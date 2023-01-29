@@ -1,0 +1,57 @@
+plugins {
+    id "java-library"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
+
+group = project.maven_group
+archivesBaseName = "ViaProxy-ViaBedrockPlugin"
+version = project.maven_version
+
+configurations {
+    include
+
+    implementation.extendsFrom include
+    api.extendsFrom include
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        name = "Jitpack"
+        url = "https://jitpack.io"
+    }
+    maven {
+        name = "Lenni0451"
+        url "https://maven.lenni0451.net/releases"
+    }
+}
+
+dependencies {
+    compileOnly "net.raphimc:ViaProxy:3.0.10"
+
+    include "com.github.RelativityMC.netty-raknet:netty-raknet-client:33e39a6238"
+    include project(path: ":", configuration: "default")
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("viaproxy.yml") {
+        expand "version": project.version
+    }
+}
+
+jar {
+    dependsOn configurations.include
+    from {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        configurations.include.collect {
+            zipTree(it)
+        }
+    } {
+        exclude "META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA"
+    }
+}

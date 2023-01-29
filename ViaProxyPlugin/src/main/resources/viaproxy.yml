@@ -1,0 +1,4 @@
+name: "ViaBedrock"
+version: "${version}"
+author: "RK_01"
+main: "net.raphimc.viabedrockplugin.ViaBedrockPlugin"
