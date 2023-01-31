@@ -22,12 +22,14 @@ import io.netty.util.AsciiString;
 
 public class BedrockTypes {
 
-    public static final Type<Integer> UNSIGNED_SHORT_LE = new UnsignedShortLEType();
-    public static final Type<Float> FLOAT_LE = new FloatLEType();
+    public static final UnsignedShortLEType UNSIGNED_SHORT_LE = new UnsignedShortLEType();
+    public static final FloatLEType FLOAT_LE = new FloatLEType();
 
     public static final UnsignedVarIntType UNSIGNED_VAR_INT = new UnsignedVarIntType();
     public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
     public static final Type<AsciiString> ASCII_STRING = new AsciiStringType();
     public static final Type<String> STRING = new StringType();
+
+    public static final Type<String[]> STRING_ARRAY = new ShortLEArrayType<>(STRING);
 
 }

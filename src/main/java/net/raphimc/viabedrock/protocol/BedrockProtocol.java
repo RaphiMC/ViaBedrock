@@ -31,6 +31,7 @@ import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPac
 import net.raphimc.viabedrock.api.JsonUtil;
 import net.raphimc.viabedrock.protocol.packets.LoginPackets;
 import net.raphimc.viabedrock.protocol.packets.PlayPackets;
+import net.raphimc.viabedrock.protocol.packets.ResourcePackPackets;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 
 public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets, ClientboundPackets1_19_3, ServerboundBedrockPackets, ServerboundPackets1_19_3> {
@@ -43,6 +44,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     protected void registerPackets() {
         LoginPackets.register(this);
         PlayPackets.register(this);
+        ResourcePackPackets.register(this);
 
         // Fallback for unhandled packets
 
