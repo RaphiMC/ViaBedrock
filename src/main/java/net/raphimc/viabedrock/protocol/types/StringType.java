@@ -18,16 +18,24 @@
 package net.raphimc.viabedrock.protocol.types;
 
 import com.viaversion.viaversion.api.type.Type;
-import io.netty.util.AsciiString;
+import io.netty.buffer.ByteBuf;
 
-public class BedrockTypes {
+import java.nio.charset.StandardCharsets;
 
-    public static final Type<Integer> UNSIGNED_SHORT_LE = new UnsignedShortLEType();
-    public static final Type<Float> FLOAT_LE = new FloatLEType();
+public class StringType extends Type<String> {
 
-    public static final UnsignedVarIntType UNSIGNED_VAR_INT = new UnsignedVarIntType();
-    public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
-    public static final Type<AsciiString> ASCII_STRING = new AsciiStringType();
-    public static final Type<String> STRING = new StringType();
+    public StringType() {
+        super(String.class);
+    }
+
+    @Override
+    public String read(ByteBuf buffer) throws Exception {
+        return new String(BedrockTypes.BYTE_ARRAY.read(buffer), StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public void write(ByteBuf buffer, String value) throws Exception {
+        BedrockTypes.BYTE_ARRAY.write(buffer, value.getBytes(StandardCharsets.UTF_8));
+    }
 
 }

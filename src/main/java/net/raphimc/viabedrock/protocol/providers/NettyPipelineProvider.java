@@ -20,14 +20,25 @@ package net.raphimc.viabedrock.protocol.providers;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
 
+import javax.crypto.SecretKey;
+
 public abstract class NettyPipelineProvider implements Provider {
 
     /**
      * Enables compression/decompression for the given user
      *
      * @param user      The user
+     * @param threshold The compression threshold
      * @param algorithm The compression algorithm. 0 = Zlib, 1 = Snappy
      */
-    public abstract void enableCompression(final UserConnection user, final int algorithm);
+    public abstract void enableCompression(final UserConnection user, final int threshold, final int algorithm);
+
+    /**
+     * Enables encryption/decryption for the given user
+     *
+     * @param user The user
+     * @param key  The encryption key
+     */
+    public abstract void enableEncryption(final UserConnection user, final SecretKey key);
 
 }

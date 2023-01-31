@@ -15,19 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.types;
+package net.raphimc.viabedrock.api;
 
-import com.viaversion.viaversion.api.type.Type;
-import io.netty.util.AsciiString;
+import com.viaversion.viaversion.libs.gson.JsonObject;
 
-public class BedrockTypes {
+public class JsonUtil {
 
-    public static final Type<Integer> UNSIGNED_SHORT_LE = new UnsignedShortLEType();
-    public static final Type<Float> FLOAT_LE = new FloatLEType();
-
-    public static final UnsignedVarIntType UNSIGNED_VAR_INT = new UnsignedVarIntType();
-    public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
-    public static final Type<AsciiString> ASCII_STRING = new AsciiStringType();
-    public static final Type<String> STRING = new StringType();
+    public static String textToJson(final String text) {
+        final JsonObject root = new JsonObject();
+        root.addProperty("text", text);
+        return root.toString();
+    }
 
 }

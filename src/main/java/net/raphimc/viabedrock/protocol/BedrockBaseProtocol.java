@@ -34,24 +34,22 @@ public class BedrockBaseProtocol extends AbstractSimpleProtocol {
 
     @Override
     protected void registerPackets() {
-        this.registerServerbound(State.HANDSHAKE, ServerboundBedrockPackets.REQUEST_NETWORK_SETTINGS.getId(), ServerboundHandshakePackets.CLIENT_INTENTION.getId(), new PacketRemapper() {
+        this.registerServerbound(State.HANDSHAKE, -1, ServerboundHandshakePackets.CLIENT_INTENTION.getId(), new PacketRemapper() {
             @Override
             public void registerMap() {
                 handler(wrapper -> {
+                    wrapper.cancel();
                     final int protocolVersion = wrapper.read(Type.VAR_INT) - 1_000_000; // protocol id
                     final String hostname = wrapper.read(Type.STRING); // hostname
                     final int port = wrapper.read(Type.UNSIGNED_SHORT); // port
                     final int state = wrapper.read(Type.VAR_INT); // state
 
                     if (state != State.LOGIN.ordinal()) {
-                        wrapper.cancel();
                         wrapper.user().disconnect("Only login requests are supported");
                         return;
                     }
 
                     wrapper.user().put(new HandshakeStorage(wrapper.user(), protocolVersion, hostname, port));
-
-                    wrapper.write(Type.INT, protocolVersion);
                 });
             }
         });

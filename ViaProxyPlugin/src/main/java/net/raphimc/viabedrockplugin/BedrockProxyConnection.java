@@ -24,11 +24,17 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import net.raphimc.netminecraft.constants.MCPipeline;
 import net.raphimc.netminecraft.util.LazyLoadBase;
+import net.raphimc.viabedrock.netty.AesGcmEncryption;
 import net.raphimc.viabedrock.netty.ZLibCompression;
 import net.raphimc.viaproxy.proxy.ProxyConnection;
 import network.ycc.raknet.RakNet;
 import network.ycc.raknet.client.RakNetClient;
 
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -53,7 +59,17 @@ public class BedrockProxyConnection extends ProxyConnection {
     }
 
     public void enableZLibCompression() {
+        if (this.getChannel().pipeline().get(MCPipeline.COMPRESSION_HANDLER_NAME) != null)
+            throw new IllegalStateException("Compression is already enabled");
+
         this.getChannel().pipeline().addBefore(MCPipeline.SIZER_HANDLER_NAME, MCPipeline.COMPRESSION_HANDLER_NAME, new ZLibCompression());
+    }
+
+    public void enableAesGcmEncryption(final SecretKey secretKey) throws InvalidAlgorithmParameterException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        if (this.getChannel().pipeline().get(MCPipeline.ENCRYPTION_HANDLER_NAME) != null)
+            throw new IllegalStateException("Encryption is already enabled");
+
+        this.getChannel().pipeline().addBefore(MCPipeline.COMPRESSION_HANDLER_NAME, MCPipeline.ENCRYPTION_HANDLER_NAME, new AesGcmEncryption(secretKey));
     }
 
 }

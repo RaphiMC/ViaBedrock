@@ -22,10 +22,12 @@ import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrockplugin.BedrockProxyConnection;
 import net.raphimc.viaproxy.proxy.ProxyConnection;
 
+import javax.crypto.SecretKey;
+
 public class ViaProxyNettyPipelineProvider extends NettyPipelineProvider {
 
     @Override
-    public void enableCompression(UserConnection user, int algorithm) {
+    public void enableCompression(UserConnection user, int threshold, int algorithm) {
         if (algorithm != 0) {
             throw new IllegalStateException("Only ZLIB compression is supported");
         }
@@ -33,6 +35,16 @@ public class ViaProxyNettyPipelineProvider extends NettyPipelineProvider {
         try {
             final BedrockProxyConnection proxyConnection = (BedrockProxyConnection) ProxyConnection.fromUserConnection(user);
             proxyConnection.enableZLibCompression();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void enableEncryption(UserConnection user, SecretKey key) {
+        try {
+            final BedrockProxyConnection proxyConnection = (BedrockProxyConnection) ProxyConnection.fromUserConnection(user);
+            proxyConnection.enableAesGcmEncryption(key);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

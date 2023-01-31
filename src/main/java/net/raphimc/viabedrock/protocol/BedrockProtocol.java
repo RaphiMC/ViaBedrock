@@ -23,9 +23,14 @@ import com.viaversion.viaversion.api.protocol.AbstractProtocol;
 import com.viaversion.viaversion.api.protocol.packet.Direction;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
+import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
+import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
+import net.raphimc.viabedrock.api.JsonUtil;
 import net.raphimc.viabedrock.protocol.packets.LoginPackets;
+import net.raphimc.viabedrock.protocol.packets.PlayPackets;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 
 public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets, ClientboundPackets1_19_3, ServerboundBedrockPackets, ServerboundPackets1_19_3> {
@@ -37,7 +42,23 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     @Override
     protected void registerPackets() {
         LoginPackets.register(this);
+        PlayPackets.register(this);
 
+        // Fallback for unhandled packets
+
+        for (ClientboundBedrockPackets packet : this.oldClientboundPacketEnum.getEnumConstants()) {
+            if (!this.hasRegisteredClientbound(State.LOGIN, packet.getId())) {
+                this.registerClientbound(State.LOGIN, packet.getId(), ClientboundLoginPackets.LOGIN_DISCONNECT.getId(), new PacketRemapper() {
+                    @Override
+                    public void registerMap() {
+                        handler(wrapper -> {
+                            wrapper.clearPacket();
+                            wrapper.write(Type.STRING, JsonUtil.textToJson("§cReceived unhanded packet: " + packet.name() + " in state LOGIN\n\n§cPlease report this issue on the ViaBedrock GitHub page!"));
+                        });
+                    }
+                });
+            }
+        }
         for (ClientboundBedrockPackets packet : this.oldClientboundPacketEnum.getEnumConstants()) {
             if (!this.hasRegisteredClientbound(packet)) {
                 this.cancelClientbound(packet);
@@ -69,9 +90,9 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         }
         super.transform(direction, state, packetWrapper);
         if (direction == Direction.CLIENTBOUND) {
-            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundBedrockPackets.values()[packetWrapper.getId() - 1] + ", packetWrapper = " + packetWrapper);
+            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_19_3.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
         } else {
-            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_19_3.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
+            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ServerboundBedrockPackets.values()[packetWrapper.getId() - 1] + ", packetWrapper = " + packetWrapper);
         }
     }
 
