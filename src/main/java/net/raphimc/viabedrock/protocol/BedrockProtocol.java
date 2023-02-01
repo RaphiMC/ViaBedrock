@@ -29,12 +29,15 @@ import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
 import net.raphimc.viabedrock.api.JsonUtil;
+import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.packets.LoginPackets;
 import net.raphimc.viabedrock.protocol.packets.PlayPackets;
 import net.raphimc.viabedrock.protocol.packets.ResourcePackPackets;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 
 public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets, ClientboundPackets1_19_3, ServerboundBedrockPackets, ServerboundPackets1_19_3> {
+
+    public static final BedrockMappingData MAPPINGS = new BedrockMappingData();
 
     public BedrockProtocol() {
         super(ClientboundBedrockPackets.class, ClientboundPackets1_19_3.class, ServerboundBedrockPackets.class, ServerboundPackets1_19_3.class);
@@ -81,6 +84,11 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     @Override
     public void init(UserConnection connection) {
 
+    }
+
+    @Override
+    public BedrockMappingData getMappingData() {
+        return MAPPINGS;
     }
 
     @Override

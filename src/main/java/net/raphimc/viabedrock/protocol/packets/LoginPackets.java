@@ -82,7 +82,9 @@ public class LoginPackets {
                 handler(wrapper -> {
                     final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
                     if (hasMessage) {
-                        wrapper.write(Type.STRING, JsonUtil.textToJson(wrapper.read(BedrockTypes.STRING))); // message
+                        final String rawMessage = wrapper.read(BedrockTypes.STRING);
+                        final String translatedMessage = protocol.getMappingData().getTranslations().getOrDefault(rawMessage, rawMessage);
+                        wrapper.write(Type.STRING, JsonUtil.textToJson(translatedMessage)); // message
                     } else {
                         wrapper.write(Type.STRING, "null"); // message
                     }
