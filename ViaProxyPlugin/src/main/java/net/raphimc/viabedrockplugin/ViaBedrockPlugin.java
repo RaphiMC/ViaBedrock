@@ -18,14 +18,17 @@
 package net.raphimc.viabedrockplugin;
 
 import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import io.netty.channel.ChannelHandlerContext;
 import net.lenni0451.lambdaevents.EventHandler;
 import net.lenni0451.reflect.Enums;
 import net.lenni0451.reflect.stream.RStream;
+import net.raphimc.mcauth.step.bedrock.StepMCChain;
 import net.raphimc.netminecraft.constants.ConnectionState;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
+import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrockplugin.provider.ViaProxyNettyPipelineProvider;
 import net.raphimc.viaprotocolhack.util.VersionEnum;
 import net.raphimc.viaproxy.cli.options.Options;
@@ -35,6 +38,7 @@ import net.raphimc.viaproxy.plugins.events.*;
 import net.raphimc.viaproxy.proxy.ProxyConnection;
 import net.raphimc.viaproxy.proxy.client2proxy.Client2ProxyHandler;
 import net.raphimc.viaproxy.proxy.proxy2server.Proxy2ServerHandler;
+import net.raphimc.viaproxy.saves.impl.accounts.BedrockAccount;
 import net.raphimc.viaproxy.util.logging.Logger;
 
 import java.util.Map;
@@ -88,6 +92,17 @@ public class ViaBedrockPlugin extends ViaProxyPlugin {
                 RStream.of(this).withSuper().fields().by("proxyConnection").set(bedrockProxyConnection);
             }
         });
+    }
+
+    @EventHandler
+    public void onFillPlayerData(final FillPlayerDataEvent event) {
+        final UserConnection user = event.getProxyConnection().getUserConnection();
+
+        if (Options.MC_ACCOUNT instanceof BedrockAccount) {
+            final BedrockAccount bedrockAccount = (BedrockAccount) Options.MC_ACCOUNT;
+            final StepMCChain.MCChain mcChain = bedrockAccount.getMcChain();
+            user.put(new AuthChainData(user, mcChain.mojangJwt(), mcChain.identityJwt(), mcChain.publicKey(), mcChain.privateKey()));
+        }
     }
 
 }
