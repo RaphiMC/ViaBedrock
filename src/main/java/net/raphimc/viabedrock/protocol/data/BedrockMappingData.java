@@ -63,10 +63,8 @@ public class BedrockMappingData extends MappingDataBase {
                 .filter(line -> line.contains("="))
                 .map(line -> line.contains("##") ? line.substring(0, line.indexOf("##")) : line)
                 .map(String::trim)
-                .collect(Collectors.toMap(
-                        line -> line.split("=", 2)[0],
-                        line -> line.split("=", 2)[1]
-                ));
+                .map(line -> line.split("=", 2))
+                .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1]));
     }
 
     private List<String> readTextList(String file) {
