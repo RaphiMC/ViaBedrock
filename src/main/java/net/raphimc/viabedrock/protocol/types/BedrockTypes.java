@@ -19,6 +19,8 @@ package net.raphimc.viabedrock.protocol.types;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.util.AsciiString;
+import net.raphimc.viabedrock.protocol.model.Position2f;
+import net.raphimc.viabedrock.protocol.model.Position3f;
 
 public class BedrockTypes {
 
@@ -34,5 +36,8 @@ public class BedrockTypes {
     public static final Type<String> STRING = new StringType();
 
     public static final Type<String[]> STRING_ARRAY = new ShortLEArrayType<>(STRING);
+
+    public static final Type<Position3f> POSITION_3F = new Position3fType();
+    public static final Type<Position2f> POSITION_2F = new Position2fType();
 
 }
