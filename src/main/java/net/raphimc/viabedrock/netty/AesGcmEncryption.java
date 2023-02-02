@@ -41,6 +41,7 @@ public class AesGcmEncryption extends ByteToMessageCodec<ByteBuf> {
     private final Cipher outCipher;
     private final MessageDigest sha256;
     private long sentPacketCounter;
+    private long receivedPacketCounter;
 
     private byte[] decryptBuffer = new byte[8192];
     private byte[] encryptBuffer = new byte[8192];
@@ -87,8 +88,9 @@ public class AesGcmEncryption extends ByteToMessageCodec<ByteBuf> {
 
         final ByteBuf decrypted = ctx.alloc().buffer(outLength);
         decrypted.writeBytes(this.decryptBuffer, 0, this.inCipher.update(data, 0, data.length, this.decryptBuffer, 0));
-
-        // TODO: Verify hash
+        if (!this.verifyHash(decrypted, Arrays.copyOf(this.decryptBuffer, this.inCipher.update(hash, 0, hash.length, this.decryptBuffer, 0)))) {
+            throw new IllegalStateException("Invalid packet hash");
+        }
 
         out.add(decrypted);
     }
@@ -100,6 +102,15 @@ public class AesGcmEncryption extends ByteToMessageCodec<ByteBuf> {
         final byte[] hash = this.sha256.digest();
         this.sha256.reset();
         return Arrays.copyOf(hash, 8);
+    }
+
+    private boolean verifyHash(final ByteBuf buf, final byte[] receivedHash) {
+        this.sha256.update(Longs.toByteArray(Long.reverseBytes(this.receivedPacketCounter++)));
+        this.sha256.update(ByteBufUtil.getBytes(buf));
+        this.sha256.update(this.secretKey.getEncoded());
+        final byte[] expectedHash = this.sha256.digest();
+        this.sha256.reset();
+        return Arrays.equals(receivedHash, Arrays.copyOf(expectedHash, 8));
     }
 
 }
