@@ -37,7 +37,7 @@ public class PacketEncapsulationCodec extends ByteToMessageCodec<ByteBuf> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-        final int header = (int) BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(in);
+        final int header = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(in);
         final int packetId = header & 1023;
         final int senderId = (header >>> 10) & 3;
         final int clientId = (header >>> 12) & 3;

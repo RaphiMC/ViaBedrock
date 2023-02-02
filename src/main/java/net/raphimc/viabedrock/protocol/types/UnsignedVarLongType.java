@@ -21,38 +21,38 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.TypeConverter;
 import io.netty.buffer.ByteBuf;
 
-public class UnsignedVarIntType extends Type<Integer> implements TypeConverter<Integer> {
+public class UnsignedVarLongType extends Type<Long> implements TypeConverter<Long> {
 
-    public UnsignedVarIntType() {
-        super("UnsignedVarInt", Integer.class);
+    public UnsignedVarLongType() {
+        super("UnsignedVarLong", Long.class);
     }
 
-    public int readPrimitive(final ByteBuf buffer) {
-        return (int) Type.VAR_LONG.readPrimitive(buffer);
+    public long readPrimitive(final ByteBuf buffer) {
+        return Type.VAR_LONG.readPrimitive(buffer);
     }
 
-    public void writePrimitive(final ByteBuf buffer, int value) {
-        Type.VAR_LONG.writePrimitive(buffer, value & 0xFFFFFFFFL);
+    public void writePrimitive(final ByteBuf buffer, long value) {
+        Type.VAR_LONG.writePrimitive(buffer, value);
     }
 
     @Override
-    public Integer read(ByteBuf buffer) throws Exception {
+    public Long read(ByteBuf buffer) throws Exception {
         return this.readPrimitive(buffer);
     }
 
     @Override
-    public void write(ByteBuf buffer, Integer value) {
+    public void write(ByteBuf buffer, Long value) {
         this.writePrimitive(buffer, value);
     }
 
     @Override
-    public Integer from(Object o) {
+    public Long from(Object o) {
         if (o instanceof Number) {
-            return ((Number) o).intValue();
+            return ((Number) o).longValue();
         } else if (o instanceof Boolean) {
-            return ((Boolean) o) ? 1 : 0;
+            return ((Boolean) o) ? 1L : 0L;
         }
-        return (Integer) o;
+        return (Long) o;
     }
 
 }

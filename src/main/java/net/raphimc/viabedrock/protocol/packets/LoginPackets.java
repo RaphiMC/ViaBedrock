@@ -106,7 +106,7 @@ public class LoginPackets {
 
                     final PacketWrapper login = PacketWrapper.create(ServerboundBedrockPackets.LOGIN, wrapper.user());
                     login.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
-                    login.write(BedrockTypes.UNSIGNED_VAR_INT, chainAndSkin.key().length() + chainAndSkin.value().length() + 8L); // length
+                    login.write(BedrockTypes.UNSIGNED_VAR_INT, chainAndSkin.key().length() + chainAndSkin.value().length() + 8); // length
                     login.write(BedrockTypes.ASCII_STRING, AsciiString.of(chainAndSkin.key())); // chain data
                     login.write(BedrockTypes.ASCII_STRING, AsciiString.of(chainAndSkin.value())); // skin data
                     login.sendToServer(BedrockProtocol.class);

@@ -25,7 +25,10 @@ public class BedrockTypes {
     public static final UnsignedShortLEType UNSIGNED_SHORT_LE = new UnsignedShortLEType();
     public static final FloatLEType FLOAT_LE = new FloatLEType();
 
+    public static final VarIntType VAR_INT = new VarIntType();
     public static final UnsignedVarIntType UNSIGNED_VAR_INT = new UnsignedVarIntType();
+    public static final VarLongType VAR_LONG = new VarLongType();
+    public static final UnsignedVarLongType UNSIGNED_VAR_LONG = new UnsignedVarLongType();
     public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
     public static final Type<AsciiString> ASCII_STRING = new AsciiStringType();
     public static final Type<String> STRING = new StringType();

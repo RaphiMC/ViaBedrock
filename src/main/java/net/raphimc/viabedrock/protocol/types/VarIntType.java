@@ -21,18 +21,19 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.TypeConverter;
 import io.netty.buffer.ByteBuf;
 
-public class UnsignedVarIntType extends Type<Integer> implements TypeConverter<Integer> {
+public class VarIntType extends Type<Integer> implements TypeConverter<Integer> {
 
-    public UnsignedVarIntType() {
-        super("UnsignedVarInt", Integer.class);
+    public VarIntType() {
+        super("VarInt", Integer.class);
     }
 
     public int readPrimitive(final ByteBuf buffer) {
-        return (int) Type.VAR_LONG.readPrimitive(buffer);
+        final int i = (int) Type.VAR_LONG.readPrimitive(buffer);
+        return (i >>> 1) ^ -(i & 1);
     }
 
     public void writePrimitive(final ByteBuf buffer, int value) {
-        Type.VAR_LONG.writePrimitive(buffer, value & 0xFFFFFFFFL);
+        Type.VAR_LONG.writePrimitive(buffer, (((long) value << 1) ^ (value >> 31)) & 0xFFFFFFFFL);
     }
 
     @Override
