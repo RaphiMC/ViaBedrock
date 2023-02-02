@@ -45,7 +45,7 @@ public class BedrockBaseProtocol extends AbstractSimpleProtocol {
                     final int state = wrapper.read(Type.VAR_INT); // state
 
                     if (state != State.LOGIN.ordinal()) {
-                        wrapper.user().disconnect("Only login requests are supported");
+                        wrapper.user().disconnect("Invalid handshake state. Expected LOGIN, got " + state + ".");
                         return;
                     }
 
