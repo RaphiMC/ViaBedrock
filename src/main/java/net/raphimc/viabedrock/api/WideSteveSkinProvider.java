@@ -66,7 +66,7 @@ public class WideSteveSkinProvider {
         claims.put("SkinId", UUID.randomUUID() + ".Custom" + UUID.randomUUID());
         claims.put("SkinImageWidth", 64);
         claims.put("SkinImageHeight", 64);
-        claims.put("SkinResourcePatch", Base64.getEncoder().encodeToString("{\"geometry\":{\"default\":\"geometry.humanoid.custom\"}".getBytes(StandardCharsets.UTF_8)));
+        claims.put("SkinResourcePatch", Base64.getEncoder().encodeToString("{\"geometry\":{\"default\":\"geometry.humanoid.custom\"}}".getBytes(StandardCharsets.UTF_8)));
         claims.put("ThirdPartyName", username);
         claims.put("ThirdPartyNameOnly", false);
         claims.put("TrustedSkin", false);
