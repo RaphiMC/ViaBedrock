@@ -19,28 +19,23 @@ package net.raphimc.viabedrock.protocol.types;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.EducationUriResource;
 
-public class Position3fType extends Type<Position3f> {
+public class EducationUriResourceType extends Type<EducationUriResource> {
 
-    public Position3fType() {
-        super("Position3f", Position3f.class);
+    public EducationUriResourceType() {
+        super(EducationUriResource.class);
     }
 
     @Override
-    public Position3f read(ByteBuf buffer) throws Exception {
-        final float x = buffer.readFloatLE();
-        final float y = buffer.readFloatLE();
-        final float z = buffer.readFloatLE();
-
-        return new Position3f(x, y, z);
+    public EducationUriResource read(ByteBuf buffer) throws Exception {
+        return new EducationUriResource(BedrockTypes.STRING.read(buffer), BedrockTypes.STRING.read(buffer));
     }
 
     @Override
-    public void write(ByteBuf buffer, Position3f value) {
-        buffer.writeFloatLE(value.x());
-        buffer.writeFloatLE(value.y());
-        buffer.writeFloatLE(value.z());
+    public void write(ByteBuf buffer, EducationUriResource value) throws Exception {
+        BedrockTypes.STRING.write(buffer, value.buttonName());
+        BedrockTypes.STRING.write(buffer, value.linkUri());
     }
 
 }

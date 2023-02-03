@@ -24,7 +24,7 @@ import net.raphimc.viabedrock.protocol.model.Position2f;
 public class Position2fType extends Type<Position2f> {
 
     public Position2fType() {
-        super(Position2f.class);
+        super("Position2f", Position2f.class);
     }
 
     @Override
