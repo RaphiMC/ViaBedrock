@@ -25,8 +25,6 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
-import net.raphimc.viabedrock.api.BedrockDataInput;
-import net.raphimc.viabedrock.api.BedrockDataOutput;
 
 import java.io.DataInput;
 import java.io.DataOutput;
