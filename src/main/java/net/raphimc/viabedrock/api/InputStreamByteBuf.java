@@ -15,32 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.types;
+package net.raphimc.viabedrock.api;
 
-import com.viaversion.viaversion.api.type.Type;
-import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.model.Position3f;
+import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.buffer.UnpooledHeapByteBuf;
 
-public class Position3fType extends Type<Position3f> {
+import java.io.DataInput;
+import java.io.IOException;
 
-    public Position3fType() {
-        super("Position3f", Position3f.class);
+public class InputStreamByteBuf extends UnpooledHeapByteBuf {
+
+    private final DataInput inputStream;
+
+    public InputStreamByteBuf(DataInput inputStream) {
+        super(UnpooledByteBufAllocator.DEFAULT, 0, 0);
+        this.inputStream = inputStream;
     }
 
     @Override
-    public Position3f read(ByteBuf buffer) throws Exception {
-        final float x = buffer.readFloatLE();
-        final float y = buffer.readFloatLE();
-        final float z = buffer.readFloatLE();
-
-        return new Position3f(x, y, z);
+    public int readableBytes() {
+        return Integer.MAX_VALUE;
     }
 
     @Override
-    public void write(ByteBuf buffer, Position3f value) {
-        buffer.writeFloatLE(value.x());
-        buffer.writeFloatLE(value.y());
-        buffer.writeFloatLE(value.z());
+    public byte readByte() {
+        try {
+            return inputStream.readByte();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-
 }

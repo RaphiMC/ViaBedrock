@@ -18,29 +18,41 @@
 package net.raphimc.viabedrock.protocol.types;
 
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.TypeConverter;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.model.Position3f;
 
-public class Position3fType extends Type<Position3f> {
+public class IntLEType extends Type<Integer> implements TypeConverter<Integer> {
 
-    public Position3fType() {
-        super("Position3f", Position3f.class);
+    public IntLEType() {
+        super("IntLE", Integer.class);
+    }
+
+    public int readPrimitive(final ByteBuf buffer) {
+        return buffer.readIntLE();
+    }
+
+    public void writePrimitive(final ByteBuf buffer, final int value) {
+        buffer.writeIntLE(value);
     }
 
     @Override
-    public Position3f read(ByteBuf buffer) throws Exception {
-        final float x = buffer.readFloatLE();
-        final float y = buffer.readFloatLE();
-        final float z = buffer.readFloatLE();
-
-        return new Position3f(x, y, z);
+    public Integer read(ByteBuf buffer) {
+        return this.readPrimitive(buffer);
     }
 
     @Override
-    public void write(ByteBuf buffer, Position3f value) {
-        buffer.writeFloatLE(value.x());
-        buffer.writeFloatLE(value.y());
-        buffer.writeFloatLE(value.z());
+    public void write(ByteBuf buffer, Integer value) {
+        this.writePrimitive(buffer, value);
+    }
+
+    @Override
+    public Integer from(Object o) {
+        if (o instanceof Number) {
+            return ((Number) o).intValue();
+        } else if (o instanceof Boolean) {
+            return ((Boolean) o) ? 1 : 0;
+        }
+        return (Integer) o;
     }
 
 }

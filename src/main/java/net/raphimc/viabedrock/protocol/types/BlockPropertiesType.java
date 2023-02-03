@@ -18,29 +18,24 @@
 package net.raphimc.viabedrock.protocol.types;
 
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.BlockProperties;
 
-public class Position3fType extends Type<Position3f> {
+public class BlockPropertiesType extends Type<BlockProperties> {
 
-    public Position3fType() {
-        super("Position3f", Position3f.class);
+    public BlockPropertiesType() {
+        super(BlockProperties.class);
     }
 
     @Override
-    public Position3f read(ByteBuf buffer) throws Exception {
-        final float x = buffer.readFloatLE();
-        final float y = buffer.readFloatLE();
-        final float z = buffer.readFloatLE();
-
-        return new Position3f(x, y, z);
+    public BlockProperties read(ByteBuf buffer) throws Exception {
+        return new BlockProperties(BedrockTypes.STRING.read(buffer), (CompoundTag) BedrockTypes.TAG.read(buffer));
     }
 
     @Override
-    public void write(ByteBuf buffer, Position3f value) {
-        buffer.writeFloatLE(value.x());
-        buffer.writeFloatLE(value.y());
-        buffer.writeFloatLE(value.z());
+    public void write(ByteBuf buffer, BlockProperties value) throws Exception {
+        BedrockTypes.STRING.write(buffer, value.name());
+        BedrockTypes.TAG.write(buffer, value.properties());
     }
-
 }

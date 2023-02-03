@@ -30,6 +30,7 @@ import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPac
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
 import net.raphimc.viabedrock.api.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
+import net.raphimc.viabedrock.protocol.packets.JoinPackets;
 import net.raphimc.viabedrock.protocol.packets.LoginPackets;
 import net.raphimc.viabedrock.protocol.packets.PlayPackets;
 import net.raphimc.viabedrock.protocol.packets.ResourcePackPackets;
@@ -45,6 +46,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
 
     @Override
     protected void registerPackets() {
+        JoinPackets.register(this);
         LoginPackets.register(this);
         PlayPackets.register(this);
         ResourcePackPackets.register(this);

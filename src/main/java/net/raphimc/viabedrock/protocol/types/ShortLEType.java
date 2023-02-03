@@ -18,38 +18,41 @@
 package net.raphimc.viabedrock.protocol.types;
 
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.types.ArrayType;
+import com.viaversion.viaversion.api.type.TypeConverter;
 import io.netty.buffer.ByteBuf;
 
-import java.lang.reflect.Array;
+public class ShortLEType extends Type<Short> implements TypeConverter<Short> {
 
-public class ShortLEArrayType<T> extends Type<T[]> {
+    public ShortLEType() {
+        super("ShortLE", Short.class);
+    }
 
-    private final Type<T> elementType;
+    public short readPrimitive(final ByteBuf buffer) {
+        return buffer.readShortLE();
+    }
 
-    public ShortLEArrayType(final Type<T> type) {
-        super(type.getTypeName() + " ShortLEArray", (Class<T[]>) ArrayType.getArrayClass(type.getOutputClass()));
-
-        this.elementType = type;
+    public void writePrimitive(final ByteBuf buffer, final short value) {
+        buffer.writeShortLE(value);
     }
 
     @Override
-    public T[] read(ByteBuf buffer) throws Exception {
-        final int length = BedrockTypes.UNSIGNED_SHORT_LE.readPrimitive(buffer);
-        final T[] array = (T[]) Array.newInstance(this.elementType.getOutputClass(), length);
-
-        for (int i = 0; i < length; i++) {
-            array[i] = this.elementType.read(buffer);
-        }
-        return array;
+    public Short read(ByteBuf buffer) {
+        return this.readPrimitive(buffer);
     }
 
     @Override
-    public void write(ByteBuf buffer, T[] value) throws Exception {
-        BedrockTypes.UNSIGNED_SHORT_LE.writePrimitive(buffer, value.length);
-        for (T v : value) {
-            this.elementType.write(buffer, v);
+    public void write(ByteBuf buffer, Short value) {
+        this.writePrimitive(buffer, value);
+    }
+
+    @Override
+    public Short from(Object o) {
+        if (o instanceof Number) {
+            return ((Number) o).shortValue();
+        } else if (o instanceof Boolean) {
+            return (short) (((Boolean) o) ? 1 : 0);
         }
+        return (Short) o;
     }
 
 }

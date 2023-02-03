@@ -19,28 +19,25 @@ package net.raphimc.viabedrock.protocol.types;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.Experiment;
+import net.raphimc.viabedrock.protocol.model.ItemEntry;
 
-public class Position3fType extends Type<Position3f> {
+public class ItemEntryType extends Type<ItemEntry> {
 
-    public Position3fType() {
-        super("Position3f", Position3f.class);
+    public ItemEntryType() {
+        super(ItemEntry.class);
     }
 
     @Override
-    public Position3f read(ByteBuf buffer) throws Exception {
-        final float x = buffer.readFloatLE();
-        final float y = buffer.readFloatLE();
-        final float z = buffer.readFloatLE();
-
-        return new Position3f(x, y, z);
+    public ItemEntry read(ByteBuf buffer) throws Exception {
+        return new ItemEntry(BedrockTypes.STRING.read(buffer), buffer.readShortLE(), buffer.readBoolean());
     }
 
     @Override
-    public void write(ByteBuf buffer, Position3f value) {
-        buffer.writeFloatLE(value.x());
-        buffer.writeFloatLE(value.y());
-        buffer.writeFloatLE(value.z());
+    public void write(ByteBuf buffer, ItemEntry value) throws Exception {
+        BedrockTypes.STRING.write(buffer, value.identifier());
+        buffer.writeShortLE(value.id());
+        buffer.writeBoolean(value.componentBased());
     }
 
 }

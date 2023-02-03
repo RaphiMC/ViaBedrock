@@ -17,30 +17,31 @@
  */
 package net.raphimc.viabedrock.protocol.types;
 
+import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
-public class Position3fType extends Type<Position3f> {
+public class Position3iType extends Type<Position> {
 
-    public Position3fType() {
-        super("Position3f", Position3f.class);
+    public Position3iType() {
+        super("Position3i", Position.class);
     }
 
     @Override
-    public Position3f read(ByteBuf buffer) throws Exception {
-        final float x = buffer.readFloatLE();
-        final float y = buffer.readFloatLE();
-        final float z = buffer.readFloatLE();
+    public Position read(ByteBuf buffer) throws Exception {
+        final int x = BedrockTypes.VAR_INT.readPrimitive(buffer);
+        final int y = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
+        final int z = BedrockTypes.VAR_INT.readPrimitive(buffer);
 
-        return new Position3f(x, y, z);
+        return new Position(x, y, z);
     }
 
     @Override
-    public void write(ByteBuf buffer, Position3f value) {
-        buffer.writeFloatLE(value.x());
-        buffer.writeFloatLE(value.y());
-        buffer.writeFloatLE(value.z());
+    public void write(ByteBuf buffer, Position value) {
+        BedrockTypes.VAR_INT.writePrimitive(buffer, value.x());
+        BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.y());
+        BedrockTypes.VAR_INT.writePrimitive(buffer, value.z());
     }
 
 }
