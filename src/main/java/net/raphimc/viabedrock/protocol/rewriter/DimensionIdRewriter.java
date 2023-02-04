@@ -27,6 +27,8 @@ public class DimensionIdRewriter {
                 return "minecraft:the_nether";
             case 2:
                 return "minecraft:the_end";
+            case 3:
+                return "minecraft:overworld_caves";
             default: // Mojang client would crash here
                 throw new RuntimeException("Invalid dimension id: " + dimensionId);
         }

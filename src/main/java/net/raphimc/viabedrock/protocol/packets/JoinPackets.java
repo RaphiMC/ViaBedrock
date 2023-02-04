@@ -30,12 +30,14 @@ import net.raphimc.viabedrock.api.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.model.Entity;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
+import net.raphimc.viabedrock.protocol.storage.ChatSettingsStorage;
+import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.Map;
@@ -50,6 +52,8 @@ public class JoinPackets {
             public void registerMap() {
                 handler(wrapper -> {
                     wrapper.cancel(); // We need to fix the order of the packets
+                    final ChatSettingsStorage chatSettingsStorage = wrapper.user().get(ChatSettingsStorage.class);
+                    final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
                     final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
@@ -106,7 +110,7 @@ public class JoinPackets {
                     if (wrapper.read(Type.BOOLEAN)) { // enable experimental game play
                         wrapper.read(Type.BOOLEAN); // force experimental game play
                     }
-                    wrapper.read(Type.BYTE); // chat restriction level
+                    final byte chatRestrictionLevel = wrapper.read(Type.BYTE); // chat restriction level
                     wrapper.read(Type.BOOLEAN); // disabling player interactions
 
                     // Continue reading start game packet
@@ -138,7 +142,11 @@ public class JoinPackets {
                         return;
                     }
 
-                    final int javaEntityId = entityTracker.addEntity(new Entity(uniqueEntityId, runtimeEntityId, Entity1_19_3Types.PLAYER)).javaId();
+                    wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
+                    chatSettingsStorage.setServerRestricted(chatRestrictionLevel >= 1);
+                    spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
+                    entityTracker.setClientPlayerUniqueId(uniqueEntityId);
+                    final int javaEntityId = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, Entity1_19_3Types.PLAYER).javaId();
 
                     final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_3.JOIN_GAME, wrapper.user());
                     joinGame.write(Type.INT, javaEntityId); // entity id
@@ -183,15 +191,25 @@ public class JoinPackets {
                     }
                     tags.send(BedrockProtocol.class);
 
-                    final PacketWrapper spawnPosition = PacketWrapper.create(ClientboundPackets1_19_3.SPAWN_POSITION, wrapper.user());
-                    spawnPosition.write(Type.POSITION1_14, defaultSpawnPosition); // position
-                    spawnPosition.write(Type.FLOAT, 0F); // angle
-                    spawnPosition.send(BedrockProtocol.class);
+                    if (rainLevel > 0F || lightningLevel > 0F) {
+                        final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_19_3.GAME_EVENT, wrapper.user());
+                        rainStartGameEvent.write(Type.VAR_INT, 2); // event id
+                        rainStartGameEvent.write(Type.FLOAT, 0F); // value
+                        rainStartGameEvent.send(BedrockProtocol.class);
 
-                    // TODO: Rain level and lightning level should be handled
-                    // TODO: commands enabled should be handled? What does it do exactly?
-                    // TODO: ChatRestrictionLevel should be handled
-                    // TODO: Send a proper SPAWN_POSITION packet
+                        if (rainLevel > 0F) {
+                            final PacketWrapper rainStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_3.GAME_EVENT, wrapper.user());
+                            rainStrengthGameEvent.write(Type.VAR_INT, 7); // event id
+                            rainStrengthGameEvent.write(Type.FLOAT, rainLevel); // value
+                            rainStrengthGameEvent.send(BedrockProtocol.class);
+                        }
+                        if (lightningLevel > 0F) {
+                            final PacketWrapper thunderStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_3.GAME_EVENT, wrapper.user());
+                            thunderStrengthGameEvent.write(Type.VAR_INT, 8); // event id
+                            thunderStrengthGameEvent.write(Type.FLOAT, lightningLevel); // value
+                            thunderStrengthGameEvent.send(BedrockProtocol.class);
+                        }
+                    }
 
                     final PacketWrapper requestChunkRadius = PacketWrapper.create(ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, wrapper.user());
                     requestChunkRadius.write(BedrockTypes.VAR_INT, DEFAULT_VIEW_DISTANCE); // radius

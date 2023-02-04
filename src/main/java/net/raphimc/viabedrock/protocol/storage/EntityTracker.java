@@ -19,22 +19,30 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
 import net.raphimc.viabedrock.protocol.model.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-// TODO: When should all entities be removed?
 public class EntityTracker extends StoredObject {
 
+    private final AtomicInteger ID_COUNTER = new AtomicInteger(0);
+    private long clientPlayerUniqueId = -1;
     private final Map<Long, Entity> entities = new HashMap<>();
-    
+
     public EntityTracker(final UserConnection user) {
         super(user);
     }
 
+    public void setClientPlayerUniqueId(final long uniqueId) {
+        this.clientPlayerUniqueId = uniqueId;
+    }
+
     // TODO: Behavior if entity is already present
-    public Entity addEntity(final Entity entity) {
+    public Entity addEntity(final long uniqueId, final long runtimeId, final Entity1_19_3Types type) {
+        final Entity entity = new Entity(uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), type);
         this.entities.put(entity.uniqueId(), entity);
 
         return entity;
@@ -42,6 +50,10 @@ public class EntityTracker extends StoredObject {
 
     public Entity getEntity(final long uniqueId) {
         return this.entities.get(uniqueId);
+    }
+
+    public Entity getClientPlayer() {
+        return this.entities.get(this.clientPlayerUniqueId);
     }
 
 }

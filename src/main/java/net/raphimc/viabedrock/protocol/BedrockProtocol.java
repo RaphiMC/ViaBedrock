@@ -30,12 +30,11 @@ import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPac
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
 import net.raphimc.viabedrock.api.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
-import net.raphimc.viabedrock.protocol.packets.JoinPackets;
-import net.raphimc.viabedrock.protocol.packets.LoginPackets;
-import net.raphimc.viabedrock.protocol.packets.PlayPackets;
-import net.raphimc.viabedrock.protocol.packets.ResourcePackPackets;
+import net.raphimc.viabedrock.protocol.packets.*;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
+import net.raphimc.viabedrock.protocol.storage.ChatSettingsStorage;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
 
 public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets, ClientboundPackets1_19_3, ServerboundBedrockPackets, ServerboundPackets1_19_3> {
 
@@ -51,6 +50,9 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         PlayPackets.register(this);
         ResourcePackPackets.register(this);
         JoinPackets.register(this);
+        ChatPackets.register(this);
+        PlayerPackets.register(this);
+        WorldPackets.register(this);
 
         // Fallback for unhandled packets
 
@@ -61,7 +63,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
                     public void registerMap() {
                         handler(wrapper -> {
                             wrapper.clearPacket();
-                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("§cReceived unhanded packet: " + packet.name() + " in state LOGIN\n\n§cPlease report this issue on the ViaBedrock GitHub page!"));
+                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("§cReceived unhandled packet: " + packet.name() + " in state LOGIN\n\n§cPlease report this issue on the ViaBedrock GitHub page!"));
                         });
                     }
                 });
@@ -86,6 +88,8 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
 
     @Override
     public void init(UserConnection user) {
+        user.put(new ChatSettingsStorage(user));
+        user.put(new SpawnPositionStorage(user));
         user.put(new EntityTracker(user));
     }
 

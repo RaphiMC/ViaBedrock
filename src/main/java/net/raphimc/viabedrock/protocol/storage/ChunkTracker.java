@@ -15,38 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.model;
+package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
+import com.viaversion.viaversion.api.connection.StoredObject;
+import com.viaversion.viaversion.api.connection.UserConnection;
 
-public class Entity {
+public class ChunkTracker extends StoredObject {
 
-    private final long uniqueId;
-    private final long runtimeId;
-    private final int javaId;
-    private final Entity1_19_3Types type;
+    private final int dimensionId;
 
-    public Entity(final long uniqueId, final long runtimeId, final int javaId, final Entity1_19_3Types type) {
-        this.uniqueId = uniqueId;
-        this.runtimeId = runtimeId;
-        this.javaId = javaId;
-        this.type = type;
+    public ChunkTracker(final UserConnection user, final int dimensionId) {
+        super(user);
+
+        this.dimensionId = dimensionId;
     }
 
-    public long uniqueId() {
-        return this.uniqueId;
-    }
-
-    public long runtimeId() {
-        return this.runtimeId;
-    }
-
-    public int javaId() {
-        return this.javaId;
-    }
-
-    public Entity1_19_3Types type() {
-        return this.type;
+    public int getDimensionId() {
+        return this.dimensionId;
     }
 
 }
