@@ -15,21 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api;
+package net.raphimc.viabedrock.protocol.rewriter;
 
-import com.viaversion.viaversion.libs.gson.JsonElement;
-import com.viaversion.viaversion.libs.gson.JsonObject;
+public class DimensionIdRewriter {
 
-public class JsonUtil {
-
-    public static String textToJson(final String text) {
-        return textToComponent(text).toString();
-    }
-
-    public static JsonElement textToComponent(final String text) {
-        final JsonObject root = new JsonObject();
-        root.addProperty("text", text);
-        return root;
+    public static String dimensionIdToDimensionKey(final int dimensionId) {
+        switch (dimensionId) {
+            case 0:
+                return "minecraft:overworld";
+            case 1:
+                return "minecraft:the_nether";
+            case 2:
+                return "minecraft:the_end";
+            default: // Mojang client would crash here
+                throw new RuntimeException("Invalid dimension id: " + dimensionId);
+        }
     }
 
 }

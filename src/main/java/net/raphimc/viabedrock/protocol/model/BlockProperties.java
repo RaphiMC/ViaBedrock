@@ -64,4 +64,5 @@ public class BlockProperties {
                 ", properties=" + properties +
                 '}';
     }
+
 }

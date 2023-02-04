@@ -40,7 +40,8 @@ public class BedrockTypes {
     public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
     public static final Type<AsciiString> ASCII_STRING = new AsciiStringType();
     public static final Type<String> STRING = new StringType();
-    public static final Type<String[]> STRING_ARRAY = new ArrayType<>(STRING, SHORT_LE);
+    public static final Type<String[]> SHORT_LE_STRING_ARRAY = new ArrayType<>(STRING, SHORT_LE);
+    public static final Type<String[]> UNSIGNED_VAR_INT_STRING_ARRAY = new ArrayType<>(STRING, UNSIGNED_VAR_INT);
     public static final Type<UUID> UUID = new UUIDType();
 
     public static final Type<Tag> TAG = new TagType();

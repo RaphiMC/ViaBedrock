@@ -62,4 +62,5 @@ public class EducationUriResource {
                 ", linkUri='" + linkUri + '\'' +
                 '}';
     }
+
 }

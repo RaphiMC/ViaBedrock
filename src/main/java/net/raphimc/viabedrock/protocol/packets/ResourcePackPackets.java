@@ -34,7 +34,7 @@ public class ResourcePackPackets {
                     wrapper.cancel();
                     final PacketWrapper resourcePackClientResponse = wrapper.create(ClientboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
                     resourcePackClientResponse.write(Type.UNSIGNED_BYTE, (short) 3); // status | 3 = HAVE_ALL_PACKS
-                    resourcePackClientResponse.write(BedrockTypes.STRING_ARRAY, new String[0]); // resource pack ids
+                    resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
                     resourcePackClientResponse.sendToServer(BedrockProtocol.class);
                 });
             }
@@ -46,7 +46,7 @@ public class ResourcePackPackets {
                     wrapper.cancel();
                     final PacketWrapper resourcePackClientResponse = wrapper.create(ClientboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
                     resourcePackClientResponse.write(Type.UNSIGNED_BYTE, (short) 4); // status | 4 = COMPLETED
-                    resourcePackClientResponse.write(BedrockTypes.STRING_ARRAY, new String[0]); // resource pack ids
+                    resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
                     resourcePackClientResponse.sendToServer(BedrockProtocol.class);
                 });
             }

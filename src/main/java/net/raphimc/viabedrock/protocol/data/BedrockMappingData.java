@@ -19,6 +19,8 @@ package net.raphimc.viabedrock.protocol.data;
 
 import com.viaversion.viaversion.api.data.MappingDataBase;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+import com.viaversion.viaversion.libs.opennbt.NBTIO;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 
@@ -31,10 +33,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 public class BedrockMappingData extends MappingDataBase {
 
     private Map<String, String> translations;
+    private CompoundTag registries;
+    private CompoundTag tags;
 
     public BedrockMappingData() {
         super(ProtocolVersion.v1_19_3.getName(), BedrockProtocolVersion.bedrockLatest.getName());
@@ -45,10 +50,20 @@ public class BedrockMappingData extends MappingDataBase {
         this.getLogger().info("Loading " + this.oldVersion + " -> " + this.newVersion + " mappings...");
 
         this.translations = this.readTranslationMap("en_US.lang");
+        this.registries = this.readNBT("registries.nbt");
+        this.tags = this.readNBT("tags.nbt");
     }
 
     public Map<String, String> getTranslations() {
         return Collections.unmodifiableMap(this.translations);
+    }
+
+    public CompoundTag getRegistries() {
+        return this.registries;
+    }
+
+    public CompoundTag getTags() {
+        return this.tags;
     }
 
     @Override
@@ -80,6 +95,21 @@ public class BedrockMappingData extends MappingDataBase {
         } catch (IOException e) {
             this.getLogger().severe("Could not read " + file);
             return Collections.emptyList();
+        }
+    }
+
+    private CompoundTag readNBT(String file) {
+        file = "assets/viabedrock/data/" + file;
+        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
+            if (inputStream == null) {
+                this.getLogger().severe("Could not open " + file);
+                return null;
+            }
+
+            return NBTIO.readTag(new GZIPInputStream(inputStream));
+        } catch (IOException e) {
+            this.getLogger().severe("Could not read " + file);
+            return null;
         }
     }
 

@@ -15,21 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api;
+package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.libs.gson.JsonElement;
-import com.viaversion.viaversion.libs.gson.JsonObject;
+import com.viaversion.viaversion.api.connection.StoredObject;
+import com.viaversion.viaversion.api.connection.UserConnection;
+import net.raphimc.viabedrock.protocol.model.Entity;
 
-public class JsonUtil {
+import java.util.HashMap;
+import java.util.Map;
 
-    public static String textToJson(final String text) {
-        return textToComponent(text).toString();
+// TODO: When should all entities be removed?
+public class EntityTracker extends StoredObject {
+
+    private final Map<Long, Entity> entities = new HashMap<>();
+    
+    public EntityTracker(final UserConnection user) {
+        super(user);
     }
 
-    public static JsonElement textToComponent(final String text) {
-        final JsonObject root = new JsonObject();
-        root.addProperty("text", text);
-        return root;
+    // TODO: Behavior if entity is already present
+    public Entity addEntity(final Entity entity) {
+        this.entities.put(entity.uniqueId(), entity);
+
+        return entity;
+    }
+
+    public Entity getEntity(final long uniqueId) {
+        return this.entities.get(uniqueId);
     }
 
 }

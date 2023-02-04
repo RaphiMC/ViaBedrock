@@ -84,9 +84,9 @@ public class LoginPackets {
                     if (hasMessage) {
                         final String rawMessage = wrapper.read(BedrockTypes.STRING);
                         final String translatedMessage = protocol.getMappingData().getTranslations().getOrDefault(rawMessage, rawMessage);
-                        wrapper.write(Type.STRING, JsonUtil.textToJson(translatedMessage)); // message
+                        wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translatedMessage)); // reason
                     } else {
-                        wrapper.write(Type.STRING, "null"); // message
+                        wrapper.write(Type.COMPONENT, com.viaversion.viaversion.libs.gson.JsonNull.INSTANCE); // reason
                     }
                 });
             }
@@ -183,26 +183,26 @@ public class LoginPackets {
                             clientCacheStatus.sendToServer(BedrockProtocol.class);
                             break;
                         case 1: // LOGIN_FAILED_CLIENT_OLD
-                            wrapper.write(Type.STRING, JsonUtil.textToJson("Could not connect: Outdated client!"));
+                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect: Outdated client!"));
                             break;
                         case 2: // LOGIN_FAILED_SERVER_OLD
-                            wrapper.write(Type.STRING, JsonUtil.textToJson("Could not connect: Outdated server!"));
+                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect: Outdated server!"));
                             break;
                         case 4: // LOGIN_FAILED_INVALID_TENANT
-                            wrapper.write(Type.STRING, JsonUtil.textToJson("Could not connect. You do not have access to this world."));
+                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect. You do not have access to this world."));
                             break;
                         case 5: // LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA
-                            wrapper.write(Type.STRING, JsonUtil.textToJson("The server is not running Minecraft: Education Edition. Failed to connect."));
+                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is not running Minecraft: Education Edition. Failed to connect."));
                             break;
                         case 6: // LOGIN_FAILED_EDITION_MISMATCH_VANILLA_TO_EDU
-                            wrapper.write(Type.STRING, JsonUtil.textToJson("The server is running an incompatible edition of Minecraft. Failed to connect."));
+                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is running an incompatible edition of Minecraft. Failed to connect."));
                             break;
                         case 7: // FAILED_SERVER_FULL_SUB_CLIENT
                         case 9: // VANILLA_TO_EDITOR_MISMATCH
-                            wrapper.write(Type.STRING, JsonUtil.textToJson("Wow this server is popular! Check back later to see if space opens up.\n\n\n\nServer Full"));
+                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Wow this server is popular! Check back later to see if space opens up.\n\n\n\nServer Full"));
                             break;
                         case 8: // EDITOR_TO_VANILLA_MISMATCH
-                            wrapper.write(Type.STRING, JsonUtil.textToJson("The server is not in Editor mode. Failed to connect."));
+                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is not in Editor mode. Failed to connect."));
                             break;
                         case 3: // PLAYER_SPAWN
                         default:

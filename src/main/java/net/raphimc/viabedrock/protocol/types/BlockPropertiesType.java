@@ -38,4 +38,5 @@ public class BlockPropertiesType extends Type<BlockProperties> {
         BedrockTypes.STRING.write(buffer, value.name());
         BedrockTypes.TAG.write(buffer, value.properties());
     }
+
 }
