@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.minecraft.Position;
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
 import com.viaversion.viaversion.api.type.Type;
@@ -30,6 +29,9 @@ import net.raphimc.viabedrock.api.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
+import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
+import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
@@ -145,15 +147,17 @@ public class JoinPackets {
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
                     chatSettingsStorage.setServerRestricted(chatRestrictionLevel >= 1);
                     spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
-                    entityTracker.setClientPlayerUniqueId(uniqueEntityId);
-                    final int javaEntityId = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, Entity1_19_3Types.PLAYER).javaId();
+                    final int javaEntityId = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId).javaId();
+                    entityTracker.getClientPlayer().setPosition(playerPosition);
+                    entityTracker.getClientPlayer().setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
+                    entityTracker.getClientPlayer().setOnGround(false);
 
                     final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_3.JOIN_GAME, wrapper.user());
                     joinGame.write(Type.INT, javaEntityId); // entity id
                     joinGame.write(Type.BOOLEAN, false); // hardcore
                     joinGame.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(playerGameType, levelGameType)); // gamemode
                     joinGame.write(Type.BYTE, (byte) -1); // previous gamemode
-                    joinGame.write(Type.STRING_ARRAY, new String[]{"minecraft:overworld", "minecraft:the_nether", "minecraft:the_end"}); // dimension types
+                    joinGame.write(Type.STRING_ARRAY, new String[]{DimensionKeys.OVERWORLD, DimensionKeys.NETHER, DimensionKeys.END}); // dimension types
                     joinGame.write(Type.NBT, BedrockProtocol.MAPPINGS.getRegistries()); // registries
                     joinGame.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension type
                     joinGame.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension id
@@ -193,19 +197,19 @@ public class JoinPackets {
 
                     if (rainLevel > 0F || lightningLevel > 0F) {
                         final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_19_3.GAME_EVENT, wrapper.user());
-                        rainStartGameEvent.write(Type.VAR_INT, 2); // event id
+                        rainStartGameEvent.write(Type.VAR_INT, GameEvents.RAIN_STARTED); // event id
                         rainStartGameEvent.write(Type.FLOAT, 0F); // value
                         rainStartGameEvent.send(BedrockProtocol.class);
 
                         if (rainLevel > 0F) {
                             final PacketWrapper rainStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_3.GAME_EVENT, wrapper.user());
-                            rainStrengthGameEvent.write(Type.VAR_INT, 7); // event id
+                            rainStrengthGameEvent.write(Type.VAR_INT, GameEvents.RAIN_GRADIENT_CHANGED); // event id
                             rainStrengthGameEvent.write(Type.FLOAT, rainLevel); // value
                             rainStrengthGameEvent.send(BedrockProtocol.class);
                         }
                         if (lightningLevel > 0F) {
                             final PacketWrapper thunderStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_3.GAME_EVENT, wrapper.user());
-                            thunderStrengthGameEvent.write(Type.VAR_INT, 8); // event id
+                            thunderStrengthGameEvent.write(Type.VAR_INT, GameEvents.THUNDER_GRADIENT_CHANGED); // event id
                             thunderStrengthGameEvent.write(Type.FLOAT, lightningLevel); // value
                             thunderStrengthGameEvent.send(BedrockProtocol.class);
                         }
@@ -220,15 +224,7 @@ public class JoinPackets {
                     tickSync.write(BedrockTypes.LONG_LE, 0L); // response timestamp
                     tickSync.sendToServer(BedrockProtocol.class);
 
-                    final PacketWrapper movePlayer = PacketWrapper.create(ServerboundBedrockPackets.MOVE_PLAYER, wrapper.user());
-                    movePlayer.write(BedrockTypes.UNSIGNED_VAR_LONG, runtimeEntityId); // runtime entity id
-                    movePlayer.write(BedrockTypes.POSITION_3F, playerPosition); // position
-                    movePlayer.write(BedrockTypes.POSITION_3F, new Position3f(playerRotation.x(), playerRotation.y(), 0F)); // rotation
-                    movePlayer.write(Type.UNSIGNED_BYTE, (short) 0); // mode | 0 = NORMAL
-                    movePlayer.write(Type.BOOLEAN, false); // on ground
-                    movePlayer.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // riding runtime entity id
-                    movePlayer.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // tick
-                    movePlayer.sendToServer(BedrockProtocol.class);
+                    entityTracker.getClientPlayer().sendMovementPacket(wrapper.user(), MovePlayerMode.NORMAL);
                 });
             }
         });

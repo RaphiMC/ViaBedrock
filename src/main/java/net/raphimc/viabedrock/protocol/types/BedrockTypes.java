@@ -43,6 +43,7 @@ public class BedrockTypes {
     public static final Type<String[]> SHORT_LE_STRING_ARRAY = new ArrayType<>(STRING, SHORT_LE);
     public static final Type<String[]> UNSIGNED_VAR_INT_STRING_ARRAY = new ArrayType<>(STRING, UNSIGNED_VAR_INT);
     public static final Type<UUID> UUID = new UUIDType();
+    public static final Type<UUID[]> UUID_ARRAY = new ArrayType<>(UUID, UNSIGNED_VAR_INT);
 
     public static final Type<Tag> TAG = new TagType();
     public static final Type<Position> POSITION_3I = new Position3iType();
@@ -57,5 +58,6 @@ public class BedrockTypes {
     public static final Type<BlockProperties[]> BLOCK_PROPERTIES_ARRAY = new ArrayType<>(BLOCK_PROPERTIES, UNSIGNED_VAR_INT);
     public static final Type<ItemEntry> ITEM_ENTRY = new ItemEntryType();
     public static final Type<ItemEntry[]> ITEM_ENTRY_ARRAY = new ArrayType<>(ITEM_ENTRY, UNSIGNED_VAR_INT);
+    public static final Type<CommandOrigin> COMMAND_ORIGIN = new CommandOriginType();
 
 }

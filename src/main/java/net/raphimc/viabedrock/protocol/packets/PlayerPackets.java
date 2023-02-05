@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
 import com.viaversion.viaversion.api.type.Type;
@@ -25,10 +26,11 @@ import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPac
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerActionTypes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.RespawnState;
+import net.raphimc.viabedrock.protocol.data.enums.java.ClientStatus;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class PlayerPackets {
@@ -42,12 +44,26 @@ public class PlayerPackets {
                     final short state = wrapper.read(Type.UNSIGNED_BYTE); // state
                     wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
 
-                    if (state != 1) { // SERVER_READY
+                    if (state != RespawnState.SERVER_READY) {
                         wrapper.cancel();
                         return;
                     }
 
-                    System.out.println(position);
+                    final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+                    if (!entityTracker.getClientPlayer().isSpawned()) {
+                        entityTracker.getClientPlayer().setRespawning(true);
+                    } else {
+                        final PacketWrapper playerAction = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, wrapper.user());
+                        playerAction.write(BedrockTypes.UNSIGNED_VAR_LONG, entityTracker.getClientPlayer().runtimeId()); // runtime entity id
+                        playerAction.write(BedrockTypes.VAR_INT, PlayerActionTypes.RESPAWN); // action
+                        playerAction.write(BedrockTypes.POSITION_3I, new Position(0, 0, 0)); // block position
+                        playerAction.write(BedrockTypes.POSITION_3I, new Position(0, 0, 0)); // result position
+                        playerAction.write(BedrockTypes.VAR_INT, -1); // face
+                        playerAction.sendToServer(BedrockProtocol.class);
+
+                        entityTracker.getClientPlayer().closeDownloadingTerrainScreen(wrapper.user());
+                    }
+                    entityTracker.getClientPlayer().setPosition(position);
 
                     wrapper.write(Type.DOUBLE, (double) position.x()); // x
                     wrapper.write(Type.DOUBLE, (double) position.y() - 1.62D); // y
@@ -57,16 +73,6 @@ public class PlayerPackets {
                     wrapper.write(Type.BYTE, (byte) 0b11000); // flags | keep rotation
                     wrapper.write(Type.VAR_INT, 0); // teleport id
                     wrapper.write(Type.BOOLEAN, false); // dismount vehicle
-
-                    { // Close the "Downloading Terrain" screen
-                        final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
-                        final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
-
-                        final PacketWrapper spawnPosition = PacketWrapper.create(ClientboundPackets1_19_3.SPAWN_POSITION, wrapper.user());
-                        spawnPosition.write(Type.POSITION1_14, spawnPositionStorage.getSpawnPosition(chunkTracker.getDimensionId())); // position
-                        spawnPosition.write(Type.FLOAT, 0F); // angle
-                        spawnPosition.send(BedrockProtocol.class);
-                    }
                 });
             }
         });
@@ -77,14 +83,14 @@ public class PlayerPackets {
                 handler(wrapper -> {
                     final int action = wrapper.read(Type.VAR_INT); // action
 
-                    if (action != 0) { // PERFORM_RESPAWN
+                    if (action != ClientStatus.PERFORM_RESPAWN) {
                         wrapper.cancel();
                         return;
                     }
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
                     wrapper.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // position
-                    wrapper.write(Type.UNSIGNED_BYTE, (short) 2); // state | 2 = CLIENT_READY
+                    wrapper.write(Type.UNSIGNED_BYTE, RespawnState.CLIENT_READY); // state
                     wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entityTracker.getClientPlayer().runtimeId()); // runtime entity id
                 });
             }

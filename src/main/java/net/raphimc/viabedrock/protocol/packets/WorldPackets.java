@@ -58,6 +58,7 @@ public class WorldPackets {
                 });
             }
         });
+        // TODO: Dimension change -> store spawn position
         protocol.registerClientbound(ClientboundBedrockPackets.SET_TIME, ClientboundPackets1_19_3.TIME_UPDATE, new PacketRemapper() {
             @Override
             public void registerMap() {

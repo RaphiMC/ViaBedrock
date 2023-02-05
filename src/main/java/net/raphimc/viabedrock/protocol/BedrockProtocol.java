@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol;
 
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.ViaProviders;
 import com.viaversion.viaversion.api.protocol.AbstractProtocol;
@@ -35,6 +36,7 @@ import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.storage.ChatSettingsStorage;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
+import net.raphimc.viabedrock.protocol.task.EntityTrackerTickTask;
 
 public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets, ClientboundPackets1_19_3, ServerboundBedrockPackets, ServerboundPackets1_19_3> {
 
@@ -84,6 +86,8 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     @Override
     public void register(ViaProviders providers) {
         providers.require(NettyPipelineProvider.class);
+
+        Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
     }
 
     @Override

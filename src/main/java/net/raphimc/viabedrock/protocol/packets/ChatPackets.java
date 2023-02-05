@@ -24,20 +24,158 @@ import com.viaversion.viaversion.api.type.types.BitSetType;
 import com.viaversion.viaversion.api.type.types.ByteArrayType;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
+import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
+import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
+import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
+import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
+import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginTypes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOutputType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.TextType;
+import net.raphimc.viabedrock.protocol.model.CommandOrigin;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrock.protocol.storage.ChatSettingsStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.logging.Level;
+
 public class ChatPackets {
 
+    private static final ByteArrayType.OptionalByteArrayType OPTIONAL_MESSAGE_SIGNATURE_BYTES_TYPE = new ByteArrayType.OptionalByteArrayType(256);
+    private static final ByteArrayType MESSAGE_SIGNATURE_BYTES_TYPE = new ByteArrayType(256);
+    private static final BitSetType ACKNOWLEDGED_BIT_SET_TYPE = new BitSetType(20);
+
     public static void register(final BedrockProtocol protocol) {
+        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_19_3.SYSTEM_CHAT, new PacketRemapper() {
+            @Override
+            public void registerMap() {
+                handler(wrapper -> {
+                    final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
+                    final boolean needsTranslation = wrapper.read(Type.BOOLEAN); // needs translation
+
+                    final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+                    String originalMessage = null;
+                    try {
+                        switch (type) {
+                            case TextType.CHAT:
+                            case TextType.WHISPER:
+                            case TextType.ANNOUNCEMENT: {
+                                final String sourceName = wrapper.read(BedrockTypes.STRING); // source name
+                                String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
+                                if (needsTranslation) {
+                                    message = BedrockTranslator.translate(message, translator, new Object[0]);
+                                }
+
+                                if (type == TextType.CHAT && !sourceName.isEmpty()) {
+                                    message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, message}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
+                                } else if (type == TextType.WHISPER) {
+                                    message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, BedrockTranslator.translate("§7§o%commands.message.display.incoming", translator, new String[]{sourceName, message})}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
+                                }
+
+                                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message));
+                                wrapper.write(Type.BOOLEAN, false); // overlay
+                                break;
+                            }
+                            case TextType.RAW:
+                            case TextType.TIP:
+                            case TextType.SYSTEM:
+                            case TextType.OBJECT:
+                            case TextType.OBJECT_WHISPER:
+                            case TextType.OBJECT_ANNOUNCEMENT: {
+                                String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
+                                final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
+                                rootComponent.forEach(c -> {
+                                    if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
+                                });
+                                message = rootComponent.asString();
+                                if (needsTranslation) {
+                                    message = BedrockTranslator.translate(message, translator, new Object[0]);
+                                }
+
+                                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message)); // message
+                                wrapper.write(Type.BOOLEAN, false); // overlay
+                                break;
+                            }
+                            case TextType.TRANSLATION:
+                            case TextType.POPUP:
+                            case TextType.JUKEBOX_POPUP: {
+                                String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
+                                final String[] parameters = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT_STRING_ARRAY); // parameters
+                                if (needsTranslation) {
+                                    message = BedrockTranslator.translate(message, translator, parameters);
+                                }
+
+                                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message)); // message
+                                wrapper.write(Type.BOOLEAN, type == TextType.POPUP || type == TextType.JUKEBOX_POPUP); // overlay
+                                break;
+                            }
+                            default:
+                                ViaBedrock.getPlatform().getLogger().warning("Unknown text type: " + type);
+                                wrapper.cancel();
+                        }
+                    } catch (Throwable e) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalMessage + "' (" + type + ")", e);
+                        wrapper.cancel();
+                    }
+                });
+                read(BedrockTypes.STRING); // xuid
+                read(BedrockTypes.STRING); // platform chat id
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_19_3.SYSTEM_CHAT, new PacketRemapper() {
+            @Override
+            public void registerMap() {
+                handler(wrapper -> {
+                    final CommandOrigin originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN); // origin
+                    final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
+                    wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
+
+                    if (type != CommandOutputType.ALL_OUTPUT) { // TODO: handle other types
+                        ViaBedrock.getPlatform().getLogger().warning("Unhandled command output type: " + type);
+                        wrapper.cancel();
+                        return;
+                    }
+                    if (originData.type() != CommandOriginTypes.PLAYER) { // TODO: handle other types
+                        ViaBedrock.getPlatform().getLogger().warning("Unhandled command origin type: " + originData.type());
+                        wrapper.cancel();
+                        return;
+                    }
+                    final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+                    final StringBuilder message = new StringBuilder();
+
+                    final int messageCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // message count
+                    for (int i = 0; i < messageCount; i++) {
+                        final boolean internal = wrapper.read(Type.BOOLEAN); // is internal
+                        final String messageId = wrapper.read(BedrockTypes.STRING); // message id
+                        final String[] parameters = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT_STRING_ARRAY); // parameters
+
+                        message.append(internal ? "§r" : "§c");
+                        message.append(BedrockTranslator.translate(messageId, translator, parameters));
+                        if (i != messageCount - 1) {
+                            message.append("\n");
+                        }
+                    }
+                    if (type == CommandOutputType.DATA_SET) {
+                        wrapper.read(BedrockTypes.STRING); // data
+                    }
+
+                    wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message.toString()));
+                    wrapper.write(Type.BOOLEAN, false); // overlay
+                });
+            }
+        });
+
         protocol.registerServerbound(ServerboundPackets1_19_3.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketRemapper() {
             @Override
             public void registerMap() {
-                create(Type.UNSIGNED_BYTE, (short) 1); // type
+                create(Type.UNSIGNED_BYTE, TextType.CHAT); // type
                 create(Type.BOOLEAN, false); // needs translation
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().getProtocolInfo().getUsername())); // source name
                 map(Type.STRING, BedrockTypes.STRING); // message
@@ -45,9 +183,9 @@ public class ChatPackets {
                 create(BedrockTypes.STRING, ""); // platform chat id
                 read(Type.LONG); // timestamp
                 read(Type.LONG); // salt
-                read(new ByteArrayType.OptionalByteArrayType(256)); // signature
+                read(OPTIONAL_MESSAGE_SIGNATURE_BYTES_TYPE); // signature
                 read(Type.VAR_INT); // offset
-                read(new BitSetType(20)); // acknowledged
+                read(ACKNOWLEDGED_BIT_SET_TYPE); // acknowledged
                 handler(wrapper -> {
                     final ChatSettingsStorage chatSettings = wrapper.user().get(ChatSettingsStorage.class);
                     if (chatSettings.isServerRestricted()) {
@@ -58,6 +196,28 @@ public class ChatPackets {
                         systemChat.send(BedrockProtocol.class);
                     }
                 });
+            }
+        });
+        protocol.registerServerbound(ServerboundPackets1_19_3.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, new PacketRemapper() {
+            @Override
+            public void registerMap() {
+                map(Type.STRING, BedrockTypes.STRING, c -> "/" + c); // command
+                handler(wrapper -> {
+                    final UUID uuid = wrapper.user().getProtocolInfo().getUuid();
+                    wrapper.write(BedrockTypes.COMMAND_ORIGIN, new CommandOrigin(CommandOriginTypes.PLAYER, uuid, "")); // origin
+                });
+                create(Type.BOOLEAN, false); // internal
+                read(Type.LONG); // timestamp
+                read(Type.LONG); // salt
+                handler(wrapper -> {
+                    final int signatures = wrapper.read(Type.VAR_INT); // count
+                    for (int i = 0; i < signatures; i++) {
+                        wrapper.read(Type.STRING); // argument name
+                        wrapper.read(MESSAGE_SIGNATURE_BYTES_TYPE); // signature
+                    }
+                });
+                read(Type.VAR_INT); // offset
+                read(ACKNOWLEDGED_BIT_SET_TYPE); // acknowledged
             }
         });
     }

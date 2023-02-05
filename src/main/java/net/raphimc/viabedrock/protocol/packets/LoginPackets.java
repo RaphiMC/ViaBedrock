@@ -38,6 +38,7 @@ import net.raphimc.viabedrock.api.WideSteveSkinProvider;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
@@ -157,58 +158,28 @@ public class LoginPackets {
                 handler(wrapper -> {
                     final int status = wrapper.read(Type.INT); // status
 
-                    if (status != 0) {
+                    if (status == PlayStatus.LOGIN_SUCCESS) {
+                        final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
+                        wrapper.write(Type.UUID, authChainData.getIdentity()); // uuid
+                        wrapper.write(Type.STRING, authChainData.getDisplayName()); // username
+                        wrapper.write(Type.VAR_INT, 0); // properties length
+
+                        final ProtocolInfo protocolInfo = wrapper.user().getProtocolInfo();
+                        protocolInfo.setUsername(authChainData.getDisplayName());
+                        protocolInfo.setUuid(authChainData.getIdentity());
+
+                        protocolInfo.setState(State.PLAY);
+                        Via.getManager().getConnectionManager().onLoginSuccess(wrapper.user());
+                        if (!protocolInfo.getPipeline().hasNonBaseProtocols()) {
+                            wrapper.user().setActive(false);
+                        }
+
+                        final PacketWrapper clientCacheStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_STATUS, wrapper.user());
+                        clientCacheStatus.write(Type.BOOLEAN, false); // is supported
+                        clientCacheStatus.sendToServer(BedrockProtocol.class);
+                    } else {
                         wrapper.setPacketType(ClientboundLoginPackets.LOGIN_DISCONNECT);
-                    }
-
-                    switch (status) {
-                        case 0: // LOGIN_SUCCESS
-                            final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
-                            wrapper.write(Type.UUID, authChainData.getIdentity()); // uuid
-                            wrapper.write(Type.STRING, authChainData.getDisplayName()); // username
-                            wrapper.write(Type.VAR_INT, 0); // properties length
-
-                            final ProtocolInfo protocolInfo = wrapper.user().getProtocolInfo();
-                            protocolInfo.setUsername(authChainData.getDisplayName());
-                            protocolInfo.setUuid(authChainData.getIdentity());
-
-                            protocolInfo.setState(State.PLAY);
-                            Via.getManager().getConnectionManager().onLoginSuccess(wrapper.user());
-                            if (!protocolInfo.getPipeline().hasNonBaseProtocols()) {
-                                wrapper.user().setActive(false);
-                            }
-
-                            final PacketWrapper clientCacheStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_STATUS, wrapper.user());
-                            clientCacheStatus.write(Type.BOOLEAN, false); // is supported
-                            clientCacheStatus.sendToServer(BedrockProtocol.class);
-                            break;
-                        case 1: // LOGIN_FAILED_CLIENT_OLD
-                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect: Outdated client!"));
-                            break;
-                        case 2: // LOGIN_FAILED_SERVER_OLD
-                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect: Outdated server!"));
-                            break;
-                        case 4: // LOGIN_FAILED_INVALID_TENANT
-                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect. You do not have access to this world."));
-                            break;
-                        case 5: // LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA
-                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is not running Minecraft: Education Edition. Failed to connect."));
-                            break;
-                        case 6: // LOGIN_FAILED_EDITION_MISMATCH_VANILLA_TO_EDU
-                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is running an incompatible edition of Minecraft. Failed to connect."));
-                            break;
-                        case 7: // FAILED_SERVER_FULL_SUB_CLIENT
-                        case 9: // VANILLA_TO_EDITOR_MISMATCH
-                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Wow this server is popular! Check back later to see if space opens up.\n\n\n\nServer Full"));
-                            break;
-                        case 8: // EDITOR_TO_VANILLA_MISMATCH
-                            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is not in Editor mode. Failed to connect."));
-                            break;
-                        case 3: // PLAYER_SPAWN
-                        default:
-                            wrapper.cancel(); // Mojang client silently ignores invalid values
-                            ViaBedrock.getPlatform().getLogger().warning("Received invalid login status: " + status);
-                            break;
+                        writePlayStatusKickMessage(wrapper, status);
                     }
                 });
             }
@@ -228,6 +199,39 @@ public class LoginPackets {
                 });
             }
         });
+    }
+
+    public static void writePlayStatusKickMessage(final PacketWrapper wrapper, final int status) {
+        switch (status) {
+            case PlayStatus.LOGIN_FAILED_CLIENT_OLD:
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect: Outdated client!"));
+                break;
+            case PlayStatus.LOGIN_FAILED_SERVER_OLD:
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect: Outdated server!"));
+                break;
+            case PlayStatus.LOGIN_FAILED_INVALID_TENANT:
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect. You do not have access to this world."));
+                break;
+            case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA:
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is not running Minecraft: Education Edition. Failed to connect."));
+                break;
+            case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_VANILLA_TO_EDU:
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is running an incompatible edition of Minecraft. Failed to connect."));
+                break;
+            case PlayStatus.FAILED_SERVER_FULL_SUB_CLIENT:
+            case PlayStatus.VANILLA_TO_EDITOR_MISMATCH:
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Wow this server is popular! Check back later to see if space opens up.\n\n\n\nServer Full"));
+                break;
+            case PlayStatus.EDITOR_TO_VANILLA_MISMATCH:
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is not in Editor mode. Failed to connect."));
+                break;
+            default: // Mojang client silently ignores invalid values
+                ViaBedrock.getPlatform().getLogger().warning("Received invalid login status: " + status);
+            case PlayStatus.PLAYER_SPAWN:
+            case PlayStatus.LOGIN_SUCCESS:
+                wrapper.cancel();
+                break;
+        }
     }
 
     private static ECPublicKey publicKeyFromBase64(final String base64) {

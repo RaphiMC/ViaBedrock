@@ -17,22 +17,24 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter;
 
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameTypes;
+
 public class GameTypeRewriter {
 
     public static short gameTypeToGameMode(final int gameType) {
         switch (gameType) {
-            case 0: // SURVIVAL
-            case 3: // SURVIVAL_VIEWER
-            case 4: // CREATIVE_VIEWER
+            case GameTypes.SURVIVAL:
+            case GameTypes.SURVIVAL_VIEWER:
+            case GameTypes.CREATIVE_VIEWER:
             default: // Mojang client defaults to survival in case of out of bounds values
                 return 0;
-            case 1: // CREATIVE
+            case GameTypes.CREATIVE: // CREATIVE
                 return 1;
-            case 2: // ADVENTURE
+            case GameTypes.ADVENTURE: // ADVENTURE
                 return 2;
-            case 5: // DEFAULT
+            case GameTypes.DEFAULT: // DEFAULT
                 return -1;
-            case 6: // SPECTATOR
+            case GameTypes.SPECTATOR: // SPECTATOR
                 return 3;
         }
     }

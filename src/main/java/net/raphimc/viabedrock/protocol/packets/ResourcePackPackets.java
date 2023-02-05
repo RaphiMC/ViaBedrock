@@ -22,6 +22,7 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
 import com.viaversion.viaversion.api.type.Type;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ResourcePackStatus;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class ResourcePackPackets {
@@ -33,7 +34,7 @@ public class ResourcePackPackets {
                 handler(wrapper -> {
                     wrapper.cancel();
                     final PacketWrapper resourcePackClientResponse = wrapper.create(ClientboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
-                    resourcePackClientResponse.write(Type.UNSIGNED_BYTE, (short) 3); // status | 3 = HAVE_ALL_PACKS
+                    resourcePackClientResponse.write(Type.UNSIGNED_BYTE, ResourcePackStatus.HAVE_ALL_PACKS); // status
                     resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
                     resourcePackClientResponse.sendToServer(BedrockProtocol.class);
                 });
@@ -45,7 +46,7 @@ public class ResourcePackPackets {
                 handler(wrapper -> {
                     wrapper.cancel();
                     final PacketWrapper resourcePackClientResponse = wrapper.create(ClientboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
-                    resourcePackClientResponse.write(Type.UNSIGNED_BYTE, (short) 4); // status | 4 = COMPLETED
+                    resourcePackClientResponse.write(Type.UNSIGNED_BYTE, ResourcePackStatus.COMPLETED); // status
                     resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
                     resourcePackClientResponse.sendToServer(BedrockProtocol.class);
                 });

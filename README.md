@@ -18,9 +18,11 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 ## Features
 - [ ] Pinging
 - [x] Joining
-- [ ] Chat
+- [x] Chat / Commands
 - [ ] Chunks
 - [ ] Movement
 - [ ] Inventory
 - [ ] Block breaking
 - [ ] Block placing
+- [x] Respawning
+- [ ] Dimension switching

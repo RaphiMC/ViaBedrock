@@ -17,18 +17,21 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter;
 
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.DimensionIds;
+import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
+
 public class DimensionIdRewriter {
 
     public static String dimensionIdToDimensionKey(final int dimensionId) {
         switch (dimensionId) {
-            case 0:
-                return "minecraft:overworld";
-            case 1:
-                return "minecraft:the_nether";
-            case 2:
-                return "minecraft:the_end";
-            case 3:
-                return "minecraft:overworld_caves";
+            case DimensionIds.OVERWORLD:
+                return DimensionKeys.OVERWORLD;
+            case DimensionIds.NETHER:
+                return DimensionKeys.NETHER;
+            case DimensionIds.END:
+                return DimensionKeys.END;
+            case DimensionIds.OVERWORLD_CAVES:
+                return DimensionKeys.OVERWORLD_CAVES;
             default: // Mojang client would crash here
                 throw new RuntimeException("Invalid dimension id: " + dimensionId);
         }

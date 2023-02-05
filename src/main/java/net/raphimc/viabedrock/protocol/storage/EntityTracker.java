@@ -20,7 +20,9 @@ package net.raphimc.viabedrock.protocol.storage;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
-import net.raphimc.viabedrock.protocol.model.Entity;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.protocol.model.entity.ClientPlayerEntity;
+import net.raphimc.viabedrock.protocol.model.entity.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,15 +31,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EntityTracker extends StoredObject {
 
     private final AtomicInteger ID_COUNTER = new AtomicInteger(0);
-    private long clientPlayerUniqueId = -1;
+    private ClientPlayerEntity clientPlayerEntity = null;
     private final Map<Long, Entity> entities = new HashMap<>();
 
     public EntityTracker(final UserConnection user) {
         super(user);
     }
 
-    public void setClientPlayerUniqueId(final long uniqueId) {
-        this.clientPlayerUniqueId = uniqueId;
+    public ClientPlayerEntity addClientPlayer(final long uniqueId, final long runtimeId) {
+        this.clientPlayerEntity = new ClientPlayerEntity(uniqueId, runtimeId, ID_COUNTER.getAndIncrement());
+        this.entities.put(uniqueId, this.clientPlayerEntity);
+
+        return this.clientPlayerEntity;
     }
 
     // TODO: Behavior if entity is already present
@@ -48,12 +53,28 @@ public class EntityTracker extends StoredObject {
         return entity;
     }
 
+    public void tick() {
+        for (Entity entity : this.entities.values()) {
+            try {
+                entity.tick(this);
+            } catch (Throwable e) {
+                ViaBedrock.getPlatform().getLogger().warning("Error while ticking entity " + entity.uniqueId() + ": " + e.getMessage());
+            }
+        }
+    }
+
+    // TODO: Clear on dimension change
+    public void clear() {
+        this.entities.clear();
+        this.entities.put(this.clientPlayerEntity.uniqueId(), this.clientPlayerEntity);
+    }
+
     public Entity getEntity(final long uniqueId) {
         return this.entities.get(uniqueId);
     }
 
-    public Entity getClientPlayer() {
-        return this.entities.get(this.clientPlayerUniqueId);
+    public ClientPlayerEntity getClientPlayer() {
+        return this.clientPlayerEntity;
     }
 
 }
