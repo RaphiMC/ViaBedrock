@@ -207,6 +207,7 @@ public class ChatPackets {
                     wrapper.write(BedrockTypes.COMMAND_ORIGIN, new CommandOrigin(CommandOriginTypes.PLAYER, uuid, "")); // origin
                 });
                 create(Type.BOOLEAN, false); // internal
+                create(BedrockTypes.VAR_INT, 26); // version
                 read(Type.LONG); // timestamp
                 read(Type.LONG); // salt
                 handler(wrapper -> {

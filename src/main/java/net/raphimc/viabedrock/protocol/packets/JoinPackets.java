@@ -101,6 +101,7 @@ public class JoinPackets {
                     wrapper.read(Type.BOOLEAN); // only spawn v1 villagers
                     wrapper.read(Type.BOOLEAN); // disable personas
                     wrapper.read(Type.BOOLEAN); // disable custom skins
+                    wrapper.read(Type.BOOLEAN); // mute emote chat
                     final String vanillaVersion = wrapper.read(BedrockTypes.STRING); // vanilla version
                     wrapper.read(BedrockTypes.INT_LE); // limited world width
                     wrapper.read(BedrockTypes.INT_LE); // limited world height

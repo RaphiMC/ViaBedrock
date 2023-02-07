@@ -49,5 +49,6 @@ public class PlayerActionTypes {
     public static final int BLOCK_CONTINUE_DESTROY = 27;
     public static final int ITEM_USE_ON_START = 28;
     public static final int ITEM_USE_ON_STOP = 29;
+    public static final int HANDLED_TELEPORT = 30;
 
 }
