@@ -36,6 +36,7 @@ public class TagType extends Type<Tag> {
     public Tag read(ByteBuf buffer) throws Exception {
         final short id = buffer.readUnsignedByte();
         BedrockTypes.STRING.read(buffer);
+        if (id == 0) return null;
 
         final Tag tag = TagRegistry.createInstance(id);
         tag.read(new BedrockTagDataInputStream(new ByteBufInputStream(buffer)));
@@ -45,6 +46,12 @@ public class TagType extends Type<Tag> {
 
     @Override
     public void write(ByteBuf buffer, Tag value) throws Exception {
+        if (value == null) {
+            buffer.writeByte(0);
+            BedrockTypes.STRING.write(buffer, "");
+            return;
+        }
+
         buffer.writeByte(value.getTagId());
         BedrockTypes.STRING.write(buffer, "");
         value.write(new BedrockTagDataOutputStream(new ByteBufOutputStream(buffer)));

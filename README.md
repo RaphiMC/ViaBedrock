@@ -18,6 +18,7 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 ## Features
 - [ ] Pinging
 - [x] Joining
+- [x] Xbox Live Auth
 - [x] Chat / Commands
 - [ ] Chunks
 - [ ] Movement

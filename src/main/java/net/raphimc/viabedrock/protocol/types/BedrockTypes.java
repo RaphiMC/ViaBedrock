@@ -37,6 +37,7 @@ public class BedrockTypes {
     public static final UnsignedVarIntType UNSIGNED_VAR_INT = new UnsignedVarIntType();
     public static final VarLongType VAR_LONG = new VarLongType();
     public static final UnsignedVarLongType UNSIGNED_VAR_LONG = new UnsignedVarLongType();
+    public static final Type<Long[]> LONG_ARRAY = new ArrayType<>(LONG_LE, UNSIGNED_VAR_INT);
     public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
     public static final Type<AsciiString> ASCII_STRING = new AsciiStringType();
     public static final Type<String> STRING = new StringType();

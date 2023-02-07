@@ -58,6 +58,36 @@ public class WorldPackets {
                 });
             }
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_CHUNK, null, new PacketRemapper() {
+            @Override
+            public void registerMap() {
+                handler(wrapper -> {
+                    wrapper.cancel();
+                    final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+
+                    final int chunkX = wrapper.read(BedrockTypes.VAR_INT); // chunk x
+                    final int chunkZ = wrapper.read(BedrockTypes.VAR_INT); // chunk z
+                    int sectionCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // sub chunk count
+
+                    if (sectionCount == -1) {
+                        sectionCount = 0;
+                        throw new RuntimeException("Section count -1 is not implemented yet");
+                    } else if (sectionCount == -2) {
+                        sectionCount = 0;
+                        final int startY = chunkTracker.getMinY() >> 4;
+                        final int count = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // count
+                        chunkTracker.requestSubChunks(chunkX, chunkZ, startY, startY + count);
+                    }
+
+                    final boolean cachingEnabled = wrapper.read(Type.BOOLEAN); // caching enabled
+                    if (cachingEnabled) {
+                        final Long[] blobIds = wrapper.read(BedrockTypes.LONG_ARRAY); // blob ids
+                        throw new RuntimeException("Caching is not implemented yet");
+                    }
+                    final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
+                });
+            }
+        });
         // TODO: Dimension change -> store spawn position
         protocol.registerClientbound(ClientboundBedrockPackets.SET_TIME, ClientboundPackets1_19_3.TIME_UPDATE, new PacketRemapper() {
             @Override

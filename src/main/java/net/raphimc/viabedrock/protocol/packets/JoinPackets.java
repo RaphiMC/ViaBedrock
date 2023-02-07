@@ -36,10 +36,7 @@ import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChatSettingsStorage;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.Map;
@@ -144,6 +141,10 @@ public class JoinPackets {
                         return;
                     }
 
+                    final CompoundTag registries = BedrockProtocol.MAPPINGS.getRegistries().clone();
+                    // TODO: Modify world heights / biomes
+                    wrapper.user().put(new GameSessionStorage(wrapper.user(), registries));
+
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
                     chatSettingsStorage.setServerRestricted(chatRestrictionLevel >= 1);
                     spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
@@ -158,7 +159,7 @@ public class JoinPackets {
                     joinGame.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(playerGameType, levelGameType)); // gamemode
                     joinGame.write(Type.BYTE, (byte) -1); // previous gamemode
                     joinGame.write(Type.STRING_ARRAY, new String[]{DimensionKeys.OVERWORLD, DimensionKeys.NETHER, DimensionKeys.END}); // dimension types
-                    joinGame.write(Type.NBT, BedrockProtocol.MAPPINGS.getRegistries()); // registries
+                    joinGame.write(Type.NBT, registries); // registries
                     joinGame.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension type
                     joinGame.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension id
                     joinGame.write(Type.LONG, 0L); // hashed seed

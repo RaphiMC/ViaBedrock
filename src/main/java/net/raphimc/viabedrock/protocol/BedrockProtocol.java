@@ -37,6 +37,7 @@ import net.raphimc.viabedrock.protocol.storage.ChatSettingsStorage;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
 import net.raphimc.viabedrock.protocol.task.EntityTrackerTickTask;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets, ClientboundPackets1_19_3, ServerboundBedrockPackets, ServerboundPackets1_19_3> {
 
@@ -55,6 +56,29 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         ChatPackets.register(this);
         PlayerPackets.register(this);
         WorldPackets.register(this);
+
+        this.registerClientbound(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING, ClientboundPackets1_19_3.DISCONNECT, new PacketRemapper() {
+            @Override
+            public void registerMap() {
+                handler(wrapper -> {
+                    final int type = wrapper.read(BedrockTypes.VAR_INT) + 1; // type
+                    final int severity = wrapper.read(BedrockTypes.VAR_INT) + 1; // severity
+                    final int packetIdCause = wrapper.read(BedrockTypes.VAR_INT) - 1; // cause packet id
+                    final String context = wrapper.read(BedrockTypes.STRING); // context
+
+                    final String[] types = new String[]{"Unknown", "Malformed packet"};
+                    final String[] severities = new String[]{"Unknown", "Warning", "Final warning", "Terminating connection"};
+
+                    final String reason = "§4Packet violation warning: §c"
+                            + (type >= 0 && type <= types.length ? types[type] : type)
+                            + " (" + (severity >= 0 && severity <= severities.length ? severities[severity] : severity) + ")\n"
+                            + "Violating Packet: " + (packetIdCause >= 0 && packetIdCause <= ClientboundBedrockPackets.values().length ? ClientboundBedrockPackets.values()[packetIdCause].name() : packetIdCause) + "\n"
+                            + (context.isEmpty() ? "No context provided" : (" Context: '" + context + "'"))
+                            + "\n\nPlease report this issue on the ViaBedrock GitHub page!";
+                    wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(reason));
+                });
+            }
+        });
 
         // Fallback for unhandled packets
 
