@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "net.raphimc:ViaProxy:3.0.10"
+    compileOnly "net.raphimc:ViaProxy:3.0.11"
 
     include "com.github.RelativityMC.netty-raknet:netty-raknet-client:33e39a6238"
     include project(path: ":", configuration: "default")
