@@ -31,12 +31,25 @@ repositories {
         name = "Lenni0451"
         url "https://maven.lenni0451.net/snapshots"
     }
+    maven {
+        name = "OpenCollab Releases"
+        url = "https://repo.opencollab.dev/maven-releases/"
+    }
+    maven {
+        name = "OpenCollab Snapshots"
+        url = "https://repo.opencollab.dev/maven-snapshots/"
+    }
 }
 
 dependencies {
     compileOnly "net.raphimc:ViaProxy:3.0.10"
 
-    include "com.github.RelativityMC.netty-raknet:netty-raknet-client:33e39a6238"
+    include("org.cloudburstmc.netty:netty-transport-raknet:0.0.1.Final-SNAPSHOT") {
+        exclude group: "io.netty", module: "netty-common"
+        exclude group: "io.netty", module: "netty-buffer"
+        exclude group: "io.netty", module: "netty-codec"
+        exclude group: "io.netty", module: "netty-transport"
+    }
     include project(path: ":", configuration: "default")
 }
 

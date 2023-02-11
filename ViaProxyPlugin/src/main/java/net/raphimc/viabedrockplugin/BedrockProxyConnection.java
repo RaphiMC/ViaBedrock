@@ -21,14 +21,16 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollDatagramChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 import net.raphimc.netminecraft.constants.MCPipeline;
 import net.raphimc.netminecraft.util.LazyLoadBase;
 import net.raphimc.viabedrock.netty.AesGcmEncryption;
 import net.raphimc.viabedrock.netty.ZLibCompression;
 import net.raphimc.viaproxy.proxy.ProxyConnection;
-import network.ycc.raknet.RakNet;
-import network.ycc.raknet.client.RakNetClient;
+import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
+import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
 
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
@@ -46,12 +48,20 @@ public class BedrockProxyConnection extends ProxyConnection {
 
     @Override
     public void initialize(Bootstrap bootstrap) {
+        if (Epoll.isAvailable()) {
+            bootstrap
+                    .group(LazyLoadBase.CLIENT_EPOLL_EVENTLOOP.getValue())
+                    .channelFactory(RakChannelFactory.client(EpollDatagramChannel.class));
+        } else {
+            bootstrap
+                    .group(LazyLoadBase.CLIENT_NIO_EVENTLOOP.getValue())
+                    .channelFactory(RakChannelFactory.client(NioDatagramChannel.class));
+        }
+
         bootstrap
-                .group(LazyLoadBase.CLIENT_NIO_EVENTLOOP.getValue())
-                .channel(RakNetClient.CHANNEL)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 4_000)
-                .option(ChannelOption.IP_TOS, 0x18)
-                .option(RakNet.PROTOCOL_VERSION, 11)
+                .option(RakChannelOption.CONNECT_TIMEOUT_MILLIS, 4_000)
+                .option(RakChannelOption.IP_TOS, 0x18)
+                .option(RakChannelOption.RAK_PROTOCOL_VERSION, 11)
                 .attr(ProxyConnection.PROXY_CONNECTION_ATTRIBUTE_KEY, this)
                 .handler(this.channelInitializerSupplier.apply(this.handlerSupplier));
 

@@ -32,7 +32,6 @@ import net.raphimc.viaprotocolhack.netty.ViaEncodeHandler;
 import net.raphimc.viaprotocolhack.netty.ViaPipeline;
 import net.raphimc.viaproxy.protocolhack.impl.ViaProxyViaDecodeHandler;
 import net.raphimc.viaproxy.proxy.ProxyConnection;
-import network.ycc.raknet.client.channel.RakNetClientChannel;
 
 import java.util.function.Supplier;
 
@@ -46,15 +45,12 @@ public class Proxy2ServerRakNetChannelInitializer extends MinecraftChannelInitia
     protected void initChannel(Channel channel) {
         channel.attr(MCPipeline.COMPRESSION_THRESHOLD_ATTRIBUTE_KEY).set(-1);
 
-        final RakNetClientChannel rakChannel = (RakNetClientChannel) channel;
-        rakChannel.config().setprotocolVersions(new int[]{11});
-
         final UserConnection user = new UserConnectionImpl(channel, true);
         new ProtocolPipelineImpl(user);
         ProxyConnection.fromChannel(channel).setUserConnection(user);
         user.getProtocolInfo().getPipeline().add(BedrockBaseProtocol.INSTANCE);
 
-        channel.pipeline().addLast("frame_encapsulation", new FrameDataEncapsulationCodec());
+        channel.pipeline().addLast("frame_encapsulation", new RakMessageEncapsulationCodec());
         // Encryption
         // Compression
         channel.pipeline().addLast(MCPipeline.SIZER_HANDLER_NAME, new BatchLengthCodec());
