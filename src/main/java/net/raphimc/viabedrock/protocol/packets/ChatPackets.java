@@ -90,11 +90,13 @@ public class ChatPackets {
                             case TextType.OBJECT_WHISPER:
                             case TextType.OBJECT_ANNOUNCEMENT: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
-                                final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
-                                rootComponent.forEach(c -> {
-                                    if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
-                                });
-                                message = rootComponent.asString();
+                                if (type != TextType.RAW) {
+                                    final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
+                                    rootComponent.forEach(c -> {
+                                        if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
+                                    });
+                                    message = rootComponent.asString();
+                                }
                                 if (needsTranslation) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
