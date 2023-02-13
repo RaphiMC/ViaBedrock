@@ -44,7 +44,7 @@ repositories {
 dependencies {
     compileOnly "net.raphimc:ViaProxy:3.0.10"
 
-    include("org.cloudburstmc.netty:netty-transport-raknet:0.0.1.Final-SNAPSHOT") {
+    include("org.cloudburstmc.netty:netty-transport-raknet:4.1.51.Final") {
         exclude group: "io.netty", module: "netty-common"
         exclude group: "io.netty", module: "netty-buffer"
         exclude group: "io.netty", module: "netty-codec"
