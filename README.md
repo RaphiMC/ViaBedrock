@@ -15,15 +15,29 @@ To use the ViaProxy implementation of ViaBedrock you have to download [ViaProxy]
 
 If you want to talk about ViaBedrock or learn more about it you can join my [Discord](https://discord.gg/dCzT9XHEWu).
 
+## Credits
+ViaBedrock would not have been possible without the following projects:
+- [ViaVersion](https://github.com/ViaVersion/ViaVersion): Provides the base for translating packets
+- [CloudburstMC Protocol](https://github.com/CloudburstMC/Protocol): Documentation of the Bedrock Edition protocol
+- [Geyser](https://github.com/GeyserMC/Geyser): Providing Bedrock Edition data dumps and mappings
+- [PrismarineJS Data](https://github.com/PrismarineJS/minecraft-data): Providing Bedrock Edition data dumps and mappings
+- [wiki.vg](https://wiki.vg/Bedrock_Protocol): Documentation of the Bedrock Edition protocol
+
 ## Features
 - [ ] Pinging
 - [x] Joining
 - [x] Xbox Live Auth
 - [x] Chat / Commands
 - [ ] Chunks
-- [ ] Movement
-- [ ] Inventory
+- [ ] Chunk caching
+- [ ] Entities
+- [ ] Entity interactions
+- [ ] Entity metadata
+- [ ] Client-Authoritative Movement
+- [ ] Server-Authoritative Movement
+- [ ] Client-Authoritative Inventory
+- [ ] Server-Authoritative Inventory
 - [ ] Block breaking
 - [ ] Block placing
-- [x] Respawning
+- [ ] Respawning
 - [ ] Dimension switching

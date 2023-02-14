@@ -23,11 +23,10 @@ import com.viaversion.viaversion.api.connection.ProtocolInfo;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
-import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
+import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
-import com.viaversion.viaversion.util.Pair;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.gson.io.GsonDeserializer;
 import io.jsonwebtoken.io.Decoders;
@@ -58,6 +57,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 public class LoginPackets {
 
@@ -77,9 +77,9 @@ public class LoginPackets {
     }
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.DISCONNECT.getId(), ClientboundLoginPackets.LOGIN_DISCONNECT.getId(), new PacketRemapper() {
+        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.DISCONNECT.getId(), ClientboundLoginPackets.LOGIN_DISCONNECT.getId(), new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
                     if (hasMessage) {
@@ -92,31 +92,44 @@ public class LoginPackets {
                 });
             }
         });
-        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.NETWORK_SETTINGS.getId(), -1, new PacketRemapper() {
+        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.NETWORK_SETTINGS.getId(), -1, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     wrapper.cancel();
                     final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
+                    final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
 
                     final int threshold = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression threshold
                     final int algorithm = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression algorithm
                     Via.getManager().getProviders().get(NettyPipelineProvider.class).enableCompression(wrapper.user(), threshold, algorithm);
 
-                    final Pair<String, String> chainAndSkin = getLoginData(wrapper.user());
+                    final JsonObject rootObj = new JsonObject();
+                    final JsonArray chain = new JsonArray();
+                    if (authChainData.getSelfSignedJwt() != null) {
+                        chain.add(new JsonPrimitive(authChainData.getSelfSignedJwt()));
+                    }
+                    if (authChainData.getMojangJwt() != null) {
+                        chain.add(new JsonPrimitive(authChainData.getMojangJwt()));
+                    }
+                    if (authChainData.getIdentityJwt() != null) {
+                        chain.add(new JsonPrimitive(authChainData.getIdentityJwt()));
+                    }
+                    rootObj.add("chain", chain);
+                    final String chainData = rootObj.toString();
 
                     final PacketWrapper login = PacketWrapper.create(ServerboundBedrockPackets.LOGIN, wrapper.user());
                     login.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
-                    login.write(BedrockTypes.UNSIGNED_VAR_INT, chainAndSkin.key().length() + chainAndSkin.value().length() + 8); // length
-                    login.write(BedrockTypes.ASCII_STRING, AsciiString.of(chainAndSkin.key())); // chain data
-                    login.write(BedrockTypes.ASCII_STRING, AsciiString.of(chainAndSkin.value())); // skin data
+                    login.write(BedrockTypes.UNSIGNED_VAR_INT, chainData.length() + authChainData.getSkinJwt().length() + 8); // length
+                    login.write(BedrockTypes.ASCII_STRING, AsciiString.of(chainData)); // chain data
+                    login.write(BedrockTypes.ASCII_STRING, AsciiString.of(authChainData.getSkinJwt())); // skin data
                     login.sendToServer(BedrockProtocol.class);
                 });
             }
         });
-        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE.getId(), -1, new PacketRemapper() {
+        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE.getId(), -1, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     wrapper.cancel();
                     final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
@@ -152,9 +165,9 @@ public class LoginPackets {
                 });
             }
         });
-        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.PLAY_STATUS.getId(), ClientboundLoginPackets.GAME_PROFILE.getId(), new PacketRemapper() {
+        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.PLAY_STATUS.getId(), ClientboundLoginPackets.GAME_PROFILE.getId(), new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     final int status = wrapper.read(Type.INT); // status
 
@@ -185,9 +198,9 @@ public class LoginPackets {
             }
         });
 
-        protocol.registerServerbound(State.LOGIN, ServerboundBedrockPackets.REQUEST_NETWORK_SETTINGS.getId(), ServerboundLoginPackets.HELLO.getId(), new PacketRemapper() {
+        protocol.registerServerbound(State.LOGIN, ServerboundLoginPackets.HELLO.getId(), ServerboundBedrockPackets.REQUEST_NETWORK_SETTINGS.getId(), new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
 
@@ -196,9 +209,32 @@ public class LoginPackets {
                     protocolInfo.setUuid(wrapper.read(Type.OPTIONAL_UUID));
 
                     wrapper.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
+
+                    validateAndFullAuthChainData(wrapper.user());
                 });
             }
         });
+
+        // Bedrock protocol is stateless, so we need to register all packets and redirect them to the correct state
+        for (ClientboundBedrockPackets packet : ClientboundBedrockPackets.values()) {
+            if (!protocol.hasRegisteredClientbound(State.LOGIN, packet.getId())) {
+                protocol.registerClientbound(State.LOGIN, packet.getId(), packet.getId(), new PacketHandlers() {
+                    @Override
+                    public void register() {
+                        handler(wrapper -> {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unexpected packet " + packet.name() + " in state LOGIN. Redirecting to PLAY.");
+
+                            final PacketWrapper playStatus = PacketWrapper.create(ClientboundBedrockPackets.PLAY_STATUS, wrapper.user());
+                            playStatus.write(Type.INT, PlayStatus.LOGIN_SUCCESS); // status
+                            playStatus.send(BedrockProtocol.class, false);
+
+                            wrapper.send(BedrockProtocol.class, false);
+                            wrapper.cancel();
+                        });
+                    }
+                });
+            }
+        }
     }
 
     public static void writePlayStatusKickMessage(final PacketWrapper wrapper, final int status) {
@@ -226,7 +262,7 @@ public class LoginPackets {
                 wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is not in Editor mode. Failed to connect."));
                 break;
             default: // Mojang client silently ignores invalid values
-                ViaBedrock.getPlatform().getLogger().warning("Received invalid login status: " + status);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received invalid login status: " + status);
             case PlayStatus.PLAYER_SPAWN:
             case PlayStatus.LOGIN_SUCCESS:
                 wrapper.cancel();
@@ -242,8 +278,8 @@ public class LoginPackets {
         }
     }
 
-    private static Pair<String, String> getLoginData(final UserConnection user) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        if (user.has(AuthChainData.class)) {
+    private static void validateAndFullAuthChainData(final UserConnection user) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+        if (user.has(AuthChainData.class)) { // Externally supplied chain data
             final AuthChainData authChainData = user.get(AuthChainData.class);
 
             final PublicKey publicKey = authChainData.getPublicKey();
@@ -254,35 +290,32 @@ public class LoginPackets {
             final ECPublicKey mojangJwtPublicKey = publicKeyFromBase64(mojangJwt.getBody().get("identityPublicKey", String.class));
             final Jws<Claims> identityJwt = Jwts.parserBuilder().setSigningKey(mojangJwtPublicKey).build().parseClaimsJws(authChainData.getIdentityJwt());
 
-            final String selfSignedJwt = Jwts.builder()
-                    .signWith(privateKey, SignatureAlgorithm.ES384)
-                    .setHeaderParam("x5u", encodedPublicKey)
-                    .claim("certificateAuthority", true)
-                    .claim("identityPublicKey", mojangJwt.getHeader().get("x5u"))
-                    .setExpiration(Date.from(Instant.now().plus(2, ChronoUnit.DAYS)))
-                    .setNotBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
-                    .compact();
+            if (authChainData.getSelfSignedJwt() == null) {
+                final String selfSignedJwt = Jwts.builder()
+                        .signWith(privateKey, SignatureAlgorithm.ES384)
+                        .setHeaderParam("x5u", encodedPublicKey)
+                        .claim("certificateAuthority", true)
+                        .claim("identityPublicKey", mojangJwt.getHeader().get("x5u"))
+                        .setExpiration(Date.from(Instant.now().plus(2, ChronoUnit.DAYS)))
+                        .setNotBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
+                        .compact();
 
-            final JsonObject rootObj = new JsonObject();
-            final JsonArray chain = new JsonArray();
-            chain.add(new JsonPrimitive(selfSignedJwt));
-            chain.add(new JsonPrimitive(authChainData.getMojangJwt()));
-            chain.add(new JsonPrimitive(authChainData.getIdentityJwt()));
-            rootObj.add("chain", chain);
-            final String chainData = rootObj.toString();
+                authChainData.setSelfSignedJwt(selfSignedJwt);
+            }
+            if (authChainData.getSkinJwt() == null) {
+                final String skinData = Jwts.builder()
+                        .signWith(privateKey, SignatureAlgorithm.ES384)
+                        .setHeaderParam("x5u", encodedPublicKey)
+                        .addClaims(WideSteveSkinProvider.get(user))
+                        .compact();
 
-            final String skinData = Jwts.builder()
-                    .signWith(privateKey, SignatureAlgorithm.ES384)
-                    .setHeaderParam("x5u", encodedPublicKey)
-                    .addClaims(WideSteveSkinProvider.get(user))
-                    .compact();
+                authChainData.setSkinJwt(skinData);
+            }
 
             final Map<String, Object> extraData = identityJwt.getBody().get("extraData", Map.class);
             authChainData.setXuid((String) extraData.get("XUID"));
             authChainData.setIdentity(UUID.fromString((String) extraData.get("identity")));
             authChainData.setDisplayName((String) extraData.get("displayName"));
-
-            return new Pair<>(chainData, skinData);
         } else {
             final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
             keyPairGenerator.initialize(new ECGenParameterSpec("secp384r1"));
@@ -312,25 +345,18 @@ public class LoginPackets {
                     .setNotBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
                     .compact();
 
-            final JsonObject rootObj = new JsonObject();
-            final JsonArray chain = new JsonArray();
-            chain.add(new JsonPrimitive(identityJwt));
-            rootObj.add("chain", chain);
-            final String chainData = rootObj.toString();
-
             final String skinData = Jwts.builder()
                     .signWith(privateKey, SignatureAlgorithm.ES384)
                     .setHeaderParam("x5u", encodedPublicKey)
                     .addClaims(WideSteveSkinProvider.get(user))
                     .compact();
 
-            final AuthChainData authChainData = new AuthChainData(user, null, null, publicKey, privateKey);
+            final AuthChainData authChainData = new AuthChainData(user, null, identityJwt, publicKey, privateKey);
+            authChainData.setSkinJwt(skinData);
             authChainData.setXuid((String) extraData.get("XUID"));
             authChainData.setIdentity(UUID.fromString((String) extraData.get("identity")));
             authChainData.setDisplayName((String) extraData.get("displayName"));
             user.put(authChainData);
-
-            return new Pair<>(chainData, skinData);
         }
     }
 

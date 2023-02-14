@@ -19,13 +19,14 @@ package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
+import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerActionTypes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.RespawnState;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClientStatus;
@@ -36,9 +37,9 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 public class PlayerPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.RESPAWN, ClientboundPackets1_19_3.PLAYER_POSITION, new PacketRemapper() {
+        protocol.registerClientbound(ClientboundBedrockPackets.RESPAWN, ClientboundPackets1_19_3.PLAYER_POSITION, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
                     final short state = wrapper.read(Type.UNSIGNED_BYTE); // state
@@ -50,7 +51,9 @@ public class PlayerPackets {
                     }
 
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
-                    if (!entityTracker.getClientPlayer().isSpawned()) {
+                    entityTracker.getClientPlayer().setPosition(position);
+
+                    if (!entityTracker.getClientPlayer().isInitiallySpawned()) {
                         entityTracker.getClientPlayer().setRespawning(true);
                     } else {
                         final PacketWrapper playerAction = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, wrapper.user());
@@ -61,9 +64,9 @@ public class PlayerPackets {
                         playerAction.write(BedrockTypes.VAR_INT, -1); // face
                         playerAction.sendToServer(BedrockProtocol.class);
 
+                        entityTracker.getClientPlayer().sendMovementPacketToServer(wrapper.user(), MovePlayerMode.NORMAL);
                         entityTracker.getClientPlayer().closeDownloadingTerrainScreen(wrapper.user());
                     }
-                    entityTracker.getClientPlayer().setPosition(position);
 
                     wrapper.write(Type.DOUBLE, (double) position.x()); // x
                     wrapper.write(Type.DOUBLE, (double) position.y() - 1.62D); // y
@@ -77,9 +80,9 @@ public class PlayerPackets {
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_19_3.CLIENT_STATUS, ServerboundBedrockPackets.RESPAWN, new PacketRemapper() {
+        protocol.registerServerbound(ServerboundPackets1_19_3.CLIENT_STATUS, ServerboundBedrockPackets.RESPAWN, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     final int action = wrapper.read(Type.VAR_INT); // action
 

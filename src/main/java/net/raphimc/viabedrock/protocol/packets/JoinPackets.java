@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
+import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntArrayTag;
@@ -43,17 +43,22 @@ import java.util.Map;
 
 public class JoinPackets {
 
-    private static final int DEFAULT_VIEW_DISTANCE = 16;
+    private static final int DEFAULT_VIEW_DISTANCE = 8;
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.START_GAME, null, new PacketRemapper() {
+        protocol.registerClientbound(ClientboundBedrockPackets.START_GAME, null, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     wrapper.cancel(); // We need to fix the order of the packets
                     final ChatSettingsStorage chatSettingsStorage = wrapper.user().get(ChatSettingsStorage.class);
                     final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
+                    final GameSessionStorage gameSessionStorage = wrapper.user().get(GameSessionStorage.class);
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+
+                    if (gameSessionStorage.getJavaRegistries() != null) {
+                        BedrockProtocol.kickForIllegalState(wrapper.user(), "Received StartGame packet twice");
+                    }
 
                     final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
                     final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
@@ -144,13 +149,13 @@ public class JoinPackets {
 
                     final CompoundTag registries = BedrockProtocol.MAPPINGS.getRegistries().clone();
                     // TODO: Modify world heights / biomes
-                    wrapper.user().put(new GameSessionStorage(wrapper.user(), registries));
+                    gameSessionStorage.setJavaRegistries(registries);
 
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
                     chatSettingsStorage.setServerRestricted(chatRestrictionLevel >= 1);
                     spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
                     final int javaEntityId = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId).javaId();
-                    entityTracker.getClientPlayer().setPosition(playerPosition);
+                    entityTracker.getClientPlayer().setPosition(new Position3f(playerPosition.x(), playerPosition.y() + 1.62F, playerPosition.z()));
                     entityTracker.getClientPlayer().setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
                     entityTracker.getClientPlayer().setOnGround(false);
 
@@ -217,6 +222,8 @@ public class JoinPackets {
                         }
                     }
 
+                    entityTracker.getClientPlayer().sendPlayerPositionPacketToClient(wrapper.user());
+
                     final PacketWrapper requestChunkRadius = PacketWrapper.create(ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, wrapper.user());
                     requestChunkRadius.write(BedrockTypes.VAR_INT, DEFAULT_VIEW_DISTANCE); // radius
                     requestChunkRadius.sendToServer(BedrockProtocol.class);
@@ -226,7 +233,16 @@ public class JoinPackets {
                     tickSync.write(BedrockTypes.LONG_LE, 0L); // response timestamp
                     tickSync.sendToServer(BedrockProtocol.class);
 
-                    entityTracker.getClientPlayer().sendMovementPacket(wrapper.user(), MovePlayerMode.NORMAL);
+                    entityTracker.getClientPlayer().sendMovementPacketToServer(wrapper.user(), MovePlayerMode.NORMAL);
+                });
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.BIOME_DEFINITION_LIST, null, new PacketHandlers() {
+            @Override
+            public void register() {
+                handler(wrapper -> {
+                    wrapper.cancel();
+                    wrapper.user().get(GameSessionStorage.class).setBedrockBiomeDefinitions((CompoundTag) wrapper.read(BedrockTypes.TAG)); // biome definitions
                 });
             }
         });

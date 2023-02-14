@@ -17,11 +17,12 @@
  */
 package net.raphimc.viabedrock.protocol.types;
 
-import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.model.GameRule;
+
+import java.util.logging.Level;
 
 public class GameRuleType extends Type<GameRule<?>> {
 
@@ -42,7 +43,7 @@ public class GameRuleType extends Type<GameRule<?>> {
             case 3:
                 return new GameRule<>(name, editable, BedrockTypes.FLOAT_LE.readPrimitive(buffer));
             default:
-                ViaBedrock.getPlatform().getLogger().warning("Unknown game rule type: " + type);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown game rule type: " + type);
                 return new GameRule<>(name, editable, null);
         }
 

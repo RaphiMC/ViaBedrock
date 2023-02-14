@@ -18,11 +18,10 @@
 package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
+import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -32,6 +31,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.UUID;
@@ -39,12 +39,13 @@ import java.util.UUID;
 public class PlayPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.PLAY_STATUS, ClientboundPackets1_19_3.DISCONNECT, new PacketRemapper() {
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAY_STATUS, ClientboundPackets1_19_3.DISCONNECT, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     final int status = wrapper.read(Type.INT); // status
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
                     if (status == PlayStatus.LOGIN_SUCCESS) {
                         wrapper.cancel();
@@ -55,8 +56,12 @@ public class PlayPackets {
                     if (status == PlayStatus.PLAYER_SPAWN) { // First spawn
                         wrapper.cancel();
                         final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
-                        if (clientPlayer.isSpawned()) {
-                            ViaBedrock.getPlatform().getLogger().warning("Tried to spawn the client player twice!");
+                        if (clientPlayer.isInitiallySpawned()) {
+                            BedrockProtocol.kickForIllegalState(wrapper.user(), "Tried to spawn the client player twice!");
+                            return;
+                        }
+                        if (gameSession.getBedrockBiomeDefinitions() == null) {
+                            BedrockProtocol.kickForIllegalState(wrapper.user(), "Tried to spawn the client player before the biome definitions were loaded!");
                             return;
                         }
 
@@ -73,10 +78,9 @@ public class PlayPackets {
                         emoteList.write(BedrockTypes.UUID_ARRAY, new UUID[0]); // emote ids
                         emoteList.sendToServer(BedrockProtocol.class);
 
-                        clientPlayer.sendMovementPacket(wrapper.user(), MovePlayerMode.NORMAL);
                         clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
-                        clientPlayer.sendMovementPacket(wrapper.user(), MovePlayerMode.NORMAL);
-                        clientPlayer.setSpawned(true);
+                        clientPlayer.setInitiallySpawned(true);
+                        clientPlayer.sendMovementPacketToServer(wrapper.user(), MovePlayerMode.NORMAL);
 
                         final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());
                         setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
@@ -89,17 +93,17 @@ public class PlayPackets {
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_19_3.SERVER_DIFFICULTY, new PacketRemapper() {
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_19_3.SERVER_DIFFICULTY, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 map(BedrockTypes.UNSIGNED_VAR_INT, Type.UNSIGNED_BYTE); // difficulty
                 create(Type.BOOLEAN, false); // locked
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_19_3.CLIENT_SETTINGS, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, new PacketRemapper() {
+        protocol.registerServerbound(ServerboundPackets1_19_3.CLIENT_SETTINGS, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 read(Type.STRING); // locale
                 map(Type.BYTE, BedrockTypes.VAR_INT); // view distance
                 read(Type.VAR_INT); // chat visibility

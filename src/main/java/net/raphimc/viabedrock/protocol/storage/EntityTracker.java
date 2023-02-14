@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.protocol.model.entity.Entity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 public class EntityTracker extends StoredObject {
 
@@ -58,7 +59,7 @@ public class EntityTracker extends StoredObject {
             try {
                 entity.tick(this);
             } catch (Throwable e) {
-                ViaBedrock.getPlatform().getLogger().warning("Error while ticking entity " + entity.uniqueId() + ": " + e.getMessage());
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while ticking entity " + entity.uniqueId(), e);
             }
         }
     }

@@ -31,6 +31,8 @@ public class AuthChainData extends StoredObject {
     private final ECPublicKey publicKey;
     private final ECPrivateKey privateKey;
 
+    private String selfSignedJwt;
+    private String skinJwt;
     private String displayName;
     private UUID identity;
     private String xuid;
@@ -60,28 +62,44 @@ public class AuthChainData extends StoredObject {
         return this.privateKey;
     }
 
-    public void setDisplayName(final String displayName) {
-        this.displayName = displayName;
+    public String getSelfSignedJwt() {
+        return this.selfSignedJwt;
+    }
+
+    public void setSelfSignedJwt(final String selfSignedJwt) {
+        this.selfSignedJwt = selfSignedJwt;
+    }
+
+    public String getSkinJwt() {
+        return this.skinJwt;
+    }
+
+    public void setSkinJwt(final String skinJwt) {
+        this.skinJwt = skinJwt;
     }
 
     public String getDisplayName() {
         return this.displayName;
     }
 
-    public void setIdentity(final UUID identity) {
-        this.identity = identity;
+    public void setDisplayName(final String displayName) {
+        this.displayName = displayName;
     }
 
     public UUID getIdentity() {
         return this.identity;
     }
 
-    public void setXuid(final String xuid) {
-        this.xuid = xuid;
+    public void setIdentity(final UUID identity) {
+        this.identity = identity;
     }
 
     public String getXuid() {
         return this.xuid;
+    }
+
+    public void setXuid(final String xuid) {
+        this.xuid = xuid;
     }
 
 }

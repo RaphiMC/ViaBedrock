@@ -15,35 +15,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.storage;
+package net.raphimc.viabedrock.api.chunk;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 
-public class GameSessionStorage extends StoredObject {
+public class RawBlockEntity implements BlockEntity {
 
-    private CompoundTag javaRegistries;
-    private CompoundTag bedrockBiomeDefinitions;
+    private final CompoundTag tag;
 
-    public GameSessionStorage(final UserConnection user) {
-        super(user);
+    public RawBlockEntity(final CompoundTag tag) {
+        this.tag = tag;
     }
 
-    public CompoundTag getJavaRegistries() {
-        return this.javaRegistries;
+    @Override
+    public byte packedXZ() {
+        throw new UnsupportedOperationException();
     }
 
-    public void setJavaRegistries(final CompoundTag javaRegistries) {
-        this.javaRegistries = javaRegistries;
+    @Override
+    public short y() {
+        throw new UnsupportedOperationException();
     }
 
-    public CompoundTag getBedrockBiomeDefinitions() {
-        return this.bedrockBiomeDefinitions;
+    @Override
+    public int typeId() {
+        throw new UnsupportedOperationException();
     }
 
-    public void setBedrockBiomeDefinitions(final CompoundTag bedrockBiomeDefinitions) {
-        this.bedrockBiomeDefinitions = bedrockBiomeDefinitions;
+    @Override
+    public CompoundTag tag() {
+        return this.tag;
+    }
+
+    @Override
+    public BlockEntity withTypeId(int typeId) {
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
+import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
@@ -28,9 +28,9 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 public class ResourcePackPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACKS_INFO, null, new PacketRemapper() {
+        protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACKS_INFO, null, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     wrapper.cancel();
                     final PacketWrapper resourcePackClientResponse = wrapper.create(ClientboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
@@ -40,9 +40,9 @@ public class ResourcePackPackets {
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_STACK, null, new PacketRemapper() {
+        protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_STACK, null, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     wrapper.cancel();
                     final PacketWrapper resourcePackClientResponse = wrapper.create(ClientboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);

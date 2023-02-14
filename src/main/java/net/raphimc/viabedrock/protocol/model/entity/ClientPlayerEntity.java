@@ -32,8 +32,8 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class ClientPlayerEntity extends Entity {
 
-    private boolean spawned;
-    private int respawnWaitingTicks = -1;
+    private boolean initiallySpawned;
+    private boolean respawning;
 
     public ClientPlayerEntity(final long uniqueId, final long runtimeId, final int javaId) {
         super(uniqueId, runtimeId, javaId, Entity1_19_3Types.PLAYER);
@@ -44,11 +44,7 @@ public class ClientPlayerEntity extends Entity {
         super.tick(entityTracker);
 
         if (this.isRespawning()) {
-            this.respawnWaitingTicks++;
-        }
-
-        if (this.respawnWaitingTicks >= 40) {
-            this.sendMovementPacket(entityTracker.getUser(), MovePlayerMode.RESPAWN);
+            this.sendMovementPacketToServer(entityTracker.getUser(), MovePlayerMode.RESPAWN);
         }
     }
 
@@ -62,7 +58,7 @@ public class ClientPlayerEntity extends Entity {
         spawnPosition.send(BedrockProtocol.class);
     }
 
-    public void sendMovementPacket(final UserConnection user, final short mode) throws Exception {
+    public void sendMovementPacketToServer(final UserConnection user, final short mode) throws Exception {
         final PacketWrapper movePlayer = PacketWrapper.create(ServerboundBedrockPackets.MOVE_PLAYER, user);
         movePlayer.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
         movePlayer.write(BedrockTypes.POSITION_3F, this.position); // position
@@ -74,23 +70,36 @@ public class ClientPlayerEntity extends Entity {
         movePlayer.sendToServer(BedrockProtocol.class);
     }
 
-    // TODO: Java client movement passthrough only when the player isSpawned()
-
-    public boolean isSpawned() {
-        return this.spawned;
+    public void sendPlayerPositionPacketToClient(final UserConnection user) throws Exception {
+        final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets1_19_3.PLAYER_POSITION, user);
+        playerPosition.write(Type.DOUBLE, (double) position.x()); // x
+        playerPosition.write(Type.DOUBLE, (double) position.y() - 1.62D); // y
+        playerPosition.write(Type.DOUBLE, (double) position.z()); // z
+        playerPosition.write(Type.FLOAT, this.rotation.y()); // yaw
+        playerPosition.write(Type.FLOAT, this.rotation.x()); // pitch
+        playerPosition.write(Type.BYTE, (byte) 0); // flags
+        playerPosition.write(Type.VAR_INT, 0); // teleport id
+        playerPosition.write(Type.BOOLEAN, false); // dismount vehicle
+        playerPosition.send(BedrockProtocol.class);
     }
 
-    public void setSpawned(final boolean spawned) {
-        this.spawned = spawned;
-        this.respawnWaitingTicks = spawned ? -1 : 0;
+    // TODO: Java client movement passthrough only when the player isInitiallySpawned()
+
+    public boolean isInitiallySpawned() {
+        return this.initiallySpawned;
+    }
+
+    public void setInitiallySpawned(final boolean initiallySpawned) {
+        this.initiallySpawned = initiallySpawned;
+        this.respawning = false;
     }
 
     public boolean isRespawning() {
-        return this.respawnWaitingTicks >= 0;
+        return this.respawning;
     }
 
     public void setRespawning(final boolean respawning) {
-        this.respawnWaitingTicks = respawning ? 0 : -1;
+        this.respawning = respawning;
     }
 
 }

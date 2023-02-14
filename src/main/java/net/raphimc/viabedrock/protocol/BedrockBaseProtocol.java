@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol;
 
 import com.viaversion.viaversion.api.protocol.AbstractSimpleProtocol;
 import com.viaversion.viaversion.api.protocol.packet.State;
-import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
+import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.base.ServerboundHandshakePackets;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
@@ -34,9 +34,9 @@ public class BedrockBaseProtocol extends AbstractSimpleProtocol {
 
     @Override
     protected void registerPackets() {
-        this.registerServerbound(State.HANDSHAKE, -1, ServerboundHandshakePackets.CLIENT_INTENTION.getId(), new PacketRemapper() {
+        this.registerServerbound(State.HANDSHAKE, ServerboundHandshakePackets.CLIENT_INTENTION.getId(), -1, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     wrapper.cancel();
                     final int protocolVersion = wrapper.read(Type.VAR_INT) - 1_000_000; // protocol id

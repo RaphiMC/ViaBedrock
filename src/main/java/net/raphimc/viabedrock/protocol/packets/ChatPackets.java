@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.protocol.remapper.PacketRemapper;
+import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.types.BitSetType;
 import com.viaversion.viaversion.api.type.types.ByteArrayType;
@@ -53,9 +53,9 @@ public class ChatPackets {
     private static final BitSetType ACKNOWLEDGED_BIT_SET_TYPE = new BitSetType(20);
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_19_3.SYSTEM_CHAT, new PacketRemapper() {
+        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_19_3.SYSTEM_CHAT, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
                     final boolean needsTranslation = wrapper.read(Type.BOOLEAN); // needs translation
@@ -119,10 +119,10 @@ public class ChatPackets {
                                 break;
                             }
                             default:
-                                ViaBedrock.getPlatform().getLogger().warning("Unknown text type: " + type);
+                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown text type: " + type);
                                 wrapper.cancel();
                         }
-                    } catch (Throwable e) {
+                    } catch (Throwable e) { // Mojang client silently ignores errors
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalMessage + "' (" + type + ")", e);
                         wrapper.cancel();
                     }
@@ -131,21 +131,21 @@ public class ChatPackets {
                 read(BedrockTypes.STRING); // platform chat id
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_19_3.SYSTEM_CHAT, new PacketRemapper() {
+        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_19_3.SYSTEM_CHAT, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 handler(wrapper -> {
                     final CommandOrigin originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN); // origin
                     final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
                     wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
 
                     if (type != CommandOutputType.ALL_OUTPUT) { // TODO: handle other types
-                        ViaBedrock.getPlatform().getLogger().warning("Unhandled command output type: " + type);
+                        BedrockProtocol.kickForIllegalState(wrapper.user(), "Unhandled command output type: " + type);
                         wrapper.cancel();
                         return;
                     }
                     if (originData.type() != CommandOriginTypes.PLAYER) { // TODO: handle other types
-                        ViaBedrock.getPlatform().getLogger().warning("Unhandled command origin type: " + originData.type());
+                        BedrockProtocol.kickForIllegalState(wrapper.user(), "Unhandled command origin type: " + originData.type());
                         wrapper.cancel();
                         return;
                     }
@@ -174,9 +174,9 @@ public class ChatPackets {
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_19_3.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketRemapper() {
+        protocol.registerServerbound(ServerboundPackets1_19_3.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 create(Type.UNSIGNED_BYTE, TextType.CHAT); // type
                 create(Type.BOOLEAN, false); // needs translation
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().getProtocolInfo().getUsername())); // source name
@@ -200,9 +200,9 @@ public class ChatPackets {
                 });
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_19_3.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, new PacketRemapper() {
+        protocol.registerServerbound(ServerboundPackets1_19_3.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, new PacketHandlers() {
             @Override
-            public void registerMap() {
+            public void register() {
                 map(Type.STRING, BedrockTypes.STRING, c -> "/" + c); // command
                 handler(wrapper -> {
                     final UUID uuid = wrapper.user().getProtocolInfo().getUuid();

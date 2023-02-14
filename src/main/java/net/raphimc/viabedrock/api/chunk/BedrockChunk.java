@@ -15,35 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.storage;
+package net.raphimc.viabedrock.api.chunk;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
+import com.viaversion.viaversion.api.minecraft.chunks.Chunk1_18;
+import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 
-public class GameSessionStorage extends StoredObject {
+import java.util.List;
 
-    private CompoundTag javaRegistries;
-    private CompoundTag bedrockBiomeDefinitions;
+public class BedrockChunk extends Chunk1_18 {
 
-    public GameSessionStorage(final UserConnection user) {
-        super(user);
+    private boolean requestSubChunks = false;
+
+    public BedrockChunk(final int x, final int z, final ChunkSection[] sections, final CompoundTag heightMap, final List<BlockEntity> blockEntities) {
+        super(x, z, sections, heightMap, blockEntities);
     }
 
-    public CompoundTag getJavaRegistries() {
-        return this.javaRegistries;
+    public boolean isRequestSubChunks() {
+        return this.requestSubChunks;
     }
 
-    public void setJavaRegistries(final CompoundTag javaRegistries) {
-        this.javaRegistries = javaRegistries;
-    }
-
-    public CompoundTag getBedrockBiomeDefinitions() {
-        return this.bedrockBiomeDefinitions;
-    }
-
-    public void setBedrockBiomeDefinitions(final CompoundTag bedrockBiomeDefinitions) {
-        this.bedrockBiomeDefinitions = bedrockBiomeDefinitions;
+    public void setRequestSubChunks(final boolean requestSubChunks) {
+        this.requestSubChunks = requestSubChunks;
     }
 
 }

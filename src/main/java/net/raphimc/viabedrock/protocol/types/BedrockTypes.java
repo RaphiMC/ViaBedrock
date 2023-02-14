@@ -21,7 +21,11 @@ import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import io.netty.util.AsciiString;
+import net.raphimc.viabedrock.api.chunk.BedrockDataPalette;
+import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.protocol.model.*;
+import net.raphimc.viabedrock.protocol.types.chunk.ChunkSectionType;
+import net.raphimc.viabedrock.protocol.types.chunk.DataPaletteType;
 
 import java.util.UUID;
 
@@ -30,6 +34,7 @@ public class BedrockTypes {
     public static final ShortLEType SHORT_LE = new ShortLEType();
     public static final UnsignedShortLEType UNSIGNED_SHORT_LE = new UnsignedShortLEType();
     public static final IntLEType INT_LE = new IntLEType();
+    public static final UnsignedIntLEType UNSIGNED_INT_LE = new UnsignedIntLEType();
     public static final FloatLEType FLOAT_LE = new FloatLEType();
     public static final LongLEType LONG_LE = new LongLEType();
 
@@ -60,5 +65,14 @@ public class BedrockTypes {
     public static final Type<ItemEntry> ITEM_ENTRY = new ItemEntryType();
     public static final Type<ItemEntry[]> ITEM_ENTRY_ARRAY = new ArrayType<>(ITEM_ENTRY, UNSIGNED_VAR_INT);
     public static final Type<CommandOrigin> COMMAND_ORIGIN = new CommandOriginType();
+    public static final Type<BedrockChunkSection> CHUNK_SECTION = new ChunkSectionType();
+    public static final Type<Position> SUB_CHUNK_OFFSET = new SubChunkOffsetType();
+
+    public static final Type<BedrockDataPalette> BLOCK_PALETTE = new DataPaletteType(tag -> {
+        throw new IllegalStateException("TODO: Implement non runtime blocks");
+    });
+    public static final Type<BedrockDataPalette> BIOME_PALETTE = new DataPaletteType(tag -> {
+        throw new IllegalStateException("TODO: Implement non runtime biomes");
+    });
 
 }

@@ -75,6 +75,7 @@ public class BedrockProxyConnection extends ProxyConnection {
         this.getChannel().pipeline().addBefore(MCPipeline.SIZER_HANDLER_NAME, MCPipeline.COMPRESSION_HANDLER_NAME, new ZLibCompression());
     }
 
+    // TODO: Allow encryption without compression
     public void enableAesGcmEncryption(final SecretKey secretKey) throws InvalidAlgorithmParameterException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         if (this.getChannel().pipeline().get(MCPipeline.ENCRYPTION_HANDLER_NAME) != null)
             throw new IllegalStateException("Encryption is already enabled");

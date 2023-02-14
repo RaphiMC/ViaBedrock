@@ -23,8 +23,8 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
-import net.raphimc.viabedrock.api.BedrockTagDataInputStream;
-import net.raphimc.viabedrock.api.BedrockTagDataOutputStream;
+import net.raphimc.viabedrock.api.io.BedrockTagDataInputStream;
+import net.raphimc.viabedrock.api.io.BedrockTagDataOutputStream;
 
 public class TagType extends Type<Tag> {
 

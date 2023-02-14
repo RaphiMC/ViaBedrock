@@ -17,24 +17,20 @@ repositories {
         name = "ViaVersion"
         url "https://repo.viaversion.com"
     }
-    maven {
-        name = "Lenni0451"
-        url "https://maven.lenni0451.net/snapshots"
-    }
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion:4.5.2-SNAPSHOT"
+    compileOnly "com.viaversion:viaversion:4.6.0-23w06a-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:1.33"
     compileOnly "com.google.guava:guava:31.1-jre"
-    compileOnly "io.netty:netty-handler:4.1.87.Final"
+    compileOnly "io.netty:netty-handler:4.1.89.Final"
     compileOnly "com.google.code.gson:gson:2.10.1"
 
     api "io.jsonwebtoken:jjwt-impl:0.11.5"
     api("io.jsonwebtoken:jjwt-gson:0.11.5") {
         exclude group: "com.google.code.gson", module: "gson"
     }
-    api("net.lenni0451.mcstructs-bedrock:text:1.0.0-SNAPSHOT") {
+    api("net.lenni0451.mcstructs-bedrock:text:1.0.0") {
         exclude group: "com.google.code.gson", module: "gson"
     }
 }
