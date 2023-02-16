@@ -77,6 +77,10 @@ public class ViaBedrockPlugin extends ViaProxyPlugin {
         if (proxyConnection.getConnectionState() != ConnectionState.LOGIN) {
             event.setCancelMessage("§cStatus is not yet implemented for Bedrock Edition!");
         }
+
+        if (event.getServerAddress().getPort() == 25565) { // Janky fix for the default port being hardcoded everywhere
+            RStream.of(event.getServerAddress()).fields().by("port").set(19132);
+        }
     }
 
     @EventHandler
