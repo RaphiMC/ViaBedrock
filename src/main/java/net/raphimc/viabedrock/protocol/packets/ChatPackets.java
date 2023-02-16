@@ -119,8 +119,7 @@ public class ChatPackets {
                                 break;
                             }
                             default:
-                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown text type: " + type);
-                                wrapper.cancel();
+                                BedrockProtocol.kickForIllegalState(wrapper.user(), "Unknown text type: " + type);
                         }
                     } catch (Throwable e) { // Mojang client silently ignores errors
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalMessage + "' (" + type + ")", e);
@@ -193,7 +192,7 @@ public class ChatPackets {
                     if (chatSettings.isServerRestricted()) {
                         wrapper.cancel();
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_3.SYSTEM_CHAT, wrapper.user());
-                        systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§eChat is currently disabled")); // message
+                        systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + BedrockProtocol.MAPPINGS.getTranslations().get("permissions.chatmute"))); // message
                         systemChat.write(Type.BOOLEAN, false); // overlay
                         systemChat.send(BedrockProtocol.class);
                     }

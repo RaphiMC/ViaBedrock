@@ -138,6 +138,11 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         final PacketWrapper disconnect = PacketWrapper.create(user.getProtocolInfo().getState() == State.PLAY ? ClientboundPackets1_19_3.DISCONNECT : ClientboundLoginPackets.LOGIN_DISCONNECT, user);
         disconnect.write(Type.COMPONENT, JsonUtil.textToComponent("§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page."));
         disconnect.send(BedrockProtocol.class);
+
+        if (user.getChannel() != null) {
+            user.getChannel().flush();
+            user.getChannel().close();
+        }
     }
 
 }
