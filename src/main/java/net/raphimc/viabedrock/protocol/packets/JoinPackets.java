@@ -141,7 +141,7 @@ public class JoinPackets {
 
                     if (isWorldEditor) {
                         final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_3.DISCONNECT, wrapper.user());
-                        disconnect.write(Type.COMPONENT, JsonUtil.textToComponent("This world is in Editor Mode. It cannot be loaded.")); // reason
+                        disconnect.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
                         disconnect.send(BedrockProtocol.class);
                         return;
                     }

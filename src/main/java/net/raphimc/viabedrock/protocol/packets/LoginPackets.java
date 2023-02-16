@@ -240,26 +240,26 @@ public class LoginPackets {
     public static void writePlayStatusKickMessage(final PacketWrapper wrapper, final int status) {
         switch (status) {
             case PlayStatus.LOGIN_FAILED_CLIENT_OLD:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect: Outdated client!"));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.outdatedClient")));
                 break;
             case PlayStatus.LOGIN_FAILED_SERVER_OLD:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect: Outdated server!"));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.outdatedServer")));
                 break;
             case PlayStatus.LOGIN_FAILED_INVALID_TENANT:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Could not connect. You do not have access to this world."));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.invalidTenant")));
                 break;
             case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is not running Minecraft: Education Edition. Failed to connect."));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editionMismatchEduToVanilla")));
                 break;
             case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_VANILLA_TO_EDU:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is running an incompatible edition of Minecraft. Failed to connect."));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editionMismatchVanillaToEdu")));
                 break;
             case PlayStatus.FAILED_SERVER_FULL_SUB_CLIENT:
             case PlayStatus.VANILLA_TO_EDITOR_MISMATCH:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("Wow this server is popular! Check back later to see if space opens up.\n\n\n\nServer Full"));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.serverFull") + "\n\n\n\n" + BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.serverFull.title")));
                 break;
             case PlayStatus.EDITOR_TO_VANILLA_MISMATCH:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent("The server is not in Editor mode. Failed to connect."));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editor.mismatchEditorToVanilla")));
                 break;
             default: // Mojang client silently ignores invalid values
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received invalid login status: " + status);
