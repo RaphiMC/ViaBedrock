@@ -100,6 +100,24 @@ public class PlayPackets {
                 create(Type.BOOLEAN, false); // locked
             }
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_STACK_LATENCY, ClientboundPackets1_19_3.KEEP_ALIVE, new PacketHandlers() {
+            @Override
+            protected void register() {
+                map(BedrockTypes.LONG_LE, Type.LONG, t -> {
+                    if (t >= 0) {
+                        return t / 1000 * 1000;
+                    } else {
+                        final long result = (t - 383) / 1000 * 1000;
+                        return result > 0 ? result : result - 616;
+                    }
+                }); // timestamp
+                handler(wrapper -> {
+                    if (!wrapper.read(Type.BOOLEAN)) { // from server
+                        wrapper.cancel();
+                    }
+                });
+            }
+        });
 
         protocol.registerServerbound(ServerboundPackets1_19_3.CLIENT_SETTINGS, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, new PacketHandlers() {
             @Override
@@ -112,6 +130,13 @@ public class PlayPackets {
                 read(Type.VAR_INT); // main hand
                 read(Type.BOOLEAN); // text filtering
                 read(Type.BOOLEAN); // server listing
+            }
+        });
+        protocol.registerServerbound(ServerboundPackets1_19_3.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, new PacketHandlers() {
+            @Override
+            public void register() {
+                map(Type.LONG, BedrockTypes.LONG_LE); // id
+                create(Type.BOOLEAN, true); // from server
             }
         });
     }
