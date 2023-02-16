@@ -189,7 +189,7 @@ public class ChatPackets {
                 read(ACKNOWLEDGED_BIT_SET_TYPE); // acknowledged
                 handler(wrapper -> {
                     final ChatSettingsStorage chatSettings = wrapper.user().get(ChatSettingsStorage.class);
-                    if (chatSettings.isServerRestricted()) {
+                    if (chatSettings.isChatRestricted()) {
                         wrapper.cancel();
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_3.SYSTEM_CHAT, wrapper.user());
                         systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + BedrockProtocol.MAPPINGS.getTranslations().get("permissions.chatmute"))); // message
@@ -220,6 +220,16 @@ public class ChatPackets {
                 });
                 read(Type.VAR_INT); // offset
                 read(ACKNOWLEDGED_BIT_SET_TYPE); // acknowledged
+                handler(wrapper -> {
+                    final ChatSettingsStorage chatSettings = wrapper.user().get(ChatSettingsStorage.class);
+                    if (!chatSettings.areCommandsEnabled()) {
+                        wrapper.cancel();
+                        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_3.SYSTEM_CHAT, wrapper.user());
+                        systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + BedrockProtocol.MAPPINGS.getTranslations().get("commands.generic.disabled"))); // message
+                        systemChat.write(Type.BOOLEAN, false); // overlay
+                        systemChat.send(BedrockProtocol.class);
+                    }
+                });
             }
         });
     }

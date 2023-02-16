@@ -34,7 +34,6 @@ import net.raphimc.viabedrock.api.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.packets.*;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
-import net.raphimc.viabedrock.protocol.storage.ChatSettingsStorage;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
@@ -107,7 +106,6 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
 
     @Override
     public void init(UserConnection user) {
-        user.put(new ChatSettingsStorage(user));
         user.put(new SpawnPositionStorage(user));
         user.put(new GameSessionStorage(user));
         user.put(new EntityTracker(user));

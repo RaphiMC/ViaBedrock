@@ -51,7 +51,6 @@ public class JoinPackets {
             public void register() {
                 handler(wrapper -> {
                     wrapper.cancel(); // We need to fix the order of the packets
-                    final ChatSettingsStorage chatSettingsStorage = wrapper.user().get(ChatSettingsStorage.class);
                     final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
                     final GameSessionStorage gameSessionStorage = wrapper.user().get(GameSessionStorage.class);
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
@@ -88,7 +87,7 @@ public class JoinPackets {
                     wrapper.read(Type.BOOLEAN); // is broadcasting to lan
                     wrapper.read(BedrockTypes.VAR_INT); // Xbox Live broadcast mode
                     wrapper.read(BedrockTypes.VAR_INT); // platform broadcast mode
-                    wrapper.read(Type.BOOLEAN); // commands enabled
+                    final boolean commandsEnabled = wrapper.read(Type.BOOLEAN); // commands enabled
                     wrapper.read(Type.BOOLEAN); // texture packs required
                     wrapper.read(BedrockTypes.GAME_RULE_ARRAY); // game rules
                     wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
@@ -152,7 +151,7 @@ public class JoinPackets {
                     gameSessionStorage.setJavaRegistries(registries);
 
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
-                    chatSettingsStorage.setServerRestricted(chatRestrictionLevel >= 1);
+                    wrapper.user().put(new ChatSettingsStorage(wrapper.user(), chatRestrictionLevel >= 1, commandsEnabled));
                     spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
                     final int javaEntityId = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId).javaId();
                     entityTracker.getClientPlayer().setPosition(new Position3f(playerPosition.x(), playerPosition.y() + 1.62F, playerPosition.z()));

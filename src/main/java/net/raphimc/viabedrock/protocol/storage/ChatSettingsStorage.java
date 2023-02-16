@@ -22,18 +22,22 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 
 public class ChatSettingsStorage extends StoredObject {
 
-    private boolean serverRestricted = false;
+    private final boolean chatRestricted;
+    private final boolean commandsEnabled;
 
-    public ChatSettingsStorage(final UserConnection user) {
+    public ChatSettingsStorage(final UserConnection user, final boolean chatRestricted, final boolean commandsEnabled) {
         super(user);
+
+        this.chatRestricted = chatRestricted;
+        this.commandsEnabled = commandsEnabled;
     }
 
-    public boolean isServerRestricted() {
-        return this.serverRestricted;
+    public boolean isChatRestricted() {
+        return this.chatRestricted;
     }
 
-    public void setServerRestricted(final boolean serverRestricted) {
-        this.serverRestricted = serverRestricted;
+    public boolean areCommandsEnabled() {
+        return this.commandsEnabled;
     }
 
 }
