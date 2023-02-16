@@ -42,6 +42,9 @@ import java.util.function.Supplier;
 
 public class BedrockProxyConnection extends ProxyConnection {
 
+    private boolean compressionEnabled = false;
+    private boolean encryptionEnabled = false;
+
     public BedrockProxyConnection(Supplier<ChannelHandler> handlerSupplier, Function<Supplier<ChannelHandler>, ChannelInitializer<Channel>> channelInitializerSupplier, Channel c2p) {
         super(handlerSupplier, channelInitializerSupplier, c2p);
     }
@@ -69,18 +72,27 @@ public class BedrockProxyConnection extends ProxyConnection {
     }
 
     public void enableZLibCompression() {
-        if (this.getChannel().pipeline().get(MCPipeline.COMPRESSION_HANDLER_NAME) != null)
+        if (this.compressionEnabled)
             throw new IllegalStateException("Compression is already enabled");
+        this.compressionEnabled = true;
 
-        this.getChannel().pipeline().addBefore(MCPipeline.SIZER_HANDLER_NAME, MCPipeline.COMPRESSION_HANDLER_NAME, new ZLibCompression());
+        this.getChannel().pipeline().replace(MCPipeline.COMPRESSION_HANDLER_NAME, MCPipeline.COMPRESSION_HANDLER_NAME, new ZLibCompression());
     }
 
-    // TODO: Allow encryption without compression
-    public void enableAesGcmEncryption(final SecretKey secretKey) throws InvalidAlgorithmParameterException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        if (this.getChannel().pipeline().get(MCPipeline.ENCRYPTION_HANDLER_NAME) != null)
-            throw new IllegalStateException("Encryption is already enabled");
+    public void enableSnappyCompression() {
+        if (this.compressionEnabled)
+            throw new IllegalStateException("Compression is already enabled");
+        this.compressionEnabled = true;
 
-        this.getChannel().pipeline().addBefore(MCPipeline.COMPRESSION_HANDLER_NAME, MCPipeline.ENCRYPTION_HANDLER_NAME, new AesGcmEncryption(secretKey));
+        this.getChannel().pipeline().replace(MCPipeline.COMPRESSION_HANDLER_NAME, MCPipeline.COMPRESSION_HANDLER_NAME, new SnappyCompression());
+    }
+
+    public void enableAesGcmEncryption(final SecretKey secretKey) throws InvalidAlgorithmParameterException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        if (this.encryptionEnabled)
+            throw new IllegalStateException("Encryption is already enabled");
+        this.encryptionEnabled = true;
+
+        this.getChannel().pipeline().replace(MCPipeline.ENCRYPTION_HANDLER_NAME, MCPipeline.ENCRYPTION_HANDLER_NAME, new AesGcmEncryption(secretKey));
     }
 
 }

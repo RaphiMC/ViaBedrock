@@ -28,13 +28,19 @@ public class ViaProxyNettyPipelineProvider extends NettyPipelineProvider {
 
     @Override
     public void enableCompression(UserConnection user, int threshold, int algorithm) {
-        if (algorithm != 0) {
-            throw new IllegalStateException("Only ZLIB compression is supported");
-        }
+        final BedrockProxyConnection proxyConnection = (BedrockProxyConnection) ProxyConnection.fromUserConnection(user);
 
         try {
-            final BedrockProxyConnection proxyConnection = (BedrockProxyConnection) ProxyConnection.fromUserConnection(user);
-            proxyConnection.enableZLibCompression();
+            switch (algorithm) {
+                case 0:
+                    proxyConnection.enableZLibCompression();
+                    break;
+                case 1:
+                    proxyConnection.enableSnappyCompression();
+                    break;
+                default:
+                    throw new IllegalStateException("Invalid compression algorithm: " + algorithm);
+            }
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -42,8 +48,8 @@ public class ViaProxyNettyPipelineProvider extends NettyPipelineProvider {
 
     @Override
     public void enableEncryption(UserConnection user, SecretKey key) {
+        final BedrockProxyConnection proxyConnection = (BedrockProxyConnection) ProxyConnection.fromUserConnection(user);
         try {
-            final BedrockProxyConnection proxyConnection = (BedrockProxyConnection) ProxyConnection.fromUserConnection(user);
             proxyConnection.enableAesGcmEncryption(key);
         } catch (Throwable e) {
             throw new RuntimeException(e);

@@ -22,6 +22,7 @@ import com.viaversion.viaversion.connection.UserConnectionImpl;
 import com.viaversion.viaversion.protocol.ProtocolPipelineImpl;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerAdapter;
 import net.raphimc.netminecraft.constants.MCPipeline;
 import net.raphimc.netminecraft.netty.connection.MinecraftChannelInitializer;
 import net.raphimc.netminecraft.packet.registry.PacketRegistryUtil;
@@ -37,6 +38,13 @@ import java.util.function.Supplier;
 
 public class Proxy2ServerRakNetChannelInitializer extends MinecraftChannelInitializer {
 
+    private static final ChannelHandler DUMMY_HANDLER = new ChannelHandlerAdapter() {
+        @Override
+        public boolean isSharable() {
+            return true;
+        }
+    };
+
     public Proxy2ServerRakNetChannelInitializer(final Supplier<ChannelHandler> handlerSupplier) {
         super(handlerSupplier);
     }
@@ -51,8 +59,8 @@ public class Proxy2ServerRakNetChannelInitializer extends MinecraftChannelInitia
         user.getProtocolInfo().getPipeline().add(BedrockBaseProtocol.INSTANCE);
 
         channel.pipeline().addLast("frame_encapsulation", new RakMessageEncapsulationCodec());
-        // Encryption
-        // Compression
+        channel.pipeline().addLast(MCPipeline.ENCRYPTION_HANDLER_NAME, DUMMY_HANDLER);
+        channel.pipeline().addLast(MCPipeline.COMPRESSION_HANDLER_NAME, DUMMY_HANDLER);
         channel.pipeline().addLast(MCPipeline.SIZER_HANDLER_NAME, new BatchLengthCodec());
         channel.pipeline().addLast("packet_encapsulation", new PacketEncapsulationCodec());
         channel.pipeline().addLast(MCPipeline.PACKET_CODEC_HANDLER_NAME, MCPipeline.PACKET_CODEC_HANDLER.get());
