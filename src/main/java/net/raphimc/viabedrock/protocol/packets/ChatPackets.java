@@ -90,7 +90,7 @@ public class ChatPackets {
                             case TextType.OBJECT_WHISPER:
                             case TextType.OBJECT_ANNOUNCEMENT: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
-                                if (type != TextType.RAW && type != TextType.SYSTEM) {
+                                if (type != TextType.RAW && type != TextType.SYSTEM && type != TextType.TIP) {
                                     final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
                                     rootComponent.forEach(c -> {
                                         if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
@@ -102,7 +102,7 @@ public class ChatPackets {
                                 }
 
                                 wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message)); // message
-                                wrapper.write(Type.BOOLEAN, false); // overlay
+                                wrapper.write(Type.BOOLEAN, type == TextType.TIP); // overlay
                                 break;
                             }
                             case TextType.TRANSLATION:
