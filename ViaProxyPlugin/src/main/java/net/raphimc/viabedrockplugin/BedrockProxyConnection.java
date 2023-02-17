@@ -27,6 +27,7 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import net.raphimc.netminecraft.constants.MCPipeline;
 import net.raphimc.netminecraft.util.LazyLoadBase;
 import net.raphimc.viabedrock.netty.AesGcmEncryption;
+import net.raphimc.viabedrock.netty.SnappyCompression;
 import net.raphimc.viabedrock.netty.ZLibCompression;
 import net.raphimc.viaproxy.proxy.ProxyConnection;
 import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
