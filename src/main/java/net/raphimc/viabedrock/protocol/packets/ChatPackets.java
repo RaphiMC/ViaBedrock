@@ -84,13 +84,13 @@ public class ChatPackets {
                                 break;
                             }
                             case TextType.RAW:
-                            case TextType.TIP:
                             case TextType.SYSTEM:
+                            case TextType.TIP:
                             case TextType.OBJECT:
                             case TextType.OBJECT_WHISPER:
                             case TextType.OBJECT_ANNOUNCEMENT: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
-                                if (type != TextType.RAW) {
+                                if (type != TextType.RAW && type != TextType.SYSTEM) {
                                     final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
                                     rootComponent.forEach(c -> {
                                         if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
