@@ -83,20 +83,27 @@ public class ChatPackets {
                                 wrapper.write(Type.BOOLEAN, false); // overlay
                                 break;
                             }
-                            case TextType.RAW:
-                            case TextType.SYSTEM:
-                            case TextType.TIP:
                             case TextType.OBJECT:
                             case TextType.OBJECT_WHISPER:
                             case TextType.OBJECT_ANNOUNCEMENT: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
-                                if (type != TextType.RAW && type != TextType.SYSTEM && type != TextType.TIP) {
-                                    final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
-                                    rootComponent.forEach(c -> {
-                                        if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
-                                    });
-                                    message = rootComponent.asString();
+                                final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
+                                rootComponent.forEach(c -> {
+                                    if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
+                                });
+                                message = rootComponent.asString();
+                                if (needsTranslation) {
+                                    message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
+
+                                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message)); // message
+                                wrapper.write(Type.BOOLEAN, type == TextType.TIP); // overlay
+                                break;
+                            }
+                            case TextType.RAW:
+                            case TextType.SYSTEM:
+                            case TextType.TIP: {
+                                String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 if (needsTranslation) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
