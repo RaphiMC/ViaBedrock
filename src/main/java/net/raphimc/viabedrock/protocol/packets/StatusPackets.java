@@ -57,7 +57,7 @@ public class StatusPackets {
 
             statusResponse.addProperty("description", "");
             version.addProperty("name", "");
-            version.addProperty("protocol", -1);
+            version.addProperty("protocol", wrapper.user().getProtocolInfo().getProtocolVersion());
             players.addProperty("max", -1);
             players.addProperty("online", -1);
 
@@ -100,17 +100,12 @@ public class StatusPackets {
                     } catch (NumberFormatException ignored) {
                     }
                 case 4: // Version
-                case 3: // Protocol version
-                    try {
-                        final int protocolVersion = Integer.parseInt(splitData[2]);
-
-                        if (protocolVersion == handshakeStorage.getProtocolVersion()) { // Compatible
-                            version.addProperty("protocol", wrapper.user().getProtocolInfo().getProtocolVersion());
-                        } else { // Incompatible
-                            version.addProperty("protocol", protocolVersion);
-                        }
-                    } catch (NumberFormatException ignored) {
-                    }
+                case 3: { // Protocol version
+                    final JsonObject sample = new JsonObject();
+                    sample.addProperty("name", "Protocol: " + splitData[2]);
+                    sample.addProperty("id", NULL_UUID);
+                    samples.add(sample);
+                }
                 case 2: // MotD
                     statusResponse.addProperty("description", splitData[1] + (splitData.length >= 8 ? ("\n§r" + splitData[7]) : ""));
                 case 1: { // Edition
