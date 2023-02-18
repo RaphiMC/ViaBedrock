@@ -25,10 +25,10 @@ import net.lenni0451.lambdaevents.EventHandler;
 import net.lenni0451.reflect.Enums;
 import net.lenni0451.reflect.stream.RStream;
 import net.raphimc.mcauth.step.bedrock.StepMCChain;
-import net.raphimc.netminecraft.constants.ConnectionState;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
+import net.raphimc.viabedrockplugin.netty.Proxy2ServerRakNetChannelInitializer;
 import net.raphimc.viabedrockplugin.provider.ViaProxyNettyPipelineProvider;
 import net.raphimc.viaprotocolhack.util.VersionEnum;
 import net.raphimc.viaproxy.cli.options.Options;
@@ -73,16 +73,6 @@ public class ViaBedrockPlugin extends ViaProxyPlugin {
     public void onGetDefaultPort(final GetDefaultPortEvent event) {
         if (event.getServerVersion().equals(bedrock)) {
             event.setDefaultPort(19132);
-        }
-    }
-
-    @EventHandler
-    public void onPreConnect(final PreConnectEvent event) {
-        final ProxyConnection proxyConnection = ProxyConnection.fromChannel(event.getClientChannel());
-        if (!Options.PROTOCOL_VERSION.equals(bedrock)) return;
-
-        if (proxyConnection.getConnectionState() != ConnectionState.LOGIN) {
-            event.setCancelMessage("§cStatus is not yet implemented for Bedrock Edition!");
         }
     }
 

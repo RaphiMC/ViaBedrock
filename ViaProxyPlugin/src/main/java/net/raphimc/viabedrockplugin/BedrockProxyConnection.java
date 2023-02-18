@@ -19,25 +19,39 @@ package net.raphimc.viabedrockplugin;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import net.lenni0451.reflect.stream.RStream;
+import net.raphimc.netminecraft.constants.ConnectionState;
 import net.raphimc.netminecraft.constants.MCPipeline;
 import net.raphimc.netminecraft.util.LazyLoadBase;
+import net.raphimc.netminecraft.util.ServerAddress;
 import net.raphimc.viabedrock.netty.AesGcmEncryption;
 import net.raphimc.viabedrock.netty.SnappyCompression;
 import net.raphimc.viabedrock.netty.ZLibCompression;
+import net.raphimc.viabedrockplugin.netty.PingEncapsulationCodec;
+import net.raphimc.viabedrockplugin.netty.Proxy2ServerRakNetChannelInitializer;
+import net.raphimc.viabedrockplugin.netty.library_fix.FixedUnconnectedPingEncoder;
+import net.raphimc.viabedrockplugin.netty.library_fix.FixedUnconnectedPongDecoder;
+import net.raphimc.viaprotocolhack.util.VersionEnum;
 import net.raphimc.viaproxy.proxy.ProxyConnection;
 import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
+import org.cloudburstmc.netty.channel.raknet.RakClientChannel;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
+import org.cloudburstmc.netty.handler.codec.raknet.common.UnconnectedPingEncoder;
+import org.cloudburstmc.netty.handler.codec.raknet.common.UnconnectedPongDecoder;
 
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import java.net.InetSocketAddress;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -66,10 +80,43 @@ public class BedrockProxyConnection extends ProxyConnection {
                 .option(RakChannelOption.CONNECT_TIMEOUT_MILLIS, 4_000)
                 .option(RakChannelOption.IP_TOS, 0x18)
                 .option(RakChannelOption.RAK_PROTOCOL_VERSION, 11)
+                .option(RakChannelOption.RAK_CONNECT_TIMEOUT, 4_000L)
+                .option(RakChannelOption.RAK_SESSION_TIMEOUT, 30_000L)
+                .option(RakChannelOption.RAK_GUID, ThreadLocalRandom.current().nextLong())
                 .attr(ProxyConnection.PROXY_CONNECTION_ATTRIBUTE_KEY, this)
                 .handler(this.channelInitializerSupplier.apply(this.handlerSupplier));
 
         this.channelFuture = bootstrap.register().syncUninterruptibly();
+    }
+
+    @Override
+    public void connectToServer(ServerAddress serverAddress, VersionEnum targetVersion) {
+        if (this.getConnectionState() == ConnectionState.STATUS) {
+            RStream.of(this).withSuper().fields().by("serverAddress").set(serverAddress);
+            RStream.of(this).withSuper().fields().by("serverVersion").set(targetVersion);
+            this.ping(serverAddress);
+        } else {
+            super.connectToServer(serverAddress, targetVersion);
+        }
+    }
+
+    private void ping(final ServerAddress serverAddress) {
+        if (this.channelFuture == null) {
+            this.initialize(new Bootstrap());
+        }
+        this.getChannel().bind(new InetSocketAddress(0)).addListener(ChannelFutureListener.CLOSE_ON_FAILURE).syncUninterruptibly();
+        final RakClientChannel channel = (RakClientChannel) this.getChannel();
+
+        { // Temporary fix for the ping encoder
+            channel.parent().pipeline().replace(UnconnectedPingEncoder.NAME, UnconnectedPingEncoder.NAME, new FixedUnconnectedPingEncoder(channel));
+            channel.parent().pipeline().replace(UnconnectedPongDecoder.NAME, UnconnectedPongDecoder.NAME, new FixedUnconnectedPongDecoder(channel));
+        }
+
+        this.getChannel().pipeline().replace(Proxy2ServerRakNetChannelInitializer.FRAME_ENCAPSULATION_HANDLER_NAME, "ping_encapsulation", new PingEncapsulationCodec(serverAddress.toSocketAddress()));
+        this.getChannel().pipeline().remove(Proxy2ServerRakNetChannelInitializer.PACKET_ENCAPSULATION_HANDLER_NAME);
+        this.getChannel().pipeline().remove(MCPipeline.ENCRYPTION_HANDLER_NAME);
+        this.getChannel().pipeline().remove(MCPipeline.COMPRESSION_HANDLER_NAME);
+        this.getChannel().pipeline().remove(MCPipeline.SIZER_HANDLER_NAME);
     }
 
     public void enableZLibCompression() {

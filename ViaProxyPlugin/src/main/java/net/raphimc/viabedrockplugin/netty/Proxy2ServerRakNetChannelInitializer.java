@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrockplugin;
+package net.raphimc.viabedrockplugin.netty;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.connection.UserConnectionImpl;
@@ -38,7 +38,10 @@ import java.util.function.Supplier;
 
 public class Proxy2ServerRakNetChannelInitializer extends MinecraftChannelInitializer {
 
-    private static final ChannelHandler DUMMY_HANDLER = new ChannelHandlerAdapter() {
+    public static final String FRAME_ENCAPSULATION_HANDLER_NAME = "frame_encapsulation";
+    public static final String PACKET_ENCAPSULATION_HANDLER_NAME = "packet_encapsulation";
+
+    public static final ChannelHandler DUMMY_HANDLER = new ChannelHandlerAdapter() {
         @Override
         public boolean isSharable() {
             return true;
@@ -51,18 +54,16 @@ public class Proxy2ServerRakNetChannelInitializer extends MinecraftChannelInitia
 
     @Override
     protected void initChannel(Channel channel) {
-        channel.attr(MCPipeline.COMPRESSION_THRESHOLD_ATTRIBUTE_KEY).set(-1);
-
         final UserConnection user = new UserConnectionImpl(channel, true);
         new ProtocolPipelineImpl(user);
         ProxyConnection.fromChannel(channel).setUserConnection(user);
         user.getProtocolInfo().getPipeline().add(BedrockBaseProtocol.INSTANCE);
 
-        channel.pipeline().addLast("frame_encapsulation", new RakMessageEncapsulationCodec());
+        channel.pipeline().addLast(FRAME_ENCAPSULATION_HANDLER_NAME, new RakMessageEncapsulationCodec());
         channel.pipeline().addLast(MCPipeline.ENCRYPTION_HANDLER_NAME, DUMMY_HANDLER);
         channel.pipeline().addLast(MCPipeline.COMPRESSION_HANDLER_NAME, DUMMY_HANDLER);
         channel.pipeline().addLast(MCPipeline.SIZER_HANDLER_NAME, new BatchLengthCodec());
-        channel.pipeline().addLast("packet_encapsulation", new PacketEncapsulationCodec());
+        channel.pipeline().addLast(PACKET_ENCAPSULATION_HANDLER_NAME, new PacketEncapsulationCodec());
         channel.pipeline().addLast(MCPipeline.PACKET_CODEC_HANDLER_NAME, MCPipeline.PACKET_CODEC_HANDLER.get());
         channel.pipeline().addLast(MCPipeline.HANDLER_HANDLER_NAME, this.handlerSupplier.get());
 

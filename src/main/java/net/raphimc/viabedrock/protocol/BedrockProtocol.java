@@ -51,6 +51,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
 
     @Override
     protected void registerPackets() {
+        StatusPackets.register(this);
         LoginPackets.register(this);
         PlayPackets.register(this);
         ResourcePackPackets.register(this);

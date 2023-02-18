@@ -42,12 +42,6 @@ public class BedrockBaseProtocol extends AbstractSimpleProtocol {
                     final int protocolVersion = wrapper.read(Type.VAR_INT) - 1_000_000; // protocol id
                     final String hostname = wrapper.read(Type.STRING); // hostname
                     final int port = wrapper.read(Type.UNSIGNED_SHORT); // port
-                    final int state = wrapper.read(Type.VAR_INT); // state
-
-                    if (state != State.LOGIN.ordinal()) {
-                        wrapper.user().disconnect("Invalid handshake state. Expected LOGIN, got " + state + ".");
-                        return;
-                    }
 
                     wrapper.user().put(new HandshakeStorage(wrapper.user(), protocolVersion, hostname, port));
                 });

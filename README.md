@@ -24,7 +24,7 @@ ViaBedrock would not have been possible without the following projects:
 - [wiki.vg](https://wiki.vg/Bedrock_Protocol): Documentation of the Bedrock Edition protocol
 
 ## Features
-- [ ] Pinging
+- [x] Pinging
 - [x] Joining
 - [x] Xbox Live Auth
 - [x] Chat / Commands
@@ -32,6 +32,7 @@ ViaBedrock would not have been possible without the following projects:
 - [ ] Chunk caching
 - [ ] Block updates
 - [ ] Biomes
+- [ ] Players
 - [ ] Entities
 - [ ] Entity interactions
 - [ ] Entity metadata
@@ -43,3 +44,4 @@ ViaBedrock would not have been possible without the following projects:
 - [ ] Block placing
 - [ ] Respawning
 - [ ] Dimension switching
+- [ ] Form GUIs
