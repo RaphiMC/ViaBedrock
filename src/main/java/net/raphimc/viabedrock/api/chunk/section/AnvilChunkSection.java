@@ -46,6 +46,10 @@ public interface AnvilChunkSection extends BedrockChunkSection {
         if (!(palette instanceof BedrockDataPalette)) {
             throw new IllegalArgumentException("Palette must be a BedrockDataPalette");
         }
+        final int count = this.palettesCount(type);
+        if (count >= 2) {
+            throw new IllegalStateException("This section already has two palettes for type " + type);
+        }
         this.addPalette(type, (BedrockDataPalette) palette);
     }
 

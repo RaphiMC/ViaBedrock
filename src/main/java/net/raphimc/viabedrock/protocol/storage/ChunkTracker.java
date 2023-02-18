@@ -352,13 +352,13 @@ public class ChunkTracker extends StoredObject {
                     remappedSection.setNonAirBlocksCount(nonAirBlocks);
                 }
                 for (int i = 1; i < blockPalettes.size(); i++) {
-                    final BedrockDataPalette mainLayer = blockPalettes.get(0);
+                    final BedrockDataPalette prevLayer = blockPalettes.get(i - 1);
                     final BedrockDataPalette layer = blockPalettes.get(i);
                     for (int x = 0; x < 16; x++) {
                         for (int y = 0; y < 16; y++) {
                             for (int z = 0; z < 16; z++) {
-                                final int mainBlockState = mainLayer.idAt(x, y, z);
-                                if (mainBlockState == airId) continue;
+                                final int prevBlockState = prevLayer.idAt(x, y, z);
+                                if (prevBlockState == airId) continue;
                                 final int blockState = layer.idAt(x, y, z);
                                 if (blockState == airId) continue;
                                 final int javaBlockState = remappedBlockPalette.idAt(x, y, z);
@@ -366,7 +366,7 @@ public class ChunkTracker extends StoredObject {
                                 if (blockStateRewriter.isWater(blockState)) { // Waterlogging
                                     final int remappedBlockState = blockStateRewriter.waterlog(javaBlockState);
                                     if (remappedBlockState == -1) {
-                                        Via.getPlatform().getLogger().log(Level.WARNING, "Missing waterlogged block state: " + mainBlockState);
+                                        Via.getPlatform().getLogger().log(Level.WARNING, "Missing waterlogged block state: " + prevBlockState);
                                     } else {
                                         remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
                                     }
