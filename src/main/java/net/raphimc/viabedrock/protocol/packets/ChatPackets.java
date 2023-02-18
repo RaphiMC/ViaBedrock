@@ -97,7 +97,7 @@ public class ChatPackets {
                                 }
 
                                 wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message)); // message
-                                wrapper.write(Type.BOOLEAN, type == TextType.TIP); // overlay
+                                wrapper.write(Type.BOOLEAN, false); // overlay
                                 break;
                             }
                             case TextType.RAW:

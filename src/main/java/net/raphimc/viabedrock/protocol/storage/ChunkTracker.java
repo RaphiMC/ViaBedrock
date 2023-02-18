@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
@@ -43,6 +44,7 @@ import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.MCRegionChunkSection;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -284,13 +286,16 @@ public class ChunkTracker extends StoredObject {
     }
 
     private Chunk remapChunk(final Chunk chunk) {
+        final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
+        final int airId = blockStateRewriter.air();
+
         final Chunk remappedChunk = new Chunk1_18(chunk.getX(), chunk.getZ(), new ChunkSection[chunk.getSections().length], new CompoundTag(), new ArrayList<>());
         final ChunkSection[] sections = chunk.getSections();
         final ChunkSection[] remappedSections = remappedChunk.getSections();
-        for (int i = 0; i < sections.length; i++) {
-            final ChunkSection section = sections[i];
+        for (int idx = 0; idx < sections.length; idx++) {
+            final ChunkSection section = sections[idx];
 
-            final ChunkSection remappedSection = remappedSections[i] = new ChunkSectionImpl(false);
+            final ChunkSection remappedSection = remappedSections[idx] = new ChunkSectionImpl(false);
             remappedSection.addPalette(PaletteType.BIOMES, new DataPaletteImpl(ChunkSection.BIOME_SIZE));
             remappedSection.palette(PaletteType.BLOCKS).addId(0);
             remappedSection.palette(PaletteType.BIOMES).addId(0);
@@ -319,17 +324,24 @@ public class ChunkTracker extends StoredObject {
                 final List<BedrockDataPalette> blockPalettes = anvilSection.palettes(PaletteType.BLOCKS);
                 final DataPalette remappedBlockPalette = remappedSection.palette(PaletteType.BLOCKS);
 
-                while (blockPalettes.size() > 1) { // TODO: remove this when we support multiple palettes
-                    blockPalettes.remove(1);
-                }
-
-                int nonAirBlocks = 0;
-                for (BedrockDataPalette blockPalette : blockPalettes) {
+                if (blockPalettes.size() > 0) {
+                    final BedrockDataPalette mainLayer = blockPalettes.get(0);
+                    int nonAirBlocks = 0;
                     for (int x = 0; x < 16; x++) {
                         for (int y = 0; y < 16; y++) {
                             for (int z = 0; z < 16; z++) {
-                                final int blockState = blockPalette.idAt(x, y, z);
-                                final int remappedBlockState = blockState == 10528 ? 0 : 1;
+                                final int blockState = mainLayer.idAt(x, y, z);
+
+                                if (blockState == airId) { // Fast path for air
+                                    remappedBlockPalette.setIdAt(x, y, z, 0);
+                                    continue;
+                                }
+
+                                int remappedBlockState = blockStateRewriter.javaId(blockState);
+                                if (remappedBlockState == -1) {
+                                    Via.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + blockState);
+                                    remappedBlockState = 1;
+                                }
                                 remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
                                 if (remappedBlockState != 0) {
                                     nonAirBlocks++;
@@ -337,8 +349,32 @@ public class ChunkTracker extends StoredObject {
                             }
                         }
                     }
+                    remappedSection.setNonAirBlocksCount(nonAirBlocks);
                 }
-                remappedSection.setNonAirBlocksCount(nonAirBlocks);
+                for (int i = 1; i < blockPalettes.size(); i++) {
+                    final BedrockDataPalette mainLayer = blockPalettes.get(0);
+                    final BedrockDataPalette layer = blockPalettes.get(i);
+                    for (int x = 0; x < 16; x++) {
+                        for (int y = 0; y < 16; y++) {
+                            for (int z = 0; z < 16; z++) {
+                                final int mainBlockState = mainLayer.idAt(x, y, z);
+                                if (mainBlockState == airId) continue;
+                                final int blockState = layer.idAt(x, y, z);
+                                if (blockState == airId) continue;
+                                final int javaBlockState = remappedBlockPalette.idAt(x, y, z);
+
+                                if (blockStateRewriter.isWater(blockState)) { // Waterlogging
+                                    final int remappedBlockState = blockStateRewriter.waterlog(javaBlockState);
+                                    if (remappedBlockState == -1) {
+                                        Via.getPlatform().getLogger().log(Level.WARNING, "Missing waterlogged block state: " + mainBlockState);
+                                    } else {
+                                        remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             if (section instanceof BedrockChunkSection) {

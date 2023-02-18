@@ -34,6 +34,7 @@ import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
@@ -138,6 +139,7 @@ public class JoinPackets {
                     wrapper.read(Type.BOOLEAN); // client side generation
 
                     // TODO: Vanilla version and block registry checksum should be handled. What exactly does the version do?
+                    // TODO: Handle block properties
 
                     if (isWorldEditor) {
                         final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_3.DISCONNECT, wrapper.user());
@@ -150,6 +152,7 @@ public class JoinPackets {
                     // TODO: Modify world heights / biomes
                     gameSessionStorage.setJavaRegistries(registries);
 
+                    wrapper.user().put(new BlockStateRewriter(wrapper.user()));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
                     wrapper.user().put(new ChatSettingsStorage(wrapper.user(), chatRestrictionLevel >= 1, commandsEnabled));
                     spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);

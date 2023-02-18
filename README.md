@@ -28,8 +28,10 @@ ViaBedrock would not have been possible without the following projects:
 - [x] Joining
 - [x] Xbox Live Auth
 - [x] Chat / Commands
-- [ ] Chunks
+- [x] Chunks
 - [ ] Chunk caching
+- [ ] Block updates
+- [ ] Biomes
 - [ ] Entities
 - [ ] Entity interactions
 - [ ] Entity metadata

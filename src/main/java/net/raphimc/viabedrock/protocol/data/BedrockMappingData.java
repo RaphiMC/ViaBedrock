@@ -17,10 +17,21 @@
  */
 package net.raphimc.viabedrock.protocol.data;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import com.viaversion.viaversion.api.data.MappingDataBase;
+import com.viaversion.viaversion.api.data.MappingDataLoader;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+import com.viaversion.viaversion.libs.fastutil.ints.IntArrayList;
+import com.viaversion.viaversion.libs.fastutil.ints.IntList;
+import com.viaversion.viaversion.libs.gson.JsonArray;
+import com.viaversion.viaversion.libs.gson.JsonElement;
+import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.opennbt.NBTIO;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
+import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 
@@ -29,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -40,6 +52,10 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, String> translations;
     private CompoundTag registries;
     private CompoundTag tags;
+    private BiMap<BlockState, Integer> javaBlockStates;
+    private BiMap<BlockState, Integer> bedrockBlockStates;
+    private Map<BlockState, BlockState> bedrockToJavaBlockStates;
+    private IntList preWaterloggedStates;
 
     public BedrockMappingData() {
         super(ProtocolVersion.v1_19_3.getName(), BedrockProtocolVersion.bedrockLatest.getName());
@@ -49,9 +65,38 @@ public class BedrockMappingData extends MappingDataBase {
     public void load() {
         this.getLogger().info("Loading " + this.oldVersion + " -> " + this.newVersion + " mappings...");
 
-        this.translations = this.readTranslationMap("en_US.lang");
-        this.registries = this.readNBT("registries.nbt");
-        this.tags = this.readNBT("tags.nbt");
+        this.translations = this.readTranslationMap("bedrock/en_US.lang");
+        this.registries = this.readNBT("java/registries.nbt");
+        this.tags = this.readNBT("java/tags.nbt");
+
+        final JsonObject javaBlockStatesJson = MappingDataLoader.loadData("mapping-1.19.3.json", true).getAsJsonObject("blockstates");
+        this.javaBlockStates = HashBiMap.create(javaBlockStatesJson.size());
+        for (Map.Entry<String, JsonElement> entry : javaBlockStatesJson.entrySet()) {
+            final int id = Integer.parseInt(entry.getKey());
+            final BlockState blockState = BlockState.fromString(entry.getValue().getAsString());
+            this.javaBlockStates.put(blockState, id);
+        }
+
+        final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_19_60.nbt").get("blocks");
+        this.bedrockBlockStates = HashBiMap.create(bedrockBlockStatesTag.size());
+        for (int i = 0; i < bedrockBlockStatesTag.getValue().size(); i++) {
+            final BlockState blockState = BlockState.fromNbt((CompoundTag) bedrockBlockStatesTag.getValue().get(i));
+            this.bedrockBlockStates.put(blockState, i);
+        }
+
+        final JsonObject bedrockToJavaBlockStatesJson = this.readJson("blocksB2J.json");
+        this.bedrockToJavaBlockStates = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : bedrockToJavaBlockStatesJson.entrySet()) {
+            final BlockState bedrockBlockState = BlockState.fromString(entry.getKey());
+            final BlockState javaBlockState = BlockState.fromString(entry.getValue().getAsString());
+            this.bedrockToJavaBlockStates.put(bedrockBlockState, javaBlockState);
+        }
+
+        final JsonArray preWaterloggedStatesJson = this.readJson("custom/pre_waterlogged_states.json").getAsJsonArray("blockstates");
+        this.preWaterloggedStates = new IntArrayList();
+        for (JsonElement entry : preWaterloggedStatesJson) {
+            this.preWaterloggedStates.add(this.javaBlockStates.get(BlockState.fromString(entry.getAsString())).intValue());
+        }
     }
 
     public Map<String, String> getTranslations() {
@@ -64,6 +109,22 @@ public class BedrockMappingData extends MappingDataBase {
 
     public CompoundTag getTags() {
         return this.tags;
+    }
+
+    public BiMap<BlockState, Integer> getJavaBlockStates() {
+        return Maps.unmodifiableBiMap(this.javaBlockStates);
+    }
+
+    public BiMap<BlockState, Integer> getBedrockBlockStates() {
+        return Maps.unmodifiableBiMap(this.bedrockBlockStates);
+    }
+
+    public Map<BlockState, BlockState> getBedrockToJavaBlockStates() {
+        return Collections.unmodifiableMap(this.bedrockToJavaBlockStates);
+    }
+
+    public IntList getPreWaterloggedStates() {
+        return this.preWaterloggedStates;
     }
 
     @Override
@@ -107,6 +168,25 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             return NBTIO.readTag(new GZIPInputStream(inputStream));
+        } catch (IOException e) {
+            this.getLogger().severe("Could not read " + file);
+            return null;
+        }
+    }
+
+    private JsonObject readJson(String file) {
+        return this.readJson(file, JsonObject.class);
+    }
+
+    private <T> T readJson(String file, final Class<T> classOfT) {
+        file = "assets/viabedrock/data/" + file;
+        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
+            if (inputStream == null) {
+                this.getLogger().severe("Could not open " + file);
+                return null;
+            }
+
+            return GsonUtil.getGson().fromJson(new InputStreamReader(inputStream), classOfT);
         } catch (IOException e) {
             this.getLogger().severe("Could not read " + file);
             return null;
