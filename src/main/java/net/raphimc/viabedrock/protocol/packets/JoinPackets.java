@@ -163,7 +163,6 @@ public class JoinPackets {
 
                     dimensionMap.get("minecraft:the_nether").put("min_y", new IntTag(0));
                     dimensionMap.get("minecraft:the_nether").put("height", new IntTag(128));
-                    dimensionMap.get("minecraft:the_nether").put("logical_height", new IntTag(128));
                     if (version.ordinal() < VanillaVersion.v1_18_0.ordinal()) {
                         dimensionMap.get("minecraft:overworld").put("min_y", new IntTag(0));
                         dimensionMap.get("minecraft:overworld").put("height", new IntTag(256));
