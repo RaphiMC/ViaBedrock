@@ -29,16 +29,13 @@ import net.raphimc.viabedrock.api.chunk.bitarray.BitArrayVersion;
 import net.raphimc.viabedrock.api.chunk.bitarray.SingletonBitArray;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataPaletteType extends Type<BedrockDataPalette> {
 
-    private final Function<Tag, Number> tagToRuntimeId;
-
-    public DataPaletteType(final Function<Tag, Number> tagToRuntimeId) {
+    public DataPaletteType() {
         super(BedrockDataPalette.class);
-
-        this.tagToRuntimeId = tagToRuntimeId;
     }
 
     @Override
@@ -60,19 +57,20 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
         }
 
         final int size = bitArray instanceof SingletonBitArray ? 1 : BedrockTypes.VAR_INT.readPrimitive(buffer);
-        final IntList palette = new IntArrayList(size);
 
         if (isRuntime) {
+            final IntList palette = new IntArrayList(size);
             for (int i = 0; i < size; i++) {
                 palette.add(BedrockTypes.VAR_INT.read(buffer).intValue());
             }
+            return new BedrockDataPalette(palette, bitArray);
         } else {
+            final List<Tag> palette = new ArrayList<>();
             for (int i = 0; i < size; i++) {
-                palette.add(this.tagToRuntimeId.apply(BedrockTypes.TAG.read(buffer)).intValue());
+                palette.add(BedrockTypes.TAG.read(buffer));
             }
+            return new BedrockDataPalette(palette, bitArray);
         }
-
-        return new BedrockDataPalette(palette, bitArray);
     }
 
     @Override
@@ -84,7 +82,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
 
         final BitArray bitArray = value.getBitArray();
         final BitArrayVersion version = bitArray.getVersion();
-        final boolean isRuntime = true;
+        final boolean isRuntime = !value.hasTagPalette();
         buffer.writeByte((version.getBits() << 1) | (isRuntime ? 1 : 0));
 
         if (!(bitArray instanceof SingletonBitArray)) {
@@ -102,6 +100,10 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
         if (isRuntime) {
             for (int i = 0; i < value.size(); i++) {
                 BedrockTypes.VAR_INT.write(buffer, value.idByIndex(i));
+            }
+        } else {
+            for (int i = 0; i < value.size(); i++) {
+                BedrockTypes.TAG.write(buffer, value.getTagPalette().get(i));
             }
         }
     }

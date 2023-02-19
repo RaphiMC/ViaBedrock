@@ -68,11 +68,7 @@ public class BedrockTypes {
     public static final Type<BedrockChunkSection> CHUNK_SECTION = new ChunkSectionType();
     public static final Type<Position> SUB_CHUNK_OFFSET = new SubChunkOffsetType();
 
-    public static final Type<BedrockDataPalette> BLOCK_PALETTE = new DataPaletteType(tag -> {
-        throw new IllegalStateException("TODO: Implement non runtime blocks");
-    });
-    public static final Type<BedrockDataPalette> BIOME_PALETTE = new DataPaletteType(tag -> {
-        throw new IllegalStateException("TODO: Implement non runtime biomes");
-    });
+    public static final Type<BedrockDataPalette> BLOCK_PALETTE = new DataPaletteType();
+    public static final Type<BedrockDataPalette> BIOME_PALETTE = new DataPaletteType();
 
 }

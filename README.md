@@ -19,9 +19,9 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 ViaBedrock would not have been possible without the following projects:
 - [ViaVersion](https://github.com/ViaVersion/ViaVersion): Provides the base for translating packets
 - [CloudburstMC Protocol](https://github.com/CloudburstMC/Protocol): Documentation of the Bedrock Edition protocol
-- [Geyser](https://github.com/GeyserMC/Geyser): Providing Bedrock Edition data dumps and mappings
-- [PrismarineJS Data](https://github.com/PrismarineJS/minecraft-data): Providing Bedrock Edition data dumps and mappings
 - [wiki.vg](https://wiki.vg/Bedrock_Protocol): Documentation of the Bedrock Edition protocol
+
+Additionally ViaBedrock uses assets and data dumps from other projects: See the `Data Asset Sources.md` file for more information.
 
 ## Features
 - [x] Pinging

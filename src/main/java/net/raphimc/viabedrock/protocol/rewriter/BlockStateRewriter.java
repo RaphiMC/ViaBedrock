@@ -35,9 +35,9 @@ import java.util.logging.Level;
 
 public class BlockStateRewriter extends StoredObject {
 
-    private final Int2IntMap blockStateIdMappings = new Int2IntOpenHashMap();
-    private final Map<BlockState, Integer> blockStateTagMappings = new HashMap<>();
-    private final IntList waterIds = new IntArrayList();
+    private final Int2IntMap blockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Java
+    private final Map<BlockState, Integer> blockStateTagMappings = new HashMap<>(); // Bedrock -> Bedrock
+    private final IntList waterIds = new IntArrayList(); // Bedrock
 
     public BlockStateRewriter(final UserConnection user) {
         super(user);
@@ -51,6 +51,7 @@ public class BlockStateRewriter extends StoredObject {
         for (Map.Entry<BlockState, Integer> entry : bedrockBlockStates.entrySet()) {
             final BlockState bedrockBlockState = entry.getKey();
             final int bedrockId = entry.getValue();
+            this.blockStateTagMappings.put(bedrockBlockState, bedrockId);
 
             if (bedrockBlockState.getIdentifier().equals("water") || bedrockBlockState.getIdentifier().equals("flowing_water")) {
                 this.waterIds.add(bedrockId);
@@ -101,16 +102,36 @@ public class BlockStateRewriter extends StoredObject {
 
             final int javaId = javaBlockStates.get(javaBlockState);
             this.blockStateIdMappings.put(bedrockId, javaId);
-            this.blockStateTagMappings.put(bedrockBlockState, javaId);
         }
+    }
+
+    public int bedrockId(final Tag bedrockBlockStateTag) {
+        BlockState blockState = BlockState.fromNbt((CompoundTag) bedrockBlockStateTag);
+        int runtimeId = this.bedrockId(blockState);
+        if (runtimeId == -1) {
+            final String originalNamespacedIdentifier = blockState.getNamespacedIdentifier();
+            final String convertedNamespacedIdentifier = BedrockProtocol.MAPPINGS.getLegacyToModernBlockIdentifiers().get(originalNamespacedIdentifier);
+            if (convertedNamespacedIdentifier != null) {
+                blockState = blockState.withNamespacedIdentifier(convertedNamespacedIdentifier);
+            }
+            runtimeId = this.bedrockId(blockState);
+            if (runtimeId == -1) {
+                blockState = BedrockProtocol.MAPPINGS.getDefaultBlockStates().getOrDefault(originalNamespacedIdentifier, null);
+                if (blockState != null) {
+                    runtimeId = this.bedrockId(blockState);
+                }
+            }
+        }
+
+        return runtimeId;
+    }
+
+    public int bedrockId(final BlockState bedrockBlockState) {
+        return this.blockStateTagMappings.getOrDefault(bedrockBlockState, -1);
     }
 
     public int javaId(final int bedrockBlockStateId) {
         return this.blockStateIdMappings.get(bedrockBlockStateId);
-    }
-
-    public int javaId(final Tag bedrockBlockStateTag) {
-        return this.blockStateTagMappings.getOrDefault(BlockState.fromNbt((CompoundTag) bedrockBlockStateTag), -1);
     }
 
     public int waterlog(final int javaBlockStateId) {
@@ -120,10 +141,6 @@ public class BlockStateRewriter extends StoredObject {
 
         final BlockState waterlogged = BedrockProtocol.MAPPINGS.getJavaBlockStates().inverse().get(javaBlockStateId).withProperty("waterlogged", "true");
         return BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(waterlogged, -1);
-    }
-
-    public int air() {
-        return this.blockStateTagMappings.get(BlockState.AIR);
     }
 
     public boolean isWater(final int bedrockBlockStateId) {

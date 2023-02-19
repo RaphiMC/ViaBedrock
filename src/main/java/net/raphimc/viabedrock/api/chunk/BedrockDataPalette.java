@@ -21,13 +21,19 @@ import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 import com.viaversion.viaversion.libs.fastutil.ints.IntArrayList;
 import com.viaversion.viaversion.libs.fastutil.ints.IntList;
+import com.viaversion.viaversion.libs.fastutil.objects.Object2IntFunction;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.raphimc.viabedrock.api.chunk.bitarray.BitArray;
 import net.raphimc.viabedrock.api.chunk.bitarray.BitArrayVersion;
+
+import java.util.List;
 
 public class BedrockDataPalette implements DataPalette, Cloneable {
 
     private final IntList palette;
     private BitArray bitArray;
+
+    private List<Tag> tagPalette;
 
     public BedrockDataPalette() {
         this(BitArrayVersion.V2);
@@ -43,6 +49,12 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
         this.bitArray = bitArray;
     }
 
+    public BedrockDataPalette(final List<Tag> tagPalette, final BitArray bitArray) {
+        this.tagPalette = tagPalette;
+        this.bitArray = bitArray;
+        this.palette = new IntArrayList(tagPalette.size());
+    }
+
     @Override
     public int index(final int x, final int y, final int z) {
         return (x << 8) + (z << 4) + y;
@@ -50,11 +62,13 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     @Override
     public int idAt(final int sectionCoordinate) {
+        this.checkTagPalette();
         return this.palette.getInt(this.bitArray.get(sectionCoordinate));
     }
 
     @Override
     public void setIdAt(final int sectionCoordinate, final int id) {
+        this.checkTagPalette();
         int index = this.palette.indexOf(id);
         if (index == -1) {
             index = this.palette.size();
@@ -66,11 +80,13 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     @Override
     public int idByIndex(final int index) {
+        this.checkTagPalette();
         return this.palette.getInt(index);
     }
 
     @Override
     public void setIdByIndex(final int index, final int id) {
+        this.checkTagPalette();
         this.palette.set(index, id);
     }
 
@@ -103,6 +119,7 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     @Override
     public void replaceId(final int oldId, final int newId) {
+        this.checkTagPalette();
         final int index = this.palette.indexOf(oldId);
         if (index == -1) return;
 
@@ -115,11 +132,19 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     @Override
     public int size() {
+        if (this.hasTagPalette()) {
+            return this.tagPalette.size();
+        }
+
         return this.palette.size();
     }
 
     @Override
     public void clear() {
+        if (this.hasTagPalette()) {
+            this.tagPalette = null;
+        }
+
         this.palette.clear();
     }
 
@@ -130,6 +155,30 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     public BitArray getBitArray() {
         return this.bitArray;
+    }
+
+    public boolean hasTagPalette() {
+        return this.tagPalette != null;
+    }
+
+    public List<Tag> getTagPalette() {
+        return this.tagPalette;
+    }
+
+    public void resolveTagPalette(final Object2IntFunction<Tag> tagToRuntimeId) {
+        if (this.hasTagPalette()) {
+            this.palette.clear();
+            for (final Tag tag : this.tagPalette) {
+                this.palette.add(tagToRuntimeId.getInt(tag));
+            }
+            this.tagPalette = null;
+        }
+    }
+
+    private void checkTagPalette() {
+        if (this.hasTagPalette()) {
+            throw new IllegalStateException("The tag palette has not been resolved yet");
+        }
     }
 
 }

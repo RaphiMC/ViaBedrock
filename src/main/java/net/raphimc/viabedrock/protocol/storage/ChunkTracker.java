@@ -32,6 +32,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.NumberTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.protocols.protocol1_18to1_17_1.types.Chunk1_18Type;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.Protocol1_19_3To1_19_1;
@@ -44,6 +45,7 @@ import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.MCRegionChunkSection;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.BlockState;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -53,6 +55,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 // TODO: Chunk unloading based on world switch / respawn
+// TODO: Block connections
 public class ChunkTracker extends StoredObject {
 
     private static final byte[] FULL_LIGHT = new byte[2048];
@@ -123,6 +126,10 @@ public class ChunkTracker extends StoredObject {
             return;
         }
 
+        for (ChunkSection section : chunk.getSections()) {
+            this.replaceTagPalette(section);
+        }
+
         synchronized (this.chunkLock) {
             this.chunks.put(this.chunkKey(chunk.getX(), chunk.getZ()), chunk);
         }
@@ -148,6 +155,8 @@ public class ChunkTracker extends StoredObject {
             chunk = new BedrockChunk(chunkX, chunkZ, new ChunkSection[this.worldHeight >> 4], new CompoundTag(), new ArrayList<>());
             this.storeChunk(chunk);
         }
+
+        this.replaceTagPalette(section);
 
         final int sectionIndex = subChunkY + Math.abs(this.minY >> 4);
         final ChunkSection[] sections = chunk.getSections();
@@ -287,7 +296,7 @@ public class ChunkTracker extends StoredObject {
 
     private Chunk remapChunk(final Chunk chunk) {
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
-        final int airId = blockStateRewriter.air();
+        final int airId = blockStateRewriter.bedrockId(BlockState.AIR);
 
         final Chunk remappedChunk = new Chunk1_18(chunk.getX(), chunk.getZ(), new ChunkSection[chunk.getSections().length], new CompoundTag(), new ArrayList<>());
         final ChunkSection[] sections = chunk.getSections();
@@ -424,6 +433,34 @@ public class ChunkTracker extends StoredObject {
 
     public long chunkKey(final int chunkX, final int chunkZ) {
         return ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
+    }
+
+    private void replaceTagPalette(final ChunkSection section) {
+        if (section == null) return;
+        final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
+
+        if (section instanceof AnvilChunkSection) {
+            final AnvilChunkSection anvilSection = (AnvilChunkSection) section;
+            final List<BedrockDataPalette> palettes = anvilSection.palettes(PaletteType.BLOCKS);
+            for (BedrockDataPalette palette : palettes) {
+                if (palette.hasTagPalette()) {
+                    palette.addId(blockStateRewriter.bedrockId(BlockState.AIR));
+                    palette.resolveTagPalette(tag -> {
+                        try {
+                            int remappedBlockState = blockStateRewriter.bedrockId((Tag) tag);
+                            if (remappedBlockState == -1) {
+                                Via.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
+                                remappedBlockState = blockStateRewriter.bedrockId(BlockState.INFO_UPDATE);
+                            }
+                            return remappedBlockState;
+                        } catch (Throwable e) {
+                            Via.getPlatform().getLogger().log(Level.WARNING, "Error while rewriting block state tag: " + tag, e);
+                            return blockStateRewriter.bedrockId(BlockState.AIR);
+                        }
+                    });
+                }
+            }
+        }
     }
 
     private static class SubChunkPosition {

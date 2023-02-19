@@ -22,12 +22,15 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
 public class BlockState {
 
     public static final BlockState AIR = new BlockState("air", Collections.emptyMap());
+    public static final BlockState STONE = new BlockState("stone", Collections.emptyMap());
+    public static final BlockState INFO_UPDATE = new BlockState("info_update", Collections.emptyMap());
 
     private final String namespace;
     private final String identifier;
@@ -38,8 +41,12 @@ public class BlockState {
     }
 
     public BlockState(final String namespace, final String identifier, final Map<String, String> properties) {
-        this.namespace = namespace;
-        this.identifier = identifier;
+        if (namespace == null || identifier == null) {
+            throw new IllegalArgumentException("BlockState namespace or identifier was null: " + namespace + ":" + identifier);
+        }
+
+        this.namespace = namespace.toLowerCase(Locale.ROOT);
+        this.identifier = identifier.toLowerCase(Locale.ROOT);
         this.properties = Collections.unmodifiableMap(properties);
     }
 
@@ -92,7 +99,7 @@ public class BlockState {
             identifier = namespaceAndIdentifier[1];
         }
 
-        if (tag.contains("states")) {
+        if (tag.get("states") instanceof CompoundTag) {
             final Map<String, String> properties = Maps.newHashMap();
             final CompoundTag statesTag = tag.get("states");
             for (final String key : statesTag.getValue().keySet()) {
@@ -101,6 +108,23 @@ public class BlockState {
             return new BlockState(namespace, identifier, properties);
         } else {
             return new BlockState(namespace, identifier, Collections.emptyMap());
+        }
+    }
+
+    public BlockState withNamespace(final String namespace) {
+        return new BlockState(namespace, this.identifier, this.properties);
+    }
+
+    public BlockState withIdentifier(final String identifier) {
+        return new BlockState(this.namespace, identifier, this.properties);
+    }
+
+    public BlockState withNamespacedIdentifier(final String namespacedIdentifier) {
+        if (namespacedIdentifier.contains(":")) {
+            final String[] namespaceAndIdentifier = namespacedIdentifier.split(":", 2);
+            return new BlockState(namespaceAndIdentifier[0], namespaceAndIdentifier[1], this.properties);
+        } else {
+            return new BlockState(this.namespace, namespacedIdentifier, this.properties);
         }
     }
 
@@ -130,6 +154,10 @@ public class BlockState {
 
     public String getIdentifier() {
         return this.identifier;
+    }
+
+    public String getNamespacedIdentifier() {
+        return this.namespace + ":" + this.identifier;
     }
 
     public Map<String, String> getProperties() {
