@@ -348,7 +348,7 @@ public class ChunkTracker extends StoredObject {
 
                                 int remappedBlockState = blockStateRewriter.javaId(blockState);
                                 if (remappedBlockState == -1) {
-                                    Via.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + blockState);
+                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + blockState);
                                     remappedBlockState = 1;
                                 }
                                 remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
@@ -375,7 +375,7 @@ public class ChunkTracker extends StoredObject {
                                 if (blockStateRewriter.isWater(blockState)) { // Waterlogging
                                     final int remappedBlockState = blockStateRewriter.waterlog(javaBlockState);
                                     if (remappedBlockState == -1) {
-                                        Via.getPlatform().getLogger().log(Level.WARNING, "Missing waterlogged block state: " + prevBlockState);
+                                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing waterlogged block state: " + prevBlockState);
                                     } else {
                                         remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
                                     }
