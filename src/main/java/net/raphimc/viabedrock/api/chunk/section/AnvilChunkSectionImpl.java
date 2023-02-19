@@ -17,8 +17,8 @@
  */
 package net.raphimc.viabedrock.api.chunk.section;
 
+import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
-import net.raphimc.viabedrock.api.chunk.BedrockDataPalette;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,8 +26,8 @@ import java.util.List;
 
 public class AnvilChunkSectionImpl implements AnvilChunkSection {
 
-    private final List<BedrockDataPalette> blockPalettes = new ArrayList<>();
-    private BedrockDataPalette biomePalette;
+    private final List<DataPalette> blockPalettes = new ArrayList<>();
+    private DataPalette biomePalette;
 
     @Override
     public int palettesCount(final PaletteType type) {
@@ -41,7 +41,7 @@ public class AnvilChunkSectionImpl implements AnvilChunkSection {
     }
 
     @Override
-    public List<BedrockDataPalette> palettes(final PaletteType type) {
+    public List<DataPalette> palettes(final PaletteType type) {
         if (type == PaletteType.BLOCKS) {
             return this.blockPalettes;
         } else if (type == PaletteType.BIOMES) {
@@ -52,9 +52,13 @@ public class AnvilChunkSectionImpl implements AnvilChunkSection {
     }
 
     @Override
-    public void addPalette(final PaletteType type, final BedrockDataPalette palette) {
+    public void addPalette(final PaletteType type, final DataPalette palette) {
         if (type == PaletteType.BLOCKS) {
             if (palette == null) throw new IllegalArgumentException("Block palette cannot be null");
+
+            if (this.blockPalettes.size() >= 2) {
+                throw new IllegalStateException("This section already has two block palettes");
+            }
 
             this.blockPalettes.add(palette);
         } else if (type == PaletteType.BIOMES) {

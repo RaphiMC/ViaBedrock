@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.types.chunk;
 import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.api.chunk.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.AnvilChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.AnvilChunkSectionImpl;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -39,7 +40,7 @@ public class ChunkSectionV1Type extends Type<AnvilChunkSection> {
 
     @Override
     public void write(ByteBuf buffer, AnvilChunkSection value) throws Exception {
-        BedrockTypes.BLOCK_PALETTE.write(buffer, value.palette(PaletteType.BLOCKS)); // block palette
+        BedrockTypes.BLOCK_PALETTE.write(buffer, (BedrockDataPalette) value.palette(PaletteType.BLOCKS)); // block palette
     }
 
 }

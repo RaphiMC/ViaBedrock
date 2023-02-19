@@ -330,11 +330,11 @@ public class ChunkTracker extends StoredObject {
                 remappedSection.setNonAirBlocksCount(nonAirBlocks);
             } else if (section instanceof AnvilChunkSection) {
                 final AnvilChunkSection anvilSection = (AnvilChunkSection) section;
-                final List<BedrockDataPalette> blockPalettes = anvilSection.palettes(PaletteType.BLOCKS);
+                final List<DataPalette> blockPalettes = anvilSection.palettes(PaletteType.BLOCKS);
                 final DataPalette remappedBlockPalette = remappedSection.palette(PaletteType.BLOCKS);
 
                 if (blockPalettes.size() > 0) {
-                    final BedrockDataPalette mainLayer = blockPalettes.get(0);
+                    final DataPalette mainLayer = blockPalettes.get(0);
                     int nonAirBlocks = 0;
                     for (int x = 0; x < 16; x++) {
                         for (int y = 0; y < 16; y++) {
@@ -361,8 +361,8 @@ public class ChunkTracker extends StoredObject {
                     remappedSection.setNonAirBlocksCount(nonAirBlocks);
                 }
                 for (int i = 1; i < blockPalettes.size(); i++) {
-                    final BedrockDataPalette prevLayer = blockPalettes.get(i - 1);
-                    final BedrockDataPalette layer = blockPalettes.get(i);
+                    final DataPalette prevLayer = blockPalettes.get(i - 1);
+                    final DataPalette layer = blockPalettes.get(i);
                     for (int x = 0; x < 16; x++) {
                         for (int y = 0; y < 16; y++) {
                             for (int z = 0; z < 16; z++) {
@@ -441,23 +441,26 @@ public class ChunkTracker extends StoredObject {
 
         if (section instanceof AnvilChunkSection) {
             final AnvilChunkSection anvilSection = (AnvilChunkSection) section;
-            final List<BedrockDataPalette> palettes = anvilSection.palettes(PaletteType.BLOCKS);
-            for (BedrockDataPalette palette : palettes) {
-                if (palette.hasTagPalette()) {
-                    palette.addId(blockStateRewriter.bedrockId(BlockState.AIR));
-                    palette.resolveTagPalette(tag -> {
-                        try {
-                            int remappedBlockState = blockStateRewriter.bedrockId((Tag) tag);
-                            if (remappedBlockState == -1) {
-                                Via.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
-                                remappedBlockState = blockStateRewriter.bedrockId(BlockState.INFO_UPDATE);
+            final List<DataPalette> palettes = anvilSection.palettes(PaletteType.BLOCKS);
+            for (DataPalette palette : palettes) {
+                if (palette instanceof BedrockDataPalette) {
+                    final BedrockDataPalette bedrockPalette = (BedrockDataPalette) palette;
+                    if (bedrockPalette.hasTagPalette()) {
+                        bedrockPalette.addId(blockStateRewriter.bedrockId(BlockState.AIR));
+                        bedrockPalette.resolveTagPalette(tag -> {
+                            try {
+                                int remappedBlockState = blockStateRewriter.bedrockId((Tag) tag);
+                                if (remappedBlockState == -1) {
+                                    Via.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
+                                    remappedBlockState = blockStateRewriter.bedrockId(BlockState.INFO_UPDATE);
+                                }
+                                return remappedBlockState;
+                            } catch (Throwable e) {
+                                Via.getPlatform().getLogger().log(Level.WARNING, "Error while rewriting block state tag: " + tag, e);
+                                return blockStateRewriter.bedrockId(BlockState.AIR);
                             }
-                            return remappedBlockState;
-                        } catch (Throwable e) {
-                            Via.getPlatform().getLogger().log(Level.WARNING, "Error while rewriting block state tag: " + tag, e);
-                            return blockStateRewriter.bedrockId(BlockState.AIR);
-                        }
-                    });
+                        });
+                    }
                 }
             }
         }

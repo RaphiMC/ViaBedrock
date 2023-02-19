@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.types.chunk;
 
+import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
@@ -46,11 +47,11 @@ public class ChunkSectionV9Type extends Type<AnvilChunkSection> {
 
     @Override
     public void write(ByteBuf buffer, AnvilChunkSection value) throws Exception {
-        final List<BedrockDataPalette> palettes = value.palettes(PaletteType.BLOCKS);
+        final List<DataPalette> palettes = value.palettes(PaletteType.BLOCKS);
         buffer.writeByte(palettes.size()); // layer count
         buffer.writeByte(0); // section y // Unused by Mojang client
-        for (BedrockDataPalette palette : palettes) {
-            BedrockTypes.BLOCK_PALETTE.write(buffer, palette); // block palette
+        for (DataPalette palette : palettes) {
+            BedrockTypes.BLOCK_PALETTE.write(buffer, (BedrockDataPalette) palette); // block palette
         }
     }
 
