@@ -25,7 +25,9 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntArrayTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.JsonUtil;
+import net.raphimc.viabedrock.api.VanillaVersion;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -41,6 +43,7 @@ import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.Map;
+import java.util.logging.Level;
 
 public class JoinPackets {
 
@@ -138,9 +141,6 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.UUID); // world template id
                     wrapper.read(Type.BOOLEAN); // client side generation
 
-                    // TODO: Vanilla version and block registry checksum should be handled. What exactly does the version do?
-                    // TODO: Handle block properties
-
                     if (isWorldEditor) {
                         final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_3.DISCONNECT, wrapper.user());
                         disconnect.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
@@ -151,6 +151,14 @@ public class JoinPackets {
                     final CompoundTag registries = BedrockProtocol.MAPPINGS.getRegistries().clone();
                     // TODO: Modify world heights / biomes
                     gameSessionStorage.setJavaRegistries(registries);
+
+                    final VanillaVersion version = VanillaVersion.fromString(vanillaVersion);
+                    if (version == null) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Unknown vanilla version: " + vanillaVersion);
+                    }
+                    gameSessionStorage.setBedrockVanillaVersion(version == null ? VanillaVersion.LATEST : version);
+
+                    // TODO: Handle block properties
 
                     wrapper.user().put(new BlockStateRewriter(wrapper.user()));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));

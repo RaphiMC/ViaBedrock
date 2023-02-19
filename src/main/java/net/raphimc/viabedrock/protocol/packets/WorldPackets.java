@@ -29,6 +29,8 @@ import com.viaversion.viaversion.util.MathUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.VanillaVersion;
+import net.raphimc.viabedrock.api.chunk.BedrockBiomeArray;
 import net.raphimc.viabedrock.api.chunk.BedrockChunk;
 import net.raphimc.viabedrock.api.chunk.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.RawBlockEntity;
@@ -38,6 +40,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResult;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
+import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.ByteArrayType;
@@ -84,6 +87,7 @@ public class WorldPackets {
             public void register() {
                 handler(wrapper -> {
                     final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
                     final int chunkX = wrapper.read(BedrockTypes.VAR_INT); // chunk x
                     final int chunkZ = wrapper.read(BedrockTypes.VAR_INT); // chunk z
@@ -126,18 +130,32 @@ public class WorldPackets {
                             for (int i = 0; i < sectionCount; i++) {
                                 bedrockSections[i] = BedrockTypes.CHUNK_SECTION.read(dataBuf); // chunk section
                             }
-                            for (int i = 0; i < bedrockSections.length; i++) {
-                                if (bedrockSections[i] == null) {
-                                    bedrockSections[i] = new AnvilChunkSectionImpl();
-                                }
-                                BedrockDataPalette biomePalette = BedrockTypes.BIOME_PALETTE.read(dataBuf); // biome palette
-                                if (biomePalette == null) {
-                                    if (i == 0) {
-                                        throw new RuntimeException("First biome palette can not point to previous biome palette");
+                            if (gameSession.getBedrockVanillaVersion().ordinal() < VanillaVersion.v1_18_0.ordinal()) {
+                                final byte[] biomeData = new byte[256];
+                                dataBuf.readBytes(biomeData);
+                                for (int i = 0; i < bedrockSections.length; i++) {
+                                    if (bedrockSections[i] == null) {
+                                        bedrockSections[i] = new AnvilChunkSectionImpl();
                                     }
-                                    biomePalette = ((BedrockDataPalette) bedrockSections[i - 1].palette(PaletteType.BIOMES)).clone();
+                                    bedrockSections[i].addPalette(PaletteType.BIOMES, new BedrockBiomeArray(biomeData));
                                 }
-                                bedrockSections[i].addPalette(PaletteType.BIOMES, biomePalette);
+                            } else {
+                                for (int i = 0; i < bedrockSections.length; i++) {
+                                    if (bedrockSections[i] == null) {
+                                        bedrockSections[i] = new AnvilChunkSectionImpl();
+                                    }
+                                    BedrockDataPalette biomePalette = BedrockTypes.BIOME_PALETTE.read(dataBuf); // biome palette
+                                    if (biomePalette == null) {
+                                        if (i == 0) {
+                                            throw new RuntimeException("First biome palette can not point to previous biome palette");
+                                        }
+                                        biomePalette = ((BedrockDataPalette) bedrockSections[i - 1].palette(PaletteType.BIOMES)).clone();
+                                    }
+                                    if (biomePalette.hasTagPalette()) {
+                                        throw new RuntimeException("Biome palette can not have tag palette");
+                                    }
+                                    bedrockSections[i].addPalette(PaletteType.BIOMES, biomePalette);
+                                }
                             }
 
                             dataBuf.skipBytes(1); // border blocks

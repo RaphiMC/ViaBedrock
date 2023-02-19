@@ -109,14 +109,13 @@ public class BlockStateRewriter extends StoredObject {
         BlockState blockState = BlockState.fromNbt((CompoundTag) bedrockBlockStateTag);
         int runtimeId = this.bedrockId(blockState);
         if (runtimeId == -1) {
-            final String originalNamespacedIdentifier = blockState.getNamespacedIdentifier();
-            final String convertedNamespacedIdentifier = BedrockProtocol.MAPPINGS.getLegacyToModernBlockIdentifiers().get(originalNamespacedIdentifier);
+            final String convertedNamespacedIdentifier = BedrockProtocol.MAPPINGS.getLegacyToModernBlockIdentifiers().get(blockState.getNamespacedIdentifier());
             if (convertedNamespacedIdentifier != null) {
                 blockState = blockState.withNamespacedIdentifier(convertedNamespacedIdentifier);
             }
             runtimeId = this.bedrockId(blockState);
             if (runtimeId == -1) {
-                blockState = BedrockProtocol.MAPPINGS.getDefaultBlockStates().getOrDefault(originalNamespacedIdentifier, null);
+                blockState = BedrockProtocol.MAPPINGS.getDefaultBlockStates().getOrDefault(blockState.getNamespacedIdentifier(), null);
                 if (blockState != null) {
                     runtimeId = this.bedrockId(blockState);
                 }
