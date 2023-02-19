@@ -34,6 +34,7 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.opennbt.NBTIO;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.util.GsonUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -57,7 +58,7 @@ public class BedrockMappingData extends MappingDataBase {
     private CompoundTag registries; // Java
     private CompoundTag tags; // Java
     private BiMap<BlockState, Integer> javaBlockStates; // Java
-    private BiMap<BlockState, Integer> bedrockBlockStates; // Bedrock
+    private List<BlockState> bedrockBlockStates; // Bedrock
     private Map<BlockState, BlockState> bedrockToJavaBlockStates; // Bedrock -> Java
     private Map<String, BlockState> defaultBlockStates; // Bedrock -> Bedrock
     private IntList preWaterloggedStates; // Java
@@ -86,14 +87,14 @@ public class BedrockMappingData extends MappingDataBase {
         }
 
         final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_19_60.nbt").get("blocks");
-        this.bedrockBlockStates = HashBiMap.create(bedrockBlockStatesTag.size());
+        this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
         this.defaultBlockStates = new HashMap<>(bedrockBlockStatesTag.size());
-        for (int i = 0; i < bedrockBlockStatesTag.getValue().size(); i++) {
-            final BlockState blockState = BlockState.fromNbt((CompoundTag) bedrockBlockStatesTag.getValue().get(i));
+        for (Tag tag : bedrockBlockStatesTag.getValue()) {
+            final BlockState blockState = BlockState.fromNbt((CompoundTag) tag);
             if (!this.defaultBlockStates.containsKey(blockState.getNamespacedIdentifier())) {
                 this.defaultBlockStates.put(blockState.getNamespacedIdentifier(), blockState);
             }
-            this.bedrockBlockStates.put(blockState, i);
+            this.bedrockBlockStates.add(blockState);
         }
 
         final JsonObject bedrockToJavaBlockStatesJson = this.readJson("blocksB2J.json");
@@ -137,8 +138,8 @@ public class BedrockMappingData extends MappingDataBase {
         return Maps.unmodifiableBiMap(this.javaBlockStates);
     }
 
-    public BiMap<BlockState, Integer> getBedrockBlockStates() {
-        return Maps.unmodifiableBiMap(this.bedrockBlockStates);
+    public List<BlockState> getBedrockBlockStates() {
+        return Collections.unmodifiableList(this.bedrockBlockStates);
     }
 
     public Map<BlockState, BlockState> getBedrockToJavaBlockStates() {

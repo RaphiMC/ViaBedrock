@@ -32,6 +32,7 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
+import net.raphimc.viabedrock.protocol.model.BlockProperties;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
@@ -130,7 +131,7 @@ public class JoinPackets {
                     wrapper.read(Type.BOOLEAN); // server authoritative block breaking
                     wrapper.read(BedrockTypes.LONG_LE); // current tick
                     wrapper.read(BedrockTypes.VAR_INT); // enchantment seed
-                    wrapper.read(BedrockTypes.BLOCK_PROPERTIES_ARRAY); // block properties
+                    final BlockProperties[] blockProperties = wrapper.read(BedrockTypes.BLOCK_PROPERTIES_ARRAY); // block properties
                     wrapper.read(BedrockTypes.ITEM_ENTRY_ARRAY); // item entries
                     wrapper.read(BedrockTypes.STRING); // multiplayer correlation id
                     wrapper.read(Type.BOOLEAN); // inventories server authoritative
@@ -174,9 +175,7 @@ public class JoinPackets {
 
                     gameSessionStorage.setJavaRegistries(registries);
 
-                    // TODO: Handle block properties
-
-                    wrapper.user().put(new BlockStateRewriter(wrapper.user()));
+                    wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
                     wrapper.user().put(new ChatSettingsStorage(wrapper.user(), chatRestrictionLevel >= 1, commandsEnabled));
                     spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);

@@ -26,10 +26,14 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntList;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.HashedPaletteComparator;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.BlockState;
+import net.raphimc.viabedrock.protocol.model.BlockProperties;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -39,18 +43,22 @@ public class BlockStateRewriter extends StoredObject {
     private final Map<BlockState, Integer> blockStateTagMappings = new HashMap<>(); // Bedrock -> Bedrock
     private final IntList waterIds = new IntArrayList(); // Bedrock
 
-    public BlockStateRewriter(final UserConnection user) {
+    public BlockStateRewriter(final UserConnection user, final BlockProperties[] blockProperties) {
         super(user);
 
         this.blockStateIdMappings.defaultReturnValue(-1);
 
-        final Map<BlockState, Integer> bedrockBlockStates = BedrockProtocol.MAPPINGS.getBedrockBlockStates();
+        final List<BlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
         final Map<BlockState, Integer> javaBlockStates = BedrockProtocol.MAPPINGS.getJavaBlockStates();
         final Map<BlockState, BlockState> bedrockToJavaBlockStates = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates();
 
-        for (Map.Entry<BlockState, Integer> entry : bedrockBlockStates.entrySet()) {
-            final BlockState bedrockBlockState = entry.getKey();
-            final int bedrockId = entry.getValue();
+        for (BlockProperties blockProperty : blockProperties) {
+            bedrockBlockStates.add(BlockState.AIR.withNamespacedIdentifier(blockProperty.name()));
+        }
+        bedrockBlockStates.sort((a, b) -> HashedPaletteComparator.INSTANCE.compare(a.getNamespacedIdentifier(), b.getNamespacedIdentifier()));
+
+        for (int bedrockId = 0; bedrockId < bedrockBlockStates.size(); bedrockId++) {
+            final BlockState bedrockBlockState = bedrockBlockStates.get(bedrockId);
             this.blockStateTagMappings.put(bedrockBlockState, bedrockId);
 
             if (bedrockBlockState.getIdentifier().equals("water") || bedrockBlockState.getIdentifier().equals("flowing_water")) {
