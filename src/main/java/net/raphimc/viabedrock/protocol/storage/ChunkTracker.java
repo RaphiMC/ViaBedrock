@@ -94,7 +94,7 @@ public class ChunkTracker extends StoredObject {
 
         final IntIntPair pair = dimensions.getValue()
                 .stream()
-                .map(t -> (CompoundTag) t)
+                .map(CompoundTag.class::cast)
                 .filter(t -> t.get("name").getValue().toString().equals(dimensionKey))
                 .findFirst()
                 .map(t -> (CompoundTag) t.get("element"))

@@ -21,9 +21,7 @@ import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntArrayTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.JsonUtil;
@@ -44,6 +42,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class JoinPackets {
 
@@ -148,15 +147,33 @@ public class JoinPackets {
                         return;
                     }
 
-                    final CompoundTag registries = BedrockProtocol.MAPPINGS.getRegistries().clone();
-                    // TODO: Modify world heights / biomes
-                    gameSessionStorage.setJavaRegistries(registries);
-
                     final VanillaVersion version = VanillaVersion.fromString(vanillaVersion);
                     if (version == null) {
                         ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Unknown vanilla version: " + vanillaVersion);
                     }
                     gameSessionStorage.setBedrockVanillaVersion(version == null ? VanillaVersion.LATEST : version);
+
+                    final CompoundTag registries = BedrockProtocol.MAPPINGS.getRegistries().clone();
+                    final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
+                    final ListTag dimensions = dimensionRegistry.get("value");
+                    final Map<String, CompoundTag> dimensionMap = dimensions.getValue()
+                            .stream()
+                            .map(CompoundTag.class::cast)
+                            .collect(Collectors.toMap(tag -> tag.get("name").getValue().toString(), tag -> tag.get("element")));
+
+                    dimensionMap.get("minecraft:the_nether").put("min_y", new IntTag(0));
+                    dimensionMap.get("minecraft:the_nether").put("height", new IntTag(128));
+                    dimensionMap.get("minecraft:the_nether").put("logical_height", new IntTag(128));
+                    if (version.ordinal() < VanillaVersion.v1_18_0.ordinal()) {
+                        dimensionMap.get("minecraft:overworld").put("min_y", new IntTag(0));
+                        dimensionMap.get("minecraft:overworld").put("height", new IntTag(256));
+                        dimensionMap.get("minecraft:overworld").put("logical_height", new IntTag(256));
+                        dimensionMap.get("minecraft:overworld_caves").put("min_y", new IntTag(0));
+                        dimensionMap.get("minecraft:overworld_caves").put("height", new IntTag(256));
+                        dimensionMap.get("minecraft:overworld_caves").put("logical_height", new IntTag(256));
+                    }
+
+                    gameSessionStorage.setJavaRegistries(registries);
 
                     // TODO: Handle block properties
 
