@@ -33,6 +33,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
 import net.raphimc.viabedrock.protocol.model.BlockProperties;
+import net.raphimc.viabedrock.protocol.model.Experiment;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
@@ -94,7 +95,7 @@ public class JoinPackets {
                     final boolean commandsEnabled = wrapper.read(Type.BOOLEAN); // commands enabled
                     wrapper.read(Type.BOOLEAN); // texture packs required
                     wrapper.read(BedrockTypes.GAME_RULE_ARRAY); // game rules
-                    wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
+                    final Experiment[] experiments = wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
                     wrapper.read(Type.BOOLEAN); // experiments previously toggled
                     wrapper.read(Type.BOOLEAN); // bonus chest enabled
                     wrapper.read(Type.BOOLEAN); // start with map enabled
@@ -146,6 +147,12 @@ public class JoinPackets {
                         disconnect.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
                         disconnect.send(BedrockProtocol.class);
                         return;
+                    }
+
+                    for (Experiment experiment : experiments) {
+                        if (experiment.enabled()) {
+                            Via.getPlatform().getLogger().log(Level.WARNING, "This server uses an experimental feature: " + experiment.name());
+                        }
                     }
 
                     Semver version;
