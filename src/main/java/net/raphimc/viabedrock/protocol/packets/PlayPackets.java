@@ -57,8 +57,7 @@ public class PlayPackets {
                         wrapper.cancel();
                         final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
                         if (clientPlayer.isInitiallySpawned()) {
-                            BedrockProtocol.kickForIllegalState(wrapper.user(), "Tried to spawn the client player twice!");
-                            return;
+                            return; // Mojang client silently ignores this packet if the player is already spawned
                         }
                         if (gameSession.getBedrockBiomeDefinitions() == null) {
                             BedrockProtocol.kickForIllegalState(wrapper.user(), "Tried to spawn the client player before the biome definitions were loaded!");

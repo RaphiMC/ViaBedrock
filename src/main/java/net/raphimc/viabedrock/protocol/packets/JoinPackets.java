@@ -61,7 +61,7 @@ public class JoinPackets {
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
                     if (gameSessionStorage.getJavaRegistries() != null) {
-                        BedrockProtocol.kickForIllegalState(wrapper.user(), "Received StartGame packet twice");
+                        return; // Mojang client silently ignores multiple start game packets
                     }
 
                     final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
