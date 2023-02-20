@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AnvilChunkSectionImpl implements AnvilChunkSection {
+public class BedrockChunkSectionImpl implements BedrockChunkSection {
 
     private final List<DataPalette> blockPalettes = new ArrayList<>();
     private DataPalette biomePalette;
@@ -67,7 +67,7 @@ public class AnvilChunkSectionImpl implements AnvilChunkSection {
     }
 
     @Override
-    public void removePalettes(final PaletteType type) {
+    public void removePalette(final PaletteType type) {
         if (type == PaletteType.BLOCKS) {
             this.blockPalettes.clear();
         } else if (type == PaletteType.BIOMES) {

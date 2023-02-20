@@ -19,16 +19,14 @@ package net.raphimc.viabedrock.protocol.types.chunk;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.api.chunk.section.AnvilChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
-import net.raphimc.viabedrock.api.chunk.section.MCRegionChunkSection;
 
 public class ChunkSectionType extends Type<BedrockChunkSection> {
 
-    private final Type<MCRegionChunkSection> V0 = new ChunkSectionV0Type();
-    private final Type<AnvilChunkSection> V1 = new ChunkSectionV1Type();
-    private final Type<AnvilChunkSection> V8 = new ChunkSectionV8Type();
-    private final Type<AnvilChunkSection> V9 = new ChunkSectionV9Type();
+    private final Type<BedrockChunkSection> V0 = new ChunkSectionV0Type();
+    private final Type<BedrockChunkSection> V1 = new ChunkSectionV1Type();
+    private final Type<BedrockChunkSection> V8 = new ChunkSectionV8Type();
+    private final Type<BedrockChunkSection> V9 = new ChunkSectionV9Type();
 
     public ChunkSectionType() {
         super(BedrockChunkSection.class);

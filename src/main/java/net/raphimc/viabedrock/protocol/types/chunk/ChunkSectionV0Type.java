@@ -20,29 +20,29 @@ package net.raphimc.viabedrock.protocol.types.chunk;
 import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.api.chunk.BedrockBlockArray;
-import net.raphimc.viabedrock.api.chunk.section.MCRegionChunkSection;
-import net.raphimc.viabedrock.api.chunk.section.MCRegionChunkSectionImpl;
+import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBlockArray;
+import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
+import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
 
-public class ChunkSectionV0Type extends Type<MCRegionChunkSection> {
+public class ChunkSectionV0Type extends Type<BedrockChunkSection> {
 
     public ChunkSectionV0Type() {
-        super(MCRegionChunkSection.class);
+        super(BedrockChunkSection.class);
     }
 
     @Override
-    public MCRegionChunkSection read(ByteBuf buffer) throws Exception {
+    public BedrockChunkSection read(ByteBuf buffer) throws Exception {
         final BedrockBlockArray blockArray = new BedrockBlockArray();
         buffer.readBytes(blockArray.getBlocks()); // block ids
         buffer.readBytes(blockArray.getData().getHandle()); // block data
 
-        final MCRegionChunkSectionImpl chunkSection = new MCRegionChunkSectionImpl();
+        final BedrockChunkSection chunkSection = new BedrockChunkSectionImpl();
         chunkSection.addPalette(PaletteType.BLOCKS, blockArray);
         return chunkSection;
     }
 
     @Override
-    public void write(ByteBuf buffer, MCRegionChunkSection value) throws Exception {
+    public void write(ByteBuf buffer, BedrockChunkSection value) throws Exception {
         final BedrockBlockArray blockArray = (BedrockBlockArray) value.palette(PaletteType.BLOCKS);
         buffer.writeBytes(blockArray.getBlocks()); // block ids
         buffer.writeBytes(blockArray.getData().getHandle()); // block data

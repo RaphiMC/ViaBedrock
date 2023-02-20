@@ -23,10 +23,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntArrayList;
 import com.viaversion.viaversion.libs.fastutil.ints.IntList;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.api.chunk.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.bitarray.BitArray;
 import net.raphimc.viabedrock.api.chunk.bitarray.BitArrayVersion;
 import net.raphimc.viabedrock.api.chunk.bitarray.SingletonBitArray;
+import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.ArrayList;

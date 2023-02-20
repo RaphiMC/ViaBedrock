@@ -21,7 +21,7 @@ import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import io.netty.util.AsciiString;
-import net.raphimc.viabedrock.api.chunk.BedrockDataPalette;
+import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.types.chunk.ChunkSectionType;

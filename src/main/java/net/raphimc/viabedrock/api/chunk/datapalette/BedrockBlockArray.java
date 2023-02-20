@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.chunk;
+package net.raphimc.viabedrock.api.chunk.datapalette;
 
 import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
@@ -48,6 +48,10 @@ public class BedrockBlockArray implements DataPalette, Cloneable {
 
     @Override
     public void setIdAt(final int sectionCoordinate, final int id) {
+        if (id >> 4 > 255) {
+            throw new IllegalArgumentException("Too large block id: " + id);
+        }
+
         this.blocks[sectionCoordinate] = (byte) (id >> 4);
         this.data.set(sectionCoordinate, id & 15);
     }

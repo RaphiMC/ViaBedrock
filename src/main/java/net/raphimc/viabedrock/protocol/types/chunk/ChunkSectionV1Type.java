@@ -20,26 +20,26 @@ package net.raphimc.viabedrock.protocol.types.chunk;
 import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.api.chunk.BedrockDataPalette;
-import net.raphimc.viabedrock.api.chunk.section.AnvilChunkSection;
-import net.raphimc.viabedrock.api.chunk.section.AnvilChunkSectionImpl;
+import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
+import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
+import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class ChunkSectionV1Type extends Type<AnvilChunkSection> {
+public class ChunkSectionV1Type extends Type<BedrockChunkSection> {
 
     public ChunkSectionV1Type() {
-        super(AnvilChunkSection.class);
+        super(BedrockChunkSection.class);
     }
 
     @Override
-    public AnvilChunkSection read(ByteBuf buffer) throws Exception {
-        final AnvilChunkSectionImpl chunkSection = new AnvilChunkSectionImpl();
+    public BedrockChunkSection read(ByteBuf buffer) throws Exception {
+        final BedrockChunkSection chunkSection = new BedrockChunkSectionImpl();
         chunkSection.addPalette(PaletteType.BLOCKS, BedrockTypes.BLOCK_PALETTE.read(buffer)); // block palette
         return chunkSection;
     }
 
     @Override
-    public void write(ByteBuf buffer, AnvilChunkSection value) throws Exception {
+    public void write(ByteBuf buffer, BedrockChunkSection value) throws Exception {
         BedrockTypes.BLOCK_PALETTE.write(buffer, (BedrockDataPalette) value.palette(PaletteType.BLOCKS)); // block palette
     }
 

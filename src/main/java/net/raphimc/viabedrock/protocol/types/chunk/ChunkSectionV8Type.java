@@ -21,22 +21,22 @@ import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.api.chunk.BedrockDataPalette;
-import net.raphimc.viabedrock.api.chunk.section.AnvilChunkSection;
-import net.raphimc.viabedrock.api.chunk.section.AnvilChunkSectionImpl;
+import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
+import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
+import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.List;
 
-public class ChunkSectionV8Type extends Type<AnvilChunkSection> {
+public class ChunkSectionV8Type extends Type<BedrockChunkSection> {
 
     public ChunkSectionV8Type() {
-        super(AnvilChunkSection.class);
+        super(BedrockChunkSection.class);
     }
 
     @Override
-    public AnvilChunkSection read(ByteBuf buffer) throws Exception {
-        final AnvilChunkSectionImpl chunkSection = new AnvilChunkSectionImpl();
+    public BedrockChunkSection read(ByteBuf buffer) throws Exception {
+        final BedrockChunkSection chunkSection = new BedrockChunkSectionImpl();
         final short layers = buffer.readUnsignedByte(); // layer count
         for (int i = 0; i < layers; i++) {
             chunkSection.addPalette(PaletteType.BLOCKS, BedrockTypes.BLOCK_PALETTE.read(buffer)); // block palette
@@ -45,7 +45,7 @@ public class ChunkSectionV8Type extends Type<AnvilChunkSection> {
     }
 
     @Override
-    public void write(ByteBuf buffer, AnvilChunkSection value) throws Exception {
+    public void write(ByteBuf buffer, BedrockChunkSection value) throws Exception {
         final List<DataPalette> palettes = value.palettes(PaletteType.BLOCKS);
         buffer.writeByte(palettes.size()); // layer count
         for (DataPalette palette : palettes) {

@@ -39,10 +39,9 @@ import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.Protocol1_19_3
 import com.viaversion.viaversion.util.MathUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockChunk;
-import net.raphimc.viabedrock.api.chunk.BedrockDataPalette;
-import net.raphimc.viabedrock.api.chunk.section.AnvilChunkSection;
+import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBlockArray;
+import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
-import net.raphimc.viabedrock.api.chunk.section.MCRegionChunkSection;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.BlockState;
@@ -78,7 +77,7 @@ public class ChunkTracker extends StoredObject {
 
     private int centerX = 0;
     private int centerZ = 0;
-    private int radius = 1;
+    private int radius = 5;
 
     public ChunkTracker(final UserConnection user, final int dimensionId) {
         super(user);
@@ -127,7 +126,8 @@ public class ChunkTracker extends StoredObject {
         }
 
         for (ChunkSection section : chunk.getSections()) {
-            this.replaceTagPalette(section);
+            this.replaceLegacyBlocks(section);
+            this.resolveTagPalette(section);
         }
 
         synchronized (this.chunkLock) {
@@ -156,7 +156,8 @@ public class ChunkTracker extends StoredObject {
             this.storeChunk(chunk);
         }
 
-        this.replaceTagPalette(section);
+        this.replaceLegacyBlocks(section);
+        this.resolveTagPalette(section);
 
         final int sectionIndex = subChunkY + Math.abs(this.minY >> 4);
         final ChunkSection[] sections = chunk.getSections();
@@ -309,28 +310,9 @@ public class ChunkTracker extends StoredObject {
             remappedSection.palette(PaletteType.BLOCKS).addId(0);
             remappedSection.palette(PaletteType.BIOMES).addId(0);
 
-            if (section instanceof MCRegionChunkSection) {
-                final MCRegionChunkSection mcRegionSection = (MCRegionChunkSection) section;
-                final DataPalette blockPalette = mcRegionSection.palette(PaletteType.BLOCKS);
-                final DataPalette remappedBlockPalette = remappedSection.palette(PaletteType.BLOCKS);
-
-                int nonAirBlocks = 0;
-                for (int x = 0; x < 16; x++) {
-                    for (int y = 0; y < 16; y++) {
-                        for (int z = 0; z < 16; z++) {
-                            final int blockState = blockPalette.idAt(x, y, z);
-                            final int remappedBlockState = blockState == 0 ? 0 : 1;
-                            remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
-                            if (remappedBlockState != 0) {
-                                nonAirBlocks++;
-                            }
-                        }
-                    }
-                }
-                remappedSection.setNonAirBlocksCount(nonAirBlocks);
-            } else if (section instanceof AnvilChunkSection) {
-                final AnvilChunkSection anvilSection = (AnvilChunkSection) section;
-                final List<DataPalette> blockPalettes = anvilSection.palettes(PaletteType.BLOCKS);
+            if (section instanceof BedrockChunkSection) {
+                final BedrockChunkSection bedrockSection = (BedrockChunkSection) section;
+                final List<DataPalette> blockPalettes = bedrockSection.palettes(PaletteType.BLOCKS);
                 final DataPalette remappedBlockPalette = remappedSection.palette(PaletteType.BLOCKS);
 
                 if (blockPalettes.size() > 0) {
@@ -340,16 +322,12 @@ public class ChunkTracker extends StoredObject {
                         for (int y = 0; y < 16; y++) {
                             for (int z = 0; z < 16; z++) {
                                 final int blockState = mainLayer.idAt(x, y, z);
-
-                                if (blockState == airId) { // Fast path for air
-                                    remappedBlockPalette.setIdAt(x, y, z, 0);
-                                    continue;
-                                }
+                                if (blockState == airId) continue;
 
                                 int remappedBlockState = blockStateRewriter.javaId(blockState);
                                 if (remappedBlockState == -1) {
                                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + blockState);
-                                    remappedBlockState = 1;
+                                    remappedBlockState = 0;
                                 }
                                 remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
                                 if (remappedBlockState != 0) {
@@ -384,10 +362,7 @@ public class ChunkTracker extends StoredObject {
                         }
                     }
                 }
-            }
 
-            if (section instanceof BedrockChunkSection) {
-                final BedrockChunkSection bedrockSection = (BedrockChunkSection) section;
                 final DataPalette biomePalette = bedrockSection.palette(PaletteType.BIOMES);
                 final DataPalette remappedBiomePalette = remappedSection.palette(PaletteType.BIOMES);
                 if (biomePalette != null) {
@@ -435,13 +410,13 @@ public class ChunkTracker extends StoredObject {
         return ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
     }
 
-    private void replaceTagPalette(final ChunkSection section) {
+    private void resolveTagPalette(final ChunkSection section) {
         if (section == null) return;
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
 
-        if (section instanceof AnvilChunkSection) {
-            final AnvilChunkSection anvilSection = (AnvilChunkSection) section;
-            final List<DataPalette> palettes = anvilSection.palettes(PaletteType.BLOCKS);
+        if (section instanceof BedrockChunkSection) {
+            final BedrockChunkSection bedrockSection = (BedrockChunkSection) section;
+            final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
             for (DataPalette palette : palettes) {
                 if (palette instanceof BedrockDataPalette) {
                     final BedrockDataPalette bedrockPalette = (BedrockDataPalette) palette;
@@ -461,6 +436,38 @@ public class ChunkTracker extends StoredObject {
                             }
                         });
                     }
+                }
+            }
+        }
+    }
+
+    private void replaceLegacyBlocks(final ChunkSection section) {
+        if (section == null) return;
+        final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
+
+        if (section instanceof BedrockChunkSection) {
+            final BedrockChunkSection bedrockSection = (BedrockChunkSection) section;
+            final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
+            for (DataPalette palette : palettes) {
+                if (palette instanceof BedrockBlockArray) {
+                    final BedrockBlockArray blockArray = (BedrockBlockArray) palette;
+                    final BedrockDataPalette dataPalette = new BedrockDataPalette();
+                    dataPalette.addId(blockStateRewriter.bedrockId(BlockState.AIR));
+                    for (int x = 0; x < 16; x++) {
+                        for (int y = 0; y < 16; y++) {
+                            for (int z = 0; z < 16; z++) {
+                                final int blockState = blockArray.idAt(x, y, z);
+                                if (blockState == 0) continue;
+                                int remappedBlockState = blockStateRewriter.bedrockId(blockState);
+                                if (remappedBlockState == -1) {
+                                    Via.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + blockState);
+                                    remappedBlockState = blockStateRewriter.bedrockId(BlockState.AIR);
+                                }
+                                dataPalette.setIdAt(x, y, z, remappedBlockState);
+                            }
+                        }
+                    }
+                    palettes.set(palettes.indexOf(palette), dataPalette);
                 }
             }
         }

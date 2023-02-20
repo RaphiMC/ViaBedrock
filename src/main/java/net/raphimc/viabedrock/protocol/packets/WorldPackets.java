@@ -30,12 +30,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.VanillaVersion;
-import net.raphimc.viabedrock.api.chunk.BedrockBiomeArray;
 import net.raphimc.viabedrock.api.chunk.BedrockChunk;
-import net.raphimc.viabedrock.api.chunk.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.RawBlockEntity;
-import net.raphimc.viabedrock.api.chunk.section.AnvilChunkSectionImpl;
+import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBiomeArray;
+import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
+import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResult;
@@ -135,14 +135,14 @@ public class WorldPackets {
                                 dataBuf.readBytes(biomeData);
                                 for (int i = 0; i < bedrockSections.length; i++) {
                                     if (bedrockSections[i] == null) {
-                                        bedrockSections[i] = new AnvilChunkSectionImpl();
+                                        bedrockSections[i] = new BedrockChunkSectionImpl();
                                     }
                                     bedrockSections[i].addPalette(PaletteType.BIOMES, new BedrockBiomeArray(biomeData));
                                 }
                             } else {
                                 for (int i = 0; i < bedrockSections.length; i++) {
                                     if (bedrockSections[i] == null) {
-                                        bedrockSections[i] = new AnvilChunkSectionImpl();
+                                        bedrockSections[i] = new BedrockChunkSectionImpl();
                                     }
                                     BedrockDataPalette biomePalette = BedrockTypes.BIOME_PALETTE.read(dataBuf); // biome palette
                                     if (biomePalette == null) {

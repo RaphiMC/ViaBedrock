@@ -19,10 +19,7 @@ package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
-import com.viaversion.viaversion.libs.fastutil.ints.IntArrayList;
-import com.viaversion.viaversion.libs.fastutil.ints.IntList;
+import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -40,6 +37,7 @@ import java.util.logging.Level;
 public class BlockStateRewriter extends StoredObject {
 
     private final Int2IntMap blockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Java
+    private final Int2IntMap legacyBlockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Bedrock
     private final Map<BlockState, Integer> blockStateTagMappings = new HashMap<>(); // Bedrock -> Bedrock
     private final IntList waterIds = new IntArrayList(); // Bedrock
 
@@ -47,6 +45,7 @@ public class BlockStateRewriter extends StoredObject {
         super(user);
 
         this.blockStateIdMappings.defaultReturnValue(-1);
+        this.legacyBlockStateIdMappings.defaultReturnValue(-1);
 
         final List<BlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
         final Map<BlockState, Integer> javaBlockStates = BedrockProtocol.MAPPINGS.getJavaBlockStates();
@@ -111,6 +110,17 @@ public class BlockStateRewriter extends StoredObject {
             final int javaId = javaBlockStates.get(javaBlockState);
             this.blockStateIdMappings.put(bedrockId, javaId);
         }
+
+        for (Int2ObjectMap.Entry<BlockState> entry : BedrockProtocol.MAPPINGS.getLegacyBlockStates().int2ObjectEntrySet()) {
+            final int legacyId = entry.getIntKey();
+            final int bedrockId = this.blockStateTagMappings.get(entry.getValue());
+            if (bedrockId == -1) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Legacy block state " + entry.getValue() + " is not mapped to a modern block state");
+                continue;
+            }
+
+            this.legacyBlockStateIdMappings.put(legacyId, bedrockId);
+        }
     }
 
     public int bedrockId(final Tag bedrockBlockStateTag) {
@@ -135,6 +145,10 @@ public class BlockStateRewriter extends StoredObject {
 
     public int bedrockId(final BlockState bedrockBlockState) {
         return this.blockStateTagMappings.getOrDefault(bedrockBlockState, -1);
+    }
+
+    public int bedrockId(final int legacyBlockStateId) {
+        return this.legacyBlockStateIdMappings.get((legacyBlockStateId >> 4) << 6 | legacyBlockStateId & 15);
     }
 
     public int javaId(final int bedrockBlockStateId) {

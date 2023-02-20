@@ -19,6 +19,10 @@ package net.raphimc.viabedrock.api.chunk.section;
 
 import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 import com.viaversion.viaversion.api.minecraft.chunks.ChunkSectionLight;
+import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
+import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
+
+import java.util.List;
 
 public interface BedrockChunkSection extends ChunkSection, Cloneable {
 
@@ -45,5 +49,21 @@ public interface BedrockChunkSection extends ChunkSection, Cloneable {
     default void setLight(final ChunkSectionLight light) {
         throw new UnsupportedOperationException();
     }
+
+    int palettesCount(final PaletteType type);
+
+    @Override
+    default DataPalette palette(final PaletteType type) {
+        final int count = this.palettesCount(type);
+        if (count == 0) {
+            return null;
+        }
+        if (count > 1) {
+            throw new IllegalStateException("More than one palette for type " + type + " in section");
+        }
+        return this.palettes(type).get(0);
+    }
+
+    List<DataPalette> palettes(final PaletteType type);
 
 }
