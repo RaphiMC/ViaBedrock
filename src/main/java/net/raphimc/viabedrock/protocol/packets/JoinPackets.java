@@ -17,15 +17,15 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.vdurmont.semver4j.Semver;
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.JsonUtil;
-import net.raphimc.viabedrock.api.VanillaVersion;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -148,11 +148,18 @@ public class JoinPackets {
                         return;
                     }
 
-                    final VanillaVersion version = VanillaVersion.fromString(vanillaVersion);
-                    if (version == null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Unknown vanilla version: " + vanillaVersion);
+                    Semver version;
+                    try {
+                        if (vanillaVersion.equals("*")) {
+                            version = new Semver("99.99.99");
+                        } else {
+                            version = new Semver(vanillaVersion, Semver.SemverType.LOOSE);
+                        }
+                    } catch (Throwable e) {
+                        Via.getPlatform().getLogger().log(Level.SEVERE, "Invalid vanilla version: " + vanillaVersion);
+                        version = new Semver("99.99.99");
                     }
-                    gameSessionStorage.setBedrockVanillaVersion(version == null ? VanillaVersion.LATEST : version);
+                    gameSessionStorage.setBedrockVanillaVersion(version);
 
                     final CompoundTag registries = BedrockProtocol.MAPPINGS.getRegistries().clone();
                     final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
@@ -164,7 +171,7 @@ public class JoinPackets {
 
                     dimensionMap.get("minecraft:the_nether").put("min_y", new IntTag(0));
                     dimensionMap.get("minecraft:the_nether").put("height", new IntTag(128));
-                    if (version.ordinal() < VanillaVersion.v1_18_0.ordinal()) {
+                    if (version.isLowerThan("1.18")) {
                         dimensionMap.get("minecraft:overworld").put("min_y", new IntTag(0));
                         dimensionMap.get("minecraft:overworld").put("height", new IntTag(256));
                         dimensionMap.get("minecraft:overworld").put("logical_height", new IntTag(256));

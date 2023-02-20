@@ -29,7 +29,6 @@ import com.viaversion.viaversion.util.MathUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.VanillaVersion;
 import net.raphimc.viabedrock.api.chunk.BedrockChunk;
 import net.raphimc.viabedrock.api.chunk.RawBlockEntity;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBiomeArray;
@@ -130,7 +129,7 @@ public class WorldPackets {
                             for (int i = 0; i < sectionCount; i++) {
                                 bedrockSections[i] = BedrockTypes.CHUNK_SECTION.read(dataBuf); // chunk section
                             }
-                            if (gameSession.getBedrockVanillaVersion().ordinal() < VanillaVersion.v1_18_0.ordinal()) {
+                            if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18")) {
                                 final byte[] biomeData = new byte[256];
                                 dataBuf.readBytes(biomeData);
                                 for (int i = 0; i < bedrockSections.length; i++) {

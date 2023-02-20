@@ -17,16 +17,16 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
+import com.vdurmont.semver4j.Semver;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import net.raphimc.viabedrock.api.VanillaVersion;
 
 public class GameSessionStorage extends StoredObject {
 
     private CompoundTag javaRegistries;
     private CompoundTag bedrockBiomeDefinitions;
-    private VanillaVersion bedrockVanillaVersion;
+    private Semver bedrockVanillaVersion;
 
     public GameSessionStorage(final UserConnection user) {
         super(user);
@@ -48,11 +48,11 @@ public class GameSessionStorage extends StoredObject {
         this.bedrockBiomeDefinitions = bedrockBiomeDefinitions;
     }
 
-    public VanillaVersion getBedrockVanillaVersion() {
+    public Semver getBedrockVanillaVersion() {
         return this.bedrockVanillaVersion;
     }
 
-    public void setBedrockVanillaVersion(final VanillaVersion bedrockVanillaVersion) {
+    public void setBedrockVanillaVersion(final Semver bedrockVanillaVersion) {
         this.bedrockVanillaVersion = bedrockVanillaVersion;
     }
 
