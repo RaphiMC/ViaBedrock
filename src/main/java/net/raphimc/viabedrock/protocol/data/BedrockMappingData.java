@@ -21,6 +21,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
 import com.viaversion.viaversion.api.data.MappingDataLoader;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
@@ -72,7 +73,9 @@ public class BedrockMappingData extends MappingDataBase {
 
     @Override
     public void load() {
-        this.getLogger().info("Loading " + this.oldVersion + " -> " + this.newVersion + " mappings...");
+        if (Via.getManager().isDebug()) {
+            this.getLogger().info("Loading " + this.oldVersion + " -> " + this.newVersion + " mappings...");
+        }
 
         this.translations = this.readTranslationMap("bedrock/en_US.lang");
         this.registries = this.readNBT("java/registries.nbt");
