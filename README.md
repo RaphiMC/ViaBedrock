@@ -31,7 +31,7 @@ Additionally ViaBedrock uses assets and data dumps from other projects: See the 
 - [x] Chunks
 - [ ] Chunk caching
 - [ ] Block updates
-- [ ] Biomes
+- [x] Biomes
 - [ ] Players
 - [ ] Entities
 - [ ] Entity interactions

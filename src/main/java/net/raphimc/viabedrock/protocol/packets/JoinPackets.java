@@ -29,6 +29,7 @@ import net.raphimc.viabedrock.api.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.BiomeRegistry;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
@@ -170,6 +171,7 @@ public class JoinPackets {
 
                     final CompoundTag registries = BedrockProtocol.MAPPINGS.getRegistries().clone();
                     final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
+                    final CompoundTag biomeRegistry = registries.get("minecraft:worldgen/biome");
                     final ListTag dimensions = dimensionRegistry.get("value");
                     final Map<String, CompoundTag> dimensionMap = dimensions.getValue()
                             .stream()
@@ -186,6 +188,8 @@ public class JoinPackets {
                         dimensionMap.get("minecraft:overworld_caves").put("height", new IntTag(256));
                         dimensionMap.get("minecraft:overworld_caves").put("logical_height", new IntTag(256));
                     }
+
+                    biomeRegistry.put("value", BiomeRegistry.buildJavaBiomeRegistry(BedrockProtocol.MAPPINGS.getBiomeDefinitions()));
 
                     gameSessionStorage.setJavaRegistries(registries);
 

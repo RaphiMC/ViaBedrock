@@ -2,6 +2,9 @@
 
 This file lists all the sources/code to obtain the data assets used in ViaBedrock.
 
+### data/bedrock/biome_definitions.nbt
+This file has been dumped from a BDS server.
+
 ### data/bedrock/biomes.json
 [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data/blob/master/data/bedrock/1.19.1/biomes.json)
 
@@ -26,6 +29,9 @@ This file has been dumped from a vanilla server using a fabric mod.
 
 ### data/blocksB2J.json
 [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data/blob/master/data/bedrock/1.19.1/blocksB2J.json)
+
+### data/custom/biome_extra_data.json
+This file has been created manually.
 
 ### data/custom/pre_waterlogged_states.json
 This file has been created manually.

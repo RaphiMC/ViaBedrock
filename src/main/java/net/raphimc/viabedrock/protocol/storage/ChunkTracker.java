@@ -379,7 +379,11 @@ public class ChunkTracker extends StoredObject {
                                     }
                                 }
                                 final int biomeId = subBiomes.int2IntEntrySet().stream().max(Comparator.comparingInt(Int2IntMap.Entry::getIntValue)).get().getIntKey();
-                                final int remappedBiomeId = 0;
+                                int remappedBiomeId = biomeId + 1;
+                                if (!BedrockProtocol.MAPPINGS.getBiomes().inverse().containsKey(biomeId)) {
+                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
+                                    remappedBiomeId = 0;
+                                }
                                 remappedBiomePalette.setIdAt(x, y, z, remappedBiomeId);
                             }
                         }

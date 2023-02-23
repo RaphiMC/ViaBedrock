@@ -32,6 +32,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntList;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
+import com.viaversion.viaversion.libs.gson.JsonPrimitive;
 import com.viaversion.viaversion.libs.opennbt.NBTIO;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
@@ -66,6 +67,9 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> legacyBlocks; // Bedrock
     private Int2ObjectMap<BlockState> legacyBlockStates; // Bedrock
     private Map<String, String> legacyToModernBlockIdentifiers; // Bedrock
+    private BiMap<String, Integer> biomes; // Bedrock
+    private Map<String, CompoundTag> biomeDefinitions; // Bedrock
+    private Map<String, Map<String, Object>> biomeExtraData; // Bedrock -> Java
 
     public BedrockMappingData() {
         super(ProtocolVersion.v1_19_3.getName(), BedrockProtocolVersion.bedrockLatest.getName());
@@ -123,6 +127,42 @@ public class BedrockMappingData extends MappingDataBase {
         }
 
         this.buildLegacyBlockStateMappings();
+
+        final JsonArray biomesJson = this.readJson("bedrock/biomes.json", JsonArray.class);
+        this.biomes = HashBiMap.create(biomesJson.size());
+        for (JsonElement entry : biomesJson) {
+            final JsonObject biomeEntry = entry.getAsJsonObject();
+            final String identifier = biomeEntry.get("name").getAsString();
+            final int id = biomeEntry.get("id").getAsInt();
+            this.biomes.put(identifier, id);
+        }
+
+        final CompoundTag biomeDefinitionsTag = this.readNBT("bedrock/biome_definitions.nbt");
+        this.biomeDefinitions = new HashMap<>(biomeDefinitionsTag.size());
+        for (Map.Entry<String, Tag> entry : biomeDefinitionsTag.getValue().entrySet()) {
+            this.biomeDefinitions.put(entry.getKey(), (CompoundTag) entry.getValue());
+        }
+
+        final JsonObject biomeExtraDataJson = this.readJson("custom/biome_extra_data.json");
+        this.biomeExtraData = new HashMap<>(biomeExtraDataJson.size());
+        for (Map.Entry<String, JsonElement> entry : biomeExtraDataJson.entrySet()) {
+            final String dataName = entry.getKey();
+            final JsonObject extraDataJson = entry.getValue().getAsJsonObject();
+            final Map<String, Object> extraData = new HashMap<>(extraDataJson.size());
+            for (Map.Entry<String, JsonElement> extraDataEntry : extraDataJson.entrySet()) {
+                final JsonPrimitive primitive = extraDataEntry.getValue().getAsJsonPrimitive();
+                if (primitive.isString()) {
+                    extraData.put(extraDataEntry.getKey(), primitive.getAsString());
+                } else if (primitive.isNumber()) {
+                    extraData.put(extraDataEntry.getKey(), primitive.getAsNumber().intValue());
+                } else if (primitive.isBoolean()) {
+                    extraData.put(extraDataEntry.getKey(), primitive.getAsBoolean());
+                } else {
+                    throw new IllegalArgumentException("Unknown extra data type: " + extraDataEntry.getValue().getClass().getName());
+                }
+            }
+            this.biomeExtraData.put(dataName, extraData);
+        }
     }
 
     public Map<String, String> getTranslations() {
@@ -167,6 +207,18 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<String, String> getLegacyToModernBlockIdentifiers() {
         return this.legacyToModernBlockIdentifiers;
+    }
+
+    public BiMap<String, Integer> getBiomes() {
+        return Maps.unmodifiableBiMap(this.biomes);
+    }
+
+    public Map<String, CompoundTag> getBiomeDefinitions() {
+        return Collections.unmodifiableMap(this.biomeDefinitions);
+    }
+
+    public Map<String, Map<String, Object>> getBiomeExtraData() {
+        return Collections.unmodifiableMap(this.biomeExtraData);
     }
 
     @Override
