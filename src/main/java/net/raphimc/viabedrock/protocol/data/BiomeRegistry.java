@@ -137,6 +137,8 @@ public class BiomeRegistry {
                 effects.put("sky_color", new IntTag(getSkyColor(bedrockBiome.<FloatTag>get("temperature").asFloat())));
             }
 
+            // TODO: Biome sounds
+
             javaBiomes.add(javaBiome);
         }
 
