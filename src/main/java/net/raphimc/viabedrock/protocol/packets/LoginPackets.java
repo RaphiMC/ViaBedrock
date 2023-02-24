@@ -32,11 +32,11 @@ import io.jsonwebtoken.gson.io.GsonDeserializer;
 import io.jsonwebtoken.io.Decoders;
 import io.netty.util.AsciiString;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.JsonUtil;
-import net.raphimc.viabedrock.api.WideSteveSkinProvider;
+import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.WideSteveSkinProvider;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
@@ -214,27 +214,6 @@ public class LoginPackets {
                 });
             }
         });
-
-        // Bedrock protocol is stateless, so we need to register all packets and redirect them to the correct state
-        for (ClientboundBedrockPackets packet : ClientboundBedrockPackets.values()) {
-            if (!protocol.hasRegisteredClientbound(State.LOGIN, packet.getId())) {
-                protocol.registerClientbound(State.LOGIN, packet.getId(), packet.getId(), new PacketHandlers() {
-                    @Override
-                    public void register() {
-                        handler(wrapper -> {
-                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unexpected packet " + packet.name() + " in state LOGIN. Redirecting to PLAY.");
-
-                            final PacketWrapper playStatus = PacketWrapper.create(ClientboundBedrockPackets.PLAY_STATUS, wrapper.user());
-                            playStatus.write(Type.INT, PlayStatus.LOGIN_SUCCESS); // status
-                            playStatus.send(BedrockProtocol.class, false);
-
-                            wrapper.send(BedrockProtocol.class, false);
-                            wrapper.cancel();
-                        });
-                    }
-                });
-            }
-        }
     }
 
     public static void writePlayStatusKickMessage(final PacketWrapper wrapper, final int status) {

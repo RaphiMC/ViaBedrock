@@ -19,7 +19,7 @@
 package net.raphimc.viabedrock.api.chunk.bitarray;
 
 import com.google.common.base.Preconditions;
-import net.raphimc.viabedrock.api.MathUtil;
+import net.raphimc.viabedrock.api.util.MathUtil;
 
 import java.util.Arrays;
 

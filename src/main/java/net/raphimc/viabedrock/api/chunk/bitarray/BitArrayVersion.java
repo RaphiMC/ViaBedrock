@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.api.chunk.bitarray;
 
-import net.raphimc.viabedrock.api.MathUtil;
+import net.raphimc.viabedrock.api.util.MathUtil;
 
 public enum BitArrayVersion {
 

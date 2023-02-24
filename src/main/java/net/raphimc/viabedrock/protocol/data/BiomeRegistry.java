@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.data;
 
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.MathUtil;
+import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.awt.*;

@@ -30,7 +30,7 @@ import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerialize
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.JsonUtil;
+import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;

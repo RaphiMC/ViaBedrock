@@ -23,7 +23,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.HashedPaletteComparator;
+import net.raphimc.viabedrock.api.util.HashedPaletteComparator;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.BlockState;
 import net.raphimc.viabedrock.protocol.model.BlockProperties;

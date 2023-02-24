@@ -15,9 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api;
+package net.raphimc.viabedrock.protocol.data;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 
 import java.nio.charset.StandardCharsets;

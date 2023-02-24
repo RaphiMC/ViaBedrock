@@ -15,21 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api;
+package net.raphimc.viabedrock.api.util;
 
-import com.viaversion.viaversion.libs.gson.JsonElement;
-import com.viaversion.viaversion.libs.gson.JsonObject;
+public class MathUtil {
 
-public class JsonUtil {
-
-    public static String textToJson(final String text) {
-        return textToComponent(text).toString();
+    public static int ceil(final float f) {
+        final int i = (int) f;
+        return f > i ? i + 1 : i;
     }
 
-    public static JsonElement textToComponent(final String text) {
-        final JsonObject root = new JsonObject();
-        root.addProperty("text", text);
-        return root;
+    public static float clamp(final float value, final float min, final float max) {
+        if (value < min) {
+            return min;
+        } else {
+            return value > max ? max : value;
+        }
     }
 
 }

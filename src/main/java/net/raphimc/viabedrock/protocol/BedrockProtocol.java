@@ -24,14 +24,16 @@ import com.viaversion.viaversion.api.protocol.AbstractProtocol;
 import com.viaversion.viaversion.api.protocol.packet.Direction;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
+import com.viaversion.viaversion.api.protocol.packet.mapping.PacketMappings;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.JsonUtil;
+import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
+import net.raphimc.viabedrock.protocol.packetmapping.ClientboundPacketMappings;
 import net.raphimc.viabedrock.protocol.packets.*;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
@@ -83,7 +85,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
             }
         });
 
-        // Fallback for unhandled packets
+        // Fallback for unhandled packets (Temporary)
 
         for (ClientboundBedrockPackets packet : this.unmappedClientboundPacketType.getEnumConstants()) {
             if (!this.hasRegisteredClientbound(packet)) {
@@ -115,6 +117,11 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     @Override
     public BedrockMappingData getMappingData() {
         return MAPPINGS;
+    }
+
+    @Override
+    protected PacketMappings createClientboundPacketMappings() {
+        return new ClientboundPacketMappings();
     }
 
     @Override
