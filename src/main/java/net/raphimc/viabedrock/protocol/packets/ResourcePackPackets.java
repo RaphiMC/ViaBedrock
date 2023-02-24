@@ -52,7 +52,7 @@ public class ResourcePackPackets {
 
             final Set<String> missingPacks = new HashSet<>();
             for (ResourcePack behaviorPack : behaviorPacks) {
-                if (!resourcePacksStorage.hasResourcePack(behaviorPack.packId())) {
+                if (!resourcePacksStorage.hasBehaviorPack(behaviorPack.packId())) {
                     missingPacks.add(behaviorPack.packId() + "_" + behaviorPack.version());
                     resourcePacksStorage.addBehaviorPack(behaviorPack);
                 }
@@ -126,7 +126,7 @@ public class ResourcePackPackets {
             if (resourcePacksStorage.hasResourcePack(idAndVersion.key())) {
                 final ResourcePack resourcePack = resourcePacksStorage.getResourcePack(idAndVersion.key());
                 resourcePack.setVersion(idAndVersion.value());
-                resourcePack.processCompressedData(chunkIndex, data);
+                resourcePack.processDataChunk(chunkIndex, data);
             } else {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received resource pack chunk data for unknown pack: " + idAndVersion.key());
             }
