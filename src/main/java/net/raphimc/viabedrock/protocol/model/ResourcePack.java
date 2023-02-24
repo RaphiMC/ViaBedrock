@@ -32,6 +32,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,10 +42,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -98,6 +97,30 @@ public class ResourcePack {
         if (this.hasReceivedAllChunks()) {
             this.decompressAndDecrypt();
         }
+    }
+
+    public byte[] bytesContent(final String path) {
+        if (!this.isDecompressed()) {
+            throw new IllegalStateException("Pack is not decompressed");
+        }
+
+        return this.contents.get(path);
+    }
+
+    public String stringContent(final String path) {
+        return new String(this.bytesContent(path), StandardCharsets.UTF_8);
+    }
+
+    public List<String> linesContent(final String path) {
+        return Arrays.asList(this.stringContent(path).split("\\n"));
+    }
+
+    public JsonObject jsonContent(final String path) {
+        return GsonUtil.getGson().fromJson(this.stringContent(path).trim(), JsonObject.class);
+    }
+
+    public BufferedImage imageContent(final String path) throws IOException {
+        return ImageIO.read(new ByteArrayInputStream(this.bytesContent(path)));
     }
 
     public boolean isDecompressed() {
@@ -198,6 +221,7 @@ public class ResourcePack {
             this.contents.put(zipEntry.getName(), baos.toByteArray());
             baos.reset();
         }
+        this.compressedData = null;
 
         if (!this.contentKey.isEmpty()) {
             final Cipher aesCfb8 = Cipher.getInstance("AES/CFB8/NoPadding");
@@ -222,7 +246,7 @@ public class ResourcePack {
             contents.readBytes(encryptedContents); // encrypted contents.json
             this.contents.put("contents.json", aesCfb8.doFinal(encryptedContents));
 
-            final JsonObject contentsJson = GsonUtil.getGson().fromJson(new String(this.contents.get("contents.json"), StandardCharsets.UTF_8), JsonObject.class);
+            final JsonObject contentsJson = this.jsonContent("contents.json");
             final JsonArray contentArray = contentsJson.getAsJsonArray("content");
             for (JsonElement element : contentArray) {
                 final JsonObject contentItem = element.getAsJsonObject();
@@ -238,8 +262,6 @@ public class ResourcePack {
                 this.contents.put(path, aesCfb8.doFinal(encryptedData));
             }
         }
-
-        this.compressedData = null;
     }
 
     private boolean hasReceivedAllChunks() {
