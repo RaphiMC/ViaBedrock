@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.types;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import com.viaversion.viaversion.util.Pair;
 import io.netty.util.AsciiString;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
@@ -67,6 +68,11 @@ public class BedrockTypes {
     public static final Type<CommandOrigin> COMMAND_ORIGIN = new CommandOriginType();
     public static final Type<BedrockChunkSection> CHUNK_SECTION = new ChunkSectionType();
     public static final Type<Position> SUB_CHUNK_OFFSET = new SubChunkOffsetType();
+    public static final Type<ResourcePack> BEHAVIOUR_PACK = new BehaviourPackType();
+    public static final Type<ResourcePack[]> BEHAVIOUR_PACK_ARRAY = new ArrayType<>(BEHAVIOUR_PACK, UNSIGNED_SHORT_LE);
+    public static final Type<ResourcePack> RESOURCE_PACK = new ResourcePackType();
+    public static final Type<ResourcePack[]> RESOURCE_PACK_ARRAY = new ArrayType<>(RESOURCE_PACK, UNSIGNED_SHORT_LE);
+    public static final Type<Pair<UUID, String>> PACK_ID_AND_VERSION = new PackIdAndVersionType();
 
     public static final Type<BedrockDataPalette> BLOCK_PALETTE = new DataPaletteType();
     public static final Type<BedrockDataPalette> BIOME_PALETTE = new DataPaletteType();

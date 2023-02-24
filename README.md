@@ -20,6 +20,7 @@ ViaBedrock would not have been possible without the following projects:
 - [ViaVersion](https://github.com/ViaVersion/ViaVersion): Provides the base for translating packets
 - [CloudburstMC Protocol](https://github.com/CloudburstMC/Protocol): Documentation of the Bedrock Edition protocol
 - [wiki.vg](https://wiki.vg/Bedrock_Protocol): Documentation of the Bedrock Edition protocol
+- [mcrputil](https://github.com/valaphee/mcrputil): Documentation of Bedrock Edition resource pack encryption
 
 Additionally ViaBedrock uses assets and data dumps from other projects: See the `Data Asset Sources.md` file for more information.
 

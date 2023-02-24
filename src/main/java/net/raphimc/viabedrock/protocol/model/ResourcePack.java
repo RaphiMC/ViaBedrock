@@ -1,0 +1,254 @@
+/*
+ * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
+ * Copyright (C) 2023 RK_01/RaphiMC and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package net.raphimc.viabedrock.protocol.model;
+
+import com.viaversion.viaversion.libs.gson.JsonArray;
+import com.viaversion.viaversion.libs.gson.JsonElement;
+import com.viaversion.viaversion.libs.gson.JsonObject;
+import com.viaversion.viaversion.util.GsonUtil;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.MathUtil;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+public class ResourcePack {
+
+    private static final byte[] CONTENTS_JSON_ENCRYPTED_MAGIC = new byte[]{(byte) 0xFC, (byte) 0xB9, (byte) 0xCF, (byte) 0x9B};
+
+    private final UUID packId;
+    private String version;
+    private final String contentKey;
+    private final String subPackName;
+    private final String contentId;
+    private final boolean scripting;
+    private final boolean raytracingCapable;
+
+    private byte[] hash;
+    private boolean premium;
+    private int type;
+
+    private byte[] compressedData;
+    private int maxChunkSize;
+    private boolean[] receivedChunks;
+    private Map<String, byte[]> contents;
+
+    public ResourcePack(final UUID packId, final String version, final String contentKey, final String subPackName, final String contentId, final boolean scripting, final boolean raytracingCapable, final long compressedSize, final int type) {
+        this.packId = packId;
+        this.version = version;
+        this.contentKey = contentKey;
+        this.subPackName = subPackName;
+        this.contentId = contentId;
+        this.scripting = scripting;
+        this.raytracingCapable = raytracingCapable;
+        this.compressedData = new byte[(int) compressedSize];
+        this.type = type;
+    }
+
+    public void processCompressedData(final int chunkIndex, final byte[] data) throws NoSuchAlgorithmException, IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        if (this.receivedChunks[chunkIndex]) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received duplicate resource pack chunk data: " + this.packId);
+            return;
+        }
+
+        final int offset = chunkIndex * this.maxChunkSize;
+        if (offset + data.length > this.compressedData.length) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received resource pack chunk data with invalid offset: " + this.packId);
+            return;
+        }
+        System.arraycopy(data, 0, this.compressedData, offset, data.length);
+        this.receivedChunks[chunkIndex] = true;
+
+        if (this.hasReceivedAllChunks()) {
+            this.decompressAndDecrypt();
+        }
+    }
+
+    public boolean isDecompressed() {
+        return this.compressedData == null;
+    }
+
+    public UUID packId() {
+        return this.packId;
+    }
+
+    public String version() {
+        return this.version;
+    }
+
+    public void setVersion(final String version) {
+        this.version = version;
+    }
+
+    public String contentKey() {
+        return this.contentKey;
+    }
+
+    public String subPackName() {
+        return this.subPackName;
+    }
+
+    public String contentId() {
+        return this.contentId;
+    }
+
+    public boolean scripting() {
+        return this.scripting;
+    }
+
+    public boolean raytracingCapable() {
+        return this.raytracingCapable;
+    }
+
+    public void setHash(final byte[] hash) {
+        this.hash = hash;
+    }
+
+    public boolean premium() {
+        return this.premium;
+    }
+
+    public void setPremium(final boolean premium) {
+        this.premium = premium;
+    }
+
+    public int type() {
+        return this.type;
+    }
+
+    public void setType(final int type) {
+        this.type = type;
+    }
+
+    public int compressedDataLength() {
+        if (this.compressedData == null) {
+            return 0;
+        }
+
+        return this.compressedData.length;
+    }
+
+    public void setCompressedDataLength(final int length, final int maxChunkSize) {
+        this.compressedData = new byte[length];
+        this.maxChunkSize = maxChunkSize;
+        this.receivedChunks = new boolean[MathUtil.ceil((float) this.compressedData.length / maxChunkSize)];
+    }
+
+    public Map<String, byte[]> contents() {
+        if (!this.isDecompressed()) {
+            throw new IllegalStateException("Pack is not decompressed");
+        }
+
+        return this.contents;
+    }
+
+    private void decompressAndDecrypt() throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        final MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+        final byte[] hash = sha256.digest(this.compressedData);
+        if (!Arrays.equals(hash, this.hash)) {
+            throw new IllegalStateException("Resource pack hash mismatch: " + this.packId);
+        }
+
+        this.contents = new HashMap<>();
+        final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(this.compressedData));
+        ZipEntry zipEntry;
+        int len;
+        final byte[] buf = new byte[4096];
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+            while ((len = zipInputStream.read(buf)) > 0) {
+                baos.write(buf, 0, len);
+            }
+            this.contents.put(zipEntry.getName(), baos.toByteArray());
+            baos.reset();
+        }
+
+        if (!this.contentKey.isEmpty()) {
+            final Cipher aesCfb8 = Cipher.getInstance("AES/CFB8/NoPadding");
+            final byte[] contentKeyBytes = this.contentKey.getBytes(StandardCharsets.ISO_8859_1);
+            aesCfb8.init(Cipher.DECRYPT_MODE, new SecretKeySpec(contentKeyBytes, "AES"), new IvParameterSpec(Arrays.copyOfRange(contentKeyBytes, 0, 16)));
+            final ByteBuf contents = Unpooled.wrappedBuffer(this.contents.get("contents.json"));
+            contents.skipBytes(4); // version
+            final byte[] magic = new byte[4];
+            contents.readBytes(magic); // magic
+            if (!Arrays.equals(magic, CONTENTS_JSON_ENCRYPTED_MAGIC)) {
+                throw new IllegalStateException("contents.json magic mismatch: " + this.packId);
+            }
+            contents.readerIndex(16);
+            final short contentIdLength = contents.readUnsignedByte(); // content id length
+            final byte[] contentIdBytes = new byte[contentIdLength];
+            contents.readBytes(contentIdBytes); // content id
+            if (!Arrays.equals(contentIdBytes, this.contentId.getBytes(StandardCharsets.UTF_8))) {
+                throw new IllegalStateException("contents.json contentId mismatch: " + this.packId);
+            }
+            contents.readerIndex(256);
+            final byte[] encryptedContents = new byte[contents.readableBytes()];
+            contents.readBytes(encryptedContents); // encrypted contents.json
+            this.contents.put("contents.json", aesCfb8.doFinal(encryptedContents));
+
+            final JsonObject contentsJson = GsonUtil.getGson().fromJson(new String(this.contents.get("contents.json"), StandardCharsets.UTF_8), JsonObject.class);
+            final JsonArray contentArray = contentsJson.getAsJsonArray("content");
+            for (JsonElement element : contentArray) {
+                final JsonObject contentItem = element.getAsJsonObject();
+                if (!contentItem.has("key")) continue;
+                final String key = contentItem.get("key").getAsString();
+                final String path = contentItem.get("path").getAsString();
+                if (!this.contents.containsKey(path)) {
+                    throw new IllegalStateException("Missing resource pack file: " + path);
+                }
+                final byte[] encryptedData = this.contents.get(path);
+                final byte[] keyBytes = key.getBytes(StandardCharsets.ISO_8859_1);
+                aesCfb8.init(Cipher.DECRYPT_MODE, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(Arrays.copyOfRange(keyBytes, 0, 16)));
+                this.contents.put(path, aesCfb8.doFinal(encryptedData));
+            }
+        }
+
+        this.compressedData = null;
+    }
+
+    private boolean hasReceivedAllChunks() {
+        for (final boolean receivedChunk : this.receivedChunks) {
+            if (!receivedChunk) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+}
