@@ -70,6 +70,8 @@ public interface BedrockChunkSection extends ChunkSection, Cloneable {
 
     boolean hasPendingBlockUpdates();
 
-    void applyPendingBlockUpdates();
+    void addPendingBlockUpdate(final int x, final int y, final int z, final int layer, final int blockState);
+
+    void applyPendingBlockUpdates(final int airId);
 
 }

@@ -19,9 +19,7 @@ package net.raphimc.viabedrock.api.chunk.section;
 
 import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
+import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +29,7 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
 
     private final List<DataPalette> blockPalettes = new ArrayList<>();
     private DataPalette biomePalette;
-    private Int2ObjectMap<Int2IntMap> pendingBlockUpdates = new Int2ObjectOpenHashMap<>();
+    private List<int[]> pendingBlockUpdates = new ArrayList<>();
 
     public BedrockChunkSectionImpl() {
     }
@@ -74,7 +72,6 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
         if (this.biomePalette == null) {
             this.biomePalette = other.palette(PaletteType.BIOMES);
         }
-        this.applyPendingBlockUpdates();
     }
 
     @Override
@@ -83,20 +80,36 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
     }
 
     @Override
-    public void applyPendingBlockUpdates() {
+    public void addPendingBlockUpdate(int x, int y, int z, int layer, int blockState) {
+        if (!this.hasPendingBlockUpdates()) {
+            throw new IllegalStateException("This section already has been merged with another section");
+        }
+
+        this.pendingBlockUpdates.add(new int[]{layer, x, y, z, blockState});
+    }
+
+    @Override
+    public void applyPendingBlockUpdates(final int airId) {
         if (this.hasPendingBlockUpdates()) {
-            /*while (this.blockPalettes.size() < this.pendingBlockUpdates.size()) {
-                this.addPalette(PaletteType.BLOCKS, new BedrockDataPalette()); // TODO: air id
-            }
-            for (int i = 0; i < this.pendingBlockUpdates.size(); i++) {
-                final DataPalette targetPalette = this.blockPalettes.get(i);
-                final Int2IntMap sourcePalette = this.pendingBlockUpdates.get(i);
-                for (Int2IntMap.Entry entry : sourcePalette.int2IntEntrySet()) {
-                    final int sectionIndex = entry.getIntKey();
-                    final int blockState = entry.getIntValue();
-                    targetPalette.setIdAt(sectionIndex, blockState);
+            for (int[] blockUpdate : this.pendingBlockUpdates) {
+                final int layer = blockUpdate[0];
+                while (this.blockPalettes.size() <= layer) {
+                    final BedrockDataPalette palette = new BedrockDataPalette();
+                    palette.addId(airId);
+                    this.addPalette(PaletteType.BLOCKS, palette);
                 }
-            }*/
+
+                final DataPalette palette = this.blockPalettes.get(layer);
+                final int sectionIndex = palette.index(blockUpdate[1], blockUpdate[2], blockUpdate[3]);
+                final int blockState = blockUpdate[4];
+
+                if (layer > 0) {
+                    final int prevBlockState = this.blockPalettes.get(layer - 1).idAt(sectionIndex);
+                    if (prevBlockState == airId) continue;
+                }
+
+                palette.setIdAt(sectionIndex, blockState);
+            }
             this.pendingBlockUpdates = null;
         }
     }

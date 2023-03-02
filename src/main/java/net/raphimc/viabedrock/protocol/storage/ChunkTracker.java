@@ -160,6 +160,7 @@ public class ChunkTracker extends StoredObject {
 
         final BedrockChunkSection section = chunk.getSections()[subChunkY + Math.abs(this.minY >> 4)];
         section.mergeWith(this.handleBlockPalette(other));
+        section.applyPendingBlockUpdates(this.getUser().get(BlockStateRewriter.class).bedrockId(BlockState.AIR));
         chunk.blockEntities().addAll(blockEntities);
 
         return true;
@@ -442,7 +443,7 @@ public class ChunkTracker extends StoredObject {
                             for (int y = 0; y < 4; y++) {
                                 for (int z = 0; z < 4; z++) {
                                     final Int2IntMap subBiomes = new Int2IntOpenHashMap();
-                                    int maxBiomeID = -1;
+                                    int maxBiomeId = -1;
                                     int maxValue = -1;
                                     for (int subX = 0; subX < 4; subX++) {
                                         for (int subY = 0; subY < 4; subY++) {
@@ -451,13 +452,13 @@ public class ChunkTracker extends StoredObject {
                                                 final int value = subBiomes.getOrDefault(biomeId, 0) + 1;
                                                 subBiomes.put(biomeId, value);
                                                 if (value > maxValue) {
-                                                    maxBiomeID = biomeId;
+                                                    maxBiomeId = biomeId;
                                                     maxValue = value;
                                                 }
                                             }
                                         }
                                     }
-                                    final int biomeId = maxBiomeID;
+                                    final int biomeId = maxBiomeId;
                                     int remappedBiomeId = biomeId + 1;
                                     if (!BedrockProtocol.MAPPINGS.getBiomes().inverse().containsKey(biomeId)) {
                                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);

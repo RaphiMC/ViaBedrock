@@ -39,8 +39,10 @@ import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.BlockState;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResult;
 import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
+import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
@@ -135,6 +137,7 @@ public class WorldPackets {
                                 try {
                                     for (int i = 0; i < sectionCount; i++) {
                                         sections[i].mergeWith(chunkTracker.handleBlockPalette(BedrockTypes.CHUNK_SECTION.read(dataBuf))); // chunk section
+                                        sections[i].applyPendingBlockUpdates(wrapper.user().get(BlockStateRewriter.class).bedrockId(BlockState.AIR));
                                     }
                                     if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
                                         final byte[] biomeData = new byte[256];
