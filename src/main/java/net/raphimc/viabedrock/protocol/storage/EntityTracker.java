@@ -20,18 +20,17 @@ package net.raphimc.viabedrock.protocol.storage;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.model.entity.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
 
 public class EntityTracker extends StoredObject {
 
     private final AtomicInteger ID_COUNTER = new AtomicInteger(0);
+
     private ClientPlayerEntity clientPlayerEntity = null;
     private final Map<Long, Entity> entities = new HashMap<>();
 
@@ -40,38 +39,34 @@ public class EntityTracker extends StoredObject {
     }
 
     public ClientPlayerEntity addClientPlayer(final long uniqueId, final long runtimeId) {
-        this.clientPlayerEntity = new ClientPlayerEntity(uniqueId, runtimeId, ID_COUNTER.getAndIncrement());
-        this.entities.put(uniqueId, this.clientPlayerEntity);
+        this.clientPlayerEntity = new ClientPlayerEntity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement());
+        this.entities.put(runtimeId, this.clientPlayerEntity);
 
         return this.clientPlayerEntity;
     }
 
     // TODO: Behavior if entity is already present
     public Entity addEntity(final long uniqueId, final long runtimeId, final Entity1_19_3Types type) {
-        final Entity entity = new Entity(uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), type);
-        this.entities.put(entity.uniqueId(), entity);
+        final Entity entity = new Entity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), type);
+        this.entities.put(runtimeId, entity);
 
         return entity;
     }
 
-    public void tick() {
+    public void tick() throws Exception {
         for (Entity entity : this.entities.values()) {
-            try {
-                entity.tick(this);
-            } catch (Throwable e) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while ticking entity " + entity.uniqueId(), e);
-            }
+            entity.tick();
         }
     }
 
     // TODO: Clear on dimension change
     public void clear() {
         this.entities.clear();
-        this.entities.put(this.clientPlayerEntity.uniqueId(), this.clientPlayerEntity);
+        this.entities.put(this.clientPlayerEntity.runtimeId(), this.clientPlayerEntity);
     }
 
-    public Entity getEntity(final long uniqueId) {
-        return this.entities.get(uniqueId);
+    public Entity getEntity(final long runtimeId) {
+        return this.entities.get(runtimeId);
     }
 
     public ClientPlayerEntity getClientPlayer() {

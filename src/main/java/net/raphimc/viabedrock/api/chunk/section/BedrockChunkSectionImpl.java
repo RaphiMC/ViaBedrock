@@ -19,6 +19,9 @@ package net.raphimc.viabedrock.api.chunk.section;
 
 import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +31,14 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
 
     private final List<DataPalette> blockPalettes = new ArrayList<>();
     private DataPalette biomePalette;
+    private Int2ObjectMap<Int2IntMap> pendingBlockUpdates = new Int2ObjectOpenHashMap<>();
+
+    public BedrockChunkSectionImpl() {
+    }
+
+    public BedrockChunkSectionImpl(final boolean noPendingBlockUpdates) {
+        if (noPendingBlockUpdates) this.pendingBlockUpdates = null;
+    }
 
     @Override
     public int palettesCount(final PaletteType type) {
@@ -49,6 +60,45 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
         }
 
         return Collections.emptyList();
+    }
+
+    @Override
+    public void mergeWith(final BedrockChunkSection other) {
+        if (!this.hasPendingBlockUpdates()) {
+            throw new IllegalStateException("This section already has been merged with another section");
+        }
+
+        if (this.blockPalettes.isEmpty()) {
+            this.blockPalettes.addAll(other.palettes(PaletteType.BLOCKS));
+        }
+        if (this.biomePalette == null) {
+            this.biomePalette = other.palette(PaletteType.BIOMES);
+        }
+        this.applyPendingBlockUpdates();
+    }
+
+    @Override
+    public boolean hasPendingBlockUpdates() {
+        return this.pendingBlockUpdates != null;
+    }
+
+    @Override
+    public void applyPendingBlockUpdates() {
+        if (this.hasPendingBlockUpdates()) {
+            /*while (this.blockPalettes.size() < this.pendingBlockUpdates.size()) {
+                this.addPalette(PaletteType.BLOCKS, new BedrockDataPalette()); // TODO: air id
+            }
+            for (int i = 0; i < this.pendingBlockUpdates.size(); i++) {
+                final DataPalette targetPalette = this.blockPalettes.get(i);
+                final Int2IntMap sourcePalette = this.pendingBlockUpdates.get(i);
+                for (Int2IntMap.Entry entry : sourcePalette.int2IntEntrySet()) {
+                    final int sectionIndex = entry.getIntKey();
+                    final int blockState = entry.getIntValue();
+                    targetPalette.setIdAt(sectionIndex, blockState);
+                }
+            }*/
+            this.pendingBlockUpdates = null;
+        }
     }
 
     @Override

@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.task;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 
 public class EntityTrackerTickTask implements Runnable {
@@ -27,7 +28,13 @@ public class EntityTrackerTickTask implements Runnable {
     public void run() {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
             final EntityTracker entityTracker = info.get(EntityTracker.class);
-            if (entityTracker != null) entityTracker.tick();
+            if (entityTracker != null) {
+                try {
+                    entityTracker.tick();
+                } catch (Throwable e) {
+                    BedrockProtocol.kickForIllegalState(info, "Error ticking entity tracker. See console for details.", e);
+                }
+            }
         }
     }
 

@@ -20,19 +20,19 @@ package net.raphimc.viabedrock.protocol.task;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
+import net.raphimc.viabedrock.protocol.storage.BlobCache;
 
-public class ChunkTrackerTickTask implements Runnable {
+public class BlobCacheTickTask implements Runnable {
 
     @Override
     public void run() {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
-            final ChunkTracker chunkTracker = info.get(ChunkTracker.class);
-            if (chunkTracker != null) {
+            final BlobCache blobCache = info.get(BlobCache.class);
+            if (blobCache != null) {
                 try {
-                    chunkTracker.tick();
+                    blobCache.tick();
                 } catch (Throwable e) {
-                    BedrockProtocol.kickForIllegalState(info, "Error ticking chunk tracker. See console for details.", e);
+                    BedrockProtocol.kickForIllegalState(info, "Error ticking blob cache. See console for details.", e);
                 }
             }
         }

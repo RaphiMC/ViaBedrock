@@ -15,29 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.storage;
+package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+public class PlayMode {
 
-public class ChatSettingsStorage extends StoredObject {
-
-    private final boolean chatRestricted;
-    private final boolean commandsEnabled;
-
-    public ChatSettingsStorage(final UserConnection user, final boolean chatRestricted, final boolean commandsEnabled) {
-        super(user);
-
-        this.chatRestricted = chatRestricted;
-        this.commandsEnabled = commandsEnabled;
-    }
-
-    public boolean isChatRestricted() {
-        return this.chatRestricted;
-    }
-
-    public boolean areCommandsEnabled() {
-        return this.commandsEnabled;
-    }
+    public static final int NORMAL = 0;
+    public static final int TEASER = 1;
+    public static final int SCREEN = 2;
+    public static final int VIEWER = 3;
+    public static final int REALITY = 4;
+    public static final int PLACEMENT = 5;
+    public static final int LIVING_ROOM = 6;
+    public static final int EXIT_LEVEL = 7;
+    public static final int EXIT_LEVEL_LIVING_ROOM = 8;
 
 }

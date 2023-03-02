@@ -15,18 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.platform;
+package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public interface ViaBedrockConfig {
+public class MovementMode {
 
-    /**
-     * @return Whether the blob cache is enabled.
-     */
-    boolean isBlobCacheEnabled();
-
-    /**
-     * @return The maximum size of the blob cache in bytes.
-     */
-    long getMaxBlobCacheSize();
+    public static final int CLIENT = 0;
+    public static final int SERVER = 1;
+    public static final int SERVER_WITH_REWIND = 2;
 
 }

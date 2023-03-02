@@ -25,12 +25,14 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.BiomeRegistry;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
 import net.raphimc.viabedrock.protocol.model.BlockProperties;
@@ -59,10 +61,16 @@ public class JoinPackets {
                     wrapper.cancel(); // We need to fix the order of the packets
                     final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
                     final GameSessionStorage gameSessionStorage = wrapper.user().get(GameSessionStorage.class);
+                    final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
                     if (gameSessionStorage.getJavaRegistries() != null) {
                         return; // Mojang client silently ignores multiple start game packets
+                    }
+
+                    if (!resourcePacksStorage.isCompleted()) {
+                        BedrockProtocol.kickForIllegalState(wrapper.user(), "Pack negotiation not completed");
+                        return;
                     }
 
                     final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
@@ -127,9 +135,9 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.STRING); // level id
                     wrapper.read(BedrockTypes.STRING); // level name
                     wrapper.read(BedrockTypes.STRING); // premium world template id
-                    wrapper.read(BedrockTypes.VAR_INT); // movement mode
-                    wrapper.read(BedrockTypes.VAR_INT); // rewind history size
                     wrapper.read(Type.BOOLEAN); // is trial
+                    final int movementMode = wrapper.read(BedrockTypes.VAR_INT); // movement mode
+                    wrapper.read(BedrockTypes.VAR_INT); // rewind history size
                     wrapper.read(Type.BOOLEAN); // server authoritative block breaking
                     wrapper.read(BedrockTypes.LONG_LE); // current tick
                     wrapper.read(BedrockTypes.VAR_INT); // enchantment seed
@@ -192,10 +200,18 @@ public class JoinPackets {
                     biomeRegistry.put("value", BiomeRegistry.buildJavaBiomeRegistry(BedrockProtocol.MAPPINGS.getBiomeDefinitions()));
 
                     gameSessionStorage.setJavaRegistries(registries);
+                    gameSessionStorage.setChatRestricted(chatRestrictionLevel >= 1);
+                    gameSessionStorage.setCommandsEnabled(commandsEnabled);
+                    gameSessionStorage.setMovementMode(movementMode);
+
+                    if (movementMode >= MovementMode.SERVER_WITH_REWIND) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "This server uses server authoritative movement with rewind. This is not supported.");
+                    } else if (movementMode >= MovementMode.SERVER) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses server authoritative movement. This is not stable yet.");
+                    }
 
                     wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
-                    wrapper.user().put(new ChatSettingsStorage(wrapper.user(), chatRestrictionLevel >= 1, commandsEnabled));
                     spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
                     final int javaEntityId = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId).javaId();
                     entityTracker.getClientPlayer().setPosition(new Position3f(playerPosition.x(), playerPosition.y() + 1.62F, playerPosition.z()));
@@ -265,7 +281,7 @@ public class JoinPackets {
                         }
                     }
 
-                    entityTracker.getClientPlayer().sendPlayerPositionPacketToClient(wrapper.user());
+                    entityTracker.getClientPlayer().sendPlayerPositionPacketToClient(false);
 
                     final PacketWrapper requestChunkRadius = PacketWrapper.create(ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, wrapper.user());
                     requestChunkRadius.write(BedrockTypes.VAR_INT, DEFAULT_VIEW_DISTANCE); // radius
@@ -276,7 +292,9 @@ public class JoinPackets {
                     tickSync.write(BedrockTypes.LONG_LE, 0L); // response timestamp
                     tickSync.sendToServer(BedrockProtocol.class);
 
-                    entityTracker.getClientPlayer().sendMovementPacketToServer(wrapper.user(), MovePlayerMode.NORMAL);
+                    if (gameSessionStorage.getMovementMode() == MovementMode.CLIENT) {
+                        entityTracker.getClientPlayer().sendMovePlayerPacketToServer(MovePlayerMode.NORMAL);
+                    }
                 });
             }
         });

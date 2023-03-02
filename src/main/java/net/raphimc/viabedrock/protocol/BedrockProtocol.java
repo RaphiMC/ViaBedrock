@@ -35,14 +35,15 @@ import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.packetmapping.ClientboundPacketMappings;
 import net.raphimc.viabedrock.protocol.packets.*;
+import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
+import net.raphimc.viabedrock.protocol.task.BlobCacheTickTask;
 import net.raphimc.viabedrock.protocol.task.ChunkTrackerTickTask;
 import net.raphimc.viabedrock.protocol.task.EntityTrackerTickTask;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+
+import java.util.logging.Level;
 
 public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets, ClientboundPackets1_19_3, ServerboundBedrockPackets, ServerboundPackets1_19_3> {
 
@@ -60,8 +61,10 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         ResourcePackPackets.register(this);
         JoinPackets.register(this);
         ChatPackets.register(this);
-        PlayerPackets.register(this);
+        ClientPlayerPackets.register(this);
+        OtherPlayerPackets.register(this);
         WorldPackets.register(this);
+        EntityPackets.register(this);
 
         this.registerClientbound(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING, ClientboundPackets1_19_3.DISCONNECT, new PacketHandlers() {
             @Override
@@ -103,9 +106,11 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     @Override
     public void register(ViaProviders providers) {
         providers.require(NettyPipelineProvider.class);
+        providers.register(BlobCacheProvider.class, new BlobCacheProvider());
 
+        Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 5L);
         Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
-        Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 10L);
+        Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 1L);
     }
 
     @Override
@@ -114,6 +119,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         user.put(new SpawnPositionStorage(user));
         user.put(new GameSessionStorage(user));
         user.put(new EntityTracker(user));
+        user.put(new BlobCache(user));
     }
 
     @Override
@@ -141,11 +147,18 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         }*/
     }
 
-    public static void kickForIllegalState(final UserConnection user, final String reason) throws Exception {
-        ViaBedrock.getPlatform().getLogger().severe("Illegal state: " + reason);
-        final PacketWrapper disconnect = PacketWrapper.create(user.getProtocolInfo().getState() == State.PLAY ? ClientboundPackets1_19_3.DISCONNECT : ClientboundLoginPackets.LOGIN_DISCONNECT, user);
-        disconnect.write(Type.COMPONENT, JsonUtil.textToComponent("§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page."));
-        disconnect.send(BedrockProtocol.class);
+    public static void kickForIllegalState(final UserConnection user, final String reason) {
+        kickForIllegalState(user, reason, null);
+    }
+
+    public static void kickForIllegalState(final UserConnection user, final String reason, final Throwable e) {
+        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Illegal state: " + reason, e);
+        try {
+            final PacketWrapper disconnect = PacketWrapper.create(user.getProtocolInfo().getState() == State.PLAY ? ClientboundPackets1_19_3.DISCONNECT : ClientboundLoginPackets.LOGIN_DISCONNECT, user);
+            disconnect.write(Type.COMPONENT, JsonUtil.textToComponent("§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page."));
+            disconnect.send(BedrockProtocol.class);
+        } catch (Throwable ignored) {
+        }
 
         if (user.getChannel() != null) {
             user.getChannel().flush();

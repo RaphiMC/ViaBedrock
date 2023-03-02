@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 public class MovePlayerMode {
 
     public static final short NORMAL = 0;
-    public static final short RESPAWN = 1;
+    public static final short RESET = 1;
     public static final short TELEPORT = 2;
     public static final short HEAD_ROTATION = 3;
 

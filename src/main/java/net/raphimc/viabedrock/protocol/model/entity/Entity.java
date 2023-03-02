@@ -17,12 +17,13 @@
  */
 package net.raphimc.viabedrock.protocol.model.entity;
 
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 
 public class Entity {
 
+    protected final UserConnection user;
     protected final long uniqueId;
     protected final long runtimeId;
     protected final int javaId;
@@ -40,14 +41,18 @@ public class Entity {
 
     protected boolean onGround;
 
-    public Entity(final long uniqueId, final long runtimeId, final int javaId, final Entity1_19_3Types type) {
+    protected int age;
+
+    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final Entity1_19_3Types type) {
+        this.user = user;
         this.uniqueId = uniqueId;
         this.runtimeId = runtimeId;
         this.javaId = javaId;
         this.type = type;
     }
 
-    public void tick(final EntityTracker entityTracker) throws Exception {
+    public void tick() throws Exception {
+        this.age++;
     }
 
     public long uniqueId() {
@@ -88,6 +93,10 @@ public class Entity {
 
     public void setOnGround(final boolean onGround) {
         this.onGround = onGround;
+    }
+
+    public int age() {
+        return this.age;
     }
 
 }

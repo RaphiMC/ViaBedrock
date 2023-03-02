@@ -188,7 +188,7 @@ public class LoginPackets {
                         }
 
                         final PacketWrapper clientCacheStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_STATUS, wrapper.user());
-                        clientCacheStatus.write(Type.BOOLEAN, false); // is supported
+                        clientCacheStatus.write(Type.BOOLEAN, ViaBedrock.getConfig().isBlobCacheEnabled()); // is supported
                         clientCacheStatus.sendToServer(BedrockProtocol.class);
                     } else {
                         wrapper.setPacketType(ClientboundLoginPackets.LOGIN_DISCONNECT);

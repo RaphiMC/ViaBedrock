@@ -42,7 +42,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "net.raphimc:ViaProxy:3.0.12"
+    compileOnly "net.raphimc:ViaProxy:3.0.14"
 
     include("org.cloudburstmc.netty:netty-transport-raknet:0.0.1.Final-SNAPSHOT") {
         exclude group: "io.netty", module: "netty-common"

@@ -19,17 +19,27 @@ package net.raphimc.viabedrock.api.chunk;
 
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.chunks.Chunk1_18;
-import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BedrockChunk extends Chunk1_18 {
 
     private boolean requestSubChunks = false;
 
-    public BedrockChunk(final int x, final int z, final ChunkSection[] sections, final CompoundTag heightMap, final List<BlockEntity> blockEntities) {
+    public BedrockChunk(final int x, final int z, final BedrockChunkSection[] sections) {
+        this(x, z, sections, new CompoundTag(), new ArrayList<>());
+    }
+
+    public BedrockChunk(final int x, final int z, final BedrockChunkSection[] sections, final CompoundTag heightMap, final List<BlockEntity> blockEntities) {
         super(x, z, sections, heightMap, blockEntities);
+    }
+
+    @Override
+    public BedrockChunkSection[] getSections() {
+        return (BedrockChunkSection[]) super.getSections();
     }
 
     public boolean isRequestSubChunks() {

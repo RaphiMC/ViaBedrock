@@ -17,8 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
+import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
@@ -38,6 +40,7 @@ import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResult;
+import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
@@ -45,9 +48,8 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.ByteArrayType;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 public class WorldPackets {
@@ -85,97 +87,110 @@ public class WorldPackets {
             @Override
             public void register() {
                 handler(wrapper -> {
+                    wrapper.cancel();
                     final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
                     final int chunkX = wrapper.read(BedrockTypes.VAR_INT); // chunk x
                     final int chunkZ = wrapper.read(BedrockTypes.VAR_INT); // chunk z
-                    int sectionCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // sub chunk count
+                    final int sectionCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // sub chunk count
                     if (sectionCount < -2) { // Mojang client silently ignores this packet
-                        wrapper.cancel();
                         return;
+                    }
+
+                    final int startY = chunkTracker.getMinY() >> 4;
+                    final int endY = chunkTracker.getMaxY() >> 4;
+
+                    int requestCount = 0;
+                    if (sectionCount == -2) {
+                        requestCount = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE) + 1; // count
+                    } else if (sectionCount == -1) {
+                        requestCount = endY - startY;
                     }
 
                     final BedrockChunk previousChunk = chunkTracker.getChunk(chunkX, chunkZ);
-                    final int startY = chunkTracker.getMinY() >> 4;
-                    final int endY = chunkTracker.getWorldHeight() >> 4;
-
-                    if (sectionCount < 0 && (previousChunk == null || !previousChunk.isRequestSubChunks())) {
-                        if (sectionCount == -1) {
-                            chunkTracker.requestSubChunks(chunkX, chunkZ, startY, endY + startY);
-                        } else if (sectionCount == -2) {
-                            final int count = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // count
-                            chunkTracker.requestSubChunks(chunkX, chunkZ, startY, MathUtil.clamp(startY + count + 1, startY + 1, endY + startY));
-                        }
-
+                    if (previousChunk != null) {
                         chunkTracker.unloadChunk(chunkX, chunkZ);
                     }
 
-                    final boolean cachingEnabled = wrapper.read(Type.BOOLEAN); // caching enabled
-                    if (cachingEnabled) {
-                        wrapper.read(BedrockTypes.LONG_ARRAY); // blob ids
-                        BedrockProtocol.kickForIllegalState(wrapper.user(), "Chunk Caching is not supported yet");
-                        wrapper.cancel();
-                        return;
-                    }
+                    final BedrockChunk chunk = chunkTracker.createChunk(chunkX, chunkZ, sectionCount < 0 ? requestCount : sectionCount);
+                    if (chunk == null) return;
 
-                    final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
-                    final ByteBuf dataBuf = Unpooled.wrappedBuffer(data);
+                    chunk.setRequestSubChunks(sectionCount < 0);
 
-                    final BedrockChunkSection[] bedrockSections = new BedrockChunkSection[chunkTracker.getWorldHeight() >> 4];
-                    final List<BlockEntity> blockEntities = new ArrayList<>();
-                    if (dataBuf.isReadable()) {
+                    final int fRequestCount = requestCount;
+                    final Consumer<byte[]> dataConsumer = combinedData -> {
                         try {
-                            for (int i = 0; i < sectionCount; i++) {
-                                bedrockSections[i] = BedrockTypes.CHUNK_SECTION.read(dataBuf); // chunk section
+                            if (fRequestCount > 0 && (previousChunk == null || !previousChunk.isRequestSubChunks())) {
+                                chunkTracker.requestSubChunks(chunkX, chunkZ, startY, MathUtil.clamp(startY + fRequestCount, startY + 1, endY));
+                            } else if (previousChunk != null && previousChunk.isRequestSubChunks()) {
+                                chunkTracker.requestSubChunks(chunkX, chunkZ, startY, endY);
                             }
-                            if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
-                                final byte[] biomeData = new byte[256];
-                                dataBuf.readBytes(biomeData);
-                                for (int i = 0; i < bedrockSections.length; i++) {
-                                    if (bedrockSections[i] == null) {
-                                        bedrockSections[i] = new BedrockChunkSectionImpl();
+
+                            final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
+
+                            final BedrockChunkSection[] sections = chunk.getSections();
+                            final List<BlockEntity> blockEntities = chunk.blockEntities();
+                            if (dataBuf.isReadable()) {
+                                try {
+                                    for (int i = 0; i < sectionCount; i++) {
+                                        sections[i].mergeWith(chunkTracker.handleBlockPalette(BedrockTypes.CHUNK_SECTION.read(dataBuf))); // chunk section
                                     }
-                                    bedrockSections[i].addPalette(PaletteType.BIOMES, new BedrockBiomeArray(biomeData));
-                                }
-                            } else {
-                                for (int i = 0; i < bedrockSections.length; i++) {
-                                    if (bedrockSections[i] == null) {
-                                        bedrockSections[i] = new BedrockChunkSectionImpl();
-                                    }
-                                    BedrockDataPalette biomePalette = BedrockTypes.BIOME_PALETTE.read(dataBuf); // biome palette
-                                    if (biomePalette == null) {
-                                        if (i == 0) {
-                                            throw new RuntimeException("First biome palette can not point to previous biome palette");
+                                    if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
+                                        final byte[] biomeData = new byte[256];
+                                        dataBuf.readBytes(biomeData);
+                                        for (ChunkSection section : sections) {
+                                            section.addPalette(PaletteType.BIOMES, new BedrockBiomeArray(biomeData));
                                         }
-                                        biomePalette = ((BedrockDataPalette) bedrockSections[i - 1].palette(PaletteType.BIOMES)).clone();
+                                    } else {
+                                        for (int i = 0; i < sections.length; i++) {
+                                            BedrockDataPalette biomePalette = BedrockTypes.BIOME_PALETTE.read(dataBuf); // biome palette
+                                            if (biomePalette == null) {
+                                                if (i == 0) {
+                                                    throw new RuntimeException("First biome palette can not point to previous biome palette");
+                                                }
+                                                biomePalette = ((BedrockDataPalette) sections[i - 1].palette(PaletteType.BIOMES)).clone();
+                                            }
+                                            if (biomePalette.hasTagPalette()) {
+                                                throw new RuntimeException("Biome palette can not have tag palette");
+                                            }
+                                            sections[i].addPalette(PaletteType.BIOMES, biomePalette);
+                                        }
                                     }
-                                    if (biomePalette.hasTagPalette()) {
-                                        throw new RuntimeException("Biome palette can not have tag palette");
+
+                                    dataBuf.skipBytes(1); // border blocks
+                                    while (dataBuf.isReadable()) {
+                                        blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.TAG.read(dataBuf))); // block entity tag
                                     }
-                                    bedrockSections[i].addPalette(PaletteType.BIOMES, biomePalette);
+                                } catch (Throwable e) {
+                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading chunk data", e);
                                 }
                             }
 
-                            dataBuf.skipBytes(1); // border blocks
-                            while (dataBuf.isReadable()) {
-                                blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.TAG.read(dataBuf))); // block entity tag
+                            if (!chunk.isRequestSubChunks()) {
+                                chunkTracker.sendChunk(chunkX, chunkZ);
                             }
                         } catch (Throwable e) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading chunk data", e);
+                            throw new RuntimeException("Error handling chunk data", e);
                         }
-                    }
+                    };
 
-                    if (previousChunk != null && previousChunk.isRequestSubChunks()) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk overwriting sub chunk requested chunk");
-                        chunkTracker.unloadChunk(chunkX, chunkZ);
-                        chunkTracker.requestSubChunks(chunkX, chunkZ, startY, endY + startY);
-                        wrapper.cancel();
+                    if (wrapper.read(Type.BOOLEAN)) { // caching enabled
+                        final Long[] blobs = wrapper.read(BedrockTypes.LONG_ARRAY); // blob ids
+                        final int expectedLength = sectionCount < 0 ? 1 : sectionCount + 1;
+                        if (blobs.length != expectedLength) { // Mojang client writes random memory contents into the request and most likely crashes
+                            BedrockProtocol.kickForIllegalState(wrapper.user(), "Invalid blob count: " + blobs.length + " (expected " + expectedLength + ")");
+                            return;
+                        }
+                        final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
+                        Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(wrapper.user(), blobs).thenAccept(blob -> {
+                            final byte[] combinedData = new byte[data.length + blob.length];
+                            System.arraycopy(blob, 0, combinedData, 0, blob.length);
+                            System.arraycopy(data, 0, combinedData, blob.length, data.length);
+                            dataConsumer.accept(combinedData);
+                        });
                     } else {
-                        final BedrockChunk bedrockChunk = new BedrockChunk(chunkX, chunkZ, bedrockSections, new CompoundTag(), blockEntities);
-                        bedrockChunk.setRequestSubChunks(sectionCount < 0);
-                        chunkTracker.storeChunk(bedrockChunk);
-                        chunkTracker.writeChunk(wrapper, chunkX, chunkZ);
+                        dataConsumer.accept(wrapper.read(BedrockTypes.BYTE_ARRAY)); // data
                     }
                 });
             }
@@ -184,71 +199,74 @@ public class WorldPackets {
             @Override
             public void register() {
                 handler(wrapper -> {
-                    wrapper.cancel(); // We might need to send multiple chunk packets
+                    wrapper.cancel();
                     final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
 
                     final boolean cachingEnabled = wrapper.read(Type.BOOLEAN); // caching enabled
-                    if (cachingEnabled) {
-                        BedrockProtocol.kickForIllegalState(wrapper.user(), "Chunk Caching is not yet supported");
-                        wrapper.cancel();
-                        return;
-                    }
-
                     final int dimensionId = wrapper.read(BedrockTypes.VAR_INT); // dimension id
                     if (dimensionId != chunkTracker.getDimensionId()) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk for wrong dimension");
-                        wrapper.cancel();
                         return;
                     }
 
                     final Position center = wrapper.read(BedrockTypes.POSITION_3I); // center position
-                    final Set<Long> updatedChunks = new HashSet<>();
                     final long count = wrapper.read(BedrockTypes.UNSIGNED_INT_LE); // count
+
                     for (long i = 0; i < count; i++) {
                         final Position offset = wrapper.read(BedrockTypes.SUB_CHUNK_OFFSET); // offset
                         final Position absolute = new Position(center.x() + offset.x(), center.y() + offset.y(), center.z() + offset.z());
                         final byte result = wrapper.read(Type.BYTE); // result
+                        final byte[] data = result != SubChunkResult.SUCCESS_ALL_AIR || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
+                        final byte heightmapResult = wrapper.read(Type.BYTE); // heightmap result
+                        final byte[] heightmapData = heightmapResult == 1 ? wrapper.read(new ByteArrayType(256)) : new byte[0]; // heightmap data
 
-                        if (result != SubChunkResult.SUCCESS_ALL_AIR || !cachingEnabled) {
-                            final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
-                            final ByteBuf dataBuf = Unpooled.wrappedBuffer(data);
-
-                            if (result == SubChunkResult.SUCCESS) {
-                                BedrockChunkSection bedrockSection = null;
-                                final List<BlockEntity> blockEntities = new ArrayList<>();
-                                try {
-                                    bedrockSection = BedrockTypes.CHUNK_SECTION.read(dataBuf); // chunk section
-                                    while (dataBuf.isReadable()) {
-                                        blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.TAG.read(dataBuf))); // block entity tag
+                        final Consumer<byte[]> dataConsumer = combinedData -> {
+                            try {
+                                if (result == SubChunkResult.SUCCESS_ALL_AIR) {
+                                    if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), new BedrockChunkSectionImpl(), new ArrayList<>())) {
+                                        chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
                                     }
-                                } catch (Throwable e) {
-                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading sub chunk data", e);
-                                }
-                                if (chunkTracker.mergeChunkSection(absolute.x(), absolute.y(), absolute.z(), bedrockSection, blockEntities)) {
-                                    updatedChunks.add(chunkTracker.chunkKey(absolute.x(), absolute.z()));
-                                }
-                            } else if (result != SubChunkResult.SUCCESS_ALL_AIR) {
-                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk with result " + result);
-                                chunkTracker.requestSubChunk(absolute.x(), absolute.y(), absolute.z());
-                            }
-                        } else if (result == SubChunkResult.SUCCESS_ALL_AIR) {
-                            if (chunkTracker.mergeChunkSection(absolute.x(), absolute.y(), absolute.z(), null, new ArrayList<>())) {
-                                updatedChunks.add(chunkTracker.chunkKey(absolute.x(), absolute.z()));
-                            }
-                        }
-                        final byte heightmapType = wrapper.read(Type.BYTE); // heightmap type
-                        if (heightmapType == 1) {
-                            wrapper.read(new ByteArrayType(256)); // heightmap
-                        }
-                        if (cachingEnabled) {
-                            wrapper.read(BedrockTypes.LONG_LE); // blob id
-                        }
-                    }
+                                } else if (result == SubChunkResult.SUCCESS) {
+                                    final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
 
-                    for (long chunk : updatedChunks) {
-                        final int chunkX = (int) (chunk >> 32);
-                        final int chunkZ = (int) chunk;
-                        chunkTracker.sendChunk(chunkX, chunkZ);
+                                    BedrockChunkSection section = new BedrockChunkSectionImpl();
+                                    final List<BlockEntity> blockEntities = new ArrayList<>();
+                                    try {
+                                        section = BedrockTypes.CHUNK_SECTION.read(dataBuf); // chunk section
+                                        while (dataBuf.isReadable()) {
+                                            blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.TAG.read(dataBuf))); // block entity tag
+                                        }
+                                    } catch (Throwable e) {
+                                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading sub chunk data", e);
+                                    }
+                                    if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), section, blockEntities)) {
+                                        chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
+                                    }
+                                } else {
+                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk with result " + result);
+                                    chunkTracker.requestSubChunk(absolute.x(), absolute.y(), absolute.z());
+                                }
+                            } catch (Throwable e) {
+                                throw new RuntimeException("Error handling sub chunk data", e);
+                            }
+                        };
+
+                        if (cachingEnabled) {
+                            final long hash = wrapper.read(BedrockTypes.LONG_LE); // blob id
+                            Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(wrapper.user(), hash).thenAccept(blob -> {
+                                if (data.length == 0) {
+                                    dataConsumer.accept(blob);
+                                } else if (blob.length == 0) {
+                                    dataConsumer.accept(data);
+                                } else {
+                                    final byte[] combinedData = new byte[data.length + blob.length];
+                                    System.arraycopy(blob, 0, combinedData, 0, blob.length);
+                                    System.arraycopy(data, 0, combinedData, blob.length, data.length);
+                                    dataConsumer.accept(combinedData);
+                                }
+                            });
+                        } else {
+                            dataConsumer.accept(data);
+                        }
                     }
                 });
             }
@@ -259,23 +277,16 @@ public class WorldPackets {
                 handler(wrapper -> {
                     final Position position = wrapper.read(BedrockTypes.POSITION_3I); // center position
                     final int radius = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT) >> 4; // radius
+                    wrapper.write(Type.VAR_INT, radius); // radius
 
                     final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
                     chunkTracker.setRadius(radius);
                     chunkTracker.setCenter(position.x() >> 4, position.z() >> 4);
 
-                    wrapper.write(Type.VAR_INT, radius); // radius
-
-                    // First update the view position. This won't rebuild the internal chunk map
                     final PacketWrapper updateViewPosition = wrapper.create(ClientboundPackets1_19_3.UPDATE_VIEW_POSITION);
                     updateViewPosition.write(Type.VAR_INT, position.x() >> 4); // chunk x
                     updateViewPosition.write(Type.VAR_INT, position.z() >> 4); // chunk z
                     updateViewPosition.send(BedrockProtocol.class);
-                    // Set the view distance to radius + 1. This will rebuild the internal chunk map
-                    final PacketWrapper updateViewDistance = wrapper.create(ClientboundPackets1_19_3.UPDATE_VIEW_DISTANCE);
-                    updateViewDistance.write(Type.VAR_INT, radius + 1); // radius
-                    updateViewDistance.send(BedrockProtocol.class);
-                    // The real view distance packet will be received after that negating the previous packet
 
                     // TODO: What to do with this?
                     final int count = wrapper.read(BedrockTypes.INT_LE); // saved chunks count
@@ -290,9 +301,7 @@ public class WorldPackets {
             @Override
             public void register() {
                 map(BedrockTypes.VAR_INT, Type.VAR_INT); // radius
-                handler(wrapper -> {
-                    wrapper.user().get(ChunkTracker.class).setRadius(wrapper.get(Type.VAR_INT, 0));
-                });
+                handler(wrapper -> wrapper.user().get(ChunkTracker.class).setRadius(wrapper.get(Type.VAR_INT, 0)));
             }
         });
         // TODO: Dimension change -> store spawn position

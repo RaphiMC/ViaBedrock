@@ -17,19 +17,24 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractAction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.model.entity.ClientPlayerEntity;
+import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -39,57 +44,64 @@ import java.util.UUID;
 public class PlayPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.PLAY_STATUS, ClientboundPackets1_19_3.DISCONNECT, new PacketHandlers() {
-            @Override
-            public void register() {
-                handler(wrapper -> {
-                    final int status = wrapper.read(Type.INT); // status
-                    final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
-                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+        protocol.registerClientbound(ClientboundBedrockPackets.DISCONNECT, ClientboundPackets1_19_3.DISCONNECT, wrapper -> {
+            final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
+            if (hasMessage) {
+                final String rawMessage = wrapper.read(BedrockTypes.STRING);
+                final String translatedMessage = protocol.getMappingData().getTranslations().getOrDefault(rawMessage, rawMessage);
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translatedMessage)); // reason
+            } else {
+                wrapper.write(Type.COMPONENT, com.viaversion.viaversion.libs.gson.JsonNull.INSTANCE); // reason
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAY_STATUS, ClientboundPackets1_19_3.DISCONNECT, wrapper -> {
+            final int status = wrapper.read(Type.INT); // status
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
-                    if (status == PlayStatus.LOGIN_SUCCESS) {
-                        wrapper.cancel();
-                        final PacketWrapper clientCacheStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_STATUS, wrapper.user());
-                        clientCacheStatus.write(Type.BOOLEAN, false); // is supported
-                        clientCacheStatus.sendToServer(BedrockProtocol.class);
-                    }
-                    if (status == PlayStatus.PLAYER_SPAWN) { // First spawn
-                        wrapper.cancel();
-                        final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
-                        if (clientPlayer.isInitiallySpawned()) {
-                            return; // Mojang client silently ignores this packet if the player is already spawned
-                        }
-                        if (gameSession.getBedrockBiomeDefinitions() == null) {
-                            BedrockProtocol.kickForIllegalState(wrapper.user(), "Tried to spawn the client player before the biome definitions were loaded!");
-                            return;
-                        }
+            if (status == PlayStatus.LOGIN_SUCCESS) {
+                wrapper.cancel();
+                final PacketWrapper clientCacheStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_STATUS, wrapper.user());
+                clientCacheStatus.write(Type.BOOLEAN, ViaBedrock.getConfig().isBlobCacheEnabled()); // is supported
+                clientCacheStatus.sendToServer(BedrockProtocol.class);
+            }
+            if (status == PlayStatus.PLAYER_SPAWN) { // First spawn
+                wrapper.cancel();
+                final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
+                if (clientPlayer.isInitiallySpawned()) {
+                    return; // Mojang client silently ignores this packet if the player is already spawned
+                }
+                if (gameSession.getBedrockBiomeDefinitions() == null) {
+                    BedrockProtocol.kickForIllegalState(wrapper.user(), "Tried to spawn the client player before the biome definitions were loaded!");
+                    return;
+                }
 
-                        final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
-                        interact.write(Type.UNSIGNED_BYTE, InteractAction.MOUSEOVER); // action
-                        interact.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
-                        interact.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // mouse position
-                        interact.sendToServer(BedrockProtocol.class);
+                final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
+                interact.write(Type.UNSIGNED_BYTE, InteractAction.MOUSEOVER); // action
+                interact.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+                interact.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // mouse position
+                interact.sendToServer(BedrockProtocol.class);
 
-                        // TODO: Mob Equipment with current held item
+                // TODO: Mob Equipment with current held item
 
-                        final PacketWrapper emoteList = PacketWrapper.create(ServerboundBedrockPackets.EMOTE_LIST, wrapper.user());
-                        emoteList.write(BedrockTypes.VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
-                        emoteList.write(BedrockTypes.UUID_ARRAY, new UUID[0]); // emote ids
-                        emoteList.sendToServer(BedrockProtocol.class);
+                final PacketWrapper emoteList = PacketWrapper.create(ServerboundBedrockPackets.EMOTE_LIST, wrapper.user());
+                emoteList.write(BedrockTypes.VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+                emoteList.write(BedrockTypes.UUID_ARRAY, new UUID[0]); // emote ids
+                emoteList.sendToServer(BedrockProtocol.class);
 
-                        clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
-                        clientPlayer.setInitiallySpawned(true);
-                        clientPlayer.sendMovementPacketToServer(wrapper.user(), MovePlayerMode.NORMAL);
+                clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
+                clientPlayer.setInitiallySpawned(true);
+                if (gameSession.getMovementMode() == MovementMode.CLIENT) {
+                    clientPlayer.sendMovePlayerPacketToServer(MovePlayerMode.NORMAL);
+                }
 
-                        final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());
-                        setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
-                        setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
+                final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());
+                setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+                setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
 
-                        clientPlayer.closeDownloadingTerrainScreen(wrapper.user());
-                    } else {
-                        LoginPackets.writePlayStatusKickMessage(wrapper, status);
-                    }
-                });
+                clientPlayer.closeDownloadingTerrainScreen();
+            } else {
+                LoginPackets.writePlayStatusKickMessage(wrapper, status);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_19_3.SERVER_DIFFICULTY, new PacketHandlers() {
@@ -115,6 +127,15 @@ public class PlayPackets {
                         wrapper.cancel();
                     }
                 });
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.CLIENT_CACHE_MISS_RESPONSE, null, wrapper -> {
+            wrapper.cancel();
+            final int length = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // blob count
+            for (int i = 0; i < length; i++) {
+                final long hash = wrapper.read(BedrockTypes.LONG_LE); // blob hash
+                final byte[] blob = wrapper.read(BedrockTypes.BYTE_ARRAY); // blob data
+                Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(wrapper.user(), hash, blob);
             }
         });
 

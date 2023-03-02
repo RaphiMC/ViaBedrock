@@ -1,2 +1,4 @@
-# No config yet
-there-is-no-config-yet: true
+# Enable global blob caching (Reduces network usage)
+blob-cache: true
+# Max blob cache size (in MB)
+max-blob-cache-size: 4096

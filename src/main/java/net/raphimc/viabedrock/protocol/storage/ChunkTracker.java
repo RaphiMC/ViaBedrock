@@ -42,9 +42,11 @@ import net.raphimc.viabedrock.api.chunk.BedrockChunk;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBlockArray;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
+import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.BlockState;
+import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -70,6 +72,7 @@ public class ChunkTracker extends StoredObject {
 
     private final Object chunkLock = new Object();
     private final Map<Long, BedrockChunk> chunks = new HashMap<>();
+    private final Set<Long> dirtyChunks = new HashSet<>();
 
     private final Object subChunkLock = new Object();
     private final Set<SubChunkPosition> subChunkRequests = new HashSet<>();
@@ -108,38 +111,37 @@ public class ChunkTracker extends StoredObject {
         this.chunkType = new Chunk1_18Type(this.worldHeight >> 4, MathUtil.ceilLog2(Protocol1_19_3To1_19_1.MAPPINGS.getBlockStateMappings().mappedSize()), MathUtil.ceilLog2(biomes.size()));
     }
 
-    public void setCenter(final int x, final int z) {
+    public void setCenter(final int x, final int z) throws Exception {
         this.centerX = x;
         this.centerZ = z;
         this.removeOutOfViewDistanceChunks();
     }
 
-    public void setRadius(final int radius) {
+    public void setRadius(final int radius) throws Exception {
         this.radius = radius;
         this.removeOutOfViewDistanceChunks();
     }
 
-    public void storeChunk(final BedrockChunk chunk) {
-        if (!this.isInViewDistance(chunk.getX(), chunk.getZ())) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of view distance: " + chunk.getX() + ", " + chunk.getZ());
-            return;
-        }
+    public BedrockChunk createChunk(final int chunkX, final int chunkZ, final int nonNullSectionCount) {
+        if (!this.isInViewDistance(chunkX, chunkZ)) return null;
 
-        for (ChunkSection section : chunk.getSections()) {
-            this.replaceLegacyBlocks(section);
-            this.resolveTagPalette(section);
+        final BedrockChunk chunk = new BedrockChunk(chunkX, chunkZ, new BedrockChunkSection[this.worldHeight >> 4]);
+        for (int i = 0; i < nonNullSectionCount && i < chunk.getSections().length; i++) {
+            chunk.getSections()[i] = new BedrockChunkSectionImpl();
         }
-
+        for (int i = 0; i < chunk.getSections().length; i++) {
+            if (chunk.getSections()[i] == null) {
+                chunk.getSections()[i] = new BedrockChunkSectionImpl(true);
+            }
+        }
         synchronized (this.chunkLock) {
             this.chunks.put(this.chunkKey(chunk.getX(), chunk.getZ()), chunk);
         }
+        return chunk;
     }
 
-    public boolean mergeChunkSection(final int chunkX, final int subChunkY, final int chunkZ, final ChunkSection section, final List<BlockEntity> blockEntities) {
-        if (!this.isInViewDistance(chunkX, chunkZ)) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk outside of view distance: " + chunkX + ", " + chunkZ);
-            return false;
-        }
+    public boolean mergeSubChunk(final int chunkX, final int subChunkY, final int chunkZ, final BedrockChunkSection other, final List<BlockEntity> blockEntities) {
+        if (!this.isInViewDistance(chunkX, chunkZ)) return false;
 
         final SubChunkPosition position = new SubChunkPosition(chunkX, subChunkY, chunkZ);
         synchronized (this.subChunkLock) {
@@ -150,29 +152,23 @@ public class ChunkTracker extends StoredObject {
             this.pendingSubChunks.remove(position);
         }
 
-        BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
+        final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
         if (chunk == null) {
-            chunk = new BedrockChunk(chunkX, chunkZ, new ChunkSection[this.worldHeight >> 4], new CompoundTag(), new ArrayList<>());
-            this.storeChunk(chunk);
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk for unloaded chunk: " + chunkX + ", " + chunkZ);
+            return false;
         }
 
-        this.replaceLegacyBlocks(section);
-        this.resolveTagPalette(section);
-
-        final int sectionIndex = subChunkY + Math.abs(this.minY >> 4);
-        final ChunkSection[] sections = chunk.getSections();
-        final ChunkSection previousSection = sections[sectionIndex];
-        if (previousSection == null) {
-            sections[sectionIndex] = section;
-        } else {
-            final DataPalette biomePalette = previousSection.palette(PaletteType.BIOMES);
-            sections[sectionIndex] = section;
-            section.addPalette(PaletteType.BIOMES, biomePalette);
-        }
-
+        final BedrockChunkSection section = chunk.getSections()[subChunkY + Math.abs(this.minY >> 4)];
+        section.mergeWith(this.handleBlockPalette(other));
         chunk.blockEntities().addAll(blockEntities);
 
         return true;
+    }
+
+    public BedrockChunkSection handleBlockPalette(final BedrockChunkSection section) {
+        this.replaceLegacyBlocks(section);
+        this.resolveTagPalette(section);
+        return section;
     }
 
     public void unloadChunk(final int chunkX, final int chunkZ) throws Exception {
@@ -194,6 +190,16 @@ public class ChunkTracker extends StoredObject {
         }
     }
 
+    public BedrockChunkSection getChunkSection(final int chunkX, final int subChunkY, final int chunkZ) {
+        final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
+        if (chunk == null) return null;
+
+        final int sectionIndex = subChunkY + Math.abs(this.minY >> 4);
+        if (sectionIndex >= chunk.getSections().length) return null;
+
+        return chunk.getSections()[sectionIndex];
+    }
+
     public boolean isChunkLoaded(final int chunkX, final int chunkZ) {
         if (!this.isInViewDistance(chunkX, chunkZ)) return false;
 
@@ -202,50 +208,87 @@ public class ChunkTracker extends StoredObject {
         }
     }
 
+    public boolean isInUnloadedChunkSection(final Position3f playerPosition) {
+        final Position chunkSectionPosition = new Position((int) Math.floor(playerPosition.x() / 16), (int) Math.floor((playerPosition.y() - 1.62F) / 16), (int) Math.floor(playerPosition.z() / 16));
+        if (!this.isChunkLoaded(chunkSectionPosition.x(), chunkSectionPosition.z())) {
+            return true;
+        }
+        final BedrockChunkSection chunkSection = this.getChunkSection(chunkSectionPosition.x(), chunkSectionPosition.y(), chunkSectionPosition.z());
+        if (chunkSection == null) {
+            return false;
+        }
+        if (chunkSection.hasPendingBlockUpdates()) {
+            return true;
+        }
+        synchronized (this.dirtyChunks) {
+            return this.dirtyChunks.contains(this.chunkKey(chunkSectionPosition.x(), chunkSectionPosition.z()));
+        }
+    }
+
     public boolean isInViewDistance(final int chunkX, final int chunkZ) {
         return Math.abs(chunkX - this.centerX) <= this.radius && Math.abs(chunkZ - this.centerZ) <= this.radius;
     }
 
-    public void removeOutOfViewDistanceChunks() {
+    public void removeOutOfViewDistanceChunks() throws Exception {
+        final Set<Long> chunksToRemove = new HashSet<>();
         synchronized (this.chunkLock) {
-            if (this.chunks.entrySet().removeIf(entry -> {
-                final int chunkX = (int) (entry.getKey() >> 32);
-                final int chunkZ = entry.getKey().intValue();
-                return !this.isInViewDistance(chunkX, chunkZ);
-            })) {
-                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Removed out of view distance chunks");
+            for (long chunkKey : this.chunks.keySet()) {
+                final int chunkX = (int) (chunkKey >> 32);
+                final int chunkZ = (int) chunkKey;
+                if (this.isInViewDistance(chunkX, chunkZ)) continue;
+
+                chunksToRemove.add(chunkKey);
             }
+        }
+        for (long chunkKey : chunksToRemove) {
+            final int chunkX = (int) (chunkKey >> 32);
+            final int chunkZ = (int) chunkKey;
+            this.unloadChunk(chunkX, chunkZ);
         }
     }
 
-    public void tick() {
+    public void tick() throws Exception {
+        synchronized (this.dirtyChunks) {
+            if (!this.dirtyChunks.isEmpty()) {
+                this.getUser().getChannel().eventLoop().execute(() -> {
+                    synchronized (this.dirtyChunks) {
+                        for (Long dirtyChunk : this.dirtyChunks) {
+                            final int chunkX = (int) (dirtyChunk >> 32);
+                            final int chunkZ = dirtyChunk.intValue();
+
+                            try {
+                                this.sendChunk(chunkX, chunkZ);
+                            } catch (Throwable e) {
+                                throw new RuntimeException("Failed to send chunk", e);
+                            }
+                        }
+                        this.dirtyChunks.clear();
+                    }
+                });
+            }
+        }
+
         final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
         if (!entityTracker.getClientPlayer().isInitiallySpawned()) return;
 
         synchronized (this.subChunkLock) {
-            if (this.subChunkRequests.removeIf(s -> !this.isInViewDistance(s.chunkX, s.chunkZ))) {
-                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Removed out of view distance sub chunk requests");
-            }
+            this.subChunkRequests.removeIf(s -> !this.isInViewDistance(s.chunkX, s.chunkZ));
 
-            try {
-                final Position basePosition = new Position(this.centerX, 0, this.centerZ);
-                while (!this.subChunkRequests.isEmpty()) {
-                    final Set<SubChunkPosition> group = this.subChunkRequests.stream().limit(256).collect(Collectors.toSet());
-                    this.subChunkRequests.removeAll(group);
+            final Position basePosition = new Position(this.centerX, 0, this.centerZ);
+            while (!this.subChunkRequests.isEmpty()) {
+                final Set<SubChunkPosition> group = this.subChunkRequests.stream().limit(256).collect(Collectors.toSet());
+                this.subChunkRequests.removeAll(group);
 
-                    final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.getUser());
-                    subChunkRequest.write(BedrockTypes.VAR_INT, this.dimensionId); // dimension id
-                    subChunkRequest.write(BedrockTypes.POSITION_3I, basePosition); // base position
-                    subChunkRequest.write(BedrockTypes.INT_LE, group.size()); // sub chunk offset count
-                    for (SubChunkPosition subChunkPosition : group) {
-                        this.pendingSubChunks.add(subChunkPosition);
-                        final Position offset = new Position(subChunkPosition.chunkX - basePosition.x(), subChunkPosition.subChunkY, subChunkPosition.chunkZ - basePosition.z());
-                        subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
-                    }
-                    subChunkRequest.sendToServer(BedrockProtocol.class);
+                final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.getUser());
+                subChunkRequest.write(BedrockTypes.VAR_INT, this.dimensionId); // dimension id
+                subChunkRequest.write(BedrockTypes.POSITION_3I, basePosition); // base position
+                subChunkRequest.write(BedrockTypes.INT_LE, group.size()); // sub chunk offset count
+                for (SubChunkPosition subChunkPosition : group) {
+                    this.pendingSubChunks.add(subChunkPosition);
+                    final Position offset = new Position(subChunkPosition.chunkX - basePosition.x(), subChunkPosition.subChunkY, subChunkPosition.chunkZ - basePosition.z());
+                    subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
                 }
-            } catch (Throwable e) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to send sub chunk request", e);
+                subChunkRequest.sendToServer(BedrockProtocol.class);
             }
         }
     }
@@ -257,13 +300,16 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void requestSubChunk(final int chunkX, final int subChunkY, final int chunkZ) {
-        if (!this.isInViewDistance(chunkX, chunkZ)) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Requested sub chunk out of view distance");
-            return;
-        }
+        if (!this.isInViewDistance(chunkX, chunkZ)) return;
 
         synchronized (this.subChunkLock) {
             this.subChunkRequests.add(new SubChunkPosition(chunkX, subChunkY, chunkZ));
+        }
+    }
+
+    public void sendChunkInNextTick(final int chunkX, final int chunkZ) {
+        synchronized (this.dirtyChunks) {
+            this.dirtyChunks.add(this.chunkKey(chunkX, chunkZ));
         }
     }
 
@@ -274,10 +320,12 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void writeChunk(final PacketWrapper wrapper, final int chunkX, final int chunkZ) {
-        final Chunk chunk;
-        synchronized (this.chunkLock) {
-            chunk = this.chunks.get(this.chunkKey(chunkX, chunkZ));
+        final Chunk chunk = this.getChunk(chunkX, chunkZ);
+        if (chunk == null) {
+            wrapper.cancel();
+            return;
         }
+
         final Chunk remappedChunk = this.remapChunk(chunk);
 
         final BitSet lightMask = new BitSet();
@@ -317,30 +365,45 @@ public class ChunkTracker extends StoredObject {
 
                 if (blockPalettes.size() > 0) {
                     final DataPalette mainLayer = blockPalettes.get(0);
-                    int nonAirBlocks = 0;
-                    for (int x = 0; x < 16; x++) {
-                        for (int y = 0; y < 16; y++) {
-                            for (int z = 0; z < 16; z++) {
-                                final int blockState = mainLayer.idAt(x, y, z);
-                                if (blockState == airId) continue;
+                    if (mainLayer.size() == 1) {
+                        final int blockState = mainLayer.idByIndex(0);
+                        int remappedBlockState = blockStateRewriter.javaId(blockState);
+                        if (remappedBlockState == -1) {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + blockState);
+                            remappedBlockState = 0;
+                        }
+                        remappedBlockPalette.setIdByIndex(0, remappedBlockState);
+                        if (remappedBlockState != 0) {
+                            remappedSection.setNonAirBlocksCount(16 * 16 * 16);
+                        }
+                    } else {
+                        int nonAirBlocks = 0;
+                        for (int x = 0; x < 16; x++) {
+                            for (int y = 0; y < 16; y++) {
+                                for (int z = 0; z < 16; z++) {
+                                    final int blockState = mainLayer.idAt(x, y, z);
+                                    if (blockState == airId) continue;
 
-                                int remappedBlockState = blockStateRewriter.javaId(blockState);
-                                if (remappedBlockState == -1) {
-                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + blockState);
-                                    remappedBlockState = 0;
-                                }
-                                remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
-                                if (remappedBlockState != 0) {
-                                    nonAirBlocks++;
+                                    int remappedBlockState = blockStateRewriter.javaId(blockState);
+                                    if (remappedBlockState == -1) {
+                                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + blockState);
+                                        remappedBlockState = 0;
+                                    }
+                                    remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
+                                    if (remappedBlockState != 0) {
+                                        nonAirBlocks++;
+                                    }
                                 }
                             }
                         }
+                        remappedSection.setNonAirBlocksCount(nonAirBlocks);
                     }
-                    remappedSection.setNonAirBlocksCount(nonAirBlocks);
                 }
                 for (int i = 1; i < blockPalettes.size(); i++) {
                     final DataPalette prevLayer = blockPalettes.get(i - 1);
                     final DataPalette layer = blockPalettes.get(i);
+                    if (layer.size() == 1 && layer.idByIndex(0) == airId) continue;
+
                     for (int x = 0; x < 16; x++) {
                         for (int y = 0; y < 16; y++) {
                             for (int z = 0; z < 16; z++) {
@@ -366,25 +429,42 @@ public class ChunkTracker extends StoredObject {
                 final DataPalette biomePalette = bedrockSection.palette(PaletteType.BIOMES);
                 final DataPalette remappedBiomePalette = remappedSection.palette(PaletteType.BIOMES);
                 if (biomePalette != null) {
-                    for (int x = 0; x < 4; x++) {
-                        for (int y = 0; y < 4; y++) {
-                            for (int z = 0; z < 4; z++) {
-                                final Int2IntMap subBiomes = new Int2IntOpenHashMap();
-                                for (int subX = 0; subX < 4; subX++) {
-                                    for (int subY = 0; subY < 4; subY++) {
-                                        for (int subZ = 0; subZ < 4; subZ++) {
-                                            final int biomeId = biomePalette.idAt(x * 4 + subX, y * 4 + subY, z * 4 + subZ);
-                                            subBiomes.put(biomeId, subBiomes.getOrDefault(biomeId, 0) + 1);
+                    if (biomePalette.size() == 1) {
+                        final int biomeId = biomePalette.idByIndex(0);
+                        int remappedBiomeId = biomeId + 1;
+                        if (!BedrockProtocol.MAPPINGS.getBiomes().inverse().containsKey(biomeId)) {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
+                            remappedBiomeId = 0;
+                        }
+                        remappedBiomePalette.setIdByIndex(0, remappedBiomeId);
+                    } else {
+                        for (int x = 0; x < 4; x++) {
+                            for (int y = 0; y < 4; y++) {
+                                for (int z = 0; z < 4; z++) {
+                                    final Int2IntMap subBiomes = new Int2IntOpenHashMap();
+                                    int maxBiomeID = -1;
+                                    int maxValue = -1;
+                                    for (int subX = 0; subX < 4; subX++) {
+                                        for (int subY = 0; subY < 4; subY++) {
+                                            for (int subZ = 0; subZ < 4; subZ++) {
+                                                final int biomeId = biomePalette.idAt(x * 4 + subX, y * 4 + subY, z * 4 + subZ);
+                                                final int value = subBiomes.getOrDefault(biomeId, 0) + 1;
+                                                subBiomes.put(biomeId, value);
+                                                if (value > maxValue) {
+                                                    maxBiomeID = biomeId;
+                                                    maxValue = value;
+                                                }
+                                            }
                                         }
                                     }
+                                    final int biomeId = maxBiomeID;
+                                    int remappedBiomeId = biomeId + 1;
+                                    if (!BedrockProtocol.MAPPINGS.getBiomes().inverse().containsKey(biomeId)) {
+                                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
+                                        remappedBiomeId = 0;
+                                    }
+                                    remappedBiomePalette.setIdAt(x, y, z, remappedBiomeId);
                                 }
-                                final int biomeId = subBiomes.int2IntEntrySet().stream().max(Comparator.comparingInt(Int2IntMap.Entry::getIntValue)).get().getIntKey();
-                                int remappedBiomeId = biomeId + 1;
-                                if (!BedrockProtocol.MAPPINGS.getBiomes().inverse().containsKey(biomeId)) {
-                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
-                                    remappedBiomeId = 0;
-                                }
-                                remappedBiomePalette.setIdAt(x, y, z, remappedBiomeId);
                             }
                         }
                     }
@@ -406,6 +486,10 @@ public class ChunkTracker extends StoredObject {
         return this.minY;
     }
 
+    public int getMaxY() {
+        return this.worldHeight - Math.abs(this.minY);
+    }
+
     public int getWorldHeight() {
         return this.worldHeight;
     }
@@ -415,7 +499,6 @@ public class ChunkTracker extends StoredObject {
     }
 
     private void resolveTagPalette(final ChunkSection section) {
-        if (section == null) return;
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
 
         if (section instanceof BedrockChunkSection) {
@@ -446,7 +529,6 @@ public class ChunkTracker extends StoredObject {
     }
 
     private void replaceLegacyBlocks(final ChunkSection section) {
-        if (section == null) return;
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
 
         if (section instanceof BedrockChunkSection) {

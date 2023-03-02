@@ -30,14 +30,14 @@ Additionally ViaBedrock uses assets and data dumps from other projects: See the 
 - [x] Xbox Live Auth
 - [x] Chat / Commands
 - [x] Chunks
-- [ ] Chunk caching
+- [x] Chunk caching
 - [ ] Block updates
 - [x] Biomes
 - [ ] Players
 - [ ] Entities
 - [ ] Entity interactions
 - [ ] Entity metadata
-- [ ] Client-Authoritative Movement
+- [x] Client-Authoritative Movement
 - [ ] Server-Authoritative Movement
 - [ ] Client-Authoritative Inventory
 - [ ] Server-Authoritative Inventory

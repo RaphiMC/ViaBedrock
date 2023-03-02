@@ -66,4 +66,10 @@ public interface BedrockChunkSection extends ChunkSection, Cloneable {
 
     List<DataPalette> palettes(final PaletteType type);
 
+    void mergeWith(final BedrockChunkSection other);
+
+    boolean hasPendingBlockUpdates();
+
+    void applyPendingBlockUpdates();
+
 }

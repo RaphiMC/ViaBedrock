@@ -27,6 +27,9 @@ public class GameSessionStorage extends StoredObject {
     private CompoundTag javaRegistries;
     private CompoundTag bedrockBiomeDefinitions;
     private Semver bedrockVanillaVersion;
+    private int movementMode;
+    private boolean chatRestricted;
+    private boolean commandsEnabled;
 
     public GameSessionStorage(final UserConnection user) {
         super(user);
@@ -54,6 +57,30 @@ public class GameSessionStorage extends StoredObject {
 
     public void setBedrockVanillaVersion(final Semver bedrockVanillaVersion) {
         this.bedrockVanillaVersion = bedrockVanillaVersion;
+    }
+
+    public int getMovementMode() {
+        return this.movementMode;
+    }
+
+    public void setMovementMode(final int movementMode) {
+        this.movementMode = movementMode;
+    }
+
+    public boolean isChatRestricted() {
+        return this.chatRestricted;
+    }
+
+    public void setChatRestricted(final boolean chatRestricted) {
+        this.chatRestricted = chatRestricted;
+    }
+
+    public boolean areCommandsEnabled() {
+        return this.commandsEnabled;
+    }
+
+    public void setCommandsEnabled(final boolean commandsEnabled) {
+        this.commandsEnabled = commandsEnabled;
     }
 
 }

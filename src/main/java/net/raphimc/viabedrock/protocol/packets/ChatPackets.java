@@ -39,7 +39,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOutputType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.TextType;
 import net.raphimc.viabedrock.protocol.model.CommandOrigin;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
-import net.raphimc.viabedrock.protocol.storage.ChatSettingsStorage;
+import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.UUID;
@@ -195,8 +195,8 @@ public class ChatPackets {
                 read(Type.VAR_INT); // offset
                 read(ACKNOWLEDGED_BIT_SET_TYPE); // acknowledged
                 handler(wrapper -> {
-                    final ChatSettingsStorage chatSettings = wrapper.user().get(ChatSettingsStorage.class);
-                    if (chatSettings.isChatRestricted()) {
+                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+                    if (gameSession.isChatRestricted()) {
                         wrapper.cancel();
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_3.SYSTEM_CHAT, wrapper.user());
                         systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + BedrockProtocol.MAPPINGS.getTranslations().get("permissions.chatmute"))); // message
@@ -228,8 +228,8 @@ public class ChatPackets {
                 read(Type.VAR_INT); // offset
                 read(ACKNOWLEDGED_BIT_SET_TYPE); // acknowledged
                 handler(wrapper -> {
-                    final ChatSettingsStorage chatSettings = wrapper.user().get(ChatSettingsStorage.class);
-                    if (!chatSettings.areCommandsEnabled()) {
+                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+                    if (!gameSession.areCommandsEnabled()) {
                         wrapper.cancel();
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_3.SYSTEM_CHAT, wrapper.user());
                         systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + BedrockProtocol.MAPPINGS.getTranslations().get("commands.generic.disabled"))); // message
