@@ -85,12 +85,11 @@ public class BedrockMappingData extends MappingDataBase {
         this.registries = this.readNBT("java/registries.nbt");
         this.tags = this.readNBT("java/tags.nbt");
 
-        final JsonObject javaBlockStatesJson = MappingDataLoader.loadData("mapping-1.19.3.json", true).getAsJsonObject("blockstates");
+        final JsonArray javaBlockStatesJson = MappingDataLoader.loadData("mapping-1.19.3.json", true).getAsJsonArray("blockstates");
         this.javaBlockStates = HashBiMap.create(javaBlockStatesJson.size());
-        for (Map.Entry<String, JsonElement> entry : javaBlockStatesJson.entrySet()) {
-            final int id = Integer.parseInt(entry.getKey());
-            final BlockState blockState = BlockState.fromString(entry.getValue().getAsString());
-            this.javaBlockStates.put(blockState, id);
+        for (int i = 0; i < javaBlockStatesJson.size(); i++) {
+            final BlockState blockState = BlockState.fromString(javaBlockStatesJson.get(i).getAsString());
+            this.javaBlockStates.put(blockState, i);
         }
 
         final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_19_60.nbt").get("blocks");
