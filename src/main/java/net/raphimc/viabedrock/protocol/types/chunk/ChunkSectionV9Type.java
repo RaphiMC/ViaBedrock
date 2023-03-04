@@ -40,7 +40,7 @@ public class ChunkSectionV9Type extends Type<BedrockChunkSection> {
         final short layers = buffer.readUnsignedByte(); // layer count
         buffer.readUnsignedByte(); // section y // Unused by Mojang client
         for (int i = 0; i < layers; i++) {
-            chunkSection.addPalette(PaletteType.BLOCKS, BedrockTypes.BLOCK_PALETTE.read(buffer)); // block palette
+            chunkSection.addPalette(PaletteType.BLOCKS, BedrockTypes.DATA_PALETTE.read(buffer)); // block palette
         }
         return chunkSection;
     }
@@ -51,7 +51,7 @@ public class ChunkSectionV9Type extends Type<BedrockChunkSection> {
         buffer.writeByte(palettes.size()); // layer count
         buffer.writeByte(0); // section y // Unused by Mojang client
         for (DataPalette palette : palettes) {
-            BedrockTypes.BLOCK_PALETTE.write(buffer, (BedrockDataPalette) palette); // block palette
+            BedrockTypes.DATA_PALETTE.write(buffer, (BedrockDataPalette) palette); // block palette
         }
     }
 

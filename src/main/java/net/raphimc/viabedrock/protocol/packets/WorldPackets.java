@@ -18,6 +18,8 @@
 package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.minecraft.BlockChangeRecord;
+import com.viaversion.viaversion.api.minecraft.BlockChangeRecord1_16_2;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
@@ -41,6 +43,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.BlockState;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResult;
+import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
@@ -50,7 +53,9 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.ByteArrayType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -147,7 +152,7 @@ public class WorldPackets {
                                         }
                                     } else {
                                         for (int i = 0; i < sections.length; i++) {
-                                            BedrockDataPalette biomePalette = BedrockTypes.BIOME_PALETTE.read(dataBuf); // biome palette
+                                            BedrockDataPalette biomePalette = BedrockTypes.DATA_PALETTE.read(dataBuf); // biome palette
                                             if (biomePalette == null) {
                                                 if (i == 0) {
                                                     throw new RuntimeException("First biome palette can not point to previous biome palette");
@@ -198,106 +203,197 @@ public class WorldPackets {
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SUB_CHUNK, ClientboundPackets1_19_3.CHUNK_DATA, new PacketHandlers() {
-            @Override
-            public void register() {
-                handler(wrapper -> {
-                    wrapper.cancel();
-                    final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+        protocol.registerClientbound(ClientboundBedrockPackets.SUB_CHUNK, ClientboundPackets1_19_3.CHUNK_DATA, wrapper -> {
+            wrapper.cancel();
+            final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
 
-                    final boolean cachingEnabled = wrapper.read(Type.BOOLEAN); // caching enabled
-                    final int dimensionId = wrapper.read(BedrockTypes.VAR_INT); // dimension id
-                    if (dimensionId != chunkTracker.getDimensionId()) {
+            final boolean cachingEnabled = wrapper.read(Type.BOOLEAN); // caching enabled
+            final int dimensionId = wrapper.read(BedrockTypes.VAR_INT); // dimension id
+            if (dimensionId != chunkTracker.getDimensionId()) {
+                return;
+            }
+
+            final Position center = wrapper.read(BedrockTypes.POSITION_3I); // center position
+            final long count = wrapper.read(BedrockTypes.UNSIGNED_INT_LE); // count
+
+            for (long i = 0; i < count; i++) {
+                final Position offset = wrapper.read(BedrockTypes.SUB_CHUNK_OFFSET); // offset
+                final Position absolute = new Position(center.x() + offset.x(), center.y() + offset.y(), center.z() + offset.z());
+                final byte result = wrapper.read(Type.BYTE); // result
+                final byte[] data = result != SubChunkResult.SUCCESS_ALL_AIR || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
+                final byte heightmapResult = wrapper.read(Type.BYTE); // heightmap result
+                final byte[] heightmapData = heightmapResult == 1 ? wrapper.read(new ByteArrayType(256)) : new byte[0]; // heightmap data
+
+                final Consumer<byte[]> dataConsumer = combinedData -> {
+                    try {
+                        if (result == SubChunkResult.SUCCESS_ALL_AIR) {
+                            if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), new BedrockChunkSectionImpl(), new ArrayList<>())) {
+                                chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
+                            }
+                        } else if (result == SubChunkResult.SUCCESS) {
+                            final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
+
+                            BedrockChunkSection section = new BedrockChunkSectionImpl();
+                            final List<BlockEntity> blockEntities = new ArrayList<>();
+                            try {
+                                section = BedrockTypes.CHUNK_SECTION.read(dataBuf); // chunk section
+                                while (dataBuf.isReadable()) {
+                                    blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.TAG.read(dataBuf))); // block entity tag
+                                }
+                            } catch (Throwable e) {
+                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading sub chunk data", e);
+                            }
+                            if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), section, blockEntities)) {
+                                chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
+                            }
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk with result " + result);
+                            chunkTracker.requestSubChunk(absolute.x(), absolute.y(), absolute.z());
+                        }
+                    } catch (Throwable e) {
+                        throw new RuntimeException("Error handling sub chunk data", e);
+                    }
+                };
+
+                if (cachingEnabled) {
+                    final long hash = wrapper.read(BedrockTypes.LONG_LE); // blob id
+                    Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(wrapper.user(), hash).thenAccept(blob -> {
+                        if (data.length == 0) {
+                            dataConsumer.accept(blob);
+                        } else if (blob.length == 0) {
+                            dataConsumer.accept(data);
+                        } else {
+                            final byte[] combinedData = new byte[data.length + blob.length];
+                            System.arraycopy(blob, 0, combinedData, 0, blob.length);
+                            System.arraycopy(data, 0, combinedData, blob.length, data.length);
+                            dataConsumer.accept(combinedData);
+                        }
+                    });
+                } else {
+                    dataConsumer.accept(data);
+                }
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_BLOCK, ClientboundPackets1_19_3.BLOCK_CHANGE, new PacketHandlers() {
+            @Override
+            protected void register() {
+                map(BedrockTypes.POSITION_3I, Type.POSITION1_14); // position
+                handler(wrapper -> {
+                    final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+                    final Position position = wrapper.get(Type.POSITION1_14, 0);
+                    final int blockState = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // block state
+                    wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // flags
+                    final int layer = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // layer
+                    if (layer < 0 || layer > 1) {
+                        wrapper.cancel();
                         return;
                     }
 
-                    final Position center = wrapper.read(BedrockTypes.POSITION_3I); // center position
-                    final long count = wrapper.read(BedrockTypes.UNSIGNED_INT_LE); // count
-
-                    for (long i = 0; i < count; i++) {
-                        final Position offset = wrapper.read(BedrockTypes.SUB_CHUNK_OFFSET); // offset
-                        final Position absolute = new Position(center.x() + offset.x(), center.y() + offset.y(), center.z() + offset.z());
-                        final byte result = wrapper.read(Type.BYTE); // result
-                        final byte[] data = result != SubChunkResult.SUCCESS_ALL_AIR || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
-                        final byte heightmapResult = wrapper.read(Type.BYTE); // heightmap result
-                        final byte[] heightmapData = heightmapResult == 1 ? wrapper.read(new ByteArrayType(256)) : new byte[0]; // heightmap data
-
-                        final Consumer<byte[]> dataConsumer = combinedData -> {
-                            try {
-                                if (result == SubChunkResult.SUCCESS_ALL_AIR) {
-                                    if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), new BedrockChunkSectionImpl(), new ArrayList<>())) {
-                                        chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
-                                    }
-                                } else if (result == SubChunkResult.SUCCESS) {
-                                    final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
-
-                                    BedrockChunkSection section = new BedrockChunkSectionImpl();
-                                    final List<BlockEntity> blockEntities = new ArrayList<>();
-                                    try {
-                                        section = BedrockTypes.CHUNK_SECTION.read(dataBuf); // chunk section
-                                        while (dataBuf.isReadable()) {
-                                            blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.TAG.read(dataBuf))); // block entity tag
-                                        }
-                                    } catch (Throwable e) {
-                                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading sub chunk data", e);
-                                    }
-                                    if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), section, blockEntities)) {
-                                        chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
-                                    }
-                                } else {
-                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk with result " + result);
-                                    chunkTracker.requestSubChunk(absolute.x(), absolute.y(), absolute.z());
-                                }
-                            } catch (Throwable e) {
-                                throw new RuntimeException("Error handling sub chunk data", e);
-                            }
-                        };
-
-                        if (cachingEnabled) {
-                            final long hash = wrapper.read(BedrockTypes.LONG_LE); // blob id
-                            Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(wrapper.user(), hash).thenAccept(blob -> {
-                                if (data.length == 0) {
-                                    dataConsumer.accept(blob);
-                                } else if (blob.length == 0) {
-                                    dataConsumer.accept(data);
-                                } else {
-                                    final byte[] combinedData = new byte[data.length + blob.length];
-                                    System.arraycopy(blob, 0, combinedData, 0, blob.length);
-                                    System.arraycopy(data, 0, combinedData, blob.length, data.length);
-                                    dataConsumer.accept(combinedData);
-                                }
-                            });
-                        } else {
-                            dataConsumer.accept(data);
-                        }
+                    final int remappedBlockState = chunkTracker.handleBlockChange(position, layer, blockState);
+                    if (remappedBlockState == -1) {
+                        wrapper.cancel();
+                        return;
                     }
+
+                    wrapper.write(Type.VAR_INT, remappedBlockState); // block state
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_CHUNK_PUBLISHER_UPDATE, ClientboundPackets1_19_3.UPDATE_VIEW_DISTANCE, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_BLOCK_SYNCED, ClientboundPackets1_19_3.BLOCK_CHANGE, new PacketHandlers() {
             @Override
-            public void register() {
+            protected void register() {
+                map(BedrockTypes.POSITION_3I, Type.POSITION1_14); // position
                 handler(wrapper -> {
-                    final Position position = wrapper.read(BedrockTypes.POSITION_3I); // center position
-                    final int radius = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT) >> 4; // radius
-                    wrapper.write(Type.VAR_INT, radius); // radius
-
                     final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
-                    chunkTracker.setRadius(radius);
-                    chunkTracker.setCenter(position.x() >> 4, position.z() >> 4);
-
-                    final PacketWrapper updateViewPosition = wrapper.create(ClientboundPackets1_19_3.UPDATE_VIEW_POSITION);
-                    updateViewPosition.write(Type.VAR_INT, position.x() >> 4); // chunk x
-                    updateViewPosition.write(Type.VAR_INT, position.z() >> 4); // chunk z
-                    updateViewPosition.send(BedrockProtocol.class);
-
-                    // TODO: What to do with this?
-                    final int count = wrapper.read(BedrockTypes.INT_LE); // saved chunks count
-                    for (int i = 0; i < count; i++) {
-                        wrapper.read(BedrockTypes.VAR_INT); // chunk x
-                        wrapper.read(BedrockTypes.VAR_INT); // chunk z
+                    final Position position = wrapper.get(Type.POSITION1_14, 0);
+                    final int blockState = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // block state
+                    wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // flags
+                    final int layer = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // layer
+                    wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+                    wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // block sync type
+                    if (layer < 0 || layer > 1) {
+                        wrapper.cancel();
+                        return;
                     }
+
+                    final int remappedBlockState = chunkTracker.handleBlockChange(position, layer, blockState);
+                    if (remappedBlockState == -1) {
+                        wrapper.cancel();
+                        return;
+                    }
+
+                    wrapper.write(Type.VAR_INT, remappedBlockState); // block state
                 });
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SUB_CHUNK_BLOCKS, ClientboundPackets1_19_3.MULTI_BLOCK_CHANGE, wrapper -> {
+            wrapper.cancel(); // Need multiple packets because offsets can go over chunk boundaries
+            final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+            final Position position = wrapper.read(BedrockTypes.POSITION_3I); // chunk position
+            final BlockChangeEntry[] layer0Blocks = wrapper.read(BedrockTypes.BLOCK_CHANGE_ENTRY_ARRAY); // standard blocks
+            final BlockChangeEntry[] layer1Blocks = wrapper.read(BedrockTypes.BLOCK_CHANGE_ENTRY_ARRAY); // extra blocks
+
+            // TODO: Bedrock does some weird validation for position
+
+            final Map<Position, List<BlockChangeRecord>> blockChanges = new HashMap<>();
+            for (BlockChangeEntry entry : layer0Blocks) {
+                final int remappedBlockState = chunkTracker.handleBlockChange(entry.position(), 0, entry.blockState());
+                if (remappedBlockState == -1) {
+                    continue;
+                }
+
+                final Position chunkPosition = new Position(entry.position().x() >> 4, entry.position().y() >> 4, entry.position().z() >> 4);
+                final Position relative = new Position(entry.position().x() & 0xF, entry.position().y() & 0xF, entry.position().z() & 0xF);
+                blockChanges.computeIfAbsent(chunkPosition, k -> new ArrayList<>()).add(new BlockChangeRecord1_16_2(relative.x(), relative.y(), relative.z(), remappedBlockState));
+            }
+            for (BlockChangeEntry entry : layer1Blocks) {
+                final int remappedBlockState = chunkTracker.handleBlockChange(entry.position(), 1, entry.blockState());
+                if (remappedBlockState == -1) {
+                    continue;
+                }
+
+                final Position chunkPosition = new Position(entry.position().x() >> 4, entry.position().y() >> 4, entry.position().z() >> 4);
+                final Position relative = new Position(entry.position().x() & 0xF, entry.position().y() & 0xF, entry.position().z() & 0xF);
+                blockChanges.computeIfAbsent(chunkPosition, k -> new ArrayList<>()).add(new BlockChangeRecord1_16_2(relative.x(), relative.y(), relative.z(), remappedBlockState));
+            }
+
+            if (blockChanges.isEmpty()) {
+                return;
+            }
+
+            for (Map.Entry<Position, List<BlockChangeRecord>> entry : blockChanges.entrySet()) {
+                final Position chunkPosition = entry.getKey();
+                final List<BlockChangeRecord> changes = entry.getValue();
+                long chunkKey = (chunkPosition.x() & 0x3FFFFFL) << 42;
+                chunkKey |= (chunkPosition.z() & 0x3FFFFFL) << 20;
+                chunkKey |= (chunkPosition.y() & 0xFFFL);
+
+                final PacketWrapper multiBlockChange = wrapper.create(ClientboundPackets1_19_3.MULTI_BLOCK_CHANGE);
+                multiBlockChange.write(Type.LONG, chunkKey); // chunk position
+                multiBlockChange.write(Type.BOOLEAN, true); // suppress light updates
+                multiBlockChange.write(Type.VAR_LONG_BLOCK_CHANGE_RECORD_ARRAY, changes.toArray(new BlockChangeRecord[0]));
+                multiBlockChange.send(BedrockProtocol.class);
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_CHUNK_PUBLISHER_UPDATE, ClientboundPackets1_19_3.UPDATE_VIEW_DISTANCE, wrapper -> {
+            final Position position = wrapper.read(BedrockTypes.POSITION_3I); // center position
+            final int radius = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT) >> 4; // radius
+            wrapper.write(Type.VAR_INT, radius); // radius
+
+            final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+            chunkTracker.setRadius(radius);
+            chunkTracker.setCenter(position.x() >> 4, position.z() >> 4);
+
+            final PacketWrapper updateViewPosition = wrapper.create(ClientboundPackets1_19_3.UPDATE_VIEW_POSITION);
+            updateViewPosition.write(Type.VAR_INT, position.x() >> 4); // chunk x
+            updateViewPosition.write(Type.VAR_INT, position.z() >> 4); // chunk z
+            updateViewPosition.send(BedrockProtocol.class);
+
+            // TODO: What to do with this?
+            final int count = wrapper.read(BedrockTypes.INT_LE); // saved chunks count
+            for (int i = 0; i < count; i++) {
+                wrapper.read(BedrockTypes.VAR_INT); // chunk x
+                wrapper.read(BedrockTypes.VAR_INT); // chunk z
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CHUNK_RADIUS_UPDATED, ClientboundPackets1_19_3.UPDATE_VIEW_DISTANCE, new PacketHandlers() {

@@ -54,8 +54,7 @@ public class OtherPlayerPackets {
             }
 
             if (mode == MovePlayerMode.HEAD_ROTATION) {
-                // TODO: handle this
-                wrapper.cancel();
+                BedrockProtocol.kickForIllegalState(wrapper.user(), "Head rotation is not implemented");
                 return;
             }
 

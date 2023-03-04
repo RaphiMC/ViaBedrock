@@ -34,13 +34,13 @@ public class ChunkSectionV1Type extends Type<BedrockChunkSection> {
     @Override
     public BedrockChunkSection read(ByteBuf buffer) throws Exception {
         final BedrockChunkSection chunkSection = new BedrockChunkSectionImpl();
-        chunkSection.addPalette(PaletteType.BLOCKS, BedrockTypes.BLOCK_PALETTE.read(buffer)); // block palette
+        chunkSection.addPalette(PaletteType.BLOCKS, BedrockTypes.DATA_PALETTE.read(buffer)); // block palette
         return chunkSection;
     }
 
     @Override
     public void write(ByteBuf buffer, BedrockChunkSection value) throws Exception {
-        BedrockTypes.BLOCK_PALETTE.write(buffer, (BedrockDataPalette) value.palette(PaletteType.BLOCKS)); // block palette
+        BedrockTypes.DATA_PALETTE.write(buffer, (BedrockDataPalette) value.palette(PaletteType.BLOCKS)); // block palette
     }
 
 }

@@ -210,13 +210,13 @@ public class JoinPackets {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses server authoritative movement. This is not stable yet.");
                     }
 
-                    wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties));
-                    wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
                     spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
                     final int javaEntityId = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId).javaId();
                     entityTracker.getClientPlayer().setPosition(new Position3f(playerPosition.x(), playerPosition.y() + 1.62F, playerPosition.z()));
                     entityTracker.getClientPlayer().setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
                     entityTracker.getClientPlayer().setOnGround(false);
+                    wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties));
+                    wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
 
                     final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_3.JOIN_GAME, wrapper.user());
                     joinGame.write(Type.INT, javaEntityId); // entity id

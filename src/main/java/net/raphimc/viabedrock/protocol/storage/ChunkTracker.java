@@ -140,38 +140,6 @@ public class ChunkTracker extends StoredObject {
         return chunk;
     }
 
-    public boolean mergeSubChunk(final int chunkX, final int subChunkY, final int chunkZ, final BedrockChunkSection other, final List<BlockEntity> blockEntities) {
-        if (!this.isInViewDistance(chunkX, chunkZ)) return false;
-
-        final SubChunkPosition position = new SubChunkPosition(chunkX, subChunkY, chunkZ);
-        synchronized (this.subChunkLock) {
-            if (!this.pendingSubChunks.contains(position)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk that was not requested: " + chunkX + ", " + chunkZ);
-                return false;
-            }
-            this.pendingSubChunks.remove(position);
-        }
-
-        final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
-        if (chunk == null) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk for unloaded chunk: " + chunkX + ", " + chunkZ);
-            return false;
-        }
-
-        final BedrockChunkSection section = chunk.getSections()[subChunkY + Math.abs(this.minY >> 4)];
-        section.mergeWith(this.handleBlockPalette(other));
-        section.applyPendingBlockUpdates(this.getUser().get(BlockStateRewriter.class).bedrockId(BlockState.AIR));
-        chunk.blockEntities().addAll(blockEntities);
-
-        return true;
-    }
-
-    public BedrockChunkSection handleBlockPalette(final BedrockChunkSection section) {
-        this.replaceLegacyBlocks(section);
-        this.resolveTagPalette(section);
-        return section;
-    }
-
     public void unloadChunk(final int chunkX, final int chunkZ) throws Exception {
         synchronized (this.chunkLock) {
             this.chunks.remove(this.chunkKey(chunkX, chunkZ));
@@ -199,6 +167,10 @@ public class ChunkTracker extends StoredObject {
         if (sectionIndex >= chunk.getSections().length) return null;
 
         return chunk.getSections()[sectionIndex];
+    }
+
+    public BedrockChunkSection getChunkSection(final Position blockPosition) {
+        return this.getChunkSection(blockPosition.x() >> 4, blockPosition.y() >> 4, blockPosition.z() >> 4);
     }
 
     public boolean isChunkLoaded(final int chunkX, final int chunkZ) {
@@ -248,6 +220,145 @@ public class ChunkTracker extends StoredObject {
         }
     }
 
+    public void requestSubChunks(final int chunkX, final int chunkZ, final int from, final int to) {
+        for (int i = from; i < to; i++) {
+            this.requestSubChunk(chunkX, i, chunkZ);
+        }
+    }
+
+    public void requestSubChunk(final int chunkX, final int subChunkY, final int chunkZ) {
+        if (!this.isInViewDistance(chunkX, chunkZ)) return;
+
+        synchronized (this.subChunkLock) {
+            this.subChunkRequests.add(new SubChunkPosition(chunkX, subChunkY, chunkZ));
+        }
+    }
+
+    public void sendChunkInNextTick(final int chunkX, final int chunkZ) {
+        synchronized (this.dirtyChunks) {
+            this.dirtyChunks.add(this.chunkKey(chunkX, chunkZ));
+        }
+    }
+
+    public void sendChunk(final int chunkX, final int chunkZ) throws Exception {
+        final Chunk chunk = this.getChunk(chunkX, chunkZ);
+        if (chunk == null) {
+            return;
+        }
+        final Chunk remappedChunk = this.remapChunk(chunk);
+
+        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_19_3.CHUNK_DATA, this.getUser());
+        final BitSet lightMask = new BitSet();
+        lightMask.set(0, remappedChunk.getSections().length + 2);
+        wrapper.write(this.chunkType, remappedChunk); // chunk
+        wrapper.write(Type.BOOLEAN, true); // trust edges
+        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // sky light mask
+        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, new long[0]); // block light mask
+        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, new long[0]); // empty sky light mask
+        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // empty block light mask
+        wrapper.write(Type.VAR_INT, remappedChunk.getSections().length + 2); // sky light length
+        for (int i = 0; i < remappedChunk.getSections().length + 2; i++) {
+            wrapper.write(Type.BYTE_ARRAY_PRIMITIVE, FULL_LIGHT); // sky light
+        }
+        wrapper.write(Type.VAR_INT, 0); // block light length
+        wrapper.send(BedrockProtocol.class);
+    }
+
+    public boolean mergeSubChunk(final int chunkX, final int subChunkY, final int chunkZ, final BedrockChunkSection other, final List<BlockEntity> blockEntities) {
+        if (!this.isInViewDistance(chunkX, chunkZ)) return false;
+
+        final SubChunkPosition position = new SubChunkPosition(chunkX, subChunkY, chunkZ);
+        synchronized (this.subChunkLock) {
+            if (!this.pendingSubChunks.contains(position)) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk that was not requested: " + chunkX + ", " + chunkZ);
+                return false;
+            }
+            this.pendingSubChunks.remove(position);
+        }
+
+        final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
+        if (chunk == null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk for unloaded chunk: " + chunkX + ", " + chunkZ);
+            return false;
+        }
+
+        final BedrockChunkSection section = chunk.getSections()[subChunkY + Math.abs(this.minY >> 4)];
+        section.mergeWith(this.handleBlockPalette(other));
+        section.applyPendingBlockUpdates(this.getUser().get(BlockStateRewriter.class).bedrockId(BlockState.AIR));
+        chunk.blockEntities().addAll(blockEntities);
+
+        return true;
+    }
+
+    public int handleBlockChange(final Position blockPosition, final int layer, final int blockState) {
+        final BedrockChunkSection section = this.getChunkSection(blockPosition);
+        if (section == null) {
+            return -1;
+        }
+
+        final int sectionX = blockPosition.x() & 15;
+        final int sectionY = blockPosition.y() & 15;
+        final int sectionZ = blockPosition.z() & 15;
+
+        if (section.hasPendingBlockUpdates()) {
+            section.addPendingBlockUpdate(sectionX, sectionY, sectionZ, layer, blockState);
+            return -1;
+        }
+
+        final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
+        while (section.palettesCount(PaletteType.BLOCKS) <= layer) {
+            final BedrockDataPalette palette = new BedrockDataPalette();
+            palette.addId(blockStateRewriter.bedrockId(BlockState.AIR));
+            section.addPalette(PaletteType.BLOCKS, palette);
+        }
+
+        final List<DataPalette> blockPalettes = section.palettes(PaletteType.BLOCKS);
+        blockPalettes.get(layer).setIdAt(sectionX, sectionY, sectionZ, blockState);
+
+        final int layer0BlockState = blockPalettes.get(0).idAt(sectionX, sectionY, sectionZ);
+        int remappedBlockState = blockStateRewriter.javaId(layer0BlockState);
+        if (remappedBlockState == -1) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + layer0BlockState);
+            remappedBlockState = 0;
+        }
+
+        if (blockPalettes.size() > 1) {
+            final int layer1BlockState = blockPalettes.get(1).idAt(sectionX, sectionY, sectionZ);
+            if (blockStateRewriter.isWater(layer1BlockState)) { // Waterlogging
+                final int prevBlockState = remappedBlockState;
+                remappedBlockState = blockStateRewriter.waterlog(remappedBlockState);
+                if (remappedBlockState == -1) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing waterlogged block state: " + prevBlockState);
+                    remappedBlockState = prevBlockState;
+                }
+            }
+        }
+
+        return remappedBlockState;
+    }
+
+    public BedrockChunkSection handleBlockPalette(final BedrockChunkSection section) {
+        this.replaceLegacyBlocks(section);
+        this.resolveTagPalette(section);
+        return section;
+    }
+
+    public int getDimensionId() {
+        return this.dimensionId;
+    }
+
+    public int getMinY() {
+        return this.minY;
+    }
+
+    public int getMaxY() {
+        return this.worldHeight - Math.abs(this.minY);
+    }
+
+    public int getWorldHeight() {
+        return this.worldHeight;
+    }
+
     public void tick() throws Exception {
         synchronized (this.dirtyChunks) {
             if (!this.dirtyChunks.isEmpty()) {
@@ -294,54 +405,8 @@ public class ChunkTracker extends StoredObject {
         }
     }
 
-    public void requestSubChunks(final int chunkX, final int chunkZ, final int from, final int to) {
-        for (int i = from; i < to; i++) {
-            this.requestSubChunk(chunkX, i, chunkZ);
-        }
-    }
-
-    public void requestSubChunk(final int chunkX, final int subChunkY, final int chunkZ) {
-        if (!this.isInViewDistance(chunkX, chunkZ)) return;
-
-        synchronized (this.subChunkLock) {
-            this.subChunkRequests.add(new SubChunkPosition(chunkX, subChunkY, chunkZ));
-        }
-    }
-
-    public void sendChunkInNextTick(final int chunkX, final int chunkZ) {
-        synchronized (this.dirtyChunks) {
-            this.dirtyChunks.add(this.chunkKey(chunkX, chunkZ));
-        }
-    }
-
-    public void sendChunk(final int chunkX, final int chunkZ) throws Exception {
-        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_19_3.CHUNK_DATA, this.getUser());
-        this.writeChunk(wrapper, chunkX, chunkZ);
-        wrapper.send(BedrockProtocol.class);
-    }
-
-    public void writeChunk(final PacketWrapper wrapper, final int chunkX, final int chunkZ) {
-        final Chunk chunk = this.getChunk(chunkX, chunkZ);
-        if (chunk == null) {
-            wrapper.cancel();
-            return;
-        }
-
-        final Chunk remappedChunk = this.remapChunk(chunk);
-
-        final BitSet lightMask = new BitSet();
-        lightMask.set(0, remappedChunk.getSections().length + 2);
-        wrapper.write(this.chunkType, remappedChunk); // chunk
-        wrapper.write(Type.BOOLEAN, true); // trust edges
-        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // sky light mask
-        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, new long[0]); // block light mask
-        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, new long[0]); // empty sky light mask
-        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // empty block light mask
-        wrapper.write(Type.VAR_INT, remappedChunk.getSections().length + 2); // sky light length
-        for (int i = 0; i < remappedChunk.getSections().length + 2; i++) {
-            wrapper.write(Type.BYTE_ARRAY_PRIMITIVE, FULL_LIGHT); // sky light
-        }
-        wrapper.write(Type.VAR_INT, 0); // block light length
+    private long chunkKey(final int chunkX, final int chunkZ) {
+        return ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
     }
 
     private Chunk remapChunk(final Chunk chunk) {
@@ -477,26 +542,6 @@ public class ChunkTracker extends StoredObject {
         // TODO: Lighting
 
         return remappedChunk;
-    }
-
-    public int getDimensionId() {
-        return this.dimensionId;
-    }
-
-    public int getMinY() {
-        return this.minY;
-    }
-
-    public int getMaxY() {
-        return this.worldHeight - Math.abs(this.minY);
-    }
-
-    public int getWorldHeight() {
-        return this.worldHeight;
-    }
-
-    public long chunkKey(final int chunkX, final int chunkZ) {
-        return ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
     }
 
     private void resolveTagPalette(final ChunkSection section) {

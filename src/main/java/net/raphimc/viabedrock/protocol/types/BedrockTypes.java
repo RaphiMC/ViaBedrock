@@ -73,8 +73,8 @@ public class BedrockTypes {
     public static final Type<ResourcePack> RESOURCE_PACK = new ResourcePackType();
     public static final Type<ResourcePack[]> RESOURCE_PACK_ARRAY = new ArrayType<>(RESOURCE_PACK, UNSIGNED_SHORT_LE);
     public static final Type<Pair<UUID, String>> PACK_ID_AND_VERSION = new PackIdAndVersionType();
-
-    public static final Type<BedrockDataPalette> BLOCK_PALETTE = new DataPaletteType();
-    public static final Type<BedrockDataPalette> BIOME_PALETTE = new DataPaletteType();
+    public static final Type<BlockChangeEntry> BLOCK_CHANGE_ENTRY = new BlockChangeEntryType();
+    public static final Type<BlockChangeEntry[]> BLOCK_CHANGE_ENTRY_ARRAY = new ArrayType<>(BLOCK_CHANGE_ENTRY, UNSIGNED_VAR_INT);
+    public static final Type<BedrockDataPalette> DATA_PALETTE = new DataPaletteType();
 
 }

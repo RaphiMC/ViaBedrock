@@ -39,7 +39,7 @@ public class ChunkSectionV8Type extends Type<BedrockChunkSection> {
         final BedrockChunkSection chunkSection = new BedrockChunkSectionImpl();
         final short layers = buffer.readUnsignedByte(); // layer count
         for (int i = 0; i < layers; i++) {
-            chunkSection.addPalette(PaletteType.BLOCKS, BedrockTypes.BLOCK_PALETTE.read(buffer)); // block palette
+            chunkSection.addPalette(PaletteType.BLOCKS, BedrockTypes.DATA_PALETTE.read(buffer)); // block palette
         }
         return chunkSection;
     }
@@ -49,7 +49,7 @@ public class ChunkSectionV8Type extends Type<BedrockChunkSection> {
         final List<DataPalette> palettes = value.palettes(PaletteType.BLOCKS);
         buffer.writeByte(palettes.size()); // layer count
         for (DataPalette palette : palettes) {
-            BedrockTypes.BLOCK_PALETTE.write(buffer, (BedrockDataPalette) palette); // block palette
+            BedrockTypes.DATA_PALETTE.write(buffer, (BedrockDataPalette) palette); // block palette
         }
     }
 
