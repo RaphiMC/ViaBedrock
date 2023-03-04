@@ -23,7 +23,6 @@ import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
-import com.viaversion.viaversion.api.data.MappingDataLoader;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
@@ -85,7 +84,7 @@ public class BedrockMappingData extends MappingDataBase {
         this.registries = this.readNBT("java/registries.nbt");
         this.tags = this.readNBT("java/tags.nbt");
 
-        final JsonArray javaBlockStatesJson = MappingDataLoader.loadData("mapping-1.19.3.json", true).getAsJsonArray("blockstates");
+        final JsonArray javaBlockStatesJson = this.readJson("java/mapping-1.19.3.json").getAsJsonArray("blockstates");
         this.javaBlockStates = HashBiMap.create(javaBlockStatesJson.size());
         for (int i = 0; i < javaBlockStatesJson.size(); i++) {
             final BlockState blockState = BlockState.fromString(javaBlockStatesJson.get(i).getAsString());

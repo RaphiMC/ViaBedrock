@@ -21,6 +21,9 @@ This file has been copied from the official bedrock client's assets folder:
 ### data/bedrock/r12_to_current_block_map.bin
 [PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/master/r12_to_current_block_map.bin)
 
+### data/java/mapping-1.19.3.json
+[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.19.3.json)
+
 ### data/java/registries.nbt
 This file has been dumped from a vanilla server using a fabric mod.
 
