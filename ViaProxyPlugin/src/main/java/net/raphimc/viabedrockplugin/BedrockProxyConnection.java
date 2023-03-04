@@ -104,7 +104,7 @@ public class BedrockProxyConnection extends ProxyConnection {
         if (this.channelFuture == null) {
             this.initialize(new Bootstrap());
         }
-        this.getChannel().bind(new InetSocketAddress(0)).addListener(ChannelFutureListener.CLOSE_ON_FAILURE).syncUninterruptibly();
+        this.getChannel().bind(new InetSocketAddress(0)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE).syncUninterruptibly();
         final RakClientChannel channel = (RakClientChannel) this.getChannel();
 
         { // Temporary fix for the ping encoder
