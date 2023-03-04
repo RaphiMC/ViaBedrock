@@ -77,7 +77,7 @@ public class BedrockMappingData extends MappingDataBase {
     @Override
     public void load() {
         if (Via.getManager().isDebug()) {
-            this.getLogger().info("Loading " + this.oldVersion + " -> " + this.newVersion + " mappings...");
+            this.getLogger().info("Loading " + this.unmappedVersion + " -> " + this.mappedVersion + " mappings...");
         }
 
         this.translations = this.readTranslationMap("bedrock/en_US.lang");
