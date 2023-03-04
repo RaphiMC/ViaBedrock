@@ -329,11 +329,9 @@ public class WorldPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SUB_CHUNK_BLOCKS, ClientboundPackets1_19_3.MULTI_BLOCK_CHANGE, wrapper -> {
             wrapper.cancel(); // Need multiple packets because offsets can go over chunk boundaries
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
-            final Position position = wrapper.read(BedrockTypes.POSITION_3I); // chunk position
+            wrapper.read(BedrockTypes.POSITION_3I); // position | Seems to be unused by the Mojang client
             final BlockChangeEntry[] layer0Blocks = wrapper.read(BedrockTypes.BLOCK_CHANGE_ENTRY_ARRAY); // standard blocks
             final BlockChangeEntry[] layer1Blocks = wrapper.read(BedrockTypes.BLOCK_CHANGE_ENTRY_ARRAY); // extra blocks
-
-            // TODO: Bedrock does some weird validation for position
 
             final Map<Position, List<BlockChangeRecord>> blockChanges = new HashMap<>();
             for (BlockChangeEntry entry : layer0Blocks) {
