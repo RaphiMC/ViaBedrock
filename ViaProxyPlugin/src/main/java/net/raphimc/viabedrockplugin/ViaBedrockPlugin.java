@@ -19,13 +19,10 @@ package net.raphimc.viabedrockplugin;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import io.netty.channel.ChannelHandlerContext;
 import net.lenni0451.lambdaevents.EventHandler;
-import net.lenni0451.reflect.Enums;
 import net.lenni0451.reflect.stream.RStream;
 import net.raphimc.mcauth.step.bedrock.StepMCChain;
-import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrockplugin.netty.Proxy2ServerRakNetChannelInitializer;
@@ -41,8 +38,6 @@ import net.raphimc.viaproxy.proxy.proxy2server.Proxy2ServerHandler;
 import net.raphimc.viaproxy.saves.impl.accounts.BedrockAccount;
 import net.raphimc.viaproxy.util.logging.Logger;
 
-import java.util.Map;
-
 public class ViaBedrockPlugin extends ViaProxyPlugin {
 
     public static VersionEnum bedrock;
@@ -51,10 +46,6 @@ public class ViaBedrockPlugin extends ViaProxyPlugin {
     public void onEnable() {
         Logger.LOGGER.error("ViaBedrock is in very early stages of development and NOT intended for regular use yet!");
         Logger.LOGGER.error("Continue at your own risk!");
-
-        Enums.addEnumInstance(VersionEnum.class, bedrock = Enums.newInstance(VersionEnum.class, "bedrock", 1_000_000, new Class[]{ProtocolVersion.class}, new Object[]{BedrockProtocolVersion.bedrockLatest}));
-        VersionEnum.SORTED_VERSIONS.add(bedrock);
-        RStream.of(VersionEnum.class).fields().by("VERSION_REGISTRY").<Map<ProtocolVersion, VersionEnum>>get().put(BedrockProtocolVersion.bedrockLatest, bedrock);
 
         PluginManager.EVENT_MANAGER.register(this);
     }
