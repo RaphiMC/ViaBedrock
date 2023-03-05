@@ -40,8 +40,6 @@ import net.raphimc.viaproxy.util.logging.Logger;
 
 public class ViaBedrockPlugin extends ViaProxyPlugin {
 
-    public static VersionEnum bedrock;
-
     @Override
     public void onEnable() {
         Logger.LOGGER.error("ViaBedrock is in very early stages of development and NOT intended for regular use yet!");
@@ -62,14 +60,14 @@ public class ViaBedrockPlugin extends ViaProxyPlugin {
 
     @EventHandler
     public void onGetDefaultPort(final GetDefaultPortEvent event) {
-        if (event.getServerVersion().equals(bedrock)) {
+        if (event.getServerVersion().equals(VersionEnum.bedrockLatest)) {
             event.setDefaultPort(19132);
         }
     }
 
     @EventHandler
     public void onResolveSrv(final ResolveSrvEvent event) {
-        if (event.getServerVersion().equals(bedrock)) event.setCancelled(true);
+        if (event.getServerVersion().equals(VersionEnum.bedrockLatest)) event.setCancelled(true);
     }
 
     @EventHandler
@@ -78,7 +76,7 @@ public class ViaBedrockPlugin extends ViaProxyPlugin {
             @Override
             public void channelActive(ChannelHandlerContext ctx) throws Exception {
                 super.channelActive(ctx);
-                if (!Options.PROTOCOL_VERSION.equals(bedrock)) return;
+                if (!Options.PROTOCOL_VERSION.equals(VersionEnum.bedrockLatest)) return;
 
                 final BedrockProxyConnection bedrockProxyConnection = new BedrockProxyConnection(() -> PluginManager.EVENT_MANAGER.call(new Proxy2ServerHandlerCreationEvent(new Proxy2ServerHandler())).getHandler(), Proxy2ServerRakNetChannelInitializer::new, ctx.channel());
                 ctx.channel().attr(ProxyConnection.PROXY_CONNECTION_ATTRIBUTE_KEY).set(bedrockProxyConnection);
