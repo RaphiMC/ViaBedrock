@@ -107,6 +107,12 @@ public class WorldPackets {
                 return;
             }
 
+            // TODO: Is this allowed?
+            if (dimensionId == wrapper.user().get(ChunkTracker.class).getDimensionId()) {
+                BedrockProtocol.kickForIllegalState(wrapper.user(), "Changing dimension to the same dimension is not supported");
+                return;
+            }
+
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
