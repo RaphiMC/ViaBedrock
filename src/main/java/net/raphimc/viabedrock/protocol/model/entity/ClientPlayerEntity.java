@@ -30,6 +30,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
+import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
 import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -44,6 +45,7 @@ public class ClientPlayerEntity extends Entity {
     // Initial spawn and respawning
     private boolean initiallySpawned;
     private boolean respawning;
+    private boolean changingDimension;
     private boolean wasInsideUnloadedChunk;
 
     // Position syncing
@@ -54,6 +56,9 @@ public class ClientPlayerEntity extends Entity {
     private Position3f prevPosition;
     private boolean prevOnGround;
     private long authInput;
+
+    // Misc data
+    private int gameType;
 
     public ClientPlayerEntity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId) {
         super(user, uniqueId, runtimeId, javaId, Entity1_19_3Types.PLAYER);
@@ -70,7 +75,7 @@ public class ClientPlayerEntity extends Entity {
         }
 
         if (this.respawning && this.gameSession.getMovementMode() == MovementMode.CLIENT) {
-            this.sendMovePlayerPacketToServer(MovePlayerMode.RESET);
+            this.sendMovePlayerPacketToServer(MovePlayerMode.RESPAWN);
         }
     }
 
@@ -270,8 +275,8 @@ public class ClientPlayerEntity extends Entity {
         return this.initiallySpawned;
     }
 
-    public void setInitiallySpawned(final boolean initiallySpawned) {
-        this.initiallySpawned = initiallySpawned;
+    public void setInitiallySpawned() {
+        this.initiallySpawned = true;
         this.respawning = false;
     }
 
@@ -283,35 +288,72 @@ public class ClientPlayerEntity extends Entity {
         this.respawning = respawning;
     }
 
+    public boolean isChangingDimension() {
+        return this.changingDimension;
+    }
+
+    public void setChangingDimension(final boolean changingDimension) {
+        this.changingDimension = changingDimension;
+    }
+
+    public int getGameType() {
+        return this.gameType;
+    }
+
+    public void setGameType(final int gameType) {
+        this.gameType = gameType;
+    }
+
     private boolean preMove(final Position3f newPosition, final boolean positionLook) throws Exception {
         final ChunkTracker chunkTracker = this.user.get(ChunkTracker.class);
 
-        if (!this.initiallySpawned && !this.position.equals(newPosition)) {
-            this.sendPlayerPositionPacketToClient(false);
-            return false;
-        }
+        // Waiting for position sync
         if (this.waitingForPositionSync) {
             if (this.pendingTeleportId == 0 && positionLook) {
                 this.waitingForPositionSync = false;
             }
             return false;
         }
+        // Is in unloaded chunk
         if (chunkTracker.isInUnloadedChunkSection(this.position)) {
             this.wasInsideUnloadedChunk = true;
             if (!this.position.equals(newPosition)) {
-                this.waitingForPositionSync = true;
-                this.sendPlayerPositionPacketToClient(true);
+                if (!this.initiallySpawned || this.respawning || this.changingDimension) {
+                    this.sendPlayerPositionPacketToClient(false);
+                } else {
+                    this.waitingForPositionSync = true;
+                    this.sendPlayerPositionPacketToClient(true);
+                }
             }
             return false;
         } else if (this.wasInsideUnloadedChunk) {
             this.wasInsideUnloadedChunk = false;
             this.waitingForPositionSync = true;
             this.sendPlayerPositionPacketToClient(true);
+
+            if (this.changingDimension) {
+                this.user.get(PacketSyncStorage.class).syncWithClient(() -> {
+                    this.sendPlayerActionPacketToServer(PlayerActionTypes.DIMENSION_CHANGE_SUCCESS, 0);
+                    this.closeDownloadingTerrainScreen();
+                    changingDimension = false;
+                    respawning = false;
+                    return null;
+                });
+            }
+
             return false;
         }
+        // Loaded -> Unloaded chunk
         if (newPosition != null && chunkTracker.isInUnloadedChunkSection(newPosition)) {
             this.waitingForPositionSync = true;
             this.sendPlayerPositionPacketToClient(true);
+            return false;
+        }
+        // Not spawned yet or respawning
+        if (!this.initiallySpawned || this.respawning || this.changingDimension) {
+            if (!this.position.equals(newPosition)) {
+                this.sendPlayerPositionPacketToClient(false);
+            }
             return false;
         }
 

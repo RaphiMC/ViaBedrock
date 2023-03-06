@@ -27,9 +27,11 @@ public class GameSessionStorage extends StoredObject {
     private CompoundTag javaRegistries;
     private CompoundTag bedrockBiomeDefinitions;
     private Semver bedrockVanillaVersion;
+    private boolean flatGenerator;
     private int movementMode;
     private boolean chatRestricted;
     private boolean commandsEnabled;
+    private int levelGameType;
 
     public GameSessionStorage(final UserConnection user) {
         super(user);
@@ -59,6 +61,14 @@ public class GameSessionStorage extends StoredObject {
         this.bedrockVanillaVersion = bedrockVanillaVersion;
     }
 
+    public boolean isFlatGenerator() {
+        return this.flatGenerator;
+    }
+
+    public void setFlatGenerator(final boolean flatGenerator) {
+        this.flatGenerator = flatGenerator;
+    }
+
     public int getMovementMode() {
         return this.movementMode;
     }
@@ -81,6 +91,14 @@ public class GameSessionStorage extends StoredObject {
 
     public void setCommandsEnabled(final boolean commandsEnabled) {
         this.commandsEnabled = commandsEnabled;
+    }
+
+    public int getLevelGameType() {
+        return this.levelGameType;
+    }
+
+    public void setLevelGameType(final int levelGameType) {
+        this.levelGameType = levelGameType;
     }
 
 }

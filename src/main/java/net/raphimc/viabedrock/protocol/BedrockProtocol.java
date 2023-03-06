@@ -120,6 +120,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         user.put(new GameSessionStorage(user));
         user.put(new EntityTracker(user));
         user.put(new BlobCache(user));
+        user.put(new PacketSyncStorage(user));
     }
 
     @Override

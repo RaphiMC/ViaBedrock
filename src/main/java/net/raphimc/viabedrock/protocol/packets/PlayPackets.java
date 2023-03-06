@@ -37,6 +37,7 @@ import net.raphimc.viabedrock.protocol.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
+import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.UUID;
@@ -65,11 +66,15 @@ public class PlayPackets {
                 clientCacheStatus.write(Type.BOOLEAN, ViaBedrock.getConfig().isBlobCacheEnabled()); // is supported
                 clientCacheStatus.sendToServer(BedrockProtocol.class);
             }
-            if (status == PlayStatus.PLAYER_SPAWN) { // First spawn
+            if (status == PlayStatus.PLAYER_SPAWN) { // Spawn player
                 wrapper.cancel();
                 final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
                 if (clientPlayer.isInitiallySpawned()) {
-                    return; // Mojang client silently ignores this packet if the player is already spawned
+                    if (clientPlayer.isChangingDimension()) {
+                        clientPlayer.closeDownloadingTerrainScreen();
+                    }
+
+                    return;
                 }
                 if (gameSession.getBedrockBiomeDefinitions() == null) {
                     BedrockProtocol.kickForIllegalState(wrapper.user(), "Tried to spawn the client player before the biome definitions were loaded!");
@@ -90,7 +95,7 @@ public class PlayPackets {
                 emoteList.sendToServer(BedrockProtocol.class);
 
                 clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
-                clientPlayer.setInitiallySpawned(true);
+                clientPlayer.setInitiallySpawned();
                 if (gameSession.getMovementMode() == MovementMode.CLIENT) {
                     clientPlayer.sendMovePlayerPacketToServer(MovePlayerMode.NORMAL);
                 }
@@ -158,6 +163,10 @@ public class PlayPackets {
                 map(Type.LONG, BedrockTypes.LONG_LE); // id
                 create(Type.BOOLEAN, true); // from server
             }
+        });
+        protocol.registerServerbound(ServerboundPackets1_19_3.PONG, null, wrapper -> {
+            wrapper.cancel();
+            wrapper.user().get(PacketSyncStorage.class).handleResponse(wrapper.read(Type.INT)); // parameter
         });
     }
 

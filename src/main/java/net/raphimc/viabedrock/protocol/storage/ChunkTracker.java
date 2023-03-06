@@ -164,7 +164,7 @@ public class ChunkTracker extends StoredObject {
         if (chunk == null) return null;
 
         final int sectionIndex = subChunkY + Math.abs(this.minY >> 4);
-        if (sectionIndex >= chunk.getSections().length) return null;
+        if (sectionIndex < 0 || sectionIndex >= chunk.getSections().length) return null;
 
         return chunk.getSections()[sectionIndex];
     }

@@ -62,10 +62,13 @@ public class OtherPlayerPackets {
             entity.setRotation(rotation);
             entity.setOnGround(onGround);
 
-            if ((mode == MovePlayerMode.TELEPORT || mode == MovePlayerMode.RESET) && entity instanceof ClientPlayerEntity) {
+            if ((mode == MovePlayerMode.TELEPORT || mode == MovePlayerMode.RESPAWN) && entity instanceof ClientPlayerEntity) {
                 final ClientPlayerEntity clientPlayer = (ClientPlayerEntity) entity;
                 wrapper.setPacketType(ClientboundPackets1_19_3.PLAYER_POSITION);
-                clientPlayer.writePlayerPositionPacketToClient(wrapper, false, mode == MovePlayerMode.RESET);
+                if (mode == MovePlayerMode.RESPAWN && clientPlayer.isChangingDimension()) {
+                    clientPlayer.setRespawning(true);
+                }
+                clientPlayer.writePlayerPositionPacketToClient(wrapper, false, mode == MovePlayerMode.RESPAWN);
                 return;
             }
 

@@ -60,11 +60,11 @@ public class JoinPackets {
                 handler(wrapper -> {
                     wrapper.cancel(); // We need to fix the order of the packets
                     final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
-                    final GameSessionStorage gameSessionStorage = wrapper.user().get(GameSessionStorage.class);
+                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
-                    if (gameSessionStorage.getJavaRegistries() != null) {
+                    if (gameSession.getJavaRegistries() != null) {
                         return; // Mojang client silently ignores multiple start game packets
                     }
 
@@ -175,7 +175,7 @@ public class JoinPackets {
                         Via.getPlatform().getLogger().log(Level.SEVERE, "Invalid vanilla version: " + vanillaVersion);
                         version = new Semver("99.99.99");
                     }
-                    gameSessionStorage.setBedrockVanillaVersion(version);
+                    gameSession.setBedrockVanillaVersion(version);
 
                     final CompoundTag registries = BedrockProtocol.MAPPINGS.getRegistries().clone();
                     final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
@@ -199,10 +199,12 @@ public class JoinPackets {
 
                     biomeRegistry.put("value", BiomeRegistry.buildJavaBiomeRegistry(BedrockProtocol.MAPPINGS.getBiomeDefinitions()));
 
-                    gameSessionStorage.setJavaRegistries(registries);
-                    gameSessionStorage.setChatRestricted(chatRestrictionLevel >= 1);
-                    gameSessionStorage.setCommandsEnabled(commandsEnabled);
-                    gameSessionStorage.setMovementMode(movementMode);
+                    gameSession.setJavaRegistries(registries);
+                    gameSession.setChatRestricted(chatRestrictionLevel >= 1);
+                    gameSession.setCommandsEnabled(commandsEnabled);
+                    gameSession.setFlatGenerator(generatorId == 2);
+                    gameSession.setMovementMode(movementMode);
+                    gameSession.setLevelGameType(levelGameType);
 
                     if (movementMode >= MovementMode.SERVER_WITH_REWIND) {
                         ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "This server uses server authoritative movement with rewind. This is not supported.");
@@ -215,6 +217,7 @@ public class JoinPackets {
                     entityTracker.getClientPlayer().setPosition(new Position3f(playerPosition.x(), playerPosition.y() + 1.62F, playerPosition.z()));
                     entityTracker.getClientPlayer().setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
                     entityTracker.getClientPlayer().setOnGround(false);
+                    entityTracker.getClientPlayer().setGameType(playerGameType);
                     wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
 
@@ -234,7 +237,7 @@ public class JoinPackets {
                     joinGame.write(Type.BOOLEAN, false); // reduced debug info
                     joinGame.write(Type.BOOLEAN, true); // show death screen
                     joinGame.write(Type.BOOLEAN, false); // is debug
-                    joinGame.write(Type.BOOLEAN, generatorId == 2); // is flat
+                    joinGame.write(Type.BOOLEAN, gameSession.isFlatGenerator()); // is flat
                     joinGame.write(Type.OPTIONAL_GLOBAL_POSITION, null); // last death location
                     joinGame.send(BedrockProtocol.class);
 
@@ -292,7 +295,7 @@ public class JoinPackets {
                     tickSync.write(BedrockTypes.LONG_LE, 0L); // response timestamp
                     tickSync.sendToServer(BedrockProtocol.class);
 
-                    if (gameSessionStorage.getMovementMode() == MovementMode.CLIENT) {
+                    if (gameSession.getMovementMode() == MovementMode.CLIENT) {
                         entityTracker.getClientPlayer().sendMovePlayerPacketToServer(MovePlayerMode.NORMAL);
                     }
                 });

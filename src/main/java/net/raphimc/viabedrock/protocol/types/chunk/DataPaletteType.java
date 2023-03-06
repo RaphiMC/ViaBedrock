@@ -65,7 +65,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
             }
             return new BedrockDataPalette(palette, bitArray);
         } else {
-            final List<Tag> palette = new ArrayList<>();
+            final List<Tag> palette = new ArrayList<>(size);
             for (int i = 0; i < size; i++) {
                 palette.add(BedrockTypes.TAG.read(buffer));
             }

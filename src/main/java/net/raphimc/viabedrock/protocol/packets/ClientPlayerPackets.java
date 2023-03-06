@@ -56,6 +56,19 @@ public class ClientPlayerPackets {
 
             clientPlayer.writePlayerPositionPacketToClient(wrapper, true, true);
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_ACTION, null, wrapper -> {
+            wrapper.cancel();
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final int action = wrapper.read(BedrockTypes.VAR_INT); // action
+            wrapper.read(BedrockTypes.POSITION_3I); // block position
+            wrapper.read(BedrockTypes.POSITION_3I); // result position
+            wrapper.read(BedrockTypes.VAR_INT); // face
+
+            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+            if (action == PlayerActionTypes.DIMENSION_CHANGE_SUCCESS && clientPlayer.isChangingDimension()) {
+                clientPlayer.closeDownloadingTerrainScreen();
+            }
+        });
         protocol.registerClientbound(ClientboundBedrockPackets.CORRECT_PLAYER_MOVE_PREDICTION, null, wrapper -> {
             wrapper.cancel();
             BedrockProtocol.kickForIllegalState(wrapper.user(), "Received CorrectPlayerMovePrediction packet, but the client does not support movement corrections.");
