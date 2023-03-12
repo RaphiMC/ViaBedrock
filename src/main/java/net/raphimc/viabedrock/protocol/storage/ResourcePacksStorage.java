@@ -27,40 +27,27 @@ import java.util.UUID;
 
 public class ResourcePacksStorage extends StoredObject {
 
-    private final Map<UUID, ResourcePack> resourcePacks = new HashMap<>();
-    private final Map<UUID, ResourcePack> behaviorPacks = new HashMap<>();
+    private final Map<UUID, ResourcePack> packs = new HashMap<>();
     private boolean completed;
 
     public ResourcePacksStorage(final UserConnection user) {
         super(user);
     }
 
-    public boolean hasResourcePack(final UUID packId) {
-        return this.resourcePacks.containsKey(packId);
+    public boolean hasPack(final UUID packId) {
+        return this.packs.containsKey(packId);
     }
 
-    public ResourcePack getResourcePack(final UUID packId) {
-        return this.resourcePacks.get(packId);
+    public ResourcePack getPack(final UUID packId) {
+        return this.packs.get(packId);
     }
 
-    public void addResourcePack(final ResourcePack pack) {
-        this.resourcePacks.put(pack.packId(), pack);
-    }
-
-    public boolean hasBehaviorPack(final UUID packId) {
-        return this.behaviorPacks.containsKey(packId);
-    }
-
-    public ResourcePack getBehaviorPack(final UUID packId) {
-        return this.behaviorPacks.get(packId);
-    }
-
-    public void addBehaviorPack(final ResourcePack pack) {
-        this.behaviorPacks.put(pack.packId(), pack);
+    public void addPack(final ResourcePack pack) {
+        this.packs.put(pack.packId(), pack);
     }
 
     public boolean areAllPacksDecompressed() {
-        return this.resourcePacks.values().stream().allMatch(ResourcePack::isDecompressed) && this.behaviorPacks.values().stream().allMatch(ResourcePack::isDecompressed);
+        return this.packs.values().stream().allMatch(ResourcePack::isDecompressed);
     }
 
     public boolean isCompleted() {

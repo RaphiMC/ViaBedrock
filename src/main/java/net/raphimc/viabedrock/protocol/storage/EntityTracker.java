@@ -20,37 +20,73 @@ package net.raphimc.viabedrock.protocol.storage;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
-import net.raphimc.viabedrock.protocol.model.entity.ClientPlayerEntity;
-import net.raphimc.viabedrock.protocol.model.entity.Entity;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
+import net.raphimc.viabedrock.api.model.entity.Entity;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 public class EntityTracker extends StoredObject {
 
-    private final AtomicInteger ID_COUNTER = new AtomicInteger(0);
+    private final AtomicInteger ID_COUNTER = new AtomicInteger(1);
 
     private ClientPlayerEntity clientPlayerEntity = null;
+    private final Map<Long, Long> runtimeIdToUniqueId = new HashMap<>();
     private final Map<Long, Entity> entities = new HashMap<>();
 
     public EntityTracker(final UserConnection user) {
         super(user);
     }
 
-    public ClientPlayerEntity addClientPlayer(final long uniqueId, final long runtimeId) {
-        this.clientPlayerEntity = new ClientPlayerEntity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement());
-        this.entities.put(runtimeId, this.clientPlayerEntity);
-
+    public ClientPlayerEntity addClientPlayer(final long uniqueId, final long runtimeId) throws Exception {
+        this.addEntity(new ClientPlayerEntity(this.getUser(), uniqueId, runtimeId, 0, this.getUser().getProtocolInfo().getUuid()));
         return this.clientPlayerEntity;
     }
 
-    // TODO: Behavior if entity is already present
-    public Entity addEntity(final long uniqueId, final long runtimeId, final Entity1_19_3Types type) {
-        final Entity entity = new Entity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), type);
-        this.entities.put(runtimeId, entity);
+    public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final Entity1_19_3Types type) throws Exception {
+        return this.addEntity(new Entity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), uuid != null ? uuid : UUID.randomUUID(), type));
+    }
+
+    public Entity addEntity(final Entity entity) throws Exception {
+        if (entity instanceof ClientPlayerEntity) {
+            this.clientPlayerEntity = (ClientPlayerEntity) entity;
+        }
+
+        if (this.runtimeIdToUniqueId.putIfAbsent(entity.runtimeId(), entity.uniqueId()) != null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate runtime entity ID: " + entity.runtimeId());
+        }
+        final Entity prevEntity = this.entities.put(entity.uniqueId(), entity);
+        if (prevEntity != null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate unique entity ID: " + entity.uniqueId());
+            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_19_3.REMOVE_ENTITIES, this.getUser());
+            removeEntities.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
+            removeEntities.send(BedrockProtocol.class);
+
+            prevEntity.deleteTeam();
+        }
+
+        entity.createTeam();
 
         return entity;
+    }
+
+    public void removeEntity(final Entity entity) throws Exception {
+        if (entity instanceof ClientPlayerEntity) {
+            throw new IllegalArgumentException("Cannot remove client player entity");
+        }
+
+        this.runtimeIdToUniqueId.remove(entity.runtimeId());
+        this.entities.remove(entity.uniqueId());
+
+        entity.deleteTeam();
     }
 
     public void tick() throws Exception {
@@ -59,14 +95,18 @@ public class EntityTracker extends StoredObject {
         }
     }
 
-    // TODO: Clear on dimension change
-    public void clear() {
-        this.entities.clear();
-        this.entities.put(this.clientPlayerEntity.runtimeId(), this.clientPlayerEntity);
+    public void prepareForRespawn() throws Exception {
+        for (Entity entity : this.entities.values()) {
+            entity.deleteTeam();
+        }
     }
 
-    public Entity getEntity(final long runtimeId) {
-        return this.entities.get(runtimeId);
+    public Entity getEntityByRid(final long runtimeId) {
+        return this.entities.get(this.runtimeIdToUniqueId.get(runtimeId));
+    }
+
+    public Entity getEntityByUid(final long uniqueId) {
+        return this.entities.get(uniqueId);
     }
 
     public ClientPlayerEntity getClientPlayer() {

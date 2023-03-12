@@ -33,11 +33,12 @@ Additionally ViaBedrock uses assets and data dumps from other projects: See the 
 - [x] Chunk caching
 - [x] Block updates
 - [x] Biomes
-- [ ] Players
+- [x] Players
 - [ ] Entities
 - [ ] Entity interactions
 - [ ] Entity metadata
 - [ ] Entity attributes
+- [ ] Entity mounts
 - [x] Client-Authoritative Movement
 - [ ] Server-Authoritative Movement
 - [ ] Client-Authoritative Inventory
@@ -48,6 +49,9 @@ Additionally ViaBedrock uses assets and data dumps from other projects: See the 
 - [x] Dimension switching
 - [ ] Form GUIs
 - [ ] Scoreboard
-- [ ] Player list
+- [ ] Titles
+- [ ] Bossbar
+- [x] Player list
 - [ ] Sounds
 - [ ] Particles
+- [ ] Player Skins

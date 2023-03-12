@@ -17,20 +17,100 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
+import com.viaversion.viaversion.api.minecraft.metadata.Metadata;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.types.BitSetType;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
+import net.raphimc.viabedrock.api.model.entity.Entity;
+import net.raphimc.viabedrock.api.util.MathUtil;
+import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.EntityLink;
+import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.model.entity.ClientPlayerEntity;
-import net.raphimc.viabedrock.protocol.model.entity.Entity;
+import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+
+import java.util.BitSet;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
 
 public class OtherPlayerPackets {
 
     public static void register(final BedrockProtocol protocol) {
+        protocol.registerClientbound(ClientboundBedrockPackets.ADD_PLAYER, ClientboundPackets1_19_3.SPAWN_PLAYER, wrapper -> {
+            final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+
+            final UUID uuid = wrapper.read(BedrockTypes.UUID); // uuid
+            final String username = wrapper.read(BedrockTypes.STRING); // username
+            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final String platformChatId = wrapper.read(BedrockTypes.STRING); // platform chat id
+            final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
+            final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
+            final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
+            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // hand item
+            final int gameType = wrapper.read(BedrockTypes.VAR_INT); // game type
+            final Metadata[] metadata = wrapper.read(BedrockTypes.METADATA_ARRAY); // metadata
+            final Int2IntMap intProperties = wrapper.read(BedrockTypes.INT_PROPERTIES); // int properties
+            final Map<Integer, Float> floatProperties = wrapper.read(BedrockTypes.FLOAT_PROPERTIES); // float properties
+            final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
+            final EntityLink[] entityLinks = wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
+
+            // TODO: Handle remaining fields
+
+            final Entity entity = entityTracker.addEntity(abilities.uniqueEntityId(), runtimeEntityId, uuid, Entity1_19_3Types.PLAYER);
+            entity.setPosition(position);
+            entity.setRotation(rotation);
+            entity.updateTeamPrefix(username);
+
+            final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_19_3.PLAYER_INFO_UPDATE, wrapper.user());
+            final BitSet bitSet = new BitSet(6);
+            bitSet.set(0); // ADD_PLAYER
+            bitSet.set(2); // UPDATE_GAME_MODE
+            playerInfoUpdate.write(new BitSetType(6), bitSet);
+            playerInfoUpdate.write(Type.VAR_INT, 1); // length
+            playerInfoUpdate.write(Type.UUID, uuid); // uuid
+            playerInfoUpdate.write(Type.STRING, StringUtil.encodeUUID(uuid)); // username
+            playerInfoUpdate.write(Type.VAR_INT, 3); // property count
+            playerInfoUpdate.write(Type.STRING, "platform_chat_id"); // property name
+            playerInfoUpdate.write(Type.STRING, platformChatId); // property value
+            playerInfoUpdate.write(Type.OPTIONAL_STRING, null); // signature
+            playerInfoUpdate.write(Type.STRING, "device_id"); // property name
+            playerInfoUpdate.write(Type.STRING, wrapper.read(BedrockTypes.STRING)); // device id
+            playerInfoUpdate.write(Type.OPTIONAL_STRING, null); // signature
+            playerInfoUpdate.write(Type.STRING, "device_os"); // property name
+            playerInfoUpdate.write(Type.STRING, wrapper.read(BedrockTypes.INT_LE).toString()); // device os
+            playerInfoUpdate.write(Type.OPTIONAL_STRING, null); // signature
+            playerInfoUpdate.write(Type.VAR_INT, (int) GameTypeRewriter.gameTypeToGameMode(gameType)); // game mode
+            playerInfoUpdate.send(BedrockProtocol.class);
+
+            wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
+            wrapper.write(Type.UUID, uuid); // uuid
+            wrapper.write(Type.DOUBLE, (double) position.x()); // x
+            wrapper.write(Type.DOUBLE, (double) position.y()); // y
+            wrapper.write(Type.DOUBLE, (double) position.z()); // z
+            wrapper.write(Type.BYTE, MathUtil.float2Byte(rotation.y())); // yaw
+            wrapper.write(Type.BYTE, MathUtil.float2Byte(rotation.x())); // pitch
+            wrapper.send(BedrockProtocol.class);
+            wrapper.cancel();
+
+            final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_19_3.ENTITY_HEAD_LOOK, wrapper.user());
+            entityHeadLook.write(Type.VAR_INT, entity.javaId()); // entity id
+            entityHeadLook.write(Type.BYTE, MathUtil.float2Byte(rotation.z())); // head yaw
+            entityHeadLook.send(BedrockProtocol.class);
+        });
         protocol.registerClientbound(ClientboundBedrockPackets.MOVE_PLAYER, ClientboundPackets1_19_3.ENTITY_TELEPORT, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
@@ -46,9 +126,9 @@ public class OtherPlayerPackets {
             }
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // tick
 
-            final Entity entity = entityTracker.getEntity(runtimeEntityId);
+            final Entity entity = entityTracker.getEntityByRid(runtimeEntityId);
             if (entity == null) {
-                // TODO: handle this
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received move player packet for unknown entity: " + runtimeEntityId);
                 wrapper.cancel();
                 return;
             }
@@ -76,9 +156,14 @@ public class OtherPlayerPackets {
             wrapper.write(Type.DOUBLE, (double) position.x()); // x
             wrapper.write(Type.DOUBLE, (double) position.y() - 1.62F); // y
             wrapper.write(Type.DOUBLE, (double) position.z()); // z
-            wrapper.write(Type.BYTE, (byte) (rotation.y() * (256F / 360F))); // yaw
-            wrapper.write(Type.BYTE, (byte) (rotation.x() * (256F / 360F))); // pitch
+            wrapper.write(Type.BYTE, MathUtil.float2Byte(rotation.y())); // yaw
+            wrapper.write(Type.BYTE, MathUtil.float2Byte(rotation.x())); // pitch
             wrapper.write(Type.BOOLEAN, onGround); // on ground
+
+            final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_19_3.ENTITY_HEAD_LOOK, wrapper.user());
+            entityHeadLook.write(Type.VAR_INT, entity.javaId()); // entity id
+            entityHeadLook.write(Type.BYTE, MathUtil.float2Byte(rotation.z())); // head yaw
+            entityHeadLook.send(BedrockProtocol.class);
         });
     }
 

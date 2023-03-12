@@ -52,15 +52,15 @@ public class ResourcePackPackets {
 
             final Set<String> missingPacks = new HashSet<>();
             for (ResourcePack behaviorPack : behaviorPacks) {
-                if (!resourcePacksStorage.hasBehaviorPack(behaviorPack.packId())) {
+                if (!resourcePacksStorage.hasPack(behaviorPack.packId())) {
                     missingPacks.add(behaviorPack.packId() + "_" + behaviorPack.version());
-                    resourcePacksStorage.addBehaviorPack(behaviorPack);
+                    resourcePacksStorage.addPack(behaviorPack);
                 }
             }
             for (ResourcePack resourcePack : resourcePacks) {
-                if (!resourcePacksStorage.hasResourcePack(resourcePack.packId())) {
+                if (!resourcePacksStorage.hasPack(resourcePack.packId())) {
                     missingPacks.add(resourcePack.packId() + "_" + resourcePack.version());
-                    resourcePacksStorage.addResourcePack(resourcePack);
+                    resourcePacksStorage.addPack(resourcePack);
                 }
             }
 
@@ -92,8 +92,8 @@ public class ResourcePackPackets {
             final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
             final int actualChunkCount = (int) Math.ceil((double) compressedPackSize / maxChunkSize);
 
-            if (resourcePacksStorage.hasResourcePack(idAndVersion.key())) {
-                final ResourcePack resourcePack = resourcePacksStorage.getResourcePack(idAndVersion.key());
+            if (resourcePacksStorage.hasPack(idAndVersion.key())) {
+                final ResourcePack resourcePack = resourcePacksStorage.getPack(idAndVersion.key());
                 resourcePack.setVersion(idAndVersion.value());
                 resourcePack.setHash(hash);
                 resourcePack.setPremium(premium);
@@ -123,8 +123,8 @@ public class ResourcePackPackets {
             wrapper.read(BedrockTypes.LONG_LE); // progress
             final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
 
-            if (resourcePacksStorage.hasResourcePack(idAndVersion.key())) {
-                final ResourcePack resourcePack = resourcePacksStorage.getResourcePack(idAndVersion.key());
+            if (resourcePacksStorage.hasPack(idAndVersion.key())) {
+                final ResourcePack resourcePack = resourcePacksStorage.getPack(idAndVersion.key());
                 resourcePack.setVersion(idAndVersion.value());
                 resourcePack.processDataChunk(chunkIndex, data);
             } else {

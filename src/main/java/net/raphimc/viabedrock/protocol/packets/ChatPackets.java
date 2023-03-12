@@ -116,7 +116,7 @@ public class ChatPackets {
                             case TextType.POPUP:
                             case TextType.JUKEBOX_POPUP: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
-                                final String[] parameters = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT_STRING_ARRAY); // parameters
+                                final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
                                 if (needsTranslation) {
                                     message = BedrockTranslator.translate(message, translator, parameters);
                                 }
@@ -162,7 +162,7 @@ public class ChatPackets {
                     for (int i = 0; i < messageCount; i++) {
                         final boolean internal = wrapper.read(Type.BOOLEAN); // is internal
                         final String messageId = wrapper.read(BedrockTypes.STRING); // message id
-                        final String[] parameters = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT_STRING_ARRAY); // parameters
+                        final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
 
                         message.append(internal ? "§r" : "§c");
                         message.append(BedrockTranslator.translate(messageId, translator, parameters));

@@ -39,9 +39,10 @@ import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBiomeArray;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
+import net.raphimc.viabedrock.api.model.BlockState;
+import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.BlockState;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResult;
@@ -56,7 +57,7 @@ import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
-import net.raphimc.viabedrock.protocol.types.ByteArrayType;
+import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,24 +114,30 @@ public class WorldPackets {
                 return;
             }
 
-            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
             wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
 
+            final EntityTracker oldEntityTracker = wrapper.user().get(EntityTracker.class);
+            final ClientPlayerEntity clientPlayer = oldEntityTracker.getClientPlayer();
+            oldEntityTracker.prepareForRespawn();
+            final EntityTracker newEntityTracker = new EntityTracker(wrapper.user());
+            newEntityTracker.addEntity(clientPlayer);
+            wrapper.user().put(newEntityTracker);
+
             spawnPositionStorage.setSpawnPosition(dimensionId, new Position((int) position.x(), (int) position.y(), (int) position.z()));
 
-            entityTracker.getClientPlayer().setPosition(new Position3f(position.x(), position.y() + 1.62F, position.z()));
+            clientPlayer.setPosition(new Position3f(position.x(), position.y() + 1.62F, position.z()));
             if (gameSession.getMovementMode() == MovementMode.CLIENT) {
-                entityTracker.getClientPlayer().sendMovePlayerPacketToServer(MovePlayerMode.NORMAL);
+                clientPlayer.sendMovePlayerPacketToServer(MovePlayerMode.NORMAL);
             }
-            entityTracker.getClientPlayer().setChangingDimension(true);
-            entityTracker.getClientPlayer().sendPlayerPositionPacketToClient(true, true);
+            clientPlayer.setChangingDimension(true);
+            clientPlayer.sendPlayerPositionPacketToClient(true, true);
 
             wrapper.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension type
             wrapper.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension id
             wrapper.write(Type.LONG, 0L); // hashed seed
-            wrapper.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(entityTracker.getClientPlayer().getGameType(), gameSession.getLevelGameType())); // gamemode
+            wrapper.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.getGameType(), gameSession.getLevelGameType())); // gamemode
             wrapper.write(Type.BYTE, (byte) -1); // previous gamemode
             wrapper.write(Type.BOOLEAN, false); // is debug
             wrapper.write(Type.BOOLEAN, gameSession.isFlatGenerator()); // is flat
@@ -215,10 +222,12 @@ public class WorldPackets {
 
                                     dataBuf.skipBytes(1); // border blocks
                                     while (dataBuf.isReadable()) {
-                                        blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.TAG.read(dataBuf))); // block entity tag
+                                        blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.NETWORK_TAG.read(dataBuf))); // block entity tag
                                     }
-                                } catch (Throwable ignored) {
+                                } catch (IndexOutOfBoundsException ignored) {
                                     // Mojang client stops reading at whatever point and loads whatever it has read successfully
+                                } catch (Throwable e) {
+                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading chunk data", e);
                                 }
                             }
 
@@ -285,8 +294,10 @@ public class WorldPackets {
                             try {
                                 section = BedrockTypes.CHUNK_SECTION.read(dataBuf); // chunk section
                                 while (dataBuf.isReadable()) {
-                                    blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.TAG.read(dataBuf))); // block entity tag
+                                    blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.NETWORK_TAG.read(dataBuf))); // block entity tag
                                 }
+                            } catch (IndexOutOfBoundsException ignored) {
+                                // Mojang client stops reading at whatever point and loads whatever it has read successfully
                             } catch (Throwable e) {
                                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading sub chunk data", e);
                             }

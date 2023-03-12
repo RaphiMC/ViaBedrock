@@ -26,6 +26,7 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
@@ -35,13 +36,11 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
-import net.raphimc.viabedrock.protocol.model.BlockProperties;
-import net.raphimc.viabedrock.protocol.model.Experiment;
-import net.raphimc.viabedrock.protocol.model.Position2f;
-import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -60,11 +59,9 @@ public class JoinPackets {
                 handler(wrapper -> {
                     wrapper.cancel(); // We need to fix the order of the packets
                     final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
-                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
-                    final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
-                    if (gameSession.getJavaRegistries() != null) {
+                    if (wrapper.user().has(GameSessionStorage.class)) {
                         return; // Mojang client silently ignores multiple start game packets
                     }
 
@@ -133,7 +130,7 @@ public class JoinPackets {
 
                     // Continue reading start game packet
                     wrapper.read(BedrockTypes.STRING); // level id
-                    wrapper.read(BedrockTypes.STRING); // level name
+                    final String levelName = wrapper.read(BedrockTypes.STRING); // level name
                     wrapper.read(BedrockTypes.STRING); // premium world template id
                     wrapper.read(Type.BOOLEAN); // is trial
                     final int movementMode = wrapper.read(BedrockTypes.VAR_INT); // movement mode
@@ -142,11 +139,11 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.LONG_LE); // current tick
                     wrapper.read(BedrockTypes.VAR_INT); // enchantment seed
                     final BlockProperties[] blockProperties = wrapper.read(BedrockTypes.BLOCK_PROPERTIES_ARRAY); // block properties
-                    wrapper.read(BedrockTypes.ITEM_ENTRY_ARRAY); // item entries
+                    final ItemEntry[] itemEntries = wrapper.read(BedrockTypes.ITEM_ENTRY_ARRAY); // item entries
                     wrapper.read(BedrockTypes.STRING); // multiplayer correlation id
                     wrapper.read(Type.BOOLEAN); // inventories server authoritative
                     final String serverEngine = wrapper.read(BedrockTypes.STRING); // server engine
-                    wrapper.read(BedrockTypes.TAG); // player property data
+                    wrapper.read(BedrockTypes.NETWORK_TAG); // player property data
                     wrapper.read(BedrockTypes.LONG_LE); // block registry checksum
                     wrapper.read(BedrockTypes.UUID); // world template id
                     wrapper.read(Type.BOOLEAN); // client side generation
@@ -175,7 +172,6 @@ public class JoinPackets {
                         Via.getPlatform().getLogger().log(Level.SEVERE, "Invalid vanilla version: " + vanillaVersion);
                         version = new Semver("99.99.99");
                     }
-                    gameSession.setBedrockVanillaVersion(version);
 
                     final CompoundTag registries = BedrockProtocol.MAPPINGS.getRegistries().clone();
                     final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
@@ -199,6 +195,9 @@ public class JoinPackets {
 
                     biomeRegistry.put("value", BiomeRegistry.buildJavaBiomeRegistry(BedrockProtocol.MAPPINGS.getBiomeDefinitions()));
 
+                    final GameSessionStorage gameSession = new GameSessionStorage(wrapper.user());
+                    wrapper.user().put(gameSession);
+                    gameSession.setBedrockVanillaVersion(version);
                     gameSession.setJavaRegistries(registries);
                     gameSession.setChatRestricted(chatRestrictionLevel >= 1);
                     gameSession.setCommandsEnabled(commandsEnabled);
@@ -213,16 +212,19 @@ public class JoinPackets {
                     }
 
                     spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
-                    final int javaEntityId = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId).javaId();
-                    entityTracker.getClientPlayer().setPosition(new Position3f(playerPosition.x(), playerPosition.y() + 1.62F, playerPosition.z()));
-                    entityTracker.getClientPlayer().setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
-                    entityTracker.getClientPlayer().setOnGround(false);
-                    entityTracker.getClientPlayer().setGameType(playerGameType);
                     wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties));
+                    wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
+                    final EntityTracker entityTracker = new EntityTracker(wrapper.user());
+                    wrapper.user().put(entityTracker);
+                    final ClientPlayerEntity clientPlayer = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId);
+                    clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + 1.62F, playerPosition.z()));
+                    clientPlayer.setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
+                    clientPlayer.setOnGround(false);
+                    clientPlayer.setGameType(playerGameType);
 
                     final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_3.JOIN_GAME, wrapper.user());
-                    joinGame.write(Type.INT, javaEntityId); // entity id
+                    joinGame.write(Type.INT, clientPlayer.javaId()); // entity id
                     joinGame.write(Type.BOOLEAN, false); // hardcore
                     joinGame.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(playerGameType, levelGameType)); // gamemode
                     joinGame.write(Type.BYTE, (byte) -1); // previous gamemode
@@ -263,6 +265,11 @@ public class JoinPackets {
                         }
                     }
                     tags.send(BedrockProtocol.class);
+
+                    final PacketWrapper tabList = PacketWrapper.create(ClientboundPackets1_19_3.TAB_LIST, wrapper.user());
+                    tabList.write(Type.COMPONENT, JsonUtil.textToComponent(levelName + "\n")); // header
+                    tabList.write(Type.COMPONENT, JsonUtil.textToComponent("§aViaBedrock §3v" + ViaBedrock.VERSION + "\n§7https://github.com/RaphiMC/ViaBedrock")); // footer
+                    tabList.send(BedrockProtocol.class);
 
                     if (rainLevel > 0F || lightningLevel > 0F) {
                         final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_19_3.GAME_EVENT, wrapper.user());
@@ -306,7 +313,7 @@ public class JoinPackets {
             public void register() {
                 handler(wrapper -> {
                     wrapper.cancel();
-                    wrapper.user().get(GameSessionStorage.class).setBedrockBiomeDefinitions((CompoundTag) wrapper.read(BedrockTypes.TAG)); // biome definitions
+                    wrapper.user().get(GameSessionStorage.class).setBedrockBiomeDefinitions((CompoundTag) wrapper.read(BedrockTypes.NETWORK_TAG)); // biome definitions
                 });
             }
         });

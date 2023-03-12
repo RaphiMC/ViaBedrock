@@ -41,6 +41,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
+import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.BufferedReader;
@@ -69,9 +70,10 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> biomes; // Bedrock
     private Map<String, CompoundTag> biomeDefinitions; // Bedrock
     private Map<String, Map<String, Object>> biomeExtraData; // Bedrock -> Java
+    private BiMap<String, Integer> items; // Bedrock
 
     public BedrockMappingData() {
-        super(ProtocolVersion.v1_19_3.getName(), BedrockProtocolVersion.bedrockLatest.getName());
+        super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolVersion.v1_19_3.getName());
     }
 
     @Override
@@ -161,6 +163,15 @@ public class BedrockMappingData extends MappingDataBase {
             }
             this.biomeExtraData.put(dataName, extraData);
         }
+
+        final JsonArray itemsJson = this.readJson("bedrock/runtime_item_states.1_19_60.json", JsonArray.class);
+        this.items = HashBiMap.create(itemsJson.size());
+        for (JsonElement entry : itemsJson) {
+            final JsonObject itemEntry = entry.getAsJsonObject();
+            final String identifier = itemEntry.get("name").getAsString();
+            final int id = itemEntry.get("id").getAsInt();
+            this.items.put(identifier, id);
+        }
     }
 
     public Map<String, String> getTranslations() {
@@ -217,6 +228,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<String, Map<String, Object>> getBiomeExtraData() {
         return Collections.unmodifiableMap(this.biomeExtraData);
+    }
+
+    public BiMap<String, Integer> getItems() {
+        return Maps.unmodifiableBiMap(this.items);
     }
 
     @Override
@@ -299,7 +314,7 @@ public class BedrockMappingData extends MappingDataBase {
             while (buf.isReadable()) {
                 final String identifier = BedrockTypes.STRING.read(buf).toLowerCase(Locale.ROOT);
                 final int metadata = buf.readShortLE();
-                final CompoundTag current = (CompoundTag) BedrockTypes.TAG.read(buf);
+                final CompoundTag current = (CompoundTag) BedrockTypes.NETWORK_TAG.read(buf);
 
                 if (!this.legacyBlocks.containsKey(identifier)) {
                     this.getLogger().warning("Unknown block identifier in r12_to_current_block_map.bin: " + identifier);

@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.packets;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
+import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -27,7 +28,6 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerActionTypes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.RespawnState;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClientStatus;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 

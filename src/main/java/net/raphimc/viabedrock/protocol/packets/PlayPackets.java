@@ -21,10 +21,13 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.types.BitSetType;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
 import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.JsonUtil;
+import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -33,13 +36,13 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.BitSet;
 import java.util.UUID;
 
 public class PlayPackets {
@@ -141,6 +144,59 @@ public class PlayPackets {
                 final long hash = wrapper.read(BedrockTypes.LONG_LE); // blob hash
                 final byte[] blob = wrapper.read(BedrockTypes.BYTE_ARRAY); // blob data
                 Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(wrapper.user(), hash, blob);
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_LIST, ClientboundPackets1_19_3.PLAYER_INFO_UPDATE, wrapper -> {
+            final short action = wrapper.read(Type.UNSIGNED_BYTE); // action
+
+            if (action == 0) { // ADD
+                final int length = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // length
+                final UUID[] uuids = new UUID[length];
+                final BitSet bitSet = new BitSet(6);
+                bitSet.set(0); // ADD_PLAYER
+                bitSet.set(3); // UPDATE_LISTED
+                bitSet.set(5); // UPDATE_DISPLAY_NAME
+                wrapper.write(new BitSetType(6), bitSet);
+                wrapper.write(Type.VAR_INT, length); // length
+                for (int i = 0; i < length; i++) {
+                    uuids[i] = wrapper.read(BedrockTypes.UUID); // uuid
+                    wrapper.write(Type.UUID, uuids[i]); // uuid
+                    wrapper.read(BedrockTypes.VAR_LONG); // entity id
+                    final String name = wrapper.read(BedrockTypes.STRING); // username
+                    wrapper.write(Type.STRING, StringUtil.encodeUUID(uuids[i])); // username
+                    wrapper.write(Type.VAR_INT, 5); // property count
+                    wrapper.write(Type.STRING, "xuid"); // property name
+                    wrapper.write(Type.STRING, wrapper.read(BedrockTypes.STRING)); // xuid
+                    wrapper.write(Type.OPTIONAL_STRING, null); // signature
+                    wrapper.write(Type.STRING, "platform_chat_id"); // property name
+                    wrapper.write(Type.STRING, wrapper.read(BedrockTypes.STRING)); // platform chat id
+                    wrapper.write(Type.OPTIONAL_STRING, null); // signature
+                    wrapper.write(Type.STRING, "device_os"); // property name
+                    wrapper.write(Type.STRING, wrapper.read(BedrockTypes.INT_LE).toString()); // device os
+                    wrapper.write(Type.OPTIONAL_STRING, null); // signature
+                    wrapper.read(BedrockTypes.SKIN); // skin
+                    wrapper.write(Type.STRING, "is_teacher"); // property name
+                    wrapper.write(Type.STRING, wrapper.read(Type.BOOLEAN).toString()); // is teacher
+                    wrapper.write(Type.OPTIONAL_STRING, null); // signature
+                    wrapper.write(Type.STRING, "is_host"); // property name
+                    wrapper.write(Type.STRING, wrapper.read(Type.BOOLEAN).toString()); // is host
+                    wrapper.write(Type.OPTIONAL_STRING, null); // signature
+
+                    wrapper.write(Type.BOOLEAN, true); // listed
+                    wrapper.write(Type.OPTIONAL_COMPONENT, JsonUtil.textToComponent(name)); // display name
+                }
+                for (int i = 0; i < length; i++) {
+                    wrapper.read(Type.BOOLEAN); // trusted skin
+                }
+                // Remove added players from the player list first because Mojang client overwrites entries if they are added twice
+                final PacketWrapper playerInfoRemove = PacketWrapper.create(ClientboundPackets1_19_3.PLAYER_INFO_REMOVE, wrapper.user());
+                playerInfoRemove.write(Type.UUID_ARRAY, uuids); // uuids
+                playerInfoRemove.send(BedrockProtocol.class);
+            } else if (action == 1) { // REMOVE
+                wrapper.setPacketType(ClientboundPackets1_19_3.PLAYER_INFO_REMOVE);
+                wrapper.write(Type.UUID_ARRAY, wrapper.read(BedrockTypes.UUID_ARRAY)); // uuids
+            } else {
+                BedrockProtocol.kickForIllegalState(wrapper.user(), "Unsupported player list action: " + action);
             }
         });
 

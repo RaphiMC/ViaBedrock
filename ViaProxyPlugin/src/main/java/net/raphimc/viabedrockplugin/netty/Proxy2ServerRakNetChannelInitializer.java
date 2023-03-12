@@ -29,8 +29,8 @@ import net.raphimc.netminecraft.packet.registry.PacketRegistryUtil;
 import net.raphimc.viabedrock.netty.BatchLengthCodec;
 import net.raphimc.viabedrock.netty.PacketEncapsulationCodec;
 import net.raphimc.viabedrock.protocol.BedrockBaseProtocol;
-import net.raphimc.viaprotocolhack.netty.ViaEncodeHandler;
-import net.raphimc.viaprotocolhack.netty.ViaPipeline;
+import net.raphimc.viaprotocolhack.netty.VPHEncodeHandler;
+import net.raphimc.viaprotocolhack.netty.VPHPipeline;
 import net.raphimc.viaproxy.protocolhack.impl.ViaProxyViaDecodeHandler;
 import net.raphimc.viaproxy.proxy.ProxyConnection;
 
@@ -38,6 +38,7 @@ import java.util.function.Supplier;
 
 public class Proxy2ServerRakNetChannelInitializer extends MinecraftChannelInitializer {
 
+    public static final String DISCONNECT_HANDLER_NAME = "disconnect_handler";
     public static final String FRAME_ENCAPSULATION_HANDLER_NAME = "frame_encapsulation";
     public static final String PACKET_ENCAPSULATION_HANDLER_NAME = "packet_encapsulation";
 
@@ -59,6 +60,7 @@ public class Proxy2ServerRakNetChannelInitializer extends MinecraftChannelInitia
         ProxyConnection.fromChannel(channel).setUserConnection(user);
         user.getProtocolInfo().getPipeline().add(BedrockBaseProtocol.INSTANCE);
 
+        channel.pipeline().addLast(DISCONNECT_HANDLER_NAME, new DisconnectHandler());
         channel.pipeline().addLast(FRAME_ENCAPSULATION_HANDLER_NAME, new RakMessageEncapsulationCodec());
         channel.pipeline().addLast(MCPipeline.ENCRYPTION_HANDLER_NAME, DUMMY_HANDLER);
         channel.pipeline().addLast(MCPipeline.COMPRESSION_HANDLER_NAME, DUMMY_HANDLER);
@@ -68,8 +70,8 @@ public class Proxy2ServerRakNetChannelInitializer extends MinecraftChannelInitia
         channel.pipeline().addLast(MCPipeline.HANDLER_HANDLER_NAME, this.handlerSupplier.get());
 
         channel.attr(MCPipeline.PACKET_REGISTRY_ATTRIBUTE_KEY).set(PacketRegistryUtil.getHandshakeRegistry(true));
-        channel.pipeline().addBefore(MCPipeline.PACKET_CODEC_HANDLER_NAME, ViaPipeline.HANDLER_ENCODER_NAME, new ViaEncodeHandler(user));
-        channel.pipeline().addBefore(MCPipeline.PACKET_CODEC_HANDLER_NAME, ViaPipeline.HANDLER_DECODER_NAME, new ViaProxyViaDecodeHandler(user));
+        channel.pipeline().addBefore(MCPipeline.PACKET_CODEC_HANDLER_NAME, VPHPipeline.ENCODER_HANDLER_NAME, new VPHEncodeHandler(user));
+        channel.pipeline().addBefore(MCPipeline.PACKET_CODEC_HANDLER_NAME, VPHPipeline.DECODER_HANDLER_NAME, new ViaProxyViaDecodeHandler(user));
     }
 
 }

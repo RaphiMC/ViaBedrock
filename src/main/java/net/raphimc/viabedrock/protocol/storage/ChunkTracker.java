@@ -43,9 +43,9 @@ import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBlockArray;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
+import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.BlockState;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
@@ -55,7 +55,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-// TODO: Chunk unloading based on world switch / respawn
 // TODO: Block connections
 public class ChunkTracker extends StoredObject {
 
@@ -270,7 +269,7 @@ public class ChunkTracker extends StoredObject {
         final SubChunkPosition position = new SubChunkPosition(chunkX, subChunkY, chunkZ);
         synchronized (this.subChunkLock) {
             if (!this.pendingSubChunks.contains(position)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk that was not requested: " + chunkX + ", " + chunkZ);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk that was not requested: " + position);
                 return false;
             }
             this.pendingSubChunks.remove(position);
@@ -278,7 +277,7 @@ public class ChunkTracker extends StoredObject {
 
         final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
         if (chunk == null) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk for unloaded chunk: " + chunkX + ", " + chunkZ);
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk for unloaded chunk: " + position);
             return false;
         }
 
@@ -631,6 +630,15 @@ public class ChunkTracker extends StoredObject {
         @Override
         public int hashCode() {
             return Objects.hash(chunkX, subChunkY, chunkZ);
+        }
+
+        @Override
+        public String toString() {
+            return "SubChunkPosition{" +
+                    "chunkX=" + chunkX +
+                    ", subChunkY=" + subChunkY +
+                    ", chunkZ=" + chunkZ +
+                    '}';
         }
     }
 

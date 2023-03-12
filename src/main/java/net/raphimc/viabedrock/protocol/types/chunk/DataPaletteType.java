@@ -67,7 +67,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
         } else {
             final List<Tag> palette = new ArrayList<>(size);
             for (int i = 0; i < size; i++) {
-                palette.add(BedrockTypes.TAG.read(buffer));
+                palette.add(BedrockTypes.NETWORK_TAG.read(buffer));
             }
             return new BedrockDataPalette(palette, bitArray);
         }
@@ -103,7 +103,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
             }
         } else {
             for (int i = 0; i < value.size(); i++) {
-                BedrockTypes.TAG.write(buffer, value.getTagPalette().get(i));
+                BedrockTypes.NETWORK_TAG.write(buffer, value.getTagPalette().get(i));
             }
         }
     }
