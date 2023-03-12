@@ -22,16 +22,16 @@ import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class Position3iType extends Type<Position> {
+public class BlockPositionType extends Type<Position> {
 
-    public Position3iType() {
-        super("Position3i", Position.class);
+    public BlockPositionType() {
+        super("BlockPosition", Position.class);
     }
 
     @Override
     public Position read(ByteBuf buffer) throws Exception {
         final int x = BedrockTypes.VAR_INT.readPrimitive(buffer);
-        final int y = BedrockTypes.VAR_INT.readPrimitive(buffer);
+        final int y = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
         final int z = BedrockTypes.VAR_INT.readPrimitive(buffer);
 
         return new Position(x, y, z);
@@ -40,7 +40,7 @@ public class Position3iType extends Type<Position> {
     @Override
     public void write(ByteBuf buffer, Position value) {
         BedrockTypes.VAR_INT.writePrimitive(buffer, value.x());
-        BedrockTypes.VAR_INT.writePrimitive(buffer, value.y());
+        BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.y());
         BedrockTypes.VAR_INT.writePrimitive(buffer, value.z());
     }
 

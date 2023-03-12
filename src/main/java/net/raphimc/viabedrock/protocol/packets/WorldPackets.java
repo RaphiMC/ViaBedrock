@@ -82,9 +82,9 @@ public class WorldPackets {
                         return;
                     }
 
-                    final Position compassPosition = wrapper.read(BedrockTypes.POSITION_3I); // compass position
+                    final Position compassPosition = wrapper.read(BedrockTypes.BLOCK_POSITION); // compass position
                     final int dimensionId = wrapper.read(BedrockTypes.VAR_INT); // dimension
-                    wrapper.read(BedrockTypes.POSITION_3I); // spawn position
+                    wrapper.read(BedrockTypes.BLOCK_POSITION); // spawn position
 
                     spawnPositionStorage.setSpawnPosition(dimensionId, compassPosition);
                     if (chunkTracker.getDimensionId() != dimensionId) {
@@ -335,7 +335,7 @@ public class WorldPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_BLOCK, ClientboundPackets1_19_3.BLOCK_CHANGE, new PacketHandlers() {
             @Override
             protected void register() {
-                map(BedrockTypes.POSITION_3I, Type.POSITION1_14); // position
+                map(BedrockTypes.BLOCK_POSITION, Type.POSITION1_14); // position
                 handler(wrapper -> {
                     final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
                     final Position position = wrapper.get(Type.POSITION1_14, 0);
@@ -360,7 +360,7 @@ public class WorldPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_BLOCK_SYNCED, ClientboundPackets1_19_3.BLOCK_CHANGE, new PacketHandlers() {
             @Override
             protected void register() {
-                map(BedrockTypes.POSITION_3I, Type.POSITION1_14); // position
+                map(BedrockTypes.BLOCK_POSITION, Type.POSITION1_14); // position
                 handler(wrapper -> {
                     final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
                     final Position position = wrapper.get(Type.POSITION1_14, 0);
@@ -387,7 +387,7 @@ public class WorldPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SUB_CHUNK_BLOCKS, ClientboundPackets1_19_3.MULTI_BLOCK_CHANGE, wrapper -> {
             wrapper.cancel(); // Need multiple packets because offsets can go over chunk boundaries
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
-            wrapper.read(BedrockTypes.POSITION_3I); // position | Seems to be unused by the Mojang client
+            wrapper.read(BedrockTypes.BLOCK_POSITION); // position | Seems to be unused by the Mojang client
             final BlockChangeEntry[] layer0Blocks = wrapper.read(BedrockTypes.BLOCK_CHANGE_ENTRY_ARRAY); // standard blocks
             final BlockChangeEntry[] layer1Blocks = wrapper.read(BedrockTypes.BLOCK_CHANGE_ENTRY_ARRAY); // extra blocks
 

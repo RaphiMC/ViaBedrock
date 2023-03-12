@@ -60,8 +60,8 @@ public class ClientPlayerPackets {
             wrapper.cancel();
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
             final int action = wrapper.read(BedrockTypes.VAR_INT); // action
-            wrapper.read(BedrockTypes.POSITION_3I); // block position
-            wrapper.read(BedrockTypes.POSITION_3I); // result position
+            wrapper.read(BedrockTypes.BLOCK_POSITION); // block position
+            wrapper.read(BedrockTypes.BLOCK_POSITION); // result position
             wrapper.read(BedrockTypes.VAR_INT); // face
 
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();

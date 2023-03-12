@@ -162,8 +162,8 @@ public class ClientPlayerEntity extends Entity {
         final PacketWrapper playerAction = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, this.user);
         playerAction.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
         playerAction.write(BedrockTypes.VAR_INT, action); // action
-        playerAction.write(BedrockTypes.POSITION_3I, new Position(0, 0, 0)); // block position
-        playerAction.write(BedrockTypes.POSITION_3I, new Position(0, 0, 0)); // result position
+        playerAction.write(BedrockTypes.BLOCK_POSITION, new Position(0, 0, 0)); // block position
+        playerAction.write(BedrockTypes.BLOCK_POSITION, new Position(0, 0, 0)); // result position
         playerAction.write(BedrockTypes.VAR_INT, face); // face
         playerAction.sendToServer(BedrockProtocol.class);
     }

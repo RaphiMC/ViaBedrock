@@ -31,7 +31,7 @@ public class BlockChangeEntryType extends Type<BlockChangeEntry> {
 
     @Override
     public BlockChangeEntry read(ByteBuf buffer) throws Exception {
-        final Position position = BedrockTypes.POSITION_3I.read(buffer);
+        final Position position = BedrockTypes.BLOCK_POSITION.read(buffer);
         final int blockState = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final int flags = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final long messageEntityId = BedrockTypes.UNSIGNED_VAR_LONG.read(buffer);
@@ -42,7 +42,7 @@ public class BlockChangeEntryType extends Type<BlockChangeEntry> {
 
     @Override
     public void write(ByteBuf buffer, BlockChangeEntry value) throws Exception {
-        BedrockTypes.POSITION_3I.write(buffer, value.position());
+        BedrockTypes.BLOCK_POSITION.write(buffer, value.position());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.blockState());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.flags());
         BedrockTypes.UNSIGNED_VAR_LONG.write(buffer, value.messageEntityId());

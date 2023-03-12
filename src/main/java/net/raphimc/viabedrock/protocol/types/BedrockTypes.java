@@ -35,10 +35,7 @@ import net.raphimc.viabedrock.protocol.types.metadata.FloatPropertiesType;
 import net.raphimc.viabedrock.protocol.types.metadata.IntPropertiesType;
 import net.raphimc.viabedrock.protocol.types.metadata.MetadataType;
 import net.raphimc.viabedrock.protocol.types.model.*;
-import net.raphimc.viabedrock.protocol.types.position.Position2fType;
-import net.raphimc.viabedrock.protocol.types.position.Position3fType;
-import net.raphimc.viabedrock.protocol.types.position.Position3iType;
-import net.raphimc.viabedrock.protocol.types.position.SubChunkOffsetType;
+import net.raphimc.viabedrock.protocol.types.position.*;
 import net.raphimc.viabedrock.protocol.types.primitive.*;
 
 import java.awt.image.BufferedImage;
@@ -72,6 +69,7 @@ public class BedrockTypes {
 
     public static final Type<Tag> NETWORK_TAG = new TagType();
     public static final Type<Tag> TAG_LE = new TagLEType();
+    public static final Type<Position> BLOCK_POSITION = new BlockPositionType();
     public static final Type<Position> POSITION_3I = new Position3iType();
     public static final Type<Position3f> POSITION_3F = new Position3fType();
     public static final Type<Position2f> POSITION_2F = new Position2fType();

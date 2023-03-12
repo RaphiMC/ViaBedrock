@@ -84,7 +84,7 @@ public class JoinPackets {
                     final int generatorId = wrapper.read(BedrockTypes.VAR_INT); // generator id
                     final int levelGameType = wrapper.read(BedrockTypes.VAR_INT); // level game type
                     final int difficulty = wrapper.read(BedrockTypes.VAR_INT); // difficulty
-                    final Position defaultSpawnPosition = wrapper.read(BedrockTypes.POSITION_3I); // default spawn position
+                    final Position defaultSpawnPosition = wrapper.read(BedrockTypes.BLOCK_POSITION); // default spawn position
                     wrapper.read(Type.BOOLEAN); // achievements disabled
                     final boolean isWorldEditor = wrapper.read(Type.BOOLEAN); // world editor
                     wrapper.read(BedrockTypes.VAR_INT); // day cycle stop time
