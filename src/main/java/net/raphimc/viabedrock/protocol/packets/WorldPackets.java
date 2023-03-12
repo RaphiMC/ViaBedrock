@@ -172,6 +172,10 @@ public class WorldPackets {
                     final BedrockChunk previousChunk = chunkTracker.getChunk(chunkX, chunkZ);
                     if (previousChunk != null) {
                         chunkTracker.unloadChunk(chunkX, chunkZ);
+
+                        if (previousChunk.isRequestSubChunks()) {
+                            requestCount = endY - startY;
+                        }
                     }
 
                     final BedrockChunk chunk = chunkTracker.createChunk(chunkX, chunkZ, sectionCount < 0 ? requestCount : sectionCount);
@@ -182,10 +186,8 @@ public class WorldPackets {
                     final int fRequestCount = requestCount;
                     final Consumer<byte[]> dataConsumer = combinedData -> {
                         try {
-                            if (fRequestCount > 0 && (previousChunk == null || !previousChunk.isRequestSubChunks())) {
+                            if (fRequestCount > 0) {
                                 chunkTracker.requestSubChunks(chunkX, chunkZ, startY, MathUtil.clamp(startY + fRequestCount, startY + 1, endY));
-                            } else if (previousChunk != null && previousChunk.isRequestSubChunks()) {
-                                chunkTracker.requestSubChunks(chunkX, chunkZ, startY, endY);
                             }
 
                             final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
