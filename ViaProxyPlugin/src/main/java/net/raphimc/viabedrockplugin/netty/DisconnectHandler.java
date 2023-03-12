@@ -23,10 +23,13 @@ import io.netty.channel.ChannelPromise;
 
 public class DisconnectHandler extends ChannelOutboundHandlerAdapter {
 
+    private boolean calledDisconnect = false;
+
     @Override
     public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
-        if (ctx.channel().isActive()) {
-            ctx.disconnect().addListener(future -> ctx.close(promise)); // Send disconnect notification to the server and close the channel
+        if (ctx.channel().isActive() && !this.calledDisconnect) {
+            this.calledDisconnect = true;
+            ctx.disconnect(promise); // Send disconnect notification to the server and close the channel
         } else {
             super.close(ctx, promise);
         }
