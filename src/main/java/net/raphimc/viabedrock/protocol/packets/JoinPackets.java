@@ -216,12 +216,12 @@ public class JoinPackets {
                     wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
                     final EntityTracker entityTracker = new EntityTracker(wrapper.user());
-                    wrapper.user().put(entityTracker);
                     final ClientPlayerEntity clientPlayer = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId);
                     clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + 1.62F, playerPosition.z()));
                     clientPlayer.setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
                     clientPlayer.setOnGround(false);
                     clientPlayer.setGameType(playerGameType);
+                    wrapper.user().put(entityTracker);
 
                     final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_3.JOIN_GAME, wrapper.user());
                     joinGame.write(Type.INT, clientPlayer.javaId()); // entity id
