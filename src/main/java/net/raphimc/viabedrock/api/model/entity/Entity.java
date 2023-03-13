@@ -69,8 +69,7 @@ public class Entity {
         final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_3.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
         teams.write(Type.BYTE, (byte) 0); // mode | 0 = ADD
-        //teams.write(Type.COMPONENT, JsonUtil.textToComponent("vb_" + this.javaId)); // display name
-        teams.write(Type.STRING, JsonUtil.textToJson("vb_" + this.javaId)); // display name
+        teams.write(Type.COMPONENT, JsonUtil.textToComponent("vb_" + this.javaId)); // display name
         teams.write(Type.BYTE, (byte) 3); // flags
         teams.write(Type.STRING, "always"); // name tag visibility
         teams.write(Type.STRING, "never"); // collision rule
@@ -89,8 +88,7 @@ public class Entity {
         final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_3.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
         teams.write(Type.BYTE, (byte) 2); // mode | 0 = UPDATE
-        //teams.write(Type.COMPONENT, JsonUtil.textToComponent("vb_" + this.javaId)); // display name
-        teams.write(Type.STRING, JsonUtil.textToJson("vb_" + this.javaId)); // display name
+        teams.write(Type.COMPONENT, JsonUtil.textToComponent("vb_" + this.javaId)); // display name
         teams.write(Type.BYTE, (byte) 3); // flags
         teams.write(Type.STRING, "always"); // name tag visibility
         teams.write(Type.STRING, "never"); // collision rule
