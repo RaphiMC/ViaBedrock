@@ -36,5 +36,8 @@ This file has been dumped from a vanilla server using a fabric mod.
 ### data/custom/biome_extra_data.json
 This file has been created manually.
 
+### data/custom/entity_identifiers.json
+This file has been created manually.
+
 ### data/custom/pre_waterlogged_states.json
 This file has been created manually.

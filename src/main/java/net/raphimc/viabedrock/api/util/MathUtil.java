@@ -36,4 +36,8 @@ public class MathUtil {
         return (byte) (f * 256F / 360F);
     }
 
+    public static float byte2Float(final byte b) {
+        return b * 360F / 256F;
+    }
+
 }

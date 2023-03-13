@@ -128,7 +128,11 @@ public class OtherPlayerPackets {
 
             final Entity entity = entityTracker.getEntityByRid(runtimeEntityId);
             if (entity == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received move player packet for unknown entity: " + runtimeEntityId);
+                wrapper.cancel();
+                return;
+            }
+            if (!entity.type().isOrHasParent(Entity1_19_3Types.PLAYER)) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received move player packet for non-player entity: " + entity.type());
                 wrapper.cancel();
                 return;
             }

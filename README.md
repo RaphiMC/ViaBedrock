@@ -34,7 +34,7 @@ Additionally ViaBedrock uses assets and data dumps from other projects: See the 
 - [x] Block updates
 - [x] Biomes
 - [x] Players
-- [ ] Entities
+- [x] Entities
 - [ ] Entity interactions
 - [ ] Entity metadata
 - [ ] Entity attributes

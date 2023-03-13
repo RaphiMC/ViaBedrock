@@ -71,6 +71,7 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, CompoundTag> biomeDefinitions; // Bedrock
     private Map<String, Map<String, Object>> biomeExtraData; // Bedrock -> Java
     private BiMap<String, Integer> items; // Bedrock
+    private Map<String, String> entityIdentifiers; // Bedrock -> Java
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolVersion.v1_19_3.getName());
@@ -172,6 +173,14 @@ public class BedrockMappingData extends MappingDataBase {
             final int id = itemEntry.get("id").getAsInt();
             this.items.put(identifier, id);
         }
+
+        final JsonObject entityIdentifiersJson = this.readJson("custom/entity_identifiers.json");
+        this.entityIdentifiers = new HashMap<>(entityIdentifiersJson.size());
+        for (Map.Entry<String, JsonElement> entry : entityIdentifiersJson.entrySet()) {
+            final String bedrockIdentifier = entry.getKey();
+            final String javaIdentifier = entry.getValue().getAsString();
+            this.entityIdentifiers.put(bedrockIdentifier, javaIdentifier);
+        }
     }
 
     public Map<String, String> getTranslations() {
@@ -232,6 +241,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public BiMap<String, Integer> getItems() {
         return Maps.unmodifiableBiMap(this.items);
+    }
+
+    public Map<String, String> getEntityIdentifiers() {
+        return Collections.unmodifiableMap(this.entityIdentifiers);
     }
 
     @Override
