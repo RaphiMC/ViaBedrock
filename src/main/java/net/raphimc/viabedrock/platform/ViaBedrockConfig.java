@@ -24,9 +24,4 @@ public interface ViaBedrockConfig {
      */
     boolean isBlobCacheEnabled();
 
-    /**
-     * @return The maximum size of the blob cache in bytes.
-     */
-    long getMaxBlobCacheSize();
-
 }

@@ -28,7 +28,6 @@ import java.util.Map;
 public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.platform.ViaBedrockConfig {
 
     private boolean blobCacheEnabled;
-    private int maxBlobCacheSize;
 
     public ViaBedrockConfig(final File configFile) {
         super(configFile);
@@ -42,7 +41,6 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
 
     private void loadFields() {
         this.blobCacheEnabled = this.getBoolean("blob-cache", true);
-        this.maxBlobCacheSize = this.getInt("max-blob-cache-size", 256);
     }
 
     @Override
@@ -62,11 +60,6 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
     @Override
     public boolean isBlobCacheEnabled() {
         return this.blobCacheEnabled;
-    }
-
-    @Override
-    public long getMaxBlobCacheSize() {
-        return this.maxBlobCacheSize * 1024L * 1024L;
     }
 
 }

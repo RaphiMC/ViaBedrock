@@ -33,6 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 public class BlobCache extends StoredObject {
 
@@ -43,6 +46,10 @@ public class BlobCache extends StoredObject {
     private final Object lock = new Object();
     private final List<Long> missing = new ArrayList<>();
     private final List<Long> acked = new ArrayList<>();
+
+    private final Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
+    private final Inflater inflater = new Inflater();
+    private final byte[] compressionBuffer = new byte[8192];
 
     public BlobCache(final UserConnection user) {
         super(user);
@@ -80,8 +87,9 @@ public class BlobCache extends StoredObject {
             this.acked.add(hash);
         }
 
-        final byte[] previousBlob = this.blobs.put(hash, blob);
-        this.size += blob.length;
+        final byte[] compressedBlob = this.compress(blob);
+        final byte[] previousBlob = this.blobs.put(hash, compressedBlob);
+        this.size += compressedBlob.length;
         if (this.pending.containsKey(hash)) {
             this.pending.remove(hash).complete(blob);
         }
@@ -121,7 +129,7 @@ public class BlobCache extends StoredObject {
             final ByteArrayOutputStream output = new ByteArrayOutputStream();
             try {
                 for (long hash : hashes) {
-                    output.write(this.blobs.get(hash));
+                    output.write(this.decompress(this.blobs.get(hash)));
                 }
             } catch (final IOException ignored) {
             }
@@ -166,6 +174,37 @@ public class BlobCache extends StoredObject {
 
     public long getTotalSize() {
         return this.size;
+    }
+
+    private byte[] compress(final byte[] data) {
+        this.deflater.setInput(data);
+        this.deflater.finish();
+
+        final ByteArrayOutputStream compressed = new ByteArrayOutputStream();
+        while (!this.deflater.finished()) {
+            final int size = this.deflater.deflate(this.compressionBuffer);
+            compressed.write(this.compressionBuffer, 0, size);
+        }
+        this.deflater.reset();
+        return compressed.toByteArray();
+    }
+
+    private byte[] decompress(final byte[] compressed) {
+        if (compressed.length == 0) return compressed;
+
+        this.inflater.setInput(compressed);
+        final ByteArrayOutputStream data = new ByteArrayOutputStream();
+        try {
+            while (!this.inflater.finished()) {
+                final int size = this.inflater.inflate(this.compressionBuffer);
+                data.write(this.compressionBuffer, 0, size);
+            }
+        } catch (final DataFormatException e) {
+            throw new RuntimeException(e);
+        } finally {
+            this.inflater.reset();
+        }
+        return data.toByteArray();
     }
 
 }
