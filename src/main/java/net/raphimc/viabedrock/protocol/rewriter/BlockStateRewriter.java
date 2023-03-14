@@ -60,51 +60,24 @@ public class BlockStateRewriter extends StoredObject {
             final BlockState bedrockBlockState = bedrockBlockStates.get(bedrockId);
             this.blockStateTagMappings.put(bedrockBlockState, bedrockId);
 
-            if (bedrockBlockState.getIdentifier().equals("water") || bedrockBlockState.getIdentifier().equals("flowing_water")) {
+            if (bedrockBlockState.getNamespacedIdentifier().equals("minecraft:water") || bedrockBlockState.getNamespacedIdentifier().equals("minecraft:flowing_water")) {
                 this.waterIds.add(bedrockId);
             }
 
-            // TODO: Really hacky, but it works for now. Fix properly once the mappings are fully done.
             if (bedrockBlockState.getIdentifier().contains("hanging_sign")) continue;
             if (bedrockBlockState.getIdentifier().contains("bamboo")) continue;
-            if (bedrockBlockState.getIdentifier().contains("element")) continue;
-            if (bedrockBlockState.getIdentifier().equals("border_block")) continue;
-            if (bedrockBlockState.getIdentifier().equals("reserved6")) continue;
-            if (bedrockBlockState.getIdentifier().equals("frame")) continue;
-            if (bedrockBlockState.getIdentifier().equals("glow_frame")) continue;
             if (bedrockBlockState.getIdentifier().equals("chiseled_bookshelf")) continue;
-            if (bedrockBlockState.getIdentifier().equals("glowingobsidian")) continue;
-            if (bedrockBlockState.getIdentifier().equals("netherreactor")) continue;
-            if (bedrockBlockState.getIdentifier().equals("unknown")) continue;
-            if (bedrockBlockState.getIdentifier().equals("chemistry_table")) continue;
             if (bedrockBlockState.getIdentifier().equals("mangrove_propagule")) continue;
-            if (bedrockBlockState.getIdentifier().equals("muddy_mangrove_roots")) continue;
-            if (bedrockBlockState.getIdentifier().equals("info_update2")) continue;
-            if (bedrockBlockState.getIdentifier().equals("info_update")) continue;
-            if (bedrockBlockState.getIdentifier().equals("chemical_heat")) continue;
-            if (bedrockBlockState.getIdentifier().equals("client_request_placeholder_block")) continue;
-            if (bedrockBlockState.getIdentifier().equals("coral_fan_hang3")) continue;
-            if (bedrockBlockState.getIdentifier().equals("jigsaw")) continue;
-            if (bedrockBlockState.getIdentifier().equals("allow")) continue;
-            if (bedrockBlockState.getIdentifier().equals("deny")) continue;
-            if (bedrockBlockState.getIdentifier().equals("camera")) continue;
+
             if (!bedrockToJavaBlockStates.containsKey(bedrockBlockState)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "B -> J missing: " + bedrockBlockState);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing Bedrock -> Java block state mapping: " + bedrockBlockState);
                 continue;
             }
-            BlockState javaBlockState = bedrockToJavaBlockStates.get(bedrockBlockState);
+
+            final BlockState javaBlockState = bedrockToJavaBlockStates.get(bedrockBlockState);
             if (!javaBlockStates.containsKey(javaBlockState)) {
-                javaBlockState = javaBlockState.withoutProperties("age");
-                if (!javaBlockStates.containsKey(javaBlockState)) {
-                    javaBlockState = javaBlockState.withoutProperties("facing");
-                    if (!javaBlockStates.containsKey(javaBlockState)) {
-                        javaBlockState = javaBlockState.withProperty("facing", "north");
-                        if (!javaBlockStates.containsKey(javaBlockState)) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "J missing: " + javaBlockState);
-                            continue;
-                        }
-                    }
-                }
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing java block state mapping: " + javaBlockState);
+                continue;
             }
 
             final int javaId = javaBlockStates.get(javaBlockState);

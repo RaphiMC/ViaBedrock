@@ -33,6 +33,9 @@ This file has been dumped from a vanilla server using a fabric mod.
 ### data/blocksB2J.json
 [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data/blob/master/data/bedrock/1.19.1/blocksB2J.json)
 
+### data/custom/additional_blocksB2J.json
+This file has been created manually.
+
 ### data/custom/biome_extra_data.json
 This file has been created manually.
 

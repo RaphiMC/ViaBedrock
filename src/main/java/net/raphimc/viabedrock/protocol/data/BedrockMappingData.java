@@ -112,6 +112,15 @@ public class BedrockMappingData extends MappingDataBase {
             final BlockState javaBlockState = BlockState.fromString(entry.getValue().getAsString());
             this.bedrockToJavaBlockStates.put(bedrockBlockState, javaBlockState);
         }
+        final JsonObject additionalBedrockToJavaBlockStatesJson = this.readJson("custom/additional_blocksB2J.json");
+        for (Map.Entry<String, JsonElement> entry : additionalBedrockToJavaBlockStatesJson.entrySet()) {
+            final BlockState bedrockBlockState = BlockState.fromString(entry.getKey());
+            final BlockState javaBlockState = BlockState.fromString(entry.getValue().getAsString());
+            if (javaBlockState.equals(bedrockToJavaBlockStates.get(bedrockBlockState))) {
+                this.getLogger().log(Level.WARNING, "Duplicate block state mapping: " + bedrockBlockState + " -> " + javaBlockState);
+            }
+            this.bedrockToJavaBlockStates.put(bedrockBlockState, javaBlockState);
+        }
 
         final JsonArray preWaterloggedStatesJson = this.readJson("custom/pre_waterlogged_states.json").getAsJsonArray("blockstates");
         this.preWaterloggedStates = new IntArrayList(preWaterloggedStatesJson.size());
