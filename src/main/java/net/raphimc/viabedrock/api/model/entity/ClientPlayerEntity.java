@@ -153,7 +153,7 @@ public class ClientPlayerEntity extends Entity {
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // interaction mode | 0 = CROSSHAIR
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_LONG, (long) this.age); // tick
         playerAuthInput.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // position delta
-        playerAuthInput.sendToServer(BedrockProtocol.class);
+        //playerAuthInput.sendToServer(BedrockProtocol.class);
 
         this.authInput = 0;
     }
