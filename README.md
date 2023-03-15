@@ -54,4 +54,4 @@ Additionally ViaBedrock uses assets and data dumps from other projects: See the 
 - [x] Player list
 - [ ] Sounds
 - [ ] Particles
-- [ ] Player Skins
+- [ ] Player Skins (Requires [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility) mod)

@@ -61,18 +61,22 @@ public class ImageType extends Type<BufferedImage> {
 
         buffer.writeIntLE(value.getWidth());
         buffer.writeIntLE(value.getHeight());
-        final byte[] data = new byte[value.getWidth() * value.getHeight() * 4];
-        for (int y = 0; y < value.getHeight(); y++) {
-            for (int x = 0; x < value.getWidth(); x++) {
-                final int argb = value.getRGB(x, y);
-                final int index = (y * value.getWidth() + x) * 4;
+        BedrockTypes.BYTE_ARRAY.write(buffer, getImageData(value));
+    }
+
+    public static byte[] getImageData(final BufferedImage image) {
+        final byte[] data = new byte[image.getWidth() * image.getHeight() * 4];
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                final int argb = image.getRGB(x, y);
+                final int index = (y * image.getWidth() + x) * 4;
                 data[index] = (byte) ((argb >> 16) & 0xFF);
                 data[index + 1] = (byte) ((argb >> 8) & 0xFF);
                 data[index + 2] = (byte) (argb & 0xFF);
                 data[index + 3] = (byte) ((argb >> 24) & 0xFF);
             }
         }
-        BedrockTypes.BYTE_ARRAY.write(buffer, data);
+        return data;
     }
 
 }

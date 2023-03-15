@@ -36,12 +36,16 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
+import net.raphimc.viabedrock.protocol.providers.SkinProvider;
+import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
 import java.util.UUID;
 
@@ -174,7 +178,7 @@ public class PlayPackets {
                     wrapper.write(Type.STRING, "device_os"); // property name
                     wrapper.write(Type.STRING, wrapper.read(BedrockTypes.INT_LE).toString()); // device os
                     wrapper.write(Type.OPTIONAL_STRING, null); // signature
-                    wrapper.read(BedrockTypes.SKIN); // skin
+                    final SkinData skin = wrapper.read(BedrockTypes.SKIN); // skin
                     wrapper.write(Type.STRING, "is_teacher"); // property name
                     wrapper.write(Type.STRING, wrapper.read(Type.BOOLEAN).toString()); // is teacher
                     wrapper.write(Type.OPTIONAL_STRING, null); // signature
@@ -184,6 +188,8 @@ public class PlayPackets {
 
                     wrapper.write(Type.BOOLEAN, true); // listed
                     wrapper.write(Type.OPTIONAL_COMPONENT, JsonUtil.textToComponent(name)); // display name
+
+                    Via.getManager().getProviders().get(SkinProvider.class).setSkin(wrapper.user(), uuids[i], skin);
                 }
                 for (int i = 0; i < length; i++) {
                     wrapper.read(Type.BOOLEAN); // trusted skin
@@ -223,6 +229,14 @@ public class PlayPackets {
         protocol.registerServerbound(ServerboundPackets1_19_3.PONG, null, wrapper -> {
             wrapper.cancel();
             wrapper.user().get(PacketSyncStorage.class).handleResponse(wrapper.read(Type.INT)); // parameter
+        });
+        protocol.registerServerbound(ServerboundPackets1_19_3.PLUGIN_MESSAGE, null, wrapper -> {
+            wrapper.cancel();
+            final String channel = wrapper.read(Type.STRING); // channel
+            if (channel.equals("minecraft:register")) {
+                final String[] channels = new String(wrapper.read(Type.REMAINING_BYTES), StandardCharsets.UTF_8).split("\0");
+                wrapper.user().get(ChannelStorage.class).addChannels(channels);
+            }
         });
     }
 
