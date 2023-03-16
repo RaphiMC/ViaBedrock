@@ -44,6 +44,8 @@ import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,6 +74,8 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, Map<String, Object>> biomeExtraData; // Bedrock -> Java
     private BiMap<String, Integer> items; // Bedrock
     private Map<String, String> entityIdentifiers; // Bedrock -> Java
+    private BufferedImage steveSkin; // Bedrock
+    private JsonObject skinGeometry; // Bedrock
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolVersion.v1_19_3.getName());
@@ -190,6 +194,9 @@ public class BedrockMappingData extends MappingDataBase {
             final String javaIdentifier = entry.getValue().getAsString();
             this.entityIdentifiers.put(bedrockIdentifier, javaIdentifier);
         }
+
+        this.steveSkin = this.readImage("bedrock/skin/steve.png");
+        this.skinGeometry = this.readJson("bedrock/skin/geometry.json");
     }
 
     public Map<String, String> getTranslations() {
@@ -256,6 +263,14 @@ public class BedrockMappingData extends MappingDataBase {
         return Collections.unmodifiableMap(this.entityIdentifiers);
     }
 
+    public BufferedImage getSteveSkin() {
+        return this.steveSkin;
+    }
+
+    public JsonObject getSkinGeometry() {
+        return this.skinGeometry;
+    }
+
     @Override
     protected Logger getLogger() {
         return ViaBedrock.getPlatform().getLogger();
@@ -316,6 +331,21 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             return GsonUtil.getGson().fromJson(new InputStreamReader(inputStream), classOfT);
+        } catch (IOException e) {
+            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
+            return null;
+        }
+    }
+
+    private BufferedImage readImage(String file) {
+        file = "assets/viabedrock/data/" + file;
+        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
+            if (inputStream == null) {
+                this.getLogger().severe("Could not open " + file);
+                return null;
+            }
+
+            return ImageIO.read(inputStream);
         } catch (IOException e) {
             this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
             return null;

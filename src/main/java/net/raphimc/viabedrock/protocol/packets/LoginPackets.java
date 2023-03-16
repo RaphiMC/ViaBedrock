@@ -36,9 +36,9 @@ import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.WideSteveSkinProvider;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
+import net.raphimc.viabedrock.protocol.providers.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -285,7 +285,7 @@ public class LoginPackets {
                 final String skinData = Jwts.builder()
                         .signWith(privateKey, SignatureAlgorithm.ES384)
                         .setHeaderParam("x5u", encodedPublicKey)
-                        .addClaims(WideSteveSkinProvider.get(user))
+                        .addClaims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(user))
                         .compact();
 
                 authChainData.setSkinJwt(skinData);
@@ -327,7 +327,7 @@ public class LoginPackets {
             final String skinData = Jwts.builder()
                     .signWith(privateKey, SignatureAlgorithm.ES384)
                     .setHeaderParam("x5u", encodedPublicKey)
-                    .addClaims(WideSteveSkinProvider.get(user))
+                    .addClaims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(user))
                     .compact();
 
             final AuthChainData authChainData = new AuthChainData(user, null, identityJwt, publicKey, privateKey);

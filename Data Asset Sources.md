@@ -21,6 +21,13 @@ This file has been copied from the official bedrock client's assets folder:
 ### data/bedrock/r12_to_current_block_map.bin
 [PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/master/r12_to_current_block_map.bin)
 
+### data/bedrock/runtime_item_states.1_19_60.json
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/master/core/src/main/resources/bedrock/runtime_item_states.1_19_60.json)
+
+### data/bedrock/skin/*
+This file has been copied from the official bedrock client's assets folder:  
+`%MC-Root%\data\skin_packs\vanilla\*`
+
 ### data/java/mapping-1.19.3.json
 [ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.19.3.json)
 
