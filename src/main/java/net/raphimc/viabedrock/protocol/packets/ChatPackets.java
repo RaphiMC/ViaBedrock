@@ -22,8 +22,8 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.types.BitSetType;
 import com.viaversion.viaversion.api.type.types.ByteArrayType;
-import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
-import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPackets1_19_4;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
@@ -53,7 +53,7 @@ public class ChatPackets {
     private static final BitSetType ACKNOWLEDGED_BIT_SET_TYPE = new BitSetType(20);
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_19_3.SYSTEM_CHAT, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_19_4.SYSTEM_CHAT, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -137,7 +137,7 @@ public class ChatPackets {
                 read(BedrockTypes.STRING); // platform chat id
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_19_3.SYSTEM_CHAT, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_19_4.SYSTEM_CHAT, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -180,7 +180,7 @@ public class ChatPackets {
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_19_3.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_19_4.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
             @Override
             public void register() {
                 create(Type.UNSIGNED_BYTE, TextType.CHAT); // type
@@ -198,7 +198,7 @@ public class ChatPackets {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     if (gameSession.isChatRestricted()) {
                         wrapper.cancel();
-                        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_3.SYSTEM_CHAT, wrapper.user());
+                        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, wrapper.user());
                         systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + BedrockProtocol.MAPPINGS.getTranslations().get("permissions.chatmute"))); // message
                         systemChat.write(Type.BOOLEAN, false); // overlay
                         systemChat.send(BedrockProtocol.class);
@@ -206,7 +206,7 @@ public class ChatPackets {
                 });
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_19_3.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_19_4.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, new PacketHandlers() {
             @Override
             public void register() {
                 map(Type.STRING, BedrockTypes.STRING, c -> "/" + c); // command
@@ -231,7 +231,7 @@ public class ChatPackets {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     if (!gameSession.areCommandsEnabled()) {
                         wrapper.cancel();
-                        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_3.SYSTEM_CHAT, wrapper.user());
+                        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, wrapper.user());
                         systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + BedrockProtocol.MAPPINGS.getTranslations().get("commands.generic.disabled"))); // message
                         systemChat.write(Type.BOOLEAN, false); // overlay
                         systemChat.send(BedrockProtocol.class);

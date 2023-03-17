@@ -217,7 +217,10 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     GAME_TEST_REQUEST,
     GAME_TEST_RESULTS,
     UPDATE_CLIENT_INPUT_LOCKS,
-    CLIENT_CHEAT_ABILITY;
+    CLIENT_CHEAT_ABILITY,
+    CAMERA_PRESETS,
+    UNLOCKED_RECIPES,
+    CAMERA_INSTRUCTION;
 
     @Override
     public int getId() {

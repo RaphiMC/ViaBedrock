@@ -19,10 +19,10 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
+import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
@@ -51,7 +51,7 @@ public class EntityTracker extends StoredObject {
         return this.clientPlayerEntity;
     }
 
-    public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final Entity1_19_3Types type) throws Exception {
+    public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final Entity1_19_4Types type) throws Exception {
         return this.addEntity(new Entity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), uuid != null ? uuid : UUID.randomUUID(), type));
     }
 
@@ -69,7 +69,7 @@ public class EntityTracker extends StoredObject {
         }
         if (prevEntity != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate unique entity ID: " + entity.uniqueId());
-            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_19_3.REMOVE_ENTITIES, this.getUser());
+            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_19_4.REMOVE_ENTITIES, this.getUser());
             removeEntities.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
 

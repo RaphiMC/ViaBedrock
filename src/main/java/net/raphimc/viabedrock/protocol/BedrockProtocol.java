@@ -28,8 +28,8 @@ import com.viaversion.viaversion.api.protocol.packet.mapping.PacketMappings;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
-import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
-import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPackets1_19_4;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
@@ -46,12 +46,12 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.logging.Level;
 
-public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets, ClientboundPackets1_19_3, ServerboundBedrockPackets, ServerboundPackets1_19_3> {
+public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets, ClientboundPackets1_19_4, ServerboundBedrockPackets, ServerboundPackets1_19_4> {
 
     public static final BedrockMappingData MAPPINGS = new BedrockMappingData();
 
     public BedrockProtocol() {
-        super(ClientboundBedrockPackets.class, ClientboundPackets1_19_3.class, ServerboundBedrockPackets.class, ServerboundPackets1_19_3.class);
+        super(ClientboundBedrockPackets.class, ClientboundPackets1_19_4.class, ServerboundBedrockPackets.class, ServerboundPackets1_19_4.class);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         WorldPackets.register(this);
         EntityPackets.register(this);
 
-        this.registerClientbound(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING, ClientboundPackets1_19_3.DISCONNECT, new PacketHandlers() {
+        this.registerClientbound(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING, ClientboundPackets1_19_4.DISCONNECT, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -97,7 +97,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
                 this.cancelClientbound(packet);
             }
         }
-        for (ServerboundPackets1_19_3 packet : this.unmappedServerboundPacketType.getEnumConstants()) {
+        for (ServerboundPackets1_19_4 packet : this.unmappedServerboundPacketType.getEnumConstants()) {
             if (!this.hasRegisteredServerbound(packet)) {
                 this.cancelServerbound(packet);
             }
@@ -139,11 +139,11 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         /*if (direction == Direction.CLIENTBOUND) {
             System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ClientboundBedrockPackets.values()[packetWrapper.getId() - 1] + ", packetWrapper = " + packetWrapper);
         } else {
-            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_19_3.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
+            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_19_4.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
         }*/
         super.transform(direction, state, packetWrapper);
         /*if (direction == Direction.CLIENTBOUND) {
-            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_19_3.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
+            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_19_4.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
         } else {
             System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ServerboundBedrockPackets.values()[packetWrapper.getId() - 1] + ", packetWrapper = " + packetWrapper);
         }*/
@@ -156,7 +156,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     public static void kickForIllegalState(final UserConnection user, final String reason, final Throwable e) {
         ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Illegal state: " + reason, e);
         try {
-            final PacketWrapper disconnect = PacketWrapper.create(user.getProtocolInfo().getState() == State.PLAY ? ClientboundPackets1_19_3.DISCONNECT : ClientboundLoginPackets.LOGIN_DISCONNECT, user);
+            final PacketWrapper disconnect = PacketWrapper.create(user.getProtocolInfo().getState() == State.PLAY ? ClientboundPackets1_19_4.DISCONNECT : ClientboundLoginPackets.LOGIN_DISCONNECT, user);
             disconnect.write(Type.COMPONENT, JsonUtil.textToComponent("§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page."));
             disconnect.send(BedrockProtocol.class);
         } catch (Throwable ignored) {

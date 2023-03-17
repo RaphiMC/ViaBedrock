@@ -40,7 +40,7 @@ public interface ViaBedrockPlatform {
 
         final ProtocolManager protocolManager = Via.getManager().getProtocolManager();
 
-        protocolManager.registerProtocol(new BedrockProtocol(), ProtocolVersion.v1_19_3, BedrockProtocolVersion.bedrockLatest);
+        protocolManager.registerProtocol(new BedrockProtocol(), ProtocolVersion.v1_19_4, BedrockProtocolVersion.bedrockLatest);
         protocolManager.registerBaseProtocol(new EmptyBaseProtocol(), Range.singleton(BedrockProtocolVersion.bedrockLatest.getVersion()));
     }
 

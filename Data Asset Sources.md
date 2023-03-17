@@ -9,10 +9,10 @@ This file has been dumped from a BDS server.
 [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data/blob/master/data/bedrock/1.19.1/biomes.json)
 
 ### data/bedrock/block_id_map.json
-[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/master/block_id_map.json)
+[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/71c36e048dc51ee1d6383385311a43e912b30850/block_id_map.json)
 
-### data/bedrock/block_palette.1_19_60.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/master/core/src/main/resources/bedrock/block_palette.1_19_60.nbt)
+### data/bedrock/block_palette.1_19_70.nbt
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/master/core/src/main/resources/bedrock/block_palette.1_19_70.nbt)
 
 ### data/bedrock/en_US.lang
 This file has been copied from the official bedrock client's assets folder:  
@@ -21,15 +21,15 @@ This file has been copied from the official bedrock client's assets folder:
 ### data/bedrock/r12_to_current_block_map.bin
 [PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/master/r12_to_current_block_map.bin)
 
-### data/bedrock/runtime_item_states.1_19_60.json
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/master/core/src/main/resources/bedrock/runtime_item_states.1_19_60.json)
+### data/bedrock/runtime_item_states.1_19_70.json
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/master/core/src/main/resources/bedrock/runtime_item_states.1_19_70.json)
 
 ### data/bedrock/skin/*
 This file has been copied from the official bedrock client's assets folder:  
 `%MC-Root%\data\skin_packs\vanilla\*`
 
-### data/java/mapping-1.19.3.json
-[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.19.3.json)
+### data/java/mapping-1.19.4.json
+[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.19.4.json)
 
 ### data/java/registries.nbt
 This file has been dumped from a vanilla server using a fabric mod.

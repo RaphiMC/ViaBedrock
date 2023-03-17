@@ -29,7 +29,7 @@ import java.util.Objects;
 public class BlockState {
 
     public static final BlockState AIR = new BlockState("air", Collections.emptyMap());
-    public static final BlockState STONE = new BlockState("stone", Collections.emptyMap());
+    public static final BlockState STONE = new BlockState("stone", Collections.singletonMap("stone_type", "stone"));
     public static final BlockState INFO_UPDATE = new BlockState("info_update", Collections.emptyMap());
 
     private final String namespace;

@@ -25,9 +25,9 @@ import java.util.List;
 public class BedrockProtocolVersion {
 
     public static final List<ProtocolVersion> PROTOCOLS = new ArrayList<>();
-    public static final String LATEST_BEDROCK_VERSION = "1.19.63";
+    public static final String LATEST_BEDROCK_VERSION = "1.19.70";
 
-    public static final ProtocolVersion bedrockLatest = registerBedrock(1_000_568, "Bedrock " + LATEST_BEDROCK_VERSION);
+    public static final ProtocolVersion bedrockLatest = registerBedrock(1_000_575, "Bedrock " + LATEST_BEDROCK_VERSION);
 
 
     private static ProtocolVersion registerBedrock(final int version, final String name) {

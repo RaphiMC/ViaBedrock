@@ -61,19 +61,9 @@ public class BiomeRegistry {
             javaBiome.put("element", element);
             element.put("temperature", bedrockBiome.get("temperature"));
             element.put("downfall", bedrockBiome.get("downfall"));
+            element.put("has_precipitation", bedrockBiome.get("rain"));
 
             final List<String> tags = bedrockBiome.<ListTag>get("tags").getValue().stream().map(StringTag.class::cast).map(StringTag::getValue).collect(Collectors.toList());
-
-            final boolean rain = bedrockBiome.<ByteTag>get("rain").asByte() != 0;
-            if (rain) {
-                if (tags.contains("frozen")) {
-                    element.put("precipitation", new StringTag("snow"));
-                } else {
-                    element.put("precipitation", new StringTag("rain"));
-                }
-            } else {
-                element.put("precipitation", new StringTag("none"));
-            }
 
             final CompoundTag effects = new CompoundTag();
             element.put("effects", effects);
@@ -154,7 +144,7 @@ public class BiomeRegistry {
         biome.put("element", element);
         element.put("temperature", new FloatTag(0.5F));
         element.put("downfall", new FloatTag(0.5F));
-        element.put("precipitation", new StringTag("none"));
+        element.put("has_precipitation", new ByteTag((byte) 0));
 
         final CompoundTag effects = new CompoundTag();
         element.put("effects", effects);
@@ -179,9 +169,7 @@ public class BiomeRegistry {
         final CompoundTag moodSound = new CompoundTag();
         moodSound.put("tick_delay", new IntTag(6000));
         moodSound.put("offset", new FloatTag(2F));
-        final CompoundTag sound = new CompoundTag();
-        moodSound.put("sound", sound);
-        sound.put("sound_id", new StringTag(soundId));
+        moodSound.put("sound", new StringTag(soundId));
         moodSound.put("block_search_extent", new IntTag(8));
         return moodSound;
     }

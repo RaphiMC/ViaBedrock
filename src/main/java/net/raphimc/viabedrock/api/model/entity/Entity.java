@@ -18,10 +18,10 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
+import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -36,7 +36,7 @@ public class Entity {
     protected final long runtimeId;
     protected final int javaId;
     protected final UUID javaUuid;
-    protected final Entity1_19_3Types type;
+    protected final Entity1_19_4Types type;
 
     /**
      * x, y, z
@@ -52,7 +52,7 @@ public class Entity {
 
     protected int age;
 
-    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid, final Entity1_19_3Types type) {
+    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid, final Entity1_19_4Types type) {
         this.user = user;
         this.uniqueId = uniqueId;
         this.runtimeId = runtimeId;
@@ -66,7 +66,7 @@ public class Entity {
     }
 
     public void createTeam() throws Exception {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_3.TEAMS, this.user);
+        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
         teams.write(Type.BYTE, (byte) 0); // mode | 0 = ADD
         teams.write(Type.COMPONENT, JsonUtil.textToComponent("vb_" + this.javaId)); // display name
@@ -76,7 +76,7 @@ public class Entity {
         teams.write(Type.VAR_INT, 21); // color | 21 = RESET
         teams.write(Type.COMPONENT, JsonUtil.textToComponent("")); // prefix
         teams.write(Type.COMPONENT, JsonUtil.textToComponent("")); // suffix
-        if (this.type.isOrHasParent(Entity1_19_3Types.PLAYER)) {
+        if (this.type.isOrHasParent(Entity1_19_4Types.PLAYER)) {
             teams.write(Type.STRING_ARRAY, new String[]{StringUtil.encodeUUID(this.javaUuid)}); // players
         } else {
             teams.write(Type.STRING_ARRAY, new String[]{this.javaUuid.toString()}); // players
@@ -85,7 +85,7 @@ public class Entity {
     }
 
     public void updateTeamPrefix(final String name) throws Exception {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_3.TEAMS, this.user);
+        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
         teams.write(Type.BYTE, (byte) 2); // mode | 0 = UPDATE
         teams.write(Type.COMPONENT, JsonUtil.textToComponent("vb_" + this.javaId)); // display name
@@ -99,7 +99,7 @@ public class Entity {
     }
 
     public void deleteTeam() throws Exception {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_3.TEAMS, this.user);
+        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
         teams.write(Type.BYTE, (byte) 1); // mode | 1 = REMOVE
         teams.send(BedrockProtocol.class);
@@ -121,7 +121,7 @@ public class Entity {
         return this.javaUuid;
     }
 
-    public Entity1_19_3Types type() {
+    public Entity1_19_4Types type() {
         return this.type;
     }
 

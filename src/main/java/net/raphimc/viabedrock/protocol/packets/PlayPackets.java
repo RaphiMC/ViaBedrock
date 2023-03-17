@@ -22,8 +22,8 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.types.BitSetType;
-import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
-import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ServerboundPackets1_19_3;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPackets1_19_4;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.JsonUtil;
@@ -52,7 +52,7 @@ import java.util.UUID;
 public class PlayPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.DISCONNECT, ClientboundPackets1_19_3.DISCONNECT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.DISCONNECT, ClientboundPackets1_19_4.DISCONNECT, wrapper -> {
             final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
             if (hasMessage) {
                 final String rawMessage = wrapper.read(BedrockTypes.STRING);
@@ -62,7 +62,7 @@ public class PlayPackets {
                 wrapper.write(Type.COMPONENT, com.viaversion.viaversion.libs.gson.JsonNull.INSTANCE); // reason
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.PLAY_STATUS, ClientboundPackets1_19_3.DISCONNECT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAY_STATUS, ClientboundPackets1_19_4.DISCONNECT, wrapper -> {
             final int status = wrapper.read(Type.INT); // status
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
@@ -116,14 +116,14 @@ public class PlayPackets {
                 LoginPackets.writePlayStatusKickMessage(wrapper, status);
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_19_3.SERVER_DIFFICULTY, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_19_4.SERVER_DIFFICULTY, new PacketHandlers() {
             @Override
             public void register() {
                 map(BedrockTypes.UNSIGNED_VAR_INT, Type.UNSIGNED_BYTE); // difficulty
                 create(Type.BOOLEAN, false); // locked
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_STACK_LATENCY, ClientboundPackets1_19_3.KEEP_ALIVE, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_STACK_LATENCY, ClientboundPackets1_19_4.KEEP_ALIVE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(BedrockTypes.LONG_LE, Type.LONG, t -> {
@@ -150,7 +150,7 @@ public class PlayPackets {
                 Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(wrapper.user(), hash, blob);
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_LIST, ClientboundPackets1_19_3.PLAYER_INFO_UPDATE, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_LIST, ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper -> {
             final short action = wrapper.read(Type.UNSIGNED_BYTE); // action
 
             if (action == 0) { // ADD
@@ -195,18 +195,18 @@ public class PlayPackets {
                     wrapper.read(Type.BOOLEAN); // trusted skin
                 }
                 // Remove added players from the player list first because Mojang client overwrites entries if they are added twice
-                final PacketWrapper playerInfoRemove = PacketWrapper.create(ClientboundPackets1_19_3.PLAYER_INFO_REMOVE, wrapper.user());
+                final PacketWrapper playerInfoRemove = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_REMOVE, wrapper.user());
                 playerInfoRemove.write(Type.UUID_ARRAY, uuids); // uuids
                 playerInfoRemove.send(BedrockProtocol.class);
             } else if (action == 1) { // REMOVE
-                wrapper.setPacketType(ClientboundPackets1_19_3.PLAYER_INFO_REMOVE);
+                wrapper.setPacketType(ClientboundPackets1_19_4.PLAYER_INFO_REMOVE);
                 wrapper.write(Type.UUID_ARRAY, wrapper.read(BedrockTypes.UUID_ARRAY)); // uuids
             } else {
                 BedrockProtocol.kickForIllegalState(wrapper.user(), "Unsupported player list action: " + action);
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_19_3.CLIENT_SETTINGS, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_19_4.CLIENT_SETTINGS, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, new PacketHandlers() {
             @Override
             public void register() {
                 read(Type.STRING); // locale
@@ -219,18 +219,18 @@ public class PlayPackets {
                 read(Type.BOOLEAN); // server listing
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_19_3.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_19_4.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, new PacketHandlers() {
             @Override
             public void register() {
                 map(Type.LONG, BedrockTypes.LONG_LE); // id
                 create(Type.BOOLEAN, true); // from server
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_19_3.PONG, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_19_4.PONG, null, wrapper -> {
             wrapper.cancel();
             wrapper.user().get(PacketSyncStorage.class).handleResponse(wrapper.read(Type.INT)); // parameter
         });
-        protocol.registerServerbound(ServerboundPackets1_19_3.PLUGIN_MESSAGE, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_19_4.PLUGIN_MESSAGE, null, wrapper -> {
             wrapper.cancel();
             final String channel = wrapper.read(Type.STRING); // channel
             if (channel.equals("minecraft:register")) {

@@ -19,14 +19,15 @@ package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_3Types;
+import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
@@ -62,7 +63,7 @@ public class ClientPlayerEntity extends Entity {
     private int gameType;
 
     public ClientPlayerEntity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid) {
-        super(user, uniqueId, runtimeId, javaId, javaUuid, Entity1_19_3Types.PLAYER);
+        super(user, uniqueId, runtimeId, javaId, javaUuid, Entity1_19_4Types.PLAYER);
 
         this.gameSession = user.get(GameSessionStorage.class);
     }
@@ -84,7 +85,7 @@ public class ClientPlayerEntity extends Entity {
         final SpawnPositionStorage spawnPositionStorage = this.user.get(SpawnPositionStorage.class);
         final ChunkTracker chunkTracker = this.user.get(ChunkTracker.class);
 
-        final PacketWrapper spawnPosition = PacketWrapper.create(ClientboundPackets1_19_3.SPAWN_POSITION, this.user);
+        final PacketWrapper spawnPosition = PacketWrapper.create(ClientboundPackets1_19_4.SPAWN_POSITION, this.user);
         spawnPosition.write(Type.POSITION1_14, spawnPositionStorage.getSpawnPosition(chunkTracker.getDimensionId())); // position
         spawnPosition.write(Type.FLOAT, 0F); // angle
         spawnPosition.send(BedrockProtocol.class);
@@ -95,7 +96,7 @@ public class ClientPlayerEntity extends Entity {
     }
 
     public void sendPlayerPositionPacketToClient(final boolean keepRotation, final boolean fakeTeleport) throws Exception {
-        final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets1_19_3.PLAYER_POSITION, this.user);
+        final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_POSITION, this.user);
         this.writePlayerPositionPacketToClient(playerPosition, keepRotation, fakeTeleport);
         playerPosition.send(BedrockProtocol.class);
     }
@@ -108,7 +109,6 @@ public class ClientPlayerEntity extends Entity {
         wrapper.write(Type.FLOAT, keepRotation ? 0F : this.rotation.x()); // pitch
         wrapper.write(Type.BYTE, (byte) (keepRotation ? 0b11000 : 0)); // flags
         wrapper.write(Type.VAR_INT, this.nextTeleportId() * (fakeTeleport ? -1 : 1)); // teleport id
-        wrapper.write(Type.BOOLEAN, false); // dismount vehicle
     }
 
     public void sendMovePlayerPacketToServer(final short mode) throws Exception {
@@ -144,8 +144,7 @@ public class ClientPlayerEntity extends Entity {
         playerAuthInput.write(BedrockTypes.FLOAT_LE, this.rotation.x()); // pitch
         playerAuthInput.write(BedrockTypes.FLOAT_LE, this.rotation.y()); // yaw
         playerAuthInput.write(BedrockTypes.POSITION_3F, this.position); // position
-        playerAuthInput.write(BedrockTypes.FLOAT_LE, motion[0]); // motion x
-        playerAuthInput.write(BedrockTypes.FLOAT_LE, motion[1]); // motion z
+        playerAuthInput.write(BedrockTypes.POSITION_2F, new Position2f(motion[0], motion[1])); // motion
         playerAuthInput.write(BedrockTypes.FLOAT_LE, this.rotation.z()); // head yaw
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_LONG, this.authInput); // input flags
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_INT, 1); // input mode | 1 = MOUSE
@@ -153,6 +152,7 @@ public class ClientPlayerEntity extends Entity {
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // interaction mode | 0 = CROSSHAIR
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_LONG, (long) this.age); // tick
         playerAuthInput.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // position delta
+        playerAuthInput.write(BedrockTypes.POSITION_2F, new Position2f(0F, 0F)); // analog move vector
         //playerAuthInput.sendToServer(BedrockProtocol.class);
 
         this.authInput = 0;

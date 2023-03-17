@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
-import com.viaversion.viaversion.protocols.protocol1_19_3to1_19_1.ClientboundPackets1_19_3;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.JsonUtil;
@@ -145,7 +145,7 @@ public class JoinPackets {
             wrapper.read(Type.BOOLEAN); // client side generation
 
             if (isWorldEditor) {
-                final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_3.DISCONNECT, wrapper.user());
+                final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_4.DISCONNECT, wrapper.user());
                 disconnect.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
                 disconnect.send(BedrockProtocol.class);
                 return;
@@ -219,7 +219,7 @@ public class JoinPackets {
             clientPlayer.setGameType(playerGameType);
             wrapper.user().put(entityTracker);
 
-            final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_3.JOIN_GAME, wrapper.user());
+            final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_4.JOIN_GAME, wrapper.user());
             joinGame.write(Type.INT, clientPlayer.javaId()); // entity id
             joinGame.write(Type.BOOLEAN, false); // hardcore
             joinGame.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(playerGameType, levelGameType)); // gamemode
@@ -239,17 +239,17 @@ public class JoinPackets {
             joinGame.write(Type.OPTIONAL_GLOBAL_POSITION, null); // last death location
             joinGame.send(BedrockProtocol.class);
 
-            final PacketWrapper brandPluginMessage = PacketWrapper.create(ClientboundPackets1_19_3.PLUGIN_MESSAGE, wrapper.user());
+            final PacketWrapper brandPluginMessage = PacketWrapper.create(ClientboundPackets1_19_4.PLUGIN_MESSAGE, wrapper.user());
             brandPluginMessage.write(Type.STRING, "minecraft:brand"); // channel
             brandPluginMessage.write(Type.STRING, "Bedrock" + (!serverEngine.isEmpty() ? " @" + serverEngine : "") + " v: " + vanillaVersion); // content
             brandPluginMessage.send(BedrockProtocol.class);
 
-            final PacketWrapper serverDifficulty = PacketWrapper.create(ClientboundPackets1_19_3.SERVER_DIFFICULTY, wrapper.user());
+            final PacketWrapper serverDifficulty = PacketWrapper.create(ClientboundPackets1_19_4.SERVER_DIFFICULTY, wrapper.user());
             serverDifficulty.write(Type.UNSIGNED_BYTE, (short) difficulty); // difficulty
             serverDifficulty.write(Type.BOOLEAN, false); // locked
             serverDifficulty.send(BedrockProtocol.class);
 
-            final PacketWrapper tags = PacketWrapper.create(ClientboundPackets1_19_3.TAGS, wrapper.user());
+            final PacketWrapper tags = PacketWrapper.create(ClientboundPackets1_19_4.TAGS, wrapper.user());
             tags.write(Type.VAR_INT, BedrockProtocol.MAPPINGS.getTags().size()); // number of registries
             for (Map.Entry<String, Tag> registryEntry : BedrockProtocol.MAPPINGS.getTags().entrySet()) {
                 final CompoundTag tag = (CompoundTag) registryEntry.getValue();
@@ -262,25 +262,25 @@ public class JoinPackets {
             }
             tags.send(BedrockProtocol.class);
 
-            final PacketWrapper tabList = PacketWrapper.create(ClientboundPackets1_19_3.TAB_LIST, wrapper.user());
+            final PacketWrapper tabList = PacketWrapper.create(ClientboundPackets1_19_4.TAB_LIST, wrapper.user());
             tabList.write(Type.COMPONENT, JsonUtil.textToComponent(levelName + "\n")); // header
             tabList.write(Type.COMPONENT, JsonUtil.textToComponent("§aViaBedrock §3v" + ViaBedrock.VERSION + "\n§7https://github.com/RaphiMC/ViaBedrock")); // footer
             tabList.send(BedrockProtocol.class);
 
             if (rainLevel > 0F || lightningLevel > 0F) {
-                final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_19_3.GAME_EVENT, wrapper.user());
+                final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
                 rainStartGameEvent.write(Type.VAR_INT, GameEvents.RAIN_STARTED); // event id
                 rainStartGameEvent.write(Type.FLOAT, 0F); // value
                 rainStartGameEvent.send(BedrockProtocol.class);
 
                 if (rainLevel > 0F) {
-                    final PacketWrapper rainStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_3.GAME_EVENT, wrapper.user());
+                    final PacketWrapper rainStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
                     rainStrengthGameEvent.write(Type.VAR_INT, GameEvents.RAIN_GRADIENT_CHANGED); // event id
                     rainStrengthGameEvent.write(Type.FLOAT, rainLevel); // value
                     rainStrengthGameEvent.send(BedrockProtocol.class);
                 }
                 if (lightningLevel > 0F) {
-                    final PacketWrapper thunderStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_3.GAME_EVENT, wrapper.user());
+                    final PacketWrapper thunderStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
                     thunderStrengthGameEvent.write(Type.VAR_INT, GameEvents.THUNDER_GRADIENT_CHANGED); // event id
                     thunderStrengthGameEvent.write(Type.FLOAT, lightningLevel); // value
                     thunderStrengthGameEvent.send(BedrockProtocol.class);

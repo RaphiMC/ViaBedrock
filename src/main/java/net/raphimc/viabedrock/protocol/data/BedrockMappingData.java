@@ -78,7 +78,7 @@ public class BedrockMappingData extends MappingDataBase {
     private JsonObject skinGeometry; // Bedrock
 
     public BedrockMappingData() {
-        super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolVersion.v1_19_3.getName());
+        super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolVersion.v1_19_4.getName());
     }
 
     @Override
@@ -91,14 +91,14 @@ public class BedrockMappingData extends MappingDataBase {
         this.registries = this.readNBT("java/registries.nbt");
         this.tags = this.readNBT("java/tags.nbt");
 
-        final JsonArray javaBlockStatesJson = this.readJson("java/mapping-1.19.3.json").getAsJsonArray("blockstates");
+        final JsonArray javaBlockStatesJson = this.readJson("java/mapping-1.19.4.json").getAsJsonArray("blockstates");
         this.javaBlockStates = HashBiMap.create(javaBlockStatesJson.size());
         for (int i = 0; i < javaBlockStatesJson.size(); i++) {
             final BlockState blockState = BlockState.fromString(javaBlockStatesJson.get(i).getAsString());
             this.javaBlockStates.put(blockState, i);
         }
 
-        final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_19_60.nbt").get("blocks");
+        final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_19_70.nbt").get("blocks");
         this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
         this.defaultBlockStates = new HashMap<>(bedrockBlockStatesTag.size());
         for (Tag tag : bedrockBlockStatesTag.getValue()) {
@@ -178,7 +178,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.biomeExtraData.put(dataName, extraData);
         }
 
-        final JsonArray itemsJson = this.readJson("bedrock/runtime_item_states.1_19_60.json", JsonArray.class);
+        final JsonArray itemsJson = this.readJson("bedrock/runtime_item_states.1_19_70.json", JsonArray.class);
         this.items = HashBiMap.create(itemsJson.size());
         for (JsonElement entry : itemsJson) {
             final JsonObject itemEntry = entry.getAsJsonObject();

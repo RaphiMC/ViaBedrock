@@ -57,5 +57,6 @@ public class AuthInput {
     public static final int PERFORM_BLOCK_ACTIONS = 35;
     public static final int PERFORM_ITEM_STACK_REQUEST = 36;
     public static final int HANDLE_TELEPORT = 37;
+    public static final int EMOTING = 38;
 
 }
