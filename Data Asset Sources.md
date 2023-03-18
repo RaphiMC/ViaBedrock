@@ -37,13 +37,13 @@ This file has been dumped from a vanilla server using a fabric mod.
 ### data/java/tags.nbt
 This file has been dumped from a vanilla server using a fabric mod.
 
-### data/blocksB2J.json
-[PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data/blob/master/data/bedrock/1.19.1/blocksB2J.json)
-
-### data/custom/additional_blocksB2J.json
-This file has been created manually.
+### data/geyser_block_mappings.json
+[GeyserMC/mappings](https://github.com/GeyserMC/mappings/blob/eab643ddbaf31c4d76531376838f8fd30633bb8e/blocks.json)
 
 ### data/custom/biome_extra_data.json
+This file has been created manually.
+
+### data/custom/block_mappings_modifications.json
 This file has been created manually.
 
 ### data/custom/entity_identifiers.json

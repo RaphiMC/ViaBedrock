@@ -37,6 +37,7 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.util.GsonUtil;
+import com.viaversion.viaversion.util.Key;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -109,21 +110,88 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockBlockStates.add(blockState);
         }
 
-        final JsonObject bedrockToJavaBlockStatesJson = this.readJson("blocksB2J.json");
-        this.bedrockToJavaBlockStates = new HashMap<>(bedrockToJavaBlockStatesJson.size());
-        for (Map.Entry<String, JsonElement> entry : bedrockToJavaBlockStatesJson.entrySet()) {
+        final JsonObject blockMappingsModificationsJson = this.readJson("custom/block_mappings_modifications.json");
+        final JsonObject stateAdditionsJson = blockMappingsModificationsJson.getAsJsonObject("state_additions");
+        final Map<BlockState, BlockState> stateAdditions = new HashMap<>(stateAdditionsJson.size());
+        for (Map.Entry<String, JsonElement> entry : stateAdditionsJson.entrySet()) {
             final BlockState bedrockBlockState = BlockState.fromString(entry.getKey());
             final BlockState javaBlockState = BlockState.fromString(entry.getValue().getAsString());
-            this.bedrockToJavaBlockStates.put(bedrockBlockState, javaBlockState);
+            stateAdditions.put(bedrockBlockState, javaBlockState);
         }
-        final JsonObject additionalBedrockToJavaBlockStatesJson = this.readJson("custom/additional_blocksB2J.json");
-        for (Map.Entry<String, JsonElement> entry : additionalBedrockToJavaBlockStatesJson.entrySet()) {
+        final JsonObject stateOverridesJson = blockMappingsModificationsJson.getAsJsonObject("state_overrides");
+        final Map<BlockState, BlockState> stateOverrides = new HashMap<>(stateOverridesJson.size());
+        for (Map.Entry<String, JsonElement> entry : stateOverridesJson.entrySet()) {
             final BlockState bedrockBlockState = BlockState.fromString(entry.getKey());
             final BlockState javaBlockState = BlockState.fromString(entry.getValue().getAsString());
-            if (javaBlockState.equals(bedrockToJavaBlockStates.get(bedrockBlockState))) {
-                this.getLogger().log(Level.WARNING, "Duplicate block state mapping: " + bedrockBlockState + " -> " + javaBlockState);
+            stateOverrides.put(bedrockBlockState, javaBlockState);
+        }
+        final JsonObject propertyOverridesJson = blockMappingsModificationsJson.getAsJsonObject("property_overrides");
+        final Map<String, Map<String, String>> propertyOverrides = new HashMap<>(propertyOverridesJson.size());
+        for (Map.Entry<String, JsonElement> entry : propertyOverridesJson.entrySet()) {
+            final Map<String, String> properties = new HashMap<>();
+            for (Map.Entry<String, JsonElement> property : entry.getValue().getAsJsonObject().entrySet()) {
+                properties.put(property.getKey(), property.getValue().getAsString());
             }
-            this.bedrockToJavaBlockStates.put(bedrockBlockState, javaBlockState);
+            propertyOverrides.put(entry.getKey(), properties);
+        }
+
+        final JsonObject geyserBlockMappingsJson = this.readJson("geyser_block_mappings.json");
+        this.bedrockToJavaBlockStates = new HashMap<>(geyserBlockMappingsJson.size() + stateAdditions.size());
+        for (Map.Entry<String, JsonElement> entry : geyserBlockMappingsJson.entrySet()) {
+            final JsonObject entryObj = entry.getValue().getAsJsonObject();
+            final JsonObject bedrockStatesJson = entryObj.getAsJsonObject("bedrock_states");
+            final Map<String, String> properties = new HashMap<>();
+            if (bedrockStatesJson != null) {
+                for (Map.Entry<String, JsonElement> state : bedrockStatesJson.entrySet()) {
+                    if (state.getValue().getAsJsonPrimitive().isBoolean()) {
+                        properties.put(state.getKey(), state.getValue().getAsBoolean() ? "1" : "0");
+                    } else {
+                        properties.put(state.getKey(), state.getValue().getAsString());
+                    }
+                }
+            }
+
+            BlockState javaBlockState = BlockState.fromString(entry.getKey()).replaceProperty("waterlogged", "false");
+            if (propertyOverrides.containsKey(javaBlockState.getNamespacedIdentifier())) {
+                javaBlockState = javaBlockState.replaceProperties(propertyOverrides.get(javaBlockState.getNamespacedIdentifier()));
+            }
+            final BlockState bedrockBlockState = new BlockState(Key.stripMinecraftNamespace(entryObj.get("bedrock_identifier").getAsString()), properties);
+            final BlockState existingJavaBlockState = this.bedrockToJavaBlockStates.get(bedrockBlockState);
+            if (javaBlockState.equals(existingJavaBlockState)) continue;
+
+            if (existingJavaBlockState == null) {
+                this.bedrockToJavaBlockStates.put(bedrockBlockState, javaBlockState);
+            } else if (stateOverrides.containsKey(bedrockBlockState)) {
+                this.bedrockToJavaBlockStates.put(bedrockBlockState, BlockState.AIR);
+            } else {
+                this.getLogger().log(Level.WARNING, "Duplicate bedrock block state: " + bedrockBlockState.toBlockStateString() + " -> " + javaBlockState.toBlockStateString() + " and " + existingJavaBlockState.toBlockStateString());
+            }
+        }
+        for (Map.Entry<BlockState, BlockState> entry : stateOverrides.entrySet()) {
+            if (bedrockToJavaBlockStates.containsKey(entry.getKey())) {
+                final BlockState existingJavaBlockState = bedrockToJavaBlockStates.get(entry.getKey());
+                if (!BlockState.AIR.equals(existingJavaBlockState) && entry.getValue().equals(existingJavaBlockState)) {
+                    this.getLogger().log(Level.WARNING, "Duplicate block state mapping in overrides: " + entry.getKey().toBlockStateString() + " -> " + entry.getValue().toBlockStateString() + " and " + existingJavaBlockState.toBlockStateString());
+                    continue;
+                }
+
+                this.bedrockToJavaBlockStates.put(entry.getKey(), entry.getValue());
+            } else {
+                this.getLogger().log(Level.WARNING, "Tried to add block mapping in overrides: " + entry.getKey().toBlockStateString() + " -> " + entry.getValue().toBlockStateString());
+            }
+        }
+        for (Map.Entry<BlockState, BlockState> entry : stateAdditions.entrySet()) {
+            if (bedrockToJavaBlockStates.containsKey(entry.getKey())) {
+                final BlockState existingJavaBlockState = bedrockToJavaBlockStates.get(entry.getKey());
+                this.getLogger().log(Level.WARNING, "Tried to override block mapping in additions: " + entry.getKey().toBlockStateString() + " -> " + entry.getValue().toBlockStateString() + " and " + existingJavaBlockState.toBlockStateString());
+                continue;
+            }
+
+            if (!entry.getValue().equals(bedrockToJavaBlockStates.get(entry.getKey()))) {
+                this.bedrockToJavaBlockStates.put(entry.getKey(), entry.getValue());
+            } else {
+                this.getLogger().log(Level.WARNING, "Duplicate block state mapping in additions: " + entry.getKey().toBlockStateString() + " -> " + entry.getValue().toBlockStateString());
+            }
         }
 
         final JsonArray preWaterloggedStatesJson = this.readJson("custom/pre_waterlogged_states.json").getAsJsonArray("blockstates");

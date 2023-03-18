@@ -148,6 +148,40 @@ public class BlockState {
         return new BlockState(this.namespace, this.identifier, newProperties);
     }
 
+    public BlockState replaceProperty(final String key, final String value) {
+        if (!this.properties.containsKey(key)) return this;
+
+        return this.withProperty(key, value);
+    }
+
+    public BlockState replaceProperties(final Map<String, String> properties) {
+        final Map<String, String> newProperties = Maps.newHashMap(this.properties);
+        for (final Map.Entry<String, String> entry : properties.entrySet()) {
+            if (newProperties.containsKey(entry.getKey())) {
+                newProperties.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return new BlockState(this.namespace, this.identifier, newProperties);
+    }
+
+    public String toBlockStateString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append(this.namespace).append(":").append(this.identifier);
+        if (!this.properties.isEmpty()) {
+            builder.append("[");
+            boolean first = true;
+            for (final Map.Entry<String, String> entry : this.properties.entrySet()) {
+                if (!first) {
+                    builder.append(",");
+                }
+                builder.append(entry.getKey()).append("=").append(entry.getValue());
+                first = false;
+            }
+            builder.append("]");
+        }
+        return builder.toString();
+    }
+
     public String getNamespace() {
         return this.namespace;
     }
