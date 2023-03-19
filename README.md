@@ -9,7 +9,7 @@ ViaBedrock aims to be as compatible and accurate as possible with the Minecraft:
 If you want to try it out anyway you can download the latest dev build
 [here](https://build.lenni0451.net/job/ViaBedrock) (Make sure to download the ViaProxy-ViaBedrockPlugin jar file).
 
-To use the ViaProxy implementation of ViaBedrock you have to download [ViaProxy](https://github.com/RaphiMC/ViaProxy) first and put the ViaProxy-ViaBedrockPlugin jar file into the plugins folder of ViaProxy.
+To use the ViaProxy implementation of ViaBedrock you have to download the latest [ViaProxy](https://build.lenni0451.net/job/ViaProxy/) dev build first and put the ViaProxy-ViaBedrockPlugin jar file into the plugins folder of ViaProxy.
 
 **Do not report any bugs yet. There are still a lot of things which are not implemented yet.**
 
