@@ -255,6 +255,7 @@ public class ResourcePack {
                 final String key = contentItem.get("key").getAsString();
                 final String path = contentItem.get("path").getAsString();
                 if (!this.contents.containsKey(path)) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing resource pack file: " + path);
                     continue;
                 }
                 final byte[] encryptedData = this.contents.get(path);
