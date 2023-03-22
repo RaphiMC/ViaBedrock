@@ -24,4 +24,9 @@ public interface ViaBedrockConfig {
      */
     boolean isBlobCacheEnabled();
 
+    /**
+     * @return Whether the server packs should be dumped.
+     */
+    boolean shouldDumpPacks();
+
 }

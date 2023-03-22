@@ -19,11 +19,17 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.model.ResourcePack;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class ResourcePacksStorage extends StoredObject {
 
@@ -48,6 +54,23 @@ public class ResourcePacksStorage extends StoredObject {
 
     public boolean areAllPacksDecompressed() {
         return this.packs.values().stream().allMatch(ResourcePack::isDecompressed);
+    }
+
+    public void dumpPacks(final File directory) {
+        directory.mkdirs();
+
+        for (ResourcePack pack : this.packs.values()) {
+            final File packFile = new File(directory, pack.packId() + "_" + pack.version() + ".zip");
+            try (final ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(packFile.toPath()))) {
+                for (final Map.Entry<String, byte[]> entry : pack.contents().entrySet()) {
+                    zipOutputStream.putNextEntry(new ZipEntry(entry.getKey()));
+                    zipOutputStream.write(entry.getValue());
+                    zipOutputStream.closeEntry();
+                }
+            } catch (final Throwable e) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to dump pack " + pack.packId(), e);
+            }
+        }
     }
 
     public boolean isCompleted() {

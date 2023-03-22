@@ -232,14 +232,15 @@ public class ResourcePack {
             final byte[] magic = new byte[4];
             contents.readBytes(magic); // magic
             if (!Arrays.equals(magic, CONTENTS_JSON_ENCRYPTED_MAGIC)) {
-                throw new IllegalStateException("contents.json magic mismatch: " + this.packId);
+                throw new IllegalStateException("contents.json magic mismatch: " + Arrays.toString(CONTENTS_JSON_ENCRYPTED_MAGIC) + " != " + Arrays.toString(magic));
             }
             contents.readerIndex(16);
             final short contentIdLength = contents.readUnsignedByte(); // content id length
             final byte[] contentIdBytes = new byte[contentIdLength];
             contents.readBytes(contentIdBytes); // content id
-            if (!Arrays.equals(contentIdBytes, this.contentId.getBytes(StandardCharsets.UTF_8))) {
-                throw new IllegalStateException("contents.json contentId mismatch: " + this.packId);
+            final String contentId = new String(contentIdBytes, StandardCharsets.UTF_8);
+            if (!this.contentId.equalsIgnoreCase(contentId)) {
+                throw new IllegalStateException("contents.json contentId mismatch: " + this.contentId + " != " + contentId);
             }
             contents.readerIndex(256);
             final byte[] encryptedContents = new byte[contents.readableBytes()];
@@ -254,7 +255,7 @@ public class ResourcePack {
                 final String key = contentItem.get("key").getAsString();
                 final String path = contentItem.get("path").getAsString();
                 if (!this.contents.containsKey(path)) {
-                    throw new IllegalStateException("Missing resource pack file: " + path);
+                    continue;
                 }
                 final byte[] encryptedData = this.contents.get(path);
                 final byte[] keyBytes = key.getBytes(StandardCharsets.ISO_8859_1);

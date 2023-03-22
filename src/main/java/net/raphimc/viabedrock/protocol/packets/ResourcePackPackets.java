@@ -28,6 +28,7 @@ import net.raphimc.viabedrock.protocol.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -138,6 +139,11 @@ public class ResourcePackPackets {
                 resourcePackClientResponse.write(Type.UNSIGNED_BYTE, ResourcePackStatus.HAVE_ALL_PACKS); // status
                 resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
                 resourcePackClientResponse.sendToServer(BedrockProtocol.class);
+
+                if (ViaBedrock.getConfig().shouldDumpPacks()) {
+                    resourcePacksStorage.dumpPacks(new File("server_packs"));
+                    ViaBedrock.getPlatform().getLogger().log(Level.INFO, "All packs have been dumped");
+                }
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_STACK, null, wrapper -> {

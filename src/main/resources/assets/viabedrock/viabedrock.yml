@@ -1,2 +1,4 @@
 # Enable blob caching (Reduces network usage)
 blob-cache: true
+# Dump server packs to disk (For debugging)
+dump-packs: false
