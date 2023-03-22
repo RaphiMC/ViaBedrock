@@ -37,12 +37,8 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.model.SkinData;
-import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
-import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
-import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.nio.charset.StandardCharsets;
@@ -147,7 +143,7 @@ public class PlayPackets {
             for (int i = 0; i < length; i++) {
                 final long hash = wrapper.read(BedrockTypes.LONG_LE); // blob hash
                 final byte[] blob = wrapper.read(BedrockTypes.BYTE_ARRAY); // blob data
-                Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(wrapper.user(), hash, blob);
+                wrapper.user().get(BlobCache.class).addBlob(hash, blob);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_LIST, ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper -> {

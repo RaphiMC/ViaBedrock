@@ -19,30 +19,34 @@ package net.raphimc.viabedrock.protocol.providers;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
-import net.raphimc.viabedrock.protocol.storage.BlobCache;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BlobCacheProvider implements Provider {
 
-    public void addBlob(final UserConnection user, final long hash, final byte[] blob) {
-        user.get(BlobCache.class).addBlob(hash, blob);
+    private final Map<Long, byte[]> blobs = new HashMap<>();
+
+    public BlobCacheProvider() {
+        this.blobs.put(0L, new byte[0]);
     }
 
-    public boolean hasBlob(final UserConnection user, final long... hashes) {
-        return user.get(BlobCache.class).hasBlob(hashes);
-    }
-
-    public CompletableFuture<byte[]> getBlob(final UserConnection user, final long... hashes) {
-        return user.get(BlobCache.class).getBlob(hashes);
-    }
-
-    public CompletableFuture<byte[]> getBlob(final UserConnection user, final Long[] hashes) {
-        final long[] longs = new long[hashes.length];
-        for (int i = 0; i < hashes.length; i++) {
-            longs[i] = hashes[i];
+    public byte[] addBlob(final UserConnection user, final long hash, final byte[] compressedBlob) {
+        synchronized (this.blobs) {
+            return this.blobs.put(hash, compressedBlob);
         }
-        return this.getBlob(user, longs);
+    }
+
+    public boolean hasBlob(final UserConnection user, final long hash) {
+        synchronized (this.blobs) {
+            return this.blobs.containsKey(hash);
+        }
+    }
+
+    public byte[] getBlob(final UserConnection user, final long hash) {
+        synchronized (this.blobs) {
+            return this.blobs.get(hash);
+        }
     }
 
 }

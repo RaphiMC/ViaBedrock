@@ -17,20 +17,19 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.zip.DataFormatException;
@@ -39,9 +38,7 @@ import java.util.zip.Inflater;
 
 public class BlobCache extends StoredObject {
 
-    private final Map<Long, byte[]> blobs = new HashMap<>();
     private final Map<Long, CompletableFuture<byte[]>> pending = new HashMap<>();
-    private long size;
 
     private final Object lock = new Object();
     private final List<Long> missing = new ArrayList<>();
@@ -53,8 +50,6 @@ public class BlobCache extends StoredObject {
 
     public BlobCache(final UserConnection user) {
         super(user);
-
-        this.blobs.put(0L, new byte[0]);
     }
 
     public void tick() throws Exception {
@@ -88,20 +83,19 @@ public class BlobCache extends StoredObject {
         }
 
         final byte[] compressedBlob = this.compress(blob);
-        final byte[] previousBlob = this.blobs.put(hash, compressedBlob);
-        this.size += compressedBlob.length;
+        final byte[] previousBlob = Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(this.getUser(), hash, compressedBlob);
         if (this.pending.containsKey(hash)) {
             this.pending.remove(hash).complete(blob);
         }
 
-        if (previousBlob != null) {
+        if (previousBlob != null && !Arrays.equals(previousBlob, compressedBlob)) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Overwriting blob with hash " + hash + "!");
         }
     }
 
     public boolean hasBlob(final long... hashes) {
         for (long hash : hashes) {
-            if (!this.blobs.containsKey(hash)) {
+            if (!Via.getManager().getProviders().get(BlobCacheProvider.class).hasBlob(this.getUser(), hash)) {
                 return false;
             }
         }
@@ -112,11 +106,20 @@ public class BlobCache extends StoredObject {
         return this.getBlob(true, hashes);
     }
 
+    public CompletableFuture<byte[]> getBlob(final Long[] hashes) {
+        final long[] longs = new long[hashes.length];
+        for (int i = 0; i < hashes.length; i++) {
+            longs[i] = hashes[i];
+        }
+
+        return this.getBlob(true, longs);
+    }
+
     public CompletableFuture<byte[]> getBlob(final boolean acknowledge, final long... hashes) {
         if (acknowledge) {
             synchronized (this.lock) {
                 for (long hash : hashes) {
-                    if (this.blobs.containsKey(hash)) {
+                    if (this.hasBlob(hash)) {
                         this.acked.add(hash);
                     } else if (!this.pending.containsKey(hash)) {
                         this.missing.add(hash);
@@ -129,7 +132,7 @@ public class BlobCache extends StoredObject {
             final ByteArrayOutputStream output = new ByteArrayOutputStream();
             try {
                 for (long hash : hashes) {
-                    output.write(this.decompress(this.blobs.get(hash)));
+                    output.write(this.decompress(Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(this.getUser(), hash)));
                 }
             } catch (final IOException ignored) {
             }
@@ -138,7 +141,7 @@ public class BlobCache extends StoredObject {
 
         final CompletableFuture<byte[]> rootFuture = new CompletableFuture<>();
         for (long hash : hashes) {
-            if (this.blobs.containsKey(hash)) continue;
+            if (this.hasBlob(hash)) continue;
 
             CompletableFuture<byte[]> subFuture = new CompletableFuture<>();
             final CompletableFuture<byte[]> existing = this.pending.get(hash);
@@ -162,18 +165,6 @@ public class BlobCache extends StoredObject {
         }
 
         return rootFuture;
-    }
-
-    public int getBlobCount() {
-        return this.blobs.size();
-    }
-
-    public int getPendingCount() {
-        return this.pending.size();
-    }
-
-    public long getTotalSize() {
-        return this.size;
     }
 
     private byte[] compress(final byte[] data) {

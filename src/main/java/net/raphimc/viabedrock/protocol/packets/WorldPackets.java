@@ -17,7 +17,6 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
-import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.BlockChangeRecord;
 import com.viaversion.viaversion.api.minecraft.BlockChangeRecord1_16_2;
 import com.viaversion.viaversion.api.minecraft.Position;
@@ -48,14 +47,10 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResult;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
-import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;
 
@@ -249,7 +244,7 @@ public class WorldPackets {
                             return;
                         }
                         final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
-                        Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(wrapper.user(), blobs).thenAccept(blob -> {
+                        wrapper.user().get(BlobCache.class).getBlob(blobs).thenAccept(blob -> {
                             final byte[] combinedData = new byte[data.length + blob.length];
                             System.arraycopy(blob, 0, combinedData, 0, blob.length);
                             System.arraycopy(data, 0, combinedData, blob.length, data.length);
@@ -317,7 +312,7 @@ public class WorldPackets {
 
                 if (cachingEnabled) {
                     final long hash = wrapper.read(BedrockTypes.LONG_LE); // blob id
-                    Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(wrapper.user(), hash).thenAccept(blob -> {
+                    wrapper.user().get(BlobCache.class).getBlob(hash).thenAccept(blob -> {
                         if (data.length == 0) {
                             dataConsumer.accept(blob);
                         } else if (blob.length == 0) {
