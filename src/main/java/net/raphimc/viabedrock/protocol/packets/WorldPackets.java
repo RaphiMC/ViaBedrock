@@ -98,11 +98,6 @@ public class WorldPackets {
             final boolean respawn = wrapper.read(Type.BOOLEAN); // respawn
 
             // TODO: Handle respawn boolean and handle keep data mask
-            if (respawn) {
-                BedrockProtocol.kickForIllegalState(wrapper.user(), "Respawn is not supported yet");
-                return;
-            }
-
             // TODO: Is this allowed?
             if (dimensionId == wrapper.user().get(ChunkTracker.class).getDimensionId()) {
                 BedrockProtocol.kickForIllegalState(wrapper.user(), "Changing dimension to the same dimension is not supported");
