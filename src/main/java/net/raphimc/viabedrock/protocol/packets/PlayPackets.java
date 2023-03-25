@@ -39,6 +39,7 @@ import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.*;
+import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.nio.charset.StandardCharsets;
@@ -220,6 +221,11 @@ public class PlayPackets {
             public void register() {
                 map(Type.LONG, BedrockTypes.LONG_LE); // id
                 create(Type.BOOLEAN, true); // from server
+                handler(wrapper -> {
+                    if (wrapper.get(BedrockTypes.LONG_LE, 0) == KeepAliveTask.INTERNAL_ID) { // It's a keep alive packet sent from ViaBedrock to prevent the client from disconnecting
+                        wrapper.cancel();
+                    }
+                });
             }
         });
         protocol.registerServerbound(ServerboundPackets1_19_4.PONG, null, wrapper -> {

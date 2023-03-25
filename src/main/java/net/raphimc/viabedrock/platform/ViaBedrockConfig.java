@@ -25,6 +25,16 @@ public interface ViaBedrockConfig {
     boolean isBlobCacheEnabled();
 
     /**
+     * @return The host to use for the resource pack HTTP server.
+     */
+    String getResourcePackHost();
+
+    /**
+     * @return The port to use for the resource pack HTTP server.
+     */
+    int getResourcePackPort();
+
+    /**
      * @return Whether the server packs should be dumped.
      */
     boolean shouldDumpPacks();

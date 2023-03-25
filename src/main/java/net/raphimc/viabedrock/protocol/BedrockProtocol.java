@@ -38,10 +38,14 @@ import net.raphimc.viabedrock.protocol.packets.*;
 import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
-import net.raphimc.viabedrock.protocol.storage.*;
+import net.raphimc.viabedrock.protocol.storage.BlobCache;
+import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
+import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
+import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
 import net.raphimc.viabedrock.protocol.task.BlobCacheTickTask;
 import net.raphimc.viabedrock.protocol.task.ChunkTrackerTickTask;
 import net.raphimc.viabedrock.protocol.task.EntityTrackerTickTask;
+import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.logging.Level;
@@ -113,11 +117,11 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 5L);
         Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
         Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 1L);
+        Via.getPlatform().runRepeatingSync(new KeepAliveTask(), 20L);
     }
 
     @Override
     public void init(UserConnection user) {
-        user.put(new ResourcePacksStorage(user));
         user.put(new SpawnPositionStorage(user));
         user.put(new BlobCache(user));
         user.put(new PacketSyncStorage(user));

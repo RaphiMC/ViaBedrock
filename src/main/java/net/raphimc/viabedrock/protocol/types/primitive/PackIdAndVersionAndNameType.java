@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.types.primitive;
 
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.util.Pair;
+import com.viaversion.viaversion.util.Triple;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -26,18 +26,16 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class PackIdAndVersionType extends Type<Pair<UUID, String>> {
+public class PackIdAndVersionAndNameType extends Type<Triple<UUID, String, String>> {
 
-    public PackIdAndVersionType() {
-        super("PackID and Version", Pair.class);
+    public PackIdAndVersionAndNameType() {
+        super("PackID and Version and Name", Triple.class);
     }
 
     @Override
-    public Pair<UUID, String> read(ByteBuf buffer) throws Exception {
-        final String packIdAndVersion = BedrockTypes.STRING.read(buffer); // id and version
-        final String[] packIdAndVersionSplit = packIdAndVersion.split("_", 2);
-        final String packId = packIdAndVersionSplit[0];
-        final String packVersion = packIdAndVersionSplit.length > 1 ? packIdAndVersionSplit[1] : null;
+    public Triple<UUID, String, String> read(ByteBuf buffer) throws Exception {
+        final String packId = BedrockTypes.STRING.read(buffer); // pack id
+        final String packVersion = BedrockTypes.STRING.read(buffer); // pack version
 
         UUID packUUID;
         try {
@@ -47,12 +45,15 @@ public class PackIdAndVersionType extends Type<Pair<UUID, String>> {
             packUUID = new UUID(0L, 0L);
         }
 
-        return new Pair<>(packUUID, packVersion);
+        final String packName = BedrockTypes.STRING.read(buffer); // pack name
+        return new Triple<>(packUUID, packVersion, packName);
     }
 
     @Override
-    public void write(ByteBuf buffer, Pair<UUID, String> value) throws Exception {
-        BedrockTypes.STRING.write(buffer, value.getKey().toString() + (value.getValue() != null ? ("_" + value.getValue()) : ""));
+    public void write(ByteBuf buffer, Triple<UUID, String, String> value) throws Exception {
+        BedrockTypes.STRING.write(buffer, value.first().toString()); // pack id
+        BedrockTypes.STRING.write(buffer, value.second()); // pack version
+        BedrockTypes.STRING.write(buffer, value.third()); // pack name
     }
 
 }

@@ -23,6 +23,7 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.util.Pair;
+import com.viaversion.viaversion.util.Triple;
 import io.netty.util.AsciiString;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
@@ -90,6 +91,8 @@ public class BedrockTypes {
     public static final Type<ResourcePack> RESOURCE_PACK = new ResourcePackType();
     public static final Type<ResourcePack[]> RESOURCE_PACK_ARRAY = new ArrayType<>(RESOURCE_PACK, UNSIGNED_SHORT_LE);
     public static final Type<Pair<UUID, String>> PACK_ID_AND_VERSION = new PackIdAndVersionType();
+    public static final Type<Triple<UUID, String, String>> PACK_ID_AND_VERSION_AND_NAME = new PackIdAndVersionAndNameType();
+    public static final Type<Triple<UUID, String, String>[]> PACK_ID_AND_VERSION_AND_NAME_ARRAY = new ArrayType<>(PACK_ID_AND_VERSION_AND_NAME, UNSIGNED_VAR_INT);
     public static final Type<BlockChangeEntry> BLOCK_CHANGE_ENTRY = new BlockChangeEntryType();
     public static final Type<BlockChangeEntry[]> BLOCK_CHANGE_ENTRY_ARRAY = new ArrayType<>(BLOCK_CHANGE_ENTRY, UNSIGNED_VAR_INT);
     public static final Type<BedrockDataPalette> DATA_PALETTE = new DataPaletteType();

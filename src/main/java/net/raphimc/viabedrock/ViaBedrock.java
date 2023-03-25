@@ -17,7 +17,11 @@
  */
 package net.raphimc.viabedrock;
 
+import net.raphimc.viabedrock.api.http.ResourcePackHttpServer;
 import net.raphimc.viabedrock.platform.ViaBedrockPlatform;
+
+import java.net.InetSocketAddress;
+import java.util.logging.Level;
 
 public class ViaBedrock {
 
@@ -25,6 +29,7 @@ public class ViaBedrock {
 
     private static ViaBedrockPlatform platform;
     private static ViaBedrockConfig config;
+    private static ResourcePackHttpServer resourcePackServer;
 
     private ViaBedrock() {
     }
@@ -34,6 +39,13 @@ public class ViaBedrock {
 
         ViaBedrock.platform = platform;
         ViaBedrock.config = config;
+
+        try {
+            ViaBedrock.resourcePackServer = new ResourcePackHttpServer(new InetSocketAddress(config.getResourcePackHost(), config.getResourcePackPort()));
+            platform.getLogger().log(Level.INFO, "Started resource pack HTTP server on " + resourcePackServer.getUrl());
+        } catch (Throwable e) {
+            throw new IllegalStateException("Failed to start resource pack HTTP server", e);
+        }
     }
 
     public static ViaBedrockPlatform getPlatform() {
@@ -42,6 +54,10 @@ public class ViaBedrock {
 
     public static ViaBedrockConfig getConfig() {
         return ViaBedrock.config;
+    }
+
+    public static ResourcePackHttpServer getResourcePackServer() {
+        return ViaBedrock.resourcePackServer;
     }
 
 }

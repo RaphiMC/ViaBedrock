@@ -46,6 +46,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 public class ResourcePack {
 
@@ -66,7 +67,7 @@ public class ResourcePack {
     private byte[] compressedData;
     private int maxChunkSize;
     private boolean[] receivedChunks;
-    private Map<String, byte[]> contents;
+    private Content content;
 
     public ResourcePack(final UUID packId, final String version, final String contentKey, final String subPackName, final String contentId, final boolean scripting, final boolean raytracingCapable, final long compressedSize, final int type) {
         this.packId = packId;
@@ -97,30 +98,6 @@ public class ResourcePack {
         if (this.hasReceivedAllChunks()) {
             this.decompressAndDecrypt();
         }
-    }
-
-    public byte[] bytesContent(final String path) {
-        if (!this.isDecompressed()) {
-            throw new IllegalStateException("Pack is not decompressed");
-        }
-
-        return this.contents.get(path);
-    }
-
-    public String stringContent(final String path) {
-        return new String(this.bytesContent(path), StandardCharsets.UTF_8);
-    }
-
-    public List<String> linesContent(final String path) {
-        return Arrays.asList(this.stringContent(path).split("\\n"));
-    }
-
-    public JsonObject jsonContent(final String path) {
-        return GsonUtil.getGson().fromJson(this.stringContent(path).trim(), JsonObject.class);
-    }
-
-    public BufferedImage imageContent(final String path) throws IOException {
-        return ImageIO.read(new ByteArrayInputStream(this.bytesContent(path)));
     }
 
     public boolean isDecompressed() {
@@ -193,12 +170,12 @@ public class ResourcePack {
         this.receivedChunks = new boolean[MathUtil.ceil((float) this.compressedData.length / maxChunkSize)];
     }
 
-    public Map<String, byte[]> contents() {
+    public Content content() {
         if (!this.isDecompressed()) {
             throw new IllegalStateException("Pack is not decompressed");
         }
 
-        return this.contents;
+        return this.content;
     }
 
     private void decompressAndDecrypt() throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
@@ -208,7 +185,7 @@ public class ResourcePack {
             throw new IllegalStateException("Resource pack hash mismatch: " + this.packId);
         }
 
-        this.contents = new HashMap<>();
+        this.content = new Content();
         final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(this.compressedData));
         ZipEntry zipEntry;
         int len;
@@ -218,7 +195,7 @@ public class ResourcePack {
             while ((len = zipInputStream.read(buf)) > 0) {
                 baos.write(buf, 0, len);
             }
-            this.contents.put(zipEntry.getName(), baos.toByteArray());
+            this.content.put(zipEntry.getName(), baos.toByteArray());
             baos.reset();
         }
         this.compressedData = null;
@@ -227,7 +204,7 @@ public class ResourcePack {
             final Cipher aesCfb8 = Cipher.getInstance("AES/CFB8/NoPadding");
             final byte[] contentKeyBytes = this.contentKey.getBytes(StandardCharsets.ISO_8859_1);
             aesCfb8.init(Cipher.DECRYPT_MODE, new SecretKeySpec(contentKeyBytes, "AES"), new IvParameterSpec(Arrays.copyOfRange(contentKeyBytes, 0, 16)));
-            final ByteBuf contents = Unpooled.wrappedBuffer(this.contents.get("contents.json"));
+            final ByteBuf contents = Unpooled.wrappedBuffer(this.content.get("contents.json"));
             contents.skipBytes(4); // version
             final byte[] magic = new byte[4];
             contents.readBytes(magic); // magic
@@ -245,23 +222,23 @@ public class ResourcePack {
             contents.readerIndex(256);
             final byte[] encryptedContents = new byte[contents.readableBytes()];
             contents.readBytes(encryptedContents); // encrypted contents.json
-            this.contents.put("contents.json", aesCfb8.doFinal(encryptedContents));
+            this.content.put("contents.json", aesCfb8.doFinal(encryptedContents));
 
-            final JsonObject contentsJson = this.jsonContent("contents.json");
+            final JsonObject contentsJson = this.content.getJson("contents.json");
             final JsonArray contentArray = contentsJson.getAsJsonArray("content");
             for (JsonElement element : contentArray) {
                 final JsonObject contentItem = element.getAsJsonObject();
                 if (!contentItem.has("key")) continue;
                 final String key = contentItem.get("key").getAsString();
                 final String path = contentItem.get("path").getAsString();
-                if (!this.contents.containsKey(path)) {
+                if (!this.content.containsKey(path)) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing resource pack file: " + path);
                     continue;
                 }
-                final byte[] encryptedData = this.contents.get(path);
+                final byte[] encryptedData = this.content.get(path);
                 final byte[] keyBytes = key.getBytes(StandardCharsets.ISO_8859_1);
                 aesCfb8.init(Cipher.DECRYPT_MODE, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(Arrays.copyOfRange(keyBytes, 0, 16)));
-                this.contents.put(path, aesCfb8.doFinal(encryptedData));
+                this.content.put(path, aesCfb8.doFinal(encryptedData));
             }
         }
     }
@@ -273,6 +250,76 @@ public class ResourcePack {
             }
         }
         return true;
+    }
+
+    public static class Content extends HashMap<String, byte[]> {
+
+        public String getString(final String path) {
+            final byte[] bytes = this.get(path);
+            if (bytes == null) {
+                return null;
+            }
+
+            return new String(bytes, StandardCharsets.UTF_8);
+        }
+
+        public void putString(final String path, final String string) {
+            this.put(path, string.getBytes(StandardCharsets.UTF_8));
+        }
+
+        public List<String> getLines(final String path) {
+            final String string = this.getString(path);
+            if (string == null) {
+                return null;
+            }
+
+            return Arrays.asList(string.split("\\n"));
+        }
+
+        public void putLines(final String path, final List<String> lines) {
+            this.putString(path, String.join("\\n", lines));
+        }
+
+        public JsonObject getJson(final String path) {
+            final String string = this.getString(path);
+            if (string == null) {
+                return null;
+            }
+
+            return GsonUtil.getGson().fromJson(string.trim(), JsonObject.class);
+        }
+
+        public void putJson(final String path, final JsonObject json) {
+            this.putString(path, GsonUtil.getGson().toJson(json));
+        }
+
+        public BufferedImage getImage(final String path) throws IOException {
+            final byte[] bytes = this.get(path);
+            if (bytes == null) {
+                return null;
+            }
+
+            return ImageIO.read(new ByteArrayInputStream(bytes));
+        }
+
+        public void putImage(final String path, final BufferedImage image) throws IOException {
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
+            this.put(path, baos.toByteArray());
+        }
+
+        public byte[] toZip() throws IOException {
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream(4 * 1024 * 1024);
+            final ZipOutputStream zipOutputStream = new ZipOutputStream(baos);
+            for (final Map.Entry<String, byte[]> entry : this.entrySet()) {
+                zipOutputStream.putNextEntry(new ZipEntry(entry.getKey()));
+                zipOutputStream.write(entry.getValue());
+                zipOutputStream.closeEntry();
+            }
+            zipOutputStream.close();
+            return baos.toByteArray();
+        }
+
     }
 
 }
