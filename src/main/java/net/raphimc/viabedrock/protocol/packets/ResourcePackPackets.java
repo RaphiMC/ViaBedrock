@@ -66,17 +66,6 @@ public class ResourcePackPackets {
                 resourcePacksStorage.addPack(resourcePack);
             }
 
-            if (resourcePacksStorage.getPacks().isEmpty()) {
-                resourcePacksStorage.setCompleted(true);
-                wrapper.cancel();
-
-                final PacketWrapper resourcePackClientResponse = wrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
-                resourcePackClientResponse.write(Type.UNSIGNED_BYTE, ResourcePackStatus.HAVE_ALL_PACKS); // status
-                resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
-                resourcePackClientResponse.sendToServer(BedrockProtocol.class);
-                return;
-            }
-
             wrapper.write(Type.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + resourcePacksStorage.getHttpToken().toString()); // url
             wrapper.write(Type.STRING, ""); // hash
             wrapper.write(Type.BOOLEAN, false); // requires accept
