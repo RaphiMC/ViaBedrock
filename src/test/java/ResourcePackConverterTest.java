@@ -1,11 +1,12 @@
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackTypes;
 import net.raphimc.viabedrock.protocol.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
+import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.file.Files;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.security.MessageDigest;
+import java.util.UUID;
 
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
@@ -31,24 +32,21 @@ public class ResourcePackConverterTest {
         final File output = new File("output.zip");
 
         long start = System.currentTimeMillis();
-        final ResourcePack.Content bedrockContent = new ResourcePack.Content();
-        final ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(input.toPath()));
-        ZipEntry zipEntry;
-        int len;
-        final byte[] buf = new byte[4096];
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            while ((len = zipInputStream.read(buf)) > 0) {
-                baos.write(buf, 0, len);
-            }
-            bedrockContent.put(zipEntry.getName(), baos.toByteArray());
-            baos.reset();
-        }
-        zipInputStream.close();
+        final byte[] bytes = Files.readAllBytes(input.toPath());
         System.out.println("Reading took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();
-        final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(bedrockContent);
+        final ResourcePack resourcePack = new ResourcePack(UUID.randomUUID(), "1.0.0", "", "", "", false, false, 0, PackTypes.RESOURCE);
+        resourcePack.setHash(MessageDigest.getInstance("SHA-256").digest(bytes));
+        resourcePack.setCompressedDataLength(bytes.length, bytes.length);
+        resourcePack.processDataChunk(0, bytes);
+
+        final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage(null);
+        resourcePacksStorage.addPack(resourcePack);
+        System.out.println("Preparation took " + (System.currentTimeMillis() - start) + "ms");
+
+        start = System.currentTimeMillis();
+        final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage, new UUID[]{resourcePack.packId()}, new UUID[0]);
         System.out.println("Conversion took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();

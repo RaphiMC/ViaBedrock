@@ -19,8 +19,6 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.util.Triple;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.model.ResourcePack;
 
 import java.io.File;
@@ -37,7 +35,6 @@ public class ResourcePacksStorage extends StoredObject {
     private final UUID httpToken = UUID.randomUUID();
     private final Map<UUID, ResourcePack> packs = new HashMap<>();
     private boolean completed;
-    private ResourcePack.Content mergedContent;
     private Consumer<byte[]> httpConsumer;
 
     public ResourcePacksStorage(final UserConnection user) {
@@ -64,41 +61,11 @@ public class ResourcePacksStorage extends StoredObject {
         return this.packs.values().stream().allMatch(ResourcePack::isDecompressed);
     }
 
-    public void mergePacks(final Triple<UUID, String, String>[] resourcePacks, final Triple<UUID, String, String>[] behaviourPacks) {
-        if (!this.mergedContent.isEmpty()) {
-            throw new IllegalStateException("Packs were already merged");
-        }
-
-        for (final Triple<UUID, String, String> resourcePack : resourcePacks) {
-            final ResourcePack pack = this.packs.get(resourcePack.first());
-            if (pack == null) {
-                ViaBedrock.getPlatform().getLogger().warning("Missing resource pack " + resourcePack.first());
-                continue;
-            }
-            pack.setVersion(resourcePack.second());
-
-            this.mergedContent.putAll(pack.content());
-            pack.content().clear();
-        }
-
-        for (final Triple<UUID, String, String> behaviourPack : behaviourPacks) {
-            final ResourcePack pack = this.packs.get(behaviourPack.first());
-            if (pack == null) {
-                ViaBedrock.getPlatform().getLogger().warning("Missing behaviour pack " + behaviourPack.first());
-                continue;
-            }
-            pack.setVersion(behaviourPack.second());
-
-            this.mergedContent.putAll(pack.content());
-            pack.content().clear();
-        }
-    }
-
     public void dumpPacks(final File directory) throws IOException {
         directory.mkdirs();
 
         for (ResourcePack pack : this.packs.values()) {
-            final File packFile = new File(directory, pack.packId() + "_" + pack.version() + ".zip");
+            final File packFile = new File(directory, pack.packId() + "_" + pack.version() + ".mcpack");
             Files.write(packFile.toPath(), pack.content().toZip());
         }
     }
@@ -113,12 +80,6 @@ public class ResourcePacksStorage extends StoredObject {
 
     public void setCompleted(final boolean completed) {
         this.completed = completed;
-
-        this.mergedContent = new ResourcePack.Content();
-    }
-
-    public ResourcePack.Content getMergedContent() {
-        return this.mergedContent;
     }
 
     public Consumer<byte[]> getHttpConsumer() {

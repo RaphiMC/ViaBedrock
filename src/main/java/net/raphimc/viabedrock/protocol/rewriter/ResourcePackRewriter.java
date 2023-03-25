@@ -19,10 +19,13 @@ package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.protocol.model.ResourcePack;
+import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+
+import java.util.UUID;
 
 public class ResourcePackRewriter {
 
-    public static ResourcePack.Content bedrockToJava(final ResourcePack.Content bedrockContent) {
+    public static ResourcePack.Content bedrockToJava(final ResourcePacksStorage bedrockPacks, final UUID[] resourcePackIds, final UUID[] behaviorPackIds) {
         final ResourcePack.Content javaContent = new ResourcePack.Content();
 
         javaContent.putJson("pack.mcmeta", createPackManifest());

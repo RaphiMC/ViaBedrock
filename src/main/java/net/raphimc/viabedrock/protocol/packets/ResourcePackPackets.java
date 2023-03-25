@@ -173,16 +173,23 @@ public class ResourcePackPackets {
             wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
             wrapper.read(Type.BOOLEAN); // experiments previously toggled
 
-            if (resourcePacksStorage.areAllPacksDecompressed()) {
-                resourcePacksStorage.mergePacks(resourcePacks, behaviourPacks);
+            final UUID[] behaviourPackIds = new UUID[behaviourPacks.length];
+            for (int i = 0; i < behaviourPacks.length; i++) {
+                behaviourPackIds[i] = behaviourPacks[i].first();
+            }
+            final UUID[] resourcePackIds = new UUID[resourcePacks.length];
+            for (int i = 0; i < resourcePacks.length; i++) {
+                resourcePackIds[i] = resourcePacks[i].first();
+            }
 
+            if (resourcePacksStorage.areAllPacksDecompressed()) {
                 if (resourcePacksStorage.getHttpConsumer() == null) {
                     BedrockProtocol.kickForIllegalState(wrapper.user(), "Java client did not connect to the HTTP server");
                     return;
                 }
 
                 final long start = System.currentTimeMillis();
-                final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage.getMergedContent());
+                final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage, resourcePackIds, behaviourPackIds);
                 Via.getPlatform().getLogger().log(Level.INFO, "Converted packs in " + (System.currentTimeMillis() - start) + "ms");
 
                 resourcePacksStorage.getHttpConsumer().accept(javaContent.toZip());
