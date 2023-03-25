@@ -11,6 +11,10 @@ group = project.maven_group
 archivesBaseName = project.maven_name
 version = project.maven_version
 
+configurations {
+    testImplementation.extendsFrom compileOnly
+}
+
 repositories {
     mavenCentral()
     maven {
