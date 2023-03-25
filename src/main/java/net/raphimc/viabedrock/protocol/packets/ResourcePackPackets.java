@@ -213,10 +213,15 @@ public class ResourcePackPackets {
                         missingPacks.add(pack.packId() + "_" + pack.version());
                     }
 
-                    ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Requesting " + missingPacks.size() + " packs");
-
-                    wrapper.write(Type.UNSIGNED_BYTE, ResourcePackStatus.SEND_PACKS); // status
-                    wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, missingPacks.toArray(new String[0])); // pack ids
+                    if (!missingPacks.isEmpty()) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Requesting " + missingPacks.size() + " packs");
+                        wrapper.write(Type.UNSIGNED_BYTE, ResourcePackStatus.SEND_PACKS); // status
+                        wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, missingPacks.toArray(new String[0])); // pack ids
+                    } else {
+                        resourcePacksStorage.setCompleted(true);
+                        wrapper.write(Type.UNSIGNED_BYTE, ResourcePackStatus.HAVE_ALL_PACKS); // status
+                        wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
+                    }
                     break;
                 default:
                     BedrockProtocol.kickForIllegalState(wrapper.user(), "Unknown resource pack status: " + status);
