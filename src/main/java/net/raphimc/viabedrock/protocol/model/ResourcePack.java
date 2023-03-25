@@ -263,8 +263,8 @@ public class ResourcePack {
             return new String(bytes, StandardCharsets.UTF_8);
         }
 
-        public void putString(final String path, final String string) {
-            this.put(path, string.getBytes(StandardCharsets.UTF_8));
+        public boolean putString(final String path, final String string) {
+            return this.put(path, string.getBytes(StandardCharsets.UTF_8)) != null;
         }
 
         public List<String> getLines(final String path) {
@@ -276,8 +276,8 @@ public class ResourcePack {
             return Arrays.asList(string.split("\\n"));
         }
 
-        public void putLines(final String path, final List<String> lines) {
-            this.putString(path, String.join("\\n", lines));
+        public boolean putLines(final String path, final List<String> lines) {
+            return this.putString(path, String.join("\\n", lines));
         }
 
         public JsonObject getJson(final String path) {
@@ -289,23 +289,31 @@ public class ResourcePack {
             return GsonUtil.getGson().fromJson(string.trim(), JsonObject.class);
         }
 
-        public void putJson(final String path, final JsonObject json) {
-            this.putString(path, GsonUtil.getGson().toJson(json));
+        public boolean putJson(final String path, final JsonObject json) {
+            return this.putString(path, GsonUtil.getGson().toJson(json));
         }
 
-        public BufferedImage getImage(final String path) throws IOException {
+        public BufferedImage getImage(final String path) {
             final byte[] bytes = this.get(path);
             if (bytes == null) {
                 return null;
             }
 
-            return ImageIO.read(new ByteArrayInputStream(bytes));
+            try {
+                return ImageIO.read(new ByteArrayInputStream(bytes));
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        public void putImage(final String path, final BufferedImage image) throws IOException {
+        public boolean putImage(final String path, final BufferedImage image) {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", baos);
-            this.put(path, baos.toByteArray());
+            try {
+                ImageIO.write(image, "png", baos);
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
+            return this.put(path, baos.toByteArray()) != null;
         }
 
         public byte[] toZip() throws IOException {
