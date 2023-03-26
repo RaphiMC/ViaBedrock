@@ -49,9 +49,10 @@ Additionally ViaBedrock uses assets and data dumps from other projects: See the 
 - [x] Dimension switching
 - [ ] Form GUIs
 - [ ] Scoreboard
-- [ ] Titles
+- [x] Titles
 - [ ] Bossbar
 - [x] Player list
+- [ ] Command suggestions
 - [ ] Sounds
 - [ ] Particles
 - [x] Player Skins (Requires [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility) mod)

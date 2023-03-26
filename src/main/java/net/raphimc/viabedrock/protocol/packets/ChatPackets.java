@@ -126,7 +126,7 @@ public class ChatPackets {
                                 break;
                             }
                             default:
-                                BedrockProtocol.kickForIllegalState(wrapper.user(), "Unknown text type: " + type);
+                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown text type: " + type);
                         }
                     } catch (Throwable e) { // Mojang client silently ignores errors
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalMessage + "' (" + type + ")", e);
@@ -209,7 +209,7 @@ public class ChatPackets {
         protocol.registerServerbound(ServerboundPackets1_19_4.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, new PacketHandlers() {
             @Override
             public void register() {
-                map(Type.STRING, BedrockTypes.STRING, c -> "/" + c); // command
+                map(Type.STRING, BedrockTypes.STRING, c -> '/' + c); // command
                 handler(wrapper -> {
                     final UUID uuid = wrapper.user().getProtocolInfo().getUuid();
                     wrapper.write(BedrockTypes.COMMAND_ORIGIN, new CommandOrigin(CommandOriginTypes.PLAYER, uuid, "")); // origin

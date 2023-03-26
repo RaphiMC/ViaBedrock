@@ -38,10 +38,7 @@ import net.raphimc.viabedrock.protocol.packets.*;
 import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
-import net.raphimc.viabedrock.protocol.storage.BlobCache;
-import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
-import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
-import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.task.BlobCacheTickTask;
 import net.raphimc.viabedrock.protocol.task.ChunkTrackerTickTask;
 import net.raphimc.viabedrock.protocol.task.EntityTrackerTickTask;
@@ -70,6 +67,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         OtherPlayerPackets.register(this);
         WorldPackets.register(this);
         EntityPackets.register(this);
+        HudPackets.register(this);
 
         this.registerClientbound(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING, ClientboundPackets1_19_4.DISCONNECT, new PacketHandlers() {
             @Override
@@ -124,6 +122,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     public void init(UserConnection user) {
         user.put(new SpawnPositionStorage(user));
         user.put(new BlobCache(user));
+        user.put(new PlayerListStorage(user));
         user.put(new PacketSyncStorage(user));
         user.put(new ChannelStorage(user));
     }

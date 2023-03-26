@@ -171,12 +171,7 @@ public class ResourcePackPackets {
                 resourcePackIds[i] = resourcePacks[i].first();
             }
 
-            if (resourcePacksStorage.areAllPacksDecompressed()) {
-                if (resourcePacksStorage.getHttpConsumer() == null) {
-                    BedrockProtocol.kickForIllegalState(wrapper.user(), "Java client did not connect to the HTTP server");
-                    return;
-                }
-
+            if (resourcePacksStorage.areAllPacksDecompressed() && resourcePacksStorage.getHttpConsumer() != null) {
                 final long start = System.currentTimeMillis();
                 final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage, resourcePackIds, behaviourPackIds);
                 Via.getPlatform().getLogger().log(Level.INFO, "Converted packs in " + (System.currentTimeMillis() - start) + "ms");

@@ -47,7 +47,7 @@ public class EntityTracker extends StoredObject {
     }
 
     public ClientPlayerEntity addClientPlayer(final long uniqueId, final long runtimeId) throws Exception {
-        this.addEntity(new ClientPlayerEntity(this.getUser(), uniqueId, runtimeId, 0, this.getUser().getProtocolInfo().getUuid()));
+        this.addEntity(new ClientPlayerEntity(this.getUser(), uniqueId, runtimeId, 0, this.getUser().getProtocolInfo().getUuid()), false);
         return this.clientPlayerEntity;
     }
 
@@ -56,6 +56,10 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity addEntity(final Entity entity) throws Exception {
+        return this.addEntity(entity, true);
+    }
+
+    public Entity addEntity(final Entity entity, final boolean handleTeam) throws Exception {
         if (entity instanceof ClientPlayerEntity) {
             this.clientPlayerEntity = (ClientPlayerEntity) entity;
         }
@@ -73,10 +77,14 @@ public class EntityTracker extends StoredObject {
             removeEntities.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
 
-            prevEntity.deleteTeam();
+            if (handleTeam) {
+                prevEntity.deleteTeam();
+            }
         }
 
-        entity.createTeam();
+        if (handleTeam) {
+            entity.createTeam();
+        }
 
         return entity;
     }

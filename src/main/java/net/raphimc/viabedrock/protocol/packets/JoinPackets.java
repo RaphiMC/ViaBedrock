@@ -267,6 +267,8 @@ public class JoinPackets {
             tabList.write(Type.COMPONENT, JsonUtil.textToComponent("§aViaBedrock §3v" + ViaBedrock.VERSION + "\n§7https://github.com/RaphiMC/ViaBedrock")); // footer
             tabList.send(BedrockProtocol.class);
 
+            clientPlayer.createTeam();
+
             if (rainLevel > 0F || lightningLevel > 0F) {
                 final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
                 rainStartGameEvent.write(Type.VAR_INT, GameEvents.RAIN_STARTED); // event id
