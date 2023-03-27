@@ -15,28 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.platform;
+package net.raphimc.viabedrock.protocol.providers;
 
-public interface ViaBedrockConfig {
+import com.viaversion.viaversion.api.platform.providers.Provider;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.protocol.model.ResourcePack;
 
-    /**
-     * @return Whether the blob cache is enabled.
-     */
-    boolean isBlobCacheEnabled();
+import java.io.File;
 
-    /**
-     * @return The host to use for the resource pack HTTP server.
-     */
-    String getResourcePackHost();
+public abstract class ResourcePackProvider implements Provider {
 
-    /**
-     * @return The port to use for the resource pack HTTP server.
-     */
-    int getResourcePackPort();
+    public abstract boolean hasPack(final ResourcePack pack) throws Exception;
 
-    /**
-     * @return Whether the server packs should be stored on disk.
-     */
-    boolean storePacks();
+    public abstract void loadPack(final ResourcePack pack) throws Exception;
+
+    public abstract void addPack(final ResourcePack pack) throws Exception;
+
+    public File getPackFile(final ResourcePack pack) {
+        return new File(ViaBedrock.getPlatform().getServerPacksFolder(), pack.packId() + "_" + pack.version() + ".mcpack");
+    }
 
 }

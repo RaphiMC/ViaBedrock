@@ -83,7 +83,7 @@ public class BlobCache extends StoredObject {
         }
 
         final byte[] compressedBlob = this.compress(blob);
-        final byte[] previousBlob = Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(this.getUser(), hash, compressedBlob);
+        final byte[] previousBlob = Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(hash, compressedBlob);
         if (this.pending.containsKey(hash)) {
             this.pending.remove(hash).complete(blob);
         }
@@ -95,7 +95,7 @@ public class BlobCache extends StoredObject {
 
     public boolean hasBlob(final long... hashes) {
         for (long hash : hashes) {
-            if (!Via.getManager().getProviders().get(BlobCacheProvider.class).hasBlob(this.getUser(), hash)) {
+            if (!Via.getManager().getProviders().get(BlobCacheProvider.class).hasBlob(hash)) {
                 return false;
             }
         }
@@ -132,7 +132,7 @@ public class BlobCache extends StoredObject {
             final ByteArrayOutputStream output = new ByteArrayOutputStream();
             try {
                 for (long hash : hashes) {
-                    output.write(this.decompress(Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(this.getUser(), hash)));
+                    output.write(this.decompress(Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(hash)));
                 }
             } catch (final IOException ignored) {
             }

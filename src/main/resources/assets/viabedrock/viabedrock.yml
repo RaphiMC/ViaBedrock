@@ -4,5 +4,5 @@ blob-cache: true
 resource-pack-host: 127.0.0.1
 # Resource pack HTTP server port (0 = random available port)
 resource-pack-port: 0
-# Dump server packs to disk (For debugging)
-dump-packs: false
+# Store server resource packs on disk (Reduces network usage and loading time)
+store-packs: true

@@ -94,19 +94,25 @@ public class HudPackets {
                     wrapper.read(Type.BOOLEAN); // trusted skin
                 }
 
-                final List<UUID> toRemove = new ArrayList<>();
+                final List<UUID> toRemoveUUIDs = new ArrayList<>();
+                final List<String> toRemoveNames = new ArrayList<>();
                 for (int i = 0; i < uuids.length; i++) {
-                    if (playerListStorage.containsPlayer(uuids[i])) {
-                        toRemove.add(uuids[i]);
+                    final String name = playerListStorage.addPlayer(uuids[i], names[i]);
+                    if (name != null) {
+                        toRemoveUUIDs.add(uuids[i]);
+                        toRemoveNames.add(name);
                     }
-                    playerListStorage.addPlayer(uuids[i], names[i]);
                 }
-
-                if (!toRemove.isEmpty()) {
+                if (!toRemoveUUIDs.isEmpty()) {
                     // Remove duplicate players from the player list first because Mojang client overwrites entries if they are added twice
                     final PacketWrapper playerInfoRemove = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_REMOVE, wrapper.user());
-                    playerInfoRemove.write(Type.UUID_ARRAY, toRemove.toArray(new UUID[0])); // uuids
+                    playerInfoRemove.write(Type.UUID_ARRAY, toRemoveUUIDs.toArray(new UUID[0])); // uuids
                     playerInfoRemove.send(BedrockProtocol.class);
+
+                    final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_19_4.CUSTOM_CHAT_COMPLETIONS, wrapper.user());
+                    customChatCompletions.write(Type.VAR_INT, 1); // action | 1 = REMOVE
+                    customChatCompletions.write(Type.STRING_ARRAY, toRemoveNames.toArray(new String[0])); // entries
+                    customChatCompletions.send(BedrockProtocol.class);
                 }
 
                 final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_19_4.CUSTOM_CHAT_COMPLETIONS, wrapper.user());
@@ -120,9 +126,9 @@ public class HudPackets {
 
                 final List<String> names = new ArrayList<>();
                 for (UUID uuid : uuids) {
-                    if (playerListStorage.containsPlayer(uuid)) {
+                    final String name = playerListStorage.removePlayer(uuid);
+                    if (name != null) {
                         names.add(playerListStorage.getPlayerName(uuid));
-                        playerListStorage.removePlayer(uuid);
                     }
                 }
 
@@ -183,6 +189,7 @@ public class HudPackets {
                         break;
                     default:
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown title type: " + type);
+                        wrapper.cancel();
                 }
             } catch (Throwable e) { // Mojang client silently ignores errors
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalText + "'", e);

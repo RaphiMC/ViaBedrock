@@ -35,9 +35,7 @@ import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.packetmapping.ClientboundPacketMappings;
 import net.raphimc.viabedrock.protocol.packets.*;
-import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
-import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
-import net.raphimc.viabedrock.protocol.providers.SkinProvider;
+import net.raphimc.viabedrock.protocol.providers.*;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.task.BlobCacheTickTask;
 import net.raphimc.viabedrock.protocol.task.ChunkTrackerTickTask;
@@ -109,6 +107,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     @Override
     public void register(ViaProviders providers) {
         providers.require(NettyPipelineProvider.class);
+        providers.register(ResourcePackProvider.class, new DiskResourcePackProvider());
         providers.register(BlobCacheProvider.class, new BlobCacheProvider());
         providers.register(SkinProvider.class, new SkinProvider());
 

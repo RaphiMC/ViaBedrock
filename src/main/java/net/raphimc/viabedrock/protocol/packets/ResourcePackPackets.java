@@ -31,11 +31,11 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ResourcePackStatus;
 import net.raphimc.viabedrock.protocol.model.ResourcePack;
+import net.raphimc.viabedrock.protocol.providers.ResourcePackProvider;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -128,7 +128,9 @@ public class ResourcePackPackets {
             if (resourcePacksStorage.hasPack(idAndVersion.key())) {
                 final ResourcePack resourcePack = resourcePacksStorage.getPack(idAndVersion.key());
                 resourcePack.setVersion(idAndVersion.value());
-                resourcePack.processDataChunk(chunkIndex, data);
+                if (resourcePack.processDataChunk(chunkIndex, data) && ViaBedrock.getConfig().storePacks()) {
+                    Via.getManager().getProviders().get(ResourcePackProvider.class).addPack(resourcePack);
+                }
             } else {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received resource pack chunk data for unknown pack: " + idAndVersion.key());
             }
@@ -140,11 +142,6 @@ public class ResourcePackPackets {
                 resourcePackClientResponse.write(Type.UNSIGNED_BYTE, ResourcePackStatus.HAVE_ALL_PACKS); // status
                 resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
                 resourcePackClientResponse.sendToServer(BedrockProtocol.class);
-
-                if (ViaBedrock.getConfig().shouldDumpPacks()) {
-                    resourcePacksStorage.dumpPacks(new File("server_packs"));
-                    ViaBedrock.getPlatform().getLogger().log(Level.INFO, "All packs have been dumped");
-                }
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_STACK, null, wrapper -> {
@@ -205,7 +202,11 @@ public class ResourcePackPackets {
                 case 3: // ACCEPTED
                     final Set<String> missingPacks = new HashSet<>();
                     for (ResourcePack pack : resourcePacksStorage.getPacks()) {
-                        missingPacks.add(pack.packId() + "_" + pack.version());
+                        if (ViaBedrock.getConfig().storePacks() && Via.getManager().getProviders().get(ResourcePackProvider.class).hasPack(pack)) {
+                            Via.getManager().getProviders().get(ResourcePackProvider.class).loadPack(pack);
+                        } else {
+                            missingPacks.add(pack.packId() + "_" + pack.version());
+                        }
                     }
 
                     if (!missingPacks.isEmpty()) {

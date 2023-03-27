@@ -32,12 +32,12 @@ public class PlayerListStorage extends StoredObject {
         super(user);
     }
 
-    public void addPlayer(final UUID uuid, final String name) {
-        this.playerList.put(uuid, name);
+    public String addPlayer(final UUID uuid, final String name) {
+        return this.playerList.put(uuid, name);
     }
 
-    public void removePlayer(final UUID uuid) {
-        this.playerList.remove(uuid);
+    public String removePlayer(final UUID uuid) {
+        return this.playerList.remove(uuid);
     }
 
     public boolean containsPlayer(final UUID uuid) {

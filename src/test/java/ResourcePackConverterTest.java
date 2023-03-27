@@ -5,7 +5,6 @@ import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.security.MessageDigest;
 import java.util.UUID;
 
 /*
@@ -37,7 +36,6 @@ public class ResourcePackConverterTest {
 
         start = System.currentTimeMillis();
         final ResourcePack resourcePack = new ResourcePack(UUID.randomUUID(), "1.0.0", "", "", "", false, false, 0, PackTypes.RESOURCE);
-        resourcePack.setHash(MessageDigest.getInstance("SHA-256").digest(bytes));
         resourcePack.setCompressedDataLength(bytes.length, bytes.length);
         resourcePack.processDataChunk(0, bytes);
 

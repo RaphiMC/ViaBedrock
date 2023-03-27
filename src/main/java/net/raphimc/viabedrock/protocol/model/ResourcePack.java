@@ -81,23 +81,26 @@ public class ResourcePack {
         this.type = type;
     }
 
-    public void processDataChunk(final int chunkIndex, final byte[] data) throws NoSuchAlgorithmException, IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public boolean processDataChunk(final int chunkIndex, final byte[] data) throws NoSuchAlgorithmException, IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         if (this.receivedChunks[chunkIndex]) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received duplicate resource pack chunk data: " + this.packId);
-            return;
+            return false;
         }
 
         final int offset = chunkIndex * this.maxChunkSize;
         if (offset + data.length > this.compressedData.length) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received resource pack chunk data with invalid offset: " + this.packId);
-            return;
+            return false;
         }
         System.arraycopy(data, 0, this.compressedData, offset, data.length);
         this.receivedChunks[chunkIndex] = true;
 
         if (this.hasReceivedAllChunks()) {
             this.decompressAndDecrypt();
+            return true;
         }
+
+        return false;
     }
 
     public boolean isDecompressed() {
@@ -179,10 +182,12 @@ public class ResourcePack {
     }
 
     private void decompressAndDecrypt() throws NoSuchAlgorithmException, IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        final MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
-        final byte[] hash = sha256.digest(this.compressedData);
-        if (!Arrays.equals(hash, this.hash)) {
-            throw new IllegalStateException("Resource pack hash mismatch: " + this.packId);
+        if (this.hash != null) {
+            final MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+            final byte[] hash = sha256.digest(this.compressedData);
+            if (!Arrays.equals(hash, this.hash)) {
+                throw new IllegalStateException("Resource pack hash mismatch: " + this.packId);
+            }
         }
 
         this.content = new Content();

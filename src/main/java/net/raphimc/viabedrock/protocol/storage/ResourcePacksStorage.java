@@ -21,9 +21,6 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import net.raphimc.viabedrock.protocol.model.ResourcePack;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,15 +56,6 @@ public class ResourcePacksStorage extends StoredObject {
 
     public boolean areAllPacksDecompressed() {
         return this.packs.values().stream().allMatch(ResourcePack::isDecompressed);
-    }
-
-    public void dumpPacks(final File directory) throws IOException {
-        directory.mkdirs();
-
-        for (ResourcePack pack : this.packs.values()) {
-            final File packFile = new File(directory, pack.packId() + "_" + pack.version() + ".mcpack");
-            Files.write(packFile.toPath(), pack.content().toZip());
-        }
     }
 
     public UUID getHttpToken() {

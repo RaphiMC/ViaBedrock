@@ -17,35 +17,32 @@
  */
 package net.raphimc.viabedrock.protocol.providers;
 
-import com.viaversion.viaversion.api.platform.providers.Provider;
+import net.raphimc.viabedrock.protocol.model.ResourcePack;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Files;
 
-public class BlobCacheProvider implements Provider {
+public class DiskResourcePackProvider extends ResourcePackProvider {
 
-    private final Map<Long, byte[]> blobs = new HashMap<>();
-
-    public BlobCacheProvider() {
-        this.blobs.put(0L, new byte[0]);
+    @Override
+    public boolean hasPack(final ResourcePack pack) {
+        return this.getPackFile(pack).isFile();
     }
 
-    public byte[] addBlob(final long hash, final byte[] compressedBlob) {
-        synchronized (this.blobs) {
-            return this.blobs.put(hash, compressedBlob);
+    @Override
+    public void loadPack(final ResourcePack pack) throws Exception {
+        if (!this.hasPack(pack)) {
+            throw new IOException("Pack not found");
         }
+        final byte[] data = Files.readAllBytes(this.getPackFile(pack).toPath());
+
+        pack.setCompressedDataLength(data.length, data.length);
+        pack.processDataChunk(0, data);
     }
 
-    public boolean hasBlob(final long hash) {
-        synchronized (this.blobs) {
-            return this.blobs.containsKey(hash);
-        }
-    }
-
-    public byte[] getBlob(final long hash) {
-        synchronized (this.blobs) {
-            return this.blobs.get(hash);
-        }
+    @Override
+    public void addPack(final ResourcePack pack) throws IOException {
+        Files.write(this.getPackFile(pack).toPath(), pack.content().toZip());
     }
 
 }

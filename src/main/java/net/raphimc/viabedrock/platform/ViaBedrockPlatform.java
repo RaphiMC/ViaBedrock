@@ -42,10 +42,16 @@ public interface ViaBedrockPlatform {
 
         protocolManager.registerProtocol(new BedrockProtocol(), ProtocolVersion.v1_19_4, BedrockProtocolVersion.bedrockLatest);
         protocolManager.registerBaseProtocol(new EmptyBaseProtocol(), Range.singleton(BedrockProtocolVersion.bedrockLatest.getVersion()));
+
+        this.getServerPacksFolder().mkdirs();
     }
 
     Logger getLogger();
 
     File getDataFolder();
+
+    default File getServerPacksFolder() {
+        return new File(this.getDataFolder(), "server_packs");
+    }
 
 }
