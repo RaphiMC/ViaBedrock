@@ -50,8 +50,12 @@ public interface ViaBedrockPlatform {
 
     File getDataFolder();
 
+    default File getDataCacheFolder() {
+        return new File(this.getDataFolder(), "viabedrock");
+    }
+
     default File getServerPacksFolder() {
-        return new File(this.getDataFolder(), "server_packs");
+        return new File(this.getDataCacheFolder(), "server_packs");
     }
 
 }
