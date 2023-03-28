@@ -30,7 +30,7 @@ import net.raphimc.netminecraft.constants.ConnectionState;
 import net.raphimc.netminecraft.constants.MCPipeline;
 import net.raphimc.netminecraft.util.LazyLoadBase;
 import net.raphimc.netminecraft.util.ServerAddress;
-import net.raphimc.viabedrock.netty.AesGcmEncryption;
+import net.raphimc.viabedrock.netty.AesEncryption;
 import net.raphimc.viabedrock.netty.SnappyCompression;
 import net.raphimc.viabedrock.netty.ZLibCompression;
 import net.raphimc.viabedrockplugin.netty.PingEncapsulationCodec;
@@ -140,7 +140,7 @@ public class BedrockProxyConnection extends ProxyConnection {
             throw new IllegalStateException("Encryption is already enabled");
         this.encryptionEnabled = true;
 
-        this.getChannel().pipeline().replace(MCPipeline.ENCRYPTION_HANDLER_NAME, MCPipeline.ENCRYPTION_HANDLER_NAME, new AesGcmEncryption(secretKey));
+        this.getChannel().pipeline().replace(MCPipeline.ENCRYPTION_HANDLER_NAME, MCPipeline.ENCRYPTION_HANDLER_NAME, new AesEncryption(secretKey));
     }
 
 }

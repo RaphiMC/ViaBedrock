@@ -34,7 +34,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 
-public class AesGcmEncryption extends ByteToMessageCodec<ByteBuf> {
+public class AesEncryption extends ByteToMessageCodec<ByteBuf> {
 
     private final SecretKey secretKey;
     private final Cipher inCipher;
@@ -46,7 +46,7 @@ public class AesGcmEncryption extends ByteToMessageCodec<ByteBuf> {
     private byte[] decryptBuffer = new byte[8192];
     private byte[] encryptBuffer = new byte[8192];
 
-    public AesGcmEncryption(final SecretKey secretKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+    public AesEncryption(final SecretKey secretKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
         final byte[] iv = new byte[16];
         System.arraycopy(secretKey.getEncoded(), 0, iv, 0, 12);
         iv[15] = 2;
