@@ -193,7 +193,7 @@ public class ResourcePackPackets {
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     break;
                 case 2: // FAILED_DOWNLOAD
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Resource pack download failed");
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Client resource pack download/application failed");
                 case 1: // DECLINED
                     resourcePacksStorage.setCompleted(true);
                     wrapper.write(Type.UNSIGNED_BYTE, ResourcePackStatus.HAVE_ALL_PACKS); // status
@@ -210,7 +210,7 @@ public class ResourcePackPackets {
                     }
 
                     if (!missingPacks.isEmpty()) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Requesting " + missingPacks.size() + " packs");
+                        ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Downloading " + missingPacks.size() + " packs");
                         wrapper.write(Type.UNSIGNED_BYTE, ResourcePackStatus.SEND_PACKS); // status
                         wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, missingPacks.toArray(new String[0])); // pack ids
                     } else {
