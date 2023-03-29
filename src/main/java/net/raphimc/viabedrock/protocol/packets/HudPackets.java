@@ -50,7 +50,6 @@ public class HudPackets {
             final PlayerListStorage playerListStorage = wrapper.user().get(PlayerListStorage.class);
 
             final short action = wrapper.read(Type.UNSIGNED_BYTE); // action
-
             if (action == 0) { // ADD
                 final int length = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // length
                 final UUID[] uuids = new UUID[length];
@@ -128,7 +127,7 @@ public class HudPackets {
                 for (UUID uuid : uuids) {
                     final String name = playerListStorage.removePlayer(uuid);
                     if (name != null) {
-                        names.add(playerListStorage.getPlayerName(uuid));
+                        names.add(name);
                     }
                 }
 
