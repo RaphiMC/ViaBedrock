@@ -361,7 +361,7 @@ public class ChunkTracker extends StoredObject {
     public void tick() throws Exception {
         synchronized (this.dirtyChunks) {
             if (!this.dirtyChunks.isEmpty()) {
-                this.getUser().getChannel().eventLoop().execute(() -> {
+                this.getUser().getChannel().eventLoop().submit(() -> {
                     synchronized (this.dirtyChunks) {
                         for (Long dirtyChunk : this.dirtyChunks) {
                             final int chunkX = (int) (dirtyChunk >> 32);
@@ -379,8 +379,7 @@ public class ChunkTracker extends StoredObject {
             }
         }
 
-        final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
-        if (!entityTracker.getClientPlayer().isInitiallySpawned()) return;
+        if (!this.getUser().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) return;
 
         synchronized (this.subChunkLock) {
             this.subChunkRequests.removeIf(s -> !this.isInViewDistance(s.chunkX, s.chunkZ));

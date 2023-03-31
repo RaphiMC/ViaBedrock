@@ -31,21 +31,15 @@ public class BlobCacheProvider implements Provider {
     }
 
     public byte[] addBlob(final long hash, final byte[] compressedBlob) {
-        synchronized (this.blobs) {
-            return this.blobs.put(hash, compressedBlob);
-        }
+        return this.blobs.put(hash, compressedBlob);
     }
 
     public boolean hasBlob(final long hash) {
-        synchronized (this.blobs) {
-            return this.blobs.containsKey(hash);
-        }
+        return this.blobs.containsKey(hash);
     }
 
     public byte[] getBlob(final long hash) {
-        synchronized (this.blobs) {
-            return this.blobs.get(hash);
-        }
+        return this.blobs.get(hash);
     }
 
 }

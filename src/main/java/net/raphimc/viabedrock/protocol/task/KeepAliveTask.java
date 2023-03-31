@@ -33,13 +33,15 @@ public class KeepAliveTask implements Runnable {
     public void run() {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
             if (info.getProtocolInfo().getState().equals(State.PLAY) && info.getProtocolInfo().getPipeline().contains(BedrockProtocol.class)) {
-                try {
-                    final PacketWrapper keepAlive = PacketWrapper.create(ClientboundPackets1_19_4.KEEP_ALIVE, info);
-                    keepAlive.write(Type.LONG, INTERNAL_ID); // id
-                    keepAlive.send(BedrockProtocol.class);
-                } catch (Throwable e) {
-                    BedrockProtocol.kickForIllegalState(info, "Error sending keep alive packet. See console for details.", e);
-                }
+                info.getChannel().eventLoop().submit(() -> {
+                    try {
+                        final PacketWrapper keepAlive = PacketWrapper.create(ClientboundPackets1_19_4.KEEP_ALIVE, info);
+                        keepAlive.write(Type.LONG, INTERNAL_ID); // id
+                        keepAlive.send(BedrockProtocol.class);
+                    } catch (Throwable e) {
+                        BedrockProtocol.kickForIllegalState(info, "Error sending keep alive packet. See console for details.", e);
+                    }
+                });
             }
         }
     }

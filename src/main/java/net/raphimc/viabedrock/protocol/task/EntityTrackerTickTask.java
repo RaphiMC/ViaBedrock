@@ -29,11 +29,13 @@ public class EntityTrackerTickTask implements Runnable {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
             final EntityTracker entityTracker = info.get(EntityTracker.class);
             if (entityTracker != null) {
-                try {
-                    entityTracker.tick();
-                } catch (Throwable e) {
-                    BedrockProtocol.kickForIllegalState(info, "Error ticking entity tracker. See console for details.", e);
-                }
+                info.getChannel().eventLoop().submit(() -> {
+                    try {
+                        entityTracker.tick();
+                    } catch (Throwable e) {
+                        BedrockProtocol.kickForIllegalState(info, "Error ticking entity tracker. See console for details.", e);
+                    }
+                });
             }
         }
     }

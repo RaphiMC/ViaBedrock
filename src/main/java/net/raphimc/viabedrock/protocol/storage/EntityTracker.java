@@ -64,13 +64,10 @@ public class EntityTracker extends StoredObject {
             this.clientPlayerEntity = (ClientPlayerEntity) entity;
         }
 
-        final Entity prevEntity;
-        synchronized (this.entities) {
-            if (this.runtimeIdToUniqueId.putIfAbsent(entity.runtimeId(), entity.uniqueId()) != null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate runtime entity ID: " + entity.runtimeId());
-            }
-            prevEntity = this.entities.put(entity.uniqueId(), entity);
+        if (this.runtimeIdToUniqueId.putIfAbsent(entity.runtimeId(), entity.uniqueId()) != null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate runtime entity ID: " + entity.runtimeId());
         }
+        final Entity prevEntity = this.entities.put(entity.uniqueId(), entity);
         if (prevEntity != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate unique entity ID: " + entity.uniqueId());
             final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_19_4.REMOVE_ENTITIES, this.getUser());
@@ -94,40 +91,30 @@ public class EntityTracker extends StoredObject {
             throw new IllegalArgumentException("Cannot remove client player entity");
         }
 
-        synchronized (this.entities) {
-            this.runtimeIdToUniqueId.remove(entity.runtimeId());
-            this.entities.remove(entity.uniqueId());
-        }
+        this.runtimeIdToUniqueId.remove(entity.runtimeId());
+        this.entities.remove(entity.uniqueId());
 
         entity.deleteTeam();
     }
 
     public void tick() throws Exception {
-        synchronized (this.entities) {
-            for (Entity entity : this.entities.values()) {
-                entity.tick();
-            }
+        for (Entity entity : this.entities.values()) {
+            entity.tick();
         }
     }
 
     public void prepareForRespawn() throws Exception {
-        synchronized (this.entities) {
-            for (Entity entity : this.entities.values()) {
-                entity.deleteTeam();
-            }
+        for (Entity entity : this.entities.values()) {
+            entity.deleteTeam();
         }
     }
 
     public Entity getEntityByRid(final long runtimeId) {
-        synchronized (this.entities) {
-            return this.entities.get(this.runtimeIdToUniqueId.get(runtimeId));
-        }
+        return this.entities.get(this.runtimeIdToUniqueId.get(runtimeId));
     }
 
     public Entity getEntityByUid(final long uniqueId) {
-        synchronized (this.entities) {
-            return this.entities.get(uniqueId);
-        }
+        return this.entities.get(uniqueId);
     }
 
     public ClientPlayerEntity getClientPlayer() {

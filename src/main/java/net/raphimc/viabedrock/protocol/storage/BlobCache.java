@@ -40,7 +40,6 @@ public class BlobCache extends StoredObject {
 
     private final Map<Long, CompletableFuture<byte[]>> pending = new HashMap<>();
 
-    private final Object lock = new Object();
     private final List<Long> missing = new ArrayList<>();
     private final List<Long> acked = new ArrayList<>();
 
@@ -53,34 +52,30 @@ public class BlobCache extends StoredObject {
     }
 
     public void tick() throws Exception {
-        synchronized (this.lock) {
-            if (this.missing.isEmpty() && this.acked.isEmpty()) {
-                return;
-            }
-
-            final List<Long> missingSubSet = this.missing.subList(0, Math.min(4096, this.missing.size()));
-            final List<Long> ackedSubSet = this.acked.subList(0, Math.min(4096, this.acked.size()));
-
-            final PacketWrapper clientCacheBlobStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_BLOB_STATUS, this.getUser());
-            clientCacheBlobStatus.write(BedrockTypes.UNSIGNED_VAR_INT, missingSubSet.size()); // missing blob count
-            clientCacheBlobStatus.write(BedrockTypes.UNSIGNED_VAR_INT, ackedSubSet.size()); // acked blob count
-            for (long hash : missingSubSet) {
-                clientCacheBlobStatus.write(BedrockTypes.LONG_LE, hash); // missing blob hash
-            }
-            for (long hash : ackedSubSet) {
-                clientCacheBlobStatus.write(BedrockTypes.LONG_LE, hash); // acked blob hash
-            }
-            clientCacheBlobStatus.sendToServer(BedrockProtocol.class);
-
-            this.missing.removeAll(missingSubSet);
-            this.acked.removeAll(ackedSubSet);
+        if (this.missing.isEmpty() && this.acked.isEmpty()) {
+            return;
         }
+
+        final List<Long> missingSubSet = this.missing.subList(0, Math.min(4096, this.missing.size()));
+        final List<Long> ackedSubSet = this.acked.subList(0, Math.min(4096, this.acked.size()));
+
+        final PacketWrapper clientCacheBlobStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_BLOB_STATUS, this.getUser());
+        clientCacheBlobStatus.write(BedrockTypes.UNSIGNED_VAR_INT, missingSubSet.size()); // missing blob count
+        clientCacheBlobStatus.write(BedrockTypes.UNSIGNED_VAR_INT, ackedSubSet.size()); // acked blob count
+        for (long hash : missingSubSet) {
+            clientCacheBlobStatus.write(BedrockTypes.LONG_LE, hash); // missing blob hash
+        }
+        for (long hash : ackedSubSet) {
+            clientCacheBlobStatus.write(BedrockTypes.LONG_LE, hash); // acked blob hash
+        }
+        clientCacheBlobStatus.sendToServer(BedrockProtocol.class);
+
+        this.missing.removeAll(missingSubSet);
+        this.acked.removeAll(ackedSubSet);
     }
 
     public void addBlob(final long hash, final byte[] blob) {
-        synchronized (this.lock) {
-            this.acked.add(hash);
-        }
+        this.acked.add(hash);
 
         final byte[] compressedBlob = this.compress(blob);
         final byte[] previousBlob = Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(hash, compressedBlob);
@@ -117,13 +112,11 @@ public class BlobCache extends StoredObject {
 
     public CompletableFuture<byte[]> getBlob(final boolean acknowledge, final long... hashes) {
         if (acknowledge) {
-            synchronized (this.lock) {
-                for (long hash : hashes) {
-                    if (this.hasBlob(hash)) {
-                        this.acked.add(hash);
-                    } else if (!this.pending.containsKey(hash)) {
-                        this.missing.add(hash);
-                    }
+            for (long hash : hashes) {
+                if (this.hasBlob(hash)) {
+                    this.acked.add(hash);
+                } else if (!this.pending.containsKey(hash)) {
+                    this.missing.add(hash);
                 }
             }
         }

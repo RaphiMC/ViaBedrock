@@ -29,11 +29,13 @@ public class BlobCacheTickTask implements Runnable {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
             final BlobCache blobCache = info.get(BlobCache.class);
             if (blobCache != null) {
-                try {
-                    blobCache.tick();
-                } catch (Throwable e) {
-                    BedrockProtocol.kickForIllegalState(info, "Error ticking blob cache. See console for details.", e);
-                }
+                info.getChannel().eventLoop().submit(() -> {
+                    try {
+                        blobCache.tick();
+                    } catch (Throwable e) {
+                        BedrockProtocol.kickForIllegalState(info, "Error ticking blob cache. See console for details.", e);
+                    }
+                });
             }
         }
     }
