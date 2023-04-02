@@ -30,12 +30,12 @@ public class SnappyCompression extends ByteToMessageCodec<ByteBuf> {
     private final Snappy snappy = new Snappy();
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) {
-        if (msg.isReadable()) {
-            if (msg.readableBytes() > Short.MAX_VALUE) { // Netty's snappy implementation can't handle more than that (https://github.com/netty/netty/issues/13226)
-                Type.VAR_INT.writePrimitive(out, msg.readableBytes());
+    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
+        if (in.isReadable()) {
+            if (in.readableBytes() > Short.MAX_VALUE) { // Netty's snappy implementation can't handle more than that (https://github.com/netty/netty/issues/13226)
+                Type.VAR_INT.writePrimitive(out, in.readableBytes());
 
-                int value = msg.readableBytes() - 1;
+                int value = in.readableBytes() - 1;
                 int highestOneBit = Integer.highestOneBit(value);
                 int bitLength = 0;
                 while ((highestOneBit >>= 1) != 0) {
@@ -44,11 +44,11 @@ public class SnappyCompression extends ByteToMessageCodec<ByteBuf> {
                 int bytesToEncode = 1 + bitLength / 8;
                 out.writeByte(59 + bytesToEncode << 2);
                 for (int i = 0; i < bytesToEncode; i++) {
-                    out.writeByte(msg.readableBytes() - 1 >> i * 8 & 0x0ff);
+                    out.writeByte(in.readableBytes() - 1 >> i * 8 & 0x0ff);
                 }
-                out.writeBytes(msg);
+                out.writeBytes(in);
             } else {
-                this.snappy.encode(msg, out, msg.readableBytes());
+                this.snappy.encode(in, out, in.readableBytes());
                 this.snappy.reset();
             }
         }

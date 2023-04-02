@@ -27,9 +27,9 @@ import java.util.List;
 public class BatchLengthCodec extends ByteToMessageCodec<ByteBuf> {
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) {
-        BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(out, msg.readableBytes());
-        out.writeBytes(msg);
+    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
+        BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(out, in.readableBytes());
+        out.writeBytes(in);
     }
 
     @Override

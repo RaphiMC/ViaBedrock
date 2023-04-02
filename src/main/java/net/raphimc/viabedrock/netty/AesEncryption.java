@@ -60,11 +60,11 @@ public class AesEncryption extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) throws Exception {
-        final byte[] hash = this.generateHash(msg);
+    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) throws Exception {
+        final byte[] hash = this.generateHash(in);
 
-        final byte[] data = new byte[msg.readableBytes()];
-        msg.readBytes(data);
+        final byte[] data = new byte[in.readableBytes()];
+        in.readBytes(data);
         final int outLength = this.outCipher.getOutputSize(data.length);
         if (this.encryptBuffer.length < outLength) {
             this.encryptBuffer = new byte[outLength];

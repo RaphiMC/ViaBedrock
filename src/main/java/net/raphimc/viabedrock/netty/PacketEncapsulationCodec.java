@@ -28,11 +28,11 @@ import java.util.List;
 public class PacketEncapsulationCodec extends ByteToMessageCodec<ByteBuf> {
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) {
-        final int packetId = Type.VAR_INT.readPrimitive(msg);
+    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
+        final int packetId = Type.VAR_INT.readPrimitive(in);
         final int header = packetId & 1023;
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(out, header);
-        out.writeBytes(msg);
+        out.writeBytes(in);
     }
 
     @Override

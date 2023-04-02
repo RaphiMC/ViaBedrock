@@ -6,13 +6,7 @@ ViaBedrock aims to be as compatible and accurate as possible with the Minecraft:
 ## Usage
 **ViaBedrock is in very early stages of development and NOT intended for regular use yet.**
 
-If you want to try it out anyway here are the steps to get it set up:
-
-1. Download the latest [ViaBedrock dev build](https://build.lenni0451.net/job/ViaBedrock/) (Click on the **ViaProxy-ViaBedrockPlugin-x.x.x-SNAPSHOT.jar** file).
-2. Download the latest [ViaProxy dev build](https://build.lenni0451.net/job/ViaProxy/) (Click on the **ViaProxy-x.x.x.jar** file).
-3. Start ViaProxy once and close it again.
-4. Put the ViaBedrock jar file into the `plugins` folder of ViaProxy.
-5. Start ViaProxy again and select "Bedrock xxx" as the server version.
+If you want to try it out anyway you can download the latest [ViaProxy dev build](https://build.lenni0451.net/job/ViaProxy/) (Click on the **ViaProxy-x.x.x.jar** file).
 
 **Do not report any bugs yet. There are still a lot of things which are not implemented yet.**
 

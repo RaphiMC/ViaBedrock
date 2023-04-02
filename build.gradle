@@ -28,9 +28,11 @@ dependencies {
     compileOnly "org.yaml:snakeyaml:2.0"
     compileOnly "com.google.guava:guava:31.1-jre"
     compileOnly "io.netty:netty-handler:4.1.90.Final"
-    compileOnly "io.netty:netty-codec-http:4.1.90.Final"
     compileOnly "com.google.code.gson:gson:2.10.1"
 
+    api("io.netty:netty-codec-http:4.1.90.Final") {
+        transitive = false
+    }
     api "io.jsonwebtoken:jjwt-impl:0.11.5"
     api("io.jsonwebtoken:jjwt-gson:0.11.5") {
         exclude group: "com.google.code.gson", module: "gson"

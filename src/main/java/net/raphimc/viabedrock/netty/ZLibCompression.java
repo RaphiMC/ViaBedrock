@@ -42,12 +42,12 @@ public class ZLibCompression extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf msg, ByteBuf out) {
+    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
         if (this.deflater == null) this.deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
 
-        if (msg.isReadable()) {
-            final byte[] uncompressedData = new byte[msg.readableBytes()];
-            msg.readBytes(uncompressedData);
+        if (in.isReadable()) {
+            final byte[] uncompressedData = new byte[in.readableBytes()];
+            in.readBytes(uncompressedData);
             this.deflater.setInput(uncompressedData);
             this.deflater.finish();
             while (!this.deflater.finished()) {

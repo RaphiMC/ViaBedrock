@@ -6,5 +6,3 @@ pluginManagement {
 }
 
 rootProject.name = "ViaBedrock"
-
-include(":ViaProxyPlugin")
