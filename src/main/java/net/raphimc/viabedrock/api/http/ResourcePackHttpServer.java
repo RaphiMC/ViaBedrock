@@ -27,6 +27,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.stream.ChunkedStream;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.io.ByteArrayInputStream;
@@ -121,8 +122,13 @@ public class ResourcePackHttpServer {
     }
 
     public String getUrl() {
-        final InetSocketAddress bindAddress = (InetSocketAddress) this.channelFuture.channel().localAddress();
-        return "http://" + this.bindAddress.getHostString() + ":" + bindAddress.getPort() + "/";
+        final String overrideUrl = ViaBedrock.getConfig().getResourcePackUrl();
+        if (!overrideUrl.isEmpty()) {
+            return overrideUrl;
+        } else {
+            final InetSocketAddress bindAddress = (InetSocketAddress) this.channelFuture.channel().localAddress();
+            return "http://" + this.bindAddress.getHostString() + ":" + bindAddress.getPort() + "/";
+        }
     }
 
     public Channel getChannel() {

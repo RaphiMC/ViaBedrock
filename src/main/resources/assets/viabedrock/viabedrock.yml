@@ -4,5 +4,7 @@ blob-cache: true
 resource-pack-host: 127.0.0.1
 # Resource pack HTTP server port (0 = random available port)
 resource-pack-port: 0
+# Resource pack URL which the clients will use to download the resource pack (empty = auto)
+resource-pack-url: ""
 # Store server resource packs on disk (Reduces network usage and loading time)
 store-packs: true

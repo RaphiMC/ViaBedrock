@@ -30,6 +30,7 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
     private boolean blobCacheEnabled;
     private String resourcePackHost;
     private int resourcePackPort;
+    private String resourcePackUrl;
     private boolean storePacks;
 
     public ViaBedrockConfig(final File configFile) {
@@ -46,6 +47,7 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
         this.blobCacheEnabled = this.getBoolean("blob-cache", true);
         this.resourcePackHost = this.getString("resource-pack-host", "127.0.0.1");
         this.resourcePackPort = this.getInt("resource-pack-port", 0);
+        this.resourcePackUrl = this.getString("resource-pack-url", "");
         this.storePacks = this.getBoolean("store-packs", true);
     }
 
@@ -76,6 +78,10 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
     @Override
     public int getResourcePackPort() {
         return this.resourcePackPort;
+    }
+
+    public String getResourcePackUrl() {
+        return this.resourcePackUrl;
     }
 
     @Override

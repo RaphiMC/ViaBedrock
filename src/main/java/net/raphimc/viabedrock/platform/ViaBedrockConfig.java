@@ -35,6 +35,11 @@ public interface ViaBedrockConfig {
     int getResourcePackPort();
 
     /**
+     * @return The URL to use for the resource pack HTTP server.
+     */
+    String getResourcePackUrl();
+
+    /**
      * @return Whether the server packs should be stored on disk.
      */
     boolean storePacks();
