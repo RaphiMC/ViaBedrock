@@ -96,7 +96,6 @@ public class ResourcePackPackets {
 
             if (resourcePacksStorage.hasPack(idAndVersion.key())) {
                 final ResourcePack resourcePack = resourcePacksStorage.getPack(idAndVersion.key());
-                resourcePack.setVersion(idAndVersion.value());
                 resourcePack.setHash(hash);
                 resourcePack.setPremium(premium);
                 resourcePack.setType(type);
@@ -125,9 +124,8 @@ public class ResourcePackPackets {
             wrapper.read(BedrockTypes.LONG_LE); // progress
             final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
 
-            if (resourcePacksStorage.hasPack(idAndVersion.key())) {
+            if (resourcePacksStorage.hasPack(idAndVersion.key()) && !resourcePacksStorage.getPack(idAndVersion.key()).isDecompressed()) {
                 final ResourcePack resourcePack = resourcePacksStorage.getPack(idAndVersion.key());
-                resourcePack.setVersion(idAndVersion.value());
                 if (resourcePack.processDataChunk(chunkIndex, data) && ViaBedrock.getConfig().storePacks()) {
                     Via.getManager().getProviders().get(ResourcePackProvider.class).addPack(resourcePack);
                 }

@@ -36,6 +36,7 @@ public class DiskResourcePackProvider extends ResourcePackProvider {
         }
         final byte[] data = Files.readAllBytes(this.getPackFile(pack).toPath());
 
+        pack.setContentKey("");
         pack.setCompressedDataLength(data.length, data.length);
         pack.processDataChunk(0, data);
     }

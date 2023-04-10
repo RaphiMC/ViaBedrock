@@ -53,8 +53,8 @@ public class ResourcePack {
     private static final byte[] CONTENTS_JSON_ENCRYPTED_MAGIC = new byte[]{(byte) 0xFC, (byte) 0xB9, (byte) 0xCF, (byte) 0x9B};
 
     private final UUID packId;
-    private String version;
-    private final String contentKey;
+    private final String version;
+    private String contentKey;
     private final String subPackName;
     private final String contentId;
     private final boolean scripting;
@@ -115,12 +115,12 @@ public class ResourcePack {
         return this.version;
     }
 
-    public void setVersion(final String version) {
-        this.version = version;
-    }
-
     public String contentKey() {
         return this.contentKey;
+    }
+
+    public void setContentKey(final String contentKey) {
+        this.contentKey = contentKey;
     }
 
     public String subPackName() {
@@ -245,6 +245,26 @@ public class ResourcePack {
                 aesCfb8.init(Cipher.DECRYPT_MODE, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(Arrays.copyOfRange(keyBytes, 0, 16)));
                 this.content.put(path, aesCfb8.doFinal(encryptedData));
             }
+        }
+
+        final JsonObject manifestJson = this.content.getJson("manifest.json");
+        final int formatVersion = manifestJson.get("format_version").getAsInt();
+        if (formatVersion != 1 && formatVersion != 2) {
+            throw new IllegalStateException("Unsupported resource pack format version: " + formatVersion);
+        }
+        final JsonObject headerObj = manifestJson.getAsJsonObject("header");
+        final UUID packId = UUID.fromString(headerObj.get("uuid").getAsString());
+        if (!this.packId.equals(packId)) {
+            throw new IllegalStateException("manifest.json packId mismatch: " + this.packId + " != " + packId);
+        }
+        final JsonArray versionArray = headerObj.getAsJsonArray("version");
+        final StringBuilder version = new StringBuilder();
+        for (JsonElement digit : versionArray) {
+            version.append(digit.getAsString()).append(".");
+        }
+        version.deleteCharAt(version.length() - 1);
+        if (!this.version.contentEquals(version)) {
+            throw new IllegalStateException("manifest.json version mismatch: " + this.version + " != " + version);
         }
     }
 
