@@ -104,5 +104,6 @@ public class BedrockTypes {
     public static final Type<PlayerAbilities> PLAYER_ABILITIES = new PlayerAbilitiesType();
     public static final Type<EntityLink> ENTITY_LINK = new EntityLinkType();
     public static final Type<EntityLink[]> ENTITY_LINK_ARRAY = new ArrayType<>(ENTITY_LINK, UNSIGNED_VAR_INT);
+    public static final Type<CommandData[]> COMMAND_DATA_ARRAY = new CommandDataArrayType();
 
 }
