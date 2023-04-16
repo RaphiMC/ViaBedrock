@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginTypes;
 import net.raphimc.viabedrock.protocol.model.CommandOrigin;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -36,7 +35,7 @@ public class CommandOriginType extends Type<CommandOrigin> {
         final String requestId = BedrockTypes.STRING.read(buffer);
 
         long event = -1;
-        if (type == CommandOriginTypes.DEV_CONSOLE || type == CommandOriginTypes.TEST) {
+        if (type == CommandOrigin.TYPE_DEV_CONSOLE || type == CommandOrigin.TYPE_TEST) {
             event = BedrockTypes.VAR_LONG.read(buffer);
         }
 
@@ -49,7 +48,7 @@ public class CommandOriginType extends Type<CommandOrigin> {
         BedrockTypes.UUID.write(buffer, value.uuid());
         BedrockTypes.STRING.write(buffer, value.requestId());
 
-        if (value.type() == CommandOriginTypes.DEV_CONSOLE || value.type() == CommandOriginTypes.TEST) {
+        if (value.type() == CommandOrigin.TYPE_DEV_CONSOLE || value.type() == CommandOrigin.TYPE_TEST) {
             BedrockTypes.VAR_LONG.write(buffer, value.event());
         }
     }

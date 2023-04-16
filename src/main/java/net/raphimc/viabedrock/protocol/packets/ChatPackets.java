@@ -32,9 +32,9 @@ import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginTypes;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOutputType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.TextType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOutputTypes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.TextTypes;
+import net.raphimc.viabedrock.protocol.model.CommandData;
 import net.raphimc.viabedrock.protocol.model.CommandOrigin;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
@@ -58,18 +58,18 @@ public class ChatPackets {
                     String originalMessage = null;
                     try {
                         switch (type) {
-                            case TextType.CHAT:
-                            case TextType.WHISPER:
-                            case TextType.ANNOUNCEMENT: {
+                            case TextTypes.CHAT:
+                            case TextTypes.WHISPER:
+                            case TextTypes.ANNOUNCEMENT: {
                                 final String sourceName = wrapper.read(BedrockTypes.STRING); // source name
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 if (needsTranslation) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
-                                if (type == TextType.CHAT && !sourceName.isEmpty()) {
+                                if (type == TextTypes.CHAT && !sourceName.isEmpty()) {
                                     message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, message}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
-                                } else if (type == TextType.WHISPER) {
+                                } else if (type == TextTypes.WHISPER) {
                                     message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, BedrockTranslator.translate("§7§o%commands.message.display.incoming", translator, new String[]{sourceName, message})}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
                                 }
 
@@ -77,9 +77,9 @@ public class ChatPackets {
                                 wrapper.write(Type.BOOLEAN, false); // overlay
                                 break;
                             }
-                            case TextType.OBJECT:
-                            case TextType.OBJECT_WHISPER:
-                            case TextType.OBJECT_ANNOUNCEMENT: {
+                            case TextTypes.OBJECT:
+                            case TextTypes.OBJECT_WHISPER:
+                            case TextTypes.OBJECT_ANNOUNCEMENT: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
                                 rootComponent.forEach(c -> {
@@ -94,21 +94,21 @@ public class ChatPackets {
                                 wrapper.write(Type.BOOLEAN, false); // overlay
                                 break;
                             }
-                            case TextType.RAW:
-                            case TextType.SYSTEM:
-                            case TextType.TIP: {
+                            case TextTypes.RAW:
+                            case TextTypes.SYSTEM:
+                            case TextTypes.TIP: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 if (needsTranslation) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
                                 wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message)); // message
-                                wrapper.write(Type.BOOLEAN, type == TextType.TIP); // overlay
+                                wrapper.write(Type.BOOLEAN, type == TextTypes.TIP); // overlay
                                 break;
                             }
-                            case TextType.TRANSLATION:
-                            case TextType.POPUP:
-                            case TextType.JUKEBOX_POPUP: {
+                            case TextTypes.TRANSLATION:
+                            case TextTypes.POPUP:
+                            case TextTypes.JUKEBOX_POPUP: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
                                 if (needsTranslation) {
@@ -116,7 +116,7 @@ public class ChatPackets {
                                 }
 
                                 wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message)); // message
-                                wrapper.write(Type.BOOLEAN, type == TextType.POPUP || type == TextType.JUKEBOX_POPUP); // overlay
+                                wrapper.write(Type.BOOLEAN, type == TextTypes.POPUP || type == TextTypes.JUKEBOX_POPUP); // overlay
                                 break;
                             }
                             default:
@@ -137,12 +137,12 @@ public class ChatPackets {
             final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
 
-            if (type != CommandOutputType.ALL_OUTPUT) { // TODO: handle other types
+            if (type != CommandOutputTypes.ALL_OUTPUT) { // TODO: handle other types
                 BedrockProtocol.kickForIllegalState(wrapper.user(), "Unhandled command output type: " + type);
                 wrapper.cancel();
                 return;
             }
-            if (originData.type() != CommandOriginTypes.PLAYER) { // TODO: handle other types
+            if (originData.type() != CommandOrigin.TYPE_PLAYER) { // TODO: handle other types
                 BedrockProtocol.kickForIllegalState(wrapper.user(), "Unhandled command origin type: " + originData.type());
                 wrapper.cancel();
                 return;
@@ -162,7 +162,7 @@ public class ChatPackets {
                     message.append("\n");
                 }
             }
-            if (type == CommandOutputType.DATA_SET) {
+            if (type == CommandOutputTypes.DATA_SET) {
                 wrapper.read(BedrockTypes.STRING); // data
             }
 
@@ -173,7 +173,7 @@ public class ChatPackets {
         protocol.registerServerbound(ServerboundPackets1_19_4.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
             @Override
             public void register() {
-                create(Type.UNSIGNED_BYTE, TextType.CHAT); // type
+                create(Type.UNSIGNED_BYTE, TextTypes.CHAT); // type
                 create(Type.BOOLEAN, false); // needs translation
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().getProtocolInfo().getUsername())); // source name
                 map(Type.STRING, BedrockTypes.STRING); // message
@@ -198,7 +198,7 @@ public class ChatPackets {
                 map(Type.STRING, BedrockTypes.STRING, c -> '/' + c); // command
                 handler(wrapper -> {
                     final UUID uuid = wrapper.user().getProtocolInfo().getUuid();
-                    wrapper.write(BedrockTypes.COMMAND_ORIGIN, new CommandOrigin(CommandOriginTypes.PLAYER, uuid, "")); // origin
+                    wrapper.write(BedrockTypes.COMMAND_ORIGIN, new CommandOrigin(CommandOrigin.TYPE_PLAYER, uuid, "")); // origin
                 });
                 create(Type.BOOLEAN, false); // internal
                 create(BedrockTypes.VAR_INT, 26); // version

@@ -17,16 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class PackTypes {
+public class ServerMovementModes {
 
-    public static final int INVALID = 0;
-    public static final int ADDON = 1;
-    public static final int CACHED = 2;
-    public static final int COPY_PROTECTED = 3;
-    public static final int BEHAVIOR = 4;
-    public static final int PERSONA_PIECE = 5;
-    public static final int RESOURCE = 6;
-    public static final int SKINS = 7;
-    public static final int WORLD_TEMPLATE = 8;
+    public static final int CLIENT = 0;
+    public static final int SERVER = 1;
+    public static final int SERVER_WITH_REWIND = 2;
 
 }

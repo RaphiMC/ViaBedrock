@@ -17,12 +17,12 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class CommandOutputType {
+public class CommandOutputTypes {
 
-    public static final int NONE = 0;
-    public static final int LAST_OUTPUT = 1;
-    public static final int SILENT = 2;
-    public static final int ALL_OUTPUT = 3;
-    public static final int DATA_SET = 4;
+    public static final short NONE = 0;
+    public static final short LAST_OUTPUT = 1;
+    public static final short SILENT = 2;
+    public static final short ALL_OUTPUT = 3;
+    public static final short DATA_SET = 4;
 
 }

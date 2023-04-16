@@ -24,8 +24,8 @@ import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerActionTypes;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.RespawnState;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerActions;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.RespawnStates;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClientStatus;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
@@ -39,7 +39,7 @@ public class ClientPlayerPackets {
             final short state = wrapper.read(Type.UNSIGNED_BYTE); // state
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
 
-            if (state != RespawnState.SERVER_READY) {
+            if (state != RespawnStates.SERVER_READY) {
                 wrapper.cancel();
                 return;
             }
@@ -50,7 +50,7 @@ public class ClientPlayerPackets {
             if (!clientPlayer.isInitiallySpawned()) {
                 clientPlayer.setRespawning(true);
             } else {
-                clientPlayer.sendPlayerActionPacketToServer(PlayerActionTypes.RESPAWN, -1);
+                clientPlayer.sendPlayerActionPacketToServer(PlayerActions.RESPAWN, -1);
                 clientPlayer.closeDownloadingTerrainScreen();
             }
 
@@ -65,7 +65,7 @@ public class ClientPlayerPackets {
             wrapper.read(BedrockTypes.VAR_INT); // face
 
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
-            if (action == PlayerActionTypes.DIMENSION_CHANGE_SUCCESS && clientPlayer.isChangingDimension()) {
+            if (action == PlayerActions.DIMENSION_CHANGE_SUCCESS && clientPlayer.isChangingDimension()) {
                 clientPlayer.closeDownloadingTerrainScreen();
             }
         });
@@ -84,7 +84,7 @@ public class ClientPlayerPackets {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             wrapper.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // position
-            wrapper.write(Type.UNSIGNED_BYTE, RespawnState.CLIENT_READY); // state
+            wrapper.write(Type.UNSIGNED_BYTE, RespawnStates.CLIENT_READY); // state
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entityTracker.getClientPlayer().runtimeId()); // runtime entity id
         });
         protocol.registerServerbound(ServerboundPackets1_19_4.PLAYER_MOVEMENT, ServerboundBedrockPackets.MOVE_PLAYER, wrapper -> {

@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class AuthInput {
+public class AuthInputActions {
 
     public static final int ASCEND = 0;
     public static final int DESCEND = 1;

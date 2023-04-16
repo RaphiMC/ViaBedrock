@@ -31,7 +31,7 @@ import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.EntityLink;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
@@ -120,7 +120,7 @@ public class OtherPlayerPackets {
             final short mode = wrapper.read(Type.UNSIGNED_BYTE); // mode
             final boolean onGround = wrapper.read(Type.BOOLEAN); // on ground
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // riding runtime entity id
-            if (mode == MovePlayerMode.TELEPORT) {
+            if (mode == MovePlayerModes.TELEPORT) {
                 wrapper.read(BedrockTypes.INT_LE); // teleportation cause
                 wrapper.read(BedrockTypes.INT_LE); // entity type
             }
@@ -137,7 +137,7 @@ public class OtherPlayerPackets {
                 return;
             }
 
-            if (mode == MovePlayerMode.HEAD_ROTATION) {
+            if (mode == MovePlayerModes.HEAD_ROTATION) {
                 BedrockProtocol.kickForIllegalState(wrapper.user(), "Head rotation is not implemented");
                 return;
             }
@@ -146,13 +146,13 @@ public class OtherPlayerPackets {
             entity.setRotation(rotation);
             entity.setOnGround(onGround);
 
-            if ((mode == MovePlayerMode.TELEPORT || mode == MovePlayerMode.RESPAWN) && entity instanceof ClientPlayerEntity) {
+            if ((mode == MovePlayerModes.TELEPORT || mode == MovePlayerModes.RESPAWN) && entity instanceof ClientPlayerEntity) {
                 final ClientPlayerEntity clientPlayer = (ClientPlayerEntity) entity;
                 wrapper.setPacketType(ClientboundPackets1_19_4.PLAYER_POSITION);
-                if (mode == MovePlayerMode.RESPAWN && clientPlayer.isChangingDimension()) {
+                if (mode == MovePlayerModes.RESPAWN && clientPlayer.isChangingDimension()) {
                     clientPlayer.setRespawning(true);
                 }
-                clientPlayer.writePlayerPositionPacketToClient(wrapper, false, mode == MovePlayerMode.RESPAWN);
+                clientPlayer.writePlayerPositionPacketToClient(wrapper, false, mode == MovePlayerModes.RESPAWN);
                 return;
             }
 

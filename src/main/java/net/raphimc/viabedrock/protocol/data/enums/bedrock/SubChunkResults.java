@@ -17,16 +17,14 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class TitleType {
+public class SubChunkResults {
 
-    public static final int CLEAR = 0;
-    public static final int RESET = 1;
-    public static final int TITLE = 2;
-    public static final int SUBTITLE = 3;
-    public static final int ACTIONBAR = 4;
-    public static final int TIMES = 5;
-    public static final int TITLE_JSON = 6;
-    public static final int SUBTITLE_JSON = 7;
-    public static final int ACTIONBAR_JSON = 8;
+    public static final byte UNDEFINED = 0;
+    public static final byte SUCCESS = 1;
+    public static final byte CHUNK_NOT_FOUND = 2;
+    public static final byte INVALID_DIMENSION = 3;
+    public static final byte PLAYER_NOT_FOUND = 4;
+    public static final byte INDEX_OUT_OF_BOUNDS = 5;
+    public static final byte SUCCESS_ALL_AIR = 6;
 
 }

@@ -17,11 +17,16 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class MovePlayerMode {
+public class TitleTypes {
 
-    public static final short NORMAL = 0;
-    public static final short RESPAWN = 1;
-    public static final short TELEPORT = 2;
-    public static final short HEAD_ROTATION = 3;
+    public static final int CLEAR = 0;
+    public static final int RESET = 1;
+    public static final int TITLE = 2;
+    public static final int SUBTITLE = 3;
+    public static final int ACTIONBAR = 4;
+    public static final int TIMES = 5;
+    public static final int TITLE_JSON = 6;
+    public static final int SUBTITLE_JSON = 7;
+    public static final int ACTIONBAR_JSON = 8;
 
 }

@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class PlayerActionTypes {
+public class PlayerActions {
 
     public static final int START_BREAK = 0;
     public static final int ABORT_BREAK = 1;

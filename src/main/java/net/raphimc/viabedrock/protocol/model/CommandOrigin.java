@@ -17,16 +17,28 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginTypes;
-
 import java.util.Objects;
 import java.util.UUID;
 
 public class CommandOrigin {
 
-    /**
-     * Possible types: {@link CommandOriginTypes}
-     */
+    public static final int TYPE_PLAYER = 0;
+    public static final int TYPE_BLOCK = 1;
+    public static final int TYPE_MINECART_BLOCK = 2;
+    public static final int TYPE_DEV_CONSOLE = 3;
+    public static final int TYPE_TEST = 4;
+    public static final int TYPE_AUTOMATION_PLAYER = 5;
+    public static final int TYPE_CLIENT_AUTOMATION = 6;
+    public static final int TYPE_DEDICATED_SERVER = 7;
+    public static final int TYPE_ENTITY = 8;
+    public static final int TYPE_VIRTUAL = 9;
+    public static final int TYPE_GAME_ARGUMENT = 10;
+    public static final int TYPE_ENTITY_SERVER = 11;
+    public static final int TYPE_PRECOMPILED = 12;
+    public static final int TYPE_GAME_DIRECTOR_ENTITY_SERVER = 13;
+    public static final int TYPE_SCRIPT = 14;
+    public static final int TYPE_EXECUTE_CONTEXT = 15;
+
     private final int type;
     private final UUID uuid;
     private final String requestId;

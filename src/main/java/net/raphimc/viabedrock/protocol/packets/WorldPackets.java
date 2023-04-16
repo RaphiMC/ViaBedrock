@@ -42,9 +42,9 @@ import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResult;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResults;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
@@ -118,8 +118,8 @@ public class WorldPackets {
             spawnPositionStorage.setSpawnPosition(dimensionId, new Position((int) position.x(), (int) position.y(), (int) position.z()));
 
             clientPlayer.setPosition(new Position3f(position.x(), position.y() + 1.62F, position.z()));
-            if (gameSession.getMovementMode() == MovementMode.CLIENT) {
-                clientPlayer.sendMovePlayerPacketToServer(MovePlayerMode.NORMAL);
+            if (gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
+                clientPlayer.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
             }
             clientPlayer.setChangingDimension(true);
             clientPlayer.sendPlayerPositionPacketToClient(true, true);
@@ -268,17 +268,17 @@ public class WorldPackets {
                 final Position offset = wrapper.read(BedrockTypes.SUB_CHUNK_OFFSET); // offset
                 final Position absolute = new Position(center.x() + offset.x(), center.y() + offset.y(), center.z() + offset.z());
                 final byte result = wrapper.read(Type.BYTE); // result
-                final byte[] data = result != SubChunkResult.SUCCESS_ALL_AIR || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
+                final byte[] data = result != SubChunkResults.SUCCESS_ALL_AIR || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
                 final byte heightmapResult = wrapper.read(Type.BYTE); // heightmap result
                 final byte[] heightmapData = heightmapResult == 1 ? wrapper.read(new ByteArrayType(256)) : new byte[0]; // heightmap data
 
                 final Consumer<byte[]> dataConsumer = combinedData -> {
                     try {
-                        if (result == SubChunkResult.SUCCESS_ALL_AIR) {
+                        if (result == SubChunkResults.SUCCESS_ALL_AIR) {
                             if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), new BedrockChunkSectionImpl(), new ArrayList<>())) {
                                 chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
                             }
-                        } else if (result == SubChunkResult.SUCCESS) {
+                        } else if (result == SubChunkResults.SUCCESS) {
                             final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
 
                             BedrockChunkSection section = new BedrockChunkSectionImpl();

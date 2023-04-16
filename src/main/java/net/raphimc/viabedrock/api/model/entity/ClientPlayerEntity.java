@@ -72,12 +72,12 @@ public class ClientPlayerEntity extends Entity {
     public void tick() throws Exception {
         super.tick();
 
-        if (this.gameSession.getMovementMode() >= MovementMode.SERVER) {
-            this.sendAuthInputPacketToServer(this.initiallySpawned ? PlayMode.SCREEN : PlayMode.NORMAL);
+        if (this.gameSession.getMovementMode() >= ServerMovementModes.SERVER) {
+            this.sendAuthInputPacketToServer(this.initiallySpawned ? PlayModes.SCREEN : PlayModes.NORMAL);
         }
 
-        if (this.respawning && this.gameSession.getMovementMode() == MovementMode.CLIENT) {
-            this.sendMovePlayerPacketToServer(MovePlayerMode.RESPAWN);
+        if (this.respawning && this.gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
+            this.sendMovePlayerPacketToServer(MovePlayerModes.RESPAWN);
         }
     }
 
@@ -130,7 +130,7 @@ public class ClientPlayerEntity extends Entity {
     public void sendAuthInputPacketToServer(final int playMode) throws Exception {
         if (!this.prevOnGround && this.onGround) {
             this.prevOnGround = true;
-            this.sendMovePlayerPacketToServer(MovePlayerMode.NORMAL);
+            this.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
         }
         if (this.prevPosition == null) {
             this.prevPosition = this.position;
@@ -176,8 +176,8 @@ public class ClientPlayerEntity extends Entity {
 
         this.onGround = onGround;
 
-        if (this.gameSession.getMovementMode() == MovementMode.CLIENT) {
-            this.writeMovementPacketToServer(wrapper, MovePlayerMode.NORMAL);
+        if (this.gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
+            this.writeMovementPacketToServer(wrapper, MovePlayerModes.NORMAL);
         } else {
             wrapper.cancel();
         }
@@ -194,8 +194,8 @@ public class ClientPlayerEntity extends Entity {
         this.position = newPosition;
         this.onGround = onGround;
 
-        if (this.gameSession.getMovementMode() == MovementMode.CLIENT) {
-            this.writeMovementPacketToServer(wrapper, MovePlayerMode.NORMAL);
+        if (this.gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
+            this.writeMovementPacketToServer(wrapper, MovePlayerModes.NORMAL);
         } else {
             wrapper.cancel();
         }
@@ -214,8 +214,8 @@ public class ClientPlayerEntity extends Entity {
         this.rotation = newRotation;
         this.onGround = onGround;
 
-        if (this.gameSession.getMovementMode() == MovementMode.CLIENT) {
-            this.writeMovementPacketToServer(wrapper, MovePlayerMode.NORMAL);
+        if (this.gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
+            this.writeMovementPacketToServer(wrapper, MovePlayerModes.NORMAL);
         } else {
             wrapper.cancel();
         }
@@ -232,8 +232,8 @@ public class ClientPlayerEntity extends Entity {
         this.rotation = newRotation;
         this.onGround = onGround;
 
-        if (this.gameSession.getMovementMode() == MovementMode.CLIENT) {
-            this.writeMovementPacketToServer(wrapper, MovePlayerMode.NORMAL);
+        if (this.gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
+            this.writeMovementPacketToServer(wrapper, MovePlayerModes.NORMAL);
         } else {
             wrapper.cancel();
         }
@@ -248,10 +248,10 @@ public class ClientPlayerEntity extends Entity {
             if (!this.initiallySpawned || this.respawning) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received teleport confirm for teleport id " + teleportId + " but player is not spawned yet");
             }
-            if (this.gameSession.getMovementMode() == MovementMode.CLIENT) {
-                this.sendPlayerActionPacketToServer(PlayerActionTypes.HANDLED_TELEPORT, 0);
-            } else if (this.gameSession.getMovementMode() >= MovementMode.SERVER) {
-                this.authInput |= AuthInput.HANDLE_TELEPORT;
+            if (this.gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
+                this.sendPlayerActionPacketToServer(PlayerActions.HANDLED_TELEPORT, 0);
+            } else if (this.gameSession.getMovementMode() >= ServerMovementModes.SERVER) {
+                this.authInput |= AuthInputActions.HANDLE_TELEPORT;
             }
         }
     }
@@ -334,7 +334,7 @@ public class ClientPlayerEntity extends Entity {
 
             if (this.changingDimension) {
                 this.user.get(PacketSyncStorage.class).syncWithClient(() -> {
-                    this.sendPlayerActionPacketToServer(PlayerActionTypes.DIMENSION_CHANGE_SUCCESS, 0);
+                    this.sendPlayerActionPacketToServer(PlayerActions.DIMENSION_CHANGE_SUCCESS, 0);
                     this.closeDownloadingTerrainScreen();
                     changingDimension = false;
                     respawning = false;

@@ -20,7 +20,6 @@ package net.raphimc.viabedrock.protocol.types.model;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackTypes;
 import net.raphimc.viabedrock.protocol.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -52,7 +51,7 @@ public class ResourcePackType extends Type<ResourcePack> {
             packUUID = new UUID(0L, 0L);
         }
 
-        return new ResourcePack(packUUID, packVersion, contentKey, subPackName, contentId, scripting, raytracingCapable, packSize, PackTypes.RESOURCE);
+        return new ResourcePack(packUUID, packVersion, contentKey, subPackName, contentId, scripting, raytracingCapable, packSize, ResourcePack.TYPE_RESOURCE);
     }
 
     @Override

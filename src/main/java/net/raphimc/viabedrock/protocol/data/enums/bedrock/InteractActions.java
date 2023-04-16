@@ -17,10 +17,14 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class RespawnState {
+public class InteractActions {
 
-    public static final short SERVER_SEARCHING = 0;
-    public static final short SERVER_READY = 1;
-    public static final short CLIENT_READY = 2;
+    public static final short NONE = 0;
+    public static final short INTERACT = 1;
+    public static final short DAMAGE = 2;
+    public static final short LEAVE_VEHICLE = 3;
+    public static final short MOUSEOVER = 4;
+    public static final short NPC_OPEN = 5;
+    public static final short OPEN_INVENTORY = 6;
 
 }

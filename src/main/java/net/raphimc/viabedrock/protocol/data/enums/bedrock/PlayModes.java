@@ -17,19 +17,16 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class TextType {
+public class PlayModes {
 
-    public static final short RAW = 0;
-    public static final short CHAT = 1;
-    public static final short TRANSLATION = 2;
-    public static final short POPUP = 3;
-    public static final short JUKEBOX_POPUP = 4;
-    public static final short TIP = 5;
-    public static final short SYSTEM = 6;
-    public static final short WHISPER = 7;
-    public static final short ANNOUNCEMENT = 8;
-    public static final short OBJECT = 9;
-    public static final short OBJECT_WHISPER = 10;
-    public static final short OBJECT_ANNOUNCEMENT = 11;
+    public static final int NORMAL = 0;
+    public static final int TEASER = 1;
+    public static final int SCREEN = 2;
+    public static final int VIEWER = 3;
+    public static final int REALITY = 4;
+    public static final int PLACEMENT = 5;
+    public static final int LIVING_ROOM = 6;
+    public static final int EXIT_LEVEL = 7;
+    public static final int EXIT_LEVEL_LIVING_ROOM = 8;
 
 }

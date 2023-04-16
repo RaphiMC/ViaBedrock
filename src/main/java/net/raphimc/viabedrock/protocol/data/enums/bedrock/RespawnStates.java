@@ -17,14 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class SubChunkResult {
+public class RespawnStates {
 
-    public static final byte UNDEFINED = 0;
-    public static final byte SUCCESS = 1;
-    public static final byte CHUNK_NOT_FOUND = 2;
-    public static final byte INVALID_DIMENSION = 3;
-    public static final byte PLAYER_NOT_FOUND = 4;
-    public static final byte INDEX_OUT_OF_BOUNDS = 5;
-    public static final byte SUCCESS_ALL_AIR = 6;
+    public static final short SERVER_SEARCHING = 0;
+    public static final short SERVER_READY = 1;
+    public static final short CLIENT_READY = 2;
 
 }

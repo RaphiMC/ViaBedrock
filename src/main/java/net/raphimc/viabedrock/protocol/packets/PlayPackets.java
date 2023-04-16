@@ -28,10 +28,10 @@ import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractAction;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractActions;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
@@ -80,7 +80,7 @@ public class PlayPackets {
                 }
 
                 final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
-                interact.write(Type.UNSIGNED_BYTE, InteractAction.MOUSEOVER); // action
+                interact.write(Type.UNSIGNED_BYTE, InteractActions.MOUSEOVER); // action
                 interact.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
                 interact.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // mouse position
                 interact.sendToServer(BedrockProtocol.class);
@@ -94,8 +94,8 @@ public class PlayPackets {
 
                 clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
                 clientPlayer.setInitiallySpawned();
-                if (gameSession.getMovementMode() == MovementMode.CLIENT) {
-                    clientPlayer.sendMovePlayerPacketToServer(MovePlayerMode.NORMAL);
+                if (gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
+                    clientPlayer.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
                 }
 
                 final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());

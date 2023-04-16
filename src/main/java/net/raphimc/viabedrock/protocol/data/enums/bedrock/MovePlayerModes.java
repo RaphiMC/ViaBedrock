@@ -17,23 +17,11 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class CommandOriginTypes {
+public class MovePlayerModes {
 
-    public static final int PLAYER = 0;
-    public static final int BLOCK = 1;
-    public static final int MINECART_BLOCK = 2;
-    public static final int DEV_CONSOLE = 3;
-    public static final int TEST = 4;
-    public static final int AUTOMATION_PLAYER = 5;
-    public static final int CLIENT_AUTOMATION = 6;
-    public static final int DEDICATED_SERVER = 7;
-    public static final int ENTITY = 8;
-    public static final int VIRTUAL = 9;
-    public static final int GAME_ARGUMENT = 10;
-    public static final int ENTITY_SERVER = 11;
-    public static final int PRECOMPILED = 12;
-    public static final int GAME_DIRECTOR_ENTITY_SERVER = 13;
-    public static final int SCRIPT = 14;
-    public static final int EXECUTE_CONTEXT = 15;
+    public static final short NORMAL = 0;
+    public static final short RESPAWN = 1;
+    public static final short TELEPORT = 2;
+    public static final short HEAD_ROTATION = 3;
 
 }

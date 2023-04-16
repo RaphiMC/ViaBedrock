@@ -31,8 +31,8 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.BiomeRegistry;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerMode;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovementMode;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
 import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
 import net.raphimc.viabedrock.protocol.model.*;
@@ -201,9 +201,9 @@ public class JoinPackets {
             gameSession.setMovementMode(movementMode);
             gameSession.setLevelGameType(levelGameType);
 
-            if (movementMode >= MovementMode.SERVER_WITH_REWIND) {
+            if (movementMode >= ServerMovementModes.SERVER_WITH_REWIND) {
                 ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "This server uses server authoritative movement with rewind. This is not supported.");
-            } else if (movementMode >= MovementMode.SERVER) {
+            } else if (movementMode >= ServerMovementModes.SERVER) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses server authoritative movement. This is not stable yet.");
             }
 
@@ -300,8 +300,8 @@ public class JoinPackets {
             tickSync.write(BedrockTypes.LONG_LE, 0L); // response timestamp
             tickSync.sendToServer(BedrockProtocol.class);
 
-            if (gameSession.getMovementMode() == MovementMode.CLIENT) {
-                entityTracker.getClientPlayer().sendMovePlayerPacketToServer(MovePlayerMode.NORMAL);
+            if (gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
+                entityTracker.getClientPlayer().sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.BIOME_DEFINITION_LIST, null, wrapper -> {

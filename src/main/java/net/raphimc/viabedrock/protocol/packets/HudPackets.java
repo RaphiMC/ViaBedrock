@@ -30,7 +30,7 @@ import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.TitleType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.TitleTypes;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
@@ -151,7 +151,7 @@ public class HudPackets {
             final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
             final String originalText = text;
             try {
-                if (type >= TitleType.TITLE_JSON && type <= TitleType.ACTIONBAR_JSON) {
+                if (type >= TitleTypes.TITLE_JSON && type <= TitleTypes.ACTIONBAR_JSON) {
                     final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(text);
                     rootComponent.forEach(c -> {
                         if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
@@ -160,27 +160,27 @@ public class HudPackets {
                 }
 
                 switch (type) {
-                    case TitleType.CLEAR:
-                    case TitleType.RESET:
+                    case TitleTypes.CLEAR:
+                    case TitleTypes.RESET:
                         wrapper.setPacketType(ClientboundPackets1_19_4.CLEAR_TITLES);
-                        wrapper.write(Type.BOOLEAN, type == TitleType.RESET); // reset
+                        wrapper.write(Type.BOOLEAN, type == TitleTypes.RESET); // reset
                         break;
-                    case TitleType.TITLE:
-                    case TitleType.TITLE_JSON:
+                    case TitleTypes.TITLE:
+                    case TitleTypes.TITLE_JSON:
                         wrapper.setPacketType(ClientboundPackets1_19_4.TITLE_TEXT);
                         wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(text)); // text
                         break;
-                    case TitleType.SUBTITLE:
-                    case TitleType.SUBTITLE_JSON:
+                    case TitleTypes.SUBTITLE:
+                    case TitleTypes.SUBTITLE_JSON:
                         wrapper.setPacketType(ClientboundPackets1_19_4.TITLE_SUBTITLE);
                         wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(text)); // text
                         break;
-                    case TitleType.ACTIONBAR:
-                    case TitleType.ACTIONBAR_JSON:
+                    case TitleTypes.ACTIONBAR:
+                    case TitleTypes.ACTIONBAR_JSON:
                         wrapper.setPacketType(ClientboundPackets1_19_4.ACTIONBAR);
                         wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(text)); // text
                         break;
-                    case TitleType.TIMES:
+                    case TitleTypes.TIMES:
                         wrapper.setPacketType(ClientboundPackets1_19_4.TITLE_TIMES);
                         wrapper.write(Type.INT, fadeInTicks); // fade in ticks
                         wrapper.write(Type.INT, stayTicks); // stay ticks

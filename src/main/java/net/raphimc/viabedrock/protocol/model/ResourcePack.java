@@ -50,6 +50,16 @@ import java.util.zip.ZipOutputStream;
 
 public class ResourcePack {
 
+    public static final int TYPE_INVALID = 0;
+    public static final int TYPE_ADDON = 1;
+    public static final int TYPE_CACHED = 2;
+    public static final int TYPE_COPY_PROTECTED = 3;
+    public static final int TYPE_BEHAVIOR = 4;
+    public static final int TYPE_PERSONA_PIECE = 5;
+    public static final int TYPE_RESOURCE = 6;
+    public static final int TYPE_SKINS = 7;
+    public static final int TYPE_WORLD_TEMPLATE = 8;
+
     private static final byte[] CONTENTS_JSON_ENCRYPTED_MAGIC = new byte[]{(byte) 0xFC, (byte) 0xB9, (byte) 0xCF, (byte) 0x9B};
 
     private final UUID packId;
