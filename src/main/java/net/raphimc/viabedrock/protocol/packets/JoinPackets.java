@@ -213,7 +213,7 @@ public class JoinPackets {
             wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
             final EntityTracker entityTracker = new EntityTracker(wrapper.user());
             final ClientPlayerEntity clientPlayer = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId);
-            clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + 1.62F, playerPosition.z()));
+            clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + clientPlayer.eyeOffset(), playerPosition.z()));
             clientPlayer.setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
             clientPlayer.setOnGround(false);
             clientPlayer.setGameType(playerGameType);

@@ -105,6 +105,10 @@ public class Entity {
         teams.send(BedrockProtocol.class);
     }
 
+    public float eyeOffset() {
+        return 0F;
+    }
+
     public long uniqueId() {
         return this.uniqueId;
     }

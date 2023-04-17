@@ -26,6 +26,7 @@ import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPac
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
+import net.raphimc.viabedrock.api.model.entity.PlayerEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.HashMap;
@@ -52,7 +53,12 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final Entity1_19_4Types type) throws Exception {
-        return this.addEntity(new Entity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), uuid != null ? uuid : UUID.randomUUID(), type));
+        switch (type) {
+            case PLAYER:
+                return this.addEntity(new PlayerEntity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), uuid != null ? uuid : UUID.randomUUID()));
+            default:
+                return this.addEntity(new Entity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), uuid != null ? uuid : UUID.randomUUID(), type));
+        }
     }
 
     public Entity addEntity(final Entity entity) throws Exception {

@@ -117,7 +117,7 @@ public class WorldPackets {
 
             spawnPositionStorage.setSpawnPosition(dimensionId, new Position((int) position.x(), (int) position.y(), (int) position.z()));
 
-            clientPlayer.setPosition(new Position3f(position.x(), position.y() + 1.62F, position.z()));
+            clientPlayer.setPosition(new Position3f(position.x(), position.y() + clientPlayer.eyeOffset(), position.z()));
             if (gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
                 clientPlayer.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
             }

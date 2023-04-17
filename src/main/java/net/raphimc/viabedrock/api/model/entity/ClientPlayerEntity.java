@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
@@ -39,7 +38,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
-public class ClientPlayerEntity extends Entity {
+public class ClientPlayerEntity extends PlayerEntity {
 
     private final AtomicInteger TELEPORT_ID = new AtomicInteger(1);
     private final GameSessionStorage gameSession;
@@ -63,7 +62,7 @@ public class ClientPlayerEntity extends Entity {
     private int gameType;
 
     public ClientPlayerEntity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid) {
-        super(user, uniqueId, runtimeId, javaId, javaUuid, Entity1_19_4Types.PLAYER);
+        super(user, uniqueId, runtimeId, javaId, javaUuid);
 
         this.gameSession = user.get(GameSessionStorage.class);
     }
@@ -103,7 +102,7 @@ public class ClientPlayerEntity extends Entity {
 
     public void writePlayerPositionPacketToClient(final PacketWrapper wrapper, final boolean keepRotation, final boolean fakeTeleport) {
         wrapper.write(Type.DOUBLE, (double) this.position.x()); // x
-        wrapper.write(Type.DOUBLE, (double) this.position.y() - 1.62D); // y
+        wrapper.write(Type.DOUBLE, (double) this.position.y() - this.eyeOffset()); // y
         wrapper.write(Type.DOUBLE, (double) this.position.z()); // z
         wrapper.write(Type.FLOAT, keepRotation ? 0F : this.rotation.y()); // yaw
         wrapper.write(Type.FLOAT, keepRotation ? 0F : this.rotation.x()); // pitch
@@ -184,7 +183,7 @@ public class ClientPlayerEntity extends Entity {
     }
 
     public void updatePlayerPosition(final PacketWrapper wrapper, final double x, final double y, final double z, final boolean onGround) throws Exception {
-        final Position3f newPosition = new Position3f((float) x, (float) y + 1.62F, (float) z);
+        final Position3f newPosition = new Position3f((float) x, (float) y + this.eyeOffset(), (float) z);
 
         if (!this.preMove(newPosition, false)) {
             wrapper.cancel();
@@ -202,7 +201,7 @@ public class ClientPlayerEntity extends Entity {
     }
 
     public void updatePlayerPosition(final PacketWrapper wrapper, final double x, final double y, final double z, final float yaw, final float pitch, final boolean onGround) throws Exception {
-        final Position3f newPosition = new Position3f((float) x, (float) y + 1.62F, (float) z);
+        final Position3f newPosition = new Position3f((float) x, (float) y + this.eyeOffset(), (float) z);
         final Position3f newRotation = new Position3f(pitch, yaw, yaw);
 
         if (!this.preMove(newPosition, true)) {

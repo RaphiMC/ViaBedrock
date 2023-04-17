@@ -158,7 +158,7 @@ public class OtherPlayerPackets {
 
             wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Type.DOUBLE, (double) position.x()); // x
-            wrapper.write(Type.DOUBLE, (double) position.y() - 1.62F); // y
+            wrapper.write(Type.DOUBLE, (double) position.y() - entity.eyeOffset()); // y
             wrapper.write(Type.DOUBLE, (double) position.z()); // z
             wrapper.write(Type.BYTE, MathUtil.float2Byte(rotation.y())); // yaw
             wrapper.write(Type.BYTE, MathUtil.float2Byte(rotation.x())); // pitch

@@ -144,7 +144,7 @@ public class EntityPackets {
 
             wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Type.DOUBLE, (double) position.x()); // x
-            wrapper.write(Type.DOUBLE, (double) position.y() - 1.62F); // y
+            wrapper.write(Type.DOUBLE, (double) position.y() - entity.eyeOffset()); // y
             wrapper.write(Type.DOUBLE, (double) position.z()); // z
             wrapper.write(Type.BYTE, MathUtil.float2Byte(yaw)); // yaw
             wrapper.write(Type.BYTE, MathUtil.float2Byte(pitch)); // pitch
@@ -186,7 +186,7 @@ public class EntityPackets {
                 if ((flags & 256) != 0) { // force move local entity
                     wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
                     wrapper.write(Type.DOUBLE, (double) entity.position().x()); // x
-                    wrapper.write(Type.DOUBLE, (double) entity.position().y() - 1.62F); // y
+                    wrapper.write(Type.DOUBLE, (double) entity.position().y() - entity.eyeOffset()); // y
                     wrapper.write(Type.DOUBLE, (double) entity.position().z()); // z
                     wrapper.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().y())); // yaw
                     wrapper.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().x())); // pitch
@@ -226,7 +226,7 @@ public class EntityPackets {
 
             wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Type.DOUBLE, (double) entity.position().x()); // x
-            wrapper.write(Type.DOUBLE, (double) entity.position().y()); // y
+            wrapper.write(Type.DOUBLE, (double) entity.position().y() - entity.eyeOffset()); // y
             wrapper.write(Type.DOUBLE, (double) entity.position().z()); // z
             wrapper.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().y())); // yaw
             wrapper.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().x())); // pitch
