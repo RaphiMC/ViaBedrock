@@ -25,7 +25,6 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.protocols.base.ClientboundStatusPackets;
 import com.viaversion.viaversion.protocols.base.ServerboundStatusPackets;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -36,8 +35,6 @@ public class StatusPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(State.STATUS, 28/*UNCONNECTED_PONG*/, ClientboundStatusPackets.STATUS_RESPONSE.getId(), wrapper -> {
-            final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
-
             final long ping = System.currentTimeMillis() - wrapper.read(Type.LONG); // timestamp
             final String data = new String(wrapper.read(Type.REMAINING_BYTES), StandardCharsets.UTF_8); // data
             final String[] splitData = data.split(";");

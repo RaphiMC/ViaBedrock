@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPackets1_19_4;
@@ -66,16 +67,23 @@ public class ResourcePackPackets {
                 resourcePacksStorage.addPack(resourcePack);
             }
 
-            wrapper.write(Type.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + resourcePacksStorage.getHttpToken().toString()); // url
-            wrapper.write(Type.STRING, ""); // hash
-            wrapper.write(Type.BOOLEAN, false); // requires accept
-            wrapper.write(Type.OPTIONAL_COMPONENT, JsonUtil.textToComponent(
-                    "\nIf you press 'Yes', the resource packs will be downloaded and converted to Java Edition format. " +
-                            "This may take a up to 30 seconds, depending on your internet connection and the size of the packs.\n\n" +
-                            "If you press 'No', you can join without loading the resource packs" + (required ? ", but you will have a worse gameplay experience." : ".")
-            )); // prompt message
+            if(wrapper.user().getProtocolInfo().getProtocolVersion() >= ProtocolVersion.v1_19_4.getVersion()) {
+                ViaBedrock.getResourcePackServer().addConnection(resourcePacksStorage.getHttpToken(), wrapper.user());
 
-            ViaBedrock.getResourcePackServer().addConnection(resourcePacksStorage.getHttpToken(), wrapper.user());
+                wrapper.write(Type.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + resourcePacksStorage.getHttpToken().toString()); // url
+                wrapper.write(Type.STRING, ""); // hash
+                wrapper.write(Type.BOOLEAN, false); // requires accept
+                wrapper.write(Type.OPTIONAL_COMPONENT, JsonUtil.textToComponent(
+                        "\nIf you press 'Yes', the resource packs will be downloaded and converted to Java Edition format. " +
+                                "This may take a up to 15 seconds, depending on your internet connection and the size of the packs.\n\n" +
+                                "If you press 'No', you can join without loading the resource packs" + (required ? ", but you will have a worse gameplay experience." : ".")
+                )); // prompt message
+            } else {
+                wrapper.cancel();
+                final PacketWrapper resourcePackStatus = PacketWrapper.create(ServerboundPackets1_19_4.RESOURCE_PACK_STATUS, wrapper.user());
+                resourcePackStatus.write(Type.VAR_INT, 1); // status | 1 = DECLINED
+                resourcePackStatus.sendToServer(BedrockProtocol.class, false);
+            }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_DATA_INFO, null, wrapper -> {
             wrapper.cancel();
