@@ -23,6 +23,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
+import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 
@@ -40,6 +41,7 @@ public class CommandsStorage extends StoredObject {
         this.commands = commands;
     }
 
+    // TODO: Enhancement: Add tab completion for arguments
     public Pair<IntIntPair, List<Pair<String, String>>> complete(final String message) {
         final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
 
@@ -58,7 +60,7 @@ public class CommandsStorage extends StoredObject {
                     cmd = commandData;
                 }
                 if (args.isEmpty() && !message.endsWith(" ") && alias.startsWith(cmdString)) {
-                    completions.add(new Pair<>(alias, BedrockTranslator.translate(commandData.description(), translator, new Object[0])));
+                    completions.add(new Pair<>(alias, BedrockTranslator.translate(commandData.description(), translator, new Object[0], TranslatorOptions.IGNORE_STARTING_PERCENT)));
                 }
             }
         }
