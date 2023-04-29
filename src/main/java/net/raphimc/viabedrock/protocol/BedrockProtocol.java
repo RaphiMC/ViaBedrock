@@ -27,6 +27,7 @@ import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.packet.mapping.PacketMappings;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.exception.CancelException;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPackets1_19_4;
@@ -43,11 +44,25 @@ import net.raphimc.viabedrock.protocol.task.EntityTrackerTickTask;
 import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.EnumSet;
 import java.util.logging.Level;
 
 public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets, ClientboundPackets1_19_4, ServerboundBedrockPackets, ServerboundPackets1_19_4> {
 
     public static final BedrockMappingData MAPPINGS = new BedrockMappingData();
+
+    private static final EnumSet<ClientboundBedrockPackets> BEFORE_START_GAME_WHITELIST = EnumSet.of(
+            ClientboundBedrockPackets.RESOURCE_PACKS_INFO,
+            ClientboundBedrockPackets.RESOURCE_PACK_DATA_INFO,
+            ClientboundBedrockPackets.RESOURCE_PACK_CHUNK_DATA,
+            ClientboundBedrockPackets.RESOURCE_PACK_STACK,
+            ClientboundBedrockPackets.DISCONNECT,
+            ClientboundBedrockPackets.PLAY_STATUS,
+            ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
+            ClientboundBedrockPackets.AVAILABLE_COMMANDS,
+            ClientboundBedrockPackets.START_GAME,
+            ClientboundBedrockPackets.VIOLATION_WARNING
+    );
 
     public BedrockProtocol() {
         super(ClientboundBedrockPackets.class, ClientboundPackets1_19_4.class, ServerboundBedrockPackets.class, ServerboundPackets1_19_4.class);
@@ -138,6 +153,14 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
 
     @Override
     public void transform(Direction direction, State state, PacketWrapper packetWrapper) throws Exception {
+        if (direction == Direction.CLIENTBOUND && state == State.PLAY && !packetWrapper.user().has(GameSessionStorage.class)) {
+            final ClientboundBedrockPackets packet = ClientboundBedrockPackets.getPacket(packetWrapper.getId());
+            if (packet != null && !BEFORE_START_GAME_WHITELIST.contains(packet)) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received packet " + packet + " before START_GAME packet. Ignoring it.");
+                throw CancelException.generate();
+            }
+        }
+
         /*if (direction == Direction.CLIENTBOUND) {
             System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ClientboundBedrockPackets.getPacket(packetWrapper.getId()) + ", packetWrapper = " + packetWrapper);
         } else {

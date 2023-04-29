@@ -455,13 +455,7 @@ public class WorldPackets {
             @Override
             public void register() {
                 map(BedrockTypes.VAR_INT, Type.LONG); // game time
-                handler(wrapper -> {
-                    wrapper.write(Type.LONG, wrapper.get(Type.LONG, 0) % 24000L); // time of day
-
-                    if (!wrapper.user().has(ChunkTracker.class)) { // Bedrock servers might send this packet before the world is initialized
-                        wrapper.cancel();
-                    }
-                });
+                handler(wrapper -> wrapper.write(Type.LONG, wrapper.get(Type.LONG, 0) % 24000L)); // time of day
             }
         });
     }
