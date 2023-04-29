@@ -67,7 +67,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         EntityPackets.register(this);
         HudPackets.register(this);
 
-        this.registerClientbound(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING, ClientboundPackets1_19_4.DISCONNECT, new PacketHandlers() {
+        this.registerClientbound(ClientboundBedrockPackets.VIOLATION_WARNING, ClientboundPackets1_19_4.DISCONNECT, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -82,7 +82,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
                     final String reason = "§4Packet violation warning: §c"
                             + (type >= 0 && type <= types.length ? types[type] : type)
                             + " (" + (severity >= 0 && severity <= severities.length ? severities[severity] : severity) + ")\n"
-                            + "Violating Packet: " + (packetIdCause >= 0 && packetIdCause <= ClientboundBedrockPackets.values().length ? ClientboundBedrockPackets.values()[packetIdCause].name() : packetIdCause) + "\n"
+                            + "Violating Packet: " + (ServerboundBedrockPackets.getPacket(packetIdCause) != null ? ServerboundBedrockPackets.getPacket(packetIdCause).name() : packetIdCause) + "\n"
                             + (context.isEmpty() ? "No context provided" : (" Context: '" + context + "'"))
                             + "\n\nPlease report this issue on the ViaBedrock GitHub page!";
                     wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(reason));
@@ -139,7 +139,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     @Override
     public void transform(Direction direction, State state, PacketWrapper packetWrapper) throws Exception {
         /*if (direction == Direction.CLIENTBOUND) {
-            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ClientboundBedrockPackets.values()[packetWrapper.getId() - 1] + ", packetWrapper = " + packetWrapper);
+            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ClientboundBedrockPackets.getPacket(packetWrapper.getId()) + ", packetWrapper = " + packetWrapper);
         } else {
             System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_19_4.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
         }*/
@@ -147,7 +147,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         /*if (direction == Direction.CLIENTBOUND) {
             System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_19_4.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
         } else {
-            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ServerboundBedrockPackets.values()[packetWrapper.getId() - 1] + ", packetWrapper = " + packetWrapper);
+            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ServerboundBedrockPackets.getPacket(packetWrapper.getId()) + ", packetWrapper = " + packetWrapper);
         }*/
     }
 

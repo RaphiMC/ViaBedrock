@@ -28,6 +28,7 @@ import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractActions;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
@@ -147,6 +148,7 @@ public class PlayPackets {
             public void register() {
                 read(Type.STRING); // locale
                 map(Type.BYTE, BedrockTypes.VAR_INT); // view distance
+                create(Type.UNSIGNED_BYTE, ProtocolConstants.REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
                 read(Type.VAR_INT); // chat visibility
                 read(Type.BOOLEAN); // chat colors
                 read(Type.UNSIGNED_BYTE); // skin parts

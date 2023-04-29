@@ -65,12 +65,17 @@ public class BlockStateRewriter extends StoredObject {
             }
 
             if (bedrockBlockState.getIdentifier().contains("hanging_sign")) continue;
-            if (bedrockBlockState.getIdentifier().contains("bamboo")) continue;
             if (bedrockBlockState.getIdentifier().equals("chiseled_bookshelf")) continue;
             if (bedrockBlockState.getIdentifier().equals("mangrove_propagule")) continue;
+            if (bedrockBlockState.getIdentifier().equals("suspicious_gravel")) continue;
+            if (bedrockBlockState.getIdentifier().equals("pink_petals")) continue;
+            if (bedrockBlockState.getIdentifier().equals("suspicious_sand")) continue;
+            if (bedrockBlockState.getIdentifier().equals("decorated_pot")) continue;
+            if (bedrockBlockState.getIdentifier().equals("torchflower_crop")) continue;
+            if (bedrockBlockState.getIdentifier().equals("calibrated_sculk_sensor")) continue;
 
             if (!bedrockToJavaBlockStates.containsKey(bedrockBlockState)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing Bedrock -> Java block state mapping: " + bedrockBlockState);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java block state mapping: " + bedrockBlockState.toBlockStateString());
                 continue;
             }
 

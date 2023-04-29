@@ -34,6 +34,7 @@ import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOutputTypes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.TextTypes;
 import net.raphimc.viabedrock.protocol.model.CommandData;
@@ -223,7 +224,7 @@ public class ChatPackets {
                     wrapper.write(BedrockTypes.COMMAND_ORIGIN, new CommandOrigin(CommandOrigin.TYPE_PLAYER, uuid, "")); // origin
                 });
                 create(Type.BOOLEAN, false); // internal
-                create(BedrockTypes.VAR_INT, 32); // version
+                create(BedrockTypes.VAR_INT, ProtocolConstants.COMMAND_VERSION); // version
                 handler(PacketWrapper::clearInputBuffer);
                 handler(wrapper -> {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);

@@ -174,15 +174,15 @@ public class CommandData {
         public static final int TYPE_TARGET2 = 10;
         public static final int TYPE_FILE_PATH = 17;
         public static final int TYPE_INT_RANGE = 23;
-        public static final int TYPE_EQUIPMENT_SLOT = 38;
-        public static final int TYPE_STRING = 39;
-        public static final int TYPE_BLOCK_POSITION = 47;
-        public static final int TYPE_POSITION = 48;
-        public static final int TYPE_MESSAGE = 51;
-        public static final int TYPE_TEXT = 53;
-        public static final int TYPE_JSON = 57;
-        public static final int TYPE_BLOCK_STATES = 67;
-        public static final int TYPE_COMMAND = 70;
+        public static final int TYPE_EQUIPMENT_SLOT = 43;
+        public static final int TYPE_STRING = 44;
+        public static final int TYPE_BLOCK_POSITION = 52;
+        public static final int TYPE_POSITION = 53;
+        public static final int TYPE_MESSAGE = 56;
+        public static final int TYPE_TEXT = 58;
+        public static final int TYPE_JSON = 62;
+        public static final int TYPE_BLOCK_STATES = 72;
+        public static final int TYPE_COMMAND = 75;
 
         public static final short FLAG_SUPPRESS_ENUM_AUTOCOMPLETION = 1;
         public static final short FLAG_HAS_SEMANTIC_CONSTRAINT = 2;

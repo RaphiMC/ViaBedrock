@@ -31,6 +31,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.BiomeRegistry;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
 import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
@@ -83,6 +84,8 @@ public class JoinPackets {
             final Position defaultSpawnPosition = wrapper.read(BedrockTypes.BLOCK_POSITION); // default spawn position
             wrapper.read(Type.BOOLEAN); // achievements disabled
             final boolean isWorldEditor = wrapper.read(Type.BOOLEAN); // world editor
+            wrapper.read(Type.BOOLEAN); // created in world editor
+            wrapper.read(Type.BOOLEAN); // exported from world editor
             wrapper.read(BedrockTypes.VAR_INT); // day cycle stop time
             wrapper.read(BedrockTypes.VAR_INT); // education edition offers
             wrapper.read(Type.BOOLEAN); // education features enabled
@@ -143,6 +146,11 @@ public class JoinPackets {
             wrapper.read(BedrockTypes.LONG_LE); // block registry checksum
             wrapper.read(BedrockTypes.UUID); // world template id
             wrapper.read(Type.BOOLEAN); // client side generation
+            final boolean hashedRuntimeBlockIds = wrapper.read(Type.BOOLEAN); // use hashed block runtime ids
+
+            if (hashedRuntimeBlockIds) {
+                BedrockProtocol.kickForIllegalState(wrapper.user(), "Hashed runtime IDs are not supported");
+            }
 
             if (isWorldEditor) {
                 final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_4.DISCONNECT, wrapper.user());
@@ -293,6 +301,7 @@ public class JoinPackets {
 
             final PacketWrapper requestChunkRadius = PacketWrapper.create(ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, wrapper.user());
             requestChunkRadius.write(BedrockTypes.VAR_INT, DEFAULT_VIEW_DISTANCE); // radius
+            requestChunkRadius.write(Type.UNSIGNED_BYTE, ProtocolConstants.REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
             requestChunkRadius.sendToServer(BedrockProtocol.class);
 
             final PacketWrapper tickSync = PacketWrapper.create(ServerboundBedrockPackets.TICK_SYNC, wrapper.user());
