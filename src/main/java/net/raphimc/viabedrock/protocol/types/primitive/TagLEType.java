@@ -52,7 +52,7 @@ public class TagLEType extends Type<Tag> {
         }
 
         buffer.writeByte(value.getTagId());
-        BedrockTypes.STRING.write(buffer, "");
+        BedrockTypes.UTF8_STRING.write(buffer, "");
         value.write(new LittleEndianByteBufOutputStream(buffer));
     }
 

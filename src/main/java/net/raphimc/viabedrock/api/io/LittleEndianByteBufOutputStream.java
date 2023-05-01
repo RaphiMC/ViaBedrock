@@ -19,8 +19,10 @@ package net.raphimc.viabedrock.api.io;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.ByteBufUtil;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class LittleEndianByteBufOutputStream extends ByteBufOutputStream {
 
@@ -60,6 +62,12 @@ public class LittleEndianByteBufOutputStream extends ByteBufOutputStream {
     @Override
     public void writeInt(int v) throws IOException {
         this.buffer.writeIntLE(v);
+    }
+
+    @Override
+    public void writeUTF(String v) throws IOException {
+        this.writeShort(ByteBufUtil.utf8Bytes(v));
+        this.buffer.writeCharSequence(v, StandardCharsets.UTF_8);
     }
 
 }
