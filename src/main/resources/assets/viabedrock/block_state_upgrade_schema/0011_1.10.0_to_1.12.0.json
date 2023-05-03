@@ -1,0 +1,105 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 12,
+    "maxVersionPatch": 0,
+    "maxVersionRevision": 1,
+    "addedProperties": {
+        "minecraft:barrel": {
+            "open_bit": {
+                "byte": 0
+            }
+        },
+        "minecraft:bell": {
+            "toggle_bit": {
+                "byte": 0
+            }
+        },
+        "minecraft:campfire": {
+            "direction": {
+                "int": 0
+            },
+            "extinguished": {
+                "byte": 0
+            }
+        },
+        "minecraft:lectern": {
+            "powered_bit": {
+                "byte": 0
+            }
+        }
+    },
+    "renamedProperties": {
+        "minecraft:blast_furnace": {
+            "direction": "facing_direction"
+        },
+        "minecraft:composter": {
+            "fill_level": "composter_fill_level"
+        },
+        "minecraft:coral_fan": {
+            "direction": "coral_fan_direction"
+        },
+        "minecraft:coral_fan_dead": {
+            "direction": "coral_fan_direction"
+        },
+        "minecraft:smoker": {
+            "direction": "facing_direction"
+        }
+    },
+    "remappedPropertyValues": {
+        "minecraft:barrel": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:blast_furnace": {
+            "direction": "direction_00"
+        },
+        "minecraft:smoker": {
+            "direction": "direction_00"
+        }
+    },
+    "remappedPropertyValuesIndex": {
+        "direction_00": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "int": 3
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "int": 4
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "int": 5
+                }
+            }
+        ],
+        "facing_direction_00": [
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "int": 0
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "int": 0
+                }
+            }
+        ]
+    }
+}

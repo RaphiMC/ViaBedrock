@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.rewriter;
+package net.raphimc.viabedrock.protocol.rewriter.blockstate;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
+import com.viaversion.viaversion.libs.fastutil.objects.Object2IntMap;
+import com.viaversion.viaversion.libs.fastutil.objects.Object2IntOpenHashMap;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.util.HashedPaletteComparator;
@@ -29,7 +30,6 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.BlockProperties;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -38,14 +38,15 @@ public class BlockStateRewriter extends StoredObject {
 
     private final Int2IntMap blockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Java
     private final Int2IntMap legacyBlockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Bedrock
-    private final Map<BlockState, Integer> blockStateTagMappings = new HashMap<>(); // Bedrock -> Bedrock
+    private final Object2IntMap<BlockState> blockStateTagMappings = new Object2IntOpenHashMap<>(); // Bedrock -> Bedrock
     private final IntList waterIds = new IntArrayList(); // Bedrock
 
-    public BlockStateRewriter(final UserConnection user, final BlockProperties[] blockProperties) {
+    public BlockStateRewriter(final UserConnection user, final BlockProperties[] blockProperties, final boolean hashedRuntimeBlockIds) {
         super(user);
 
         this.blockStateIdMappings.defaultReturnValue(-1);
         this.legacyBlockStateIdMappings.defaultReturnValue(-1);
+        this.blockStateTagMappings.defaultReturnValue(-1);
 
         final List<BlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
         final Map<BlockState, Integer> javaBlockStates = BedrockProtocol.MAPPINGS.getJavaBlockStates();
@@ -91,7 +92,7 @@ public class BlockStateRewriter extends StoredObject {
 
         for (Int2ObjectMap.Entry<BlockState> entry : BedrockProtocol.MAPPINGS.getLegacyBlockStates().int2ObjectEntrySet()) {
             final int legacyId = entry.getIntKey();
-            final int bedrockId = this.blockStateTagMappings.get(entry.getValue());
+            final int bedrockId = this.blockStateTagMappings.getInt(entry.getValue());
             if (bedrockId == -1) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Legacy block state " + entry.getValue() + " is not mapped to a modern block state");
                 continue;
@@ -101,20 +102,13 @@ public class BlockStateRewriter extends StoredObject {
         }
     }
 
-    public int bedrockId(final Tag bedrockBlockStateTag) {
-        BlockState blockState = BlockState.fromNbt((CompoundTag) bedrockBlockStateTag);
+    public int bedrockId(final CompoundTag bedrockBlockStateTag) {
+        BlockState blockState = BlockState.fromNbt(bedrockBlockStateTag);
         int runtimeId = this.bedrockId(blockState);
         if (runtimeId == -1) {
-            final String convertedNamespacedIdentifier = BedrockProtocol.MAPPINGS.getLegacyToModernBlockIdentifiers().get(blockState.getNamespacedIdentifier());
-            if (convertedNamespacedIdentifier != null) {
-                blockState = blockState.withNamespacedIdentifier(convertedNamespacedIdentifier);
-            }
-            runtimeId = this.bedrockId(blockState);
-            if (runtimeId == -1) {
-                blockState = BedrockProtocol.MAPPINGS.getDefaultBlockStates().getOrDefault(blockState.getNamespacedIdentifier(), null);
-                if (blockState != null) {
-                    runtimeId = this.bedrockId(blockState);
-                }
+            blockState = BedrockProtocol.MAPPINGS.getDefaultBlockStates().getOrDefault(blockState.getNamespacedIdentifier(), null);
+            if (blockState != null) {
+                runtimeId = this.bedrockId(blockState);
             }
         }
 
@@ -122,11 +116,11 @@ public class BlockStateRewriter extends StoredObject {
     }
 
     public int bedrockId(final BlockState bedrockBlockState) {
-        return this.blockStateTagMappings.getOrDefault(bedrockBlockState, -1);
+        return this.blockStateTagMappings.getInt(bedrockBlockState);
     }
 
     public int bedrockId(final int legacyBlockStateId) {
-        return this.legacyBlockStateIdMappings.get((legacyBlockStateId >> 4) << 6 | legacyBlockStateId & 15);
+        return this.legacyBlockStateIdMappings.get(legacyBlockStateId);
     }
 
     public int javaId(final int bedrockBlockStateId) {

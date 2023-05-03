@@ -1,0 +1,20 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 16,
+    "maxVersionPatch": 210,
+    "maxVersionRevision": 3,
+    "removedProperties": {
+        "minecraft:stripped_crimson_hyphae": [
+            "deprecated"
+        ],
+        "minecraft:stripped_crimson_stem": [
+            "deprecated"
+        ],
+        "minecraft:stripped_warped_hyphae": [
+            "deprecated"
+        ],
+        "minecraft:stripped_warped_stem": [
+            "deprecated"
+        ]
+    }
+}

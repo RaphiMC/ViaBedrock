@@ -153,10 +153,7 @@ public class ResourcePackPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_STACK, null, wrapper -> {
             wrapper.cancel();
             final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
-            if (!resourcePacksStorage.isCompleted()) {
-                BedrockProtocol.kickForIllegalState(wrapper.user(), "Received resource pack stack before transfer completion");
-                return;
-            }
+            resourcePacksStorage.setCompleted(true);
 
             wrapper.read(Type.BOOLEAN); // must accept
             final Triple<UUID, String, String>[] behaviourPacks = wrapper.read(BedrockTypes.PACK_ID_AND_VERSION_AND_NAME_ARRAY); // behaviour packs

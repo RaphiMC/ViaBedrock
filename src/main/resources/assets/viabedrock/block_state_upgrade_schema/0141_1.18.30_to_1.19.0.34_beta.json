@@ -1,0 +1,1854 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 18,
+    "maxVersionPatch": 10,
+    "maxVersionRevision": 1,
+    "renamedIds": {
+        "minecraft:double_stone_slab": "minecraft:double_stone_block_slab",
+        "minecraft:double_stone_slab2": "minecraft:double_stone_block_slab2",
+        "minecraft:double_stone_slab3": "minecraft:double_stone_block_slab3",
+        "minecraft:double_stone_slab4": "minecraft:double_stone_block_slab4",
+        "minecraft:mangrove_propagule_hanging": "minecraft:mangrove_propagule",
+        "minecraft:stone_slab": "minecraft:stone_block_slab",
+        "minecraft:stone_slab2": "minecraft:stone_block_slab2",
+        "minecraft:stone_slab3": "minecraft:stone_block_slab3",
+        "minecraft:stone_slab4": "minecraft:stone_block_slab4"
+    },
+    "addedProperties": {
+        "minecraft:sculk_shrieker": {
+            "can_summon": {
+                "byte": 0
+            }
+        }
+    },
+    "remappedStates": {
+        "minecraft:mangrove_propagule": [
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 0
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            }
+        ],
+        "minecraft:mangrove_propagule_hanging": [
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 0
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 1
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 2
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 3
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 4
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 3
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 4
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 5
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 6
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            },
+            {
+                "oldState": {
+                    "facing_direction": {
+                        "int": 5
+                    },
+                    "growth": {
+                        "int": 7
+                    }
+                },
+                "newName": "minecraft:mangrove_propagule",
+                "newState": {
+                    "hanging": {
+                        "byte": 1
+                    },
+                    "propagule_stage": {
+                        "int": 0
+                    }
+                }
+            }
+        ]
+    }
+}

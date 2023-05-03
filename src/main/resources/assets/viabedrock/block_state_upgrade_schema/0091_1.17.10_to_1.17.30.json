@@ -1,0 +1,18 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 16,
+    "maxVersionPatch": 210,
+    "maxVersionRevision": 3,
+    "addedProperties": {
+        "minecraft:frame": {
+            "item_frame_photo_bit": {
+                "byte": 0
+            }
+        },
+        "minecraft:glow_frame": {
+            "item_frame_photo_bit": {
+                "byte": 0
+            }
+        }
+    }
+}

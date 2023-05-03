@@ -1,0 +1,2215 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 10,
+    "maxVersionPatch": 0,
+    "maxVersionRevision": 50,
+    "addedProperties": {
+        "minecraft:bell": {
+            "attachment": {
+                "string": "standing"
+            }
+        },
+        "minecraft:grindstone": {
+            "attachment": {
+                "string": "standing"
+            }
+        }
+    },
+    "removedProperties": {
+        "minecraft:element_0": [
+            "mapped_type"
+        ],
+        "minecraft:element_1": [
+            "mapped_type"
+        ],
+        "minecraft:element_10": [
+            "mapped_type"
+        ],
+        "minecraft:element_100": [
+            "mapped_type"
+        ],
+        "minecraft:element_101": [
+            "mapped_type"
+        ],
+        "minecraft:element_102": [
+            "mapped_type"
+        ],
+        "minecraft:element_103": [
+            "mapped_type"
+        ],
+        "minecraft:element_104": [
+            "mapped_type"
+        ],
+        "minecraft:element_105": [
+            "mapped_type"
+        ],
+        "minecraft:element_106": [
+            "mapped_type"
+        ],
+        "minecraft:element_107": [
+            "mapped_type"
+        ],
+        "minecraft:element_108": [
+            "mapped_type"
+        ],
+        "minecraft:element_109": [
+            "mapped_type"
+        ],
+        "minecraft:element_11": [
+            "mapped_type"
+        ],
+        "minecraft:element_110": [
+            "mapped_type"
+        ],
+        "minecraft:element_111": [
+            "mapped_type"
+        ],
+        "minecraft:element_112": [
+            "mapped_type"
+        ],
+        "minecraft:element_113": [
+            "mapped_type"
+        ],
+        "minecraft:element_114": [
+            "mapped_type"
+        ],
+        "minecraft:element_115": [
+            "mapped_type"
+        ],
+        "minecraft:element_116": [
+            "mapped_type"
+        ],
+        "minecraft:element_117": [
+            "mapped_type"
+        ],
+        "minecraft:element_118": [
+            "mapped_type"
+        ],
+        "minecraft:element_12": [
+            "mapped_type"
+        ],
+        "minecraft:element_13": [
+            "mapped_type"
+        ],
+        "minecraft:element_14": [
+            "mapped_type"
+        ],
+        "minecraft:element_15": [
+            "mapped_type"
+        ],
+        "minecraft:element_16": [
+            "mapped_type"
+        ],
+        "minecraft:element_17": [
+            "mapped_type"
+        ],
+        "minecraft:element_18": [
+            "mapped_type"
+        ],
+        "minecraft:element_19": [
+            "mapped_type"
+        ],
+        "minecraft:element_2": [
+            "mapped_type"
+        ],
+        "minecraft:element_20": [
+            "mapped_type"
+        ],
+        "minecraft:element_21": [
+            "mapped_type"
+        ],
+        "minecraft:element_22": [
+            "mapped_type"
+        ],
+        "minecraft:element_23": [
+            "mapped_type"
+        ],
+        "minecraft:element_24": [
+            "mapped_type"
+        ],
+        "minecraft:element_25": [
+            "mapped_type"
+        ],
+        "minecraft:element_26": [
+            "mapped_type"
+        ],
+        "minecraft:element_27": [
+            "mapped_type"
+        ],
+        "minecraft:element_28": [
+            "mapped_type"
+        ],
+        "minecraft:element_29": [
+            "mapped_type"
+        ],
+        "minecraft:element_3": [
+            "mapped_type"
+        ],
+        "minecraft:element_30": [
+            "mapped_type"
+        ],
+        "minecraft:element_31": [
+            "mapped_type"
+        ],
+        "minecraft:element_32": [
+            "mapped_type"
+        ],
+        "minecraft:element_33": [
+            "mapped_type"
+        ],
+        "minecraft:element_34": [
+            "mapped_type"
+        ],
+        "minecraft:element_35": [
+            "mapped_type"
+        ],
+        "minecraft:element_36": [
+            "mapped_type"
+        ],
+        "minecraft:element_37": [
+            "mapped_type"
+        ],
+        "minecraft:element_38": [
+            "mapped_type"
+        ],
+        "minecraft:element_39": [
+            "mapped_type"
+        ],
+        "minecraft:element_4": [
+            "mapped_type"
+        ],
+        "minecraft:element_40": [
+            "mapped_type"
+        ],
+        "minecraft:element_41": [
+            "mapped_type"
+        ],
+        "minecraft:element_42": [
+            "mapped_type"
+        ],
+        "minecraft:element_43": [
+            "mapped_type"
+        ],
+        "minecraft:element_44": [
+            "mapped_type"
+        ],
+        "minecraft:element_45": [
+            "mapped_type"
+        ],
+        "minecraft:element_46": [
+            "mapped_type"
+        ],
+        "minecraft:element_47": [
+            "mapped_type"
+        ],
+        "minecraft:element_48": [
+            "mapped_type"
+        ],
+        "minecraft:element_49": [
+            "mapped_type"
+        ],
+        "minecraft:element_5": [
+            "mapped_type"
+        ],
+        "minecraft:element_50": [
+            "mapped_type"
+        ],
+        "minecraft:element_51": [
+            "mapped_type"
+        ],
+        "minecraft:element_52": [
+            "mapped_type"
+        ],
+        "minecraft:element_53": [
+            "mapped_type"
+        ],
+        "minecraft:element_54": [
+            "mapped_type"
+        ],
+        "minecraft:element_55": [
+            "mapped_type"
+        ],
+        "minecraft:element_56": [
+            "mapped_type"
+        ],
+        "minecraft:element_57": [
+            "mapped_type"
+        ],
+        "minecraft:element_58": [
+            "mapped_type"
+        ],
+        "minecraft:element_59": [
+            "mapped_type"
+        ],
+        "minecraft:element_6": [
+            "mapped_type"
+        ],
+        "minecraft:element_60": [
+            "mapped_type"
+        ],
+        "minecraft:element_61": [
+            "mapped_type"
+        ],
+        "minecraft:element_62": [
+            "mapped_type"
+        ],
+        "minecraft:element_63": [
+            "mapped_type"
+        ],
+        "minecraft:element_64": [
+            "mapped_type"
+        ],
+        "minecraft:element_65": [
+            "mapped_type"
+        ],
+        "minecraft:element_66": [
+            "mapped_type"
+        ],
+        "minecraft:element_67": [
+            "mapped_type"
+        ],
+        "minecraft:element_68": [
+            "mapped_type"
+        ],
+        "minecraft:element_69": [
+            "mapped_type"
+        ],
+        "minecraft:element_7": [
+            "mapped_type"
+        ],
+        "minecraft:element_70": [
+            "mapped_type"
+        ],
+        "minecraft:element_71": [
+            "mapped_type"
+        ],
+        "minecraft:element_72": [
+            "mapped_type"
+        ],
+        "minecraft:element_73": [
+            "mapped_type"
+        ],
+        "minecraft:element_74": [
+            "mapped_type"
+        ],
+        "minecraft:element_75": [
+            "mapped_type"
+        ],
+        "minecraft:element_76": [
+            "mapped_type"
+        ],
+        "minecraft:element_77": [
+            "mapped_type"
+        ],
+        "minecraft:element_78": [
+            "mapped_type"
+        ],
+        "minecraft:element_79": [
+            "mapped_type"
+        ],
+        "minecraft:element_8": [
+            "mapped_type"
+        ],
+        "minecraft:element_80": [
+            "mapped_type"
+        ],
+        "minecraft:element_81": [
+            "mapped_type"
+        ],
+        "minecraft:element_82": [
+            "mapped_type"
+        ],
+        "minecraft:element_83": [
+            "mapped_type"
+        ],
+        "minecraft:element_84": [
+            "mapped_type"
+        ],
+        "minecraft:element_85": [
+            "mapped_type"
+        ],
+        "minecraft:element_86": [
+            "mapped_type"
+        ],
+        "minecraft:element_87": [
+            "mapped_type"
+        ],
+        "minecraft:element_88": [
+            "mapped_type"
+        ],
+        "minecraft:element_89": [
+            "mapped_type"
+        ],
+        "minecraft:element_9": [
+            "mapped_type"
+        ],
+        "minecraft:element_90": [
+            "mapped_type"
+        ],
+        "minecraft:element_91": [
+            "mapped_type"
+        ],
+        "minecraft:element_92": [
+            "mapped_type"
+        ],
+        "minecraft:element_93": [
+            "mapped_type"
+        ],
+        "minecraft:element_94": [
+            "mapped_type"
+        ],
+        "minecraft:element_95": [
+            "mapped_type"
+        ],
+        "minecraft:element_96": [
+            "mapped_type"
+        ],
+        "minecraft:element_97": [
+            "mapped_type"
+        ],
+        "minecraft:element_98": [
+            "mapped_type"
+        ],
+        "minecraft:element_99": [
+            "mapped_type"
+        ],
+        "minecraft:grass": [
+            "mapped_type"
+        ],
+        "minecraft:nether_brick_fence": [
+            "mapped_type"
+        ],
+        "minecraft:yellow_flower": [
+            "mapped_type"
+        ]
+    },
+    "renamedProperties": {
+        "minecraft:blast_furnace": {
+            "facing_direction": "direction"
+        },
+        "minecraft:bone_block": {
+            "mapped_type": "deprecated"
+        },
+        "minecraft:brown_mushroom_block": {
+            "mapped_type": "huge_mushroom_bits"
+        },
+        "minecraft:chemistry_table": {
+            "mapped_type": "chemistry_table_type"
+        },
+        "minecraft:cobblestone_wall": {
+            "mapped_type": "wall_block_type"
+        },
+        "minecraft:coral": {
+            "mapped_type": "coral_color"
+        },
+        "minecraft:coral_block": {
+            "mapped_type": "coral_color"
+        },
+        "minecraft:coral_fan": {
+            "mapped_type": "coral_color"
+        },
+        "minecraft:coral_fan_dead": {
+            "mapped_type": "coral_color"
+        },
+        "minecraft:coral_fan_hang": {
+            "mapped_type": "coral_hang_type_bit"
+        },
+        "minecraft:coral_fan_hang2": {
+            "mapped_type": "coral_hang_type_bit"
+        },
+        "minecraft:coral_fan_hang3": {
+            "mapped_type": "coral_hang_type_bit"
+        },
+        "minecraft:dirt": {
+            "mapped_type": "dirt_type"
+        },
+        "minecraft:double_plant": {
+            "mapped_type": "double_plant_type"
+        },
+        "minecraft:double_stone_slab": {
+            "mapped_type": "stone_slab_type"
+        },
+        "minecraft:double_stone_slab2": {
+            "mapped_type": "stone_slab_type_2"
+        },
+        "minecraft:double_stone_slab3": {
+            "mapped_type": "stone_slab_type_3"
+        },
+        "minecraft:double_stone_slab4": {
+            "mapped_type": "stone_slab_type_4"
+        },
+        "minecraft:double_wooden_slab": {
+            "mapped_type": "wood_type"
+        },
+        "minecraft:fence": {
+            "mapped_type": "wood_type"
+        },
+        "minecraft:hay_block": {
+            "mapped_type": "deprecated"
+        },
+        "minecraft:leaves": {
+            "mapped_type": "old_leaf_type"
+        },
+        "minecraft:leaves2": {
+            "mapped_type": "new_leaf_type"
+        },
+        "minecraft:log": {
+            "mapped_type": "old_log_type"
+        },
+        "minecraft:log2": {
+            "mapped_type": "new_log_type"
+        },
+        "minecraft:monster_egg": {
+            "mapped_type": "monster_egg_stone_type"
+        },
+        "minecraft:planks": {
+            "mapped_type": "wood_type"
+        },
+        "minecraft:portal": {
+            "axis": "portal_axis"
+        },
+        "minecraft:prismarine": {
+            "mapped_type": "prismarine_block_type"
+        },
+        "minecraft:purpur_block": {
+            "mapped_type": "chisel_type"
+        },
+        "minecraft:quartz_block": {
+            "mapped_type": "chisel_type"
+        },
+        "minecraft:red_flower": {
+            "mapped_type": "flower_type"
+        },
+        "minecraft:red_mushroom_block": {
+            "mapped_type": "huge_mushroom_bits"
+        },
+        "minecraft:red_sandstone": {
+            "mapped_type": "sand_stone_type"
+        },
+        "minecraft:sand": {
+            "mapped_type": "sand_type"
+        },
+        "minecraft:sandstone": {
+            "mapped_type": "sand_stone_type"
+        },
+        "minecraft:seagrass": {
+            "mapped_type": "sea_grass_type"
+        },
+        "minecraft:smoker": {
+            "facing_direction": "direction"
+        },
+        "minecraft:sponge": {
+            "mapped_type": "sponge_type"
+        },
+        "minecraft:stone": {
+            "mapped_type": "stone_type"
+        },
+        "minecraft:stone_slab": {
+            "mapped_type": "stone_slab_type"
+        },
+        "minecraft:stone_slab2": {
+            "mapped_type": "stone_slab_type_2"
+        },
+        "minecraft:stone_slab3": {
+            "mapped_type": "stone_slab_type_3"
+        },
+        "minecraft:stone_slab4": {
+            "mapped_type": "stone_slab_type_4"
+        },
+        "minecraft:stonebrick": {
+            "mapped_type": "stone_brick_type"
+        },
+        "minecraft:structure_block": {
+            "mapped_type": "structure_block_type"
+        },
+        "minecraft:tallgrass": {
+            "mapped_type": "tall_grass_type"
+        },
+        "minecraft:wooden_slab": {
+            "mapped_type": "wood_type"
+        }
+    },
+    "remappedPropertyValues": {
+        "minecraft:blast_furnace": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:bone_block": {
+            "mapped_type": "mapped_type_00"
+        },
+        "minecraft:chemistry_table": {
+            "mapped_type": "mapped_type_01"
+        },
+        "minecraft:cobblestone_wall": {
+            "mapped_type": "mapped_type_02"
+        },
+        "minecraft:coral": {
+            "mapped_type": "mapped_type_03"
+        },
+        "minecraft:coral_block": {
+            "mapped_type": "mapped_type_04"
+        },
+        "minecraft:coral_fan": {
+            "mapped_type": "mapped_type_04"
+        },
+        "minecraft:coral_fan_dead": {
+            "mapped_type": "mapped_type_04"
+        },
+        "minecraft:coral_fan_hang": {
+            "mapped_type": "mapped_type_05"
+        },
+        "minecraft:coral_fan_hang2": {
+            "mapped_type": "mapped_type_05"
+        },
+        "minecraft:coral_fan_hang3": {
+            "mapped_type": "mapped_type_05"
+        },
+        "minecraft:dirt": {
+            "mapped_type": "mapped_type_06"
+        },
+        "minecraft:double_plant": {
+            "mapped_type": "mapped_type_07"
+        },
+        "minecraft:double_stone_slab": {
+            "mapped_type": "mapped_type_08"
+        },
+        "minecraft:double_stone_slab2": {
+            "mapped_type": "mapped_type_09"
+        },
+        "minecraft:double_stone_slab3": {
+            "mapped_type": "mapped_type_10"
+        },
+        "minecraft:double_stone_slab4": {
+            "mapped_type": "mapped_type_11"
+        },
+        "minecraft:double_wooden_slab": {
+            "mapped_type": "mapped_type_12"
+        },
+        "minecraft:fence": {
+            "mapped_type": "mapped_type_12"
+        },
+        "minecraft:hay_block": {
+            "mapped_type": "mapped_type_00"
+        },
+        "minecraft:leaves": {
+            "mapped_type": "mapped_type_13"
+        },
+        "minecraft:leaves2": {
+            "mapped_type": "mapped_type_14"
+        },
+        "minecraft:log": {
+            "mapped_type": "mapped_type_13"
+        },
+        "minecraft:log2": {
+            "mapped_type": "mapped_type_14"
+        },
+        "minecraft:monster_egg": {
+            "mapped_type": "mapped_type_15"
+        },
+        "minecraft:planks": {
+            "mapped_type": "mapped_type_12"
+        },
+        "minecraft:prismarine": {
+            "mapped_type": "mapped_type_16"
+        },
+        "minecraft:purpur_block": {
+            "mapped_type": "mapped_type_17"
+        },
+        "minecraft:quartz_block": {
+            "mapped_type": "mapped_type_17"
+        },
+        "minecraft:red_flower": {
+            "mapped_type": "mapped_type_18"
+        },
+        "minecraft:red_sandstone": {
+            "mapped_type": "mapped_type_19"
+        },
+        "minecraft:sand": {
+            "mapped_type": "mapped_type_20"
+        },
+        "minecraft:sandstone": {
+            "mapped_type": "mapped_type_19"
+        },
+        "minecraft:seagrass": {
+            "mapped_type": "mapped_type_21"
+        },
+        "minecraft:smoker": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:sponge": {
+            "mapped_type": "mapped_type_22"
+        },
+        "minecraft:stone": {
+            "mapped_type": "mapped_type_23"
+        },
+        "minecraft:stone_slab": {
+            "mapped_type": "mapped_type_08"
+        },
+        "minecraft:stone_slab2": {
+            "mapped_type": "mapped_type_09"
+        },
+        "minecraft:stone_slab3": {
+            "mapped_type": "mapped_type_10"
+        },
+        "minecraft:stone_slab4": {
+            "mapped_type": "mapped_type_11"
+        },
+        "minecraft:stonebrick": {
+            "mapped_type": "mapped_type_24"
+        },
+        "minecraft:structure_block": {
+            "mapped_type": "mapped_type_25"
+        },
+        "minecraft:tallgrass": {
+            "mapped_type": "mapped_type_26"
+        },
+        "minecraft:wooden_slab": {
+            "mapped_type": "mapped_type_12"
+        }
+    },
+    "remappedPropertyValuesIndex": {
+        "facing_direction_00": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "int": 2
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "int": 2
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "int": 0
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "int": 1
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "int": 3
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "int": 2
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "int": 2
+                }
+            }
+        ],
+        "mapped_type_00": [
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "int": 0
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "int": 0
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "int": 0
+                }
+            }
+        ],
+        "mapped_type_01": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "compound_creator"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "material_reducer"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "element_constructor"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "lab_table"
+                }
+            }
+        ],
+        "mapped_type_02": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "cobblestone"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "mossy_cobblestone"
+                }
+            },
+            {
+                "old": {
+                    "int": 10
+                },
+                "new": {
+                    "string": "end_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 11
+                },
+                "new": {
+                    "string": "prismarine"
+                }
+            },
+            {
+                "old": {
+                    "int": 12
+                },
+                "new": {
+                    "string": "red_sandstone"
+                }
+            },
+            {
+                "old": {
+                    "int": 13
+                },
+                "new": {
+                    "string": "red_nether_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 14
+                },
+                "new": {
+                    "string": "cobblestone"
+                }
+            },
+            {
+                "old": {
+                    "int": 15
+                },
+                "new": {
+                    "string": "cobblestone"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "granite"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "diorite"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "andesite"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "sandstone"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 8
+                },
+                "new": {
+                    "string": "mossy_stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 9
+                },
+                "new": {
+                    "string": "nether_brick"
+                }
+            }
+        ],
+        "mapped_type_03": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "pink"
+                }
+            },
+            {
+                "old": {
+                    "int": 10
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 11
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 12
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 13
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 14
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 15
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "purple"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "red"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "yellow"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 8
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 9
+                },
+                "new": {
+                    "string": "blue"
+                }
+            }
+        ],
+        "mapped_type_04": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "pink"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "purple"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "red"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "yellow"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "blue"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "blue"
+                }
+            }
+        ],
+        "mapped_type_05": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "byte": 0
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "byte": 1
+                }
+            }
+        ],
+        "mapped_type_06": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "normal"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "coarse"
+                }
+            }
+        ],
+        "mapped_type_07": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "sunflower"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "syringa"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "grass"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "fern"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "rose"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "paeonia"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "sunflower"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "sunflower"
+                }
+            }
+        ],
+        "mapped_type_08": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "smooth_stone"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "sandstone"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "wood"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "cobblestone"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "quartz"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "nether_brick"
+                }
+            }
+        ],
+        "mapped_type_09": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "red_sandstone"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "purpur"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "prismarine_rough"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "prismarine_dark"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "prismarine_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "mossy_cobblestone"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "smooth_sandstone"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "red_nether_brick"
+                }
+            }
+        ],
+        "mapped_type_10": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "end_stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "smooth_red_sandstone"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "polished_andesite"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "andesite"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "diorite"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "polished_diorite"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "granite"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "polished_granite"
+                }
+            }
+        ],
+        "mapped_type_11": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "mossy_stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "smooth_quartz"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "stone"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "cut_sandstone"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "cut_red_sandstone"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "mossy_stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "mossy_stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "mossy_stone_brick"
+                }
+            }
+        ],
+        "mapped_type_12": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "oak"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "spruce"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "birch"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "jungle"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "acacia"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "dark_oak"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "oak"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "oak"
+                }
+            }
+        ],
+        "mapped_type_13": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "oak"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "spruce"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "birch"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "jungle"
+                }
+            }
+        ],
+        "mapped_type_14": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "acacia"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "dark_oak"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "acacia"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "acacia"
+                }
+            }
+        ],
+        "mapped_type_15": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "stone"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "cobblestone"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "mossy_stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "cracked_stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "chiseled_stone_brick"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "stone"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "stone"
+                }
+            }
+        ],
+        "mapped_type_16": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "default"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "dark"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "bricks"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "default"
+                }
+            }
+        ],
+        "mapped_type_17": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "default"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "chiseled"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "lines"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "smooth"
+                }
+            }
+        ],
+        "mapped_type_18": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "poppy"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "orchid"
+                }
+            },
+            {
+                "old": {
+                    "int": 10
+                },
+                "new": {
+                    "string": "lily_of_the_valley"
+                }
+            },
+            {
+                "old": {
+                    "int": 11
+                },
+                "new": {
+                    "string": "poppy"
+                }
+            },
+            {
+                "old": {
+                    "int": 12
+                },
+                "new": {
+                    "string": "poppy"
+                }
+            },
+            {
+                "old": {
+                    "int": 13
+                },
+                "new": {
+                    "string": "poppy"
+                }
+            },
+            {
+                "old": {
+                    "int": 14
+                },
+                "new": {
+                    "string": "poppy"
+                }
+            },
+            {
+                "old": {
+                    "int": 15
+                },
+                "new": {
+                    "string": "poppy"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "allium"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "houstonia"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "tulip_red"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "tulip_orange"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "tulip_white"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "tulip_pink"
+                }
+            },
+            {
+                "old": {
+                    "int": 8
+                },
+                "new": {
+                    "string": "oxeye"
+                }
+            },
+            {
+                "old": {
+                    "int": 9
+                },
+                "new": {
+                    "string": "cornflower"
+                }
+            }
+        ],
+        "mapped_type_19": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "default"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "heiroglyphs"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "cut"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "smooth"
+                }
+            }
+        ],
+        "mapped_type_20": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "normal"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "red"
+                }
+            }
+        ],
+        "mapped_type_21": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "default"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "double_top"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "double_bot"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "default"
+                }
+            }
+        ],
+        "mapped_type_22": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "dry"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "wet"
+                }
+            }
+        ],
+        "mapped_type_23": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "stone"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "granite"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "granite_smooth"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "diorite"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "diorite_smooth"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "andesite"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "andesite_smooth"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "stone"
+                }
+            }
+        ],
+        "mapped_type_24": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "default"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "mossy"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "cracked"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "chiseled"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "smooth"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "default"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "default"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "default"
+                }
+            }
+        ],
+        "mapped_type_25": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "data"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "save"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "load"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "corner"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "invalid"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "export"
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "string": "data"
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "string": "data"
+                }
+            }
+        ],
+        "mapped_type_26": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "default"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "tall"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "fern"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "snow"
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,407 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 18,
+    "maxVersionPatch": 10,
+    "maxVersionRevision": 1,
+    "removedProperties": {
+        "minecraft:skull": [
+            "no_drop_bit"
+        ]
+    },
+    "remappedPropertyValues": {
+        "minecraft:glow_lichen": {
+            "multi_face_direction_bits": "multi_face_direction_bits_00"
+        },
+        "minecraft:sculk_vein": {
+            "multi_face_direction_bits": "multi_face_direction_bits_00"
+        }
+    },
+    "remappedPropertyValuesIndex": {
+        "multi_face_direction_bits_00": [
+            {
+                "old": {
+                    "int": 10
+                },
+                "new": {
+                    "int": 6
+                }
+            },
+            {
+                "old": {
+                    "int": 11
+                },
+                "new": {
+                    "int": 7
+                }
+            },
+            {
+                "old": {
+                    "int": 12
+                },
+                "new": {
+                    "int": 20
+                }
+            },
+            {
+                "old": {
+                    "int": 13
+                },
+                "new": {
+                    "int": 21
+                }
+            },
+            {
+                "old": {
+                    "int": 14
+                },
+                "new": {
+                    "int": 22
+                }
+            },
+            {
+                "old": {
+                    "int": 15
+                },
+                "new": {
+                    "int": 23
+                }
+            },
+            {
+                "old": {
+                    "int": 16
+                },
+                "new": {
+                    "int": 8
+                }
+            },
+            {
+                "old": {
+                    "int": 17
+                },
+                "new": {
+                    "int": 9
+                }
+            },
+            {
+                "old": {
+                    "int": 18
+                },
+                "new": {
+                    "int": 10
+                }
+            },
+            {
+                "old": {
+                    "int": 19
+                },
+                "new": {
+                    "int": 11
+                }
+            },
+            {
+                "old": {
+                    "int": 20
+                },
+                "new": {
+                    "int": 24
+                }
+            },
+            {
+                "old": {
+                    "int": 21
+                },
+                "new": {
+                    "int": 25
+                }
+            },
+            {
+                "old": {
+                    "int": 22
+                },
+                "new": {
+                    "int": 26
+                }
+            },
+            {
+                "old": {
+                    "int": 23
+                },
+                "new": {
+                    "int": 27
+                }
+            },
+            {
+                "old": {
+                    "int": 24
+                },
+                "new": {
+                    "int": 12
+                }
+            },
+            {
+                "old": {
+                    "int": 25
+                },
+                "new": {
+                    "int": 13
+                }
+            },
+            {
+                "old": {
+                    "int": 26
+                },
+                "new": {
+                    "int": 14
+                }
+            },
+            {
+                "old": {
+                    "int": 27
+                },
+                "new": {
+                    "int": 15
+                }
+            },
+            {
+                "old": {
+                    "int": 36
+                },
+                "new": {
+                    "int": 48
+                }
+            },
+            {
+                "old": {
+                    "int": 37
+                },
+                "new": {
+                    "int": 49
+                }
+            },
+            {
+                "old": {
+                    "int": 38
+                },
+                "new": {
+                    "int": 50
+                }
+            },
+            {
+                "old": {
+                    "int": 39
+                },
+                "new": {
+                    "int": 51
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "int": 16
+                }
+            },
+            {
+                "old": {
+                    "int": 40
+                },
+                "new": {
+                    "int": 36
+                }
+            },
+            {
+                "old": {
+                    "int": 41
+                },
+                "new": {
+                    "int": 37
+                }
+            },
+            {
+                "old": {
+                    "int": 42
+                },
+                "new": {
+                    "int": 38
+                }
+            },
+            {
+                "old": {
+                    "int": 43
+                },
+                "new": {
+                    "int": 39
+                }
+            },
+            {
+                "old": {
+                    "int": 44
+                },
+                "new": {
+                    "int": 52
+                }
+            },
+            {
+                "old": {
+                    "int": 45
+                },
+                "new": {
+                    "int": 53
+                }
+            },
+            {
+                "old": {
+                    "int": 46
+                },
+                "new": {
+                    "int": 54
+                }
+            },
+            {
+                "old": {
+                    "int": 47
+                },
+                "new": {
+                    "int": 55
+                }
+            },
+            {
+                "old": {
+                    "int": 48
+                },
+                "new": {
+                    "int": 40
+                }
+            },
+            {
+                "old": {
+                    "int": 49
+                },
+                "new": {
+                    "int": 41
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "int": 17
+                }
+            },
+            {
+                "old": {
+                    "int": 50
+                },
+                "new": {
+                    "int": 42
+                }
+            },
+            {
+                "old": {
+                    "int": 51
+                },
+                "new": {
+                    "int": 43
+                }
+            },
+            {
+                "old": {
+                    "int": 52
+                },
+                "new": {
+                    "int": 56
+                }
+            },
+            {
+                "old": {
+                    "int": 53
+                },
+                "new": {
+                    "int": 57
+                }
+            },
+            {
+                "old": {
+                    "int": 54
+                },
+                "new": {
+                    "int": 58
+                }
+            },
+            {
+                "old": {
+                    "int": 55
+                },
+                "new": {
+                    "int": 59
+                }
+            },
+            {
+                "old": {
+                    "int": 56
+                },
+                "new": {
+                    "int": 44
+                }
+            },
+            {
+                "old": {
+                    "int": 57
+                },
+                "new": {
+                    "int": 45
+                }
+            },
+            {
+                "old": {
+                    "int": 58
+                },
+                "new": {
+                    "int": 46
+                }
+            },
+            {
+                "old": {
+                    "int": 59
+                },
+                "new": {
+                    "int": 47
+                }
+            },
+            {
+                "old": {
+                    "int": 6
+                },
+                "new": {
+                    "int": 18
+                }
+            },
+            {
+                "old": {
+                    "int": 7
+                },
+                "new": {
+                    "int": 19
+                }
+            },
+            {
+                "old": {
+                    "int": 8
+                },
+                "new": {
+                    "int": 4
+                }
+            },
+            {
+                "old": {
+                    "int": 9
+                },
+                "new": {
+                    "int": 5
+                }
+            }
+        ]
+    }
+}

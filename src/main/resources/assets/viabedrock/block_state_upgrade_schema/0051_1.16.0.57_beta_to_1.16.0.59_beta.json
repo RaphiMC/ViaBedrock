@@ -1,0 +1,17 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 16,
+    "maxVersionPatch": 0,
+    "maxVersionRevision": 9,
+    "renamedIds": {
+        "minecraft:basalt_block": "minecraft:basalt",
+        "minecraft:blue_fire": "minecraft:soul_fire",
+        "minecraft:blue_nether_wart_block": "minecraft:warped_wart_block",
+        "minecraft:crimson_trap_door": "minecraft:crimson_trapdoor",
+        "minecraft:polished_basalt_block": "minecraft:polished_basalt",
+        "minecraft:shroomlight_block": "minecraft:shroomlight",
+        "minecraft:soul_soil_block": "minecraft:soul_soil",
+        "minecraft:target_block": "minecraft:target",
+        "minecraft:weeping_vines_block": "minecraft:weeping_vines"
+    }
+}

@@ -1,0 +1,66 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 16,
+    "maxVersionPatch": 0,
+    "maxVersionRevision": 14,
+    "renamedIds": {
+        "minecraft:lodestone_block": "minecraft:lodestone",
+        "minecraft:twisting_vines_block": "minecraft:twisting_vines"
+    },
+    "addedProperties": {
+        "minecraft:melon_stem": {
+            "facing_direction": {
+                "int": 0
+            }
+        },
+        "minecraft:pumpkin_stem": {
+            "facing_direction": {
+                "int": 0
+            }
+        }
+    },
+    "removedProperties": {
+        "minecraft:blackstone_wall": [
+            "wall_block_type"
+        ],
+        "minecraft:polished_blackstone_brick_wall": [
+            "wall_block_type"
+        ],
+        "minecraft:polished_blackstone_wall": [
+            "wall_block_type"
+        ]
+    },
+    "remappedPropertyValues": {
+        "minecraft:cobblestone_wall": {
+            "wall_block_type": "wall_block_type_00"
+        }
+    },
+    "remappedPropertyValuesIndex": {
+        "wall_block_type_00": [
+            {
+                "old": {
+                    "string": "blackstone"
+                },
+                "new": {
+                    "string": "cobblestone"
+                }
+            },
+            {
+                "old": {
+                    "string": "polished_blackstone"
+                },
+                "new": {
+                    "string": "cobblestone"
+                }
+            },
+            {
+                "old": {
+                    "string": "polished_blackstone_brick"
+                },
+                "new": {
+                    "string": "cobblestone"
+                }
+            }
+        ]
+    }
+}

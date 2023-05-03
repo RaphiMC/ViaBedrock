@@ -1,0 +1,30 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 16,
+    "maxVersionPatch": 0,
+    "maxVersionRevision": 0,
+    "addedProperties": {
+        "minecraft:cobblestone_wall": {
+            "wall_connection_type_east": {
+                "string": "none"
+            },
+            "wall_connection_type_north": {
+                "string": "none"
+            },
+            "wall_connection_type_south": {
+                "string": "none"
+            },
+            "wall_connection_type_west": {
+                "string": "none"
+            },
+            "wall_post_bit": {
+                "byte": 0
+            }
+        },
+        "minecraft:jigsaw": {
+            "rotation": {
+                "int": 0
+            }
+        }
+    }
+}

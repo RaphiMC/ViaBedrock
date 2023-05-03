@@ -37,10 +37,10 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
 import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
 import net.raphimc.viabedrock.protocol.model.*;
-import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.blockstate.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -148,10 +148,6 @@ public class JoinPackets {
             wrapper.read(Type.BOOLEAN); // client side generation
             final boolean hashedRuntimeBlockIds = wrapper.read(Type.BOOLEAN); // use hashed block runtime ids
 
-            if (hashedRuntimeBlockIds) {
-                BedrockProtocol.kickForIllegalState(wrapper.user(), "Hashed runtime IDs are not supported");
-            }
-
             if (isWorldEditor) {
                 final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_4.DISCONNECT, wrapper.user());
                 disconnect.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
@@ -216,7 +212,7 @@ public class JoinPackets {
             }
 
             spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
-            wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties));
+            wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties, hashedRuntimeBlockIds));
             wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
             wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
             final EntityTracker entityTracker = new EntityTracker(wrapper.user());

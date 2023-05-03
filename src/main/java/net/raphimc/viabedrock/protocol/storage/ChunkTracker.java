@@ -32,7 +32,6 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.NumberTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.protocols.protocol1_18to1_17_1.types.Chunk1_18Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.Protocol1_19_4To1_19_3;
@@ -47,8 +46,8 @@ import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.blockstate.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.*;
@@ -555,7 +554,7 @@ public class ChunkTracker extends StoredObject {
                         bedrockPalette.addId(blockStateRewriter.bedrockId(BlockState.AIR));
                         bedrockPalette.resolveTagPalette(tag -> {
                             try {
-                                int remappedBlockState = blockStateRewriter.bedrockId((Tag) tag);
+                                int remappedBlockState = blockStateRewriter.bedrockId((CompoundTag) tag);
                                 if (remappedBlockState == -1) {
                                     Via.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
                                     remappedBlockState = blockStateRewriter.bedrockId(BlockState.INFO_UPDATE);

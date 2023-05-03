@@ -17,18 +17,32 @@
  */
 package net.raphimc.viabedrock.api.util;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Comparator;
+public class FNV1 {
 
-public class HashedPaletteComparator implements Comparator<String> {
+    private static final long FNV1_64_INIT = 0xcbf29ce484222325L;
+    private static final long FNV1_PRIME_64 = 1099511628211L;
 
-    public static final HashedPaletteComparator INSTANCE = new HashedPaletteComparator();
+    private static final int FNV1_32_INIT = 0x811c9dc5;
+    private static final int FNV1_PRIME_32 = 0x01000193;
 
-    @Override
-    public int compare(String o1, String o2) {
-        final long hash1 = FNV1.fnv1_64(o1.getBytes(StandardCharsets.UTF_8));
-        final long hash2 = FNV1.fnv1_64(o2.getBytes(StandardCharsets.UTF_8));
-        return Long.compareUnsigned(hash1, hash2);
+    public static long fnv1_64(final byte[] data) {
+        long hash = FNV1_64_INIT;
+        for (byte b : data) {
+            hash *= FNV1_PRIME_64;
+            hash ^= (b & 0xff);
+        }
+
+        return hash;
+    }
+
+    public static int fnv1a_32(final byte[] data) {
+        int hash = FNV1_32_INIT;
+        for (byte b : data) {
+            hash ^= (b & 0xff);
+            hash *= FNV1_PRIME_32;
+        }
+
+        return hash;
     }
 
 }

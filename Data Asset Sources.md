@@ -48,3 +48,6 @@ This file has been created manually.
 
 ### data/custom/pre_waterlogged_states.json
 This file has been created manually.
+
+### block_state_upgrade_schema/*
+[PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema)

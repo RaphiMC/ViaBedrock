@@ -1,0 +1,17 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 18,
+    "maxVersionPatch": 10,
+    "maxVersionRevision": 1,
+    "renamedIds": {
+        "minecraft:concretePowder": "minecraft:concrete_powder",
+        "minecraft:invisibleBedrock": "minecraft:invisible_bedrock",
+        "minecraft:movingBlock": "minecraft:moving_block",
+        "minecraft:mysterious_frame": "minecraft:reinforced_deepslate",
+        "minecraft:mysterious_frame_slot": "minecraft:reinforced_deepslate",
+        "minecraft:pistonArmCollision": "minecraft:piston_arm_collision",
+        "minecraft:seaLantern": "minecraft:sea_lantern",
+        "minecraft:stickyPistonArmCollision": "minecraft:sticky_piston_arm_collision",
+        "minecraft:tripWire": "minecraft:trip_wire"
+    }
+}

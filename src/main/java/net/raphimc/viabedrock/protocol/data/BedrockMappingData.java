@@ -42,6 +42,7 @@ import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.api.model.BlockState;
+import net.raphimc.viabedrock.protocol.rewriter.blockstate.BlockStateUpgrader;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import javax.imageio.ImageIO;
@@ -62,13 +63,13 @@ public class BedrockMappingData extends MappingDataBase {
     private CompoundTag registries; // Java
     private CompoundTag tags; // Java
     private BiMap<BlockState, Integer> javaBlockStates; // Java
+    private BlockStateUpgrader blockStateUpgrader; // Bedrock
     private List<BlockState> bedrockBlockStates; // Bedrock
     private Map<BlockState, BlockState> bedrockToJavaBlockStates; // Bedrock -> Java
     private Map<String, BlockState> defaultBlockStates; // Bedrock -> Bedrock
     private IntList preWaterloggedStates; // Java
     private BiMap<String, Integer> legacyBlocks; // Bedrock
     private Int2ObjectMap<BlockState> legacyBlockStates; // Bedrock
-    private Map<String, String> legacyToModernBlockIdentifiers; // Bedrock
     private BiMap<String, Integer> biomes; // Bedrock
     private Map<String, CompoundTag> biomeDefinitions; // Bedrock
     private Map<String, Map<String, Object>> biomeExtraData; // Bedrock -> Java
@@ -97,6 +98,8 @@ public class BedrockMappingData extends MappingDataBase {
             final BlockState blockState = BlockState.fromString(javaBlockStatesJson.get(i).getAsString());
             this.javaBlockStates.put(blockState, i);
         }
+
+        this.blockStateUpgrader = new BlockStateUpgrader();
 
         final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_19_80.nbt").get("blocks");
         this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
@@ -208,6 +211,10 @@ public class BedrockMappingData extends MappingDataBase {
         return Maps.unmodifiableBiMap(this.javaBlockStates);
     }
 
+    public BlockStateUpgrader getBlockStateUpgrader() {
+        return this.blockStateUpgrader;
+    }
+
     public List<BlockState> getBedrockBlockStates() {
         return Collections.unmodifiableList(this.bedrockBlockStates);
     }
@@ -230,10 +237,6 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Int2ObjectMap<BlockState> getLegacyBlockStates() {
         return this.legacyBlockStates;
-    }
-
-    public Map<String, String> getLegacyToModernBlockIdentifiers() {
-        return this.legacyToModernBlockIdentifiers;
     }
 
     public BiMap<String, Integer> getBiomes() {
@@ -355,30 +358,23 @@ public class BedrockMappingData extends MappingDataBase {
             final ByteBuf buf = Unpooled.wrappedBuffer(bytes);
 
             this.legacyBlockStates = new Int2ObjectOpenHashMap<>();
-            this.legacyToModernBlockIdentifiers = new HashMap<>();
             while (buf.isReadable()) {
                 final String identifier = BedrockTypes.STRING.read(buf).toLowerCase(Locale.ROOT);
                 final int metadata = buf.readShortLE();
                 final CompoundTag current = (CompoundTag) BedrockTypes.NETWORK_TAG.read(buf);
+                if (metadata > 15) continue; // Dirty hack Mojang did in 1.12. Can be ignored safely as those values can't be used in chunk packets
 
                 if (!this.legacyBlocks.containsKey(identifier)) {
                     this.getLogger().warning("Unknown block identifier in r12_to_current_block_map.bin: " + identifier);
                     continue;
                 }
                 final int id = this.legacyBlocks.get(identifier);
-                final BlockState blockState = BlockState.fromNbt(current);
 
-                this.legacyBlockStates.put(id << 6 | metadata & 63, blockState);
-
-                final String modernIdentifier = blockState.getNamespacedIdentifier();
-                if (!identifier.equals(modernIdentifier) && !this.legacyToModernBlockIdentifiers.containsKey(identifier)) {
-                    this.legacyToModernBlockIdentifiers.put(identifier, modernIdentifier);
-                }
+                this.legacyBlockStates.put(id << 4 | metadata & 15, BlockState.fromNbt(current));
             }
         } catch (Exception e) {
             this.getLogger().log(Level.SEVERE, "Could not read r12_to_current_block_map.bin", e);
             this.legacyBlockStates = null;
-            this.legacyToModernBlockIdentifiers = null;
         }
     }
 

@@ -1,0 +1,13 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 18,
+    "maxVersionPatch": 10,
+    "maxVersionRevision": 1,
+    "addedProperties": {
+        "minecraft:muddy_mangrove_roots": {
+            "pillar_axis": {
+                "string": "y"
+            }
+        }
+    }
+}

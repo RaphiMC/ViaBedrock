@@ -20,6 +20,8 @@ package net.raphimc.viabedrock.api.model;
 import com.google.common.collect.Maps;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.Collections;
 import java.util.Locale;
@@ -45,7 +47,7 @@ public class BlockState {
             throw new IllegalArgumentException("BlockState namespace or identifier was null: " + namespace + ":" + identifier);
         }
 
-        this.namespace = namespace.toLowerCase(Locale.ROOT);
+        this.namespace = namespace;
         this.identifier = identifier.toLowerCase(Locale.ROOT);
         this.properties = Collections.unmodifiableMap(properties);
     }
@@ -90,24 +92,17 @@ public class BlockState {
     }
 
     public static BlockState fromNbt(final CompoundTag tag) {
-        String namespace = "minecraft";
-        String identifier = tag.<StringTag>get("name").getValue();
+        BedrockProtocol.MAPPINGS.getBlockStateUpgrader().upgradeToLatest(tag);
 
-        if (identifier.contains(":")) {
-            final String[] namespaceAndIdentifier = identifier.split(":", 2);
-            namespace = namespaceAndIdentifier[0];
-            identifier = namespaceAndIdentifier[1];
-        }
-
+        final String[] namespaceAndIdentifier = tag.<StringTag>get("name").getValue().split(":", 2);
         if (tag.get("states") instanceof CompoundTag) {
             final Map<String, String> properties = Maps.newHashMap();
-            final CompoundTag statesTag = tag.get("states");
-            for (final String key : statesTag.getValue().keySet()) {
-                properties.put(key, statesTag.get(key).getValue().toString());
+            for (Map.Entry<String, Tag> entry : tag.<CompoundTag>get("states").getValue().entrySet()) {
+                properties.put(entry.getKey(), entry.getValue().getValue().toString());
             }
-            return new BlockState(namespace, identifier, properties);
+            return new BlockState(namespaceAndIdentifier[0], namespaceAndIdentifier[1], properties);
         } else {
-            return new BlockState(namespace, identifier, Collections.emptyMap());
+            return new BlockState(namespaceAndIdentifier[0], namespaceAndIdentifier[1], Collections.emptyMap());
         }
     }
 
