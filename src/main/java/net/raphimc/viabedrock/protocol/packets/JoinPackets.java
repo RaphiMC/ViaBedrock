@@ -37,10 +37,10 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
 import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
 import net.raphimc.viabedrock.protocol.model.*;
+import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
-import net.raphimc.viabedrock.protocol.rewriter.blockstate.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 

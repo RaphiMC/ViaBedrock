@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.rewriter.blockstate;
+package net.raphimc.viabedrock.api.chunk.block_state_upgrader;
 
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
@@ -24,19 +24,11 @@ import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
 
 import java.util.*;
-import java.util.function.Consumer;
 
-public class BlockStateUpgradeSchema {
+public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
-    private final int version;
-    private final List<Consumer<CompoundTag>> actions = new ArrayList<>();
-
-    public BlockStateUpgradeSchema(final JsonObject jsonObject) {
-        final int maxVersionMajor = jsonObject.get("maxVersionMajor").getAsInt();
-        final int maxVersionMinor = jsonObject.get("maxVersionMinor").getAsInt();
-        final int maxVersionPatch = jsonObject.get("maxVersionPatch").getAsInt();
-        final int maxVersionRevision = jsonObject.get("maxVersionRevision").getAsInt();
-        this.version = maxVersionMajor << 24 | maxVersionMinor << 16 | maxVersionPatch << 8 | maxVersionRevision;
+    public JsonBlockStateUpgradeSchema(final JsonObject jsonObject) {
+        super(jsonObject.get("maxVersionMajor").getAsInt(), jsonObject.get("maxVersionMinor").getAsInt(), jsonObject.get("maxVersionPatch").getAsInt(), jsonObject.get("maxVersionRevision").getAsInt());
 
         final Map<String, List<Pair<?, ?>>> remappedPropertyValuesLookup = new HashMap<>();
         if (jsonObject.has("remappedPropertyValuesIndex")) {
@@ -238,26 +230,6 @@ public class BlockStateUpgradeSchema {
         }
     }
 
-    public void upgrade(final CompoundTag tag) {
-        final IntTag version = tag.get("version");
-        if (version != null && version.asInt() > this.version) {
-            return;
-        }
-
-        try {
-            for (Consumer<CompoundTag> action : this.actions) {
-                action.accept(tag);
-            }
-        } catch (StopUpgrade ignored) {
-        }
-
-        tag.put("version", new IntTag(this.version));
-    }
-
-    public int version() {
-        return this.version;
-    }
-
     private Object getValue(final JsonObject obj) {
         if (obj.has("int")) {
             return obj.get("int").getAsInt();
@@ -280,25 +252,6 @@ public class BlockStateUpgradeSchema {
         } else {
             throw new IllegalArgumentException("Unknown object value type");
         }
-    }
-
-    private static final class StopUpgrade extends RuntimeException {
-
-        public static final StopUpgrade INSTANCE = new StopUpgrade();
-
-        StopUpgrade() {
-        }
-
-        @Override
-        public String toString() {
-            return "";
-        }
-
-        @Override
-        public synchronized Throwable fillInStackTrace() {
-            return this;
-        }
-
     }
 
 }

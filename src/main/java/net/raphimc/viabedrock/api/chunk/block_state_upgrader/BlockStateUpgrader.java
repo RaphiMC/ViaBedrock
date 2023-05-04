@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.rewriter.blockstate;
+package net.raphimc.viabedrock.api.chunk.block_state_upgrader;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
@@ -37,6 +37,8 @@ public class BlockStateUpgrader {
     private final List<BlockStateUpgradeSchema> schemas = new ArrayList<>();
 
     public BlockStateUpgrader() {
+        this.schemas.add(new ValTagBlockStateUpgradeSchema());
+
         try {
             final String path = "assets/viabedrock/block_state_upgrade_schema/";
 
@@ -48,7 +50,7 @@ public class BlockStateUpgrader {
 
                 for (Path file : files) {
                     final JsonObject json = GsonUtil.getGson().fromJson(new InputStreamReader(fileSystem.provider().newInputStream(file)), JsonObject.class);
-                    this.schemas.add(new BlockStateUpgradeSchema(json));
+                    this.schemas.add(new JsonBlockStateUpgradeSchema(json));
                 }
             }
         } catch (Throwable e) {

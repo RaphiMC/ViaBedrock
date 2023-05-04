@@ -18,10 +18,6 @@
 package net.raphimc.viabedrock.api.model;
 
 import com.google.common.collect.Maps;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.Collections;
 import java.util.Locale;
@@ -29,10 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class BlockState {
-
-    public static final BlockState AIR = new BlockState("air", Collections.emptyMap());
-    public static final BlockState STONE = new BlockState("stone", Collections.singletonMap("stone_type", "stone"));
-    public static final BlockState INFO_UPDATE = new BlockState("info_update", Collections.emptyMap());
 
     private final String namespace;
     private final String identifier;
@@ -88,21 +80,6 @@ public class BlockState {
             return new BlockState(namespace, identifier, properties);
         } else {
             return new BlockState(namespace, identifier, Collections.emptyMap());
-        }
-    }
-
-    public static BlockState fromNbt(final CompoundTag tag) {
-        BedrockProtocol.MAPPINGS.getBlockStateUpgrader().upgradeToLatest(tag);
-
-        final String[] namespaceAndIdentifier = tag.<StringTag>get("name").getValue().split(":", 2);
-        if (tag.get("states") instanceof CompoundTag) {
-            final Map<String, String> properties = Maps.newHashMap();
-            for (Map.Entry<String, Tag> entry : tag.<CompoundTag>get("states").getValue().entrySet()) {
-                properties.put(entry.getKey(), entry.getValue().getValue().toString());
-            }
-            return new BlockState(namespaceAndIdentifier[0], namespaceAndIdentifier[1], properties);
-        } else {
-            return new BlockState(namespaceAndIdentifier[0], namespaceAndIdentifier[1], Collections.emptyMap());
         }
     }
 
@@ -177,26 +154,26 @@ public class BlockState {
         return builder.toString();
     }
 
-    public String getNamespace() {
+    public String namespace() {
         return this.namespace;
     }
 
-    public String getIdentifier() {
+    public String identifier() {
         return this.identifier;
     }
 
-    public String getNamespacedIdentifier() {
+    public String namespacedIdentifier() {
         return this.namespace + ":" + this.identifier;
     }
 
-    public Map<String, String> getProperties() {
+    public Map<String, String> properties() {
         return this.properties;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof BlockState)) return false;
         BlockState that = (BlockState) o;
         return Objects.equals(namespace, that.namespace) && Objects.equals(identifier, that.identifier) && Objects.equals(properties, that.properties);
     }

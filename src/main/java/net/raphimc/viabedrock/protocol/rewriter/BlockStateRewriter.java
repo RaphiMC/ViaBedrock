@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.rewriter.blockstate;
+package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
@@ -24,6 +24,7 @@ import com.viaversion.viaversion.libs.fastutil.objects.Object2IntMap;
 import com.viaversion.viaversion.libs.fastutil.objects.Object2IntOpenHashMap;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.util.HashedPaletteComparator;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -53,27 +54,27 @@ public class BlockStateRewriter extends StoredObject {
         final Map<BlockState, BlockState> bedrockToJavaBlockStates = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates();
 
         for (BlockProperties blockProperty : blockProperties) {
-            bedrockBlockStates.add(BlockState.AIR.withNamespacedIdentifier(blockProperty.name()));
+            bedrockBlockStates.add(BedrockBlockState.AIR.withNamespacedIdentifier(blockProperty.name()));
         }
-        bedrockBlockStates.sort((a, b) -> HashedPaletteComparator.INSTANCE.compare(a.getNamespacedIdentifier(), b.getNamespacedIdentifier()));
+        bedrockBlockStates.sort((a, b) -> HashedPaletteComparator.INSTANCE.compare(a.namespacedIdentifier(), b.namespacedIdentifier()));
 
         for (int bedrockId = 0; bedrockId < bedrockBlockStates.size(); bedrockId++) {
             final BlockState bedrockBlockState = bedrockBlockStates.get(bedrockId);
             this.blockStateTagMappings.put(bedrockBlockState, bedrockId);
 
-            if (bedrockBlockState.getNamespacedIdentifier().equals("minecraft:water") || bedrockBlockState.getNamespacedIdentifier().equals("minecraft:flowing_water")) {
+            if (bedrockBlockState.namespacedIdentifier().equals("minecraft:water") || bedrockBlockState.namespacedIdentifier().equals("minecraft:flowing_water")) {
                 this.waterIds.add(bedrockId);
             }
 
-            if (bedrockBlockState.getIdentifier().contains("hanging_sign")) continue;
-            if (bedrockBlockState.getIdentifier().equals("chiseled_bookshelf")) continue;
-            if (bedrockBlockState.getIdentifier().equals("mangrove_propagule")) continue;
-            if (bedrockBlockState.getIdentifier().equals("suspicious_gravel")) continue;
-            if (bedrockBlockState.getIdentifier().equals("pink_petals")) continue;
-            if (bedrockBlockState.getIdentifier().equals("suspicious_sand")) continue;
-            if (bedrockBlockState.getIdentifier().equals("decorated_pot")) continue;
-            if (bedrockBlockState.getIdentifier().equals("torchflower_crop")) continue;
-            if (bedrockBlockState.getIdentifier().equals("calibrated_sculk_sensor")) continue;
+            if (bedrockBlockState.identifier().contains("hanging_sign")) continue;
+            if (bedrockBlockState.identifier().equals("chiseled_bookshelf")) continue;
+            if (bedrockBlockState.identifier().equals("mangrove_propagule")) continue;
+            if (bedrockBlockState.identifier().equals("suspicious_gravel")) continue;
+            if (bedrockBlockState.identifier().equals("pink_petals")) continue;
+            if (bedrockBlockState.identifier().equals("suspicious_sand")) continue;
+            if (bedrockBlockState.identifier().equals("decorated_pot")) continue;
+            if (bedrockBlockState.identifier().equals("torchflower_crop")) continue;
+            if (bedrockBlockState.identifier().equals("calibrated_sculk_sensor")) continue;
 
             if (!bedrockToJavaBlockStates.containsKey(bedrockBlockState)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java block state mapping: " + bedrockBlockState.toBlockStateString());
@@ -90,23 +91,27 @@ public class BlockStateRewriter extends StoredObject {
             this.blockStateIdMappings.put(bedrockId, javaId);
         }
 
-        for (Int2ObjectMap.Entry<BlockState> entry : BedrockProtocol.MAPPINGS.getLegacyBlockStates().int2ObjectEntrySet()) {
-            final int legacyId = entry.getIntKey();
+        for (Int2ObjectMap.Entry<BedrockBlockState> entry : BedrockProtocol.MAPPINGS.getLegacyBlockStates().int2ObjectEntrySet()) {
+            final int legacyId = entry.getIntKey() >> 6;
+            final int legacyData = entry.getIntKey() & 63;
+            if (legacyData > 15) continue; // Dirty hack Mojang did in 1.12. Can be ignored safely as those values can't be used in chunk packets.
+
             final int bedrockId = this.blockStateTagMappings.getInt(entry.getValue());
             if (bedrockId == -1) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Legacy block state " + entry.getValue() + " is not mapped to a modern block state");
                 continue;
             }
 
-            this.legacyBlockStateIdMappings.put(legacyId, bedrockId);
+            this.legacyBlockStateIdMappings.put(legacyId >> 4 | legacyData & 15, bedrockId);
         }
     }
 
     public int bedrockId(final CompoundTag bedrockBlockStateTag) {
-        BlockState blockState = BlockState.fromNbt(bedrockBlockStateTag);
+        BlockState blockState = BedrockBlockState.fromNbt(bedrockBlockStateTag);
         int runtimeId = this.bedrockId(blockState);
         if (runtimeId == -1) {
-            blockState = BedrockProtocol.MAPPINGS.getDefaultBlockStates().getOrDefault(blockState.getNamespacedIdentifier(), null);
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock block state mapping: " + blockState.toBlockStateString());
+            blockState = BedrockProtocol.MAPPINGS.getDefaultBlockStates().getOrDefault(blockState.namespacedIdentifier(), null);
             if (blockState != null) {
                 runtimeId = this.bedrockId(blockState);
             }

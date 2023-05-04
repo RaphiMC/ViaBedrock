@@ -41,8 +41,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
+import net.raphimc.viabedrock.api.chunk.block_state_upgrader.BlockStateUpgrader;
+import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
-import net.raphimc.viabedrock.protocol.rewriter.blockstate.BlockStateUpgrader;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import javax.imageio.ImageIO;
@@ -64,12 +65,12 @@ public class BedrockMappingData extends MappingDataBase {
     private CompoundTag tags; // Java
     private BiMap<BlockState, Integer> javaBlockStates; // Java
     private BlockStateUpgrader blockStateUpgrader; // Bedrock
-    private List<BlockState> bedrockBlockStates; // Bedrock
+    private List<BedrockBlockState> bedrockBlockStates; // Bedrock
     private Map<BlockState, BlockState> bedrockToJavaBlockStates; // Bedrock -> Java
     private Map<String, BlockState> defaultBlockStates; // Bedrock -> Bedrock
     private IntList preWaterloggedStates; // Java
     private BiMap<String, Integer> legacyBlocks; // Bedrock
-    private Int2ObjectMap<BlockState> legacyBlockStates; // Bedrock
+    private Int2ObjectMap<BedrockBlockState> legacyBlockStates; // Bedrock
     private BiMap<String, Integer> biomes; // Bedrock
     private Map<String, CompoundTag> biomeDefinitions; // Bedrock
     private Map<String, Map<String, Object>> biomeExtraData; // Bedrock -> Java
@@ -105,9 +106,9 @@ public class BedrockMappingData extends MappingDataBase {
         this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
         this.defaultBlockStates = new HashMap<>(bedrockBlockStatesTag.size());
         for (Tag tag : bedrockBlockStatesTag.getValue()) {
-            final BlockState blockState = BlockState.fromNbt((CompoundTag) tag);
-            if (!this.defaultBlockStates.containsKey(blockState.getNamespacedIdentifier())) {
-                this.defaultBlockStates.put(blockState.getNamespacedIdentifier(), blockState);
+            final BedrockBlockState blockState = BedrockBlockState.fromNbt((CompoundTag) tag);
+            if (!this.defaultBlockStates.containsKey(blockState.namespacedIdentifier())) {
+                this.defaultBlockStates.put(blockState.namespacedIdentifier(), blockState);
             }
             this.bedrockBlockStates.add(blockState);
         }
@@ -215,7 +216,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.blockStateUpgrader;
     }
 
-    public List<BlockState> getBedrockBlockStates() {
+    public List<BedrockBlockState> getBedrockBlockStates() {
         return Collections.unmodifiableList(this.bedrockBlockStates);
     }
 
@@ -235,7 +236,7 @@ public class BedrockMappingData extends MappingDataBase {
         return Maps.unmodifiableBiMap(this.legacyBlocks);
     }
 
-    public Int2ObjectMap<BlockState> getLegacyBlockStates() {
+    public Int2ObjectMap<BedrockBlockState> getLegacyBlockStates() {
         return this.legacyBlockStates;
     }
 
@@ -362,7 +363,6 @@ public class BedrockMappingData extends MappingDataBase {
                 final String identifier = BedrockTypes.STRING.read(buf).toLowerCase(Locale.ROOT);
                 final int metadata = buf.readShortLE();
                 final CompoundTag current = (CompoundTag) BedrockTypes.NETWORK_TAG.read(buf);
-                if (metadata > 15) continue; // Dirty hack Mojang did in 1.12. Can be ignored safely as those values can't be used in chunk packets
 
                 if (!this.legacyBlocks.containsKey(identifier)) {
                     this.getLogger().warning("Unknown block identifier in r12_to_current_block_map.bin: " + identifier);
@@ -370,7 +370,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
                 final int id = this.legacyBlocks.get(identifier);
 
-                this.legacyBlockStates.put(id << 4 | metadata & 15, BlockState.fromNbt(current));
+                this.legacyBlockStates.put(id << 6 | metadata & 63, BedrockBlockState.fromNbt(current));
             }
         } catch (Exception e) {
             this.getLogger().log(Level.SEVERE, "Could not read r12_to_current_block_map.bin", e);

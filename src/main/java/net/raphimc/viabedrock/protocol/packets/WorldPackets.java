@@ -38,7 +38,7 @@ import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBiomeArray;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
-import net.raphimc.viabedrock.api.model.BlockState;
+import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
@@ -47,9 +47,9 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResults;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
-import net.raphimc.viabedrock.protocol.rewriter.blockstate.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;
@@ -188,7 +188,7 @@ public class WorldPackets {
                                 try {
                                     for (int i = 0; i < sectionCount; i++) {
                                         sections[i].mergeWith(chunkTracker.handleBlockPalette(BedrockTypes.CHUNK_SECTION.read(dataBuf))); // chunk section
-                                        sections[i].applyPendingBlockUpdates(wrapper.user().get(BlockStateRewriter.class).bedrockId(BlockState.AIR));
+                                        sections[i].applyPendingBlockUpdates(wrapper.user().get(BlockStateRewriter.class).bedrockId(BedrockBlockState.AIR));
                                     }
                                     if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
                                         final byte[] biomeData = new byte[256];
