@@ -23,9 +23,12 @@ import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.fastutil.objects.Object2IntMap;
 import com.viaversion.viaversion.libs.fastutil.objects.Object2IntOpenHashMap;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
+import net.raphimc.viabedrock.api.util.BlockStateHasher;
 import net.raphimc.viabedrock.api.util.HashedPaletteComparator;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.BlockProperties;
@@ -49,17 +52,25 @@ public class BlockStateRewriter extends StoredObject {
         this.legacyBlockStateIdMappings.defaultReturnValue(-1);
         this.blockStateTagMappings.defaultReturnValue(-1);
 
-        final List<BlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
+        final List<BedrockBlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
         final Map<BlockState, Integer> javaBlockStates = BedrockProtocol.MAPPINGS.getJavaBlockStates();
         final Map<BlockState, BlockState> bedrockToJavaBlockStates = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates();
 
         for (BlockProperties blockProperty : blockProperties) {
-            bedrockBlockStates.add(BedrockBlockState.AIR.withNamespacedIdentifier(blockProperty.name()));
+            final CompoundTag blockStateTag = new CompoundTag();
+            blockStateTag.put("name", new StringTag(blockProperty.name()));
+            blockStateTag.put("states", new CompoundTag());
+            blockStateTag.put("network_id", new IntTag(BlockStateHasher.hash(blockStateTag)));
+
+            bedrockBlockStates.add(BedrockBlockState.fromNbt(blockStateTag));
         }
+
         bedrockBlockStates.sort((a, b) -> HashedPaletteComparator.INSTANCE.compare(a.namespacedIdentifier(), b.namespacedIdentifier()));
 
-        for (int bedrockId = 0; bedrockId < bedrockBlockStates.size(); bedrockId++) {
-            final BlockState bedrockBlockState = bedrockBlockStates.get(bedrockId);
+        for (int i = 0; i < bedrockBlockStates.size(); i++) {
+            final BedrockBlockState bedrockBlockState = bedrockBlockStates.get(i);
+            final int bedrockId = hashedRuntimeBlockIds ? bedrockBlockState.blockStateTag().<IntTag>get("network_id").asInt() : i;
+
             this.blockStateTagMappings.put(bedrockBlockState, bedrockId);
 
             if (bedrockBlockState.namespacedIdentifier().equals("minecraft:water") || bedrockBlockState.namespacedIdentifier().equals("minecraft:flowing_water")) {
