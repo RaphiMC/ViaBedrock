@@ -121,11 +121,9 @@ public class BlockStateRewriter extends StoredObject {
         BlockState blockState = BedrockBlockState.fromNbt(bedrockBlockStateTag);
         int runtimeId = this.bedrockId(blockState);
         if (runtimeId == -1) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock block state mapping: " + blockState.toBlockStateString());
-            blockState = BedrockProtocol.MAPPINGS.getDefaultBlockStates().getOrDefault(blockState.namespacedIdentifier(), null);
-            if (blockState != null) {
-                runtimeId = this.bedrockId(blockState);
-            }
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockBlockStateTag);
+            blockState = BedrockProtocol.MAPPINGS.getDefaultBlockStates().getOrDefault(blockState.namespacedIdentifier(), BedrockBlockState.INFO_UPDATE);
+            runtimeId = this.bedrockId(blockState);
         }
 
         return runtimeId;
