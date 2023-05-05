@@ -314,7 +314,7 @@ public class JoinPackets {
             wrapper.user().get(GameSessionStorage.class).setBedrockBiomeDefinitions((CompoundTag) wrapper.read(BedrockTypes.NETWORK_TAG)); // biome definitions
         });
         protocol.registerClientbound(ClientboundBedrockPackets.COMPRESSED_BIOME_DEFINITION_LIST, null, wrapper -> {
-            BedrockProtocol.kickForIllegalState(wrapper.user(), "Compressed biome definitions are not supported");
+            BedrockProtocol.kickForIllegalState(wrapper.user(), "Compressed biome definitions are not supported yet. If you see this message, please report it on our Discord server.");
         });
     }
 
