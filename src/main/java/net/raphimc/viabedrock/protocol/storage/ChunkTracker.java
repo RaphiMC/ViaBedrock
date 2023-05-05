@@ -554,7 +554,7 @@ public class ChunkTracker extends StoredObject {
                         bedrockPalette.addId(blockStateRewriter.bedrockId(BedrockBlockState.AIR));
                         bedrockPalette.resolveTagPalette(tag -> {
                             try {
-                                int remappedBlockState = blockStateRewriter.bedrockId((CompoundTag) tag);
+                                int remappedBlockState = blockStateRewriter.bedrockId(((CompoundTag) tag).clone());
                                 if (remappedBlockState == -1) {
                                     Via.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
                                     remappedBlockState = blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);

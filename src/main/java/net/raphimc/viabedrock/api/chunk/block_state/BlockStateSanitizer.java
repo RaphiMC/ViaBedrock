@@ -17,8 +17,11 @@
  */
 package net.raphimc.viabedrock.api.chunk.block_state;
 
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
+import net.raphimc.viabedrock.api.util.NbtUtil;
 
 import java.util.*;
 
@@ -61,26 +64,20 @@ public class BlockStateSanitizer {
                 continue;
             }
 
-            final Object value = entry.getValue().getValue();
-            if (!allowedValues.contains(value)) {
-                final Object newValue = allowedValues.iterator().next();
-                final Tag newValueTag;
-                if (newValue instanceof String) {
-                    newValueTag = new StringTag((String) newValue);
-                } else if (newValue instanceof Byte) {
-                    newValueTag = new ByteTag((Byte) newValue);
-                } else if (newValue instanceof Integer) {
-                    newValueTag = new IntTag((Integer) newValue);
-                } else {
-                    throw new IllegalStateException("Unknown value type: " + newValue.getClass());
-                }
-
-                entry.setValue(newValueTag);
+            if (!allowedValues.contains(entry.getValue().getValue())) {
+                entry.setValue(NbtUtil.createTag(allowedValues.iterator().next()));
             }
         }
 
         for (String property : toRemove) {
             statesTag.remove(property);
+        }
+
+        for (Map.Entry<String, Set<Object>> entry : propertyValues.entrySet()) {
+            final String property = entry.getKey();
+            if (!statesTag.contains(property)) {
+                statesTag.put(property, NbtUtil.createTag(entry.getValue().iterator().next()));
+            }
         }
     }
 

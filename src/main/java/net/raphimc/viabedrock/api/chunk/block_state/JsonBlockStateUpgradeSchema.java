@@ -19,9 +19,12 @@ package net.raphimc.viabedrock.api.chunk.block_state;
 
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
+import net.raphimc.viabedrock.api.util.NbtUtil;
 
 import java.util.*;
 
@@ -54,14 +57,14 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                     final CompoundTag oldStateTag = new CompoundTag();
                     if (mappingObject.get("oldState").isJsonObject()) {
                         for (Map.Entry<String, JsonElement> property : mappingObject.get("oldState").getAsJsonObject().entrySet()) {
-                            oldStateTag.put(property.getKey(), this.createTag(this.getValue(property.getValue().getAsJsonObject())));
+                            oldStateTag.put(property.getKey(), NbtUtil.createTag(this.getValue(property.getValue().getAsJsonObject())));
                         }
                     }
 
                     final CompoundTag newStateTag = new CompoundTag();
                     if (mappingObject.get("newState").isJsonObject()) {
                         for (Map.Entry<String, JsonElement> property : mappingObject.get("newState").getAsJsonObject().entrySet()) {
-                            newStateTag.put(property.getKey(), this.createTag(this.getValue(property.getValue().getAsJsonObject())));
+                            newStateTag.put(property.getKey(), NbtUtil.createTag(this.getValue(property.getValue().getAsJsonObject())));
                         }
                     }
 
@@ -134,7 +137,7 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                             final Object value = property.getValue();
                             for (Pair<?, ?> valueMapping : mapping.getValue()) {
                                 if (valueMapping.key().equals(value)) {
-                                    states.put(mapping.getKey(), this.createTag(valueMapping.value()));
+                                    states.put(mapping.getKey(), NbtUtil.createTag(valueMapping.value()));
                                 }
                             }
                         }
@@ -208,7 +211,7 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                         final CompoundTag states = tag.get("states");
 
                         for (Pair<String, ?> property : toAdd) {
-                            states.put(property.key(), this.createTag(property.value()));
+                            states.put(property.key(), NbtUtil.createTag(property.value()));
                         }
                     }
                 });
@@ -239,18 +242,6 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
             return obj.get("string").getAsString();
         } else {
             throw new IllegalArgumentException("Unknown json value type");
-        }
-    }
-
-    private Tag createTag(final Object obj) {
-        if (obj instanceof Byte) {
-            return new ByteTag((Byte) obj);
-        } else if (obj instanceof Integer) {
-            return new IntTag((Integer) obj);
-        } else if (obj instanceof String) {
-            return new StringTag((String) obj);
-        } else {
-            throw new IllegalArgumentException("Unknown object value type");
         }
     }
 

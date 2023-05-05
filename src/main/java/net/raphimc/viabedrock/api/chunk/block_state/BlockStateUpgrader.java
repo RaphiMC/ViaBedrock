@@ -43,7 +43,7 @@ public class BlockStateUpgrader {
         this.schemas.add(new ValTagBlockStateUpgradeSchema());
 
         try {
-            final String path = "assets/viabedrock/block_state_upgrade_schema/";
+            final String path = "assets/viabedrock/block_state_upgrade_schema";
 
             try (FileSystem fileSystem = FileSystems.newFileSystem(BlockStateUpgrader.class.getClassLoader().getResource(path).toURI(), Collections.emptyMap())) {
                 final List<Path> files = Files.walk(fileSystem.getPath(path))
