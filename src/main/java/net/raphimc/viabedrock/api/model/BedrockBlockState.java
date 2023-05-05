@@ -21,9 +21,9 @@ import com.google.common.collect.Maps;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 
 public class BedrockBlockState extends BlockState {
@@ -41,7 +41,7 @@ public class BedrockBlockState extends BlockState {
     }
 
     public static BedrockBlockState fromNbt(final CompoundTag tag) {
-        BedrockProtocol.MAPPINGS.getBlockStateUpgrader().upgradeToLatest(tag);
+        sanitizeName(tag);
 
         final String[] namespaceAndIdentifier = tag.<StringTag>get("name").getValue().split(":", 2);
         final Map<String, String> properties = Maps.newHashMap();
@@ -52,6 +52,20 @@ public class BedrockBlockState extends BlockState {
         }
 
         return new BedrockBlockState(namespaceAndIdentifier[0], namespaceAndIdentifier[1], properties, tag);
+    }
+
+    public static void sanitizeName(final CompoundTag tag) {
+        final StringTag name = tag.get("name");
+        String namespace = "minecraft";
+        String identifier = name.getValue();
+        if (identifier.contains(":")) {
+            final String[] namespaceAndIdentifier = identifier.split(":", 2);
+            namespace = namespaceAndIdentifier[0];
+            identifier = namespaceAndIdentifier[1].toLowerCase(Locale.ROOT);
+        } else {
+            identifier = identifier.toLowerCase(Locale.ROOT);
+        }
+        name.setValue(namespace + ":" + identifier);
     }
 
     public CompoundTag blockStateTag() {

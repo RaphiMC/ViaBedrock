@@ -106,7 +106,6 @@ public class WorldPackets {
 
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
-            wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
 
             final EntityTracker oldEntityTracker = wrapper.user().get(EntityTracker.class);
             final ClientPlayerEntity clientPlayer = oldEntityTracker.getClientPlayer();
@@ -114,6 +113,7 @@ public class WorldPackets {
             final EntityTracker newEntityTracker = new EntityTracker(wrapper.user());
             newEntityTracker.addEntity(clientPlayer);
             wrapper.user().put(newEntityTracker);
+            wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
 
             spawnPositionStorage.setSpawnPosition(dimensionId, new Position((int) position.x(), (int) position.y(), (int) position.z()));
 

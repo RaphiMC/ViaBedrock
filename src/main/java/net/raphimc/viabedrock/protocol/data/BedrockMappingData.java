@@ -41,7 +41,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
-import net.raphimc.viabedrock.api.chunk.block_state_upgrader.BlockStateUpgrader;
+import net.raphimc.viabedrock.api.chunk.block_state.BlockStateUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -67,7 +67,6 @@ public class BedrockMappingData extends MappingDataBase {
     private BlockStateUpgrader blockStateUpgrader; // Bedrock
     private List<BedrockBlockState> bedrockBlockStates; // Bedrock
     private Map<BlockState, BlockState> bedrockToJavaBlockStates; // Bedrock -> Java
-    private Map<String, BlockState> defaultBlockStates; // Bedrock -> Bedrock
     private IntList preWaterloggedStates; // Java
     private BiMap<String, Integer> legacyBlocks; // Bedrock
     private Int2ObjectMap<BedrockBlockState> legacyBlockStates; // Bedrock
@@ -104,13 +103,8 @@ public class BedrockMappingData extends MappingDataBase {
 
         final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_19_80.nbt").get("blocks");
         this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
-        this.defaultBlockStates = new HashMap<>(bedrockBlockStatesTag.size());
         for (Tag tag : bedrockBlockStatesTag.getValue()) {
-            final BedrockBlockState blockState = BedrockBlockState.fromNbt((CompoundTag) tag);
-            if (!this.defaultBlockStates.containsKey(blockState.namespacedIdentifier())) {
-                this.defaultBlockStates.put(blockState.namespacedIdentifier(), blockState);
-            }
-            this.bedrockBlockStates.add(blockState);
+            this.bedrockBlockStates.add(BedrockBlockState.fromNbt((CompoundTag) tag));
         }
 
         final JsonObject blockMappings = this.readJson("custom/blockstate_mappings.json");
@@ -222,10 +216,6 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<BlockState, BlockState> getBedrockToJavaBlockStates() {
         return Collections.unmodifiableMap(this.bedrockToJavaBlockStates);
-    }
-
-    public Map<String, BlockState> getDefaultBlockStates() {
-        return Collections.unmodifiableMap(this.defaultBlockStates);
     }
 
     public IntList getPreWaterloggedStates() {

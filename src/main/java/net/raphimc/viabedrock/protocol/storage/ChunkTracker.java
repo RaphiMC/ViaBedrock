@@ -554,7 +554,12 @@ public class ChunkTracker extends StoredObject {
                         bedrockPalette.addId(blockStateRewriter.bedrockId(BedrockBlockState.AIR));
                         bedrockPalette.resolveTagPalette(tag -> {
                             try {
-                                return blockStateRewriter.bedrockId((CompoundTag) tag);
+                                int remappedBlockState = blockStateRewriter.bedrockId((CompoundTag) tag);
+                                if (remappedBlockState == -1) {
+                                    Via.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
+                                    remappedBlockState = blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
+                                }
+                                return remappedBlockState;
                             } catch (Throwable e) {
                                 Via.getPlatform().getLogger().log(Level.WARNING, "Error while rewriting block state tag: " + tag, e);
                                 return blockStateRewriter.bedrockId(BedrockBlockState.AIR);

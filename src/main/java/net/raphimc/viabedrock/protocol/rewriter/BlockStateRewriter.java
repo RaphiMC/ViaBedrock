@@ -26,6 +26,7 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.chunk.block_state.BlockStateSanitizer;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.util.BlockStateHasher;
@@ -44,6 +45,7 @@ public class BlockStateRewriter extends StoredObject {
     private final Int2IntMap legacyBlockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Bedrock
     private final Object2IntMap<BlockState> blockStateTagMappings = new Object2IntOpenHashMap<>(); // Bedrock -> Bedrock
     private final IntList waterIds = new IntArrayList(); // Bedrock
+    private final BlockStateSanitizer blockStateSanitizer;
 
     public BlockStateRewriter(final UserConnection user, final BlockProperties[] blockProperties, final boolean hashedRuntimeBlockIds) {
         super(user);
@@ -115,18 +117,15 @@ public class BlockStateRewriter extends StoredObject {
 
             this.legacyBlockStateIdMappings.put(legacyId >> 4 | legacyData & 15, bedrockId);
         }
+
+        this.blockStateSanitizer = new BlockStateSanitizer(bedrockBlockStates);
     }
 
     public int bedrockId(final CompoundTag bedrockBlockStateTag) {
-        BlockState blockState = BedrockBlockState.fromNbt(bedrockBlockStateTag);
-        int runtimeId = this.bedrockId(blockState);
-        if (runtimeId == -1) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockBlockStateTag);
-            blockState = BedrockProtocol.MAPPINGS.getDefaultBlockStates().getOrDefault(blockState.namespacedIdentifier(), BedrockBlockState.INFO_UPDATE);
-            runtimeId = this.bedrockId(blockState);
-        }
+        BedrockProtocol.MAPPINGS.getBlockStateUpgrader().upgradeToLatest(bedrockBlockStateTag);
+        this.blockStateSanitizer.sanitize(bedrockBlockStateTag);
 
-        return runtimeId;
+        return this.bedrockId(BedrockBlockState.fromNbt(bedrockBlockStateTag));
     }
 
     public int bedrockId(final BlockState bedrockBlockState) {

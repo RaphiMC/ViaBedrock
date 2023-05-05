@@ -15,20 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.chunk.block_state_upgrader;
+package net.raphimc.viabedrock.api.chunk.block_state;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.BedrockBlockState;
 
 import java.io.InputStreamReader;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -60,25 +63,11 @@ public class BlockStateUpgrader {
     }
 
     public void upgradeToLatest(final CompoundTag tag) {
-        this.sanitizeName(tag);
+        BedrockBlockState.sanitizeName(tag);
 
         for (BlockStateUpgradeSchema schema : this.schemas) {
             schema.upgrade(tag);
         }
-    }
-
-    private void sanitizeName(final CompoundTag tag) {
-        final StringTag name = tag.get("name");
-        String namespace = "minecraft";
-        String identifier = name.getValue();
-        if (identifier.contains(":")) {
-            final String[] namespaceAndIdentifier = identifier.split(":", 2);
-            namespace = namespaceAndIdentifier[0];
-            identifier = namespaceAndIdentifier[1].toLowerCase(Locale.ROOT);
-        } else {
-            identifier = identifier.toLowerCase(Locale.ROOT);
-        }
-        name.setValue(namespace + ":" + identifier);
     }
 
 }
