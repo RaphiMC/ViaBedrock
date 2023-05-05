@@ -378,7 +378,7 @@ public class ChunkTracker extends StoredObject {
             }
         }
 
-        if (!this.getUser().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) return;
+        if (this.getUser().get(EntityTracker.class) == null || !this.getUser().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) return;
 
         synchronized (this.subChunkLock) {
             this.subChunkRequests.removeIf(s -> !this.isInViewDistance(s.chunkX, s.chunkZ));

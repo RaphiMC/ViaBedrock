@@ -214,6 +214,7 @@ public class JoinPackets {
             spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
             wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties, hashedRuntimeBlockIds));
             wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
+            wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
             final EntityTracker entityTracker = new EntityTracker(wrapper.user());
             final ClientPlayerEntity clientPlayer = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId);
             clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + clientPlayer.eyeOffset(), playerPosition.z()));
@@ -221,7 +222,6 @@ public class JoinPackets {
             clientPlayer.setOnGround(false);
             clientPlayer.setGameType(playerGameType);
             wrapper.user().put(entityTracker);
-            wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
 
             final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_4.JOIN_GAME, wrapper.user());
             joinGame.write(Type.INT, clientPlayer.javaId()); // entity id
