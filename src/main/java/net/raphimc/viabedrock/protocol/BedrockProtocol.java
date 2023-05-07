@@ -61,7 +61,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
             ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
             ClientboundBedrockPackets.AVAILABLE_COMMANDS,
             ClientboundBedrockPackets.START_GAME,
-            ClientboundBedrockPackets.VIOLATION_WARNING
+            ClientboundBedrockPackets.PACKET_VIOLATION_WARNING
     );
 
     public BedrockProtocol() {
@@ -82,7 +82,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         EntityPackets.register(this);
         HudPackets.register(this);
 
-        this.registerClientbound(ClientboundBedrockPackets.VIOLATION_WARNING, ClientboundPackets1_19_4.DISCONNECT, new PacketHandlers() {
+        this.registerClientbound(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING, ClientboundPackets1_19_4.DISCONNECT, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
