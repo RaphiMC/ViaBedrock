@@ -155,6 +155,8 @@ public class JoinPackets {
                 return;
             }
 
+            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Server feature version: " + vanillaVersion);
+
             for (Experiment experiment : experiments) {
                 if (experiment.enabled()) {
                     Via.getPlatform().getLogger().log(Level.WARNING, "This server uses an experimental feature: " + experiment.name());
