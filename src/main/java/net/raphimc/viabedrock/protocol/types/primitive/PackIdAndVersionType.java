@@ -52,7 +52,7 @@ public class PackIdAndVersionType extends Type<Pair<UUID, String>> {
 
     @Override
     public void write(ByteBuf buffer, Pair<UUID, String> value) throws Exception {
-        BedrockTypes.STRING.write(buffer, value.getKey().toString() + (value.getValue() != null ? ("_" + value.getValue()) : ""));
+        BedrockTypes.STRING.write(buffer, value.key().toString() + (value.value() != null ? ("_" + value.value()) : ""));
     }
 
 }
