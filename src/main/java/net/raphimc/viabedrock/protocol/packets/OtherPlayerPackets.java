@@ -76,10 +76,10 @@ public class OtherPlayerPackets {
             entity.updateTeamPrefix(username);
 
             final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper.user());
-            final BitSet bitSet = new BitSet(6);
-            bitSet.set(0); // ADD_PLAYER
-            bitSet.set(2); // UPDATE_GAME_MODE
-            playerInfoUpdate.write(new BitSetType(6), bitSet);
+            final BitSet actions = new BitSet(6);
+            actions.set(0); // ADD_PLAYER
+            actions.set(2); // UPDATE_GAME_MODE
+            playerInfoUpdate.write(new BitSetType(6), actions); // actions
             playerInfoUpdate.write(Type.VAR_INT, 1); // length
             playerInfoUpdate.write(Type.UUID, uuid); // uuid
             playerInfoUpdate.write(Type.STRING, StringUtil.encodeUUID(uuid)); // username

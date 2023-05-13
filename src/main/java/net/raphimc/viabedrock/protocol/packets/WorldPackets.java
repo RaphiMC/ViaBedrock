@@ -127,8 +127,8 @@ public class WorldPackets {
             wrapper.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension type
             wrapper.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension id
             wrapper.write(Type.LONG, 0L); // hashed seed
-            wrapper.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.getGameType(), gameSession.getLevelGameType())); // gamemode
-            wrapper.write(Type.BYTE, (byte) -1); // previous gamemode
+            wrapper.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.getGameType(), gameSession.getLevelGameType())); // game mode
+            wrapper.write(Type.BYTE, (byte) -1); // previous game mode
             wrapper.write(Type.BOOLEAN, false); // is debug
             wrapper.write(Type.BOOLEAN, gameSession.isFlatGenerator()); // is flat
             wrapper.write(Type.BYTE, (byte) 0x03); // keep data mask

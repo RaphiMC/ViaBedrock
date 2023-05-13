@@ -54,11 +54,11 @@ public class HudPackets {
                 final int length = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // length
                 final UUID[] uuids = new UUID[length];
                 final String[] names = new String[length];
-                final BitSet bitSet = new BitSet(6);
-                bitSet.set(0); // ADD_PLAYER
-                bitSet.set(3); // UPDATE_LISTED
-                bitSet.set(5); // UPDATE_DISPLAY_NAME
-                wrapper.write(new BitSetType(6), bitSet);
+                final BitSet actions = new BitSet(6);
+                actions.set(0); // ADD_PLAYER
+                actions.set(3); // UPDATE_LISTED
+                actions.set(5); // UPDATE_DISPLAY_NAME
+                wrapper.write(new BitSetType(6), actions); // actions
                 wrapper.write(Type.VAR_INT, length); // length
                 for (int i = 0; i < length; i++) {
                     uuids[i] = wrapper.read(BedrockTypes.UUID); // uuid

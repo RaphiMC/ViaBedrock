@@ -226,8 +226,8 @@ public class JoinPackets {
             final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_4.JOIN_GAME, wrapper.user());
             joinGame.write(Type.INT, clientPlayer.javaId()); // entity id
             joinGame.write(Type.BOOLEAN, false); // hardcore
-            joinGame.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(playerGameType, levelGameType)); // gamemode
-            joinGame.write(Type.BYTE, (byte) -1); // previous gamemode
+            joinGame.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(playerGameType, levelGameType)); // game mode
+            joinGame.write(Type.BYTE, (byte) -1); // previous game mode
             joinGame.write(Type.STRING_ARRAY, new String[]{DimensionKeys.OVERWORLD, DimensionKeys.NETHER, DimensionKeys.END}); // dimension types
             joinGame.write(Type.NBT, registries); // registries
             joinGame.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension type
