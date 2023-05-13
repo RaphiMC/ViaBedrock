@@ -22,6 +22,7 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPackets1_19_4;
+import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.JsonUtil;
@@ -40,6 +41,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class PlayPackets {
 
@@ -47,8 +49,9 @@ public class PlayPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.DISCONNECT, ClientboundPackets1_19_4.DISCONNECT, wrapper -> {
             final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
             if (hasMessage) {
-                final String rawMessage = wrapper.read(BedrockTypes.STRING);
-                final String translatedMessage = protocol.getMappingData().getTranslations().getOrDefault(rawMessage, rawMessage);
+                final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+                final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
+                final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
                 wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translatedMessage)); // reason
             } else {
                 wrapper.write(Type.COMPONENT, com.viaversion.viaversion.libs.gson.JsonNull.INSTANCE); // reason

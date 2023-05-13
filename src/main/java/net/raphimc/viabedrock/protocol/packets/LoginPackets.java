@@ -31,6 +31,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.gson.io.GsonDeserializer;
 import io.jsonwebtoken.io.Decoders;
 import io.netty.util.AsciiString;
+import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -57,6 +58,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 import java.util.logging.Level;
 
 public class LoginPackets {
@@ -83,8 +85,9 @@ public class LoginPackets {
                 handler(wrapper -> {
                     final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
                     if (hasMessage) {
-                        final String rawMessage = wrapper.read(BedrockTypes.STRING);
-                        final String translatedMessage = protocol.getMappingData().getTranslations().getOrDefault(rawMessage, rawMessage);
+                        final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+                        final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
+                        final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
                         wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translatedMessage)); // reason
                     } else {
                         wrapper.write(Type.COMPONENT, com.viaversion.viaversion.libs.gson.JsonNull.INSTANCE); // reason
