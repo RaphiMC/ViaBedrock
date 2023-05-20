@@ -23,11 +23,10 @@ import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URI;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,7 +44,7 @@ public class BlockStateUpgrader {
         try {
             final String path = "assets/viabedrock/block_state_upgrade_schema";
 
-            try (FileSystem fileSystem = FileSystems.newFileSystem(BlockStateUpgrader.class.getClassLoader().getResource(path).toURI(), Collections.emptyMap())) {
+            try (FileSystem fileSystem = getFileSystem(BlockStateUpgrader.class.getClassLoader().getResource(path).toURI())) {
                 final List<Path> files = Files.walk(fileSystem.getPath(path))
                         .filter(f -> !f.toString().equals(path))
                         .sorted(Comparator.comparing(Path::toString))
@@ -68,6 +67,16 @@ public class BlockStateUpgrader {
         for (BlockStateUpgradeSchema schema : this.schemas) {
             schema.upgrade(tag);
         }
+    }
+
+    private FileSystem getFileSystem(final URI uri) throws IOException {
+        FileSystem fileSystem;
+        try {
+            fileSystem = FileSystems.getFileSystem(uri);
+        } catch (FileSystemNotFoundException e) {
+            fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+        }
+        return fileSystem;
     }
 
 }
