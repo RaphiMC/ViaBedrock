@@ -22,11 +22,14 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.types.BitSetType;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
+import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.JsonUtil;
+import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -214,16 +217,13 @@ public class JoinPackets {
             }
 
             spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
-            wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties, hashedRuntimeBlockIds));
-            wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
-            wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
-            final EntityTracker entityTracker = new EntityTracker(wrapper.user());
-            final ClientPlayerEntity clientPlayer = entityTracker.addClientPlayer(uniqueEntityId, runtimeEntityId);
+
+            final ClientPlayerEntity clientPlayer = new ClientPlayerEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, 0, wrapper.user().getProtocolInfo().getUuid());
             clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + clientPlayer.eyeOffset(), playerPosition.z()));
             clientPlayer.setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
             clientPlayer.setOnGround(false);
             clientPlayer.setGameType(playerGameType);
-            wrapper.user().put(entityTracker);
+            clientPlayer.setName(wrapper.user().getProtocolInfo().getUsername());
 
             final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_4.JOIN_GAME, wrapper.user());
             joinGame.write(Type.INT, clientPlayer.javaId()); // entity id
@@ -244,6 +244,13 @@ public class JoinPackets {
             joinGame.write(Type.BOOLEAN, gameSession.isFlatGenerator()); // is flat
             joinGame.write(Type.OPTIONAL_GLOBAL_POSITION, null); // last death location
             joinGame.send(BedrockProtocol.class);
+
+            wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties, hashedRuntimeBlockIds));
+            wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
+            wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
+            final EntityTracker entityTracker = new EntityTracker(wrapper.user());
+            entityTracker.addEntity(clientPlayer);
+            wrapper.user().put(entityTracker);
 
             final PacketWrapper brandPluginMessage = PacketWrapper.create(ClientboundPackets1_19_4.PLUGIN_MESSAGE, wrapper.user());
             brandPluginMessage.write(Type.STRING, "minecraft:brand"); // channel
@@ -273,7 +280,14 @@ public class JoinPackets {
             tabList.write(Type.COMPONENT, JsonUtil.textToComponent("§aViaBedrock §3v" + ViaBedrock.VERSION + "\n§7https://github.com/RaphiMC/ViaBedrock")); // footer
             tabList.send(BedrockProtocol.class);
 
-            clientPlayer.createTeam();
+            final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper.user());
+            playerInfoUpdate.write(new BitSetType(6), BitSets.create(6, 0, 2)); // actions | ADD_PLAYER, UPDATE_GAME_MODE
+            playerInfoUpdate.write(Type.VAR_INT, 1); // length
+            playerInfoUpdate.write(Type.UUID, clientPlayer.javaUuid()); // uuid
+            playerInfoUpdate.write(Type.STRING, StringUtil.encodeUUID(clientPlayer.javaUuid())); // username
+            playerInfoUpdate.write(Type.VAR_INT, 0); // property count
+            playerInfoUpdate.write(Type.VAR_INT, (int) GameTypeRewriter.getEffectiveGameMode(playerGameType, levelGameType)); // game mode
+            playerInfoUpdate.send(BedrockProtocol.class);
 
             if (rainLevel > 0F || lightningLevel > 0F) {
                 final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());

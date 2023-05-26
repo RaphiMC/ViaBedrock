@@ -22,16 +22,14 @@ import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
-import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
-import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
-import net.raphimc.viabedrock.protocol.storage.SpawnPositionStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.UUID;
@@ -269,6 +267,17 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void setOnGround(final boolean onGround) {
         this.prevOnGround = onGround;
         super.setOnGround(onGround);
+    }
+
+    @Override
+    public String name() {
+        final PlayerListStorage playerList = this.user.get(PlayerListStorage.class);
+        final Pair<Long, String> entry = playerList.getPlayer(this.javaUuid);
+        if (entry != null) {
+            return entry.value();
+        }
+
+        return this.name;
     }
 
     public boolean isInitiallySpawned() {

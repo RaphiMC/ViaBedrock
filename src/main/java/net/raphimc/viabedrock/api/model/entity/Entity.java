@@ -19,12 +19,6 @@ package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
-import net.raphimc.viabedrock.api.util.JsonUtil;
-import net.raphimc.viabedrock.api.util.StringUtil;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
 import java.util.UUID;
@@ -42,14 +36,12 @@ public class Entity {
      * x, y, z
      */
     protected Position3f position;
-
     /**
      * pitch, yaw, headYaw
      */
     protected Position3f rotation;
-
     protected boolean onGround;
-
+    protected String name;
     protected int age;
 
     public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid, final Entity1_19_4Types type) {
@@ -63,46 +55,6 @@ public class Entity {
 
     public void tick() throws Exception {
         this.age++;
-    }
-
-    public void createTeam() throws Exception {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
-        teams.write(Type.STRING, "vb_" + this.javaId); // team name
-        teams.write(Type.BYTE, (byte) 0); // mode | 0 = ADD
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent("vb_" + this.javaId)); // display name
-        teams.write(Type.BYTE, (byte) 3); // flags
-        teams.write(Type.STRING, "always"); // name tag visibility
-        teams.write(Type.STRING, "never"); // collision rule
-        teams.write(Type.VAR_INT, 21); // color | 21 = RESET
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent("")); // prefix
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent("")); // suffix
-        if (this.type.isOrHasParent(Entity1_19_4Types.PLAYER)) {
-            teams.write(Type.STRING_ARRAY, new String[]{StringUtil.encodeUUID(this.javaUuid)}); // players
-        } else {
-            teams.write(Type.STRING_ARRAY, new String[]{this.javaUuid.toString()}); // players
-        }
-        teams.send(BedrockProtocol.class);
-    }
-
-    public void updateTeamPrefix(final String name) throws Exception {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
-        teams.write(Type.STRING, "vb_" + this.javaId); // team name
-        teams.write(Type.BYTE, (byte) 2); // mode | 0 = UPDATE
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent("vb_" + this.javaId)); // display name
-        teams.write(Type.BYTE, (byte) 3); // flags
-        teams.write(Type.STRING, "always"); // name tag visibility
-        teams.write(Type.STRING, "never"); // collision rule
-        teams.write(Type.VAR_INT, 21); // color | 21 = RESET
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent(name)); // prefix
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent("")); // suffix
-        teams.send(BedrockProtocol.class);
-    }
-
-    public void deleteTeam() throws Exception {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
-        teams.write(Type.STRING, "vb_" + this.javaId); // team name
-        teams.write(Type.BYTE, (byte) 1); // mode | 1 = REMOVE
-        teams.send(BedrockProtocol.class);
     }
 
     public float eyeOffset() {
@@ -151,6 +103,14 @@ public class Entity {
 
     public void setOnGround(final boolean onGround) {
         this.onGround = onGround;
+    }
+
+    public String name() {
+        return this.name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public int age() {

@@ -27,6 +27,8 @@ import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPac
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
+import net.raphimc.viabedrock.api.model.entity.PlayerEntity;
+import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -39,9 +41,9 @@ import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.BitSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -50,6 +52,7 @@ public class OtherPlayerPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.ADD_PLAYER, ClientboundPackets1_19_4.SPAWN_PLAYER, wrapper -> {
+            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
@@ -70,16 +73,13 @@ public class OtherPlayerPackets {
 
             // TODO: Handle remaining fields
 
-            final Entity entity = entityTracker.addEntity(abilities.uniqueEntityId(), runtimeEntityId, uuid, Entity1_19_4Types.PLAYER);
+            final PlayerEntity entity = (PlayerEntity) entityTracker.addEntity(abilities.uniqueEntityId(), runtimeEntityId, uuid, Entity1_19_4Types.PLAYER);
             entity.setPosition(position);
             entity.setRotation(rotation);
-            entity.updateTeamPrefix(username);
+            entity.updateName(username);
 
             final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper.user());
-            final BitSet actions = new BitSet(6);
-            actions.set(0); // ADD_PLAYER
-            actions.set(2); // UPDATE_GAME_MODE
-            playerInfoUpdate.write(new BitSetType(6), actions); // actions
+            playerInfoUpdate.write(new BitSetType(6), BitSets.create(6, 0, 2)); // actions | ADD_PLAYER, UPDATE_GAME_MODE
             playerInfoUpdate.write(Type.VAR_INT, 1); // length
             playerInfoUpdate.write(Type.UUID, uuid); // uuid
             playerInfoUpdate.write(Type.STRING, StringUtil.encodeUUID(uuid)); // username
@@ -93,7 +93,7 @@ public class OtherPlayerPackets {
             playerInfoUpdate.write(Type.STRING, "device_os"); // property name
             playerInfoUpdate.write(Type.STRING, wrapper.read(BedrockTypes.INT_LE).toString()); // device os
             playerInfoUpdate.write(Type.OPTIONAL_STRING, null); // signature
-            playerInfoUpdate.write(Type.VAR_INT, (int) GameTypeRewriter.gameTypeToGameMode(gameType)); // game mode
+            playerInfoUpdate.write(Type.VAR_INT, (int) GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType())); // game mode
             playerInfoUpdate.send(BedrockProtocol.class);
 
             wrapper.write(Type.VAR_INT, entity.javaId()); // entity id

@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.util.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,17 +27,17 @@ import java.util.UUID;
 
 public class PlayerListStorage extends StoredObject {
 
-    private final Map<UUID, String> playerList = new HashMap<>();
+    private final Map<UUID, Pair<Long, String>> playerList = new HashMap<>();
 
     public PlayerListStorage(final UserConnection user) {
         super(user);
     }
 
-    public String addPlayer(final UUID uuid, final String name) {
-        return this.playerList.put(uuid, name);
+    public Pair<Long, String> addPlayer(final UUID uuid, final long playerListId, final String name) {
+        return this.playerList.put(uuid, new Pair<>(playerListId, name));
     }
 
-    public String removePlayer(final UUID uuid) {
+    public Pair<Long, String> removePlayer(final UUID uuid) {
         return this.playerList.remove(uuid);
     }
 
@@ -44,8 +45,18 @@ public class PlayerListStorage extends StoredObject {
         return this.playerList.containsKey(uuid);
     }
 
-    public String getPlayerName(final UUID uuid) {
+    public Pair<Long, String> getPlayer(final UUID uuid) {
         return this.playerList.get(uuid);
+    }
+
+    public Pair<UUID, String> getPlayer(final long playerListId) {
+        for (final Map.Entry<UUID, Pair<Long, String>> entry : this.playerList.entrySet()) {
+            if (entry.getValue().key() == playerListId) {
+                return new Pair<>(entry.getKey(), entry.getValue().value());
+            }
+        }
+
+        return null;
     }
 
 }

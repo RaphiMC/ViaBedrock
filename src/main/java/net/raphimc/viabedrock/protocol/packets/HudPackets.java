@@ -22,10 +22,12 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.types.BitSetType;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -37,7 +39,6 @@ import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -53,17 +54,14 @@ public class HudPackets {
             if (action == 0) { // ADD
                 final int length = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // length
                 final UUID[] uuids = new UUID[length];
+                final long[] playerListIds = new long[length];
                 final String[] names = new String[length];
-                final BitSet actions = new BitSet(6);
-                actions.set(0); // ADD_PLAYER
-                actions.set(3); // UPDATE_LISTED
-                actions.set(5); // UPDATE_DISPLAY_NAME
-                wrapper.write(new BitSetType(6), actions); // actions
+                wrapper.write(new BitSetType(6), BitSets.create(6, 0, 3, 5)); // actions | ADD_PLAYER, UPDATE_LISTED, UPDATE_DISPLAY_NAME
                 wrapper.write(Type.VAR_INT, length); // length
                 for (int i = 0; i < length; i++) {
                     uuids[i] = wrapper.read(BedrockTypes.UUID); // uuid
                     wrapper.write(Type.UUID, uuids[i]); // uuid
-                    wrapper.read(BedrockTypes.VAR_LONG); // entity id
+                    playerListIds[i] = wrapper.read(BedrockTypes.VAR_LONG); // player list id
                     names[i] = wrapper.read(BedrockTypes.STRING); // username
                     wrapper.write(Type.STRING, StringUtil.encodeUUID(uuids[i])); // username
                     wrapper.write(Type.VAR_INT, 5); // property count
@@ -96,10 +94,10 @@ public class HudPackets {
                 final List<UUID> toRemoveUUIDs = new ArrayList<>();
                 final List<String> toRemoveNames = new ArrayList<>();
                 for (int i = 0; i < uuids.length; i++) {
-                    final String name = playerListStorage.addPlayer(uuids[i], names[i]);
-                    if (name != null) {
+                    final Pair<Long, String> entry = playerListStorage.addPlayer(uuids[i], playerListIds[i], names[i]);
+                    if (entry != null) {
                         toRemoveUUIDs.add(uuids[i]);
-                        toRemoveNames.add(name);
+                        toRemoveNames.add(entry.value());
                     }
                 }
                 if (!toRemoveUUIDs.isEmpty()) {
@@ -125,9 +123,9 @@ public class HudPackets {
 
                 final List<String> names = new ArrayList<>();
                 for (UUID uuid : uuids) {
-                    final String name = playerListStorage.removePlayer(uuid);
-                    if (name != null) {
-                        names.add(name);
+                    final Pair<Long, String> entry = playerListStorage.removePlayer(uuid);
+                    if (entry != null) {
+                        names.add(entry.value());
                     }
                 }
 

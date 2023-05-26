@@ -47,11 +47,6 @@ public class EntityTracker extends StoredObject {
         super(user);
     }
 
-    public ClientPlayerEntity addClientPlayer(final long uniqueId, final long runtimeId) throws Exception {
-        this.addEntity(new ClientPlayerEntity(this.getUser(), uniqueId, runtimeId, 0, this.getUser().getProtocolInfo().getUuid()), false);
-        return this.clientPlayerEntity;
-    }
-
     public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final Entity1_19_4Types type) throws Exception {
         switch (type) {
             case PLAYER:
@@ -62,10 +57,6 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity addEntity(final Entity entity) throws Exception {
-        return this.addEntity(entity, true);
-    }
-
-    public Entity addEntity(final Entity entity, final boolean handleTeam) throws Exception {
         if (entity instanceof ClientPlayerEntity) {
             this.clientPlayerEntity = (ClientPlayerEntity) entity;
         }
@@ -80,13 +71,13 @@ public class EntityTracker extends StoredObject {
             removeEntities.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
 
-            if (handleTeam) {
-                prevEntity.deleteTeam();
+            if (prevEntity instanceof PlayerEntity) {
+                ((PlayerEntity) prevEntity).deleteTeam();
             }
         }
 
-        if (handleTeam) {
-            entity.createTeam();
+        if (entity instanceof PlayerEntity) {
+            ((PlayerEntity) entity).createTeam();
         }
 
         return entity;
@@ -100,7 +91,9 @@ public class EntityTracker extends StoredObject {
         this.runtimeIdToUniqueId.remove(entity.runtimeId());
         this.entities.remove(entity.uniqueId());
 
-        entity.deleteTeam();
+        if (entity instanceof PlayerEntity) {
+            ((PlayerEntity) entity).deleteTeam();
+        }
     }
 
     public void tick() throws Exception {
@@ -111,7 +104,9 @@ public class EntityTracker extends StoredObject {
 
     public void prepareForRespawn() throws Exception {
         for (Entity entity : this.entities.values()) {
-            entity.deleteTeam();
+            if (entity instanceof PlayerEntity) {
+                ((PlayerEntity) entity).deleteTeam();
+            }
         }
     }
 
