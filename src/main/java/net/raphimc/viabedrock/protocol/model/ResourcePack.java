@@ -215,6 +215,13 @@ public class ResourcePack {
         }
         this.compressedData = null;
 
+        if (!this.content.containsKey("manifest.json")) {
+            for (String path : new HashSet<>(this.content.keySet())) {
+                final String newPath = path.substring(path.indexOf('/') + 1);
+                this.content.put(newPath, this.content.remove(path));
+            }
+        }
+
         if (!this.contentKey.isEmpty()) {
             final Cipher aesCfb8 = Cipher.getInstance("AES/CFB8/NoPadding");
             final byte[] contentKeyBytes = this.contentKey.getBytes(StandardCharsets.ISO_8859_1);
@@ -250,6 +257,13 @@ public class ResourcePack {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing resource pack file: " + path);
                     continue;
                 }
+                switch (path) {
+                    case "manifest.json":
+                    case "pack_icon.png":
+                    case "README.txt":
+                        continue;
+                }
+
                 final byte[] encryptedData = this.content.get(path);
                 final byte[] keyBytes = key.getBytes(StandardCharsets.ISO_8859_1);
                 aesCfb8.init(Cipher.DECRYPT_MODE, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(Arrays.copyOfRange(keyBytes, 0, 16)));
