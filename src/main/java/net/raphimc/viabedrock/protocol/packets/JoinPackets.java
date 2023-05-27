@@ -22,7 +22,6 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.types.BitSetType;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -46,6 +45,7 @@ import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+import net.raphimc.viabedrock.protocol.types.JavaTypes;
 
 import java.util.Map;
 import java.util.logging.Level;
@@ -281,7 +281,7 @@ public class JoinPackets {
             tabList.send(BedrockProtocol.class);
 
             final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper.user());
-            playerInfoUpdate.write(new BitSetType(6), BitSets.create(6, 0, 2)); // actions | ADD_PLAYER, UPDATE_GAME_MODE
+            playerInfoUpdate.write(JavaTypes.PROFILE_ACTIONS_ENUM_TYPE, BitSets.create(6, 0, 2)); // actions | ADD_PLAYER, UPDATE_GAME_MODE
             playerInfoUpdate.write(Type.VAR_INT, 1); // length
             playerInfoUpdate.write(Type.UUID, clientPlayer.javaUuid()); // uuid
             playerInfoUpdate.write(Type.STRING, StringUtil.encodeUUID(clientPlayer.javaUuid())); // username

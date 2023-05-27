@@ -20,7 +20,6 @@ package net.raphimc.viabedrock.protocol.packets;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.types.BitSetType;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
@@ -37,6 +36,7 @@ import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+import net.raphimc.viabedrock.protocol.types.JavaTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class HudPackets {
                 final UUID[] uuids = new UUID[length];
                 final long[] playerListIds = new long[length];
                 final String[] names = new String[length];
-                wrapper.write(new BitSetType(6), BitSets.create(6, 0, 3, 5)); // actions | ADD_PLAYER, UPDATE_LISTED, UPDATE_DISPLAY_NAME
+                wrapper.write(JavaTypes.PROFILE_ACTIONS_ENUM_TYPE, BitSets.create(6, 0, 3, 5)); // actions | ADD_PLAYER, UPDATE_LISTED, UPDATE_DISPLAY_NAME
                 wrapper.write(Type.VAR_INT, length); // length
                 for (int i = 0; i < length; i++) {
                     uuids[i] = wrapper.read(BedrockTypes.UUID); // uuid
