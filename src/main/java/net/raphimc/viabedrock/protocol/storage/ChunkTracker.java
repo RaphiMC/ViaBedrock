@@ -54,7 +54,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-// TODO: Block connections
+// TODO: Feature: Block connections
 public class ChunkTracker extends StoredObject {
 
     private static final byte[] FULL_LIGHT = new byte[2048];
@@ -534,9 +534,9 @@ public class ChunkTracker extends StoredObject {
                 }
             }
         }
-        // TODO: Block entities
-        // TODO: Heightmap
-        // TODO: Lighting
+        // TODO: Feature: Block entities
+        // TODO: Enhancement: Heightmap
+        // TODO: Enhancement: Lighting
 
         return remappedChunk;
     }

@@ -98,7 +98,7 @@ public class WorldPackets {
             final boolean respawn = wrapper.read(Type.BOOLEAN); // respawn
 
             // TODO: Handle respawn boolean and handle keep data mask
-            // TODO: Is this allowed?
+            // TODO: Is this allowed? HiveMC does that
             if (dimensionId == wrapper.user().get(ChunkTracker.class).getDimensionId()) {
                 BedrockProtocol.kickForIllegalState(wrapper.user(), "Changing dimension to the same dimension is not supported");
                 return;
@@ -437,7 +437,7 @@ public class WorldPackets {
             updateViewPosition.write(Type.VAR_INT, position.z() >> 4); // chunk z
             updateViewPosition.send(BedrockProtocol.class);
 
-            // TODO: What to do with this?
+            // TODO: Handle remaining fields
             final int count = wrapper.read(BedrockTypes.INT_LE); // saved chunks count
             for (int i = 0; i < count; i++) {
                 wrapper.read(BedrockTypes.VAR_INT); // chunk x

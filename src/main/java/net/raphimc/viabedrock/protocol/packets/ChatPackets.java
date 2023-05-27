@@ -143,12 +143,12 @@ public class ChatPackets {
             final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
 
-            if (type != CommandOutputTypes.ALL_OUTPUT) { // TODO: handle other types
+            if (type != CommandOutputTypes.ALL_OUTPUT) { // TODO: Handle other types
                 BedrockProtocol.kickForIllegalState(wrapper.user(), "Unhandled command output type: " + type);
                 wrapper.cancel();
                 return;
             }
-            if (originData.type() != CommandOrigin.TYPE_PLAYER) { // TODO: handle other types
+            if (originData.type() != CommandOrigin.TYPE_PLAYER) { // TODO: Handle other types
                 BedrockProtocol.kickForIllegalState(wrapper.user(), "Unhandled command origin type: " + originData.type());
                 wrapper.cancel();
                 return;
