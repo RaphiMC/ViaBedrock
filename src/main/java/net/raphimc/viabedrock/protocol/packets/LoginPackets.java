@@ -65,6 +65,7 @@ public class LoginPackets {
 
     private static final KeyFactory EC_KEYFACTORY;
     private static final ECPublicKey MOJANG_PUBLIC_KEY;
+    private static final int CLOCK_SKEW = 60;
 
     private static final Gson GSON = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).disableHtmlEscaping().create();
     private static final GsonDeserializer<Map<String, ?>> GSON_DESERIALIZER = new GsonDeserializer<>(GSON);
@@ -142,6 +143,7 @@ public class LoginPackets {
                     // https://github.com/jwtk/jjwt/issues/687
                     final boolean[] trim = {true};
                     final Jws<Claims> jwt = Jwts.parserBuilder()
+                            .setAllowedClockSkewSeconds(CLOCK_SKEW)
                             .setSigningKeyResolver(new SigningKeyResolverAdapter() {
                                 @Override
                                 public Key resolveSigningKey(JwsHeader header, Claims claims) {
@@ -268,9 +270,9 @@ public class LoginPackets {
             final PrivateKey privateKey = authChainData.getPrivateKey();
             final String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
 
-            final Jws<Claims> mojangJwt = Jwts.parserBuilder().setSigningKey(MOJANG_PUBLIC_KEY).deserializeJsonWith(GSON_DESERIALIZER).build().parseClaimsJws(authChainData.getMojangJwt());
+            final Jws<Claims> mojangJwt = Jwts.parserBuilder().setAllowedClockSkewSeconds(CLOCK_SKEW).setSigningKey(MOJANG_PUBLIC_KEY).deserializeJsonWith(GSON_DESERIALIZER).build().parseClaimsJws(authChainData.getMojangJwt());
             final ECPublicKey mojangJwtPublicKey = publicKeyFromBase64(mojangJwt.getBody().get("identityPublicKey", String.class));
-            final Jws<Claims> identityJwt = Jwts.parserBuilder().setSigningKey(mojangJwtPublicKey).build().parseClaimsJws(authChainData.getIdentityJwt());
+            final Jws<Claims> identityJwt = Jwts.parserBuilder().setAllowedClockSkewSeconds(CLOCK_SKEW).setSigningKey(mojangJwtPublicKey).build().parseClaimsJws(authChainData.getIdentityJwt());
 
             if (authChainData.getSelfSignedJwt() == null) {
                 final String selfSignedJwt = Jwts.builder()
