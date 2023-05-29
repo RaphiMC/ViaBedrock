@@ -19,13 +19,17 @@ package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
+import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardEntry;
+import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardObjective;
 import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.api.util.StringUtil;
@@ -35,6 +39,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.TitleTypes;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
+import net.raphimc.viabedrock.protocol.storage.ScoreboardTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.JavaTypes;
 
@@ -49,6 +54,7 @@ public class HudPackets {
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_LIST, ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper -> {
             final PlayerListStorage playerListStorage = wrapper.user().get(PlayerListStorage.class);
+            final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
 
             final short action = wrapper.read(Type.UNSIGNED_BYTE); // action
             if (action == 0) { // ADD
@@ -99,7 +105,13 @@ public class HudPackets {
                         toRemoveUUIDs.add(uuids[i]);
                         toRemoveNames.add(entry.value());
                     }
+
+                    final Pair<ScoreboardObjective, ScoreboardEntry> scoreboardEntry = scoreboardTracker.getEntryForPlayer(playerListIds[i]);
+                    if (scoreboardEntry != null) {
+                        scoreboardEntry.key().updateEntry(wrapper.user(), scoreboardEntry.value());
+                    }
                 }
+
                 if (!toRemoveUUIDs.isEmpty()) {
                     // Remove duplicate players from the player list first because Mojang client overwrites entries if they are added twice
                     final PacketWrapper playerInfoRemove = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_REMOVE, wrapper.user());
@@ -126,6 +138,10 @@ public class HudPackets {
                     final Pair<Long, String> entry = playerListStorage.removePlayer(uuid);
                     if (entry != null) {
                         names.add(entry.value());
+                        final Pair<ScoreboardObjective, ScoreboardEntry> scoreboardEntry = scoreboardTracker.getEntryForPlayer(entry.key());
+                        if (scoreboardEntry != null) {
+                            scoreboardEntry.key().updateEntry(wrapper.user(), scoreboardEntry.value());
+                        }
                     }
                 }
 
@@ -191,6 +207,105 @@ public class HudPackets {
             } catch (Throwable e) { // Mojang client silently ignores errors
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalText + "'", e);
                 wrapper.cancel();
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_DISPLAY_OBJECTIVE, ClientboundPackets1_19_4.DISPLAY_SCOREBOARD, wrapper -> {
+            final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
+
+            final String displaySlot = wrapper.read(BedrockTypes.STRING); // display slot
+            final String objectiveName = wrapper.read(BedrockTypes.STRING); // objective name
+            final String displayName = wrapper.read(BedrockTypes.STRING); // display name
+            wrapper.read(BedrockTypes.STRING); // criteria
+            final boolean ascending = wrapper.read(BedrockTypes.VAR_INT) == 0; // sort order | Any invalid value is treated as no sorting, but Java Edition doesn't support that
+
+            switch (displaySlot) {
+                case "sidebar":
+                    wrapper.write(Type.BYTE, (byte) 1); // position
+                    break;
+                case "belowname":
+                    wrapper.write(Type.BYTE, (byte) 2); // position
+                    break;
+                case "list":
+                    wrapper.write(Type.BYTE, (byte) 0); // position
+                    break;
+                default: // Mojang client silently ignores errors
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown scoreboard display slot: " + displaySlot);
+                    wrapper.cancel();
+                    return;
+            }
+            wrapper.write(Type.STRING, objectiveName); // objective name
+
+            if (objectiveName.isEmpty()) return;
+
+            if (!scoreboardTracker.hasObjective(objectiveName)) {
+                scoreboardTracker.addObjective(objectiveName, new ScoreboardObjective(objectiveName, ascending));
+                final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+
+                final PacketWrapper scoreboardObjective = PacketWrapper.create(ClientboundPackets1_19_4.SCOREBOARD_OBJECTIVE, wrapper.user());
+                scoreboardObjective.write(Type.STRING, objectiveName); // objective name
+                scoreboardObjective.write(Type.BYTE, (byte) 0); // mode | 0 = CREATE
+                scoreboardObjective.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockTranslator.translate(displayName, translator, new Object[0]))); // display name
+                scoreboardObjective.write(Type.VAR_INT, 0); // display mode | 0 = INTEGER
+                scoreboardObjective.send(BedrockProtocol.class);
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_SCORE, null, wrapper -> {
+            wrapper.cancel();
+            final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
+
+            final int action = wrapper.read(Type.UNSIGNED_BYTE); // action
+
+            final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // count
+            for (int i = 0; i < count; i++) {
+                final long scoreboardId = wrapper.read(BedrockTypes.VAR_LONG); // scoreboard id
+                final String objectiveName = wrapper.read(BedrockTypes.STRING); // objective name
+                final int score = wrapper.read(BedrockTypes.INT_LE); // score
+
+                final ScoreboardEntry entry;
+                if (action == 0) { // SET
+                    final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
+                    Long entityId = null;
+                    String fakePlayerName = null;
+                    if (type == 1 || type == 2) { // PLAYER or ENTITY
+                        entityId = wrapper.read(BedrockTypes.VAR_LONG); // entity id
+                    } else if (type == 3) { // FAKE_PLAYER
+                        fakePlayerName = wrapper.read(BedrockTypes.STRING); // fake player name
+                    }
+                    entry = new ScoreboardEntry(score, type == 1, entityId, fakePlayerName);
+                } else if (action == 1) { // REMOVE
+                    entry = null;
+                } else { // Mojang client silently ignores errors
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown scoreboard action: " + action);
+                    continue;
+                }
+
+                final ScoreboardObjective objective = scoreboardTracker.getObjective(objectiveName);
+                if (objective == null) continue;
+
+                final Pair<ScoreboardObjective, ScoreboardEntry> existingEntry = scoreboardTracker.getEntry(scoreboardId);
+                if (existingEntry != null) {
+                    existingEntry.key().removeEntry(wrapper.user(), scoreboardId);
+                    if (entry != null) {
+                        existingEntry.value().setScore(entry.score());
+                        objective.addEntry(wrapper.user(), scoreboardId, existingEntry.value());
+                    }
+                } else if (entry != null) {
+                    final ScoreboardEntry sameTargetEntry = objective.getEntryWithSameTarget(entry);
+                    if (sameTargetEntry != null) {
+                        sameTargetEntry.setScore(entry.score());
+                        objective.updateEntry(wrapper.user(), sameTargetEntry, ScoreboardEntry.ACTION_CHANGE);
+                    } else if (entry.isValid()) {
+                        objective.addEntry(wrapper.user(), scoreboardId, entry);
+                    }
+                }
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.REMOVE_OBJECTIVE, ClientboundPackets1_19_4.SCOREBOARD_OBJECTIVE, new PacketHandlers() {
+            @Override
+            protected void register() {
+                map(BedrockTypes.STRING, Type.STRING); // objective name
+                create(Type.BYTE, (byte) 1); // mode | 1 = REMOVE
+                handler(wrapper -> wrapper.user().get(ScoreboardTracker.class).removeObjective(wrapper.get(Type.STRING, 0)));
             }
         });
     }

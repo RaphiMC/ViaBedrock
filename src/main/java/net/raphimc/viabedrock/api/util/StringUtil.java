@@ -28,15 +28,19 @@ public class StringUtil {
      * @return The encoded string
      */
     public static String encodeUUID(final UUID uuid) {
+        return encodeLong(uuid.getMostSignificantBits()) + encodeLong(uuid.getLeastSignificantBits());
+    }
+
+    /**
+     * Encodes a long into an 8 character long minecraft invisible string
+     *
+     * @param bits The long to encode
+     * @return The encoded string
+     */
+    public static String encodeLong(long bits) {
         final StringBuilder builder = new StringBuilder();
-        final char[] chars = new char[8];
-        long bits = uuid.getMostSignificantBits();
+        final char[] chars = new char[4];
         for (int i = 0; i < 4; i++) {
-            chars[i] = (char) (bits & 0xFF);
-            bits >>= 8;
-        }
-        bits = uuid.getLeastSignificantBits();
-        for (int i = 4; i < 8; i++) {
             chars[i] = (char) (bits & 0xFF);
             bits >>= 8;
         }

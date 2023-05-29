@@ -139,6 +139,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         user.put(new PlayerListStorage(user));
         user.put(new PacketSyncStorage(user));
         user.put(new ChannelStorage(user));
+        user.put(new ScoreboardTracker(user));
     }
 
     @Override

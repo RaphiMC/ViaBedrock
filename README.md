@@ -45,7 +45,7 @@ Additionally ViaBedrock uses assets and data dumps from other projects: See the 
 - [ ] Respawning
 - [x] Dimension switching
 - [ ] Form GUIs
-- [ ] Scoreboard
+- [x] Scoreboard
 - [x] Titles
 - [ ] Bossbar
 - [x] Player list
