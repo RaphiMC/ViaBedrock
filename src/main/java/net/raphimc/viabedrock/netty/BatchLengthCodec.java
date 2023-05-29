@@ -36,7 +36,7 @@ public class BatchLengthCodec extends ByteToMessageCodec<ByteBuf> {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         while (in.isReadable()) {
             final int length = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(in);
-            out.add(in.readBytes(length));
+            out.add(in.readRetainedSlice(length));
         }
     }
 

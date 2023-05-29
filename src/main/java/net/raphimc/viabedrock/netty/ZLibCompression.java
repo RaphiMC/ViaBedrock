@@ -45,33 +45,29 @@ public class ZLibCompression extends ByteToMessageCodec<ByteBuf> {
     protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
         if (this.deflater == null) this.deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
 
-        if (in.isReadable()) {
-            final byte[] uncompressedData = new byte[in.readableBytes()];
-            in.readBytes(uncompressedData);
-            this.deflater.setInput(uncompressedData);
-            this.deflater.finish();
-            while (!this.deflater.finished()) {
-                out.writeBytes(this.deflateBuffer, 0, this.deflater.deflate(this.deflateBuffer));
-            }
-            this.deflater.reset();
+        final byte[] uncompressedData = new byte[in.readableBytes()];
+        in.readBytes(uncompressedData);
+        this.deflater.setInput(uncompressedData);
+        this.deflater.finish();
+        while (!this.deflater.finished()) {
+            out.writeBytes(this.deflateBuffer, 0, this.deflater.deflate(this.deflateBuffer));
         }
+        this.deflater.reset();
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         if (this.inflater == null) this.inflater = new Inflater(true);
 
-        if (in.isReadable()) {
-            final byte[] compressedData = new byte[in.readableBytes()];
-            in.readBytes(compressedData);
-            this.inflater.setInput(compressedData);
-            final ByteBuf uncompressedData = ctx.alloc().buffer();
-            while (!this.inflater.finished()) {
-                uncompressedData.writeBytes(this.inflateBuffer, 0, this.inflater.inflate(this.inflateBuffer));
-            }
-            this.inflater.reset();
-            out.add(uncompressedData);
+        final byte[] compressedData = new byte[in.readableBytes()];
+        in.readBytes(compressedData);
+        this.inflater.setInput(compressedData);
+        final ByteBuf uncompressedData = ctx.alloc().buffer();
+        while (!this.inflater.finished()) {
+            uncompressedData.writeBytes(this.inflateBuffer, 0, this.inflater.inflate(this.inflateBuffer));
         }
+        this.inflater.reset();
+        out.add(uncompressedData);
     }
 
 }

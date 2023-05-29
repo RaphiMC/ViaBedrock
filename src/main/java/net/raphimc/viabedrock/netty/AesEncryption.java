@@ -22,11 +22,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import io.netty.handler.codec.CorruptedFrameException;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -43,9 +45,6 @@ public class AesEncryption extends ByteToMessageCodec<ByteBuf> {
     private long sentPacketCounter;
     private long receivedPacketCounter;
 
-    private byte[] decryptBuffer = new byte[8192];
-    private byte[] encryptBuffer = new byte[8192];
-
     public AesEncryption(final SecretKey secretKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
         final byte[] iv = new byte[16];
         System.arraycopy(secretKey.getEncoded(), 0, iv, 0, 12);
@@ -61,56 +60,41 @@ public class AesEncryption extends ByteToMessageCodec<ByteBuf> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) throws Exception {
-        final byte[] hash = this.generateHash(in);
+        final byte[] hash = this.generateHash(in, this.sentPacketCounter++);
 
-        final byte[] data = new byte[in.readableBytes()];
-        in.readBytes(data);
-        final int outLength = this.outCipher.getOutputSize(data.length);
-        if (this.encryptBuffer.length < outLength) {
-            this.encryptBuffer = new byte[outLength];
-        }
+        final ByteBuffer inBuffer = in.nioBuffer();
+        out.ensureWritable(in.readableBytes() + 8);
 
-        out.writeBytes(this.encryptBuffer, 0, this.outCipher.update(data, 0, data.length, this.encryptBuffer, 0));
-        out.writeBytes(this.encryptBuffer, 0, this.outCipher.update(hash, 0, hash.length, this.encryptBuffer, 0));
+        this.outCipher.update(inBuffer, out.nioBuffer(0, in.readableBytes()));
+        this.outCipher.update(ByteBuffer.wrap(hash), out.nioBuffer(in.readableBytes(), 8));
+        out.writerIndex(in.readableBytes() + 8);
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        final ByteBuffer inBuffer = in.nioBuffer();
+        final ByteBuffer outBuffer = inBuffer.duplicate();
+
+        this.inCipher.update(inBuffer, outBuffer);
+        final ByteBuf output = in.readRetainedSlice(in.readableBytes() - 8);
+
         final byte[] hash = new byte[8];
-        final byte[] data = new byte[in.readableBytes() - hash.length];
-        in.readBytes(data);
         in.readBytes(hash);
-
-        final int outLength = this.inCipher.getOutputSize(data.length);
-        if (this.decryptBuffer.length < outLength) {
-            this.decryptBuffer = new byte[outLength];
+        final byte[] expectedHash = this.generateHash(output, this.receivedPacketCounter++);
+        if (!Arrays.equals(expectedHash, hash)) {
+            throw new CorruptedFrameException("Invalid encrypted packet");
         }
 
-        final ByteBuf decrypted = ctx.alloc().buffer(outLength);
-        decrypted.writeBytes(this.decryptBuffer, 0, this.inCipher.update(data, 0, data.length, this.decryptBuffer, 0));
-        if (!this.verifyHash(decrypted, Arrays.copyOf(this.decryptBuffer, this.inCipher.update(hash, 0, hash.length, this.decryptBuffer, 0)))) {
-            throw new IllegalStateException("Invalid packet hash");
-        }
-
-        out.add(decrypted);
+        out.add(output);
     }
 
-    private byte[] generateHash(final ByteBuf buf) {
-        this.sha256.update(Longs.toByteArray(Long.reverseBytes(this.sentPacketCounter++)));
+    private byte[] generateHash(final ByteBuf buf, final long packetCounter) {
+        this.sha256.update(Longs.toByteArray(Long.reverseBytes(packetCounter)));
         this.sha256.update(ByteBufUtil.getBytes(buf));
         this.sha256.update(this.secretKey.getEncoded());
         final byte[] hash = this.sha256.digest();
         this.sha256.reset();
         return Arrays.copyOf(hash, 8);
-    }
-
-    private boolean verifyHash(final ByteBuf buf, final byte[] receivedHash) {
-        this.sha256.update(Longs.toByteArray(Long.reverseBytes(this.receivedPacketCounter++)));
-        this.sha256.update(ByteBufUtil.getBytes(buf));
-        this.sha256.update(this.secretKey.getEncoded());
-        final byte[] expectedHash = this.sha256.digest();
-        this.sha256.reset();
-        return Arrays.equals(receivedHash, Arrays.copyOf(expectedHash, 8));
     }
 
 }

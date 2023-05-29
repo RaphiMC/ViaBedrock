@@ -31,37 +31,33 @@ public class SnappyCompression extends ByteToMessageCodec<ByteBuf> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
-        if (in.isReadable()) {
-            if (in.readableBytes() > Short.MAX_VALUE) { // Netty's snappy implementation can't handle more than that (https://github.com/netty/netty/issues/13226)
-                Type.VAR_INT.writePrimitive(out, in.readableBytes());
+        if (in.readableBytes() <= Short.MAX_VALUE) {
+            this.snappy.encode(in, out, in.readableBytes());
+            this.snappy.reset();
+        } else { // Netty's snappy implementation can't handle more than that (https://github.com/netty/netty/issues/13226)
+            Type.VAR_INT.writePrimitive(out, in.readableBytes());
 
-                int value = in.readableBytes() - 1;
-                int highestOneBit = Integer.highestOneBit(value);
-                int bitLength = 0;
-                while ((highestOneBit >>= 1) != 0) {
-                    bitLength++;
-                }
-                int bytesToEncode = 1 + bitLength / 8;
-                out.writeByte(59 + bytesToEncode << 2);
-                for (int i = 0; i < bytesToEncode; i++) {
-                    out.writeByte(in.readableBytes() - 1 >> i * 8 & 0x0ff);
-                }
-                out.writeBytes(in);
-            } else {
-                this.snappy.encode(in, out, in.readableBytes());
-                this.snappy.reset();
+            int value = in.readableBytes() - 1;
+            int highestOneBit = Integer.highestOneBit(value);
+            int bitLength = 0;
+            while ((highestOneBit >>= 1) != 0) {
+                bitLength++;
             }
+            int bytesToEncode = 1 + bitLength / 8;
+            out.writeByte(59 + bytesToEncode << 2);
+            for (int i = 0; i < bytesToEncode; i++) {
+                out.writeByte(in.readableBytes() - 1 >> i * 8 & 0x0ff);
+            }
+            out.writeBytes(in);
         }
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-        if (in.isReadable()) {
-            final ByteBuf uncompressedData = ctx.alloc().buffer();
-            this.snappy.decode(in, uncompressedData);
-            this.snappy.reset();
-            out.add(uncompressedData);
-        }
+        final ByteBuf uncompressedData = ctx.alloc().buffer();
+        this.snappy.decode(in, uncompressedData);
+        this.snappy.reset();
+        out.add(uncompressedData);
     }
 
 }
