@@ -81,6 +81,8 @@ public class SkinProvider implements Provider {
         claims.put("ThirdPartyNameOnly", false);
         claims.put("IsEditorMode", false);
         claims.put("TrustedSkin", false);
+        claims.put("OverrideSkin", false);
+        claims.put("CompatibleWithClientSideChunkGen", false);
 
         return claims;
     }
