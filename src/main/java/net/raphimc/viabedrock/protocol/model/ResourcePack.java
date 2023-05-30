@@ -62,6 +62,9 @@ public class ResourcePack {
 
     private static final byte[] CONTENTS_JSON_ENCRYPTED_MAGIC = new byte[]{(byte) 0xFC, (byte) 0xB9, (byte) 0xCF, (byte) 0x9B};
 
+    // Manifest validation is enabled by default, but can be disabled for debugging purposes (ResourcePackConverterTest)
+    public static boolean VALIDATE_MANIFEST = true;
+
     private final UUID packId;
     private final String version;
     private String contentKey;
@@ -271,24 +274,26 @@ public class ResourcePack {
             }
         }
 
-        final JsonObject manifestJson = this.content.getJson("manifest.json");
-        final int formatVersion = manifestJson.get("format_version").getAsInt();
-        if (formatVersion != 1 && formatVersion != 2) {
-            throw new IllegalStateException("Unsupported resource pack format version: " + formatVersion);
-        }
-        final JsonObject headerObj = manifestJson.getAsJsonObject("header");
-        final UUID packId = UUID.fromString(headerObj.get("uuid").getAsString());
-        if (!this.packId.equals(packId)) {
-            throw new IllegalStateException("manifest.json packId mismatch: " + this.packId + " != " + packId);
-        }
-        final JsonArray versionArray = headerObj.getAsJsonArray("version");
-        final StringBuilder version = new StringBuilder();
-        for (JsonElement digit : versionArray) {
-            version.append(digit.getAsString()).append(".");
-        }
-        version.deleteCharAt(version.length() - 1);
-        if (!this.version.contentEquals(version)) {
-            throw new IllegalStateException("manifest.json version mismatch: " + this.version + " != " + version);
+        if (VALIDATE_MANIFEST) {
+            final JsonObject manifestJson = this.content.getJson("manifest.json");
+            final int formatVersion = manifestJson.get("format_version").getAsInt();
+            if (formatVersion != 1 && formatVersion != 2) {
+                throw new IllegalStateException("Unsupported resource pack format version: " + formatVersion);
+            }
+            final JsonObject headerObj = manifestJson.getAsJsonObject("header");
+            final UUID packId = UUID.fromString(headerObj.get("uuid").getAsString());
+            if (!this.packId.equals(packId)) {
+                throw new IllegalStateException("manifest.json packId mismatch: " + this.packId + " != " + packId);
+            }
+            final JsonArray versionArray = headerObj.getAsJsonArray("version");
+            final StringBuilder version = new StringBuilder();
+            for (JsonElement digit : versionArray) {
+                version.append(digit.getAsString()).append(".");
+            }
+            version.deleteCharAt(version.length() - 1);
+            if (!this.version.contentEquals(version)) {
+                throw new IllegalStateException("manifest.json version mismatch: " + this.version + " != " + version);
+            }
         }
     }
 

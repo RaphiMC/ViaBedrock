@@ -26,6 +26,7 @@ import java.util.UUID;
 public class ResourcePackConverterTest {
 
     public static void main(String[] args) throws Throwable {
+        ResourcePack.VALIDATE_MANIFEST = false;
         final File input = new File("input.mcpack");
         final File output = new File("output.zip");
 
