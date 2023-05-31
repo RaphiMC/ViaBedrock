@@ -44,6 +44,7 @@ import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.api.chunk.block_state.BlockStateUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
+import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import javax.imageio.ImageIO;
@@ -187,7 +188,7 @@ public class BedrockMappingData extends MappingDataBase {
         }
 
         this.steveSkin = this.readImage("bedrock/skin/steve.png");
-        this.skinGeometry = this.readJson("bedrock/skin/geometry.json");
+        this.skinGeometry = JsonUtil.sort(this.readJson("bedrock/skin/geometry.json"), Comparator.naturalOrder());
     }
 
     public Map<String, String> getTranslations() {

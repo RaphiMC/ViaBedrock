@@ -17,13 +17,18 @@
  */
 package net.raphimc.viabedrock.api.util;
 
+import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
+import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.gson.JsonParser;
 import net.lenni0451.mcstructs.core.TextFormatting;
 import net.lenni0451.mcstructs.text.serializer.LegacyStringDeserializer;
 import net.lenni0451.mcstructs.text.serializer.TextComponentSerializer;
 import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 public class JsonUtil {
@@ -48,6 +53,25 @@ public class JsonUtil {
 
     public static JsonElement textToComponent(final String text) {
         return JsonParser.parseString(textToJson(text));
+    }
+
+    public static <T extends JsonElement> T sort(final T element, final Comparator<String> comparator) {
+        if (element == null) {
+            return null;
+        } else if (element.isJsonArray()) {
+            final JsonArray array = element.getAsJsonArray();
+            for (int i = 0; i < array.size(); i++) array.set(i, sort(array.get(i), comparator));
+            return (T) array;
+        } else if (element.isJsonObject()) {
+            final JsonObject object = element.getAsJsonObject();
+            final JsonObject sorted = new JsonObject();
+            final List<String> keys = new ArrayList<>(object.keySet());
+            keys.sort(comparator);
+            for (String key : keys) sorted.add(key, sort(object.get(key), comparator));
+            return (T) sorted;
+        } else {
+            return element;
+        }
     }
 
 }

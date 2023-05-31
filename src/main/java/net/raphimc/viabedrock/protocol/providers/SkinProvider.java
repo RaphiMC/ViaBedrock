@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
+import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
 
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
@@ -48,7 +49,7 @@ public class SkinProvider implements Provider {
         claims.put("SkinResourcePatch", Base64.getEncoder().encodeToString("{\"geometry\":{\"default\":\"geometry.humanoid.custom\"}}".getBytes(StandardCharsets.UTF_8)));
         claims.put("SkinImageWidth", skin.getWidth());
         claims.put("SkinImageHeight", skin.getHeight());
-        claims.put("SkinData", Base64.getEncoder().encodeToString(this.encodeImage(skin)));
+        claims.put("SkinData", Base64.getEncoder().encodeToString(ImageType.getImageData(skin)));
         claims.put("AnimatedImageData", new ArrayList<>());
         claims.put("CapeImageHeight", 0);
         claims.put("CapeImageWidth", 0);
@@ -93,21 +94,6 @@ public class SkinProvider implements Provider {
         if (channelStorage.hasChannel(BedrockSkinUtilityInterface.CHANNEL)) {
             BedrockSkinUtilityInterface.sendSkin(user, playerUuid, skin);
         }
-    }
-
-    protected byte[] encodeImage(final BufferedImage image) {
-        final byte[] data = new byte[image.getWidth() * image.getHeight() * 4];
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                final int pixel = image.getRGB(x, y);
-                final int index = (y * image.getWidth() + x) * 4;
-                data[index] = (byte) ((pixel >> 16) & 0xFF);
-                data[index + 1] = (byte) ((pixel >> 8) & 0xFF);
-                data[index + 2] = (byte) (pixel & 0xFF);
-                data[index + 3] = (byte) ((pixel >> 24) & 0xFF);
-            }
-        }
-        return data;
     }
 
 }
