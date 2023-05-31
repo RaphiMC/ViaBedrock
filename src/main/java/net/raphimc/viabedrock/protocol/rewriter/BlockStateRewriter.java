@@ -115,7 +115,7 @@ public class BlockStateRewriter extends StoredObject {
                 continue;
             }
 
-            this.legacyBlockStateIdMappings.put(legacyId >> 4 | legacyData & 15, bedrockId);
+            this.legacyBlockStateIdMappings.put(legacyId << 4 | legacyData & 15, bedrockId);
         }
 
         this.blockStateSanitizer = new BlockStateSanitizer(bedrockBlockStates);
