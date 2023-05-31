@@ -24,6 +24,7 @@ import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.DeviceOS;
 import net.raphimc.viabedrock.protocol.model.SkinData;
+import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 
@@ -36,14 +37,14 @@ public class SkinProvider implements Provider {
 
     public Map<String, Object> getClientPlayerSkin(final UserConnection user) {
         final HandshakeStorage handshakeStorage = user.get(HandshakeStorage.class);
-        final String username = user.getProtocolInfo().getUsername();
+        final AuthChainData authChainData = user.get(AuthChainData.class);
 
         final BufferedImage skin = BedrockProtocol.MAPPINGS.getSteveSkin();
 
         final Map<String, Object> claims = new HashMap<>();
 
-        claims.put("PlayFabId", "");
-        claims.put("SkinId", UUID.randomUUID() + ".Custom" + UUID.randomUUID());
+        claims.put("PlayFabId", authChainData.getPlayFabId().toLowerCase(Locale.ROOT));
+        claims.put("SkinId", "Custom" + authChainData.getDeviceId());
         claims.put("SkinResourcePatch", Base64.getEncoder().encodeToString("{\"geometry\":{\"default\":\"geometry.humanoid.custom\"}}".getBytes(StandardCharsets.UTF_8)));
         claims.put("SkinImageWidth", skin.getWidth());
         claims.put("SkinImageHeight", skin.getHeight());
@@ -64,12 +65,12 @@ public class SkinProvider implements Provider {
         claims.put("PersonaSkin", false);
         claims.put("CapeOnClassicSkin", false);
         claims.put("ClientRandomId", ThreadLocalRandom.current().nextLong()); // ?
-        claims.put("SelfSignedId", UUID.randomUUID().toString());
+        claims.put("SelfSignedId", UUID.randomUUID().toString()); // ?
         claims.put("CurrentInputMode", 1);
         claims.put("DefaultInputMode", 1);
         claims.put("GuiScale", -1L);
         claims.put("UIProfile", 0);
-        claims.put("DeviceId", UUID.randomUUID().toString());
+        claims.put("DeviceId", authChainData.getDeviceId().toString());
         claims.put("DeviceModel", "");
         claims.put("DeviceOS", DeviceOS.UWP.ordinal());
         claims.put("LanguageCode", "en_US");
@@ -77,7 +78,7 @@ public class SkinProvider implements Provider {
         claims.put("PlatformOnlineId", "");
         claims.put("GameVersion", BedrockProtocolVersion.LATEST_BEDROCK_VERSION);
         claims.put("ServerAddress", handshakeStorage.getHostname() + ":" + handshakeStorage.getPort());
-        claims.put("ThirdPartyName", username);
+        claims.put("ThirdPartyName", user.getProtocolInfo().getUsername());
         claims.put("ThirdPartyNameOnly", false);
         claims.put("IsEditorMode", false);
         claims.put("TrustedSkin", false);

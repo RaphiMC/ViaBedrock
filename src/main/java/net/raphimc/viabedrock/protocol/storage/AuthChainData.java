@@ -30,6 +30,8 @@ public class AuthChainData extends StoredObject {
     private final String identityJwt;
     private final ECPublicKey publicKey;
     private final ECPrivateKey privateKey;
+    private final UUID deviceId;
+    private final String playFabId;
 
     private String selfSignedJwt;
     private String skinJwt;
@@ -37,13 +39,15 @@ public class AuthChainData extends StoredObject {
     private UUID identity;
     private String xuid;
 
-    public AuthChainData(final UserConnection user, final String mojangJwt, final String identityJwt, final ECPublicKey publicKey, final ECPrivateKey privateKey) {
+    public AuthChainData(final UserConnection user, final String mojangJwt, final String identityJwt, final ECPublicKey publicKey, final ECPrivateKey privateKey, final UUID deviceId, final String playFabId) {
         super(user);
 
         this.mojangJwt = mojangJwt;
         this.identityJwt = identityJwt;
         this.publicKey = publicKey;
         this.privateKey = privateKey;
+        this.deviceId = deviceId;
+        this.playFabId = playFabId;
     }
 
     public String getMojangJwt() {
@@ -60,6 +64,14 @@ public class AuthChainData extends StoredObject {
 
     public ECPrivateKey getPrivateKey() {
         return this.privateKey;
+    }
+
+    public UUID getDeviceId() {
+        return this.deviceId;
+    }
+
+    public String getPlayFabId() {
+        return this.playFabId;
     }
 
     public String getSelfSignedJwt() {

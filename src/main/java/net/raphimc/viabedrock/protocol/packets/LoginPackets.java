@@ -329,18 +329,19 @@ public class LoginPackets {
                     .setNotBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
                     .compact();
 
+            final AuthChainData authChainData = new AuthChainData(user, null, identityJwt, publicKey, privateKey, UUID.randomUUID(), "");
+            authChainData.setXuid((String) extraData.get("XUID"));
+            authChainData.setIdentity(UUID.fromString((String) extraData.get("identity")));
+            authChainData.setDisplayName((String) extraData.get("displayName"));
+            user.put(authChainData);
+
             final String skinData = Jwts.builder()
                     .signWith(privateKey, SignatureAlgorithm.ES384)
                     .setHeaderParam("x5u", encodedPublicKey)
                     .addClaims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(user))
                     .compact();
 
-            final AuthChainData authChainData = new AuthChainData(user, null, identityJwt, publicKey, privateKey);
             authChainData.setSkinJwt(skinData);
-            authChainData.setXuid((String) extraData.get("XUID"));
-            authChainData.setIdentity(UUID.fromString((String) extraData.get("identity")));
-            authChainData.setDisplayName((String) extraData.get("displayName"));
-            user.put(authChainData);
         }
     }
 
