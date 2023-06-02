@@ -19,17 +19,17 @@ package net.raphimc.viabedrock.protocol.data.enums.java;
 
 public class GameEvents {
 
-    public static final int NO_RESPAWN_BLOCK = 0;
-    public static final int RAIN_STARTED = 1;
-    public static final int RAIN_STOPPED = 2;
-    public static final int GAME_MODE_CHANGED = 3;
-    public static final int GAME_WON = 4;
-    public static final int DEMO_MESSAGE_SHOWN = 5;
-    public static final int PROJECTILE_HIT_PLAYER = 6;
-    public static final int RAIN_GRADIENT_CHANGED = 7;
-    public static final int THUNDER_GRADIENT_CHANGED = 8;
-    public static final int PUFFERFISH_STING = 9;
-    public static final int ELDER_GUARDIAN_EFFECT = 10;
-    public static final int IMMEDIATE_RESPAWN = 11;
+    public static final short NO_RESPAWN_BLOCK = 0;
+    public static final short RAIN_STARTED = 1;
+    public static final short RAIN_STOPPED = 2;
+    public static final short GAME_MODE_CHANGED = 3;
+    public static final short GAME_WON = 4;
+    public static final short DEMO_MESSAGE_SHOWN = 5;
+    public static final short PROJECTILE_HIT_PLAYER = 6;
+    public static final short RAIN_GRADIENT_CHANGED = 7;
+    public static final short THUNDER_GRADIENT_CHANGED = 8;
+    public static final short PUFFERFISH_STING = 9;
+    public static final short ELDER_GUARDIAN_EFFECT = 10;
+    public static final short IMMEDIATE_RESPAWN = 11;
 
 }

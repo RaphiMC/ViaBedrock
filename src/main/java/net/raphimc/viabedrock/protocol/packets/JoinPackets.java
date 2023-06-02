@@ -291,19 +291,19 @@ public class JoinPackets {
 
             if (rainLevel > 0F || lightningLevel > 0F) {
                 final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
-                rainStartGameEvent.write(Type.VAR_INT, GameEvents.RAIN_STARTED); // event id
+                rainStartGameEvent.write(Type.UNSIGNED_BYTE, GameEvents.RAIN_STARTED); // event id
                 rainStartGameEvent.write(Type.FLOAT, 0F); // value
                 rainStartGameEvent.send(BedrockProtocol.class);
 
                 if (rainLevel > 0F) {
                     final PacketWrapper rainStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
-                    rainStrengthGameEvent.write(Type.VAR_INT, GameEvents.RAIN_GRADIENT_CHANGED); // event id
+                    rainStrengthGameEvent.write(Type.UNSIGNED_BYTE, GameEvents.RAIN_GRADIENT_CHANGED); // event id
                     rainStrengthGameEvent.write(Type.FLOAT, rainLevel); // value
                     rainStrengthGameEvent.send(BedrockProtocol.class);
                 }
                 if (lightningLevel > 0F) {
                     final PacketWrapper thunderStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
-                    thunderStrengthGameEvent.write(Type.VAR_INT, GameEvents.THUNDER_GRADIENT_CHANGED); // event id
+                    thunderStrengthGameEvent.write(Type.UNSIGNED_BYTE, GameEvents.THUNDER_GRADIENT_CHANGED); // event id
                     thunderStrengthGameEvent.write(Type.FLOAT, lightningLevel); // value
                     thunderStrengthGameEvent.send(BedrockProtocol.class);
                 }

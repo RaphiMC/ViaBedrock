@@ -87,7 +87,7 @@ public class ClientPlayerPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.SET_PLAYER_GAME_TYPE, ClientboundPackets1_19_4.GAME_EVENT, new PacketHandlers() {
             @Override
             protected void register() {
-                create(Type.VAR_INT, GameEvents.GAME_MODE_CHANGED); // event id
+                create(Type.UNSIGNED_BYTE, GameEvents.GAME_MODE_CHANGED); // event id
                 handler(wrapper -> {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
@@ -110,7 +110,7 @@ public class ClientPlayerPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.SET_DEFAULT_GAME_TYPE, ClientboundPackets1_19_4.GAME_EVENT, new PacketHandlers() {
             @Override
             protected void register() {
-                create(Type.VAR_INT, GameEvents.GAME_MODE_CHANGED); // event id
+                create(Type.UNSIGNED_BYTE, GameEvents.GAME_MODE_CHANGED); // event id
                 handler(wrapper -> {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
@@ -154,7 +154,7 @@ public class ClientPlayerPackets {
                 entityTracker.getClientPlayer().setGameType(gameType);
 
                 final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
-                gameEvent.write(Type.VAR_INT, GameEvents.GAME_MODE_CHANGED); // event id
+                gameEvent.write(Type.UNSIGNED_BYTE, GameEvents.GAME_MODE_CHANGED); // event id
                 gameEvent.write(Type.FLOAT, (float) gameMode); // value
                 gameEvent.send(BedrockProtocol.class);
             }
