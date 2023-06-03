@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.types.model;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.protocol.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.UUID;

@@ -39,10 +39,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOutputTypes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.TextTypes;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 import net.raphimc.viabedrock.protocol.model.CommandOrigin;
-import net.raphimc.viabedrock.protocol.storage.AuthChainData;
-import net.raphimc.viabedrock.protocol.storage.CommandsStorage;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.List;
@@ -60,7 +57,7 @@ public class ChatPackets {
                     final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
                     final boolean needsTranslation = wrapper.read(Type.BOOLEAN); // needs translation
 
-                    final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+                    final Function<String, String> translator = k -> wrapper.user().get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
                     String originalMessage = null;
                     try {
                         switch (type) {
@@ -153,7 +150,7 @@ public class ChatPackets {
                 wrapper.cancel();
                 return;
             }
-            final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+            final Function<String, String> translator = k -> wrapper.user().get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
             final StringBuilder message = new StringBuilder();
 
             final int messageCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // message count
@@ -209,7 +206,7 @@ public class ChatPackets {
                     if (gameSession.isChatRestricted()) {
                         wrapper.cancel();
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, wrapper.user());
-                        systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + BedrockProtocol.MAPPINGS.getTranslations().get("permissions.chatmute"))); // message
+                        systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute"))); // message
                         systemChat.write(Type.BOOLEAN, false); // overlay
                         systemChat.send(BedrockProtocol.class);
                     }
@@ -232,7 +229,7 @@ public class ChatPackets {
                     if (!gameSession.areCommandsEnabled()) {
                         wrapper.cancel();
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, wrapper.user());
-                        systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + BedrockProtocol.MAPPINGS.getTranslations().get("commands.generic.disabled"))); // message
+                        systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled"))); // message
                         systemChat.write(Type.BOOLEAN, false); // overlay
                         systemChat.send(BedrockProtocol.class);
                     }

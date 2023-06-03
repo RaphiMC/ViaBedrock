@@ -65,7 +65,7 @@ public class JoinPackets {
                 return; // Mojang client silently ignores multiple start game packets
             }
 
-            if (!resourcePacksStorage.isCompleted()) {
+            if (resourcePacksStorage == null || !resourcePacksStorage.hasCompletedTransfer()) {
                 BedrockProtocol.kickForIllegalState(wrapper.user(), "Pack negotiation not completed");
                 return;
             }
@@ -153,7 +153,7 @@ public class JoinPackets {
 
             if (isWorldEditor) {
                 final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_4.DISCONNECT, wrapper.user());
-                disconnect.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
+                disconnect.write(Type.COMPONENT, JsonUtil.textToComponent(resourcePacksStorage.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
                 disconnect.send(BedrockProtocol.class);
                 return;
             }

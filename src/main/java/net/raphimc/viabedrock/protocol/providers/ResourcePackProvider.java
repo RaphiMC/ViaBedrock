@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.providers;
 
 import com.viaversion.viaversion.api.platform.providers.Provider;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.protocol.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.ResourcePack;
 
 import java.io.File;
 

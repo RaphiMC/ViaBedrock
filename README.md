@@ -18,6 +18,7 @@ ViaBedrock would not have been possible without the following projects:
 - [CloudburstMC Protocol](https://github.com/CloudburstMC/Protocol): Documentation of the Bedrock Edition protocol
 - [wiki.vg](https://wiki.vg/Bedrock_Protocol): Documentation of the Bedrock Edition protocol
 - [mcrputil](https://github.com/valaphee/mcrputil): Documentation of Bedrock Edition resource pack encryption
+- [wiki.bedrock.dev](https://wiki.bedrock.dev): Documentation of various technical aspects of Bedrock Edition
 
 Additionally ViaBedrock uses assets and data dumps from other projects: See the `Data Asset Sources.md` file for more information.
 
@@ -53,4 +54,4 @@ Additionally ViaBedrock uses assets and data dumps from other projects: See the 
 - [ ] Sounds
 - [ ] Particles
 - [x] Player Skins (Requires [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility) mod)
-- [x] Very basic resource pack conversion (Contributions welcome)
+- [x] Basic resource pack conversion (Contributions welcome)

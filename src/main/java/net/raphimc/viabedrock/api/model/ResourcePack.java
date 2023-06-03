@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.model;
+package net.raphimc.viabedrock.api.model;
 
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
@@ -24,6 +24,7 @@ import com.viaversion.viaversion.util.GsonUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
 
 import javax.crypto.BadPaddingException;
@@ -44,6 +45,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -308,6 +310,8 @@ public class ResourcePack {
 
     public static class Content extends HashMap<String, byte[]> {
 
+        private final Map<String, Map<String, String>> langCache = new HashMap<>();
+
         public String getString(final String path) {
             final byte[] bytes = this.get(path);
             if (bytes == null) {
@@ -327,11 +331,34 @@ public class ResourcePack {
                 return null;
             }
 
-            return Arrays.asList(string.split("\\n"));
+            return Collections.unmodifiableList(Arrays.asList(string.split("\\n")));
         }
 
         public boolean putLines(final String path, final List<String> lines) {
             return this.putString(path, String.join("\\n", lines));
+        }
+
+        public Map<String, String> getLang(final String path) {
+            return this.langCache.computeIfAbsent(path, k -> {
+                final List<String> lines = this.getLines(k);
+                return Collections.unmodifiableMap(lines.stream()
+                        .filter(line -> !line.startsWith("##"))
+                        .filter(line -> line.contains("="))
+                        .map(line -> line.contains("##") ? line.substring(0, line.indexOf("##")) : line)
+                        .map(String::trim)
+                        .map(line -> line.split("=", 2))
+                        .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1])));
+            });
+        }
+
+        public boolean putLang(final String path, final Map<String, String> lang) {
+            this.langCache.put(path, lang);
+
+            final List<String> lines = new ArrayList<>();
+            for (Entry<String, String> entry : lang.entrySet()) {
+                lines.add(entry.getKey() + "=" + entry.getValue());
+            }
+            return this.putLines(path, lines);
         }
 
         public JsonObject getJson(final String path) {
@@ -341,6 +368,10 @@ public class ResourcePack {
             }
 
             return GsonUtil.getGson().fromJson(string.trim(), JsonObject.class);
+        }
+
+        public JsonObject getSortedJson(final String path) {
+            return JsonUtil.sort(this.getJson(path), Comparator.naturalOrder());
         }
 
         public boolean putJson(final String path, final JsonObject json) {

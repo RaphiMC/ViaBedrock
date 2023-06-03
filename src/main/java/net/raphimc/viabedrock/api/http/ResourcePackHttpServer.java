@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.api.http;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -28,11 +29,15 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.stream.ChunkedStream;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class ResourcePackHttpServer {
 
@@ -55,7 +60,7 @@ public class ResourcePackHttpServer {
                         channel.pipeline().addLast("chunked_writer", new ChunkedWriteHandler());
                         channel.pipeline().addLast("http_handler", new SimpleChannelInboundHandler<Object>() {
                             @Override
-                            protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
+                            protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws IOException {
                                 if (msg instanceof HttpRequest) {
                                     final HttpRequest request = (HttpRequest) msg;
                                     if (!request.method().equals(HttpMethod.GET)) {
@@ -76,19 +81,19 @@ public class ResourcePackHttpServer {
                                     }
 
                                     final ResourcePacksStorage resourcePacksStorage = user.get(ResourcePacksStorage.class);
-                                    resourcePacksStorage.setHttpConsumer(data -> {
-                                        if (!ctx.channel().isActive() || !ctx.channel().isOpen()) {
-                                            throw new IllegalStateException("Channel is not open");
-                                        }
 
-                                        final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-                                        response.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
-                                        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/octet-stream");
-                                        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, data.length);
-                                        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-                                        ctx.write(response);
-                                        ctx.writeAndFlush(new HttpChunkedInput(new ChunkedStream(new ByteArrayInputStream(data), 65535))).addListener(ChannelFutureListener.CLOSE);
-                                    });
+                                    final long start = System.currentTimeMillis();
+                                    final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage);
+                                    final byte[] data = javaContent.toZip();
+                                    Via.getPlatform().getLogger().log(Level.INFO, "Converted packs in " + (System.currentTimeMillis() - start) + "ms");
+
+                                    final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+                                    response.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+                                    response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/octet-stream");
+                                    response.headers().set(HttpHeaderNames.CONTENT_LENGTH, data.length);
+                                    response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+                                    ctx.write(response);
+                                    ctx.writeAndFlush(new HttpChunkedInput(new ChunkedStream(new ByteArrayInputStream(data), 65535))).addListener(ChannelFutureListener.CLOSE);
                                 }
                             }
 

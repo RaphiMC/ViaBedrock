@@ -24,7 +24,6 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class CommandsStorage extends StoredObject {
 
     // TODO: Enhancement: Add tab completion for arguments
     public Pair<IntIntPair, List<Pair<String, String>>> complete(final String message) {
-        final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+        final Function<String, String> translator = k -> this.getUser().get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
 
         final List<Pair<String, String>> completions = new ArrayList<>();
         int startIndex = 0;

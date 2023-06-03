@@ -44,6 +44,7 @@ import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.api.chunk.block_state.BlockStateUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
+import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -61,7 +62,7 @@ import java.util.zip.GZIPInputStream;
 
 public class BedrockMappingData extends MappingDataBase {
 
-    private Map<String, String> translations; // Bedrock
+    private ResourcePack vanillaResourcePack; // Bedrock
     private CompoundTag registries; // Java
     private CompoundTag tags; // Java
     private BiMap<BlockState, Integer> javaBlockStates; // Java
@@ -89,7 +90,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.getLogger().info("Loading " + this.unmappedVersion + " -> " + this.mappedVersion + " mappings...");
         }
 
-        this.translations = this.readTranslationMap("bedrock/en_US.lang");
+        this.vanillaResourcePack = this.readResourcePack("bedrock/vanilla.mcpack", UUID.fromString("0575c61f-a5da-4b7f-9961-ffda2908861e"), "0.0.1");
         this.registries = this.readNBT("java/registries.nbt");
         this.tags = this.readNBT("java/tags.nbt");
 
@@ -191,8 +192,8 @@ public class BedrockMappingData extends MappingDataBase {
         this.skinGeometry = JsonUtil.sort(this.readJson("bedrock/skin/geometry.json"), Comparator.naturalOrder());
     }
 
-    public Map<String, String> getTranslations() {
-        return Collections.unmodifiableMap(this.translations);
+    public ResourcePack getVanillaResourcePack() {
+        return this.vanillaResourcePack;
     }
 
     public CompoundTag getRegistries() {
@@ -264,15 +265,18 @@ public class BedrockMappingData extends MappingDataBase {
         return ViaBedrock.getPlatform().getLogger();
     }
 
-    private Map<String, String> readTranslationMap(final String file) {
-        final List<String> lines = this.readTextList(file);
-        return lines.stream()
-                .filter(line -> !line.startsWith("##"))
-                .filter(line -> line.contains("="))
-                .map(line -> line.contains("##") ? line.substring(0, line.indexOf("##")) : line)
-                .map(String::trim)
-                .map(line -> line.split("=", 2))
-                .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1]));
+    private ResourcePack readResourcePack(String file, final UUID uuid, final String version) {
+        file = "assets/viabedrock/data/" + file;
+        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
+            final byte[] bytes = ByteStreams.toByteArray(inputStream);
+            final ResourcePack resourcePack = new ResourcePack(uuid, version, "", "", "", false, false, 0, ResourcePack.TYPE_RESOURCE);
+            resourcePack.setCompressedDataLength(bytes.length, bytes.length);
+            resourcePack.processDataChunk(0, bytes);
+            return resourcePack;
+        } catch (Exception e) {
+            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
+            return null;
+        }
     }
 
     private List<String> readTextList(String file) {

@@ -1,4 +1,4 @@
-import net.raphimc.viabedrock.protocol.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
@@ -41,10 +41,11 @@ public class ResourcePackConverterTest {
 
         final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage(null);
         resourcePacksStorage.addPack(resourcePack);
+        resourcePacksStorage.setPackStack(new UUID[]{resourcePack.packId()}, new UUID[0]);
         System.out.println("Preparation took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();
-        final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage, new UUID[]{resourcePack.packId()}, new UUID[0]);
+        final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage);
         System.out.println("Conversion took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();

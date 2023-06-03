@@ -19,25 +19,21 @@ package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import net.raphimc.viabedrock.protocol.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.awt.image.BufferedImage;
 import java.util.Locale;
-import java.util.UUID;
 
 public class ResourcePackRewriter {
 
-    public static ResourcePack.Content bedrockToJava(final ResourcePacksStorage bedrockPacks, final UUID[] resourcePackIds, final UUID[] behaviorPackIds) {
+    public static ResourcePack.Content bedrockToJava(final ResourcePacksStorage resourcePacksStorage) {
         final ResourcePack.Content javaContent = new ResourcePack.Content();
 
-        for (UUID id : resourcePackIds) {
-            if (bedrockPacks.hasPack(id)) {
-                final ResourcePack pack = bedrockPacks.getPack(id);
-
-                convertGlyphSheets(pack.content(), javaContent);
-            }
-        }
+        resourcePacksStorage.iterateResourcePacksBottomToTop(pack -> {
+            convertGlyphSheets(pack.content(), javaContent);
+            return true;
+        });
 
         javaContent.putJson("pack.mcmeta", createPackManifest());
 
@@ -93,9 +89,16 @@ public class ResourcePackRewriter {
             return;
         }
 
-        final JsonObject root = new JsonObject();
-        root.add("providers", providers);
-        javaContent.putJson("assets/minecraft/font/default.json", root);
+        final String javaDefaultsPath = "assets/minecraft/font/default.json";
+        final JsonObject root;
+        if (javaContent.containsKey(javaDefaultsPath)) {
+            root = javaContent.getJson(javaDefaultsPath);
+            root.getAsJsonArray("providers").addAll(providers);
+        } else {
+            root = new JsonObject();
+            root.add("providers", providers);
+        }
+        javaContent.putJson(javaDefaultsPath, root);
     }
 
 }

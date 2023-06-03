@@ -39,6 +39,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.TitleTypes;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.storage.ScoreboardTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.JavaTypes;
@@ -162,7 +163,7 @@ public class HudPackets {
             wrapper.read(BedrockTypes.STRING); // xuid
             wrapper.read(BedrockTypes.STRING); // platform chat id
 
-            final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+            final Function<String, String> translator = k -> wrapper.user().get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
             final String originalText = text;
             try {
                 if (type >= TitleTypes.TITLE_JSON && type <= TitleTypes.ACTIONBAR_JSON) {
@@ -239,7 +240,7 @@ public class HudPackets {
 
             if (!scoreboardTracker.hasObjective(objectiveName)) {
                 scoreboardTracker.addObjective(objectiveName, new ScoreboardObjective(objectiveName, ascending));
-                final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+                final Function<String, String> translator = k -> wrapper.user().get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
 
                 final PacketWrapper scoreboardObjective = PacketWrapper.create(ClientboundPackets1_19_4.SCOREBOARD_OBJECTIVE, wrapper.user());
                 scoreboardObjective.write(Type.STRING, objectiveName); // objective name

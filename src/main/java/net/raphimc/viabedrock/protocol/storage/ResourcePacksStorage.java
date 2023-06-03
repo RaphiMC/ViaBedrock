@@ -19,23 +19,27 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import net.raphimc.viabedrock.protocol.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.*;
+import java.util.function.Function;
 
 public class ResourcePacksStorage extends StoredObject {
 
-    private final UUID httpToken = UUID.randomUUID();
     private final Map<UUID, ResourcePack> packs = new HashMap<>();
-    private boolean completed;
-    private Consumer<byte[]> httpConsumer;
+    private final Set<UUID> preloadedPacks = new HashSet<>();
+    private final List<UUID> resourcePackStack = new ArrayList<>();
+    private final List<UUID> behaviourPackStack = new ArrayList<>();
+
+    private boolean completedTransfer;
+
+    private Map<String, String> translations;
 
     public ResourcePacksStorage(final UserConnection user) {
         super(user);
+
+        this.addPreloadedPack(BedrockProtocol.MAPPINGS.getVanillaResourcePack());
     }
 
     public boolean hasPack(final UUID packId) {
@@ -50,32 +54,66 @@ public class ResourcePacksStorage extends StoredObject {
         return this.packs.values();
     }
 
-    public void addPack(final ResourcePack pack) {
-        this.packs.put(pack.packId(), pack);
-    }
-
     public boolean areAllPacksDecompressed() {
         return this.packs.values().stream().allMatch(ResourcePack::isDecompressed);
     }
 
-    public UUID getHttpToken() {
-        return this.httpToken;
+    public void addPack(final ResourcePack pack) {
+        this.packs.put(pack.packId(), pack);
     }
 
-    public boolean isCompleted() {
-        return this.completed;
+    public boolean isPreloaded(final UUID packId) {
+        return this.preloadedPacks.contains(packId);
     }
 
-    public void setCompleted(final boolean completed) {
-        this.completed = completed;
+    public void addPreloadedPack(final ResourcePack pack) {
+        this.packs.put(pack.packId(), pack);
+        this.preloadedPacks.add(pack.packId());
+        this.resourcePackStack.add(pack.packId());
     }
 
-    public Consumer<byte[]> getHttpConsumer() {
-        return this.httpConsumer;
+    public void iterateResourcePacksTopToBottom(final Function<ResourcePack, Boolean> function) {
+        for (UUID packId : this.resourcePackStack) {
+            final ResourcePack pack = this.packs.get(packId);
+            if (pack == null) continue;
+
+            if (!function.apply(pack)) break;
+        }
     }
 
-    public void setHttpConsumer(final Consumer<byte[]> httpConsumer) {
-        this.httpConsumer = httpConsumer;
+    public void iterateResourcePacksBottomToTop(final Function<ResourcePack, Boolean> function) {
+        for (int i = this.resourcePackStack.size() - 1; i >= 0; i--) {
+            final ResourcePack pack = this.packs.get(this.resourcePackStack.get(i));
+            if (pack == null) continue;
+
+            if (!function.apply(pack)) break;
+        }
+    }
+
+    public void setPackStack(final UUID[] resourcePackStack, final UUID[] behaviourPackStack) {
+        this.resourcePackStack.addAll(0, Arrays.asList(resourcePackStack));
+        this.behaviourPackStack.addAll(0, Arrays.asList(behaviourPackStack));
+
+        this.translations = new HashMap<>();
+        this.iterateResourcePacksBottomToTop(pack -> {
+            if (pack.content().containsKey("texts/en_US.lang")) {
+                this.translations.putAll(pack.content().getLang("texts/en_US.lang"));
+            }
+            return true;
+        });
+        this.translations = Collections.unmodifiableMap(this.translations);
+    }
+
+    public boolean hasCompletedTransfer() {
+        return this.completedTransfer;
+    }
+
+    public void setCompletedTransfer() {
+        this.completedTransfer = true;
+    }
+
+    public Map<String, String> getTranslations() {
+        return this.translations;
     }
 
 }

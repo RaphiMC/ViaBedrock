@@ -86,7 +86,8 @@ public class LoginPackets {
                 handler(wrapper -> {
                     final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
                     if (hasMessage) {
-                        final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+                        final Map<String, String> translations = BedrockProtocol.MAPPINGS.getVanillaResourcePack().content().getLang("texts/en_US.lang");
+                        final Function<String, String> translator = k -> translations.getOrDefault(k, k);
                         final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
                         final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
                         wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translatedMessage)); // reason
@@ -222,28 +223,30 @@ public class LoginPackets {
     }
 
     public static void writePlayStatusKickMessage(final PacketWrapper wrapper, final int status) {
+        final Map<String, String> translations = BedrockProtocol.MAPPINGS.getVanillaResourcePack().content().getLang("texts/en_US.lang");
+
         switch (status) {
             case PlayStatus.LOGIN_FAILED_CLIENT_OLD:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.outdatedClient")));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.outdatedClient")));
                 break;
             case PlayStatus.LOGIN_FAILED_SERVER_OLD:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.outdatedServer")));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.outdatedServer")));
                 break;
             case PlayStatus.LOGIN_FAILED_INVALID_TENANT:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.invalidTenant")));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.invalidTenant")));
                 break;
             case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editionMismatchEduToVanilla")));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.editionMismatchEduToVanilla")));
                 break;
             case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_VANILLA_TO_EDU:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editionMismatchVanillaToEdu")));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.editionMismatchVanillaToEdu")));
                 break;
             case PlayStatus.FAILED_SERVER_FULL_SUB_CLIENT:
             case PlayStatus.VANILLA_TO_EDITOR_MISMATCH:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.serverFull") + "\n\n\n\n" + BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.serverFull.title")));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title")));
                 break;
             case PlayStatus.EDITOR_TO_VANILLA_MISMATCH:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockProtocol.MAPPINGS.getTranslations().get("disconnectionScreen.editor.mismatchEditorToVanilla")));
+                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.editor.mismatchEditorToVanilla")));
                 break;
             default: // Mojang client silently ignores invalid values
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received invalid login status: " + status);

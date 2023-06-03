@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.api.model.scoreboard;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.api.util.StringUtil;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -90,7 +90,7 @@ public class ScoreboardEntry {
             if (player != null) {
                 this.javaName = player.value();
             } else {
-                this.javaName = StringUtil.encodeLong(this.entityId) + BedrockProtocol.MAPPINGS.getTranslations().get("commands.scoreboard.players.offlinePlayerName");
+                this.javaName = StringUtil.encodeLong(this.entityId) + user.get(ResourcePacksStorage.class).getTranslations().get("commands.scoreboard.players.offlinePlayerName");
             }
         } else if (this.entityId != null) {
             this.javaName = String.valueOf(this.entityId);

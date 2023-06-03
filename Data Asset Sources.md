@@ -14,10 +14,6 @@ This file has been dumped from a BDS server.
 ### data/bedrock/block_palette.1_19_80.nbt
 [GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/master/core/src/main/resources/bedrock/block_palette.1_19_80.nbt)
 
-### data/bedrock/en_US.lang
-This file has been copied from the official bedrock client's assets folder:  
-`%MC-Root%\data\resource_packs\vanilla\texts\en_US.lang`
-
 ### data/bedrock/r12_to_current_block_map.bin
 [PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/master/r12_to_current_block_map.bin)
 

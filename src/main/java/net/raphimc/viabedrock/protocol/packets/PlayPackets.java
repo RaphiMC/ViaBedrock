@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPackets1_19_4;
@@ -40,6 +41,7 @@ import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -49,7 +51,8 @@ public class PlayPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.DISCONNECT, ClientboundPackets1_19_4.DISCONNECT, wrapper -> {
             final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
             if (hasMessage) {
-                final Function<String, String> translator = k -> BedrockProtocol.MAPPINGS.getTranslations().getOrDefault(k, k);
+                final Map<String, String> translations = BedrockProtocol.MAPPINGS.getVanillaResourcePack().content().getLang("texts/en_US.lang");
+                final Function<String, String> translator = k -> translations.getOrDefault(k, k);
                 final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
                 final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
                 wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translatedMessage)); // reason
@@ -107,6 +110,18 @@ public class PlayPackets {
                 setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
 
                 clientPlayer.closeDownloadingTerrainScreen();
+
+                if (wrapper.user().getProtocolInfo().getProtocolVersion() >= ProtocolVersion.v1_19_4.getVersion()) {
+                    final UUID httpToken = UUID.randomUUID();
+                    ViaBedrock.getResourcePackServer().addConnection(httpToken, wrapper.user());
+
+                    final PacketWrapper resourcePack = PacketWrapper.create(ClientboundPackets1_19_4.RESOURCE_PACK, wrapper.user());
+                    resourcePack.write(Type.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + httpToken); // url
+                    resourcePack.write(Type.STRING, ""); // hash
+                    resourcePack.write(Type.BOOLEAN, false); // requires accept
+                    resourcePack.write(Type.OPTIONAL_COMPONENT, JsonUtil.textToComponent("\nFor the best possible experience, you should accept the resource pack.")); // prompt message
+                    resourcePack.send(BedrockProtocol.class);
+                }
             } else {
                 LoginPackets.writePlayStatusKickMessage(wrapper, status);
             }
