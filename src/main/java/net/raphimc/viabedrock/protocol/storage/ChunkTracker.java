@@ -556,12 +556,12 @@ public class ChunkTracker extends StoredObject {
                             try {
                                 int remappedBlockState = blockStateRewriter.bedrockId(((CompoundTag) tag).clone());
                                 if (remappedBlockState == -1) {
-                                    Via.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
+                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
                                     remappedBlockState = blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
                                 }
                                 return remappedBlockState;
                             } catch (Throwable e) {
-                                Via.getPlatform().getLogger().log(Level.WARNING, "Error while rewriting block state tag: " + tag, e);
+                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while rewriting block state tag: " + tag, e);
                                 return blockStateRewriter.bedrockId(BedrockBlockState.AIR);
                             }
                         });

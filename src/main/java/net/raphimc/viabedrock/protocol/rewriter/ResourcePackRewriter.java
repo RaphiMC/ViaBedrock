@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.libs.gson.JsonArray;
+import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
@@ -53,7 +54,17 @@ public class ResourcePackRewriter {
         final int glyphsPerRow = 16;
         final int glyphsPerColumn = 16;
 
-        final JsonArray providers = new JsonArray();
+        final String javaDefaultsPath = "assets/minecraft/font/default.json";
+        final JsonObject root;
+        JsonArray providers;
+        if (javaContent.containsKey(javaDefaultsPath)) {
+            root = javaContent.getJson(javaDefaultsPath);
+            providers = root.getAsJsonArray("providers");
+        } else {
+            root = new JsonObject();
+            providers = new JsonArray();
+            root.add("providers", providers);
+        }
 
         for (int i = 0; i < 0xFF; i++) {
             final String pageName = "glyph_" + String.format("%1$02X", i) + ".png";
@@ -67,6 +78,13 @@ public class ResourcePackRewriter {
             javaContent.putImage(javaPath, image);
 
             final int glyphHeight = image.getHeight() / glyphsPerColumn;
+
+            for (JsonElement provider : providers) {
+                if (provider.getAsJsonObject().get("file").getAsString().equals("viabedrock:font/" + pageName.toLowerCase(Locale.ROOT))) {
+                    providers.remove(provider);
+                    break;
+                }
+            }
 
             final JsonObject glyphPage = new JsonObject();
             providers.add(glyphPage);
@@ -89,15 +107,6 @@ public class ResourcePackRewriter {
             return;
         }
 
-        final String javaDefaultsPath = "assets/minecraft/font/default.json";
-        final JsonObject root;
-        if (javaContent.containsKey(javaDefaultsPath)) {
-            root = javaContent.getJson(javaDefaultsPath);
-            root.getAsJsonArray("providers").addAll(providers);
-        } else {
-            root = new JsonObject();
-            root.add("providers", providers);
-        }
         javaContent.putJson(javaDefaultsPath, root);
     }
 

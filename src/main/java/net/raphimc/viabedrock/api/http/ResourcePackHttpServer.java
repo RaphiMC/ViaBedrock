@@ -80,20 +80,23 @@ public class ResourcePackHttpServer {
                                         return;
                                     }
 
-                                    final ResourcePacksStorage resourcePacksStorage = user.get(ResourcePacksStorage.class);
+                                    try {
+                                        final long start = System.currentTimeMillis();
+                                        final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(user.get(ResourcePacksStorage.class));
+                                        final byte[] data = javaContent.toZip();
+                                        Via.getPlatform().getLogger().log(Level.INFO, "Converted packs in " + (System.currentTimeMillis() - start) + "ms");
 
-                                    final long start = System.currentTimeMillis();
-                                    final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage);
-                                    final byte[] data = javaContent.toZip();
-                                    Via.getPlatform().getLogger().log(Level.INFO, "Converted packs in " + (System.currentTimeMillis() - start) + "ms");
-
-                                    final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-                                    response.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
-                                    response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/octet-stream");
-                                    response.headers().set(HttpHeaderNames.CONTENT_LENGTH, data.length);
-                                    response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-                                    ctx.write(response);
-                                    ctx.writeAndFlush(new HttpChunkedInput(new ChunkedStream(new ByteArrayInputStream(data), 65535))).addListener(ChannelFutureListener.CLOSE);
+                                        final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+                                        response.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
+                                        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/octet-stream");
+                                        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, data.length);
+                                        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+                                        ctx.write(response);
+                                        ctx.writeAndFlush(new HttpChunkedInput(new ChunkedStream(new ByteArrayInputStream(data), 65535))).addListener(ChannelFutureListener.CLOSE);
+                                    } catch (Throwable e) {
+                                        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Failed to convert resource packs", e);
+                                        ctx.close();
+                                    }
                                 }
                             }
 
