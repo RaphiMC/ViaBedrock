@@ -31,26 +31,26 @@ public class ScoreboardEntry {
     public static final int ACTION_CHANGE = 0;
     public static final int ACTION_REMOVE = 1;
 
-    private final boolean isPlayerId;
-    private final Long entityId;
-    private final String fakePlayerName;
+    private boolean isPlayerId;
+    private Long entityId;
+    private String fakePlayerName;
 
     private int score;
     private String javaName;
 
     public ScoreboardEntry(final int score, final boolean isPlayerId, final Long entityId, final String fakePlayerName) {
-        if (entityId != null && fakePlayerName != null) {
-            throw new IllegalArgumentException("ScoreboardEntry cannot have both entityId and fakePlayerName");
-        }
-
-        this.isPlayerId = isPlayerId;
-        this.entityId = entityId;
-        this.fakePlayerName = fakePlayerName;
+        this.updateTarget(isPlayerId, entityId, fakePlayerName);
         this.score = score;
     }
 
     public boolean isSameTarget(final ScoreboardEntry entry) {
         return this.isPlayerId == entry.isPlayerId && Objects.equals(this.entityId, entry.entityId) && Objects.equals(this.fakePlayerName, entry.fakePlayerName);
+    }
+
+    public void updateTarget(final boolean isPlayerId, final Long entityId, final String fakePlayerName) {
+        this.isPlayerId = isPlayerId;
+        this.entityId = entityId;
+        this.fakePlayerName = fakePlayerName;
     }
 
     public boolean isValid() {
@@ -82,9 +82,7 @@ public class ScoreboardEntry {
     }
 
     public void updateJavaName(final UserConnection user) {
-        if (this.fakePlayerName != null) {
-            this.javaName = this.fakePlayerName;
-        } else if (this.entityId != null && this.isPlayerId) {
+        if (this.entityId != null && this.isPlayerId) {
             final PlayerListStorage playerList = user.get(PlayerListStorage.class);
             final Pair<UUID, String> player = playerList.getPlayer(this.entityId);
             if (player != null) {
@@ -94,6 +92,8 @@ public class ScoreboardEntry {
             }
         } else if (this.entityId != null) {
             this.javaName = String.valueOf(this.entityId);
+        } else if (this.fakePlayerName != null) {
+            this.javaName = this.fakePlayerName;
         }
     }
 

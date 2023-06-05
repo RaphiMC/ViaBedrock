@@ -255,7 +255,6 @@ public class HudPackets {
             final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
 
             final int action = wrapper.read(Type.UNSIGNED_BYTE); // action
-
             final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // count
             for (int i = 0; i < count; i++) {
                 final long scoreboardId = wrapper.read(BedrockTypes.VAR_LONG); // scoreboard id
@@ -297,6 +296,35 @@ public class HudPackets {
                         objective.updateEntry(wrapper.user(), sameTargetEntry, ScoreboardEntry.ACTION_CHANGE);
                     } else if (entry.isValid()) {
                         objective.addEntry(wrapper.user(), scoreboardId, entry);
+                    }
+                }
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_SCOREBOARD_IDENTITY, null, wrapper -> {
+            wrapper.cancel();
+            final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
+
+            final int action = wrapper.read(Type.UNSIGNED_BYTE); // action
+            final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // count
+            for (int i = 0; i < count; i++) {
+                final long scoreboardId = wrapper.read(BedrockTypes.VAR_LONG); // scoreboard id
+                final Pair<ScoreboardObjective, ScoreboardEntry> entry = scoreboardTracker.getEntry(scoreboardId);
+                if (action == 0) { // SET_IDENTITY
+                    final long playerListId = wrapper.read(BedrockTypes.VAR_LONG); // player list id
+                    if (entry == null) continue;
+                    final ScoreboardEntry scoreboardEntry = entry.value();
+
+                    if (scoreboardEntry.entityId() == null) {
+                        scoreboardEntry.updateTarget(true, playerListId, scoreboardEntry.fakePlayerName());
+                        entry.key().updateEntry(wrapper.user(), scoreboardEntry);
+                    }
+                } else if (action == 1) { // CLEAR_IDENTITY
+                    if (entry == null) continue;
+                    final ScoreboardEntry scoreboardEntry = entry.value();
+
+                    if (scoreboardEntry.fakePlayerName() != null) {
+                        scoreboardEntry.updateTarget(false, null, scoreboardEntry.fakePlayerName());
+                        entry.key().updateEntry(wrapper.user(), scoreboardEntry);
                     }
                 }
             }
