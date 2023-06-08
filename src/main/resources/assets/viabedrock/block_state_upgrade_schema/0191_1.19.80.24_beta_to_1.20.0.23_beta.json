@@ -1,0 +1,385 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 20,
+    "maxVersionPatch": 0,
+    "maxVersionRevision": 33,
+    "renamedIds": {
+        "minecraft:lava_cauldron": "minecraft:cauldron"
+    },
+    "renamedProperties": {
+        "minecraft:calibrated_sculk_sensor": {
+            "powered_bit": "sculk_sensor_phase"
+        },
+        "minecraft:carved_pumpkin": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:lit_pumpkin": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:pumpkin": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:sculk_sensor": {
+            "powered_bit": "sculk_sensor_phase"
+        }
+    },
+    "remappedPropertyValues": {
+        "minecraft:calibrated_sculk_sensor": {
+            "powered_bit": "powered_bit_00"
+        },
+        "minecraft:carved_pumpkin": {
+            "direction": "direction_00"
+        },
+        "minecraft:lit_pumpkin": {
+            "direction": "direction_00"
+        },
+        "minecraft:pumpkin": {
+            "direction": "direction_00"
+        },
+        "minecraft:sculk_sensor": {
+            "powered_bit": "powered_bit_01"
+        }
+    },
+    "remappedPropertyValuesIndex": {
+        "direction_00": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "south"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "west"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "north"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "east"
+                }
+            }
+        ],
+        "powered_bit_00": [
+            {
+                "old": {
+                    "byte": 0
+                },
+                "new": {
+                    "int": 0
+                }
+            },
+            {
+                "old": {
+                    "byte": 1
+                },
+                "new": {
+                    "int": 0
+                }
+            }
+        ],
+        "powered_bit_01": [
+            {
+                "old": {
+                    "byte": 0
+                },
+                "new": {
+                    "int": 0
+                }
+            },
+            {
+                "old": {
+                    "byte": 1
+                },
+                "new": {
+                    "int": 1
+                }
+            }
+        ]
+    },
+    "remappedStates": {
+        "minecraft:carpet": [
+            {
+                "oldState": {
+                    "color": {
+                        "string": "black"
+                    }
+                },
+                "newName": "minecraft:black_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "blue"
+                    }
+                },
+                "newName": "minecraft:blue_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "brown"
+                    }
+                },
+                "newName": "minecraft:brown_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "cyan"
+                    }
+                },
+                "newName": "minecraft:cyan_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "gray"
+                    }
+                },
+                "newName": "minecraft:gray_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "green"
+                    }
+                },
+                "newName": "minecraft:green_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "light_blue"
+                    }
+                },
+                "newName": "minecraft:light_blue_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "lime"
+                    }
+                },
+                "newName": "minecraft:lime_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "magenta"
+                    }
+                },
+                "newName": "minecraft:magenta_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "orange"
+                    }
+                },
+                "newName": "minecraft:orange_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "pink"
+                    }
+                },
+                "newName": "minecraft:pink_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "purple"
+                    }
+                },
+                "newName": "minecraft:purple_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "red"
+                    }
+                },
+                "newName": "minecraft:red_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "silver"
+                    }
+                },
+                "newName": "minecraft:light_gray_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "white"
+                    }
+                },
+                "newName": "minecraft:white_carpet",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "color": {
+                        "string": "yellow"
+                    }
+                },
+                "newName": "minecraft:yellow_carpet",
+                "newState": null
+            }
+        ],
+        "minecraft:coral": [
+            {
+                "oldState": {
+                    "coral_color": {
+                        "string": "blue"
+                    },
+                    "dead_bit": {
+                        "byte": 0
+                    }
+                },
+                "newName": "minecraft:tube_coral",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "coral_color": {
+                        "string": "blue"
+                    },
+                    "dead_bit": {
+                        "byte": 1
+                    }
+                },
+                "newName": "minecraft:dead_tube_coral",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "coral_color": {
+                        "string": "pink"
+                    },
+                    "dead_bit": {
+                        "byte": 0
+                    }
+                },
+                "newName": "minecraft:brain_coral",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "coral_color": {
+                        "string": "pink"
+                    },
+                    "dead_bit": {
+                        "byte": 1
+                    }
+                },
+                "newName": "minecraft:dead_brain_coral",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "coral_color": {
+                        "string": "purple"
+                    },
+                    "dead_bit": {
+                        "byte": 0
+                    }
+                },
+                "newName": "minecraft:bubble_coral",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "coral_color": {
+                        "string": "purple"
+                    },
+                    "dead_bit": {
+                        "byte": 1
+                    }
+                },
+                "newName": "minecraft:dead_bubble_coral",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "coral_color": {
+                        "string": "red"
+                    },
+                    "dead_bit": {
+                        "byte": 0
+                    }
+                },
+                "newName": "minecraft:fire_coral",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "coral_color": {
+                        "string": "red"
+                    },
+                    "dead_bit": {
+                        "byte": 1
+                    }
+                },
+                "newName": "minecraft:dead_fire_coral",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "coral_color": {
+                        "string": "yellow"
+                    },
+                    "dead_bit": {
+                        "byte": 0
+                    }
+                },
+                "newName": "minecraft:horn_coral",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "coral_color": {
+                        "string": "yellow"
+                    },
+                    "dead_bit": {
+                        "byte": 1
+                    }
+                },
+                "newName": "minecraft:dead_horn_coral",
+                "newState": null
+            }
+        ]
+    }
+}

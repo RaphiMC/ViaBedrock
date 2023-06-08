@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.data;
 
 public class ProtocolConstants {
 
-    public static final int COMMAND_VERSION = 33;
+    public static final int COMMAND_VERSION = 34;
     public static final short REQUEST_CHUNK_RADIUS_MAX_RADIUS = 28;
 
 }

@@ -111,7 +111,7 @@ public class PlayPackets {
 
                 clientPlayer.closeDownloadingTerrainScreen();
 
-                if (wrapper.user().getProtocolInfo().getProtocolVersion() >= ProtocolVersion.v1_19_4.getVersion()) {
+                if (wrapper.user().getProtocolInfo().getProtocolVersion() >= ProtocolVersion.v1_20.getVersion()) {
                     final UUID httpToken = UUID.randomUUID();
                     ViaBedrock.getResourcePackServer().addConnection(httpToken, wrapper.user());
 

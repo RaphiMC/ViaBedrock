@@ -249,7 +249,6 @@ public class ChunkTracker extends StoredObject {
         final BitSet lightMask = new BitSet();
         lightMask.set(0, remappedChunk.getSections().length + 2);
         wrapper.write(this.chunkType, remappedChunk); // chunk
-        wrapper.write(Type.BOOLEAN, true); // trust edges
         wrapper.write(Type.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // sky light mask
         wrapper.write(Type.LONG_ARRAY_PRIMITIVE, new long[0]); // block light mask
         wrapper.write(Type.LONG_ARRAY_PRIMITIVE, new long[0]); // empty sky light mask

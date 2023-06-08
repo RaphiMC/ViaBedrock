@@ -45,11 +45,12 @@ public class ResourcePackRewriter {
         final JsonObject root = new JsonObject();
         final JsonObject pack = new JsonObject();
         root.add("pack", pack);
-        pack.addProperty("pack_format", 13);
+        pack.addProperty("pack_format", 15);
         pack.addProperty("description", "ViaBedrock Resource Pack");
         return root;
     }
 
+    // TODO: Maybe the new Unihex provider is better
     private static void convertGlyphSheets(final ResourcePack.Content bedrockContent, final ResourcePack.Content javaContent) {
         final int glyphsPerRow = 16;
         final int glyphsPerColumn = 16;

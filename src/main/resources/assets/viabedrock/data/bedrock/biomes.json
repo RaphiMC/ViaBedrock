@@ -1018,5 +1018,9 @@
     "color": 0,
     "rainfall": 0.8999999761581421,
     "temperature": 0.800000011920929
+  },
+  {
+    "id": 192,
+    "name": "cherry_grove"
   }
 ]

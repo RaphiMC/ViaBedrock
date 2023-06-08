@@ -79,16 +79,6 @@ public class BlockStateRewriter extends StoredObject {
                 this.waterIds.add(bedrockId);
             }
 
-            if (bedrockBlockState.identifier().contains("hanging_sign")) continue;
-            if (bedrockBlockState.identifier().equals("chiseled_bookshelf")) continue;
-            if (bedrockBlockState.identifier().equals("mangrove_propagule")) continue;
-            if (bedrockBlockState.identifier().equals("suspicious_gravel")) continue;
-            if (bedrockBlockState.identifier().equals("pink_petals")) continue;
-            if (bedrockBlockState.identifier().equals("suspicious_sand")) continue;
-            if (bedrockBlockState.identifier().equals("decorated_pot")) continue;
-            if (bedrockBlockState.identifier().equals("torchflower_crop")) continue;
-            if (bedrockBlockState.identifier().equals("calibrated_sculk_sensor")) continue;
-
             if (!bedrockToJavaBlockStates.containsKey(bedrockBlockState)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java block state mapping: " + bedrockBlockState.toBlockStateString());
                 continue;

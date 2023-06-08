@@ -143,13 +143,14 @@ public class JoinPackets {
             final BlockProperties[] blockProperties = wrapper.read(BedrockTypes.BLOCK_PROPERTIES_ARRAY); // block properties
             final ItemEntry[] itemEntries = wrapper.read(BedrockTypes.ITEM_ENTRY_ARRAY); // item entries
             wrapper.read(BedrockTypes.STRING); // multiplayer correlation id
-            wrapper.read(Type.BOOLEAN); // inventories server authoritative
+            wrapper.read(Type.BOOLEAN); // server authoritative inventories
             final String serverEngine = wrapper.read(BedrockTypes.STRING); // server engine
             wrapper.read(BedrockTypes.NETWORK_TAG); // player property data
             wrapper.read(BedrockTypes.LONG_LE); // block registry checksum
             wrapper.read(BedrockTypes.UUID); // world template id
             wrapper.read(Type.BOOLEAN); // client side generation
             final boolean hashedRuntimeBlockIds = wrapper.read(Type.BOOLEAN); // use hashed block runtime ids
+            wrapper.read(Type.BOOLEAN); // server authoritative sounds
 
             if (isWorldEditor) {
                 final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_4.DISCONNECT, wrapper.user());
@@ -243,6 +244,7 @@ public class JoinPackets {
             joinGame.write(Type.BOOLEAN, false); // is debug
             joinGame.write(Type.BOOLEAN, gameSession.isFlatGenerator()); // is flat
             joinGame.write(Type.OPTIONAL_GLOBAL_POSITION, null); // last death location
+            joinGame.write(Type.VAR_INT, 0); // portal cooldown
             joinGame.send(BedrockProtocol.class);
 
             wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties, hashedRuntimeBlockIds));

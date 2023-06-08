@@ -133,8 +133,9 @@ public class WorldPackets {
             wrapper.write(Type.BOOLEAN, gameSession.isFlatGenerator()); // is flat
             wrapper.write(Type.BYTE, (byte) 0x03); // keep data mask
             wrapper.write(Type.OPTIONAL_GLOBAL_POSITION, null); // last death position
+            wrapper.write(Type.VAR_INT, 0); // portal cooldown
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_CHUNK, ClientboundPackets1_19_4.CHUNK_DATA, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_CHUNK, null, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -251,7 +252,7 @@ public class WorldPackets {
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SUB_CHUNK, ClientboundPackets1_19_4.CHUNK_DATA, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.SUB_CHUNK, null, wrapper -> {
             wrapper.cancel();
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
 
@@ -376,7 +377,7 @@ public class WorldPackets {
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SUB_CHUNK_BLOCKS, ClientboundPackets1_19_4.MULTI_BLOCK_CHANGE, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SUB_CHUNK_BLOCKS, null, wrapper -> {
             wrapper.cancel(); // Need multiple packets because offsets can go over chunk boundaries
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             wrapper.read(BedrockTypes.BLOCK_POSITION); // position | Seems to be unused by the Mojang client
@@ -418,7 +419,6 @@ public class WorldPackets {
 
                 final PacketWrapper multiBlockChange = wrapper.create(ClientboundPackets1_19_4.MULTI_BLOCK_CHANGE);
                 multiBlockChange.write(Type.LONG, chunkKey); // chunk position
-                multiBlockChange.write(Type.BOOLEAN, true); // suppress light updates
                 multiBlockChange.write(Type.VAR_LONG_BLOCK_CHANGE_RECORD_ARRAY, changes.toArray(new BlockChangeRecord[0])); // block change records
                 multiBlockChange.send(BedrockProtocol.class);
             }

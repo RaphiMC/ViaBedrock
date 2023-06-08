@@ -81,7 +81,7 @@ public class BedrockMappingData extends MappingDataBase {
     private JsonObject skinGeometry; // Bedrock
 
     public BedrockMappingData() {
-        super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolVersion.v1_19_4.getName());
+        super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolVersion.v1_20.getName());
     }
 
     @Override
@@ -94,7 +94,7 @@ public class BedrockMappingData extends MappingDataBase {
         this.registries = this.readNBT("java/registries.nbt");
         this.tags = this.readNBT("java/tags.nbt");
 
-        final JsonArray javaBlockStatesJson = this.readJson("java/mapping-1.19.4.json").getAsJsonArray("blockstates");
+        final JsonArray javaBlockStatesJson = this.readJson("java/mapping-1.20.json").getAsJsonArray("blockstates");
         this.javaBlockStates = HashBiMap.create(javaBlockStatesJson.size());
         for (int i = 0; i < javaBlockStatesJson.size(); i++) {
             final BlockState blockState = BlockState.fromString(javaBlockStatesJson.get(i).getAsString());
@@ -103,7 +103,7 @@ public class BedrockMappingData extends MappingDataBase {
 
         this.blockStateUpgrader = new BlockStateUpgrader();
 
-        final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_19_80.nbt").get("blocks");
+        final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_20_0.nbt").get("blocks");
         this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
         for (Tag tag : bedrockBlockStatesTag.getValue()) {
             this.bedrockBlockStates.add(BedrockBlockState.fromNbt((CompoundTag) tag));
@@ -125,7 +125,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.preWaterloggedStates.add(this.javaBlockStates.get(BlockState.fromString(entry.getAsString())).intValue());
         }
 
-        final JsonObject legacyBlocksJson = this.readJson("bedrock/block_id_map.json");
+        final JsonObject legacyBlocksJson = this.readJson("bedrock/block_legacy_id_map.json");
         this.legacyBlocks = HashBiMap.create(legacyBlocksJson.size());
         for (Map.Entry<String, JsonElement> entry : legacyBlocksJson.entrySet()) {
             final String identifier = entry.getKey();
@@ -171,7 +171,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.biomeExtraData.put(dataName, extraData);
         }
 
-        final JsonArray itemsJson = this.readJson("bedrock/runtime_item_states.1_19_80.json", JsonArray.class);
+        final JsonArray itemsJson = this.readJson("bedrock/runtime_item_states.1_20_0.json", JsonArray.class);
         this.items = HashBiMap.create(itemsJson.size());
         for (JsonElement entry : itemsJson) {
             final JsonObject itemEntry = entry.getAsJsonObject();
