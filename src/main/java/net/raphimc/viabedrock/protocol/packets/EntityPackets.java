@@ -113,7 +113,8 @@ public class EntityPackets {
             final float yaw = MathUtil.byte2Float(wrapper.read(Type.BYTE)); // yaw
             final float headYaw = MathUtil.byte2Float(wrapper.read(Type.BYTE)); // head yaw
             final boolean onGround = (flags & 1) != 0;
-            final boolean teleported = (flags & 2) != 0; // Whether the position should be interpolated
+            final boolean teleported = (flags & 2) != 0; // If the position shouldn't be interpolated
+            final boolean forceMoveLocalEntity = (flags & 4) != 0;
 
             final Entity entity = entityTracker.getEntityByRid(runtimeEntityId);
             if (entity == null) {
@@ -121,21 +122,32 @@ public class EntityPackets {
                 return;
             }
 
-            entity.setPosition(position);
-            entity.setOnGround(onGround);
-
             if (entity instanceof ClientPlayerEntity) {
-                if (!teleported) {
+                if (!teleported && !forceMoveLocalEntity) {
                     wrapper.cancel();
                     return;
                 }
-                // The player should keep the motions, but this is not possible with the current Java Edition protocol
-                wrapper.setPacketType(ClientboundPackets1_19_4.PLAYER_POSITION);
-                entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, true, true);
+                entity.setPosition(position);
+
+                if (forceMoveLocalEntity) {
+                    wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
+                    wrapper.write(Type.DOUBLE, (double) entity.position().x()); // x
+                    wrapper.write(Type.DOUBLE, (double) entity.position().y() - entity.eyeOffset()); // y
+                    wrapper.write(Type.DOUBLE, (double) entity.position().z()); // z
+                    wrapper.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().y())); // yaw
+                    wrapper.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().x())); // pitch
+                    wrapper.write(Type.BOOLEAN, entity.isOnGround()); // on ground
+                } else { // teleport
+                    // The player should keep the motions, but this is not possible with the current Java Edition protocol
+                    wrapper.setPacketType(ClientboundPackets1_19_4.PLAYER_POSITION);
+                    entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, true, true);
+                }
                 return;
             }
 
+            entity.setPosition(position);
             entity.setRotation(new Position3f(pitch, yaw, headYaw));
+            entity.setOnGround(onGround);
 
             final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_19_4.ENTITY_HEAD_LOOK, wrapper.user());
             entityHeadLook.write(Type.VAR_INT, entity.javaId()); // entity id
@@ -155,6 +167,15 @@ public class EntityPackets {
 
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
             final int flags = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // flags
+            final boolean hasX = (flags & 1) != 0;
+            final boolean hasY = (flags & 2) != 0;
+            final boolean hasZ = (flags & 4) != 0;
+            final boolean hasPitch = (flags & 8) != 0;
+            final boolean hasYaw = (flags & 16) != 0;
+            final boolean hasHeadYaw = (flags & 32) != 0;
+            final boolean onGround = (flags & 64) != 0;
+            final boolean teleported = (flags & 128) != 0; // If the position shouldn't be interpolated
+            final boolean forceMoveLocalEntity = (flags & 256) != 0;
 
             final Entity entity = entityTracker.getEntityByRid(runtimeEntityId);
             if (entity == null) {
@@ -163,7 +184,7 @@ public class EntityPackets {
             }
 
             if (entity instanceof ClientPlayerEntity) {
-                if ((flags & 128) == 0 && (flags & 256) == 0) { // !teleport && !force move local entity
+                if (!teleported && !forceMoveLocalEntity) {
                     wrapper.cancel();
                     return;
                 }
@@ -171,19 +192,19 @@ public class EntityPackets {
                 float x = 0F;
                 float y = 0F;
                 float z = 0F;
-                if ((flags & 1) != 0) { // has x
+                if (hasX) {
                     x = wrapper.read(BedrockTypes.FLOAT_LE);
                 }
-                if ((flags & 2) != 0) { // has y
+                if (hasY) {
                     y = wrapper.read(BedrockTypes.FLOAT_LE);
                 }
-                if ((flags & 4) != 0) { // has z
+                if (hasZ) {
                     z = wrapper.read(BedrockTypes.FLOAT_LE);
                 }
                 entity.setPosition(new Position3f(x, y, z));
 
                 wrapper.clearPacket();
-                if ((flags & 256) != 0) { // force move local entity
+                if (forceMoveLocalEntity) {
                     wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
                     wrapper.write(Type.DOUBLE, (double) entity.position().x()); // x
                     wrapper.write(Type.DOUBLE, (double) entity.position().y() - entity.eyeOffset()); // y
@@ -199,22 +220,22 @@ public class EntityPackets {
                 return;
             }
 
-            if ((flags & 1) != 0) { // has x
+            if (hasX) {
                 entity.setPosition(new Position3f(wrapper.read(BedrockTypes.FLOAT_LE), entity.position().y(), entity.position().z()));
             }
-            if ((flags & 2) != 0) { // has y
+            if (hasY) {
                 entity.setPosition(new Position3f(entity.position().x(), wrapper.read(BedrockTypes.FLOAT_LE), entity.position().z()));
             }
-            if ((flags & 4) != 0) { // has z
+            if (hasZ) {
                 entity.setPosition(new Position3f(entity.position().x(), entity.position().y(), wrapper.read(BedrockTypes.FLOAT_LE)));
             }
-            if ((flags & 8) != 0) { // has pitch
+            if (hasPitch) {
                 entity.setRotation(new Position3f(MathUtil.byte2Float(wrapper.read(Type.BYTE)), entity.rotation().y(), entity.rotation().z()));
             }
-            if ((flags & 16) != 0) { // has yaw
+            if (hasYaw) {
                 entity.setRotation(new Position3f(entity.rotation().x(), MathUtil.byte2Float(wrapper.read(Type.BYTE)), entity.rotation().z()));
             }
-            if ((flags & 32) != 0) { // has head yaw
+            if (hasHeadYaw) {
                 entity.setRotation(new Position3f(entity.rotation().x(), entity.rotation().y(), MathUtil.byte2Float(wrapper.read(Type.BYTE))));
 
                 final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_19_4.ENTITY_HEAD_LOOK, wrapper.user());
@@ -222,7 +243,7 @@ public class EntityPackets {
                 entityHeadLook.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().z())); // head yaw
                 entityHeadLook.send(BedrockProtocol.class);
             }
-            entity.setOnGround((flags & 64) != 0);
+            entity.setOnGround(onGround);
 
             wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Type.DOUBLE, (double) entity.position().x()); // x
