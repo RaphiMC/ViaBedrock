@@ -20,28 +20,18 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 
-public class CommandBlockBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
+public class EnchantingTableBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        copy(bedrockTag, javaTag, "Command", StringTag.class);
-        copy(bedrockTag, javaTag, "SuccessCount", IntTag.class);
-        copy(bedrockTag, javaTag, "TrackOutput", ByteTag.class);
-        copy(bedrockTag, javaTag, "powered", ByteTag.class);
-        copy(bedrockTag, javaTag, "conditionMet", ByteTag.class);
-        copy(bedrockTag, javaTag, "auto", ByteTag.class);
-
-        translateCustomName(user, bedrockTag, javaTag);
+        this.translateCustomName(user, bedrockTag, javaTag);
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }

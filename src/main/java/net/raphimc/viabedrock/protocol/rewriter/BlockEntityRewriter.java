@@ -20,15 +20,17 @@ package net.raphimc.viabedrock.protocol.rewriter;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.rewriter.blockentity.BedBlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.rewriter.blockentity.CommandBlockBlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.rewriter.blockentity.LecternBlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.rewriter.blockentity.SignBlockEntityRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.blockentity.*;
+import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class BlockEntityRewriter {
 
@@ -38,10 +40,10 @@ public class BlockEntityRewriter {
     static {
         BLOCK_ENTITY_REWRITERS.put("bed", new BedBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("cauldron", NULL_REWRITER);
-        BLOCK_ENTITY_REWRITERS.put("command_block", new CommandBlockBlockEntityRewriter()); // TODO: CustomName
-        BLOCK_ENTITY_REWRITERS.put("enchanting_table", NULL_REWRITER); // TODO: CustomName
+        BLOCK_ENTITY_REWRITERS.put("command_block", new CommandBlockBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("enchanting_table", new EnchantingTableBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("hanging_sign", new SignBlockEntityRewriter());
-        BLOCK_ENTITY_REWRITERS.put("lectern", new LecternBlockEntityRewriter()); // TODO: CustomName
+        BLOCK_ENTITY_REWRITERS.put("lectern", new LecternBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("sign", new SignBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("spore_blossom", NULL_REWRITER);
     }
@@ -82,6 +84,17 @@ public class BlockEntityRewriter {
 
         default CompoundTag rewriteSlot(final UserConnection user, final CompoundTag itemTag) {
             return user.get(ItemRewriter.class).javaTag(itemTag);
+        }
+
+        default StringTag rewriteCustomName(final UserConnection user, final StringTag textTag) {
+            final Function<String, String> translator = k -> user.get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
+            return new StringTag(TextUtil.stringToJson(BedrockTranslator.translate(textTag.getValue(), translator, new Object[0])));
+        }
+
+        default void translateCustomName(final UserConnection user, final CompoundTag oldTag, final CompoundTag newTag) {
+            if (oldTag.get("CustomName") instanceof StringTag) {
+                newTag.put("CustomName", rewriteCustomName(user, oldTag.get("CustomName")));
+            }
         }
     }
 
