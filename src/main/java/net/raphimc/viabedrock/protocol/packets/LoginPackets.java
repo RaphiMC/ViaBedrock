@@ -216,7 +216,7 @@ public class LoginPackets {
 
                     wrapper.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
 
-                    validateAndFullAuthChainData(wrapper.user());
+                    validateAndFillAuthChainData(wrapper.user());
                 });
             }
         });
@@ -265,7 +265,7 @@ public class LoginPackets {
         }
     }
 
-    private static void validateAndFullAuthChainData(final UserConnection user) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+    private static void validateAndFillAuthChainData(final UserConnection user) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
         if (user.has(AuthChainData.class)) { // Externally supplied chain data
             final AuthChainData authChainData = user.get(AuthChainData.class);
 
