@@ -20,40 +20,12 @@ package net.raphimc.viabedrock.api.util;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import com.viaversion.viaversion.libs.gson.JsonParser;
-import net.lenni0451.mcstructs.core.TextFormatting;
-import net.lenni0451.mcstructs.text.serializer.LegacyStringDeserializer;
-import net.lenni0451.mcstructs.text.serializer.TextComponentSerializer;
-import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 public class JsonUtil {
-
-    public static String textToJson(final String text) {
-        return TextComponentSerializer.V1_19_4.serialize(LegacyStringDeserializer.parse(text, TextFormatting.COLOR_CHAR, c -> Optional.ofNullable(BedrockTextFormatting.getByCode(c)).map(f -> {
-            if (f.isColor()) {
-                return new TextFormatting(f.getRgbValue());
-            } else if (f.equals(BedrockTextFormatting.OBFUSCATED)) {
-                return TextFormatting.OBFUSCATED;
-            } else if (f.equals(BedrockTextFormatting.BOLD)) {
-                return TextFormatting.BOLD;
-            } else if (f.equals(BedrockTextFormatting.ITALIC)) {
-                return TextFormatting.ITALIC;
-            } else if (f.equals(BedrockTextFormatting.RESET)) {
-                return TextFormatting.RESET;
-            } else {
-                throw new IllegalArgumentException("Unknown formatting: " + f);
-            }
-        }).orElse(null)));
-    }
-
-    public static JsonElement textToComponent(final String text) {
-        return JsonParser.parseString(textToJson(text));
-    }
 
     public static <T extends JsonElement> T sort(final T element, final Comparator<String> comparator) {
         if (element == null) {

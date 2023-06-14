@@ -36,6 +36,9 @@ This file has been dumped from a vanilla server using a fabric mod.
 ### data/custom/biome_extra_data.json
 This file has been created manually.
 
+### data/custom/block_tags.json
+This file has been created manually.
+
 ### data/custom/blockstate_mappings.json
 This file has been created manually.
 

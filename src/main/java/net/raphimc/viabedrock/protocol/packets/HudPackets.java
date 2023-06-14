@@ -31,8 +31,8 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardEntry;
 import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardObjective;
 import net.raphimc.viabedrock.api.util.BitSets;
-import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.api.util.StringUtil;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.TitleTypes;
@@ -90,7 +90,7 @@ public class HudPackets {
                     wrapper.write(Type.OPTIONAL_STRING, null); // signature
 
                     wrapper.write(Type.BOOLEAN, true); // listed
-                    wrapper.write(Type.OPTIONAL_COMPONENT, JsonUtil.textToComponent(names[i])); // display name
+                    wrapper.write(Type.OPTIONAL_COMPONENT, TextUtil.stringToGson(names[i])); // display name
 
                     Via.getManager().getProviders().get(SkinProvider.class).setSkin(wrapper.user(), uuids[i], skin);
                 }
@@ -183,17 +183,17 @@ public class HudPackets {
                     case TitleTypes.TITLE:
                     case TitleTypes.TITLE_JSON:
                         wrapper.setPacketType(ClientboundPackets1_19_4.TITLE_TEXT);
-                        wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(text)); // text
+                        wrapper.write(Type.COMPONENT, TextUtil.stringToGson(text)); // text
                         break;
                     case TitleTypes.SUBTITLE:
                     case TitleTypes.SUBTITLE_JSON:
                         wrapper.setPacketType(ClientboundPackets1_19_4.TITLE_SUBTITLE);
-                        wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(text)); // text
+                        wrapper.write(Type.COMPONENT, TextUtil.stringToGson(text)); // text
                         break;
                     case TitleTypes.ACTIONBAR:
                     case TitleTypes.ACTIONBAR_JSON:
                         wrapper.setPacketType(ClientboundPackets1_19_4.ACTIONBAR);
-                        wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(text)); // text
+                        wrapper.write(Type.COMPONENT, TextUtil.stringToGson(text)); // text
                         break;
                     case TitleTypes.TIMES:
                         wrapper.setPacketType(ClientboundPackets1_19_4.TITLE_TIMES);
@@ -245,7 +245,7 @@ public class HudPackets {
                 final PacketWrapper scoreboardObjective = PacketWrapper.create(ClientboundPackets1_19_4.SCOREBOARD_OBJECTIVE, wrapper.user());
                 scoreboardObjective.write(Type.STRING, objectiveName); // objective name
                 scoreboardObjective.write(Type.BYTE, (byte) 0); // mode | 0 = CREATE
-                scoreboardObjective.write(Type.COMPONENT, JsonUtil.textToComponent(BedrockTranslator.translate(displayName, translator, new Object[0]))); // display name
+                scoreboardObjective.write(Type.COMPONENT, TextUtil.stringToGson(BedrockTranslator.translate(displayName, translator, new Object[0]))); // display name
                 scoreboardObjective.write(Type.VAR_INT, 0); // display mode | 0 = INTEGER
                 scoreboardObjective.send(BedrockProtocol.class);
             }

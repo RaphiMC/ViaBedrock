@@ -19,7 +19,10 @@ package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.libs.fastutil.ints.*;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 import com.viaversion.viaversion.libs.fastutil.objects.Object2IntMap;
 import com.viaversion.viaversion.libs.fastutil.objects.Object2IntOpenHashMap;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
@@ -41,10 +44,12 @@ import java.util.logging.Level;
 
 public class BlockStateRewriter extends StoredObject {
 
+    public static final String TAG_WATER = "water";
+
     private final Int2IntMap blockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Java
     private final Int2IntMap legacyBlockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Bedrock
     private final Object2IntMap<BlockState> blockStateTagMappings = new Object2IntOpenHashMap<>(); // Bedrock -> Bedrock
-    private final IntList waterIds = new IntArrayList(); // Bedrock
+    private final Int2ObjectMap<String> blockStateTags = new Int2ObjectOpenHashMap<>(); // Bedrock
     private final BlockStateSanitizer blockStateSanitizer;
 
     public BlockStateRewriter(final UserConnection user, final BlockProperties[] blockProperties, final boolean hashedRuntimeBlockIds) {
@@ -57,6 +62,7 @@ public class BlockStateRewriter extends StoredObject {
         final List<BedrockBlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
         final Map<BlockState, Integer> javaBlockStates = BedrockProtocol.MAPPINGS.getJavaBlockStates();
         final Map<BlockState, BlockState> bedrockToJavaBlockStates = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates();
+        final Map<String, String> blockTags = BedrockProtocol.MAPPINGS.getBlockTags();
 
         for (BlockProperties blockProperty : blockProperties) {
             final CompoundTag blockStateTag = new CompoundTag();
@@ -75,8 +81,8 @@ public class BlockStateRewriter extends StoredObject {
 
             this.blockStateTagMappings.put(bedrockBlockState, bedrockId);
 
-            if (bedrockBlockState.namespacedIdentifier().equals("minecraft:water") || bedrockBlockState.namespacedIdentifier().equals("minecraft:flowing_water")) {
-                this.waterIds.add(bedrockId);
+            if (blockTags.containsKey(bedrockBlockState.namespacedIdentifier())) {
+                this.blockStateTags.put(bedrockId, blockTags.get(bedrockBlockState.namespacedIdentifier()));
             }
 
             if (!bedrockToJavaBlockStates.containsKey(bedrockBlockState)) {
@@ -139,8 +145,8 @@ public class BlockStateRewriter extends StoredObject {
         return BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(waterlogged, -1);
     }
 
-    public boolean isWater(final int bedrockBlockStateId) {
-        return this.waterIds.contains(bedrockBlockStateId);
+    public String tag(final int bedrockBlockStateId) {
+        return this.blockStateTags.get(bedrockBlockStateId);
     }
 
 }

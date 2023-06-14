@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.api.chunk;
 
+import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.chunks.Chunk1_18;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
@@ -48,6 +49,10 @@ public class BedrockChunk extends Chunk1_18 {
 
     public void setRequestSubChunks(final boolean requestSubChunks) {
         this.requestSubChunks = requestSubChunks;
+    }
+
+    public void removeBlockEntityAt(final Position position) {
+        this.blockEntities().removeIf(blockEntity -> ((BedrockBlockEntity) blockEntity).position().equals(position));
     }
 
 }

@@ -27,18 +27,19 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.util.MathUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.chunk.BedrockChunk;
-import net.raphimc.viabedrock.api.chunk.RawBlockEntity;
+import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBiomeArray;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
-import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
@@ -47,7 +48,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResults;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
@@ -189,7 +190,7 @@ public class WorldPackets {
                                 try {
                                     for (int i = 0; i < sectionCount; i++) {
                                         sections[i].mergeWith(chunkTracker.handleBlockPalette(BedrockTypes.CHUNK_SECTION.read(dataBuf))); // chunk section
-                                        sections[i].applyPendingBlockUpdates(wrapper.user().get(BlockStateRewriter.class).bedrockId(BedrockBlockState.AIR));
+                                        sections[i].applyPendingBlockUpdates(chunkTracker.airId());
                                     }
                                     if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
                                         final byte[] biomeData = new byte[256];
@@ -215,7 +216,10 @@ public class WorldPackets {
 
                                     dataBuf.skipBytes(1); // border blocks
                                     while (dataBuf.isReadable()) {
-                                        blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.NETWORK_TAG.read(dataBuf))); // block entity tag
+                                        final Tag tag = BedrockTypes.NETWORK_TAG.read(dataBuf); // block entity tag
+                                        if (tag instanceof CompoundTag) { // Ignore non-compound tags
+                                            blockEntities.add(new BedrockBlockEntity((CompoundTag) tag));
+                                        }
                                     }
                                 } catch (IndexOutOfBoundsException ignored) {
                                     // Mojang client stops reading at whatever point and loads whatever it has read successfully
@@ -283,11 +287,14 @@ public class WorldPackets {
                             final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
 
                             BedrockChunkSection section = new BedrockChunkSectionImpl();
-                            final List<BlockEntity> blockEntities = new ArrayList<>();
+                            final List<BedrockBlockEntity> blockEntities = new ArrayList<>();
                             try {
                                 section = BedrockTypes.CHUNK_SECTION.read(dataBuf); // chunk section
                                 while (dataBuf.isReadable()) {
-                                    blockEntities.add(new RawBlockEntity((CompoundTag) BedrockTypes.NETWORK_TAG.read(dataBuf))); // block entity tag
+                                    final Tag tag = BedrockTypes.NETWORK_TAG.read(dataBuf); // block entity tag
+                                    if (tag instanceof CompoundTag) { // Ignore non-compound tags
+                                        blockEntities.add(new BedrockBlockEntity((CompoundTag) tag));
+                                    }
                                 }
                             } catch (IndexOutOfBoundsException ignored) {
                                 // Mojang client stops reading at whatever point and loads whatever it has read successfully
@@ -421,6 +428,42 @@ public class WorldPackets {
                 multiBlockChange.write(Type.LONG, chunkKey); // chunk position
                 multiBlockChange.write(Type.VAR_LONG_BLOCK_CHANGE_RECORD_ARRAY, changes.toArray(new BlockChangeRecord[0])); // block change records
                 multiBlockChange.send(BedrockProtocol.class);
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.BLOCK_ENTITY_DATA, ClientboundPackets1_19_4.BLOCK_ENTITY_DATA, new PacketHandlers() {
+            @Override
+            protected void register() {
+                map(BedrockTypes.BLOCK_POSITION, Type.POSITION1_14); // position
+                handler(wrapper -> {
+                    final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+
+                    final Tag tag = wrapper.read(BedrockTypes.NETWORK_TAG); // block entity tag
+                    if (!(tag instanceof CompoundTag)) {
+                        wrapper.cancel();
+                        return;
+                    }
+
+                    final BedrockBlockEntity bedrockBlockEntity = new BedrockBlockEntity(wrapper.get(Type.POSITION1_14, 0), (CompoundTag) tag);
+                    final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(wrapper.user(), chunkTracker.getBlockState(bedrockBlockEntity.position()), bedrockBlockEntity);
+
+                    if (javaBlockEntity instanceof BlockEntityWithBlockState) {
+                        final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
+
+                        if (blockEntityWithBlockState.hasBlockState()) {
+                            final PacketWrapper blockChange = PacketWrapper.create(ClientboundPackets1_19_4.BLOCK_CHANGE, wrapper.user());
+                            blockChange.write(Type.POSITION1_14, wrapper.get(Type.POSITION1_14, 0)); // position
+                            blockChange.write(Type.VAR_INT, blockEntityWithBlockState.blockState()); // block state
+                            blockChange.send(BedrockProtocol.class);
+                        }
+                    }
+
+                    if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
+                        wrapper.write(Type.VAR_INT, javaBlockEntity.typeId()); // type
+                        wrapper.write(Type.NBT, javaBlockEntity.tag()); // block entity tag
+                    } else {
+                        wrapper.cancel();
+                    }
+                });
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_CHUNK_PUBLISHER_UPDATE, ClientboundPackets1_19_4.UPDATE_VIEW_DISTANCE, wrapper -> {

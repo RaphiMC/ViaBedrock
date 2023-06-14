@@ -27,8 +27,8 @@ import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPac
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.BitSets;
-import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.api.util.StringUtil;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -154,7 +154,7 @@ public class JoinPackets {
 
             if (isWorldEditor) {
                 final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_4.DISCONNECT, wrapper.user());
-                disconnect.write(Type.COMPONENT, JsonUtil.textToComponent(resourcePacksStorage.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
+                disconnect.write(Type.COMPONENT, TextUtil.stringToGson(resourcePacksStorage.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
                 disconnect.send(BedrockProtocol.class);
                 return;
             }
@@ -278,8 +278,8 @@ public class JoinPackets {
             tags.send(BedrockProtocol.class);
 
             final PacketWrapper tabList = PacketWrapper.create(ClientboundPackets1_19_4.TAB_LIST, wrapper.user());
-            tabList.write(Type.COMPONENT, JsonUtil.textToComponent(levelName + "\n")); // header
-            tabList.write(Type.COMPONENT, JsonUtil.textToComponent("§aViaBedrock §3v" + ViaBedrock.VERSION + "\n§7https://github.com/RaphiMC/ViaBedrock")); // footer
+            tabList.write(Type.COMPONENT, TextUtil.stringToGson(levelName + "\n")); // header
+            tabList.write(Type.COMPONENT, TextUtil.stringToGson("§aViaBedrock §3v" + ViaBedrock.VERSION + "\n§7https://github.com/RaphiMC/ViaBedrock")); // footer
             tabList.send(BedrockProtocol.class);
 
             final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper.user());

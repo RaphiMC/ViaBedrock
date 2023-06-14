@@ -30,7 +30,7 @@ import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerialize
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.util.JsonUtil;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -76,7 +76,7 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, BedrockTranslator.translate("§7§o%commands.message.display.incoming", translator, new String[]{sourceName, message})}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
                                 }
 
-                                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message));
+                                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(message));
                                 wrapper.write(Type.BOOLEAN, false); // overlay
                                 break;
                             }
@@ -93,7 +93,7 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
-                                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message)); // message
+                                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(message)); // message
                                 wrapper.write(Type.BOOLEAN, false); // overlay
                                 break;
                             }
@@ -105,7 +105,7 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
-                                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message)); // message
+                                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(message)); // message
                                 wrapper.write(Type.BOOLEAN, type == TextTypes.TIP); // overlay
                                 break;
                             }
@@ -118,7 +118,7 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate(message, translator, parameters);
                                 }
 
-                                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message)); // message
+                                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(message)); // message
                                 wrapper.write(Type.BOOLEAN, type == TextTypes.POPUP || type == TextTypes.JUKEBOX_POPUP); // overlay
                                 break;
                             }
@@ -169,7 +169,7 @@ public class ChatPackets {
                 wrapper.read(BedrockTypes.STRING); // data
             }
 
-            wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(message.toString()));
+            wrapper.write(Type.COMPONENT, TextUtil.stringToGson(message.toString()));
             wrapper.write(Type.BOOLEAN, false); // overlay
         });
         protocol.registerClientbound(ClientboundBedrockPackets.AVAILABLE_COMMANDS, ClientboundPackets1_19_4.DECLARE_COMMANDS, wrapper -> {
@@ -206,7 +206,7 @@ public class ChatPackets {
                     if (gameSession.isChatRestricted()) {
                         wrapper.cancel();
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, wrapper.user());
-                        systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute"))); // message
+                        systemChat.write(Type.COMPONENT, TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute"))); // message
                         systemChat.write(Type.BOOLEAN, false); // overlay
                         systemChat.send(BedrockProtocol.class);
                     }
@@ -229,7 +229,7 @@ public class ChatPackets {
                     if (!gameSession.areCommandsEnabled()) {
                         wrapper.cancel();
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, wrapper.user());
-                        systemChat.write(Type.COMPONENT, JsonUtil.textToComponent("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled"))); // message
+                        systemChat.write(Type.COMPONENT, TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled"))); // message
                         systemChat.write(Type.BOOLEAN, false); // overlay
                         systemChat.send(BedrockProtocol.class);
                     }
@@ -255,7 +255,7 @@ public class ChatPackets {
             tabComplete.write(Type.VAR_INT, completions.value().size()); // count
             for (Pair<String, String> completion : completions.value()) {
                 tabComplete.write(Type.STRING, completion.key()); // text
-                tabComplete.write(Type.OPTIONAL_COMPONENT, completion.value() != null ? JsonUtil.textToComponent(completion.value()) : null); // tooltip
+                tabComplete.write(Type.OPTIONAL_COMPONENT, completion.value() != null ? TextUtil.stringToGson(completion.value()) : null); // tooltip
             }
             tabComplete.send(BedrockProtocol.class);
         });

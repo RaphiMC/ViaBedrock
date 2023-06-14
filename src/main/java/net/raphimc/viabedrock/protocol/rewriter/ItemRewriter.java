@@ -23,6 +23,7 @@ import com.google.common.collect.Maps;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
@@ -43,6 +44,10 @@ public class ItemRewriter extends StoredObject {
             this.items.put(Key.namespaced(itemEntry.identifier()), itemEntry.id());
         }
         this.itemType = new BedrockItemType(this.items.getOrDefault("minecraft:shield", -1));
+    }
+
+    public CompoundTag javaTag(final CompoundTag bedrockTag) {
+        return new CompoundTag(); // TODO
     }
 
     public BiMap<String, Integer> getItems() {

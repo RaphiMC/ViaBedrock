@@ -17,35 +17,63 @@
  */
 package net.raphimc.viabedrock.api.chunk;
 
+import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
 
-public class RawBlockEntity implements BlockEntity {
+public class BedrockBlockEntity implements BlockEntity {
 
+    private final Position position;
     private final CompoundTag tag;
 
-    public RawBlockEntity(final CompoundTag tag) {
+    public BedrockBlockEntity(final CompoundTag tag) {
+        this.tag = tag;
+
+        int x = 0;
+        if (tag.get("x") instanceof IntTag) {
+            x = ((IntTag) tag.get("x")).asInt();
+        }
+        int y = 0;
+        if (tag.get("y") instanceof IntTag) {
+            y = ((IntTag) tag.get("y")).asInt();
+        }
+        int z = 0;
+        if (tag.get("z") instanceof IntTag) {
+            z = ((IntTag) tag.get("z")).asInt();
+        }
+        this.position = new Position(x, y, z);
+
+        // id value should be validated, but not strictly required
+    }
+
+    public BedrockBlockEntity(final Position position, final CompoundTag tag) {
+        this.position = position;
         this.tag = tag;
     }
 
     @Override
     public byte packedXZ() {
-        throw new UnsupportedOperationException();
+        return BlockEntity.pack(this.position.x() & 15, this.position.z() & 15);
     }
 
     @Override
     public short y() {
-        throw new UnsupportedOperationException();
+        return (short) this.position.y();
     }
 
-    @Override
-    public int typeId() {
-        throw new UnsupportedOperationException();
+    public Position position() {
+        return this.position;
     }
 
     @Override
     public CompoundTag tag() {
         return this.tag;
+    }
+
+    @Override
+    public int typeId() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

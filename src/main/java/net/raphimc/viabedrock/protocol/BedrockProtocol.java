@@ -32,7 +32,7 @@ import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPackets1_19_4;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.util.JsonUtil;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.packetmapping.ClientboundPacketMappings;
 import net.raphimc.viabedrock.protocol.packets.*;
@@ -100,7 +100,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
                             + "Violating Packet: " + (ServerboundBedrockPackets.getPacket(packetIdCause) != null ? ServerboundBedrockPackets.getPacket(packetIdCause).name() : packetIdCause) + "\n"
                             + (context.isEmpty() ? "No context provided" : (" Context: '" + context + "'"))
                             + "\n\nPlease report this issue on the ViaBedrock GitHub page!";
-                    wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(reason));
+                    wrapper.write(Type.COMPONENT, TextUtil.stringToGson(reason));
                 });
             }
         });
@@ -183,7 +183,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Illegal state: " + reason, e);
         try {
             final PacketWrapper disconnect = PacketWrapper.create(user.getProtocolInfo().getState() == State.PLAY ? ClientboundPackets1_19_4.DISCONNECT : ClientboundLoginPackets.LOGIN_DISCONNECT, user);
-            disconnect.write(Type.COMPONENT, JsonUtil.textToComponent("§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page."));
+            disconnect.write(Type.COMPONENT, TextUtil.stringToGson("§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page."));
             disconnect.send(BedrockProtocol.class);
         } catch (Throwable ignored) {
         }

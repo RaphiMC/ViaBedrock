@@ -1,0 +1,56 @@
+{
+  "banner": [
+    "minecraft:standing_banner",
+    "minecraft:wall_banner"
+  ],
+  "bed": [
+    "minecraft:bed"
+  ],
+  "cauldron": [
+    "minecraft:cauldron"
+  ],
+  "command_block": [
+    "minecraft:command_block",
+    "minecraft:chain_command_block",
+    "minecraft:repeating_command_block"
+  ],
+  "enchanting_table": [
+    "minecraft:enchanting_table"
+  ],
+  "hanging_sign": [
+    "minecraft:acacia_hanging_sign",
+    "minecraft:bamboo_hanging_sign",
+    "minecraft:birch_hanging_sign",
+    "minecraft:cherry_hanging_sign",
+    "minecraft:crimson_hanging_sign",
+    "minecraft:dark_oak_hanging_sign",
+    "minecraft:jungle_hanging_sign",
+    "minecraft:mangrove_hanging_sign",
+    "minecraft:oak_hanging_sign",
+    "minecraft:spruce_hanging_sign",
+    "minecraft:warped_hanging_sign"
+  ],
+  "lectern": [
+    "minecraft:lectern"
+  ],
+  "sign": [
+    "minecraft:acacia_standing_sign",
+    "minecraft:bamboo_standing_sign",
+    "minecraft:birch_standing_sign",
+    "minecraft:cherry_standing_sign",
+    "minecraft:crimson_standing_sign",
+    "minecraft:darkoak_standing_sign",
+    "minecraft:jungle_standing_sign",
+    "minecraft:mangrove_standing_sign",
+    "minecraft:standing_sign",
+    "minecraft:spruce_standing_sign",
+    "minecraft:warped_standing_sign"
+  ],
+  "spore_blossom": [
+    "minecraft:spore_blossom"
+  ],
+  "water": [
+    "minecraft:flowing_water",
+    "minecraft:water"
+  ]
+}

@@ -33,7 +33,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.netty.util.AsciiString;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.util.JsonUtil;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -90,7 +90,7 @@ public class LoginPackets {
                         final Function<String, String> translator = k -> translations.getOrDefault(k, k);
                         final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
                         final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
-                        wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translatedMessage)); // reason
+                        wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translatedMessage)); // reason
                     } else {
                         wrapper.write(Type.COMPONENT, com.viaversion.viaversion.libs.gson.JsonNull.INSTANCE); // reason
                     }
@@ -227,26 +227,26 @@ public class LoginPackets {
 
         switch (status) {
             case PlayStatus.LOGIN_FAILED_CLIENT_OLD:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.outdatedClient")));
+                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.outdatedClient")));
                 break;
             case PlayStatus.LOGIN_FAILED_SERVER_OLD:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.outdatedServer")));
+                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.outdatedServer")));
                 break;
             case PlayStatus.LOGIN_FAILED_INVALID_TENANT:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.invalidTenant")));
+                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.invalidTenant")));
                 break;
             case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.editionMismatchEduToVanilla")));
+                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.editionMismatchEduToVanilla")));
                 break;
             case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_VANILLA_TO_EDU:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.editionMismatchVanillaToEdu")));
+                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.editionMismatchVanillaToEdu")));
                 break;
             case PlayStatus.FAILED_SERVER_FULL_SUB_CLIENT:
             case PlayStatus.VANILLA_TO_EDITOR_MISMATCH:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title")));
+                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title")));
                 break;
             case PlayStatus.EDITOR_TO_VANILLA_MISMATCH:
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translations.get("disconnectionScreen.editor.mismatchEditorToVanilla")));
+                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.editor.mismatchEditorToVanilla")));
                 break;
             default: // Mojang client silently ignores invalid values
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received invalid login status: " + status);

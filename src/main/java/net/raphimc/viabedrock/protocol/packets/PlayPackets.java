@@ -26,7 +26,7 @@ import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPac
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
-import net.raphimc.viabedrock.api.util.JsonUtil;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -55,7 +55,7 @@ public class PlayPackets {
                 final Function<String, String> translator = k -> translations.getOrDefault(k, k);
                 final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
                 final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
-                wrapper.write(Type.COMPONENT, JsonUtil.textToComponent(translatedMessage)); // reason
+                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translatedMessage)); // reason
             } else {
                 wrapper.write(Type.COMPONENT, com.viaversion.viaversion.libs.gson.JsonNull.INSTANCE); // reason
             }
@@ -119,7 +119,7 @@ public class PlayPackets {
                     resourcePack.write(Type.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + httpToken); // url
                     resourcePack.write(Type.STRING, ""); // hash
                     resourcePack.write(Type.BOOLEAN, false); // requires accept
-                    resourcePack.write(Type.OPTIONAL_COMPONENT, JsonUtil.textToComponent("\nFor the best possible experience, you should accept the resource pack.")); // prompt message
+                    resourcePack.write(Type.OPTIONAL_COMPONENT, TextUtil.stringToGson("\nFor the best possible experience, you should accept the resource pack.")); // prompt message
                     resourcePack.send(BedrockProtocol.class);
                 }
             } else {

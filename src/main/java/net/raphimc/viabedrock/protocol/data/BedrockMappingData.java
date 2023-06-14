@@ -26,8 +26,8 @@ import com.viaversion.viaversion.api.data.MappingDataBase;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
-import com.viaversion.viaversion.libs.fastutil.ints.IntArrayList;
-import com.viaversion.viaversion.libs.fastutil.ints.IntList;
+import com.viaversion.viaversion.libs.fastutil.ints.IntOpenHashSet;
+import com.viaversion.viaversion.libs.fastutil.ints.IntSet;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
@@ -69,7 +69,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BlockStateUpgrader blockStateUpgrader; // Bedrock
     private List<BedrockBlockState> bedrockBlockStates; // Bedrock
     private Map<BlockState, BlockState> bedrockToJavaBlockStates; // Bedrock -> Java
-    private IntList preWaterloggedStates; // Java
+    private IntSet preWaterloggedStates; // Java
     private BiMap<String, Integer> legacyBlocks; // Bedrock
     private Int2ObjectMap<BedrockBlockState> legacyBlockStates; // Bedrock
     private BiMap<String, Integer> biomes; // Bedrock
@@ -79,6 +79,8 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, String> entityIdentifiers; // Bedrock -> Java
     private BufferedImage steveSkin; // Bedrock
     private JsonObject skinGeometry; // Bedrock
+    private Map<String, String> blockTags; // Bedrock
+    private BiMap<String, Integer> blockEntities; // Java
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolVersion.v1_20.getName());
@@ -94,7 +96,9 @@ public class BedrockMappingData extends MappingDataBase {
         this.registries = this.readNBT("java/registries.nbt");
         this.tags = this.readNBT("java/tags.nbt");
 
-        final JsonArray javaBlockStatesJson = this.readJson("java/mapping-1.20.json").getAsJsonArray("blockstates");
+        final JsonObject mapping1_20 = this.readJson("java/mapping-1.20.json");
+
+        final JsonArray javaBlockStatesJson = mapping1_20.getAsJsonArray("blockstates");
         this.javaBlockStates = HashBiMap.create(javaBlockStatesJson.size());
         for (int i = 0; i < javaBlockStatesJson.size(); i++) {
             final BlockState blockState = BlockState.fromString(javaBlockStatesJson.get(i).getAsString());
@@ -120,7 +124,7 @@ public class BedrockMappingData extends MappingDataBase {
         }
 
         final JsonArray preWaterloggedStatesJson = this.readJson("custom/pre_waterlogged_states.json").getAsJsonArray("blockstates");
-        this.preWaterloggedStates = new IntArrayList(preWaterloggedStatesJson.size());
+        this.preWaterloggedStates = new IntOpenHashSet(preWaterloggedStatesJson.size());
         for (JsonElement entry : preWaterloggedStatesJson) {
             this.preWaterloggedStates.add(this.javaBlockStates.get(BlockState.fromString(entry.getAsString())).intValue());
         }
@@ -190,6 +194,21 @@ public class BedrockMappingData extends MappingDataBase {
 
         this.steveSkin = this.readImage("bedrock/skin/steve.png");
         this.skinGeometry = JsonUtil.sort(this.readJson("bedrock/skin/geometry.json"), Comparator.naturalOrder());
+
+        final JsonObject blockTagsJson = this.readJson("custom/block_tags.json");
+        this.blockTags = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : blockTagsJson.entrySet()) {
+            final String tagName = entry.getKey();
+            for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
+                this.blockTags.put(tagValueJson.getAsString(), tagName);
+            }
+        }
+
+        final JsonArray blockEntitiesJson = mapping1_20.get("blockentities").getAsJsonArray();
+        this.blockEntities = HashBiMap.create(blockEntitiesJson.size());
+        for (int i = 0; i < blockEntitiesJson.size(); i++) {
+            this.blockEntities.put(blockEntitiesJson.get(i).getAsString(), i);
+        }
     }
 
     public ResourcePack getVanillaResourcePack() {
@@ -220,7 +239,7 @@ public class BedrockMappingData extends MappingDataBase {
         return Collections.unmodifiableMap(this.bedrockToJavaBlockStates);
     }
 
-    public IntList getPreWaterloggedStates() {
+    public IntSet getPreWaterloggedStates() {
         return this.preWaterloggedStates;
     }
 
@@ -258,6 +277,14 @@ public class BedrockMappingData extends MappingDataBase {
 
     public JsonObject getSkinGeometry() {
         return this.skinGeometry;
+    }
+
+    public Map<String, String> getBlockTags() {
+        return Collections.unmodifiableMap(this.blockTags);
+    }
+
+    public BiMap<String, Integer> getBlockEntities() {
+        return Maps.unmodifiableBiMap(this.blockEntities);
     }
 
     @Override

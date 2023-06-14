@@ -22,8 +22,8 @@ import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
-import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.api.util.StringUtil;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.UUID;
@@ -38,13 +38,13 @@ public class PlayerEntity extends Entity {
         final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
         teams.write(Type.BYTE, (byte) 0); // mode | 0 = ADD
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent("vb_" + this.javaId)); // display name
+        teams.write(Type.COMPONENT, TextUtil.stringToGson("vb_" + this.javaId)); // display name
         teams.write(Type.BYTE, (byte) 3); // flags
         teams.write(Type.STRING, "always"); // name tag visibility
         teams.write(Type.STRING, "never"); // collision rule
         teams.write(Type.VAR_INT, 21); // color | 21 = RESET
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent("")); // prefix
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent("")); // suffix
+        teams.write(Type.COMPONENT, TextUtil.stringToGson("")); // prefix
+        teams.write(Type.COMPONENT, TextUtil.stringToGson("")); // suffix
         teams.write(Type.STRING_ARRAY, new String[]{StringUtil.encodeUUID(this.javaUuid)}); // players
         teams.send(BedrockProtocol.class);
     }
@@ -55,13 +55,13 @@ public class PlayerEntity extends Entity {
         final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
         teams.write(Type.BYTE, (byte) 2); // mode | 2 = UPDATE
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent("vb_" + this.javaId)); // display name
+        teams.write(Type.COMPONENT, TextUtil.stringToGson("vb_" + this.javaId)); // display name
         teams.write(Type.BYTE, (byte) 3); // flags
         teams.write(Type.STRING, "always"); // name tag visibility
         teams.write(Type.STRING, "never"); // collision rule
         teams.write(Type.VAR_INT, 21); // color | 21 = RESET
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent(name)); // prefix
-        teams.write(Type.COMPONENT, JsonUtil.textToComponent("")); // suffix
+        teams.write(Type.COMPONENT, TextUtil.stringToGson(name)); // prefix
+        teams.write(Type.COMPONENT, TextUtil.stringToGson("")); // suffix
         teams.send(BedrockProtocol.class);
     }
 
