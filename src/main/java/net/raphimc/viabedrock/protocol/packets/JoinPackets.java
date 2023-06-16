@@ -124,9 +124,7 @@ public class JoinPackets {
             wrapper.read(BedrockTypes.INT_LE); // limited world height
             wrapper.read(Type.BOOLEAN); // nether type
             wrapper.read(BedrockTypes.EDUCATION_URI_RESOURCE); // education shared uri
-            if (wrapper.read(Type.BOOLEAN)) { // enable experimental game play
-                wrapper.read(Type.BOOLEAN); // force experimental game play
-            }
+            wrapper.read(Type.BOOLEAN); // enable experimental game play
             final byte chatRestrictionLevel = wrapper.read(Type.BYTE); // chat restriction level
             wrapper.read(Type.BOOLEAN); // disabling player interactions
 
