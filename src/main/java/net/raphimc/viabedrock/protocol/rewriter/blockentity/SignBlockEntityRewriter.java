@@ -52,9 +52,9 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
                 final CompoundTag bedrockText = bedrockTag.get(entry.getKey());
                 final CompoundTag javaText = new CompoundTag();
 
-                if (bedrockText.get("HideGlowOutline") instanceof ByteTag) {
-                    javaText.put("has_glowing_text", new ByteTag(bedrockText.<ByteTag>get("HideGlowOutline").asByte() != 0 ? (byte) 0 : (byte) 1));
-                } else {
+                final boolean ignoreLighting = !(bedrockText.get("IgnoreLighting") instanceof ByteTag) || bedrockText.<ByteTag>get("IgnoreLighting").asByte() != 0;
+                final boolean hideGlowOutline = bedrockText.get("HideGlowOutline") instanceof ByteTag && bedrockText.<ByteTag>get("HideGlowOutline").asByte() != 0;
+                if (!hideGlowOutline && ignoreLighting) {
                     javaText.put("has_glowing_text", new ByteTag((byte) 1));
                 }
 
