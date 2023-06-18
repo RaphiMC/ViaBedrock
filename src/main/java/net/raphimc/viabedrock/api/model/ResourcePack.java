@@ -255,7 +255,7 @@ public class ResourcePack {
             final JsonArray contentArray = contentsJson.getAsJsonArray("content");
             for (JsonElement element : contentArray) {
                 final JsonObject contentItem = element.getAsJsonObject();
-                if (!contentItem.has("key")) continue;
+                if (!contentItem.has("key") || contentItem.get("key").isJsonNull()) continue;
                 final String key = contentItem.get("key").getAsString();
                 final String path = contentItem.get("path").getAsString();
                 if (!this.content.containsKey(path)) {
