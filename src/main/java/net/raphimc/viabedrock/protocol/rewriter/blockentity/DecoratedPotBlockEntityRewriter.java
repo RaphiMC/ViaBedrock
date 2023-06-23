@@ -45,14 +45,15 @@ public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewr
                 for (Tag sherd : bedrockSherds) {
                     final String bedrockIdentifier = ((StringTag) sherd).getValue();
                     final String javaIdentifier = BedrockProtocol.MAPPINGS.getBedrockToJavaItems().get(bedrockIdentifier);
-                    if (javaIdentifier == null) {
+                    if (javaIdentifier != null) {
+                        javaSherds.add(new StringTag(javaIdentifier));
+                    } else if (bedrockIdentifier.isEmpty()) {
+                        javaSherds.add(new StringTag("minecraft:brick"));
+                    } else {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing item: " + bedrockIdentifier);
-                        continue;
+                        javaSherds.add(new StringTag("minecraft:brick"));
                     }
-
-                    javaSherds.add(new StringTag(javaIdentifier));
                 }
-
                 javaTag.put("sherds", javaSherds);
             }
         }
