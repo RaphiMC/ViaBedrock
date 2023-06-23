@@ -105,15 +105,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
                     CommandData.EnumData enumData = null;
                     String postfix = null;
 
-                    if ((param & FLAG_POSTFIX) != 0) {
-                        final int index = param & ~FLAG_POSTFIX;
-                        postfix = postFixLiterals[index];
-                    } else if ((param & FLAG_ENUM) != 0) {
-                        final int index = param & ~FLAG_ENUM & ~FLAG_VALID;
-                        if (index >= 0 && index < enumPalette.length) {
-                            enumData = enumPalette[index];
-                        }
-                    } else if ((param & FLAG_DYNAMIC_ENUM) != 0) {
+                    if ((param & FLAG_DYNAMIC_ENUM) != 0) {
                         final int index = param & ~FLAG_DYNAMIC_ENUM & ~FLAG_VALID;
                         final int finalJ = j;
                         final int finalK = k;
@@ -124,8 +116,15 @@ public class CommandDataArrayType extends Type<CommandData[]> {
                                 parameters[finalJ][finalK] = new CommandData.ParamData(paramName, optional, paramFlags, CommandData.ParamData.TYPE_STRING, null, null);
                             }
                         });
-
                         continue;
+                    } else if ((param & FLAG_POSTFIX) != 0) {
+                        final int index = param & ~FLAG_POSTFIX;
+                        postfix = postFixLiterals[index];
+                    } else if ((param & FLAG_ENUM) != 0) {
+                        final int index = param & ~FLAG_ENUM & ~FLAG_VALID;
+                        if (index >= 0 && index < enumPalette.length) {
+                            enumData = enumPalette[index];
+                        }
                     } else if ((param & FLAG_VALID) != 0) {
                         type = param & ~FLAG_VALID;
                     }
