@@ -62,7 +62,7 @@ public class BlockStateRewriter extends StoredObject {
         final List<BedrockBlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
         final Map<BlockState, Integer> javaBlockStates = BedrockProtocol.MAPPINGS.getJavaBlockStates();
         final Map<BlockState, BlockState> bedrockToJavaBlockStates = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates();
-        final Map<String, String> blockTags = BedrockProtocol.MAPPINGS.getBlockTags();
+        final Map<String, String> blockTags = BedrockProtocol.MAPPINGS.getBedrockBlockTags();
 
         for (BlockProperties blockProperty : blockProperties) {
             final CompoundTag blockStateTag = new CompoundTag();
@@ -90,38 +90,32 @@ public class BlockStateRewriter extends StoredObject {
                 continue;
             }
 
-            final BlockState javaBlockState = bedrockToJavaBlockStates.get(bedrockBlockState);
-            if (!javaBlockStates.containsKey(javaBlockState)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing java block state mapping: " + javaBlockState);
-                continue;
-            }
-
-            final int javaId = javaBlockStates.get(javaBlockState);
+            final int javaId = javaBlockStates.get(bedrockToJavaBlockStates.get(bedrockBlockState));
             this.blockStateIdMappings.put(bedrockId, javaId);
         }
 
-        for (Int2ObjectMap.Entry<BedrockBlockState> entry : BedrockProtocol.MAPPINGS.getLegacyBlockStates().int2ObjectEntrySet()) {
+        for (Int2ObjectMap.Entry<BedrockBlockState> entry : BedrockProtocol.MAPPINGS.getBedrockLegacyBlockStates().int2ObjectEntrySet()) {
             final int legacyId = entry.getIntKey() >> 6;
             final int legacyData = entry.getIntKey() & 63;
             if (legacyData > 15) continue; // Dirty hack Mojang did in 1.12. Can be ignored safely as those values can't be used in chunk packets.
 
-            final int bedrockId = this.blockStateTagMappings.getInt(entry.getValue());
-            if (bedrockId == -1) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Legacy block state " + entry.getValue() + " is not mapped to a modern block state");
-                continue;
-            }
-
-            this.legacyBlockStateIdMappings.put(legacyId << 4 | legacyData & 15, bedrockId);
+            this.legacyBlockStateIdMappings.put(legacyId << 4 | legacyData & 15, this.blockStateTagMappings.getInt(entry.getValue()));
         }
 
         this.blockStateSanitizer = new BlockStateSanitizer(bedrockBlockStates);
     }
 
     public int bedrockId(final CompoundTag bedrockBlockStateTag) {
-        BedrockProtocol.MAPPINGS.getBlockStateUpgrader().upgradeToLatest(bedrockBlockStateTag);
-        this.blockStateSanitizer.sanitize(bedrockBlockStateTag);
+        final CompoundTag bedrockBlockStateTagClone = bedrockBlockStateTag.clone();
+        try {
+            BedrockProtocol.MAPPINGS.getBedrockBlockStateUpgrader().upgradeToLatest(bedrockBlockStateTagClone);
+            this.blockStateSanitizer.sanitize(bedrockBlockStateTagClone);
 
-        return this.bedrockId(BedrockBlockState.fromNbt(bedrockBlockStateTag));
+            return this.bedrockId(BedrockBlockState.fromNbt(bedrockBlockStateTagClone));
+        } catch (Throwable e) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while rewriting block state tag: " + bedrockBlockStateTag, e);
+            return this.bedrockId(BedrockBlockState.AIR);
+        }
     }
 
     public int bedrockId(final BlockState bedrockBlockState) {
@@ -137,7 +131,7 @@ public class BlockStateRewriter extends StoredObject {
     }
 
     public int waterlog(final int javaBlockStateId) {
-        if (BedrockProtocol.MAPPINGS.getPreWaterloggedStates().contains(javaBlockStateId)) {
+        if (BedrockProtocol.MAPPINGS.getJavaPreWaterloggedStates().contains(javaBlockStateId)) {
             return javaBlockStateId;
         }
 

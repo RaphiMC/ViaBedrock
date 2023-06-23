@@ -39,7 +39,7 @@ public class ResourcePacksStorage extends StoredObject {
     public ResourcePacksStorage(final UserConnection user) {
         super(user);
 
-        this.addPreloadedPack(BedrockProtocol.MAPPINGS.getVanillaResourcePack());
+        this.addPreloadedPack(BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack());
     }
 
     public boolean hasPack(final UUID packId) {

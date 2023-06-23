@@ -29,12 +29,16 @@ import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
 public class BedBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
+    private static final int COLOR_WHITE = 0;
+    private static final int COLOR_RED = 14;
+    private static final int COLOR_BLACK = 15;
+
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
 
         byte color = bedrockTag.get("color") instanceof ByteTag ? bedrockTag.<ByteTag>get("color").asByte() : -1;
-        if (color < 0 || color > 15) color = 14; // red
+        if (color < COLOR_WHITE || color > COLOR_BLACK) color = COLOR_RED;
 
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
         javaBlockState += color * 16;

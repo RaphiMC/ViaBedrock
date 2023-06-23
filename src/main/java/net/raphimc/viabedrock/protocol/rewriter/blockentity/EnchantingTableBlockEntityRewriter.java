@@ -31,7 +31,7 @@ public class EnchantingTableBlockEntityRewriter implements BlockEntityRewriter.R
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        this.translateCustomName(user, bedrockTag, javaTag);
+        this.copyCustomName(user, bedrockTag, javaTag);
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }

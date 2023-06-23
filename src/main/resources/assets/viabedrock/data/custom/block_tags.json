@@ -3,19 +3,92 @@
     "minecraft:standing_banner",
     "minecraft:wall_banner"
   ],
+  "barrel": [
+    "minecraft:barrel"
+  ],
+  "beacon": [
+    "minecraft:beacon"
+  ],
   "bed": [
     "minecraft:bed"
   ],
+  "beehive": [
+    "minecraft:beehive",
+    "minecraft:bee_nest"
+  ],
+  "bell": [
+    "minecraft:bell"
+  ],
+  "blast_furnace": [
+    "minecraft:blast_furnace",
+    "minecraft:lit_blast_furnace"
+  ],
+  "brewing_stand": [
+    "minecraft:brewing_stand"
+  ],
+  "brushable_block": [
+    "minecraft:suspicious_gravel",
+    "minecraft:suspicious_sand"
+  ],
+  "calibrated_sculk_sensor": [
+    "minecraft:calibrated_sculk_sensor"
+  ],
+  "campfire": [
+    "minecraft:campfire",
+    "minecraft:soul_campfire"
+  ],
   "cauldron": [
     "minecraft:cauldron"
+  ],
+  "chest": [
+    "minecraft:chest"
+  ],
+  "chiseled_bookshelf": [
+    "minecraft:chiseled_bookshelf"
   ],
   "command_block": [
     "minecraft:command_block",
     "minecraft:chain_command_block",
     "minecraft:repeating_command_block"
   ],
+  "comparator": [
+    "minecraft:powered_comparator",
+    "minecraft:unpowered_comparator"
+  ],
+  "conduit": [
+    "minecraft:conduit"
+  ],
+  "daylight_detector": [
+    "minecraft:daylight_detector",
+    "minecraft:daylight_detector_inverted"
+  ],
+  "decorated_pot": [
+    "minecraft:decorated_pot"
+  ],
+  "dispenser": [
+    "minecraft:dispenser"
+  ],
+  "dropper": [
+    "minecraft:dropper"
+  ],
   "enchanting_table": [
     "minecraft:enchanting_table"
+  ],
+  "end_gateway": [
+    "minecraft:end_gateway"
+  ],
+  "end_portal": [
+    "minecraft:end_portal"
+  ],
+  "ender_chest": [
+    "minecraft:ender_chest"
+  ],
+  "flower_pot": [
+    "minecraft:flower_pot"
+  ],
+  "furnace": [
+    "minecraft:furnace",
+    "minecraft:lit_furnace"
   ],
   "hanging_sign": [
     "minecraft:acacia_hanging_sign",
@@ -30,24 +103,93 @@
     "minecraft:spruce_hanging_sign",
     "minecraft:warped_hanging_sign"
   ],
+  "hopper": [
+    "minecraft:hopper"
+  ],
+  "item_frame": [
+    "minecraft:glow_frame",
+    "minecraft:frame"
+  ],
+  "jigsaw": [
+    "minecraft:jigsaw"
+  ],
+  "jukebox": [
+    "minecraft:jukebox"
+  ],
   "lectern": [
     "minecraft:lectern"
   ],
+  "lodestone": [
+    "minecraft:lodestone"
+  ],
+  "mob_spawner": [
+    "minecraft:mob_spawner"
+  ],
+  "moving_block": [
+    "minecraft:moving_block"
+  ],
+  "nether_reactor": [
+    "minecraft:netherreactor"
+  ],
+  "note_block": [
+    "minecraft:noteblock"
+  ],
+  "piston": [
+    "minecraft:piston",
+    "minecraft:sticky_piston"
+  ],
+  "sculk_catalyst": [
+    "minecraft:sculk_catalyst"
+  ],
+  "sculk_sensor": [
+    "minecraft:sculk_sensor"
+  ],
+  "sculk_shrieker": [
+    "minecraft:sculk_shrieker"
+  ],
+  "shulker_box": [
+    "minecraft:shulker_box",
+    "minecraft:undyed_shulker_box"
+  ],
   "sign": [
     "minecraft:acacia_standing_sign",
+    "minecraft:acacia_wall_sign",
     "minecraft:bamboo_standing_sign",
+    "minecraft:bamboo_wall_sign",
     "minecraft:birch_standing_sign",
+    "minecraft:birch_wall_sign",
     "minecraft:cherry_standing_sign",
+    "minecraft:cherry_wall_sign",
     "minecraft:crimson_standing_sign",
+    "minecraft:crimson_wall_sign",
     "minecraft:darkoak_standing_sign",
+    "minecraft:darkoak_wall_sign",
     "minecraft:jungle_standing_sign",
+    "minecraft:jungle_wall_sign",
     "minecraft:mangrove_standing_sign",
+    "minecraft:mangrove_wall_sign",
     "minecraft:standing_sign",
+    "minecraft:wall_sign",
     "minecraft:spruce_standing_sign",
-    "minecraft:warped_standing_sign"
+    "minecraft:spruce_wall_sign",
+    "minecraft:warped_standing_sign",
+    "minecraft:warped_wall_sign"
+  ],
+  "skull": [
+    "minecraft:skull"
+  ],
+  "smoker": [
+    "minecraft:smoker",
+    "minecraft:lit_smoker"
   ],
   "spore_blossom": [
     "minecraft:spore_blossom"
+  ],
+  "structure_block": [
+    "minecraft:structure_block"
+  ],
+  "trapped_chest": [
+    "minecraft:trapped_chest"
   ],
   "water": [
     "minecraft:flowing_water",

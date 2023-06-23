@@ -55,7 +55,7 @@ public class SkinProvider implements Provider {
         claims.put("CapeImageWidth", 0);
         claims.put("CapeData", "");
         claims.put("CapeId", "");
-        claims.put("SkinGeometryData", Base64.getEncoder().encodeToString(BedrockProtocol.MAPPINGS.getSkinGeometry().toString().getBytes(StandardCharsets.UTF_8)));
+        claims.put("SkinGeometryData", Base64.getEncoder().encodeToString(BedrockProtocol.MAPPINGS.getBedrockSkinGeometry().toString().getBytes(StandardCharsets.UTF_8)));
         claims.put("SkinGeometryDataEngineVersion", Base64.getEncoder().encodeToString("0.0.0".getBytes(StandardCharsets.UTF_8)));
         claims.put("SkinAnimationData", "");
         claims.put("ArmSize", "wide");

@@ -177,7 +177,7 @@ public class JoinPackets {
                 version = new Semver("99.99.99");
             }
 
-            final CompoundTag registries = BedrockProtocol.MAPPINGS.getRegistries().clone();
+            final CompoundTag registries = BedrockProtocol.MAPPINGS.getJavaRegistries().clone();
             final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
             final CompoundTag biomeRegistry = registries.get("minecraft:worldgen/biome");
             final ListTag dimensions = dimensionRegistry.get("value");
@@ -197,7 +197,7 @@ public class JoinPackets {
                 dimensionMap.get("minecraft:overworld_caves").put("logical_height", new IntTag(256));
             }
 
-            biomeRegistry.put("value", BiomeRegistry.buildJavaBiomeRegistry(BedrockProtocol.MAPPINGS.getBiomeDefinitions()));
+            biomeRegistry.put("value", BiomeRegistry.buildJavaBiomeRegistry(BedrockProtocol.MAPPINGS.getBedrockBiomeDefinitions()));
 
             final GameSessionStorage gameSession = new GameSessionStorage(wrapper.user());
             wrapper.user().put(gameSession);
@@ -263,8 +263,8 @@ public class JoinPackets {
             serverDifficulty.send(BedrockProtocol.class);
 
             final PacketWrapper tags = PacketWrapper.create(ClientboundPackets1_19_4.TAGS, wrapper.user());
-            tags.write(Type.VAR_INT, BedrockProtocol.MAPPINGS.getTags().size()); // number of registries
-            for (Map.Entry<String, Tag> registryEntry : BedrockProtocol.MAPPINGS.getTags().entrySet()) {
+            tags.write(Type.VAR_INT, BedrockProtocol.MAPPINGS.getJavaTags().size()); // number of registries
+            for (Map.Entry<String, Tag> registryEntry : BedrockProtocol.MAPPINGS.getJavaTags().entrySet()) {
                 final CompoundTag tag = (CompoundTag) registryEntry.getValue();
                 tags.write(Type.STRING, registryEntry.getKey()); // registry key
                 tags.write(Type.VAR_INT, tag.size()); // number of tags

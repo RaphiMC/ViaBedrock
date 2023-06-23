@@ -65,22 +65,9 @@ public class EntityPackets {
 
             // TODO: Handle remaining fields
 
-            final String javaIdentifier = BedrockProtocol.MAPPINGS.getEntityIdentifiers().get(Key.namespaced(identifier));
-            if (javaIdentifier == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity identifier: " + identifier);
-                wrapper.cancel();
-                return;
-            }
-
-            Entity1_19_4Types javaEntityType = null;
-            for (Entity1_19_4Types type : Entity1_19_4Types.values()) {
-                if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
-                    javaEntityType = type;
-                    break;
-                }
-            }
+            final Entity1_19_4Types javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(identifier));
             if (javaEntityType == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown java entity identifier: " + javaIdentifier);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity identifier: " + identifier);
                 wrapper.cancel();
                 return;
             }

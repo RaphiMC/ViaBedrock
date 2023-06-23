@@ -20,32 +20,21 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
-import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
-public class LecternBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
+public class ComparatorBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("book") instanceof CompoundTag) {
-            javaTag.put("Book", this.rewriteItem(user, bedrockTag.get("book")));
-        }
-        this.copy(bedrockTag, javaTag, "page", "Page", IntTag.class);
+        this.copy(bedrockTag, javaTag, "OutputSignal", IntTag.class);
 
-        int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
-        if (bedrockTag.get("hasBook") instanceof ByteTag && bedrockTag.<ByteTag>get("hasBook").asByte() != 0) {
-            javaBlockState -= 2;
-        }
-
-        return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag), javaBlockState);
+        return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }
 
 }

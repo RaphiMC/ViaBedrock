@@ -101,7 +101,7 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             }
         }
 
-        copy(bedrockTag, javaTag, "IsWaxed", "is_waxed", ByteTag.class);
+        this.copy(bedrockTag, javaTag, "IsWaxed", "is_waxed", ByteTag.class);
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }

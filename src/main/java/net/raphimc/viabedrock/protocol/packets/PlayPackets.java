@@ -51,7 +51,7 @@ public class PlayPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.DISCONNECT, ClientboundPackets1_19_4.DISCONNECT, wrapper -> {
             final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
             if (hasMessage) {
-                final Map<String, String> translations = BedrockProtocol.MAPPINGS.getVanillaResourcePack().content().getLang("texts/en_US.lang");
+                final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
                 final Function<String, String> translator = k -> translations.getOrDefault(k, k);
                 final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
                 final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);

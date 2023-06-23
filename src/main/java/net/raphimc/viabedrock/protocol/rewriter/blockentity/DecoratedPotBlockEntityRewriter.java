@@ -20,32 +20,44 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
-import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
-public class LecternBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
+import java.util.logging.Level;
+
+public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("book") instanceof CompoundTag) {
-            javaTag.put("Book", this.rewriteItem(user, bedrockTag.get("book")));
-        }
-        this.copy(bedrockTag, javaTag, "page", "Page", IntTag.class);
+        if (bedrockTag.get("sherds") instanceof ListTag) {
+            final ListTag bedrockSherds = bedrockTag.get("sherds");
+            if (StringTag.class.equals(bedrockSherds.getElementType())) {
+                final ListTag javaSherds = new ListTag(StringTag.class);
+                for (Tag sherd : bedrockSherds) {
+                    final String bedrockIdentifier = ((StringTag) sherd).getValue();
+                    final String javaIdentifier = BedrockProtocol.MAPPINGS.getBedrockToJavaItems().get(bedrockIdentifier);
+                    if (javaIdentifier == null) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing item: " + bedrockIdentifier);
+                        continue;
+                    }
 
-        int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
-        if (bedrockTag.get("hasBook") instanceof ByteTag && bedrockTag.<ByteTag>get("hasBook").asByte() != 0) {
-            javaBlockState -= 2;
+                    javaSherds.add(new StringTag(javaIdentifier));
+                }
+
+                javaTag.put("sherds", javaSherds);
+            }
         }
 
-        return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag), javaBlockState);
+        return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }
 
 }

@@ -38,14 +38,14 @@ public class CommandBlockBlockEntityRewriter implements BlockEntityRewriter.Rewr
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        copy(bedrockTag, javaTag, "Command", StringTag.class);
-        copy(bedrockTag, javaTag, "SuccessCount", IntTag.class);
-        copy(bedrockTag, javaTag, "TrackOutput", ByteTag.class);
-        copy(bedrockTag, javaTag, "LastExecution", LongTag.class);
-        copy(bedrockTag, javaTag, "powered", ByteTag.class);
-        copy(bedrockTag, javaTag, "conditionMet", ByteTag.class);
-        copy(bedrockTag, javaTag, "auto", ByteTag.class);
-        translateCustomName(user, bedrockTag, javaTag);
+        this.copy(bedrockTag, javaTag, "Command", StringTag.class);
+        this.copy(bedrockTag, javaTag, "SuccessCount", IntTag.class);
+        this.copy(bedrockTag, javaTag, "TrackOutput", ByteTag.class);
+        this.copy(bedrockTag, javaTag, "LastExecution", LongTag.class);
+        this.copy(bedrockTag, javaTag, "powered", ByteTag.class);
+        this.copy(bedrockTag, javaTag, "conditionMet", ByteTag.class);
+        this.copy(bedrockTag, javaTag, "auto", ByteTag.class);
+        this.copyCustomName(user, bedrockTag, javaTag);
 
         if (bedrockTag.get("LastOutput") instanceof StringTag) {
             final Function<String, String> translator = k -> user.get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
@@ -53,7 +53,7 @@ public class CommandBlockBlockEntityRewriter implements BlockEntityRewriter.Rewr
             final List<String> lastOutputParams = new ArrayList<>();
             if (bedrockTag.get("LastOutputParams") instanceof ListTag) {
                 final ListTag bedrockLastOutputParams = bedrockTag.get("LastOutputParams");
-                if (bedrockLastOutputParams.getElementType().equals(StringTag.class)) {
+                if (StringTag.class.equals(bedrockLastOutputParams.getElementType())) {
                     for (Tag bedrockLastOutputParam : bedrockLastOutputParams) {
                         lastOutputParams.add(((StringTag) bedrockLastOutputParam).getValue());
                     }

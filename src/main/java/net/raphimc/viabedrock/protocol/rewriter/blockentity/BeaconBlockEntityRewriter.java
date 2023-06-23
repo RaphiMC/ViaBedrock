@@ -20,32 +20,38 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
-import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
-public class LecternBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
+import java.util.logging.Level;
+
+public class BeaconBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("book") instanceof CompoundTag) {
-            javaTag.put("Book", this.rewriteItem(user, bedrockTag.get("book")));
-        }
-        this.copy(bedrockTag, javaTag, "page", "Page", IntTag.class);
+        this.mapEffect(bedrockTag, javaTag, "primary", "Primary");
+        this.mapEffect(bedrockTag, javaTag, "secondary", "Secondary");
 
-        int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
-        if (bedrockTag.get("hasBook") instanceof ByteTag && bedrockTag.<ByteTag>get("hasBook").asByte() != 0) {
-            javaBlockState -= 2;
-        }
+        return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
+    }
 
-        return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag), javaBlockState);
+    private void mapEffect(final CompoundTag oldTag, final CompoundTag newTag, final String oldName, final String newName) {
+        if (oldTag.get(oldName) instanceof IntTag) {
+            final int bedrockId = oldTag.<IntTag>get(oldName).asInt();
+            final String bedrockIdentifier = BedrockProtocol.MAPPINGS.getBedrockEffects().inverse().get(bedrockId);
+            if (bedrockIdentifier == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown beacon effect: " + bedrockId);
+                return;
+            }
+            newTag.put(newName, new IntTag(BedrockProtocol.MAPPINGS.getJavaEffects().get(BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(bedrockIdentifier))));
+        }
     }
 
 }

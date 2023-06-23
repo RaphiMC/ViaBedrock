@@ -20,32 +20,30 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
-import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
-public class LecternBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
+public class BrushableBlockBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("book") instanceof CompoundTag) {
-            javaTag.put("Book", this.rewriteItem(user, bedrockTag.get("book")));
+        if (bedrockTag.get("item") instanceof CompoundTag) {
+            javaTag.put("item", this.rewriteItem(user, bedrockTag.get("item")));
         }
-        this.copy(bedrockTag, javaTag, "page", "Page", IntTag.class);
-
-        int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
-        if (bedrockTag.get("hasBook") instanceof ByteTag && bedrockTag.<ByteTag>get("hasBook").asByte() != 0) {
-            javaBlockState -= 2;
+        if (bedrockTag.get("brush_direction") instanceof ByteTag) {
+            final byte brushDirection = bedrockTag.<ByteTag>get("brush_direction").asByte();
+            if (brushDirection >= 0 && brushDirection <= 5) {
+                javaTag.put("hit_direction", new IntTag(brushDirection));
+            }
         }
+        this.copy(bedrockTag, javaTag, "LootTable", StringTag.class);
+        this.copy(bedrockTag, javaTag, "LootTableSeed", LongTag.class);
 
-        return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag), javaBlockState);
+        return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }
 
 }

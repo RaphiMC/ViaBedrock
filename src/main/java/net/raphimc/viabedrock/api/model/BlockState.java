@@ -19,10 +19,7 @@ package net.raphimc.viabedrock.api.model;
 
 import com.google.common.collect.Maps;
 
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class BlockState {
 
@@ -137,12 +134,16 @@ public class BlockState {
     }
 
     public String toBlockStateString() {
+        return this.toBlockStateString(false);
+    }
+
+    public String toBlockStateString(final boolean sorted) {
         final StringBuilder builder = new StringBuilder();
         builder.append(this.namespace).append(":").append(this.identifier);
         if (!this.properties.isEmpty()) {
             builder.append("[");
             boolean first = true;
-            for (final Map.Entry<String, String> entry : this.properties.entrySet()) {
+            for (final Map.Entry<String, String> entry : (sorted ? new TreeMap<>(this.properties) : this.properties).entrySet()) {
                 if (!first) {
                     builder.append(",");
                 }

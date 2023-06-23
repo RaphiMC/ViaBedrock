@@ -33,19 +33,19 @@ public class ValTagBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
         this.actions.add(tag -> {
             if (tag.get("val") instanceof ShortTag) {
                 final String name = tag.<StringTag>get("name").getValue();
-                if (!BedrockProtocol.MAPPINGS.getLegacyBlocks().containsKey(name)) {
+                if (!BedrockProtocol.MAPPINGS.getBedrockLegacyBlocks().containsKey(name)) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block " + name + " in val tag block state upgrade schema");
                     return;
                 }
-                final int id = BedrockProtocol.MAPPINGS.getLegacyBlocks().get(name);
+                final int id = BedrockProtocol.MAPPINGS.getBedrockLegacyBlocks().get(name);
 
                 final short metadata = tag.<ShortTag>remove("val").asShort();
                 if (metadata < 0 || metadata > 63) return;
 
-                BedrockBlockState blockState = BedrockProtocol.MAPPINGS.getLegacyBlockStates().get(id << 6 | metadata & 63);
+                BedrockBlockState blockState = BedrockProtocol.MAPPINGS.getBedrockLegacyBlockStates().get(id << 6 | metadata & 63);
                 if (blockState == null) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state " + name + ":" + metadata + " in val tag block state upgrade schema");
-                    blockState = BedrockProtocol.MAPPINGS.getLegacyBlockStates().get(id << 6);
+                    blockState = BedrockProtocol.MAPPINGS.getBedrockLegacyBlockStates().get(id << 6);
                 }
 
                 tag.put("states", blockState.blockStateTag().get("states").clone());

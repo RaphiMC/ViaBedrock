@@ -20,32 +20,35 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.LongTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
-import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
-public class LecternBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
+public class EndGatewayBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("book") instanceof CompoundTag) {
-            javaTag.put("Book", this.rewriteItem(user, bedrockTag.get("book")));
+        if (bedrockTag.get("Age") instanceof IntTag) {
+            javaTag.put("Age", new LongTag(((IntTag) bedrockTag.get("Age")).getValue()));
         }
-        this.copy(bedrockTag, javaTag, "page", "Page", IntTag.class);
-
-        int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
-        if (bedrockTag.get("hasBook") instanceof ByteTag && bedrockTag.<ByteTag>get("hasBook").asByte() != 0) {
-            javaBlockState -= 2;
+        if (bedrockTag.get("ExitPortal") instanceof ListTag) {
+            final ListTag bedrockExitPortal = bedrockTag.get("ExitPortal");
+            if (IntTag.class.equals(bedrockExitPortal.getElementType()) && bedrockExitPortal.size() == 3) {
+                final CompoundTag javaExitPortal = new CompoundTag();
+                javaExitPortal.put("X", bedrockExitPortal.get(0));
+                javaExitPortal.put("Y", bedrockExitPortal.get(1));
+                javaExitPortal.put("Z", bedrockExitPortal.get(2));
+                javaTag.put("ExitPortal", javaExitPortal);
+            }
         }
 
-        return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag), javaBlockState);
+        return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }
 
 }

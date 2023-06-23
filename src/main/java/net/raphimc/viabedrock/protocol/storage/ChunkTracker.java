@@ -180,7 +180,7 @@ public class ChunkTracker extends StoredObject {
 
     public int getBlockState(final int layer, final Position blockPosition) {
         final BedrockChunkSection chunkSection = this.getChunkSection(blockPosition);
-        if (chunkSection == null) return 0;
+        if (chunkSection == null) return this.airId();
         if (chunkSection.palettesCount(PaletteType.BLOCKS) <= layer) return this.airId();
 
         return chunkSection.palettes(PaletteType.BLOCKS).get(layer).idAt(blockPosition.x() & 15, blockPosition.y() & 15, blockPosition.z() & 15);
@@ -552,7 +552,7 @@ public class ChunkTracker extends StoredObject {
                     if (biomePalette.size() == 1) {
                         final int biomeId = biomePalette.idByIndex(0);
                         int remappedBiomeId = biomeId + 1;
-                        if (!BedrockProtocol.MAPPINGS.getBiomes().inverse().containsKey(biomeId)) {
+                        if (!BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().containsKey(biomeId)) {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
                             remappedBiomeId = 0;
                         }
@@ -579,7 +579,7 @@ public class ChunkTracker extends StoredObject {
                                     }
                                     final int biomeId = maxBiomeId;
                                     int remappedBiomeId = biomeId + 1;
-                                    if (!BedrockProtocol.MAPPINGS.getBiomes().inverse().containsKey(biomeId)) {
+                                    if (!BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().containsKey(biomeId)) {
                                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
                                         remappedBiomeId = 0;
                                     }
@@ -628,17 +628,12 @@ public class ChunkTracker extends StoredObject {
                     if (bedrockPalette.hasTagPalette()) {
                         bedrockPalette.addId(this.airId());
                         bedrockPalette.resolveTagPalette(tag -> {
-                            try {
-                                int remappedBlockState = blockStateRewriter.bedrockId(((CompoundTag) tag).clone());
-                                if (remappedBlockState == -1) {
-                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
-                                    remappedBlockState = blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
-                                }
-                                return remappedBlockState;
-                            } catch (Throwable e) {
-                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while rewriting block state tag: " + tag, e);
-                                return this.airId();
+                            int remappedBlockState = blockStateRewriter.bedrockId((CompoundTag) tag);
+                            if (remappedBlockState == -1) {
+                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
+                                remappedBlockState = blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
                             }
+                            return remappedBlockState;
                         });
                     }
                 }

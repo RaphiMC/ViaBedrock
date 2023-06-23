@@ -35,19 +35,19 @@ public class BiomeRegistry {
 
         javaBiomes.add(getTheVoidBiome());
 
-        final Map<String, Object> fogColor = BedrockProtocol.MAPPINGS.getBiomeExtraData().get("fog_color");
-        final Map<String, Object> waterFogColor = BedrockProtocol.MAPPINGS.getBiomeExtraData().get("water_fog_color");
-        final Map<String, Object> foliageColor = BedrockProtocol.MAPPINGS.getBiomeExtraData().get("foliage_color");
-        final Map<String, Object> grassColor = BedrockProtocol.MAPPINGS.getBiomeExtraData().get("grass_color");
-        final Map<String, Object> grassColorModifier = BedrockProtocol.MAPPINGS.getBiomeExtraData().get("grass_color_modifier");
-        final Map<String, Object> moodSound = BedrockProtocol.MAPPINGS.getBiomeExtraData().get("mood_sound");
+        final Map<String, Object> fogColor = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("fog_color");
+        final Map<String, Object> waterFogColor = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("water_fog_color");
+        final Map<String, Object> foliageColor = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("foliage_color");
+        final Map<String, Object> grassColor = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("grass_color");
+        final Map<String, Object> grassColorModifier = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("grass_color_modifier");
+        final Map<String, Object> moodSound = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("mood_sound");
 
         for (Map.Entry<String, CompoundTag> entry : biomeDefinitions.entrySet()) {
             final String bedrockIdentifier = entry.getKey();
             final String javaIdentifier = "minecraft:" + bedrockIdentifier;
             final CompoundTag bedrockBiome = entry.getValue();
             final CompoundTag javaBiome = new CompoundTag();
-            final int bedrockId = BedrockProtocol.MAPPINGS.getBiomes().getOrDefault(bedrockIdentifier, -1);
+            final int bedrockId = BedrockProtocol.MAPPINGS.getBedrockBiomes().getOrDefault(bedrockIdentifier, -1);
             final int javaId = bedrockId + 1;
 
             if (bedrockId == -1) {

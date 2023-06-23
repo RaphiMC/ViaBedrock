@@ -38,7 +38,7 @@ public class ItemRewriter extends StoredObject {
     public ItemRewriter(final UserConnection user, final ItemEntry[] itemEntries) {
         super(user);
 
-        this.items = HashBiMap.create(BedrockProtocol.MAPPINGS.getItems());
+        this.items = HashBiMap.create(BedrockProtocol.MAPPINGS.getBedrockItems());
         for (ItemEntry itemEntry : itemEntries) {
             this.items.inverse().remove(itemEntry.id());
             this.items.put(Key.namespaced(itemEntry.identifier()), itemEntry.id());

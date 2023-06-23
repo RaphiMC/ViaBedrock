@@ -23,11 +23,9 @@ import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
+import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
-import com.viaversion.viaversion.libs.fastutil.ints.IntOpenHashSet;
-import com.viaversion.viaversion.libs.fastutil.ints.IntSet;
+import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
@@ -36,6 +34,7 @@ import com.viaversion.viaversion.libs.opennbt.NBTIO;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.Protocol1_19_4To1_19_3;
 import com.viaversion.viaversion.util.GsonUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -46,6 +45,7 @@ import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.api.util.JsonUtil;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import javax.imageio.ImageIO;
@@ -62,25 +62,43 @@ import java.util.zip.GZIPInputStream;
 
 public class BedrockMappingData extends MappingDataBase {
 
-    private ResourcePack vanillaResourcePack; // Bedrock
-    private CompoundTag registries; // Java
-    private CompoundTag tags; // Java
-    private BiMap<BlockState, Integer> javaBlockStates; // Java
-    private BlockStateUpgrader blockStateUpgrader; // Bedrock
-    private List<BedrockBlockState> bedrockBlockStates; // Bedrock
-    private Map<BlockState, BlockState> bedrockToJavaBlockStates; // Bedrock -> Java
-    private IntSet preWaterloggedStates; // Java
-    private BiMap<String, Integer> legacyBlocks; // Bedrock
-    private Int2ObjectMap<BedrockBlockState> legacyBlockStates; // Bedrock
-    private BiMap<String, Integer> biomes; // Bedrock
-    private Map<String, CompoundTag> biomeDefinitions; // Bedrock
-    private Map<String, Map<String, Object>> biomeExtraData; // Bedrock -> Java
-    private BiMap<String, Integer> items; // Bedrock
-    private Map<String, String> entityIdentifiers; // Bedrock -> Java
-    private BufferedImage steveSkin; // Bedrock
-    private JsonObject skinGeometry; // Bedrock
-    private Map<String, String> blockTags; // Bedrock
-    private BiMap<String, Integer> blockEntities; // Java
+    // Bedrock misc
+    private ResourcePack bedrockVanillaResourcePack;
+    private BufferedImage bedrockSteveSkin;
+    private JsonObject bedrockSkinGeometry;
+
+    // Java misc
+    private CompoundTag javaRegistries;
+    private CompoundTag javaTags;
+
+    // Block states
+    private BlockStateUpgrader bedrockBlockStateUpgrader;
+    private BiMap<BlockState, Integer> javaBlockStates;
+    private List<BedrockBlockState> bedrockBlockStates;
+    private Map<BlockState, BlockState> bedrockToJavaBlockStates;
+    private IntSet javaPreWaterloggedStates;
+    private Int2IntMap javaPottedBlockStates;
+    private BiMap<String, Integer> bedrockLegacyBlocks;
+    private Int2ObjectMap<BedrockBlockState> bedrockLegacyBlockStates;
+    private Map<String, String> bedrockBlockTags;
+
+    // Biomes
+    private Map<String, CompoundTag> bedrockBiomeDefinitions;
+    private BiMap<String, Integer> bedrockBiomes;
+    private Map<String, Map<String, Object>> bedrockToJavaBiomeExtraData;
+
+    // Items
+    private BiMap<String, Integer> bedrockItems;
+    private Map<String, String> bedrockToJavaItems;
+
+    // Entities
+    private Map<String, Entity1_19_4Types> bedrockToJavaEntities;
+    private BiMap<String, Integer> javaBlockEntities;
+
+    // Effects
+    private BiMap<String, Integer> javaEffects;
+    private BiMap<String, Integer> bedrockEffects;
+    private Map<String, String> bedrockToJavaEffects;
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolVersion.v1_20.getName());
@@ -92,143 +110,253 @@ public class BedrockMappingData extends MappingDataBase {
             this.getLogger().info("Loading " + this.unmappedVersion + " -> " + this.mappedVersion + " mappings...");
         }
 
-        this.vanillaResourcePack = this.readResourcePack("bedrock/vanilla.mcpack", UUID.fromString("0575c61f-a5da-4b7f-9961-ffda2908861e"), "0.0.1");
-        this.registries = this.readNBT("java/registries.nbt");
-        this.tags = this.readNBT("java/tags.nbt");
-
-        final JsonObject mapping1_20 = this.readJson("java/mapping-1.20.json");
-
-        final JsonArray javaBlockStatesJson = mapping1_20.getAsJsonArray("blockstates");
-        this.javaBlockStates = HashBiMap.create(javaBlockStatesJson.size());
-        for (int i = 0; i < javaBlockStatesJson.size(); i++) {
-            final BlockState blockState = BlockState.fromString(javaBlockStatesJson.get(i).getAsString());
-            this.javaBlockStates.put(blockState, i);
+        { // Bedrock misc
+            this.bedrockVanillaResourcePack = this.readResourcePack("bedrock/vanilla.mcpack", UUID.fromString("0575c61f-a5da-4b7f-9961-ffda2908861e"), "0.0.1");
+            this.bedrockSteveSkin = this.readImage("bedrock/skin/steve.png");
+            this.bedrockSkinGeometry = JsonUtil.sort(this.readJson("bedrock/skin/geometry.json"), Comparator.naturalOrder());
         }
 
-        this.blockStateUpgrader = new BlockStateUpgrader();
-
-        final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_20_0.nbt").get("blocks");
-        this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
-        for (Tag tag : bedrockBlockStatesTag.getValue()) {
-            this.bedrockBlockStates.add(BedrockBlockState.fromNbt((CompoundTag) tag));
+        { // Java misc
+            this.javaRegistries = this.readNBT("java/registries.nbt");
+            this.javaTags = this.readNBT("java/tags.nbt");
         }
 
-        final JsonObject blockMappings = this.readJson("custom/blockstate_mappings.json");
-        this.bedrockToJavaBlockStates = new HashMap<>(blockMappings.size());
-        for (Map.Entry<String, JsonElement> entry : blockMappings.entrySet()) {
-            final BlockState bedrockBlockState = BlockState.fromString(entry.getKey());
-            final BlockState javaBlockState = BlockState.fromString(entry.getValue().getAsString());
-            if (this.bedrockToJavaBlockStates.put(bedrockBlockState, javaBlockState) != null) {
-                throw new RuntimeException("Duplicate bedrock -> java block mapping for " + bedrockBlockState.toBlockStateString());
+        final JsonObject javaMapping1_20Json = this.readJson("java/mapping-1.20.json");
+
+        { // Block states
+            this.bedrockBlockStateUpgrader = new BlockStateUpgrader();
+
+            final JsonArray javaBlockStatesJson = javaMapping1_20Json.getAsJsonArray("blockstates");
+            this.javaBlockStates = HashBiMap.create(javaBlockStatesJson.size());
+            for (int i = 0; i < javaBlockStatesJson.size(); i++) {
+                final BlockState blockState = BlockState.fromString(javaBlockStatesJson.get(i).getAsString());
+                this.javaBlockStates.put(blockState, i);
             }
-        }
 
-        final JsonArray preWaterloggedStatesJson = this.readJson("custom/pre_waterlogged_states.json").getAsJsonArray("blockstates");
-        this.preWaterloggedStates = new IntOpenHashSet(preWaterloggedStatesJson.size());
-        for (JsonElement entry : preWaterloggedStatesJson) {
-            this.preWaterloggedStates.add(this.javaBlockStates.get(BlockState.fromString(entry.getAsString())).intValue());
-        }
+            final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_20_0.nbt").get("blocks");
+            this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
+            for (Tag tag : bedrockBlockStatesTag.getValue()) {
+                this.bedrockBlockStates.add(BedrockBlockState.fromNbt((CompoundTag) tag));
+            }
 
-        final JsonObject legacyBlocksJson = this.readJson("bedrock/block_legacy_id_map.json");
-        this.legacyBlocks = HashBiMap.create(legacyBlocksJson.size());
-        for (Map.Entry<String, JsonElement> entry : legacyBlocksJson.entrySet()) {
-            final String identifier = entry.getKey();
-            final int id = entry.getValue().getAsInt();
-            this.legacyBlocks.put(identifier.toLowerCase(Locale.ROOT), id);
-        }
-
-        this.buildLegacyBlockStateMappings();
-
-        final JsonArray biomesJson = this.readJson("bedrock/biomes.json", JsonArray.class);
-        this.biomes = HashBiMap.create(biomesJson.size());
-        for (JsonElement entry : biomesJson) {
-            final JsonObject biomeEntry = entry.getAsJsonObject();
-            final String identifier = biomeEntry.get("name").getAsString();
-            final int id = biomeEntry.get("id").getAsInt();
-            this.biomes.put(identifier, id);
-        }
-
-        final CompoundTag biomeDefinitionsTag = this.readNBT("bedrock/biome_definitions.nbt");
-        this.biomeDefinitions = new HashMap<>(biomeDefinitionsTag.size());
-        for (Map.Entry<String, Tag> entry : biomeDefinitionsTag.getValue().entrySet()) {
-            this.biomeDefinitions.put(entry.getKey(), (CompoundTag) entry.getValue());
-        }
-
-        final JsonObject biomeExtraDataJson = this.readJson("custom/biome_extra_data.json");
-        this.biomeExtraData = new HashMap<>(biomeExtraDataJson.size());
-        for (Map.Entry<String, JsonElement> entry : biomeExtraDataJson.entrySet()) {
-            final String dataName = entry.getKey();
-            final JsonObject extraDataJson = entry.getValue().getAsJsonObject();
-            final Map<String, Object> extraData = new HashMap<>(extraDataJson.size());
-            for (Map.Entry<String, JsonElement> extraDataEntry : extraDataJson.entrySet()) {
-                final JsonPrimitive primitive = extraDataEntry.getValue().getAsJsonPrimitive();
-                if (primitive.isString()) {
-                    extraData.put(extraDataEntry.getKey(), primitive.getAsString());
-                } else if (primitive.isNumber()) {
-                    extraData.put(extraDataEntry.getKey(), primitive.getAsNumber().intValue());
-                } else if (primitive.isBoolean()) {
-                    extraData.put(extraDataEntry.getKey(), primitive.getAsBoolean());
-                } else {
-                    throw new IllegalArgumentException("Unknown extra data type: " + extraDataEntry.getValue().getClass().getName());
+            final JsonObject bedrockToJavaBlockStateMappingsJson = this.readJson("custom/blockstate_mappings.json");
+            this.bedrockToJavaBlockStates = new HashMap<>(bedrockToJavaBlockStateMappingsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaBlockStateMappingsJson.entrySet()) {
+                final BlockState bedrockBlockState = BlockState.fromString(entry.getKey());
+                if (!this.bedrockBlockStates.contains(bedrockBlockState)) {
+                    throw new RuntimeException("Unknown bedrock block state: " + bedrockBlockState.toBlockStateString());
+                }
+                final BlockState javaBlockState = BlockState.fromString(entry.getValue().getAsString());
+                if (!this.javaBlockStates.containsKey(javaBlockState)) {
+                    throw new RuntimeException("Unknown java block state: " + javaBlockState.toBlockStateString());
+                }
+                if (this.bedrockToJavaBlockStates.put(bedrockBlockState, javaBlockState) != null) {
+                    throw new RuntimeException("Duplicate bedrock -> java block mapping for " + bedrockBlockState.toBlockStateString());
                 }
             }
-            this.biomeExtraData.put(dataName, extraData);
-        }
 
-        final JsonArray itemsJson = this.readJson("bedrock/runtime_item_states.1_20_0.json", JsonArray.class);
-        this.items = HashBiMap.create(itemsJson.size());
-        for (JsonElement entry : itemsJson) {
-            final JsonObject itemEntry = entry.getAsJsonObject();
-            final String identifier = itemEntry.get("name").getAsString();
-            final int id = itemEntry.get("id").getAsInt();
-            this.items.put(identifier, id);
-        }
+            final JsonArray javaPreWaterloggedStatesJson = this.readJson("custom/pre_waterlogged_states.json").getAsJsonArray("blockstates");
+            this.javaPreWaterloggedStates = new IntOpenHashSet(javaPreWaterloggedStatesJson.size());
+            for (JsonElement entry : javaPreWaterloggedStatesJson) {
+                final BlockState javaBlockState = BlockState.fromString(entry.getAsString());
+                if (!this.javaBlockStates.containsKey(javaBlockState)) {
+                    throw new RuntimeException("Unknown java block state: " + javaBlockState.toBlockStateString());
+                }
 
-        final JsonObject entityIdentifiersJson = this.readJson("custom/entity_identifiers.json");
-        this.entityIdentifiers = new HashMap<>(entityIdentifiersJson.size());
-        for (Map.Entry<String, JsonElement> entry : entityIdentifiersJson.entrySet()) {
-            final String bedrockIdentifier = entry.getKey();
-            final String javaIdentifier = entry.getValue().getAsString();
-            this.entityIdentifiers.put(bedrockIdentifier, javaIdentifier);
-        }
+                this.javaPreWaterloggedStates.add(this.javaBlockStates.get(javaBlockState).intValue());
+            }
 
-        this.steveSkin = this.readImage("bedrock/skin/steve.png");
-        this.skinGeometry = JsonUtil.sort(this.readJson("bedrock/skin/geometry.json"), Comparator.naturalOrder());
+            final JsonObject javaPottedBlockStatesJson = this.readJson("custom/potted_blockstates.json");
+            this.javaPottedBlockStates = new Int2IntOpenHashMap(javaPottedBlockStatesJson.size());
+            for (Map.Entry<String, JsonElement> entry : javaPottedBlockStatesJson.entrySet()) {
+                final BlockState javaBlockState = BlockState.fromString(entry.getKey());
+                if (!this.javaBlockStates.containsKey(javaBlockState)) {
+                    throw new RuntimeException("Unknown java block state: " + javaBlockState.toBlockStateString());
+                }
+                final BlockState javaPottedBlockState = BlockState.fromString(entry.getValue().getAsString());
+                if (!this.javaBlockStates.containsKey(javaPottedBlockState)) {
+                    throw new RuntimeException("Unknown java block state: " + javaPottedBlockState.toBlockStateString());
+                }
 
-        final JsonObject blockTagsJson = this.readJson("custom/block_tags.json");
-        this.blockTags = new HashMap<>();
-        for (Map.Entry<String, JsonElement> entry : blockTagsJson.entrySet()) {
-            final String tagName = entry.getKey();
-            for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
-                this.blockTags.put(tagValueJson.getAsString(), tagName);
+                this.javaPottedBlockStates.put(this.javaBlockStates.get(javaBlockState).intValue(), this.javaBlockStates.get(javaPottedBlockState).intValue());
+            }
+
+            final JsonObject bedrockLegacyBlocksJson = this.readJson("bedrock/block_legacy_id_map.json");
+            this.bedrockLegacyBlocks = HashBiMap.create(bedrockLegacyBlocksJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockLegacyBlocksJson.entrySet()) {
+                this.bedrockLegacyBlocks.put(entry.getKey().toLowerCase(Locale.ROOT), entry.getValue().getAsInt());
+            }
+
+            this.buildLegacyBlockStateMappings();
+
+            final JsonObject bedrockBlockTagsJson = this.readJson("custom/block_tags.json");
+            this.bedrockBlockTags = new HashMap<>();
+            for (Map.Entry<String, JsonElement> entry : bedrockBlockTagsJson.entrySet()) {
+                final String tagName = entry.getKey();
+                for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
+                    this.bedrockBlockTags.put(tagValueJson.getAsString(), tagName);
+                }
             }
         }
 
-        final JsonArray blockEntitiesJson = mapping1_20.get("blockentities").getAsJsonArray();
-        this.blockEntities = HashBiMap.create(blockEntitiesJson.size());
-        for (int i = 0; i < blockEntitiesJson.size(); i++) {
-            this.blockEntities.put(blockEntitiesJson.get(i).getAsString(), i);
+        { // Biomes
+            final CompoundTag bedrockBiomeDefinitionsTag = this.readNBT("bedrock/biome_definitions.nbt");
+            this.bedrockBiomeDefinitions = new HashMap<>(bedrockBiomeDefinitionsTag.size());
+            for (Map.Entry<String, Tag> entry : bedrockBiomeDefinitionsTag.getValue().entrySet()) {
+                this.bedrockBiomeDefinitions.put(entry.getKey(), (CompoundTag) entry.getValue());
+            }
+
+            final JsonObject bedrockBiomesJson = this.readJson("bedrock/biomes.json", JsonObject.class);
+            this.bedrockBiomes = HashBiMap.create(bedrockBiomesJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockBiomesJson.entrySet()) {
+                final String bedrockBiomeName = entry.getKey();
+                if (!this.bedrockBiomeDefinitions.containsKey(bedrockBiomeName)) {
+                    throw new RuntimeException("Unknown bedrock biome: " + bedrockBiomeName);
+                }
+
+                this.bedrockBiomes.put(bedrockBiomeName, entry.getValue().getAsInt());
+            }
+
+            for (String bedrockBiomeName : this.bedrockBiomeDefinitions.keySet()) {
+                if (!this.bedrockBiomes.containsKey(bedrockBiomeName)) {
+                    throw new RuntimeException("Missing bedrock biome id mapping: " + bedrockBiomeName);
+                }
+            }
+
+            final JsonObject bedrockToJavaBiomeExtraDataJson = this.readJson("custom/biome_extra_data.json");
+            this.bedrockToJavaBiomeExtraData = new HashMap<>(bedrockToJavaBiomeExtraDataJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaBiomeExtraDataJson.entrySet()) {
+                final String dataName = entry.getKey();
+                final JsonObject extraDataJson = entry.getValue().getAsJsonObject();
+                final Map<String, Object> extraData = new HashMap<>(extraDataJson.size());
+                for (Map.Entry<String, JsonElement> extraDataEntry : extraDataJson.entrySet()) {
+                    final JsonPrimitive primitive = extraDataEntry.getValue().getAsJsonPrimitive();
+                    if (primitive.isString()) {
+                        extraData.put(extraDataEntry.getKey(), primitive.getAsString());
+                    } else if (primitive.isNumber()) {
+                        extraData.put(extraDataEntry.getKey(), primitive.getAsNumber().intValue());
+                    } else if (primitive.isBoolean()) {
+                        extraData.put(extraDataEntry.getKey(), primitive.getAsBoolean());
+                    } else {
+                        throw new IllegalArgumentException("Unknown extra data type: " + extraDataEntry.getValue().getClass().getName());
+                    }
+                }
+                this.bedrockToJavaBiomeExtraData.put(dataName, extraData);
+            }
+        }
+
+        { // Items
+            final JsonArray bedrockItemsJson = this.readJson("bedrock/runtime_item_states.1_20_0.json", JsonArray.class);
+            this.bedrockItems = HashBiMap.create(bedrockItemsJson.size());
+            for (JsonElement entry : bedrockItemsJson) {
+                final JsonObject itemEntry = entry.getAsJsonObject();
+                final String identifier = itemEntry.get("name").getAsString();
+                final int id = itemEntry.get("id").getAsInt();
+                this.bedrockItems.put(identifier, id);
+            }
+
+            final JsonObject bedrockItemMappingsJson = this.readJson("custom/item_mappings.json");
+            this.bedrockToJavaItems = new HashMap<>(bedrockItemMappingsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockItemMappingsJson.entrySet()) {
+                final String bedrockIdentifier = entry.getKey();
+                final String javaIdentifier = entry.getValue().getAsString();
+                this.bedrockToJavaItems.put(bedrockIdentifier, javaIdentifier);
+            }
+        }
+
+        { // Entities
+            Via.getManager().getProtocolManager().addMappingLoaderFuture(BedrockProtocol.class, Protocol1_19_4To1_19_3.class, () -> {
+                final JsonObject bedrockToJavaEntityMappingsJson = this.readJson("custom/entity_mappings.json");
+                this.bedrockToJavaEntities = new HashMap<>(bedrockToJavaEntityMappingsJson.size());
+                for (Map.Entry<String, JsonElement> entry : bedrockToJavaEntityMappingsJson.entrySet()) {
+                    final String bedrockIdentifier = entry.getKey();
+                    final String javaIdentifier = entry.getValue().getAsString();
+
+                    Entity1_19_4Types javaEntityType = null;
+                    for (Entity1_19_4Types type : Entity1_19_4Types.values()) {
+                        if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
+                            javaEntityType = type;
+                            break;
+                        }
+                    }
+                    if (javaEntityType == null) {
+                        throw new RuntimeException("Unknown java entity identifier: " + javaIdentifier);
+                    }
+
+                    this.bedrockToJavaEntities.put(bedrockIdentifier, javaEntityType);
+                }
+            });
+
+            final JsonArray javaBlockEntitiesJson = javaMapping1_20Json.get("blockentities").getAsJsonArray();
+            this.javaBlockEntities = HashBiMap.create(javaBlockEntitiesJson.size());
+            for (int i = 0; i < javaBlockEntitiesJson.size(); i++) {
+                this.javaBlockEntities.put(javaBlockEntitiesJson.get(i).getAsString(), i);
+            }
+        }
+
+        { // Effects
+            final JsonArray javaEffectsJson = this.readJson("java/effects.json", JsonArray.class);
+            this.javaEffects = HashBiMap.create(javaEffectsJson.size());
+            for (int i = 0; i < javaEffectsJson.size(); i++) {
+                this.javaEffects.put(javaEffectsJson.get(i).getAsString(), i);
+            }
+
+            final JsonArray bedrockEffectsJson = this.readJson("bedrock/effects.json", JsonArray.class);
+            this.bedrockEffects = HashBiMap.create(bedrockEffectsJson.size());
+            for (int i = 0; i < bedrockEffectsJson.size(); i++) {
+                this.bedrockEffects.put(bedrockEffectsJson.get(i).getAsString(), i);
+            }
+
+            this.bedrockToJavaEffects = new HashMap<>(this.bedrockEffects.size());
+            for (String bedrockIdentifier : this.bedrockEffects.keySet()) {
+                if (this.javaEffects.containsKey(bedrockIdentifier)) {
+                    this.bedrockToJavaEffects.put(bedrockIdentifier, bedrockIdentifier);
+                }
+            }
+
+            final JsonObject effectMappingsJson = this.readJson("custom/effect_mappings.json");
+            for (Map.Entry<String, JsonElement> entry : effectMappingsJson.entrySet()) {
+                this.bedrockToJavaEffects.put(entry.getKey(), entry.getValue().getAsString());
+            }
+
+            for (String bedrockIdentifier : this.bedrockEffects.keySet()) {
+                if (!this.bedrockToJavaEffects.containsKey(bedrockIdentifier)) {
+                    throw new IllegalStateException("Missing bedrock -> java effect mapping for " + bedrockIdentifier);
+                }
+                final String javaIdentifier = this.bedrockToJavaEffects.get(bedrockIdentifier);
+                if (!this.javaEffects.containsKey(javaIdentifier)) {
+                    throw new IllegalStateException("Missing java effect mapping for: " + javaIdentifier);
+                }
+            }
         }
     }
 
-    public ResourcePack getVanillaResourcePack() {
-        return this.vanillaResourcePack;
+    public ResourcePack getBedrockVanillaResourcePack() {
+        return this.bedrockVanillaResourcePack;
     }
 
-    public CompoundTag getRegistries() {
-        return this.registries;
+    public BufferedImage getSteveSkin() {
+        return this.bedrockSteveSkin;
     }
 
-    public CompoundTag getTags() {
-        return this.tags;
+    public JsonObject getBedrockSkinGeometry() {
+        return this.bedrockSkinGeometry;
+    }
+
+    public CompoundTag getJavaRegistries() {
+        return this.javaRegistries;
+    }
+
+    public CompoundTag getJavaTags() {
+        return this.javaTags;
+    }
+
+    public BlockStateUpgrader getBedrockBlockStateUpgrader() {
+        return this.bedrockBlockStateUpgrader;
     }
 
     public BiMap<BlockState, Integer> getJavaBlockStates() {
         return Maps.unmodifiableBiMap(this.javaBlockStates);
-    }
-
-    public BlockStateUpgrader getBlockStateUpgrader() {
-        return this.blockStateUpgrader;
     }
 
     public List<BedrockBlockState> getBedrockBlockStates() {
@@ -239,52 +367,64 @@ public class BedrockMappingData extends MappingDataBase {
         return Collections.unmodifiableMap(this.bedrockToJavaBlockStates);
     }
 
-    public IntSet getPreWaterloggedStates() {
-        return this.preWaterloggedStates;
+    public IntSet getJavaPreWaterloggedStates() {
+        return this.javaPreWaterloggedStates;
     }
 
-    public BiMap<String, Integer> getLegacyBlocks() {
-        return Maps.unmodifiableBiMap(this.legacyBlocks);
+    public Int2IntMap getJavaPottedBlockStates() {
+        return this.javaPottedBlockStates;
     }
 
-    public Int2ObjectMap<BedrockBlockState> getLegacyBlockStates() {
-        return this.legacyBlockStates;
+    public BiMap<String, Integer> getBedrockLegacyBlocks() {
+        return Maps.unmodifiableBiMap(this.bedrockLegacyBlocks);
     }
 
-    public BiMap<String, Integer> getBiomes() {
-        return Maps.unmodifiableBiMap(this.biomes);
+    public Int2ObjectMap<BedrockBlockState> getBedrockLegacyBlockStates() {
+        return this.bedrockLegacyBlockStates;
     }
 
-    public Map<String, CompoundTag> getBiomeDefinitions() {
-        return Collections.unmodifiableMap(this.biomeDefinitions);
+    public Map<String, String> getBedrockBlockTags() {
+        return Collections.unmodifiableMap(this.bedrockBlockTags);
     }
 
-    public Map<String, Map<String, Object>> getBiomeExtraData() {
-        return Collections.unmodifiableMap(this.biomeExtraData);
+    public Map<String, CompoundTag> getBedrockBiomeDefinitions() {
+        return Collections.unmodifiableMap(this.bedrockBiomeDefinitions);
     }
 
-    public BiMap<String, Integer> getItems() {
-        return Maps.unmodifiableBiMap(this.items);
+    public BiMap<String, Integer> getBedrockBiomes() {
+        return Maps.unmodifiableBiMap(this.bedrockBiomes);
     }
 
-    public Map<String, String> getEntityIdentifiers() {
-        return Collections.unmodifiableMap(this.entityIdentifiers);
+    public Map<String, Map<String, Object>> getBedrockToJavaBiomeExtraData() {
+        return Collections.unmodifiableMap(this.bedrockToJavaBiomeExtraData);
     }
 
-    public BufferedImage getSteveSkin() {
-        return this.steveSkin;
+    public BiMap<String, Integer> getBedrockItems() {
+        return Maps.unmodifiableBiMap(this.bedrockItems);
     }
 
-    public JsonObject getSkinGeometry() {
-        return this.skinGeometry;
+    public Map<String, String> getBedrockToJavaItems() {
+        return Collections.unmodifiableMap(this.bedrockToJavaItems);
     }
 
-    public Map<String, String> getBlockTags() {
-        return Collections.unmodifiableMap(this.blockTags);
+    public Map<String, Entity1_19_4Types> getBedrockToJavaEntities() {
+        return Collections.unmodifiableMap(this.bedrockToJavaEntities);
     }
 
-    public BiMap<String, Integer> getBlockEntities() {
-        return Maps.unmodifiableBiMap(this.blockEntities);
+    public BiMap<String, Integer> getJavaBlockEntities() {
+        return Maps.unmodifiableBiMap(this.javaBlockEntities);
+    }
+
+    public BiMap<String, Integer> getJavaEffects() {
+        return Maps.unmodifiableBiMap(this.javaEffects);
+    }
+
+    public BiMap<String, Integer> getBedrockEffects() {
+        return Maps.unmodifiableBiMap(this.bedrockEffects);
+    }
+
+    public Map<String, String> getBedrockToJavaEffects() {
+        return Collections.unmodifiableMap(this.bedrockToJavaEffects);
     }
 
     @Override
@@ -380,23 +520,25 @@ public class BedrockMappingData extends MappingDataBase {
             final byte[] bytes = ByteStreams.toByteArray(inputStream);
             final ByteBuf buf = Unpooled.wrappedBuffer(bytes);
 
-            this.legacyBlockStates = new Int2ObjectOpenHashMap<>();
+            this.bedrockLegacyBlockStates = new Int2ObjectOpenHashMap<>();
             while (buf.isReadable()) {
                 final String identifier = BedrockTypes.STRING.read(buf).toLowerCase(Locale.ROOT);
-                final int metadata = buf.readShortLE();
-                final CompoundTag current = (CompoundTag) BedrockTypes.NETWORK_TAG.read(buf);
-
-                if (!this.legacyBlocks.containsKey(identifier)) {
-                    this.getLogger().warning("Unknown block identifier in r12_to_current_block_map.bin: " + identifier);
-                    continue;
+                if (!this.bedrockLegacyBlocks.containsKey(identifier)) {
+                    throw new RuntimeException("Unknown block identifier in r12_to_current_block_map.bin: " + identifier);
                 }
-                final int id = this.legacyBlocks.get(identifier);
+                final int id = this.bedrockLegacyBlocks.get(identifier);
+                final int metadata = buf.readShortLE();
+                final CompoundTag tag = (CompoundTag) BedrockTypes.NETWORK_TAG.read(buf);
+                final BedrockBlockState bedrockBlockState = BedrockBlockState.fromNbt(tag);
+                if (!this.bedrockBlockStates.contains(bedrockBlockState)) {
+                    throw new RuntimeException("Legacy block state " + bedrockBlockState.toBlockStateString() + " is not mapped to a modern block state");
+                }
 
-                this.legacyBlockStates.put(id << 6 | metadata & 63, BedrockBlockState.fromNbt(current));
+                this.bedrockLegacyBlockStates.put(id << 6 | metadata & 63, bedrockBlockState);
             }
         } catch (Exception e) {
             this.getLogger().log(Level.SEVERE, "Could not read r12_to_current_block_map.bin", e);
-            this.legacyBlockStates = null;
+            this.bedrockLegacyBlockStates = null;
         }
     }
 

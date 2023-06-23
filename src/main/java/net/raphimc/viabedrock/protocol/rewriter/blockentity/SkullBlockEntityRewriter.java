@@ -22,30 +22,55 @@ import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.FloatTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
+import net.raphimc.viabedrock.api.model.BlockState;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
-public class LecternBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
+import java.util.Collections;
+
+public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
+
+    private static final float BEDROCK_MAX_ROT = 360F;
+    private static final int JAVA_MAX_ROT = 15;
+    private static final int PLAYER_HEAD_TYPE = 3;
+    private static final int MAX_TYPE = 6;
+    private static final int SKULL_WITH_ROTATION_UPDATE;
+
+    static {
+        final BlockState blockState = new BlockState("skeleton_skull", Collections.singletonMap("rotation", "0"));
+        SKULL_WITH_ROTATION_UPDATE = BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(blockState, -1);
+        if (SKULL_WITH_ROTATION_UPDATE == -1) {
+            throw new IllegalStateException("Unable to find skull block state with rotation 0");
+        }
+    }
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
-        final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("book") instanceof CompoundTag) {
-            javaTag.put("Book", this.rewriteItem(user, bedrockTag.get("book")));
-        }
-        this.copy(bedrockTag, javaTag, "page", "Page", IntTag.class);
+        byte type = bedrockTag.get("SkullType") instanceof ByteTag ? bedrockTag.<ByteTag>get("SkullType").asByte() : 0;
+        if (type < 0 || type > MAX_TYPE) type = PLAYER_HEAD_TYPE;
 
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
-        if (bedrockTag.get("hasBook") instanceof ByteTag && bedrockTag.<ByteTag>get("hasBook").asByte() != 0) {
-            javaBlockState -= 2;
+        if (javaBlockState == SKULL_WITH_ROTATION_UPDATE && bedrockTag.get("Rotation") instanceof FloatTag) {
+            javaBlockState += this.convertRotation(bedrockTag.<FloatTag>get("Rotation").asFloat());
+        }
+        javaBlockState += type * 20;
+
+        return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, new CompoundTag()), javaBlockState);
+    }
+
+    private int convertRotation(float f) {
+        f %= BEDROCK_MAX_ROT;
+        if (f < 0) {
+            f += BEDROCK_MAX_ROT;
         }
 
-        return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag), javaBlockState);
+        return (int) Math.ceil((f / BEDROCK_MAX_ROT) * JAVA_MAX_ROT);
     }
 
 }
