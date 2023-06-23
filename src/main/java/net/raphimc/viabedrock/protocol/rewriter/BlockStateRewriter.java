@@ -25,22 +25,20 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 import com.viaversion.viaversion.libs.fastutil.objects.Object2IntMap;
 import com.viaversion.viaversion.libs.fastutil.objects.Object2IntOpenHashMap;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.block_state.BlockStateSanitizer;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.util.BlockStateHasher;
+import net.raphimc.viabedrock.api.util.CombinationUtil;
 import net.raphimc.viabedrock.api.util.HashedPaletteComparator;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.BlockProperties;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class BlockStateRewriter extends StoredObject {
 
@@ -60,19 +58,55 @@ public class BlockStateRewriter extends StoredObject {
         this.blockStateTagMappings.defaultReturnValue(-1);
 
         final List<BedrockBlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
+        final List<BedrockBlockState> customBlockStates = new ArrayList<>();
         final Map<BlockState, Integer> javaBlockStates = BedrockProtocol.MAPPINGS.getJavaBlockStates();
         final Map<BlockState, BlockState> bedrockToJavaBlockStates = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates();
         final Map<String, String> blockTags = BedrockProtocol.MAPPINGS.getBedrockBlockTags();
 
         for (BlockProperties blockProperty : blockProperties) {
-            final CompoundTag blockStateTag = new CompoundTag();
-            blockStateTag.put("name", new StringTag(blockProperty.name()));
-            blockStateTag.put("states", new CompoundTag());
-            blockStateTag.put("network_id", new IntTag(BlockStateHasher.hash(blockStateTag)));
+            final Map<String, Set<Tag>> propertiesMap = new LinkedHashMap<>();
+            if (blockProperty.properties().get("properties") instanceof ListTag) {
+                final ListTag properties = blockProperty.properties().get("properties");
+                if (CompoundTag.class.equals(properties.getElementType())) {
+                    for (Tag propertyTag : properties) {
+                        final CompoundTag property = (CompoundTag) propertyTag;
+                        if (property.get("name") instanceof StringTag) {
+                            final String name = property.<StringTag>get("name").getValue();
+                            if (property.get("enum") instanceof ListTag) {
+                                final ListTag enumTag = property.get("enum");
+                                final Set<Tag> values = new LinkedHashSet<>();
+                                for (Tag tag : enumTag) {
+                                    values.add(tag);
+                                }
+                                propertiesMap.put(name, values);
+                            }
+                        }
+                    }
+                }
+            }
+            final List<CompoundTag> combinations = CombinationUtil.generateCombinations(propertiesMap).stream()
+                    .map(stringTagMap -> {
+                        final CompoundTag combination = new CompoundTag();
+                        for (Map.Entry<String, Tag> entry : stringTagMap.entrySet()) {
+                            combination.put(entry.getKey(), entry.getValue().clone());
+                        }
+                        return combination;
+                    }).collect(Collectors.toList());
+            if (combinations.isEmpty()) {
+                combinations.add(new CompoundTag());
+            }
 
-            bedrockBlockStates.add(BedrockBlockState.fromNbt(blockStateTag));
+            for (CompoundTag combination : combinations) {
+                final CompoundTag blockStateTag = new CompoundTag();
+                blockStateTag.put("name", new StringTag(blockProperty.name()));
+                blockStateTag.put("states", combination);
+                blockStateTag.put("network_id", new IntTag(BlockStateHasher.hash(blockStateTag)));
+
+                customBlockStates.add(BedrockBlockState.fromNbt(blockStateTag));
+            }
         }
 
+        bedrockBlockStates.addAll(customBlockStates);
         bedrockBlockStates.sort((a, b) -> HashedPaletteComparator.INSTANCE.compare(a.namespacedIdentifier(), b.namespacedIdentifier()));
 
         for (int i = 0; i < bedrockBlockStates.size(); i++) {
