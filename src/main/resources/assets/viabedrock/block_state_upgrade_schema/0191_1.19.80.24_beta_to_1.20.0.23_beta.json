@@ -6,10 +6,19 @@
     "renamedIds": {
         "minecraft:lava_cauldron": "minecraft:cauldron"
     },
-    "renamedProperties": {
+    "addedProperties": {
         "minecraft:calibrated_sculk_sensor": {
-            "powered_bit": "sculk_sensor_phase"
-        },
+            "sculk_sensor_phase": {
+                "int": 0
+            }
+        }
+    },
+    "removedProperties": {
+        "minecraft:calibrated_sculk_sensor": [
+            "powered_bit"
+        ]
+    },
+    "renamedProperties": {
         "minecraft:carved_pumpkin": {
             "direction": "minecraft:cardinal_direction"
         },
@@ -24,9 +33,6 @@
         }
     },
     "remappedPropertyValues": {
-        "minecraft:calibrated_sculk_sensor": {
-            "powered_bit": "powered_bit_00"
-        },
         "minecraft:carved_pumpkin": {
             "direction": "direction_00"
         },
@@ -37,7 +43,7 @@
             "direction": "direction_00"
         },
         "minecraft:sculk_sensor": {
-            "powered_bit": "powered_bit_01"
+            "powered_bit": "powered_bit_00"
         }
     },
     "remappedPropertyValuesIndex": {
@@ -76,24 +82,6 @@
             }
         ],
         "powered_bit_00": [
-            {
-                "old": {
-                    "byte": 0
-                },
-                "new": {
-                    "int": 0
-                }
-            },
-            {
-                "old": {
-                    "byte": 1
-                },
-                "new": {
-                    "int": 0
-                }
-            }
-        ],
-        "powered_bit_01": [
             {
                 "old": {
                     "byte": 0

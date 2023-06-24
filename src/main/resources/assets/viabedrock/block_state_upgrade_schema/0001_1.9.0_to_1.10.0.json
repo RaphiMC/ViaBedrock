@@ -9,13 +9,26 @@
                 "string": "standing"
             }
         },
+        "minecraft:bone_block": {
+            "deprecated": {
+                "int": 0
+            }
+        },
         "minecraft:grindstone": {
             "attachment": {
                 "string": "standing"
             }
+        },
+        "minecraft:hay_block": {
+            "deprecated": {
+                "int": 0
+            }
         }
     },
     "removedProperties": {
+        "minecraft:bone_block": [
+            "mapped_type"
+        ],
         "minecraft:element_0": [
             "mapped_type"
         ],
@@ -376,6 +389,9 @@
         "minecraft:grass": [
             "mapped_type"
         ],
+        "minecraft:hay_block": [
+            "mapped_type"
+        ],
         "minecraft:nether_brick_fence": [
             "mapped_type"
         ],
@@ -386,9 +402,6 @@
     "renamedProperties": {
         "minecraft:blast_furnace": {
             "facing_direction": "direction"
-        },
-        "minecraft:bone_block": {
-            "mapped_type": "deprecated"
         },
         "minecraft:brown_mushroom_block": {
             "mapped_type": "huge_mushroom_bits"
@@ -443,9 +456,6 @@
         },
         "minecraft:fence": {
             "mapped_type": "wood_type"
-        },
-        "minecraft:hay_block": {
-            "mapped_type": "deprecated"
         },
         "minecraft:leaves": {
             "mapped_type": "old_leaf_type"
@@ -533,137 +543,131 @@
         "minecraft:blast_furnace": {
             "facing_direction": "facing_direction_00"
         },
-        "minecraft:bone_block": {
-            "mapped_type": "mapped_type_00"
-        },
         "minecraft:chemistry_table": {
-            "mapped_type": "mapped_type_01"
+            "mapped_type": "mapped_type_00"
         },
         "minecraft:cobblestone_wall": {
-            "mapped_type": "mapped_type_02"
+            "mapped_type": "mapped_type_01"
         },
         "minecraft:coral": {
-            "mapped_type": "mapped_type_03"
+            "mapped_type": "mapped_type_02"
         },
         "minecraft:coral_block": {
-            "mapped_type": "mapped_type_04"
+            "mapped_type": "mapped_type_03"
         },
         "minecraft:coral_fan": {
-            "mapped_type": "mapped_type_04"
+            "mapped_type": "mapped_type_03"
         },
         "minecraft:coral_fan_dead": {
-            "mapped_type": "mapped_type_04"
+            "mapped_type": "mapped_type_03"
         },
         "minecraft:coral_fan_hang": {
-            "mapped_type": "mapped_type_05"
+            "mapped_type": "mapped_type_04"
         },
         "minecraft:coral_fan_hang2": {
-            "mapped_type": "mapped_type_05"
+            "mapped_type": "mapped_type_04"
         },
         "minecraft:coral_fan_hang3": {
-            "mapped_type": "mapped_type_05"
+            "mapped_type": "mapped_type_04"
         },
         "minecraft:dirt": {
-            "mapped_type": "mapped_type_06"
+            "mapped_type": "mapped_type_05"
         },
         "minecraft:double_plant": {
-            "mapped_type": "mapped_type_07"
+            "mapped_type": "mapped_type_06"
         },
         "minecraft:double_stone_slab": {
-            "mapped_type": "mapped_type_08"
+            "mapped_type": "mapped_type_07"
         },
         "minecraft:double_stone_slab2": {
-            "mapped_type": "mapped_type_09"
+            "mapped_type": "mapped_type_08"
         },
         "minecraft:double_stone_slab3": {
-            "mapped_type": "mapped_type_10"
+            "mapped_type": "mapped_type_09"
         },
         "minecraft:double_stone_slab4": {
-            "mapped_type": "mapped_type_11"
+            "mapped_type": "mapped_type_10"
         },
         "minecraft:double_wooden_slab": {
-            "mapped_type": "mapped_type_12"
+            "mapped_type": "mapped_type_11"
         },
         "minecraft:fence": {
-            "mapped_type": "mapped_type_12"
-        },
-        "minecraft:hay_block": {
-            "mapped_type": "mapped_type_00"
+            "mapped_type": "mapped_type_11"
         },
         "minecraft:leaves": {
-            "mapped_type": "mapped_type_13"
-        },
-        "minecraft:leaves2": {
-            "mapped_type": "mapped_type_14"
-        },
-        "minecraft:log": {
-            "mapped_type": "mapped_type_13"
-        },
-        "minecraft:log2": {
-            "mapped_type": "mapped_type_14"
-        },
-        "minecraft:monster_egg": {
-            "mapped_type": "mapped_type_15"
-        },
-        "minecraft:planks": {
             "mapped_type": "mapped_type_12"
         },
+        "minecraft:leaves2": {
+            "mapped_type": "mapped_type_13"
+        },
+        "minecraft:log": {
+            "mapped_type": "mapped_type_12"
+        },
+        "minecraft:log2": {
+            "mapped_type": "mapped_type_13"
+        },
+        "minecraft:monster_egg": {
+            "mapped_type": "mapped_type_14"
+        },
+        "minecraft:planks": {
+            "mapped_type": "mapped_type_11"
+        },
         "minecraft:prismarine": {
-            "mapped_type": "mapped_type_16"
+            "mapped_type": "mapped_type_15"
         },
         "minecraft:purpur_block": {
-            "mapped_type": "mapped_type_17"
+            "mapped_type": "mapped_type_16"
         },
         "minecraft:quartz_block": {
-            "mapped_type": "mapped_type_17"
+            "mapped_type": "mapped_type_16"
         },
         "minecraft:red_flower": {
-            "mapped_type": "mapped_type_18"
+            "mapped_type": "mapped_type_17"
         },
         "minecraft:red_sandstone": {
-            "mapped_type": "mapped_type_19"
+            "mapped_type": "mapped_type_18"
         },
         "minecraft:sand": {
-            "mapped_type": "mapped_type_20"
-        },
-        "minecraft:sandstone": {
             "mapped_type": "mapped_type_19"
         },
+        "minecraft:sandstone": {
+            "mapped_type": "mapped_type_18"
+        },
         "minecraft:seagrass": {
-            "mapped_type": "mapped_type_21"
+            "mapped_type": "mapped_type_20"
         },
         "minecraft:smoker": {
             "facing_direction": "facing_direction_00"
         },
         "minecraft:sponge": {
-            "mapped_type": "mapped_type_22"
+            "mapped_type": "mapped_type_21"
         },
         "minecraft:stone": {
-            "mapped_type": "mapped_type_23"
+            "mapped_type": "mapped_type_22"
         },
         "minecraft:stone_slab": {
-            "mapped_type": "mapped_type_08"
+            "mapped_type": "mapped_type_07"
         },
         "minecraft:stone_slab2": {
-            "mapped_type": "mapped_type_09"
+            "mapped_type": "mapped_type_08"
         },
         "minecraft:stone_slab3": {
-            "mapped_type": "mapped_type_10"
+            "mapped_type": "mapped_type_09"
         },
         "minecraft:stone_slab4": {
-            "mapped_type": "mapped_type_11"
+            "mapped_type": "mapped_type_10"
         },
         "minecraft:stonebrick": {
-            "mapped_type": "mapped_type_24"
+            "mapped_type": "mapped_type_23"
         },
         "minecraft:structure_block": {
-            "mapped_type": "mapped_type_25"
+            "mapped_type": "mapped_type_24"
         },
         "minecraft:tallgrass": {
-            "mapped_type": "mapped_type_26"
+            "mapped_type": "mapped_type_25"
         },
         "minecraft:wooden_slab": {
-            "mapped_type": "mapped_type_12"
+            "mapped_type": "mapped_type_11"
         }
     },
     "remappedPropertyValuesIndex": {
@@ -728,32 +732,6 @@
         "mapped_type_00": [
             {
                 "old": {
-                    "int": 1
-                },
-                "new": {
-                    "int": 0
-                }
-            },
-            {
-                "old": {
-                    "int": 2
-                },
-                "new": {
-                    "int": 0
-                }
-            },
-            {
-                "old": {
-                    "int": 3
-                },
-                "new": {
-                    "int": 0
-                }
-            }
-        ],
-        "mapped_type_01": [
-            {
-                "old": {
                     "int": 0
                 },
                 "new": {
@@ -785,7 +763,7 @@
                 }
             }
         ],
-        "mapped_type_02": [
+        "mapped_type_01": [
             {
                 "old": {
                     "int": 0
@@ -915,7 +893,7 @@
                 }
             }
         ],
-        "mapped_type_03": [
+        "mapped_type_02": [
             {
                 "old": {
                     "int": 0
@@ -1045,7 +1023,7 @@
                 }
             }
         ],
-        "mapped_type_04": [
+        "mapped_type_03": [
             {
                 "old": {
                     "int": 0
@@ -1111,7 +1089,7 @@
                 }
             }
         ],
-        "mapped_type_05": [
+        "mapped_type_04": [
             {
                 "old": {
                     "int": 0
@@ -1129,7 +1107,7 @@
                 }
             }
         ],
-        "mapped_type_06": [
+        "mapped_type_05": [
             {
                 "old": {
                     "int": 0
@@ -1147,7 +1125,7 @@
                 }
             }
         ],
-        "mapped_type_07": [
+        "mapped_type_06": [
             {
                 "old": {
                     "int": 0
@@ -1213,7 +1191,7 @@
                 }
             }
         ],
-        "mapped_type_08": [
+        "mapped_type_07": [
             {
                 "old": {
                     "int": 0
@@ -1279,7 +1257,7 @@
                 }
             }
         ],
-        "mapped_type_09": [
+        "mapped_type_08": [
             {
                 "old": {
                     "int": 0
@@ -1345,7 +1323,7 @@
                 }
             }
         ],
-        "mapped_type_10": [
+        "mapped_type_09": [
             {
                 "old": {
                     "int": 0
@@ -1411,7 +1389,7 @@
                 }
             }
         ],
-        "mapped_type_11": [
+        "mapped_type_10": [
             {
                 "old": {
                     "int": 0
@@ -1477,7 +1455,7 @@
                 }
             }
         ],
-        "mapped_type_12": [
+        "mapped_type_11": [
             {
                 "old": {
                     "int": 0
@@ -1543,7 +1521,7 @@
                 }
             }
         ],
-        "mapped_type_13": [
+        "mapped_type_12": [
             {
                 "old": {
                     "int": 0
@@ -1577,7 +1555,7 @@
                 }
             }
         ],
-        "mapped_type_14": [
+        "mapped_type_13": [
             {
                 "old": {
                     "int": 0
@@ -1611,7 +1589,7 @@
                 }
             }
         ],
-        "mapped_type_15": [
+        "mapped_type_14": [
             {
                 "old": {
                     "int": 0
@@ -1677,7 +1655,7 @@
                 }
             }
         ],
-        "mapped_type_16": [
+        "mapped_type_15": [
             {
                 "old": {
                     "int": 0
@@ -1711,7 +1689,7 @@
                 }
             }
         ],
-        "mapped_type_17": [
+        "mapped_type_16": [
             {
                 "old": {
                     "int": 0
@@ -1745,7 +1723,7 @@
                 }
             }
         ],
-        "mapped_type_18": [
+        "mapped_type_17": [
             {
                 "old": {
                     "int": 0
@@ -1875,7 +1853,7 @@
                 }
             }
         ],
-        "mapped_type_19": [
+        "mapped_type_18": [
             {
                 "old": {
                     "int": 0
@@ -1909,7 +1887,7 @@
                 }
             }
         ],
-        "mapped_type_20": [
+        "mapped_type_19": [
             {
                 "old": {
                     "int": 0
@@ -1927,7 +1905,7 @@
                 }
             }
         ],
-        "mapped_type_21": [
+        "mapped_type_20": [
             {
                 "old": {
                     "int": 0
@@ -1961,7 +1939,7 @@
                 }
             }
         ],
-        "mapped_type_22": [
+        "mapped_type_21": [
             {
                 "old": {
                     "int": 0
@@ -1979,7 +1957,7 @@
                 }
             }
         ],
-        "mapped_type_23": [
+        "mapped_type_22": [
             {
                 "old": {
                     "int": 0
@@ -2045,7 +2023,7 @@
                 }
             }
         ],
-        "mapped_type_24": [
+        "mapped_type_23": [
             {
                 "old": {
                     "int": 0
@@ -2111,7 +2089,7 @@
                 }
             }
         ],
-        "mapped_type_25": [
+        "mapped_type_24": [
             {
                 "old": {
                     "int": 0
@@ -2177,7 +2155,7 @@
                 }
             }
         ],
-        "mapped_type_26": [
+        "mapped_type_25": [
             {
                 "old": {
                     "int": 0
