@@ -6,104 +6,23 @@
     "remappedStates": {
         "minecraft:fence": [
             {
-                "oldState": {
-                    "wood_type": {
-                        "string": "acacia"
-                    }
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "wood_type",
+                    "suffix": "_fence"
                 },
-                "newName": "minecraft:acacia_fence",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "wood_type": {
-                        "string": "birch"
-                    }
-                },
-                "newName": "minecraft:birch_fence",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "wood_type": {
-                        "string": "dark_oak"
-                    }
-                },
-                "newName": "minecraft:dark_oak_fence",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "wood_type": {
-                        "string": "jungle"
-                    }
-                },
-                "newName": "minecraft:jungle_fence",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "wood_type": {
-                        "string": "oak"
-                    }
-                },
-                "newName": "minecraft:oak_fence",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "wood_type": {
-                        "string": "spruce"
-                    }
-                },
-                "newName": "minecraft:spruce_fence",
                 "newState": null
             }
         ],
         "minecraft:log": [
             {
-                "oldState": {
-                    "old_log_type": {
-                        "string": "birch"
-                    }
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "old_log_type",
+                    "suffix": "_log"
                 },
-                "newName": "minecraft:birch_log",
-                "newState": null,
-                "copiedState": [
-                    "pillar_axis"
-                ]
-            },
-            {
-                "oldState": {
-                    "old_log_type": {
-                        "string": "jungle"
-                    }
-                },
-                "newName": "minecraft:jungle_log",
-                "newState": null,
-                "copiedState": [
-                    "pillar_axis"
-                ]
-            },
-            {
-                "oldState": {
-                    "old_log_type": {
-                        "string": "oak"
-                    }
-                },
-                "newName": "minecraft:oak_log",
-                "newState": null,
-                "copiedState": [
-                    "pillar_axis"
-                ]
-            },
-            {
-                "oldState": {
-                    "old_log_type": {
-                        "string": "spruce"
-                    }
-                },
-                "newName": "minecraft:spruce_log",
                 "newState": null,
                 "copiedState": [
                     "pillar_axis"
@@ -112,24 +31,12 @@
         ],
         "minecraft:log2": [
             {
-                "oldState": {
-                    "new_log_type": {
-                        "string": "acacia"
-                    }
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "new_log_type",
+                    "suffix": "_log"
                 },
-                "newName": "minecraft:acacia_log",
-                "newState": null,
-                "copiedState": [
-                    "pillar_axis"
-                ]
-            },
-            {
-                "oldState": {
-                    "new_log_type": {
-                        "string": "dark_oak"
-                    }
-                },
-                "newName": "minecraft:dark_oak_log",
                 "newState": null,
                 "copiedState": [
                     "pillar_axis"

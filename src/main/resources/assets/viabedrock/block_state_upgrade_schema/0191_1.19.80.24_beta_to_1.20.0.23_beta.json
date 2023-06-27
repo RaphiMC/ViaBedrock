@@ -105,123 +105,6 @@
             {
                 "oldState": {
                     "color": {
-                        "string": "black"
-                    }
-                },
-                "newName": "minecraft:black_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "blue"
-                    }
-                },
-                "newName": "minecraft:blue_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "brown"
-                    }
-                },
-                "newName": "minecraft:brown_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "cyan"
-                    }
-                },
-                "newName": "minecraft:cyan_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "gray"
-                    }
-                },
-                "newName": "minecraft:gray_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "green"
-                    }
-                },
-                "newName": "minecraft:green_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "light_blue"
-                    }
-                },
-                "newName": "minecraft:light_blue_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "lime"
-                    }
-                },
-                "newName": "minecraft:lime_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "magenta"
-                    }
-                },
-                "newName": "minecraft:magenta_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "orange"
-                    }
-                },
-                "newName": "minecraft:orange_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "pink"
-                    }
-                },
-                "newName": "minecraft:pink_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "purple"
-                    }
-                },
-                "newName": "minecraft:purple_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "red"
-                    }
-                },
-                "newName": "minecraft:red_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
                         "string": "silver"
                     }
                 },
@@ -229,21 +112,12 @@
                 "newState": null
             },
             {
-                "oldState": {
-                    "color": {
-                        "string": "white"
-                    }
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "color",
+                    "suffix": "_carpet"
                 },
-                "newName": "minecraft:white_carpet",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "yellow"
-                    }
-                },
-                "newName": "minecraft:yellow_carpet",
                 "newState": null
             }
         ],

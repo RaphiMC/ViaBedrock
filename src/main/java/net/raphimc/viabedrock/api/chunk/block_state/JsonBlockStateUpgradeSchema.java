@@ -27,6 +27,7 @@ import com.viaversion.viaversion.util.Triple;
 import net.raphimc.viabedrock.api.util.NbtUtil;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
@@ -50,7 +51,7 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
             final JsonObject remappedStates = jsonObject.get("remappedStates").getAsJsonObject();
             for (Map.Entry<String, JsonElement> entry : remappedStates.entrySet()) {
                 final String identifier = entry.getKey().toLowerCase(Locale.ROOT);
-                final Map<CompoundTag, Triple<String, CompoundTag, List<String>>> mappings = new HashMap<>();
+                final Map<CompoundTag, Triple<Function<CompoundTag, String>, CompoundTag, List<String>>> mappings = new LinkedHashMap<>();
                 for (JsonElement mappingEntry : entry.getValue().getAsJsonArray()) {
                     final JsonObject mappingObject = mappingEntry.getAsJsonObject();
 
@@ -75,7 +76,22 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                         }
                     }
 
-                    mappings.put(oldStateTag, new Triple<>(mappingObject.get("newName").getAsString().toLowerCase(Locale.ROOT), newStateTag, copiedStates));
+                    if (mappingObject.has("newName")) {
+                        final String newName = mappingObject.get("newName").getAsString();
+                        mappings.put(oldStateTag, new Triple<>(states -> newName.toLowerCase(Locale.ROOT), newStateTag, copiedStates));
+                    } else if (mappingObject.has("newFlattenedName")) {
+                        final JsonObject newFlattenedName = mappingObject.get("newFlattenedName").getAsJsonObject();
+                        final String prefix = newFlattenedName.get("prefix").getAsString();
+                        final String flattenedProperty = newFlattenedName.get("flattenedProperty").getAsString();
+                        final String suffix = newFlattenedName.get("suffix").getAsString();
+
+                        mappings.put(oldStateTag, new Triple<>(states -> {
+                            final String flattenedName = prefix + states.get(flattenedProperty).getValue().toString() + suffix;
+                            return flattenedName.toLowerCase(Locale.ROOT);
+                        }, newStateTag, copiedStates));
+                    } else {
+                        throw new IllegalArgumentException("No new name or flattened name specified for " + identifier);
+                    }
                 }
 
                 this.actions.add(tag -> {
@@ -85,26 +101,28 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                     if (tag.get("states") instanceof CompoundTag) {
                         final CompoundTag states = tag.get("states");
 
-                        for (Map.Entry<CompoundTag, Triple<String, CompoundTag, List<String>>> mapping : mappings.entrySet()) {
+                        for (Map.Entry<CompoundTag, Triple<Function<CompoundTag, String>, CompoundTag, List<String>>> mapping : mappings.entrySet()) {
                             boolean matches = true;
-                            for (Map.Entry<String, Tag> stateTag : mapping.getKey().entrySet()) {
-                                if (!stateTag.getValue().equals(states.get(stateTag.getKey()))) {
-                                    matches = false;
-                                    break;
+                            if (mapping.getKey() != null) {
+                                for (Map.Entry<String, Tag> stateTag : mapping.getKey().entrySet()) {
+                                    if (!stateTag.getValue().equals(states.get(stateTag.getKey()))) {
+                                        matches = false;
+                                        break;
+                                    }
                                 }
                             }
 
                             if (matches) {
-                                final Triple<String, CompoundTag, List<String>> mappingValue = mapping.getValue();
-                                final CompoundTag newStates = mappingValue.second().clone();
+                                final Triple<Function<CompoundTag, String>, CompoundTag, List<String>> mappingValue = mapping.getValue();
 
+                                final CompoundTag newStates = mappingValue.second().clone();
                                 for (String property : mappingValue.third()) {
                                     if (states.contains(property)) {
                                         newStates.put(property, states.get(property));
                                     }
                                 }
 
-                                tag.put("name", new StringTag(mappingValue.first()));
+                                tag.put("name", new StringTag(mappingValue.first().apply(states)));
                                 tag.put("states", newStates);
 
                                 throw StopUpgrade.INSTANCE;

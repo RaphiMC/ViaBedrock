@@ -8,123 +8,6 @@
             {
                 "oldState": {
                     "color": {
-                        "string": "black"
-                    }
-                },
-                "newName": "minecraft:black_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "blue"
-                    }
-                },
-                "newName": "minecraft:blue_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "brown"
-                    }
-                },
-                "newName": "minecraft:brown_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "cyan"
-                    }
-                },
-                "newName": "minecraft:cyan_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "gray"
-                    }
-                },
-                "newName": "minecraft:gray_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "green"
-                    }
-                },
-                "newName": "minecraft:green_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "light_blue"
-                    }
-                },
-                "newName": "minecraft:light_blue_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "lime"
-                    }
-                },
-                "newName": "minecraft:lime_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "magenta"
-                    }
-                },
-                "newName": "minecraft:magenta_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "orange"
-                    }
-                },
-                "newName": "minecraft:orange_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "pink"
-                    }
-                },
-                "newName": "minecraft:pink_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "purple"
-                    }
-                },
-                "newName": "minecraft:purple_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "red"
-                    }
-                },
-                "newName": "minecraft:red_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
                         "string": "silver"
                     }
                 },
@@ -132,21 +15,12 @@
                 "newState": null
             },
             {
-                "oldState": {
-                    "color": {
-                        "string": "white"
-                    }
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "color",
+                    "suffix": "_wool"
                 },
-                "newName": "minecraft:white_wool",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "color": {
-                        "string": "yellow"
-                    }
-                },
-                "newName": "minecraft:yellow_wool",
                 "newState": null
             }
         ]
