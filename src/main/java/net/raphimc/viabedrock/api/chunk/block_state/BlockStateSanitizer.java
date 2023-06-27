@@ -45,14 +45,18 @@ public class BlockStateSanitizer {
         BedrockBlockState.sanitizeName(tag);
 
         final String identifier = tag.<StringTag>get("name").getValue();
-        final CompoundTag statesTag = tag.get("states");
-        if (statesTag == null) {
-            return;
-        }
-
         final Map<String, Set<Object>> propertyValues = this.allowedPropertyValues.get(identifier);
         if (propertyValues == null) {
             return;
+        }
+
+        CompoundTag statesTag = tag.get("states");
+        if (statesTag == null) {
+            if (propertyValues.isEmpty()) {
+                return;
+            } else {
+                tag.put("states", statesTag = new CompoundTag());
+            }
         }
 
         final Set<String> toRemove = new HashSet<>();
