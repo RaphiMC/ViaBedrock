@@ -20,10 +20,10 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 public enum DeviceOS {
 
     UNKNOWN("Unknown"),
-    GOOGLE("Android"),
+    ANDROID("Android"),
     IOS("iOS"),
-    OSX("macOS"),
-    AMAZON("Amazon"),
+    MAC_OS("macOS"),
+    FIRE_OS("FireOS"),
     GEAR_VR("Gear VR"),
     HOLOLENS("Hololens"),
     UWP("UWP"),
@@ -31,9 +31,10 @@ public enum DeviceOS {
     DEDICATED("Dedicated"),
     TVOS("Apple TV"),
     PS4("PS4"),
-    NX("Switch"),
-    XBOX("Xbox One"),
-    WINDOWS_PHONE("Windows Phone");
+    SWITCH("Switch"),
+    XBOX_ONE("Xbox One"),
+    WINDOWS_PHONE("Windows Phone"),
+    LINUX("Linux");
 
     private final String name;
 
