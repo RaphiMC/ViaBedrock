@@ -280,16 +280,14 @@ public class HudPackets {
                 }
 
                 final ScoreboardObjective objective = scoreboardTracker.getObjective(objectiveName);
-                if (objective == null) continue;
-
                 final Pair<ScoreboardObjective, ScoreboardEntry> existingEntry = scoreboardTracker.getEntry(scoreboardId);
                 if (existingEntry != null) {
                     existingEntry.key().removeEntry(wrapper.user(), scoreboardId);
-                    if (entry != null) {
+                    if (entry != null && objective != null) {
                         existingEntry.value().setScore(entry.score());
                         objective.addEntry(wrapper.user(), scoreboardId, existingEntry.value());
                     }
-                } else if (entry != null) {
+                } else if (entry != null && objective != null) {
                     final ScoreboardEntry sameTargetEntry = objective.getEntryWithSameTarget(entry);
                     if (sameTargetEntry != null) {
                         sameTargetEntry.setScore(entry.score());
