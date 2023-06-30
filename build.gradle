@@ -116,6 +116,7 @@ publishing {
 }
 
 signing {
+    setRequired(false)
     sign configurations.archives
     sign publishing.publications.maven
 }
