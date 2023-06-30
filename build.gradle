@@ -1,6 +1,7 @@
 plugins {
     id "java-library"
     id "maven-publish"
+    id "signing"
     id "net.kyori.blossom" version "1.3.1"
 }
 
@@ -65,11 +66,16 @@ jar {
     }
 }
 
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
 publishing {
     repositories {
         maven {
             name = "reposilite"
-            url = "https://maven.lenni0451.net/snapshots"
+            url = project.maven_version.endsWith("SNAPSHOT") ? "https://maven.lenni0451.net/snapshots" : "https://maven.lenni0451.net/releases"
+
             credentials(PasswordCredentials)
             authentication {
                 basic(BasicAuthentication)
@@ -83,6 +89,37 @@ publishing {
             version = project.maven_version
 
             from components.java
+
+            pom {
+                name = "ViaBedrock"
+                description = "ViaVersion addon to add support for Minecraft: Bedrock Edition servers"
+                url = "https://github.com/RaphiMC/ViaBedrock"
+                licenses {
+                    license {
+                        name = "GPL-3.0 License"
+                        url = "https://github.com/RaphiMC/ViaBedrock/blob/main/LICENSE"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "RK_01"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/RaphiMC/ViaBedrock.git"
+                    developerConnection = "scm:git:ssh://github.com/RaphiMC/ViaBedrock.git"
+                    url = "https://github.com/RaphiMC/ViaBedrock.git"
+                }
+            }
         }
     }
+}
+
+signing {
+    sign configurations.archives
+    sign publishing.publications.maven
+}
+
+project.tasks.withType(PublishToMavenRepository).forEach {
+    it.dependsOn(project.tasks.withType(Sign))
 }
