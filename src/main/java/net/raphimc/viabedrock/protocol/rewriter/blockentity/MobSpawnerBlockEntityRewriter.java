@@ -22,6 +22,7 @@ import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ShortTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import com.viaversion.viaversion.util.Key;
@@ -47,21 +48,25 @@ public class MobSpawnerBlockEntityRewriter implements BlockEntityRewriter.Rewrit
         this.copy(bedrockTag, javaTag, "RequiredPlayerRange", ShortTag.class);
         this.copy(bedrockTag, javaTag, "SpawnRange", ShortTag.class);
 
+        if (bedrockTag.get("EntityId") instanceof IntTag) {
+            final int bedrockEntityId = bedrockTag.<IntTag>get("EntityId").asInt();
+            final String bedrockEntityIdentifier = BedrockProtocol.MAPPINGS.getBedrockEntities().inverse().getOrDefault(bedrockEntityId, "viabedrock:" + bedrockEntityId);
+            bedrockTag.put("EntityIdentifier", new StringTag(bedrockEntityIdentifier));
+        }
         if (bedrockTag.get("EntityIdentifier") instanceof StringTag) {
-            final String bedrockIdentifier = bedrockTag.<StringTag>get("EntityIdentifier").getValue();
-            final Entity1_19_4Types javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(bedrockIdentifier));
+            final String bedrockEntityIdentifier = bedrockTag.<StringTag>get("EntityIdentifier").getValue();
+            final Entity1_19_4Types javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(bedrockEntityIdentifier));
             if (javaEntityType != null) {
                 final CompoundTag spawnData = new CompoundTag();
                 final CompoundTag entityTag = new CompoundTag();
                 entityTag.put("id", new StringTag(javaEntityType.identifier()));
                 spawnData.put("entity", entityTag);
                 javaTag.put("SpawnData", spawnData);
-            } else if (bedrockIdentifier.isEmpty()) {
+            } else if (!bedrockEntityIdentifier.isEmpty()) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity identifier: " + bedrockEntityIdentifier);
                 final CompoundTag spawnData = new CompoundTag();
                 spawnData.put("entity", new CompoundTag());
                 javaTag.put("SpawnData", spawnData);
-            } else {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity identifier: " + bedrockIdentifier);
             }
         }
 

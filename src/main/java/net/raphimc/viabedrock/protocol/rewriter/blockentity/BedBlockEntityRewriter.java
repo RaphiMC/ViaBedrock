@@ -24,24 +24,19 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
+import net.raphimc.viabedrock.protocol.data.enums.DyeColor;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
 public class BedBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
-    private static final int COLOR_WHITE = 0;
-    private static final int COLOR_RED = 14;
-    private static final int COLOR_BLACK = 15;
-
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
 
-        byte color = bedrockTag.get("color") instanceof ByteTag ? bedrockTag.<ByteTag>get("color").asByte() : -1;
-        if (color < COLOR_WHITE || color > COLOR_BLACK) color = COLOR_RED;
-
+        final DyeColor color = DyeColor.getByJavaId(bedrockTag.get("color") instanceof ByteTag ? bedrockTag.<ByteTag>get("color").asByte() : -1, DyeColor.RED);
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
-        javaBlockState += color * 16;
+        javaBlockState += color.javaId() * 16;
 
         return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, new CompoundTag()), javaBlockState);
     }

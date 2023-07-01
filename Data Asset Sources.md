@@ -15,6 +15,9 @@ This file has been dumped from a BDS server.
 ### data/bedrock/r12_to_current_block_map.bin
 [PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/b3dd3f4b8e3b6759c5d84de6ec85bb20b668c3a9/r12_to_current_block_map.bin)
 
+### data/bedrock/entity_identifiers.nbt
+This file has been dumped from a BDS server.
+
 ### data/bedrock/runtime_item_states.1_20_0.json
 [GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/master/core/src/main/resources/bedrock/runtime_item_states.1_20_0.json)
 

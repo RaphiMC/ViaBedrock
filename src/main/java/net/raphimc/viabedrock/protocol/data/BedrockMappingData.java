@@ -31,9 +31,7 @@ import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.gson.JsonPrimitive;
 import com.viaversion.viaversion.libs.opennbt.NBTIO;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.Protocol1_19_4To1_19_3;
 import com.viaversion.viaversion.util.GsonUtil;
 import io.netty.buffer.ByteBuf;
@@ -92,6 +90,7 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, String> bedrockToJavaItems;
 
     // Entities
+    private BiMap<String, Integer> bedrockEntities;
     private Map<String, Entity1_19_4Types> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
 
@@ -265,13 +264,29 @@ public class BedrockMappingData extends MappingDataBase {
         }
 
         { // Entities
+            final CompoundTag entityIdentifiersTag = this.readNBT("bedrock/entity_identifiers.nbt");
+            final ListTag entityIdentifiersListTag = entityIdentifiersTag.get("idlist");
+            this.bedrockEntities = HashBiMap.create(entityIdentifiersListTag.size());
+            for (Tag tag : entityIdentifiersListTag) {
+                final CompoundTag entry = (CompoundTag) tag;
+                this.bedrockEntities.put(entry.<StringTag>get("id").getValue(), entry.<IntTag>get("rid").getValue());
+            }
+
             Via.getManager().getProtocolManager().addMappingLoaderFuture(BedrockProtocol.class, Protocol1_19_4To1_19_3.class, () -> {
                 final JsonObject bedrockToJavaEntityMappingsJson = this.readJson("custom/entity_mappings.json");
                 this.bedrockToJavaEntities = new HashMap<>(bedrockToJavaEntityMappingsJson.size());
+                final Set<String> unmappedIdentifiers = new HashSet<>();
                 for (Map.Entry<String, JsonElement> entry : bedrockToJavaEntityMappingsJson.entrySet()) {
                     final String bedrockIdentifier = entry.getKey();
-                    final String javaIdentifier = entry.getValue().getAsString();
+                    if (!this.bedrockEntities.containsKey(bedrockIdentifier)) {
+                        throw new RuntimeException("Unknown bedrock entity identifier: " + bedrockIdentifier);
+                    }
 
+                    final String javaIdentifier = entry.getValue().getAsString();
+                    if (javaIdentifier.isEmpty()) {
+                        unmappedIdentifiers.add(bedrockIdentifier);
+                        continue;
+                    }
                     Entity1_19_4Types javaEntityType = null;
                     for (Entity1_19_4Types type : Entity1_19_4Types.values()) {
                         if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
@@ -284,6 +299,12 @@ public class BedrockMappingData extends MappingDataBase {
                     }
 
                     this.bedrockToJavaEntities.put(bedrockIdentifier, javaEntityType);
+                }
+
+                for (String bedrockIdentifier : this.bedrockEntities.keySet()) {
+                    if (!this.bedrockToJavaEntities.containsKey(bedrockIdentifier) && !unmappedIdentifiers.contains(bedrockIdentifier)) {
+                        throw new RuntimeException("Missing bedrock -> java entity mapping for " + bedrockIdentifier);
+                    }
                 }
             });
 
@@ -405,6 +426,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<String, String> getBedrockToJavaItems() {
         return Collections.unmodifiableMap(this.bedrockToJavaItems);
+    }
+
+    public BiMap<String, Integer> getBedrockEntities() {
+        return Maps.unmodifiableBiMap(this.bedrockEntities);
     }
 
     public Map<String, Entity1_19_4Types> getBedrockToJavaEntities() {

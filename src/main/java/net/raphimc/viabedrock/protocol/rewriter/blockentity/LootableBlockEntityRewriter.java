@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.LongTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 
@@ -33,7 +33,7 @@ public class LootableBlockEntityRewriter extends LockableBlockEntityRewriter {
         final CompoundTag javaTag = javaBlockEntity.tag();
 
         this.copy(bedrockTag, javaTag, "LootTable", StringTag.class);
-        this.copy(bedrockTag, javaTag, "LootTableSeed", LongTag.class);
+        this.copy(bedrockTag, javaTag, "LootTableSeed", IntTag.class);
         this.copyItemList(user, bedrockTag, javaTag);
 
         return javaBlockEntity;

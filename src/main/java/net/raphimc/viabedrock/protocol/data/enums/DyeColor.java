@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.java;
+package net.raphimc.viabedrock.protocol.data.enums;
 
 public enum DyeColor {
 
@@ -36,10 +36,42 @@ public enum DyeColor {
     RED(16711680),
     BLACK(0);
 
+    private static final DyeColor[] JAVA_VALUES = new DyeColor[values().length];
+    private static final DyeColor[] BEDROCK_VALUES = new DyeColor[values().length];
+
+    static {
+        for (DyeColor color : values()) {
+            JAVA_VALUES[color.javaId()] = color;
+            BEDROCK_VALUES[color.bedrockId()] = color;
+        }
+    }
+
     private final int signColor;
 
     DyeColor(final int signColor) {
         this.signColor = signColor;
+    }
+
+    public static DyeColor getByJavaId(final int id, final DyeColor fallback) {
+        final DyeColor color = getByJavaId(id);
+        return color == null ? fallback : color;
+    }
+
+    public static DyeColor getByJavaId(final int id) {
+        if (id < 0 || id >= JAVA_VALUES.length) return null;
+
+        return JAVA_VALUES[id];
+    }
+
+    public static DyeColor getByBedrockId(final int id, final DyeColor fallback) {
+        final DyeColor color = getByBedrockId(id);
+        return color == null ? fallback : color;
+    }
+
+    public static DyeColor getByBedrockId(final int id) {
+        if (id < 0 || id >= BEDROCK_VALUES.length) return null;
+
+        return BEDROCK_VALUES[id];
     }
 
     public static DyeColor getClosestDyeColor(final int rgb) {
@@ -66,6 +98,14 @@ public enum DyeColor {
 
     public int signColor() {
         return this.signColor | 0xFF000000;
+    }
+
+    public byte javaId() {
+        return (byte) this.ordinal();
+    }
+
+    public byte bedrockId() {
+        return (byte) (values().length - 1 - this.ordinal());
     }
 
 }

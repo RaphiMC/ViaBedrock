@@ -34,8 +34,6 @@ import java.util.Collections;
 
 public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
-    private static final float BEDROCK_MAX_ROT = 360F;
-    private static final int JAVA_MAX_ROT = 15;
     private static final int PLAYER_HEAD_TYPE = 3;
     private static final int MAX_TYPE = 6;
     private static final int SKULL_WITH_ROTATION_UPDATE;
@@ -56,21 +54,34 @@ public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         if (type < 0 || type > MAX_TYPE) type = PLAYER_HEAD_TYPE;
 
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
-        if (javaBlockState == SKULL_WITH_ROTATION_UPDATE && bedrockTag.get("Rotation") instanceof FloatTag) {
-            javaBlockState += this.convertRotation(bedrockTag.<FloatTag>get("Rotation").asFloat());
+        if (javaBlockState == SKULL_WITH_ROTATION_UPDATE) {
+            if (bedrockTag.get("Rot") instanceof ByteTag) {
+                javaBlockState += this.convertRot(bedrockTag.<ByteTag>get("Rot").asByte());
+            } else if (bedrockTag.get("Rotation") instanceof FloatTag) {
+                javaBlockState += this.convertRotation(bedrockTag.<FloatTag>get("Rotation").asFloat());
+            }
         }
         javaBlockState += type * 20;
 
         return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, new CompoundTag()), javaBlockState);
     }
 
-    private int convertRotation(float f) {
-        f %= BEDROCK_MAX_ROT;
-        if (f < 0) {
-            f += BEDROCK_MAX_ROT;
+    private int convertRot(byte b) {
+        b %= 16;
+        if (b < 0) {
+            b += 16;
         }
 
-        return (int) Math.ceil((f / BEDROCK_MAX_ROT) * JAVA_MAX_ROT);
+        return b;
+    }
+
+    private int convertRotation(float f) {
+        f %= 360F;
+        if (f < 0) {
+            f += 360F;
+        }
+
+        return (int) Math.ceil((f / 360F) * 15);
     }
 
 }
