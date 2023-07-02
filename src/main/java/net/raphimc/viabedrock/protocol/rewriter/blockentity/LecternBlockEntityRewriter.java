@@ -35,13 +35,12 @@ public class LecternBlockEntityRewriter implements BlockEntityRewriter.Rewriter 
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("book") instanceof CompoundTag) {
-            javaTag.put("Book", this.rewriteItem(user, bedrockTag.get("book")));
-        }
-        this.copy(bedrockTag, javaTag, "page", "Page", IntTag.class);
-
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
         if (bedrockTag.get("hasBook") instanceof ByteTag && bedrockTag.<ByteTag>get("hasBook").asByte() != 0) {
+            if (bedrockTag.get("book") instanceof CompoundTag) {
+                javaTag.put("Book", this.rewriteItem(user, bedrockTag.get("book")));
+            }
+            this.copy(bedrockTag, javaTag, "page", "Page", IntTag.class);
             javaBlockState -= 2;
         }
 
