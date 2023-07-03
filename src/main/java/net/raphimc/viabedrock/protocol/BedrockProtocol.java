@@ -125,6 +125,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         providers.register(ResourcePackProvider.class, new DiskResourcePackProvider());
         providers.register(BlobCacheProvider.class, new BlobCacheProvider());
         providers.register(SkinProvider.class, new SkinProvider());
+        providers.register(TransferProvider.class, new TransferProvider());
 
         Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 5L);
         Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);

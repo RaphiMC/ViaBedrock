@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
@@ -36,10 +37,12 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.providers.TransferProvider;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
@@ -159,6 +162,13 @@ public class PlayPackets {
                 final byte[] blob = wrapper.read(BedrockTypes.BYTE_ARRAY); // blob data
                 wrapper.user().get(BlobCache.class).addBlob(hash, blob);
             }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.TRANSFER, null, wrapper -> {
+            wrapper.cancel();
+            final String hostname = wrapper.read(BedrockTypes.STRING); // hostname
+            final short port = wrapper.read(BedrockTypes.SHORT_LE); // port
+
+            Via.getManager().getProviders().get(TransferProvider.class).connectToServer(wrapper.user(), new InetSocketAddress(hostname, port));
         });
 
         protocol.registerServerbound(ServerboundPackets1_19_4.CLIENT_SETTINGS, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, new PacketHandlers() {
