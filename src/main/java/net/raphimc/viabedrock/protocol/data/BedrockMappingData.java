@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.data;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
@@ -377,15 +376,15 @@ public class BedrockMappingData extends MappingDataBase {
     }
 
     public BiMap<BlockState, Integer> getJavaBlockStates() {
-        return Maps.unmodifiableBiMap(this.javaBlockStates);
+        return this.javaBlockStates;
     }
 
     public List<BedrockBlockState> getBedrockBlockStates() {
-        return Collections.unmodifiableList(this.bedrockBlockStates);
+        return this.bedrockBlockStates;
     }
 
     public Map<BlockState, BlockState> getBedrockToJavaBlockStates() {
-        return Collections.unmodifiableMap(this.bedrockToJavaBlockStates);
+        return this.bedrockToJavaBlockStates;
     }
 
     public IntSet getJavaPreWaterloggedStates() {
@@ -397,7 +396,7 @@ public class BedrockMappingData extends MappingDataBase {
     }
 
     public BiMap<String, Integer> getBedrockLegacyBlocks() {
-        return Maps.unmodifiableBiMap(this.bedrockLegacyBlocks);
+        return this.bedrockLegacyBlocks;
     }
 
     public Int2ObjectMap<BedrockBlockState> getBedrockLegacyBlockStates() {
@@ -405,51 +404,51 @@ public class BedrockMappingData extends MappingDataBase {
     }
 
     public Map<String, String> getBedrockBlockTags() {
-        return Collections.unmodifiableMap(this.bedrockBlockTags);
+        return this.bedrockBlockTags;
     }
 
     public Map<String, CompoundTag> getBedrockBiomeDefinitions() {
-        return Collections.unmodifiableMap(this.bedrockBiomeDefinitions);
+        return this.bedrockBiomeDefinitions;
     }
 
     public BiMap<String, Integer> getBedrockBiomes() {
-        return Maps.unmodifiableBiMap(this.bedrockBiomes);
+        return this.bedrockBiomes;
     }
 
     public Map<String, Map<String, Object>> getBedrockToJavaBiomeExtraData() {
-        return Collections.unmodifiableMap(this.bedrockToJavaBiomeExtraData);
+        return this.bedrockToJavaBiomeExtraData;
     }
 
     public BiMap<String, Integer> getBedrockItems() {
-        return Maps.unmodifiableBiMap(this.bedrockItems);
+        return this.bedrockItems;
     }
 
     public Map<String, String> getBedrockToJavaItems() {
-        return Collections.unmodifiableMap(this.bedrockToJavaItems);
+        return this.bedrockToJavaItems;
     }
 
     public BiMap<String, Integer> getBedrockEntities() {
-        return Maps.unmodifiableBiMap(this.bedrockEntities);
+        return this.bedrockEntities;
     }
 
     public Map<String, Entity1_19_4Types> getBedrockToJavaEntities() {
-        return Collections.unmodifiableMap(this.bedrockToJavaEntities);
+        return this.bedrockToJavaEntities;
     }
 
     public BiMap<String, Integer> getJavaBlockEntities() {
-        return Maps.unmodifiableBiMap(this.javaBlockEntities);
+        return this.javaBlockEntities;
     }
 
     public BiMap<String, Integer> getJavaEffects() {
-        return Maps.unmodifiableBiMap(this.javaEffects);
+        return this.javaEffects;
     }
 
     public BiMap<String, Integer> getBedrockEffects() {
-        return Maps.unmodifiableBiMap(this.bedrockEffects);
+        return this.bedrockEffects;
     }
 
     public Map<String, String> getBedrockToJavaEffects() {
-        return Collections.unmodifiableMap(this.bedrockToJavaEffects);
+        return this.bedrockToJavaEffects;
     }
 
     @Override

@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
@@ -51,7 +50,7 @@ public class ItemRewriter extends StoredObject {
     }
 
     public BiMap<String, Integer> getItems() {
-        return Maps.unmodifiableBiMap(this.items);
+        return this.items;
     }
 
     public Type<BedrockItem> itemType() {
