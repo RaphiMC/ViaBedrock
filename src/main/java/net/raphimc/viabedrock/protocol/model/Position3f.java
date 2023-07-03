@@ -17,6 +17,8 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
+import com.viaversion.viaversion.api.minecraft.BlockFace;
+
 import java.util.Objects;
 
 public class Position3f {
@@ -35,6 +37,18 @@ public class Position3f {
         this.x = position.x;
         this.y = position.y;
         this.z = position.z;
+    }
+
+    public Position3f getRelative(final BlockFace face) {
+        return new Position3f(this.x + face.modX(), this.y + face.modY(), this.z + face.modZ());
+    }
+
+    public Position3f subtract(final float x, final float y, final float z) {
+        return new Position3f(this.x - x, this.y - y, this.z - z);
+    }
+
+    public Position3f subtract(final Position3f position) {
+        return new Position3f(this.x - position.x, this.y - position.y, this.z - position.z);
     }
 
     public float x() {

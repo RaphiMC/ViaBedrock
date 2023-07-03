@@ -17,10 +17,13 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.google.common.collect.Lists;
 import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
 import com.viaversion.viaversion.api.minecraft.metadata.Metadata;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.types.version.Types1_19;
+import com.viaversion.viaversion.api.type.types.version.Types1_20;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.util.Key;
@@ -30,6 +33,9 @@ import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
+import net.raphimc.viabedrock.protocol.data.enums.Direction;
+import net.raphimc.viabedrock.protocol.data.enums.PaintingVariant;
 import net.raphimc.viabedrock.protocol.model.EntityLink;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
@@ -253,6 +259,41 @@ public class EntityPackets {
             entityTracker.removeEntity(entity);
 
             wrapper.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{entity.javaId()}); // entity ids
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.ADD_PAINTING, ClientboundPackets1_19_4.SPAWN_ENTITY, wrapper -> {
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+
+            final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
+            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
+            final Direction direction = Direction.getFromHorizontalId(wrapper.read(BedrockTypes.VAR_INT), Direction.NORTH); // direction
+            final PaintingVariant painting = PaintingVariant.getByName(wrapper.read(BedrockTypes.STRING)); // motive
+            final Position3f positionOffset = painting.getJavaPositionOffset(direction);
+
+            final Entity entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, Entity1_19_4Types.PAINTING);
+            entity.setPosition(position);
+
+            wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
+            wrapper.write(Type.UUID, entity.javaUuid()); // uuid
+            wrapper.write(Type.VAR_INT, Entity1_19_4Types.PAINTING.getId()); // type id
+            wrapper.write(Type.DOUBLE, (double) position.x() + positionOffset.x()); // x
+            wrapper.write(Type.DOUBLE, (double) position.y() + positionOffset.y()); // y
+            wrapper.write(Type.DOUBLE, (double) position.z() + positionOffset.z()); // z
+            wrapper.write(Type.BYTE, (byte) 0); // pitch
+            wrapper.write(Type.BYTE, (byte) 0); // yaw
+            wrapper.write(Type.BYTE, (byte) 0); // head yaw
+            wrapper.write(Type.VAR_INT, direction.verticalId()); // data
+            wrapper.write(Type.SHORT, (short) 0); // velocity x
+            wrapper.write(Type.SHORT, (short) 0); // velocity y
+            wrapper.write(Type.SHORT, (short) 0); // velocity z
+
+            final PacketWrapper entityMetadata = PacketWrapper.create(ClientboundPackets1_19_4.ENTITY_METADATA, wrapper.user());
+            entityMetadata.write(Type.VAR_INT, entity.javaId()); // entity id
+            entityMetadata.write(Types1_19.METADATA_LIST, Lists.newArrayList(new Metadata(ProtocolConstants.PAINTING_VARIANT_ID, Types1_20.META_TYPES.paintingVariantType, painting.ordinal()))); // metadata
+
+            wrapper.send(BedrockProtocol.class);
+            wrapper.cancel();
+            entityMetadata.send(BedrockProtocol.class);
         });
     }
 
