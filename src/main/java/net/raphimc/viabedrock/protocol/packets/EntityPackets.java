@@ -92,9 +92,9 @@ public class EntityPackets {
             wrapper.write(Type.BYTE, MathUtil.float2Byte(rotation.y())); // yaw
             wrapper.write(Type.BYTE, MathUtil.float2Byte(rotation.z())); // head yaw
             wrapper.write(Type.VAR_INT, 0); // data
-            wrapper.write(Type.SHORT, (short) 0); // velocity x
-            wrapper.write(Type.SHORT, (short) 0); // velocity y
-            wrapper.write(Type.SHORT, (short) 0); // velocity z
+            wrapper.write(Type.SHORT, (short) (motion.x() * 8000F)); // velocity x
+            wrapper.write(Type.SHORT, (short) (motion.y() * 8000F)); // velocity y
+            wrapper.write(Type.SHORT, (short) (motion.z() * 8000F)); // velocity z
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOVE_ENTITY_ABSOLUTE, ClientboundPackets1_19_4.ENTITY_TELEPORT, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
@@ -245,6 +245,23 @@ public class EntityPackets {
             wrapper.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().y())); // yaw
             wrapper.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().x())); // pitch
             wrapper.write(Type.BOOLEAN, entity.isOnGround()); // on ground
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_ENTITY_MOTION, ClientboundPackets1_19_4.ENTITY_VELOCITY, wrapper -> {
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+
+            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
+
+            final Entity entity = entityTracker.getEntityByRid(runtimeEntityId);
+            if (entity == null) {
+                wrapper.cancel();
+                return;
+            }
+
+            wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
+            wrapper.write(Type.SHORT, (short) (motion.x() * 8000F)); // velocity x
+            wrapper.write(Type.SHORT, (short) (motion.y() * 8000F)); // velocity y
+            wrapper.write(Type.SHORT, (short) (motion.z() * 8000F)); // velocity z
         });
         protocol.registerClientbound(ClientboundBedrockPackets.REMOVE_ENTITY, ClientboundPackets1_19_4.REMOVE_ENTITIES, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
