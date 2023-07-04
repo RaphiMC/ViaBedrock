@@ -12,11 +12,11 @@ This file has been dumped from a BDS server.
 ### data/bedrock/block_palette.1_20_0.nbt
 [GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/master/core/src/main/resources/bedrock/block_palette.1_20_0.nbt)
 
-### data/bedrock/r12_to_current_block_map.bin
-[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/b3dd3f4b8e3b6759c5d84de6ec85bb20b668c3a9/r12_to_current_block_map.bin)
-
 ### data/bedrock/entity_identifiers.nbt
 This file has been dumped from a BDS server.
+
+### data/bedrock/id_meta_to_nbt.1_12_0.bin
+[PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/8b72c47109e174ac7f17c3ac546748f8e49a5fdf/id_meta_to_nbt/1.12.0.bin)
 
 ### data/bedrock/runtime_item_states.1_20_0.json
 [GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/master/core/src/main/resources/bedrock/runtime_item_states.1_20_0.json)
@@ -35,4 +35,4 @@ This file has been dumped from a vanilla server using a fabric mod.
 This file has been dumped from a vanilla server using a fabric mod.
 
 ### block_state_upgrade_schema/*
-[PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema)
+[PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)

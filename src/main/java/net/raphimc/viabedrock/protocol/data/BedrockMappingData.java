@@ -536,32 +536,38 @@ public class BedrockMappingData extends MappingDataBase {
     }
 
     private void buildLegacyBlockStateMappings() {
-        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("assets/viabedrock/data/bedrock/r12_to_current_block_map.bin")) {
+        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("assets/viabedrock/data/bedrock/id_meta_to_nbt.1_12_0.bin")) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open r12_to_current_block_map.bin");
+                this.getLogger().severe("Could not open id_meta_to_nbt.1_12_0.bin");
                 return;
             }
             final byte[] bytes = ByteStreams.toByteArray(inputStream);
             final ByteBuf buf = Unpooled.wrappedBuffer(bytes);
 
             this.bedrockLegacyBlockStates = new Int2ObjectOpenHashMap<>();
-            while (buf.isReadable()) {
+            final int blockCount = BedrockTypes.UNSIGNED_VAR_INT.read(buf);
+            for (int i = 0; i < blockCount; i++) {
                 final String identifier = BedrockTypes.STRING.read(buf).toLowerCase(Locale.ROOT);
                 if (!this.bedrockLegacyBlocks.containsKey(identifier)) {
-                    throw new RuntimeException("Unknown block identifier in r12_to_current_block_map.bin: " + identifier);
+                    throw new RuntimeException("Unknown block identifier in id_meta_to_nbt.1_12_0.bin: " + identifier);
                 }
                 final int id = this.bedrockLegacyBlocks.get(identifier);
-                final int metadata = buf.readShortLE();
-                final CompoundTag tag = (CompoundTag) BedrockTypes.NETWORK_TAG.read(buf);
-                final BedrockBlockState bedrockBlockState = BedrockBlockState.fromNbt(tag);
-                if (!this.bedrockBlockStates.contains(bedrockBlockState)) {
-                    throw new RuntimeException("Legacy block state " + bedrockBlockState.toBlockStateString() + " is not mapped to a modern block state");
-                }
 
-                this.bedrockLegacyBlockStates.put(id << 6 | metadata & 63, bedrockBlockState);
+                final int metaCount = BedrockTypes.UNSIGNED_VAR_INT.read(buf);
+                for (int i1 = 0; i1 < metaCount; i1++) {
+                    final int metadata = BedrockTypes.UNSIGNED_VAR_INT.read(buf);
+                    final CompoundTag tag = (CompoundTag) BedrockTypes.TAG_LE.read(buf);
+                    this.bedrockBlockStateUpgrader.upgradeToLatest(tag);
+                    final BedrockBlockState bedrockBlockState = BedrockBlockState.fromNbt(tag);
+                    if (!this.bedrockBlockStates.contains(bedrockBlockState)) {
+                        throw new RuntimeException("Legacy block state " + bedrockBlockState.toBlockStateString() + " is not mapped to a modern block state");
+                    }
+
+                    this.bedrockLegacyBlockStates.put(id << 6 | metadata & 63, bedrockBlockState);
+                }
             }
         } catch (Exception e) {
-            this.getLogger().log(Level.SEVERE, "Could not read r12_to_current_block_map.bin", e);
+            this.getLogger().log(Level.SEVERE, "Could not read id_meta_to_nbt.1_12_0.bin", e);
             this.bedrockLegacyBlockStates = null;
         }
     }
