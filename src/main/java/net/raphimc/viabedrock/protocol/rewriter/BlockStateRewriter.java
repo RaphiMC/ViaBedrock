@@ -17,14 +17,14 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
-import com.viaversion.viaversion.libs.fastutil.objects.Object2IntMap;
-import com.viaversion.viaversion.libs.fastutil.objects.Object2IntOpenHashMap;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.block_state.BlockStateSanitizer;
@@ -43,10 +43,11 @@ import java.util.stream.Collectors;
 public class BlockStateRewriter extends StoredObject {
 
     public static final String TAG_WATER = "water";
+    public static final String TAG_ITEM_FRAME = "item_frame";
 
     private final Int2IntMap blockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Java
     private final Int2IntMap legacyBlockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Bedrock
-    private final Object2IntMap<BlockState> blockStateTagMappings = new Object2IntOpenHashMap<>(); // Bedrock -> Bedrock
+    private final BiMap<BlockState, Integer> blockStateTagMappings = HashBiMap.create(); // Bedrock -> Bedrock
     private final Int2ObjectMap<String> blockStateTags = new Int2ObjectOpenHashMap<>(); // Bedrock
     private final BlockStateSanitizer blockStateSanitizer;
 
@@ -55,7 +56,6 @@ public class BlockStateRewriter extends StoredObject {
 
         this.blockStateIdMappings.defaultReturnValue(-1);
         this.legacyBlockStateIdMappings.defaultReturnValue(-1);
-        this.blockStateTagMappings.defaultReturnValue(-1);
 
         final List<BedrockBlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
         final List<BedrockBlockState> customBlockStates = new ArrayList<>();
@@ -133,7 +133,7 @@ public class BlockStateRewriter extends StoredObject {
             final int legacyData = entry.getIntKey() & 63;
             if (legacyData > 15) continue; // Dirty hack Mojang did in 1.12. Can be ignored safely as those values can't be used in chunk packets.
 
-            this.legacyBlockStateIdMappings.put(legacyId << 4 | legacyData & 15, this.blockStateTagMappings.getInt(entry.getValue()));
+            this.legacyBlockStateIdMappings.put(legacyId << 4 | legacyData & 15, this.blockStateTagMappings.getOrDefault(entry.getValue(), -1).intValue());
         }
 
         this.blockStateSanitizer = new BlockStateSanitizer(bedrockBlockStates);
@@ -153,7 +153,11 @@ public class BlockStateRewriter extends StoredObject {
     }
 
     public int bedrockId(final BlockState bedrockBlockState) {
-        return this.blockStateTagMappings.getInt(bedrockBlockState);
+        return this.blockStateTagMappings.getOrDefault(bedrockBlockState, -1);
+    }
+
+    public BlockState blockState(final int bedrockBlockStateId) {
+        return this.blockStateTagMappings.inverse().get(bedrockBlockStateId);
     }
 
     public int bedrockId(final int legacyBlockStateId) {

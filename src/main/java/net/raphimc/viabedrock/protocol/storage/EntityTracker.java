@@ -19,11 +19,13 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.entity.PlayerEntity;
@@ -42,6 +44,7 @@ public class EntityTracker extends StoredObject {
     private ClientPlayerEntity clientPlayerEntity = null;
     private final Map<Long, Long> runtimeIdToUniqueId = new HashMap<>();
     private final Map<Long, Entity> entities = new HashMap<>();
+    private final Map<Position, Integer> itemFrames = new HashMap<>();
 
     public EntityTracker(final UserConnection user) {
         super(user);
@@ -93,6 +96,57 @@ public class EntityTracker extends StoredObject {
 
         if (entity instanceof PlayerEntity) {
             ((PlayerEntity) entity).deleteTeam();
+        }
+    }
+
+    public void spawnItemFrame(final Position position, final BlockState blockState) throws Exception {
+        this.removeItemFrame(position);
+
+        if (!blockState.identifier().equals("frame") && !blockState.identifier().equals("glow_frame")) {
+            throw new IllegalArgumentException("Block state must be a frame or glow_frame");
+        }
+
+        final int javaId = ID_COUNTER.getAndIncrement();
+        this.itemFrames.put(position, javaId);
+
+        final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets1_19_4.SPAWN_ENTITY, this.getUser());
+        spawnEntity.write(Type.VAR_INT, javaId); // entity id
+        spawnEntity.write(Type.UUID, UUID.randomUUID()); // uuid
+        spawnEntity.write(Type.VAR_INT, blockState.identifier().equals("frame") ? Entity1_19_4Types.ITEM_FRAME.getId() : Entity1_19_4Types.GLOW_ITEM_FRAME.getId()); // type id
+        spawnEntity.write(Type.DOUBLE, (double) position.x()); // x
+        spawnEntity.write(Type.DOUBLE, (double) position.y()); // y
+        spawnEntity.write(Type.DOUBLE, (double) position.z()); // z
+        spawnEntity.write(Type.BYTE, (byte) 0); // pitch
+        spawnEntity.write(Type.BYTE, (byte) 0); // yaw
+        spawnEntity.write(Type.BYTE, (byte) 0); // head yaw
+        spawnEntity.write(Type.VAR_INT, Integer.valueOf(blockState.properties().get("facing_direction"))); // data
+        spawnEntity.write(Type.SHORT, (short) 0); // velocity x
+        spawnEntity.write(Type.SHORT, (short) 0); // velocity y
+        spawnEntity.write(Type.SHORT, (short) 0); // velocity z
+        spawnEntity.send(BedrockProtocol.class);
+    }
+
+    public int getItemFrameId(final Position position) {
+        return this.itemFrames.getOrDefault(position, -1);
+    }
+
+    public void removeItemFrame(final Position position) throws Exception {
+        final Integer javaId = this.itemFrames.remove(position);
+        if (javaId == null) {
+            return;
+        }
+
+        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_19_4.REMOVE_ENTITIES, this.getUser());
+        removeEntities.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{javaId}); // entity ids
+        removeEntities.send(BedrockProtocol.class);
+    }
+
+    public void removeItemFrame(final int chunkX, final int chunkZ) throws Exception {
+        for (final Map.Entry<Position, Integer> entry : this.itemFrames.entrySet()) {
+            final Position position = entry.getKey();
+            if (position.x() >> 4 == chunkX && position.z() >> 4 == chunkZ) {
+                this.removeItemFrame(position);
+            }
         }
     }
 

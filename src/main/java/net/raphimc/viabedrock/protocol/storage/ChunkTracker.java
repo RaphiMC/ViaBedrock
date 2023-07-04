@@ -146,6 +146,7 @@ public class ChunkTracker extends StoredObject {
         synchronized (this.chunkLock) {
             this.chunks.remove(this.chunkKey(chunkX, chunkZ));
         }
+        this.getUser().get(EntityTracker.class).removeItemFrame(chunkX, chunkZ);
 
         final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_19_4.UNLOAD_CHUNK, this.getUser());
         unloadChunk.write(Type.INT, chunkX); // chunk x
@@ -341,6 +342,7 @@ public class ChunkTracker extends StoredObject {
         }
 
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
+        final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
         final int sectionX = blockPosition.x() & 15;
         final int sectionY = blockPosition.y() & 15;
         final int sectionZ = blockPosition.z() & 15;
@@ -364,28 +366,35 @@ public class ChunkTracker extends StoredObject {
         int remappedBlockState = this.getJavaBlockState(section, sectionX, sectionY, sectionZ);
         if (!Objects.equals(prevTag, tag)) {
             this.getChunk(blockPosition.x() >> 4, blockPosition.z() >> 4).removeBlockEntityAt(blockPosition);
-        } else if (prevBlockState != blockState && BedrockProtocol.MAPPINGS.getJavaBlockEntities().containsKey(tag)) {
-            final BedrockBlockEntity bedrockBlockEntity = this.getBlockEntity(blockPosition);
-            final BlockEntity javaBlockEntity;
-            if (bedrockBlockEntity != null) {
-                javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), blockState, bedrockBlockEntity);
-                if (javaBlockEntity instanceof BlockEntityWithBlockState) {
-                    final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
-                    if (blockEntityWithBlockState.hasBlockState()) {
-                        remappedBlockState = blockEntityWithBlockState.blockState();
-                    }
-                }
-            } else {
-                final int javaType = BedrockProtocol.MAPPINGS.getJavaBlockEntities().get(tag);
-                javaBlockEntity = new BlockEntityImpl(BlockEntity.pack(sectionX, sectionZ), (short) blockPosition.y(), javaType, new CompoundTag());
-            }
+            entityTracker.removeItemFrame(blockPosition);
+        }
 
-            if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
-                final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_19_4.BLOCK_ENTITY_DATA, this.getUser());
-                blockEntityData.write(Type.POSITION1_14, blockPosition); // position
-                blockEntityData.write(Type.VAR_INT, javaBlockEntity.typeId()); // type
-                blockEntityData.write(Type.NBT, javaBlockEntity.tag()); // block entity tag
-                blockEntityData.scheduleSend(BedrockProtocol.class);
+        if (prevBlockState != blockState) {
+            if (BedrockProtocol.MAPPINGS.getJavaBlockEntities().containsKey(tag)) {
+                final BedrockBlockEntity bedrockBlockEntity = this.getBlockEntity(blockPosition);
+                final BlockEntity javaBlockEntity;
+                if (bedrockBlockEntity != null) {
+                    javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), blockState, bedrockBlockEntity);
+                    if (javaBlockEntity instanceof BlockEntityWithBlockState) {
+                        final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
+                        if (blockEntityWithBlockState.hasBlockState()) {
+                            remappedBlockState = blockEntityWithBlockState.blockState();
+                        }
+                    }
+                } else {
+                    final int javaType = BedrockProtocol.MAPPINGS.getJavaBlockEntities().get(tag);
+                    javaBlockEntity = new BlockEntityImpl(BlockEntity.pack(sectionX, sectionZ), (short) blockPosition.y(), javaType, new CompoundTag());
+                }
+
+                if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
+                    final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_19_4.BLOCK_ENTITY_DATA, this.getUser());
+                    blockEntityData.write(Type.POSITION1_14, blockPosition); // position
+                    blockEntityData.write(Type.VAR_INT, javaBlockEntity.typeId()); // type
+                    blockEntityData.write(Type.NBT, javaBlockEntity.tag()); // block entity tag
+                    blockEntityData.scheduleSend(BedrockProtocol.class);
+                }
+            } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
+                this.getUser().get(EntityTracker.class).spawnItemFrame(blockPosition, blockStateRewriter.blockState(blockState));
             }
         }
 
@@ -496,7 +505,7 @@ public class ChunkTracker extends StoredObject {
         return ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
     }
 
-    private Chunk remapChunk(final Chunk chunk) {
+    private Chunk remapChunk(final Chunk chunk) throws Exception {
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
         final int airId = this.airId();
 
@@ -544,32 +553,35 @@ public class ChunkTracker extends StoredObject {
                                     }
                                     if (remappedBlockState != 0) {
                                         nonAirBlocks++;
-                                        final String tag = blockStateRewriter.tag(blockState);
+                                    }
+                                    final String tag = blockStateRewriter.tag(blockState);
 
-                                        CHECK_BLOCK_ENTITY:
-                                        if (BedrockProtocol.MAPPINGS.getJavaBlockEntities().containsKey(tag)) {
-                                            for (BlockEntity blockEntity : chunk.blockEntities()) {
-                                                final BedrockBlockEntity bedrockBlockEntity = (BedrockBlockEntity) blockEntity;
-                                                final Position position = bedrockBlockEntity.position();
-                                                if ((position.x() & 15) == x && (position.y() & 15) == y && (position.z() & 15) == z) {
-                                                    final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), blockState, bedrockBlockEntity);
-                                                    if (javaBlockEntity instanceof BlockEntityWithBlockState) {
-                                                        final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
-                                                        if (blockEntityWithBlockState.hasBlockState()) {
-                                                            remappedBlockState = blockEntityWithBlockState.blockState();
-                                                        }
+                                    CHECK_BLOCK_ENTITY:
+                                    if (BedrockProtocol.MAPPINGS.getJavaBlockEntities().containsKey(tag)) {
+                                        for (BlockEntity blockEntity : chunk.blockEntities()) {
+                                            final BedrockBlockEntity bedrockBlockEntity = (BedrockBlockEntity) blockEntity;
+                                            final Position position = bedrockBlockEntity.position();
+                                            if ((position.x() & 15) == x && (position.y() & 15) == y && (position.z() & 15) == z) {
+                                                final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), blockState, bedrockBlockEntity);
+                                                if (javaBlockEntity instanceof BlockEntityWithBlockState) {
+                                                    final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
+                                                    if (blockEntityWithBlockState.hasBlockState()) {
+                                                        remappedBlockState = blockEntityWithBlockState.blockState();
                                                     }
-                                                    if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
-                                                        remappedChunk.blockEntities().add(javaBlockEntity);
-                                                    }
-                                                    break CHECK_BLOCK_ENTITY;
                                                 }
+                                                if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
+                                                    remappedChunk.blockEntities().add(javaBlockEntity);
+                                                }
+                                                break CHECK_BLOCK_ENTITY;
                                             }
-
-                                            final int javaType = BedrockProtocol.MAPPINGS.getJavaBlockEntities().get(tag);
-                                            final BlockEntity javaBlockEntity = new BlockEntityImpl(BlockEntity.pack(x, z), (short) (idx * 16 + y), javaType, new CompoundTag());
-                                            remappedChunk.blockEntities().add(javaBlockEntity);
                                         }
+
+                                        final int javaType = BedrockProtocol.MAPPINGS.getJavaBlockEntities().get(tag);
+                                        final BlockEntity javaBlockEntity = new BlockEntityImpl(BlockEntity.pack(x, z), (short) (this.minY + idx * 16 + y), javaType, new CompoundTag());
+                                        remappedChunk.blockEntities().add(javaBlockEntity);
+                                    } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
+                                        final Position position = new Position(chunk.getX() * 16 + x, this.minY + idx * 16 + y, chunk.getZ() * 16 + z);
+                                        this.getUser().get(EntityTracker.class).spawnItemFrame(position, blockStateRewriter.blockState(blockState));
                                     }
                                     remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
                                 }
