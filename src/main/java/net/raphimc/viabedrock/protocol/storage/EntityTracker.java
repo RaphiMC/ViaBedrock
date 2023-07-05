@@ -31,9 +31,7 @@ import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.entity.PlayerEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -142,11 +140,16 @@ public class EntityTracker extends StoredObject {
     }
 
     public void removeItemFrame(final int chunkX, final int chunkZ) throws Exception {
+        final List<Position> toRemove = new ArrayList<>();
         for (final Map.Entry<Position, Integer> entry : this.itemFrames.entrySet()) {
             final Position position = entry.getKey();
             if (position.x() >> 4 == chunkX && position.z() >> 4 == chunkZ) {
-                this.removeItemFrame(position);
+                toRemove.add(position);
             }
+        }
+
+        for (final Position position : toRemove) {
+            this.removeItemFrame(position);
         }
     }
 
