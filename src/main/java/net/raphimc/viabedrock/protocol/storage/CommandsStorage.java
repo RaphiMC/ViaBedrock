@@ -42,7 +42,7 @@ public class CommandsStorage extends StoredObject {
 
     // TODO: Enhancement: Add tab completion for arguments
     public Pair<IntIntPair, List<Pair<String, String>>> complete(final String message) {
-        final Function<String, String> translator = k -> this.getUser().get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
+        final Function<String, String> translator = this.getUser().get(ResourcePacksStorage.class).getTranslationLookup();
 
         final List<Pair<String, String>> completions = new ArrayList<>();
         int startIndex = 0;

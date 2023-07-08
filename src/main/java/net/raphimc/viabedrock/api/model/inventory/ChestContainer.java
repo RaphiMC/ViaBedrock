@@ -15,37 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.util;
+package net.raphimc.viabedrock.api.model.inventory;
 
-public class MathUtil {
+import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 
-    public static int ceil(final float f) {
-        final int i = (int) f;
-        return f > i ? i + 1 : i;
-    }
+public class ChestContainer extends Container {
 
-    public static float clamp(final float value, final float min, final float max) {
-        if (value < min) {
-            return min;
-        } else {
-            return value > max ? max : value;
-        }
-    }
-
-    public static int clamp(final int value, final int min, final int max) {
-        if (value < min) {
-            return min;
-        } else {
-            return value > max ? max : value;
-        }
-    }
-
-    public static byte float2Byte(final float f) {
-        return (byte) (f * 256F / 360F);
-    }
-
-    public static float byte2Float(final byte b) {
-        return b * 360F / 256F;
+    public ChestContainer(byte windowId, int size) {
+        super(windowId, MenuType.CONTAINER, size);
     }
 
 }

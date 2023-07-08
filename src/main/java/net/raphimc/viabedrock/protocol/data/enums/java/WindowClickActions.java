@@ -15,16 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.providers;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-import com.viaversion.viaversion.api.platform.providers.Provider;
+public class WindowClickActions {
 
-public abstract class BlobCacheProvider implements Provider {
-
-    public abstract byte[] addBlob(final long hash, final byte[] compressedBlob);
-
-    public abstract boolean hasBlob(final long hash);
-
-    public abstract byte[] getBlob(final long hash);
+    public static final int PICKUP = 0;
+    public static final int QUICK_MOVE = 1;
+    public static final int SWAP = 2;
+    public static final int CLONE = 3;
+    public static final int THROW = 4;
+    public static final int QUICK_CRAFT = 5;
+    public static final int PICKUP_ALL = 6;
 
 }

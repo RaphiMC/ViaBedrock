@@ -21,18 +21,15 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
-import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
-import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.rewriter.blockentity.*;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.logging.Level;
 
 public class BlockEntityRewriter {
@@ -166,8 +163,7 @@ public class BlockEntityRewriter {
         }
 
         default StringTag rewriteCustomName(final UserConnection user, final StringTag textTag) {
-            final Function<String, String> translator = k -> user.get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
-            return new StringTag(TextUtil.stringToJson(BedrockTranslator.translate(textTag.getValue(), translator, new Object[0])));
+            return new StringTag(user.get(ResourcePacksStorage.class).translate(textTag.getValue()));
         }
 
     }

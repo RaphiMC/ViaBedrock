@@ -48,7 +48,7 @@ public class CommandBlockBlockEntityRewriter implements BlockEntityRewriter.Rewr
         this.copyCustomName(user, bedrockTag, javaTag);
 
         if (bedrockTag.get("LastOutput") instanceof StringTag) {
-            final Function<String, String> translator = k -> user.get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
+            final Function<String, String> translator = user.get(ResourcePacksStorage.class).getTranslationLookup();
 
             final List<String> lastOutputParams = new ArrayList<>();
             if (bedrockTag.get("LastOutputParams") instanceof ListTag) {

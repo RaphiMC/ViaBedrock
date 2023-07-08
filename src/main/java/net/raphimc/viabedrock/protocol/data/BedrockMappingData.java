@@ -33,6 +33,7 @@ import com.viaversion.viaversion.libs.opennbt.NBTIO;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.Protocol1_19_4To1_19_3;
 import com.viaversion.viaversion.util.GsonUtil;
+import com.viaversion.viaversion.util.Key;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -43,6 +44,7 @@ import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import javax.imageio.ImageIO;
@@ -85,8 +87,10 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, Map<String, Object>> bedrockToJavaBiomeExtraData;
 
     // Items
+    private BiMap<String, Integer> javaItems;
     private BiMap<String, Integer> bedrockItems;
     private Map<String, String> bedrockToJavaItems;
+    private BiMap<String, Integer> javaMenus;
 
     // Entities
     private BiMap<String, Integer> bedrockEntities;
@@ -244,6 +248,12 @@ public class BedrockMappingData extends MappingDataBase {
         }
 
         { // Items
+            final JsonArray javaItemsJson = javaMapping1_20Json.get("items").getAsJsonArray();
+            this.javaItems = HashBiMap.create(javaItemsJson.size());
+            for (int i = 0; i < javaItemsJson.size(); i++) {
+                this.javaItems.put(Key.namespaced(javaItemsJson.get(i).getAsString()), i);
+            }
+
             final JsonArray bedrockItemsJson = this.readJson("bedrock/runtime_item_states.1_20_0.json", JsonArray.class);
             this.bedrockItems = HashBiMap.create(bedrockItemsJson.size());
             for (JsonElement entry : bedrockItemsJson) {
@@ -260,6 +270,14 @@ public class BedrockMappingData extends MappingDataBase {
                 final String javaIdentifier = entry.getValue().getAsString();
                 this.bedrockToJavaItems.put(bedrockIdentifier, javaIdentifier);
             }
+
+            final JsonArray javaMenusJson = javaMapping1_20Json.get("menus").getAsJsonArray();
+            this.javaMenus = HashBiMap.create(javaMenusJson.size());
+            for (int i = 0; i < javaMenusJson.size(); i++) {
+                this.javaMenus.put(Key.namespaced(javaMenusJson.get(i).getAsString()), i);
+            }
+            // noinspection ResultOfMethodCallIgnored
+            MenuType.values(); // Initialize the enum
         }
 
         { // Entities
@@ -419,12 +437,20 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaBiomeExtraData;
     }
 
+    public BiMap<String, Integer> getJavaItems() {
+        return this.javaItems;
+    }
+
     public BiMap<String, Integer> getBedrockItems() {
         return this.bedrockItems;
     }
 
     public Map<String, String> getBedrockToJavaItems() {
         return this.bedrockToJavaItems;
+    }
+
+    public BiMap<String, Integer> getJavaMenus() {
+        return this.javaMenus;
     }
 
     public BiMap<String, Integer> getBedrockEntities() {

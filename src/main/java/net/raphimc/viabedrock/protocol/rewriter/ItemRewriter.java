@@ -21,6 +21,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.item.DataItem;
+import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.util.Key;
@@ -28,11 +30,14 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.types.BedrockItemType;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 
 public class ItemRewriter extends StoredObject {
 
     private final BiMap<String, Integer> items;
     private final Type<BedrockItem> itemType;
+    private final Type<BedrockItem[]> itemArrayType;
 
     public ItemRewriter(final UserConnection user, final ItemEntry[] itemEntries) {
         super(user);
@@ -43,10 +48,37 @@ public class ItemRewriter extends StoredObject {
             this.items.put(Key.namespaced(itemEntry.identifier()), itemEntry.id());
         }
         this.itemType = new BedrockItemType(this.items.getOrDefault("minecraft:shield", -1));
+        this.itemArrayType = new ArrayType<>(this.itemType, BedrockTypes.UNSIGNED_VAR_INT);
+    }
+
+    public Item javaItem(final BedrockItem bedrockItem) {
+        if(bedrockItem == null) return null;
+
+        return new DataItem(BedrockProtocol.MAPPINGS.getJavaItems().get(bedrockItem.identifier() == 1 ? "minecraft:stone" : "minecraft:grass_block"), (byte) bedrockItem.amount(), (short) 0, null); // TODO
+    }
+
+    public Item[] javaItems(final BedrockItem[] bedrockItems) {
+        final Item[] javaItems = new Item[bedrockItems.length];
+        for (int i = 0; i < bedrockItems.length; i++) {
+            javaItems[i] = this.javaItem(bedrockItems[i]);
+        }
+        return javaItems;
     }
 
     public CompoundTag javaTag(final CompoundTag bedrockTag) {
         return new CompoundTag(); // TODO
+    }
+
+    public BedrockItem bedrockItem(final Item javaItem) {
+        return null;
+    }
+
+    public BedrockItem[] bedrockItems(final Item[] javaItems) {
+        final BedrockItem[] bedrockItems = new BedrockItem[javaItems.length];
+        for (int i = 0; i < javaItems.length; i++) {
+            bedrockItems[i] = this.bedrockItem(javaItems[i]);
+        }
+        return bedrockItems;
     }
 
     public BiMap<String, Integer> getItems() {
@@ -55,6 +87,10 @@ public class ItemRewriter extends StoredObject {
 
     public Type<BedrockItem> itemType() {
         return this.itemType;
+    }
+
+    public Type<BedrockItem[]> itemArrayType() {
+        return this.itemArrayType;
     }
 
 }

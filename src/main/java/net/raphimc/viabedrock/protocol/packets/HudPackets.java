@@ -26,7 +26,6 @@ import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
-import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardEntry;
 import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardObjective;
@@ -163,7 +162,7 @@ public class HudPackets {
             wrapper.read(BedrockTypes.STRING); // xuid
             wrapper.read(BedrockTypes.STRING); // platform chat id
 
-            final Function<String, String> translator = k -> wrapper.user().get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
+            final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTranslationLookup();
             final String originalText = text;
             try {
                 if (type >= TitleTypes.TITLE_JSON && type <= TitleTypes.ACTIONBAR_JSON) {
@@ -240,12 +239,11 @@ public class HudPackets {
 
             if (!scoreboardTracker.hasObjective(objectiveName)) {
                 scoreboardTracker.addObjective(objectiveName, new ScoreboardObjective(objectiveName, ascending));
-                final Function<String, String> translator = k -> wrapper.user().get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
 
                 final PacketWrapper scoreboardObjective = PacketWrapper.create(ClientboundPackets1_19_4.SCOREBOARD_OBJECTIVE, wrapper.user());
                 scoreboardObjective.write(Type.STRING, objectiveName); // objective name
                 scoreboardObjective.write(Type.BYTE, (byte) 0); // mode | 0 = CREATE
-                scoreboardObjective.write(Type.COMPONENT, TextUtil.stringToGson(BedrockTranslator.translate(displayName, translator, new Object[0]))); // display name
+                scoreboardObjective.write(Type.COMPONENT, TextUtil.stringToGson(wrapper.user().get(ResourcePacksStorage.class).translate(displayName))); // display name
                 scoreboardObjective.write(Type.VAR_INT, 0); // display mode | 0 = INTEGER
                 scoreboardObjective.send(BedrockProtocol.class);
             }

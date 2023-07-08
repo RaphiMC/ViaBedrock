@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
@@ -102,6 +103,14 @@ public class ResourcePacksStorage extends StoredObject {
             return true;
         });
         this.translations = Collections.unmodifiableMap(this.translations);
+    }
+
+    public Function<String, String> getTranslationLookup() {
+        return k -> this.translations.getOrDefault(k, k);
+    }
+
+    public String translate(final String text) {
+        return BedrockTranslator.translate(text, this.getTranslationLookup(), new Object[0]);
     }
 
     public boolean hasCompletedTransfer() {

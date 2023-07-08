@@ -15,37 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.util;
+package net.raphimc.viabedrock.protocol.providers.impl;
 
-public class MathUtil {
+import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 
-    public static int ceil(final float f) {
-        final int i = (int) f;
-        return f > i ? i + 1 : i;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class InMemoryBlobCacheProvider extends BlobCacheProvider {
+
+    private final Map<Long, byte[]> blobs = new ConcurrentHashMap<>();
+
+    public InMemoryBlobCacheProvider() {
+        this.blobs.put(0L, new byte[0]);
     }
 
-    public static float clamp(final float value, final float min, final float max) {
-        if (value < min) {
-            return min;
-        } else {
-            return value > max ? max : value;
-        }
+    @Override
+    public byte[] addBlob(final long hash, final byte[] compressedBlob) {
+        return this.blobs.put(hash, compressedBlob);
     }
 
-    public static int clamp(final int value, final int min, final int max) {
-        if (value < min) {
-            return min;
-        } else {
-            return value > max ? max : value;
-        }
+    @Override
+    public boolean hasBlob(final long hash) {
+        return this.blobs.containsKey(hash);
     }
 
-    public static byte float2Byte(final float f) {
-        return (byte) (f * 256F / 360F);
-    }
-
-    public static float byte2Float(final byte b) {
-        return b * 360F / 256F;
+    @Override
+    public byte[] getBlob(final long hash) {
+        return this.blobs.get(hash);
     }
 
 }

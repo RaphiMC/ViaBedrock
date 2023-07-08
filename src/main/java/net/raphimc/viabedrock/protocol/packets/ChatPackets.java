@@ -57,7 +57,7 @@ public class ChatPackets {
                     final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
                     final boolean needsTranslation = wrapper.read(Type.BOOLEAN); // needs translation
 
-                    final Function<String, String> translator = k -> wrapper.user().get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
+                    final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTranslationLookup();
                     String originalMessage = null;
                     try {
                         switch (type) {
@@ -150,7 +150,7 @@ public class ChatPackets {
                 wrapper.cancel();
                 return;
             }
-            final Function<String, String> translator = k -> wrapper.user().get(ResourcePacksStorage.class).getTranslations().getOrDefault(k, k);
+            final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTranslationLookup();
             final StringBuilder message = new StringBuilder();
 
             final int messageCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // message count

@@ -37,11 +37,11 @@ import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.packetmapping.ClientboundPacketMappings;
 import net.raphimc.viabedrock.protocol.packets.*;
 import net.raphimc.viabedrock.protocol.providers.*;
+import net.raphimc.viabedrock.protocol.providers.impl.DiskResourcePackProvider;
+import net.raphimc.viabedrock.protocol.providers.impl.InMemoryBlobCacheProvider;
+import net.raphimc.viabedrock.protocol.providers.impl.InventoryFormProvider;
 import net.raphimc.viabedrock.protocol.storage.*;
-import net.raphimc.viabedrock.protocol.task.BlobCacheTickTask;
-import net.raphimc.viabedrock.protocol.task.ChunkTrackerTickTask;
-import net.raphimc.viabedrock.protocol.task.EntityTrackerTickTask;
-import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
+import net.raphimc.viabedrock.protocol.task.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.EnumSet;
@@ -81,6 +81,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         WorldPackets.register(this);
         EntityPackets.register(this);
         HudPackets.register(this);
+        InventoryPackets.register(this);
 
         this.registerClientbound(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING, ClientboundPackets1_19_4.DISCONNECT, new PacketHandlers() {
             @Override
@@ -123,14 +124,16 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     public void register(ViaProviders providers) {
         providers.require(NettyPipelineProvider.class);
         providers.register(ResourcePackProvider.class, new DiskResourcePackProvider());
-        providers.register(BlobCacheProvider.class, new BlobCacheProvider());
+        providers.register(BlobCacheProvider.class, new InMemoryBlobCacheProvider());
         providers.register(SkinProvider.class, new SkinProvider());
         providers.register(TransferProvider.class, new TransferProvider());
+        providers.register(FormProvider.class, new InventoryFormProvider());
 
         Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 5L);
         Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
         Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 1L);
         Via.getPlatform().runRepeatingSync(new KeepAliveTask(), 20L);
+        Via.getPlatform().runRepeatingSync(new InventoryTrackerTickTask(), 1L);
     }
 
     @Override
@@ -141,6 +144,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
         user.put(new PacketSyncStorage(user));
         user.put(new ChannelStorage(user));
         user.put(new ScoreboardTracker(user));
+        user.put(new InventoryTracker(user));
     }
 
     @Override

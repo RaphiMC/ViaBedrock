@@ -43,12 +43,24 @@ public class Position3f {
         return new Position3f(this.x + face.modX(), this.y + face.modY(), this.z + face.modZ());
     }
 
+    public Position3f add(final float x, final float y, final float z) {
+        return new Position3f(this.x + x, this.y + y, this.z + z);
+    }
+
+    public Position3f add(final Position3f position) {
+        return new Position3f(this.x + position.x, this.y + position.y, this.z + position.z);
+    }
+
     public Position3f subtract(final float x, final float y, final float z) {
         return new Position3f(this.x - x, this.y - y, this.z - z);
     }
 
     public Position3f subtract(final Position3f position) {
         return new Position3f(this.x - position.x, this.y - position.y, this.z - position.z);
+    }
+
+    public float distanceTo(final Position3f position) {
+        return (float) Math.sqrt(Math.pow(this.x - position.x, 2) + Math.pow(this.y - position.y, 2) + Math.pow(this.z - position.z, 2));
     }
 
     public float x() {
