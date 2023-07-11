@@ -78,7 +78,6 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         }
         final String text = textBuilder.toString();
 
-        // TODO: Enhancement: Text has to be split when it is too long for one line
         final List<ATextComponent> components = new ArrayList<>();
         if (bedrockText.get("PersistFormatting") instanceof ByteTag && bedrockText.<ByteTag>get("PersistFormatting").asByte() != 0) {
             for (String line : BedrockTextUtils.split(text, "\n")) {

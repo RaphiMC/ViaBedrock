@@ -31,6 +31,7 @@ import net.lenni0451.mcstructs_bedrock.forms.elements.*;
 import net.lenni0451.mcstructs_bedrock.forms.types.ActionForm;
 import net.lenni0451.mcstructs_bedrock.forms.types.CustomForm;
 import net.lenni0451.mcstructs_bedrock.forms.types.ModalForm;
+import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTextUtils;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -171,13 +172,13 @@ public class FormContainer extends FakeContainer {
         if (this.form instanceof ModalForm) {
             final ModalForm modalForm = (ModalForm) this.form;
 
-            items.add(this.createItem("minecraft:oak_sign", "Text", modalForm.getText().split("\n")));
+            items.add(this.createItem("minecraft:oak_sign", "Text", modalForm.getText()));
             items.add(this.createItem("minecraft:oak_button", modalForm.getButton1()));
             items.add(this.createItem("minecraft:oak_button", modalForm.getButton2()));
         } else if (this.form instanceof ActionForm) {
             final ActionForm actionForm = (ActionForm) this.form;
 
-            items.add(this.createItem("minecraft:oak_sign", "Text", actionForm.getText().split("\n")));
+            items.add(this.createItem("minecraft:oak_sign", "Text", actionForm.getText()));
             for (final ActionForm.Button button : actionForm.getButtons()) {
                 items.add(this.createItem("minecraft:oak_button", button.getText()));
             }
@@ -277,8 +278,10 @@ public class FormContainer extends FakeContainer {
         displayTag.put("Name", new StringTag(this.stringToJson(name)));
         if (description.length > 0) {
             final ListTag loreTags = new ListTag(StringTag.class);
-            for (final String line : description) {
-                loreTags.add(new StringTag(this.stringToJson(line)));
+            for (String desc : description) {
+                for (final String line : BedrockTextUtils.split(desc, "\n")) {
+                    loreTags.add(new StringTag(this.stringToJson(line)));
+                }
             }
             displayTag.put("Lore", loreTags);
         }
