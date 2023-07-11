@@ -135,7 +135,7 @@ public class BedrockMappingData extends MappingDataBase {
                 this.javaBlockStates.put(blockState, i);
             }
 
-            final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.1_20_0.nbt").get("blocks");
+            final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.nbt").get("blocks");
             this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
             for (Tag tag : bedrockBlockStatesTag.getValue()) {
                 this.bedrockBlockStates.add(BedrockBlockState.fromNbt((CompoundTag) tag));
@@ -254,7 +254,7 @@ public class BedrockMappingData extends MappingDataBase {
                 this.javaItems.put(Key.namespaced(javaItemsJson.get(i).getAsString()), i);
             }
 
-            final JsonArray bedrockItemsJson = this.readJson("bedrock/runtime_item_states.1_20_0.json", JsonArray.class);
+            final JsonArray bedrockItemsJson = this.readJson("bedrock/runtime_item_states.json", JsonArray.class);
             this.bedrockItems = HashBiMap.create(bedrockItemsJson.size());
             for (JsonElement entry : bedrockItemsJson) {
                 final JsonObject itemEntry = entry.getAsJsonObject();
@@ -562,9 +562,9 @@ public class BedrockMappingData extends MappingDataBase {
     }
 
     private void buildLegacyBlockStateMappings() {
-        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("assets/viabedrock/data/bedrock/id_meta_to_nbt.1_12_0.bin")) {
+        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("assets/viabedrock/data/bedrock/block_id_meta_to_1_12_0_nbt.bin")) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open id_meta_to_nbt.1_12_0.bin");
+                this.getLogger().severe("Could not open block_id_meta_to_1_12_0_nbt.bin");
                 return;
             }
             final byte[] bytes = ByteStreams.toByteArray(inputStream);
@@ -575,7 +575,7 @@ public class BedrockMappingData extends MappingDataBase {
             for (int i = 0; i < blockCount; i++) {
                 final String identifier = BedrockTypes.STRING.read(buf).toLowerCase(Locale.ROOT);
                 if (!this.bedrockLegacyBlocks.containsKey(identifier)) {
-                    throw new RuntimeException("Unknown block identifier in id_meta_to_nbt.1_12_0.bin: " + identifier);
+                    throw new RuntimeException("Unknown block identifier in block_id_meta_to_1_12_0_nbt.bin: " + identifier);
                 }
                 final int id = this.bedrockLegacyBlocks.get(identifier);
 
@@ -593,7 +593,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
         } catch (Exception e) {
-            this.getLogger().log(Level.SEVERE, "Could not read id_meta_to_nbt.1_12_0.bin", e);
+            this.getLogger().log(Level.SEVERE, "Could not read block_id_meta_to_1_12_0_nbt.bin", e);
             this.bedrockLegacyBlockStates = null;
         }
     }

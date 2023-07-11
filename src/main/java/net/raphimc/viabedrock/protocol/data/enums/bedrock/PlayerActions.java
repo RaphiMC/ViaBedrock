@@ -50,5 +50,8 @@ public class PlayerActions {
     public static final int ITEM_USE_ON_START = 28;
     public static final int ITEM_USE_ON_STOP = 29;
     public static final int HANDLED_TELEPORT = 30;
+    public static final int MISSED_SWING = 31;
+    public static final int START_CRAWLING = 32;
+    public static final int STOP_CRAWLING = 33;
 
 }

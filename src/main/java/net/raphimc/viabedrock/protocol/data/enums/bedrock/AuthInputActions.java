@@ -58,5 +58,8 @@ public class AuthInputActions {
     public static final int PERFORM_ITEM_STACK_REQUEST = 36;
     public static final int HANDLE_TELEPORT = 37;
     public static final int EMOTING = 38;
+    public static final int MISSED_SWING = 39;
+    public static final int START_CRAWLING = 40;
+    public static final int STOP_CRAWLING = 41;
 
 }

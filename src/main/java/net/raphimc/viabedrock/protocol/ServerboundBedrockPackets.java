@@ -133,7 +133,6 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     SET_LOCAL_PLAYER_AS_INITIALIZED(113),
     UPDATE_SOFT_ENUM(114),
     NETWORK_STACK_LATENCY(115),
-    SCRIPT_CUSTOM_EVENT(117),
     SPAWN_PARTICLE_EFFECT(118),
     AVAILABLE_ENTITY_IDENTIFIERS(119),
     LEVEL_SOUND_EVENT_V2(120),
@@ -218,7 +217,8 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     CAMERA_INSTRUCTION(300),
     COMPRESSED_BIOME_DEFINITION_LIST(301),
     TRIM_DATA(302),
-    OPEN_SIGN(303);
+    OPEN_SIGN(303),
+    AGENT_ANIMATION(304);
 
     private static final ServerboundBedrockPackets[] REGISTRY = new ServerboundBedrockPackets[512];
 
