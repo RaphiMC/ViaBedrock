@@ -39,14 +39,11 @@ public class PacketEncapsulationCodec extends ByteToMessageCodec<ByteBuf> {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         final int header = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(in);
         final int packetId = header & 1023;
-        final int senderId = (header >>> 10) & 3;
-        final int clientId = (header >>> 12) & 3;
+        final int senderId = (header >> 10) & 3;
+        final int recipientId = (header >> 12) & 3;
 
         if (senderId != 0) {
             throw new UnsupportedOperationException("Sender ID " + senderId + " is not supported");
-        }
-        if (clientId != 0) {
-            throw new UnsupportedOperationException("Client ID " + clientId + " is not supported");
         }
 
         final ByteBuf packet = ctx.alloc().buffer();
