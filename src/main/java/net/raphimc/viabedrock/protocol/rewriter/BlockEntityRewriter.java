@@ -120,6 +120,10 @@ public class BlockEntityRewriter {
         return null;
     }
 
+    public static boolean isBedrockBlockEntity(final String tag) {
+        return BLOCK_ENTITY_REWRITERS.containsKey(tag);
+    }
+
     public interface Rewriter {
 
         BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity);
