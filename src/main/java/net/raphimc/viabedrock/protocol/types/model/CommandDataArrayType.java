@@ -32,6 +32,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
     private static final int FLAG_ENUM = 1 << 21;
     private static final int FLAG_POSTFIX = 1 << 24;
     private static final int FLAG_DYNAMIC_ENUM = 1 << 26;
+    private static final int FLAG_SUB_COMMAND = 1 << 27;
 
     public CommandDataArrayType() {
         super(CommandData[].class);
@@ -40,6 +41,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
     @Override
     public CommandData[] read(ByteBuf buffer) throws Exception {
         final String[] enumLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // enum literals
+        final String[] subCommandLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // sub command literals
         final String[] postFixLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // post fix literals
 
         final Type<? extends Number> indexType;
@@ -76,6 +78,30 @@ public class CommandDataArrayType extends Type<CommandData[]> {
             enumPalette[i] = enumData;
         }
 
+        final CommandData.SubCommandData[] subCommands = new CommandData.SubCommandData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];
+        final Map<String, CommandData.SubCommandData> subCommandMap = new HashMap<>(subCommands.length);
+        for (int i = 0; i < subCommands.length; i++) {
+            final String name = BedrockTypes.STRING.read(buffer); // name
+            final int valueCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
+            final Map<String, Integer> values = new HashMap<>(valueCount);
+            for (int j = 0; j < valueCount; j++) {
+                final int index = buffer.readUnsignedShortLE(); // value
+                final int type = buffer.readUnsignedShortLE(); // type
+                if (index >= 0 && index < subCommandLiterals.length) {
+                    values.put(subCommandLiterals[index], type);
+                }
+            }
+
+            final CommandData.SubCommandData subCommandData;
+            if (subCommandMap.containsKey(name)) {
+                subCommandData = subCommandMap.get(name);
+                subCommandData.addValues(values);
+            } else {
+                subCommandMap.put(name, subCommandData = new CommandData.SubCommandData(name, values));
+            }
+            subCommands[i] = subCommandData;
+        }
+
         final List<Consumer<CommandData.EnumData[]>> dynamicEnumResolvers = new ArrayList<>();
         final CommandData[] commands = new CommandData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];
         final Map<String, CommandData> commandMap = new HashMap<>(commands.length);
@@ -93,27 +119,33 @@ public class CommandDataArrayType extends Type<CommandData[]> {
                 alias = new CommandData.EnumData(name + "_invalid_alias_" + aliasIndex, Sets.newHashSet(name), false);
             }
 
-            final CommandData.ParamData[][] parameters = new CommandData.ParamData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)][];
-            for (int j = 0; j < parameters.length; j++) {
-                parameters[j] = new CommandData.ParamData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];
-                for (int k = 0; k < parameters[j].length; k++) {
+            final int subCommandCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
+            for (int j = 0; j < subCommandCount; j++) {
+                buffer.readUnsignedShortLE(); // idk
+            }
+
+            final CommandData.OverloadData[] overloads = new CommandData.OverloadData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];
+            for (int j = 0; j < overloads.length; j++) {
+                final boolean chaining = buffer.readBoolean();
+                final CommandData.OverloadData.ParamData[] params = new CommandData.OverloadData.ParamData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];
+                for (int k = 0; k < params.length; k++) {
                     final String paramName = BedrockTypes.STRING.read(buffer); // name
                     final int param = buffer.readIntLE(); // param
                     final boolean optional = buffer.readBoolean(); // optional
                     final short paramFlags = buffer.readUnsignedByte(); // flags
                     Integer type = null;
                     CommandData.EnumData enumData = null;
+                    CommandData.SubCommandData subCommandData = null;
                     String postfix = null;
 
                     if ((param & FLAG_DYNAMIC_ENUM) != 0) {
                         final int index = param & ~FLAG_DYNAMIC_ENUM & ~FLAG_VALID;
-                        final int finalJ = j;
                         final int finalK = k;
                         dynamicEnumResolvers.add(dynamicEnumPalette -> {
                             if (index >= 0 && index < dynamicEnumPalette.length) {
-                                parameters[finalJ][finalK] = new CommandData.ParamData(paramName, optional, paramFlags, null, dynamicEnumPalette[index], null);
+                                params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, null, dynamicEnumPalette[index], null, null);
                             } else {
-                                parameters[finalJ][finalK] = new CommandData.ParamData(paramName, optional, paramFlags, CommandData.ParamData.TYPE_STRING, null, null);
+                                params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, CommandData.OverloadData.ParamData.TYPE_STRING, null, null, null);
                             }
                         });
                         continue;
@@ -122,27 +154,29 @@ public class CommandDataArrayType extends Type<CommandData[]> {
                         postfix = postFixLiterals[index];
                     } else if ((param & FLAG_ENUM) != 0) {
                         final int index = param & ~FLAG_ENUM & ~FLAG_VALID;
-                        if (index >= 0 && index < enumPalette.length) {
-                            enumData = enumPalette[index];
-                        }
+                        enumData = enumPalette[index];
+                    } else if ((param & FLAG_SUB_COMMAND) != 0) {
+                        final int index = param & ~FLAG_SUB_COMMAND & ~FLAG_VALID;
+                        subCommandData = subCommands[index];
                     } else if ((param & FLAG_VALID) != 0) {
                         type = param & ~FLAG_VALID;
                     }
 
-                    parameters[j][k] = new CommandData.ParamData(paramName, optional, paramFlags, type, enumData, postfix);
+                    params[k] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, type, enumData, subCommandData, postfix);
                 }
+                overloads[j] = new CommandData.OverloadData(chaining, params);
             }
 
             CommandData commandData;
             if (commandMap.containsKey(name)) {
                 final CommandData oldCommandData = commandMap.get(name);
                 final CommandData.EnumData newAlias = validAliasPointer ? alias : oldCommandData.alias();
-                final CommandData.ParamData[][] newParameters = new CommandData.ParamData[oldCommandData.parameters().length + parameters.length][];
-                System.arraycopy(oldCommandData.parameters(), 0, newParameters, 0, oldCommandData.parameters().length);
-                System.arraycopy(parameters, 0, newParameters, oldCommandData.parameters().length, parameters.length);
-                commandMap.put(name, commandData = new CommandData(name, oldCommandData.description(), oldCommandData.flags(), oldCommandData.permission(), newAlias, newParameters));
+                final CommandData.OverloadData[] newOverloads = new CommandData.OverloadData[oldCommandData.overloads().length + overloads.length];
+                System.arraycopy(oldCommandData.overloads(), 0, newOverloads, 0, oldCommandData.overloads().length);
+                System.arraycopy(overloads, 0, newOverloads, oldCommandData.overloads().length, overloads.length);
+                commandMap.put(name, commandData = new CommandData(name, oldCommandData.description(), oldCommandData.flags(), oldCommandData.permission(), newAlias, newOverloads));
             } else {
-                commandMap.put(name, commandData = new CommandData(name, description, flags, permission, alias, parameters));
+                commandMap.put(name, commandData = new CommandData(name, description, flags, permission, alias, overloads));
             }
             commands[i] = commandData;
         }

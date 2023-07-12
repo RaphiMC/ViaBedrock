@@ -36,15 +36,15 @@ public class CommandData {
     private final int flags;
     private final short permission;
     private final EnumData alias;
-    private final ParamData[][] parameters;
+    private final OverloadData[] overloads;
 
-    public CommandData(final String name, final String description, final int flags, final short permission, final EnumData alias, final ParamData[][] parameters) {
+    public CommandData(final String name, final String description, final int flags, final short permission, final EnumData alias, final OverloadData[] overloads) {
         this.name = name;
         this.description = description;
         this.flags = flags;
         this.permission = permission;
         this.alias = alias;
-        this.parameters = parameters;
+        this.overloads = overloads;
     }
 
     public String name() {
@@ -67,8 +67,8 @@ public class CommandData {
         return this.alias;
     }
 
-    public ParamData[][] parameters() {
-        return this.parameters;
+    public OverloadData[] overloads() {
+        return this.overloads;
     }
 
     @Override
@@ -76,13 +76,13 @@ public class CommandData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CommandData that = (CommandData) o;
-        return flags == that.flags && permission == that.permission && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(alias, that.alias) && Arrays.deepEquals(parameters, that.parameters);
+        return flags == that.flags && permission == that.permission && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(alias, that.alias) && Arrays.deepEquals(overloads, that.overloads);
     }
 
     @Override
     public int hashCode() {
         int result = Objects.hash(name, description, flags, permission, alias);
-        result = 31 * result + Arrays.deepHashCode(parameters);
+        result = 31 * result + Arrays.deepHashCode(overloads);
         return result;
     }
 
@@ -94,7 +94,7 @@ public class CommandData {
                 ", flags=" + flags +
                 ", permission=" + permission +
                 ", alias=" + alias +
-                ", parameters=" + Arrays.toString(parameters) +
+                ", overloads=" + Arrays.toString(overloads) +
                 '}';
     }
 
@@ -161,96 +161,191 @@ public class CommandData {
 
     }
 
-    public static class ParamData {
-
-        public static final int TYPE_INT = 1;
-        public static final int TYPE_FLOAT1 = 2;
-        public static final int TYPE_FLOAT2 = 3;
-        public static final int TYPE_VALUE = 4;
-        public static final int TYPE_WILDCARD_INT = 5;
-        public static final int TYPE_OPERATOR = 6;
-        public static final int TYPE_COMPARE_OPERATOR = 7;
-        public static final int TYPE_TARGET1 = 8;
-        public static final int TYPE_TARGET2 = 10;
-        public static final int TYPE_FILE_PATH = 17;
-        public static final int TYPE_INT_RANGE = 23;
-        public static final int TYPE_EQUIPMENT_SLOT = 43;
-        public static final int TYPE_STRING = 44;
-        public static final int TYPE_BLOCK_POSITION = 52;
-        public static final int TYPE_POSITION = 53;
-        public static final int TYPE_MESSAGE = 56;
-        public static final int TYPE_TEXT = 58;
-        public static final int TYPE_JSON = 62;
-        public static final int TYPE_BLOCK_STATES = 72;
-        public static final int TYPE_COMMAND = 75;
-
-        public static final short FLAG_SUPPRESS_ENUM_AUTOCOMPLETION = 1;
-        public static final short FLAG_HAS_SEMANTIC_CONSTRAINT = 2;
-        public static final short FLAG_ENUM_AS_CHAINED_COMMAND = 4;
+    public static class SubCommandData {
 
         private final String name;
-        private final boolean optional;
-        private final short flags;
-        private final Integer type;
-        private final EnumData enumData;
-        private final String postfix;
+        private final Map<String, Integer> values;
 
-        public ParamData(final String name, final boolean optional, final short flags, final Integer type, final EnumData enumData, final String postfix) {
+        public SubCommandData(final String name, final Map<String, Integer> values) {
             this.name = name;
-            this.optional = optional;
-            this.flags = flags;
-            this.type = type;
-            this.enumData = enumData;
-            this.postfix = postfix;
+            this.values = values;
         }
 
         public String name() {
             return this.name;
         }
 
-        public boolean optional() {
-            return this.optional;
+        public Map<String, Integer> values() {
+            return this.values;
         }
 
-        public short flags() {
-            return this.flags;
-        }
-
-        public Integer type() {
-            return this.type;
-        }
-
-        public EnumData enumData() {
-            return this.enumData;
-        }
-
-        public String postfix() {
-            return this.postfix;
+        public void addValues(final Map<String, Integer> values) {
+            this.values.putAll(values);
         }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            ParamData paramData = (ParamData) o;
-            return optional == paramData.optional && flags == paramData.flags && Objects.equals(name, paramData.name) && Objects.equals(type, paramData.type) && Objects.equals(enumData, paramData.enumData) && Objects.equals(postfix, paramData.postfix);
+            SubCommandData that = (SubCommandData) o;
+            return Objects.equals(name, that.name) && Objects.equals(values, that.values);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(name, optional, flags, type, enumData, postfix);
+            return Objects.hash(name, values);
         }
 
         @Override
         public String toString() {
-            return "ParamData{" +
+            return "SubCommandData{" +
                     "name='" + name + '\'' +
-                    ", optional=" + optional +
-                    ", flags=" + flags +
-                    ", type=" + type +
-                    ", enumData=" + enumData +
-                    ", postfix='" + postfix + '\'' +
+                    ", values=" + values +
                     '}';
+        }
+
+    }
+
+    public static class OverloadData {
+
+        private final boolean chaining;
+        private final ParamData[] parameters;
+
+        public OverloadData(final boolean chaining, final ParamData[] parameters) {
+            this.chaining = chaining;
+            this.parameters = parameters;
+        }
+
+        public boolean chaining() {
+            return this.chaining;
+        }
+
+        public ParamData[] parameters() {
+            return this.parameters;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            OverloadData that = (OverloadData) o;
+            return chaining == that.chaining && Arrays.equals(parameters, that.parameters);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(chaining);
+            result = 31 * result + Arrays.hashCode(parameters);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "OverloadData{" +
+                    "chaining=" + chaining +
+                    ", parameters=" + Arrays.toString(parameters) +
+                    '}';
+        }
+
+        public static class ParamData {
+
+            public static final int TYPE_INT = 1;
+            public static final int TYPE_FLOAT1 = 2;
+            public static final int TYPE_FLOAT2 = 3;
+            public static final int TYPE_VALUE = 4;
+            public static final int TYPE_WILDCARD_INT = 5;
+            public static final int TYPE_OPERATOR = 6;
+            public static final int TYPE_COMPARE_OPERATOR = 7;
+            public static final int TYPE_TARGET1 = 8;
+            public static final int TYPE_TARGET2 = 10;
+            public static final int TYPE_FILE_PATH = 17;
+            public static final int TYPE_INT_RANGE = 23;
+            public static final int TYPE_EQUIPMENT_SLOT = 43;
+            public static final int TYPE_STRING = 44;
+            public static final int TYPE_BLOCK_POSITION = 52;
+            public static final int TYPE_POSITION = 53;
+            public static final int TYPE_MESSAGE = 56;
+            public static final int TYPE_TEXT = 58;
+            public static final int TYPE_JSON = 62;
+            public static final int TYPE_BLOCK_STATES = 72;
+            public static final int TYPE_COMMAND = 75;
+
+            public static final short FLAG_SUPPRESS_ENUM_AUTOCOMPLETION = 1;
+            public static final short FLAG_HAS_SEMANTIC_CONSTRAINT = 2;
+            public static final short FLAG_ENUM_AS_CHAINED_COMMAND = 4;
+
+            private final String name;
+            private final boolean optional;
+            private final short flags;
+            private final Integer type;
+            private final EnumData enumData;
+            private final SubCommandData subCommandData;
+            private final String postfix;
+
+            public ParamData(final String name, final boolean optional, final short flags, final Integer type, final EnumData enumData, final SubCommandData subCommandData, final String postfix) {
+                this.name = name;
+                this.optional = optional;
+                this.flags = flags;
+                this.type = type;
+                this.enumData = enumData;
+                this.subCommandData = subCommandData;
+                this.postfix = postfix;
+            }
+
+            public String name() {
+                return this.name;
+            }
+
+            public boolean optional() {
+                return this.optional;
+            }
+
+            public short flags() {
+                return this.flags;
+            }
+
+            public Integer type() {
+                return this.type;
+            }
+
+            public EnumData enumData() {
+                return this.enumData;
+            }
+
+            public SubCommandData subCommandData() {
+                return this.subCommandData;
+            }
+
+            public String postfix() {
+                return this.postfix;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                ParamData paramData = (ParamData) o;
+                return optional == paramData.optional && flags == paramData.flags && Objects.equals(name, paramData.name) && Objects.equals(type, paramData.type) && Objects.equals(enumData, paramData.enumData) && Objects.equals(subCommandData, paramData.subCommandData) && Objects.equals(postfix, paramData.postfix);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(name, optional, flags, type, enumData, subCommandData, postfix);
+            }
+
+            @Override
+            public String toString() {
+                return "ParamData{" +
+                        "name='" + name + '\'' +
+                        ", optional=" + optional +
+                        ", flags=" + flags +
+                        ", type=" + type +
+                        ", enumData=" + enumData +
+                        ", subCommandData=" + subCommandData +
+                        ", postfix='" + postfix + '\'' +
+                        '}';
+            }
+
         }
 
     }

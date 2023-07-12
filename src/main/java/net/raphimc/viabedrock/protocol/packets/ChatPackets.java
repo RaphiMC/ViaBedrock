@@ -37,6 +37,7 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOutputTypes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.TextTypes;
+import net.raphimc.viabedrock.protocol.model.CommandData;
 import net.raphimc.viabedrock.protocol.model.CommandOrigin;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -172,7 +173,7 @@ public class ChatPackets {
             wrapper.write(Type.BOOLEAN, false); // overlay
         });
         protocol.registerClientbound(ClientboundBedrockPackets.AVAILABLE_COMMANDS, ClientboundPackets1_19_4.DECLARE_COMMANDS, wrapper -> {
-            /*final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
+            final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
             wrapper.user().put(new CommandsStorage(wrapper.user(), commands));
 
             wrapper.write(Type.VAR_INT, 2); // count
@@ -187,8 +188,7 @@ public class ChatPackets {
             wrapper.write(Type.VAR_INT, 2);
             wrapper.write(Type.STRING, "minecraft:ask_server");
 
-            wrapper.write(Type.VAR_INT, 0); // root node index*/
-            wrapper.cancel();
+            wrapper.write(Type.VAR_INT, 0); // root node index
         });
 
         protocol.registerServerbound(ServerboundPackets1_19_4.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
