@@ -217,7 +217,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
 
     @Override
     public void write(ByteBuf buffer, CommandData[] value) throws Exception {
-        throw new UnsupportedOperationException("Cannot serialize CommandData array");
+        throw new UnsupportedOperationException("Cannot serialize CommandDataArrayType");
     }
 
 }

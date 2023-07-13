@@ -33,19 +33,17 @@ public enum MenuType {
     DO_NOT_USE_ANVIL("minecraft:anvil", windowId -> null, "anvil");
 
     private final Function<Byte, Container> containerSupplier;
-    private final String javaMenuType;
     private final int javaMenuTypeId;
     private final List<String> acceptedTags;
 
     MenuType(final String javaMenuType, final Function<Byte, Container> containerSupplier, final String... acceptedTags) {
-        this.javaMenuType = javaMenuType;
         this.containerSupplier = containerSupplier;
         this.acceptedTags = Arrays.asList(acceptedTags);
 
         if (javaMenuType != null) {
-            this.javaMenuTypeId = BedrockProtocol.MAPPINGS.getJavaMenus().getOrDefault(this.javaMenuType, -1);
+            this.javaMenuTypeId = BedrockProtocol.MAPPINGS.getJavaMenus().getOrDefault(javaMenuType, -1);
             if (this.javaMenuTypeId == -1) {
-                throw new RuntimeException("Unknown java menu type: " + this.javaMenuType);
+                throw new IllegalArgumentException("Unknown java menu type: " + javaMenuType);
             }
         } else {
             this.javaMenuTypeId = -1;
@@ -57,10 +55,6 @@ public enum MenuType {
         if (id < 0 || id >= values().length - 1) return null;
 
         return values()[id + 1];
-    }
-
-    public String javaMenuType() {
-        return this.javaMenuType;
     }
 
     public int javaMenuTypeId() {
