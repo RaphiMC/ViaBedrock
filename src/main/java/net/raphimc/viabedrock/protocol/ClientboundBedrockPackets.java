@@ -211,7 +211,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     GAME_TEST_REQUEST(194),
     GAME_TEST_RESULTS(195),
     UPDATE_CLIENT_INPUT_LOCKS(196),
-    CLIENT_CHEAT_ABILITY(197),
     CAMERA_PRESETS(198),
     UNLOCKED_RECIPES(199),
     CAMERA_INSTRUCTION(300),
