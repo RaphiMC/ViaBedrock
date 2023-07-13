@@ -97,7 +97,7 @@ public class ClientPlayerPackets {
                     final int gameMode = GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType());
 
                     final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper.user());
-                    playerInfoUpdate.write(JavaTypes.PROFILE_ACTIONS_ENUM_TYPE, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
+                    playerInfoUpdate.write(JavaTypes.PROFILE_ACTIONS_ENUM, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
                     playerInfoUpdate.write(Type.VAR_INT, 1); // length
                     playerInfoUpdate.write(Type.UUID, entityTracker.getClientPlayer().javaUuid()); // uuid
                     playerInfoUpdate.write(Type.VAR_INT, gameMode); // game mode
@@ -120,7 +120,7 @@ public class ClientPlayerPackets {
                     final int gameMode = GameTypeRewriter.getEffectiveGameMode(entityTracker.getClientPlayer().getGameType(), gameType);
 
                     final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper.user());
-                    playerInfoUpdate.write(JavaTypes.PROFILE_ACTIONS_ENUM_TYPE, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
+                    playerInfoUpdate.write(JavaTypes.PROFILE_ACTIONS_ENUM, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
                     playerInfoUpdate.write(Type.VAR_INT, 1); // length
                     playerInfoUpdate.write(Type.UUID, entityTracker.getClientPlayer().javaUuid()); // uuid
                     playerInfoUpdate.write(Type.VAR_INT, gameMode); // game mode
@@ -145,7 +145,7 @@ public class ClientPlayerPackets {
             }
 
             final int gameMode = GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType());
-            wrapper.write(JavaTypes.PROFILE_ACTIONS_ENUM_TYPE, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
+            wrapper.write(JavaTypes.PROFILE_ACTIONS_ENUM, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
             wrapper.write(Type.VAR_INT, 1); // length
             wrapper.write(Type.UUID, playerListEntry.key()); // uuid
             wrapper.write(Type.VAR_INT, gameMode); // game mode

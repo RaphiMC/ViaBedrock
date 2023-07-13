@@ -17,10 +17,13 @@
  */
 package net.raphimc.viabedrock.protocol.types;
 
+import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.types.BitSetType;
+
+import java.util.BitSet;
 
 public class JavaTypes {
 
-    public static final BitSetType PROFILE_ACTIONS_ENUM_TYPE = new BitSetType(6);
+    public static final Type<BitSet> PROFILE_ACTIONS_ENUM = new BitSetType(6);
 
 }
