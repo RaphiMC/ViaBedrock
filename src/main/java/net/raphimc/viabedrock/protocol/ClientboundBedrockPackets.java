@@ -82,7 +82,7 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     SET_PLAYER_GAME_TYPE(62),
     PLAYER_LIST(63),
     SIMPLE_EVENT(64),
-    EVENT(65),
+    LEGACY_TELEMETRY_EVENT(65),
     SPAWN_EXPERIENCE_ORB(66),
     CLIENTBOUND_MAP_ITEM_DATA(67),
     MAP_INFO_REQUEST(68),
