@@ -47,7 +47,6 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put("note_block", NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("piston", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("moving_block", NULL_REWRITER);
-        BLOCK_ENTITY_REWRITERS.put("item_frame", NULL_REWRITER);
 
         BLOCK_ENTITY_REWRITERS.put("banner", new BannerBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("barrel", new LootableBlockEntityRewriter());
@@ -76,6 +75,7 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put("furnace", new FurnaceBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("hanging_sign", new SignBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("hopper", new HopperBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("item_frame", NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("jigsaw", new JigsawBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("jukebox", new JukeboxBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("lectern", new LecternBlockEntityRewriter());
@@ -120,8 +120,8 @@ public class BlockEntityRewriter {
         return null;
     }
 
-    public static boolean isBedrockBlockEntity(final String tag) {
-        return BLOCK_ENTITY_REWRITERS.containsKey(tag);
+    public static boolean isJavaBlockEntity(final String tag) {
+        return !NULL_REWRITER.equals(BLOCK_ENTITY_REWRITERS.get(tag));
     }
 
     public interface Rewriter {
