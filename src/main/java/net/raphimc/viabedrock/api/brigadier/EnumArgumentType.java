@@ -49,7 +49,7 @@ public class EnumArgumentType implements ArgumentType<Object> {
             throw INVALID_ENUM_EXCEPTION.createWithContext(reader);
         }
 
-        return new Object();
+        return null;
     }
 
     @Override

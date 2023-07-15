@@ -43,7 +43,7 @@ public class WildcardIntegerArgumentType implements ArgumentType<Object> {
             reader.readInt();
         }
 
-        return new Object();
+        return null;
     }
 
     @Override

@@ -62,7 +62,7 @@ public class BlockStatesArgumentType implements ArgumentType<Object> {
         if (!reader.canRead()) throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
         if (reader.peek() != ']') throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
         reader.skip();
-        return new Object();
+        return null;
     }
 
     @Override

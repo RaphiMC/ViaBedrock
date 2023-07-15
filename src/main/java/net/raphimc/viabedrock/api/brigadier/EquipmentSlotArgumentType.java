@@ -45,7 +45,7 @@ public class EquipmentSlotArgumentType implements ArgumentType<Object> {
             throw INVALID_EQUIPMENT_EXCEPTION.create();
         }
 
-        return new Object();
+        return null;
     }
 
     @Override

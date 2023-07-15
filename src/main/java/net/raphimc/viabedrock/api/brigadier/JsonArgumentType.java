@@ -63,7 +63,7 @@ public class JsonArgumentType implements ArgumentType<Object> {
         try (JsonReader r = new JsonReader(new java.io.StringReader(reader.getRemaining()))) {
             GsonUtil.getGson().fromJson(r, JsonObject.class);
             reader.setCursor(reader.getCursor() + this.getPosition(r));
-            return new Object();
+            return null;
         } catch (Throwable t) {
             throw INVALID_JSON_EXCEPTION.createWithContext(reader);
         }

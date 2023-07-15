@@ -44,15 +44,15 @@ public class IntegerRangeArgumentType implements ArgumentType<Object> {
             reader.skip();
         } else {
             this.readInt(reader);
-            if (!reader.canRead() || reader.peek() == ' ') return new Object();
+            if (!reader.canRead() || reader.peek() == ' ') return null;
             if (!reader.canRead(2)) throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
             for (int i = 0; i < 2; i++) {
                 if (reader.read() != '.') throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
             }
         }
-        if (!reader.canRead() || reader.peek() == ' ') return new Object();
+        if (!reader.canRead() || reader.peek() == ' ') return null;
         this.readInt(reader);
-        return new Object();
+        return null;
     }
 
     @Override

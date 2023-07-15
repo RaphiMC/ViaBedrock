@@ -49,7 +49,7 @@ public class OperatorArgumentType implements ArgumentType<Object> {
             throw INVALID_OPERATOR.create();
         }
 
-        return new Object();
+        return null;
     }
 
     @Override

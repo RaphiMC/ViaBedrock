@@ -49,7 +49,7 @@ public class ValueArgumentType implements ArgumentType<Object> {
             throw INVALID_VALUE_EXCEPTION.createWithContext(reader);
         }
 
-        return new Object();
+        return null;
     }
 
     @Override

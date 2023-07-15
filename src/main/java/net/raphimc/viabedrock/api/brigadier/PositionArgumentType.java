@@ -44,7 +44,7 @@ public class PositionArgumentType implements ArgumentType<Object> {
         if (reader.canRead()) reader.skip();
         boolean hasHat3 = this.readCoordinate(reader, hasHat);
         if (hasHat2 != hasHat3) throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
-        return new Object();
+        return null;
     }
 
     @Override
