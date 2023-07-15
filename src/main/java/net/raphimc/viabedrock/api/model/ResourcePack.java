@@ -347,7 +347,7 @@ public class ResourcePack {
                         .map(line -> line.contains("##") ? line.substring(0, line.indexOf("##")) : line)
                         .map(String::trim)
                         .map(line -> line.split("=", 2))
-                        .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1])));
+                        .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1], (o, n) -> n)));
             });
         }
 
