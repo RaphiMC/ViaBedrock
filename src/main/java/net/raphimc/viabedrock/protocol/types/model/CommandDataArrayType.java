@@ -116,7 +116,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
             if (validAliasPointer) {
                 alias = enumPalette[aliasIndex];
             } else {
-                alias = new CommandData.EnumData(name + "_invalid_alias_" + aliasIndex, Sets.newHashSet(name), false);
+                alias = null;
             }
 
             final int subCommandCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);

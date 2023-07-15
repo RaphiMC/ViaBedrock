@@ -69,6 +69,7 @@ public class BedrockMappingData extends MappingDataBase {
     // Java misc
     private CompoundTag javaRegistries;
     private CompoundTag javaTags;
+    private BiMap<String, Integer> javaCommandArgumentTypes;
 
     // Block states
     private BlockStateUpgrader bedrockBlockStateUpgrader;
@@ -112,6 +113,8 @@ public class BedrockMappingData extends MappingDataBase {
             this.getLogger().info("Loading " + this.unmappedVersion + " -> " + this.mappedVersion + " mappings...");
         }
 
+        final JsonObject javaMapping1_20Json = this.readJson("java/mapping-1.20.json");
+
         { // Bedrock misc
             this.bedrockVanillaResourcePack = this.readResourcePack("bedrock/vanilla.mcpack", UUID.fromString("0575c61f-a5da-4b7f-9961-ffda2908861e"), "0.0.1");
             this.bedrockSteveSkin = this.readImage("bedrock/skin/steve.png");
@@ -121,9 +124,14 @@ public class BedrockMappingData extends MappingDataBase {
         { // Java misc
             this.javaRegistries = this.readNBT("java/registries.nbt");
             this.javaTags = this.readNBT("java/tags.nbt");
-        }
 
-        final JsonObject javaMapping1_20Json = this.readJson("java/mapping-1.20.json");
+            final JsonArray javaCommandArgumentTypesJson = javaMapping1_20Json.getAsJsonArray("argumenttypes");
+            this.javaCommandArgumentTypes = HashBiMap.create(javaCommandArgumentTypesJson.size());
+            for (int i = 0; i < javaCommandArgumentTypesJson.size(); i++) {
+                this.javaCommandArgumentTypes.put(Key.namespaced(javaCommandArgumentTypesJson.get(i).getAsString()), i);
+            }
+            ArgumentTypeRegistry.init();
+        }
 
         { // Block states
             this.bedrockBlockStateUpgrader = new BlockStateUpgrader();
@@ -387,6 +395,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public CompoundTag getJavaTags() {
         return this.javaTags;
+    }
+
+    public BiMap<String, Integer> getJavaCommandArgumentTypes() {
+        return this.javaCommandArgumentTypes;
     }
 
     public BlockStateUpgrader getBedrockBlockStateUpgrader() {

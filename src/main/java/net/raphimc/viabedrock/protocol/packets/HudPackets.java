@@ -200,7 +200,7 @@ public class HudPackets {
                         wrapper.write(Type.INT, stayTicks); // stay ticks
                         wrapper.write(Type.INT, fadeOutTicks); // fade out ticks
                         break;
-                    default:
+                    default: // Mojang client silently ignores unknown actions
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown title type: " + type);
                         wrapper.cancel();
                 }
@@ -228,7 +228,7 @@ public class HudPackets {
                 case "list":
                     wrapper.write(Type.BYTE, (byte) 0); // position
                     break;
-                default: // Mojang client silently ignores errors
+                default: // Mojang client silently ignores unknown actions
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown scoreboard display slot: " + displaySlot);
                     wrapper.cancel();
                     return;
@@ -272,7 +272,7 @@ public class HudPackets {
                     entry = new ScoreboardEntry(score, type == 1, entityId, fakePlayerName);
                 } else if (action == 1) { // REMOVE
                     entry = null;
-                } else { // Mojang client silently ignores errors
+                } else { // Mojang client silently ignores unknown actions
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown scoreboard action: " + action);
                     continue;
                 }

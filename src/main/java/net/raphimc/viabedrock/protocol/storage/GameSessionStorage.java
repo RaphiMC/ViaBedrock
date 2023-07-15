@@ -29,9 +29,12 @@ public class GameSessionStorage extends StoredObject {
     private Semver bedrockVanillaVersion;
     private boolean flatGenerator;
     private int movementMode;
-    private boolean chatRestricted;
-    private boolean commandsEnabled;
     private int levelGameType;
+
+    private byte chatRestrictionLevel;
+    private boolean commandsEnabled;
+    private int playerPermission;
+    private int commandPermission;
 
     public GameSessionStorage(final UserConnection user) {
         super(user);
@@ -77,12 +80,20 @@ public class GameSessionStorage extends StoredObject {
         this.movementMode = movementMode;
     }
 
-    public boolean isChatRestricted() {
-        return this.chatRestricted;
+    public int getLevelGameType() {
+        return this.levelGameType;
     }
 
-    public void setChatRestricted(final boolean chatRestricted) {
-        this.chatRestricted = chatRestricted;
+    public void setLevelGameType(final int levelGameType) {
+        this.levelGameType = levelGameType;
+    }
+
+    public byte getChatRestrictionLevel() {
+        return this.chatRestrictionLevel;
+    }
+
+    public void setChatRestrictionLevel(final byte chatRestrictionLevel) {
+        this.chatRestrictionLevel = chatRestrictionLevel;
     }
 
     public boolean areCommandsEnabled() {
@@ -93,12 +104,20 @@ public class GameSessionStorage extends StoredObject {
         this.commandsEnabled = commandsEnabled;
     }
 
-    public int getLevelGameType() {
-        return this.levelGameType;
+    public int getPlayerPermission() {
+        return this.playerPermission;
     }
 
-    public void setLevelGameType(final int levelGameType) {
-        this.levelGameType = levelGameType;
+    public void setPlayerPermission(final int playerPermission) {
+        this.playerPermission = playerPermission;
+    }
+
+    public int getCommandPermission() {
+        return this.commandPermission;
+    }
+
+    public void setCommandPermission(final int commandPermission) {
+        this.commandPermission = commandPermission;
     }
 
 }

@@ -17,13 +17,14 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.google.common.collect.Sets;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPackets1_19_4;
-import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
@@ -35,14 +36,16 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ChatRestrictionLevels;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOutputTypes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerPermissions;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.TextTypes;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 import net.raphimc.viabedrock.protocol.model.CommandOrigin;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -122,7 +125,7 @@ public class ChatPackets {
                                 wrapper.write(Type.BOOLEAN, type == TextTypes.POPUP || type == TextTypes.JUKEBOX_POPUP); // overlay
                                 break;
                             }
-                            default:
+                            default: // Mojang client silently ignores unknown actions
                                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown text type: " + type);
                                 wrapper.cancel();
                         }
@@ -174,21 +177,35 @@ public class ChatPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.AVAILABLE_COMMANDS, ClientboundPackets1_19_4.DECLARE_COMMANDS, wrapper -> {
             final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
-            wrapper.user().put(new CommandsStorage(wrapper.user(), commands));
+            final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
+            wrapper.user().put(commandsStorage);
+            commandsStorage.writeCommandTree(wrapper);
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SOFT_ENUM, null, wrapper -> {
+            wrapper.cancel();
+            final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
+            if (commandsStorage == null) return;
 
-            wrapper.write(Type.VAR_INT, 2); // count
+            final String name = wrapper.read(BedrockTypes.STRING); // name
+            final Set<String> values = Sets.newHashSet(wrapper.read(BedrockTypes.STRING_ARRAY)); // values
 
-            wrapper.write(Type.BYTE, (byte) 0); // flags | 0 = command
-            wrapper.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{1}); // children indices
+            final CommandData.EnumData dynamicEnum = commandsStorage.getDynamicEnum(name);
+            if (dynamicEnum == null) { // Mojang client silently ignores unknown enums
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received update for unknown dynamic enum: " + name);
+                return;
+            }
 
-            wrapper.write(Type.BYTE, (byte) (0x02 | 0x04 | 0x10)); // flags | 2 = argument node, 4 = executable, 16 = custom suggestion
-            wrapper.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[0]); // children indices
-            wrapper.write(Type.STRING, "args"); // name
-            wrapper.write(Type.VAR_INT, 5); // type | 5 = string
-            wrapper.write(Type.VAR_INT, 2);
-            wrapper.write(Type.STRING, "minecraft:ask_server");
-
-            wrapper.write(Type.VAR_INT, 0); // root node index
+            final byte action = wrapper.read(Type.BYTE); // action
+            if (action == 0) { // ADD
+                dynamicEnum.addValues(values);
+            } else if (action == 1) { // REMOVE
+                dynamicEnum.removeValues(values);
+            } else if (action == 2) { // REPLACE
+                dynamicEnum.values().clear();
+                dynamicEnum.addValues(values);
+            } else { // Mojang client silently ignores unknown actions
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown dynamic enum action: " + action);
+            }
         });
 
         protocol.registerServerbound(ServerboundPackets1_19_4.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
@@ -203,7 +220,7 @@ public class ChatPackets {
                 handler(PacketWrapper::clearInputBuffer);
                 handler(wrapper -> {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-                    if (gameSession.isChatRestricted()) {
+                    if (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.COMMANDS_ONLY) {
                         wrapper.cancel();
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, wrapper.user());
                         systemChat.write(Type.COMPONENT, TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute"))); // message
@@ -226,7 +243,7 @@ public class ChatPackets {
                 handler(PacketWrapper::clearInputBuffer);
                 handler(wrapper -> {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-                    if (!gameSession.areCommandsEnabled()) {
+                    if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.HIDDEN && gameSession.getPlayerPermission() <= PlayerPermissions.OPERATOR)) {
                         wrapper.cancel();
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, wrapper.user());
                         systemChat.write(Type.COMPONENT, TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled"))); // message
@@ -238,7 +255,8 @@ public class ChatPackets {
         });
         protocol.registerServerbound(ServerboundPackets1_19_4.TAB_COMPLETE, null, wrapper -> {
             wrapper.cancel();
-            final CommandsStorage commands = wrapper.user().get(CommandsStorage.class);
+            final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
+            if (commandsStorage == null) return;
 
             final int id = wrapper.read(Type.VAR_INT); // transaction id
             final String command = wrapper.read(Type.STRING); // command
@@ -246,16 +264,19 @@ public class ChatPackets {
                 return;
             }
 
-            final Pair<IntIntPair, List<Pair<String, String>>> completions = commands.complete(command.substring(1));
+            final Suggestions suggestions = commandsStorage.complete(command);
 
             final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets1_19_4.TAB_COMPLETE, wrapper.user());
             tabComplete.write(Type.VAR_INT, id); // transaction id
-            tabComplete.write(Type.VAR_INT, completions.key().keyInt()); // start index
-            tabComplete.write(Type.VAR_INT, completions.key().valueInt()); // end index
-            tabComplete.write(Type.VAR_INT, completions.value().size()); // count
-            for (Pair<String, String> completion : completions.value()) {
-                tabComplete.write(Type.STRING, completion.key()); // text
-                tabComplete.write(Type.OPTIONAL_COMPONENT, completion.value() != null ? TextUtil.stringToGson(completion.value()) : null); // tooltip
+            tabComplete.write(Type.VAR_INT, suggestions.getRange().getStart()); // start index
+            tabComplete.write(Type.VAR_INT, suggestions.getRange().getLength()); // length
+            tabComplete.write(Type.VAR_INT, suggestions.getList().size()); // count
+            for (Suggestion suggestion : suggestions.getList()) {
+                tabComplete.write(Type.STRING, suggestion.getText()); // text
+                tabComplete.write(Type.BOOLEAN, suggestion.getTooltip() != null); // has tooltip
+                if (suggestion.getTooltip() != null) {
+                    tabComplete.write(Type.STRING, TextUtil.stringToJson(suggestion.getTooltip().getString())); // tooltip
+                }
             }
             tabComplete.send(BedrockProtocol.class);
         });

@@ -21,15 +21,15 @@ import java.util.*;
 
 public class CommandData {
 
-    public static final int FLAG_TEST_USAGE = 1;
-    public static final int FLAG_HIDDEN_FROM_COMMAND_BLOCK = 2;
-    public static final int FLAG_HIDDEN_FROM_PLAYER = 4;
-    public static final int FLAG_HIDDEN_FROM_AUTOMATION = 8;
-    public static final int FLAG_LOCAL_SYNC = 16;
-    public static final int FLAG_EXECUTE_DISALLOWED = 32;
-    public static final int FLAG_MESSAGE_TYPE = 64;
-    public static final int FLAG_NOT_CHEAT = 128;
-    public static final int FLAG_ASYNC = 256;
+    public static final int FLAG_TEST_USAGE = 1 << 0;
+    public static final int FLAG_HIDDEN_FROM_COMMAND_BLOCK = 1 << 1;
+    public static final int FLAG_HIDDEN_FROM_PLAYER = 1 << 2;
+    public static final int FLAG_HIDDEN_FROM_AUTOMATION = 1 << 3;
+    public static final int FLAG_LOCAL_SYNC = 1 << 4;
+    public static final int FLAG_EXECUTE_DISALLOWED = 1 << 5;
+    public static final int FLAG_MESSAGE_TYPE = 1 << 6;
+    public static final int FLAG_NOT_CHEAT = 1 << 7;
+    public static final int FLAG_ASYNC = 1 << 8;
 
     private final String name;
     private final String description;
@@ -130,6 +130,12 @@ public class CommandData {
         public void addValues(final Set<String> values) {
             for (final String value : values) {
                 this.values.put(value, new HashSet<>());
+            }
+        }
+
+        public void removeValues(final Set<String> values) {
+            for (final String value : values) {
+                this.values.remove(value);
             }
         }
 

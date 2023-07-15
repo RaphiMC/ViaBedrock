@@ -107,7 +107,7 @@ public class JoinPackets {
             wrapper.read(Type.BOOLEAN); // experiments previously toggled
             wrapper.read(Type.BOOLEAN); // bonus chest enabled
             wrapper.read(Type.BOOLEAN); // start with map enabled
-            wrapper.read(BedrockTypes.VAR_INT); // player permission
+            final int playerPermission = wrapper.read(BedrockTypes.VAR_INT); // player permission
             wrapper.read(BedrockTypes.INT_LE); // server chunk tick range
             wrapper.read(Type.BOOLEAN); // behavior pack locked
             wrapper.read(Type.BOOLEAN); // resource pack locked
@@ -203,11 +203,12 @@ public class JoinPackets {
             wrapper.user().put(gameSession);
             gameSession.setBedrockVanillaVersion(version);
             gameSession.setJavaRegistries(registries);
-            gameSession.setChatRestricted(chatRestrictionLevel >= 1);
-            gameSession.setCommandsEnabled(commandsEnabled);
             gameSession.setFlatGenerator(generatorId == 2);
             gameSession.setMovementMode(movementMode);
             gameSession.setLevelGameType(levelGameType);
+            gameSession.setChatRestrictionLevel(chatRestrictionLevel);
+            gameSession.setCommandsEnabled(commandsEnabled);
+            gameSession.setPlayerPermission(playerPermission);
 
             if (movementMode >= ServerMovementModes.SERVER_WITH_REWIND) {
                 ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "This server uses server authoritative movement with rewind. This is not supported.");
