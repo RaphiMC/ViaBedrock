@@ -37,12 +37,48 @@ public class IntegerRangeArgumentType implements ArgumentType<Object> {
     }
 
     public Object parse(StringReader reader) throws CommandSyntaxException {
+        if (!reader.canRead() || reader.peek() == ' ') throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
+        if (reader.peek() == '!') reader.skip();
+        if (reader.canRead(2) && reader.peek() == '.' && reader.peek(1) == '.') {
+            reader.skip();
+            reader.skip();
+        } else {
+            this.readInt(reader);
+            if (!reader.canRead() || reader.peek() == ' ') return new Object();
+            if (!reader.canRead(2)) throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
+            for (int i = 0; i < 2; i++) {
+                if (reader.read() != '.') throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
+            }
+        }
+        if (!reader.canRead() || reader.peek() == ' ') return new Object();
+        this.readInt(reader);
         return new Object();
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return Suggestions.empty();
+        StringReader reader = new StringReader(builder.getInput());
+        reader.setCursor(builder.getStart());
+
+        if (!reader.canRead()) builder.suggest("!");
+        return builder.buildFuture();
+    }
+
+    private int readInt(final StringReader reader) throws CommandSyntaxException {
+        final int start = reader.getCursor();
+        while (reader.canRead() && this.isAllowedNumber(reader.peek())) reader.skip();
+        final String number = reader.getString().substring(start, reader.getCursor());
+        if (number.isEmpty()) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt().createWithContext(reader);
+        try {
+            return Integer.parseInt(number);
+        } catch (final NumberFormatException ex) {
+            reader.setCursor(start);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt().createWithContext(reader, number);
+        }
+    }
+
+    private boolean isAllowedNumber(final char c) {
+        return c >= '0' && c <= '9' || c == '-' || c == '+';
     }
 
 }

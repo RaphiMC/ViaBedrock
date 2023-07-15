@@ -30,19 +30,54 @@ import java.util.concurrent.CompletableFuture;
 
 public class PositionArgumentType implements ArgumentType<Object> {
 
-    private static final SimpleCommandExceptionType INVALID_POSITION_EXCEPTION = new SimpleCommandExceptionType(new LiteralMessage("Invalid position"));
+    private static final SimpleCommandExceptionType INVALID_BLOCK_POSITION_EXCEPTION = new SimpleCommandExceptionType(new LiteralMessage("Invalid block position"));
 
     public static PositionArgumentType position() {
         return new PositionArgumentType();
     }
 
     public Object parse(StringReader reader) throws CommandSyntaxException {
+        boolean hasHat = this.readCoordinate(reader, false);
+        if (reader.canRead()) reader.skip();
+        boolean hasHat2 = this.readCoordinate(reader, hasHat);
+        if (hasHat != hasHat2) throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+        if (reader.canRead()) reader.skip();
+        boolean hasHat3 = this.readCoordinate(reader, hasHat);
+        if (hasHat2 != hasHat3) throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
         return new Object();
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return Suggestions.empty();
+        StringReader reader = new StringReader(builder.getInput());
+        reader.setCursor(builder.getStart());
+
+        if (!reader.canRead()) {
+            builder.suggest("~ ~ ~");
+            builder.suggest("^ ^ ^");
+        }
+        return builder.buildFuture();
+    }
+
+    private boolean readCoordinate(final StringReader reader, final boolean requiresHat) throws CommandSyntaxException {
+        if (!reader.canRead()) throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+        boolean hasHat = false;
+        boolean hasWave = false;
+        if (reader.peek() == '^') {
+            reader.skip();
+            hasHat = true;
+        } else if (requiresHat) {
+            throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+        } else if (reader.peek() == '~') {
+            reader.skip();
+            hasWave = true;
+        }
+        if (hasWave) {
+            if (!reader.canRead() || reader.peek() == ' ') return hasHat;
+        }
+        reader.readDouble();
+        if (reader.canRead() && reader.peek() != ' ') throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+        return hasHat;
     }
 
 }
