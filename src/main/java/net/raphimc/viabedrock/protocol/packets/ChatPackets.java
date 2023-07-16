@@ -31,6 +31,7 @@ import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerialize
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
@@ -222,10 +223,7 @@ public class ChatPackets {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     if (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.COMMANDS_ONLY) {
                         wrapper.cancel();
-                        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, wrapper.user());
-                        systemChat.write(Type.COMPONENT, TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute"))); // message
-                        systemChat.write(Type.BOOLEAN, false); // overlay
-                        systemChat.send(BedrockProtocol.class);
+                        PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute")));
                     }
                 });
             }
@@ -245,10 +243,13 @@ public class ChatPackets {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.HIDDEN && gameSession.getPlayerPermission() <= PlayerPermissions.OPERATOR)) {
                         wrapper.cancel();
-                        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, wrapper.user());
-                        systemChat.write(Type.COMPONENT, TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled"))); // message
-                        systemChat.write(Type.BOOLEAN, false); // overlay
-                        systemChat.send(BedrockProtocol.class);
+                        PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
+                        return;
+                    }
+
+                    final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
+                    if (commandsStorage != null && commandsStorage.execute(wrapper.get(BedrockTypes.STRING, 0))) {
+                        wrapper.cancel();
                     }
                 });
             }

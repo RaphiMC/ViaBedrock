@@ -32,8 +32,10 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerActions;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.RespawnStates;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClientStatus;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
+import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
+import net.raphimc.viabedrock.protocol.storage.CommandsStorage;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
@@ -79,6 +81,7 @@ public class ClientPlayerPackets {
             if (action == PlayerActions.DIMENSION_CHANGE_SUCCESS && clientPlayer.isChangingDimension()) {
                 clientPlayer.closeDownloadingTerrainScreen();
             }
+            // TODO: Handle remaining actions
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CORRECT_PLAYER_MOVE_PREDICTION, null, wrapper -> {
             wrapper.cancel();
@@ -157,6 +160,23 @@ public class ClientPlayerPackets {
                 gameEvent.write(Type.UNSIGNED_BYTE, GameEvents.GAME_MODE_CHANGED); // event id
                 gameEvent.write(Type.FLOAT, (float) gameMode); // value
                 gameEvent.send(BedrockProtocol.class);
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, null, wrapper -> {
+            wrapper.cancel();
+            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+
+            final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
+            if (abilities.uniqueEntityId() == entityTracker.getClientPlayer().uniqueId()) {
+                gameSession.setPlayerPermission(abilities.playerPermission());
+                gameSession.setCommandPermission(abilities.commandPermission());
+                // TODO: Handle remaining fields
+
+                final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
+                if (commandsStorage != null) {
+                    commandsStorage.updateCommandTree();
+                }
             }
         });
 

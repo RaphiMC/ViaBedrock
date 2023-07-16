@@ -17,11 +17,14 @@
  */
 package net.raphimc.viabedrock.api.brigadier;
 
+import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.viaversion.viaversion.util.Pair;
 
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 public class SuggestionsUtil {
 
@@ -33,6 +36,18 @@ public class SuggestionsUtil {
                 builder.suggest(candidate);
             }
         }
+
+        return builder.buildFuture();
+    }
+
+    public static CompletableFuture<Suggestions> suggestMatching(final Stream<Pair<String, String>> candidates, final SuggestionsBuilder builder) {
+        final String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
+
+        candidates.forEach(candidate -> {
+            if (shouldSuggest(remaining, candidate.key().toLowerCase(Locale.ROOT))) {
+                builder.suggest(candidate.key(), candidate.value() != null ? new LiteralMessage(candidate.value()) : null);
+            }
+        });
 
         return builder.buildFuture();
     }

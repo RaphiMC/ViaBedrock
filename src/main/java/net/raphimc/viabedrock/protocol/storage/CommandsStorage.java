@@ -39,13 +39,19 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.util.Pair;
+import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
+import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.brigadier.*;
+import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ArgumentTypeRegistry;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.logging.Level;
 
 public class CommandsStorage extends StoredObject {
@@ -149,19 +155,34 @@ public class CommandsStorage extends StoredObject {
         return this.dispatcher.getCompletionSuggestions(parseResults).join();
     }
 
+    public boolean execute(final String message) {
+        final StringReader reader = new StringReader(message);
+        if (reader.canRead() && reader.peek() == '/') {
+            reader.skip();
+        }
+        final ParseResults<UserConnection> parseResults = this.dispatcher.parse(reader, this.getUser());
+        try {
+            if (this.dispatcher.execute(parseResults) != 0) {
+                return true;
+            }
+        } catch (Throwable ignored) {
+        }
+
+        return false;
+    }
+
     public CommandData.EnumData getDynamicEnum(final String name) {
         return this.dynamicEnumMap.get(name);
     }
 
     private void buildCommandTree() {
         this.dispatcher = new CommandDispatcher<>();
-        // For translating the description of a CommandData use the TranslatorOptions.IGNORE_STARTING_PERCENT option
 
         for (CommandData command : this.commands) {
             final String name = command.alias() != null ? Iterables.getFirst(command.alias().values().keySet(), null) : command.name();
             if (name == null) continue;
 
-            final LiteralArgumentBuilder<UserConnection> cmdBuilder = literal(name)/*.requires(user -> user.get(GameSessionStorage.class).getCommandPermission() >= command.permission())*/;
+            final LiteralArgumentBuilder<UserConnection> cmdBuilder = literal(name).requires(user -> user.get(GameSessionStorage.class).getCommandPermission() >= command.permission());
             for (CommandData.OverloadData overload : command.overloads()) {
                 ArgumentBuilder<UserConnection, ?> last = null;
                 boolean hasRedirect = false;
@@ -181,6 +202,9 @@ public class CommandsStorage extends StoredObject {
                     } else if (parameter.postfix() != null) {
                         // TODO
                         continue;
+                    } else if (parameter.type() == null) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid command parameter: " + parameter);
+                        argument = argument(parameter.name() + ": unknown", StringArgumentType.greedyString());
                     } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_INT) {
                         argument = argument(parameter.name() + ": int", IntegerArgumentType.integer());
                     } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_FLOAT1 || parameter.type() == CommandData.OverloadData.ParamData.TYPE_FLOAT2) {
@@ -255,7 +279,8 @@ public class CommandsStorage extends StoredObject {
                 }
             }
 
-            final LiteralCommandNode<UserConnection> node = this.dispatcher.register(cmdBuilder);
+            final LiteralCommandNode<UserConnection> node = new BedrockLiteralCommandNode<>(command, cmdBuilder.build());
+            this.dispatcher.getRoot().addChild(node);
             if (command.alias() != null && command.alias().values().size() > 1) {
                 for (String alias : command.alias().values().keySet()) {
                     if (!alias.equals(node.getName())) {
@@ -264,6 +289,63 @@ public class CommandsStorage extends StoredObject {
                 }
             }
         }
+
+        this.removeNotAllowedNodes(this.dispatcher.getRoot());
+
+        if (this.dispatcher.getRoot().getChild("help") == null) {
+            final ResourcePacksStorage resourcePacksStorage = this.getUser().get(ResourcePacksStorage.class);
+            final Function<String, String> translator = resourcePacksStorage.getTranslationLookup();
+            final LiteralArgumentBuilder<UserConnection> cmdBuilder = literal("help");
+            cmdBuilder.executes(cmd -> {
+                PacketFactory.sendSystemChat(cmd.getSource(), TextUtil.stringToGson("§c" + BedrockTranslator.translate("%commands.generic.usage", translator, new Object[]{"/help <command>"})));
+                return 1;
+            });
+            cmdBuilder.then(argument("command", StringArgumentType.greedyString()).suggests((context, builder) -> {
+                return SuggestionsUtil.suggestMatching(this.dispatcher.getRoot().getChildren().stream().map(c -> {
+                    final String description;
+                    if (c instanceof BedrockLiteralCommandNode) {
+                        description = ((BedrockLiteralCommandNode<UserConnection>) c).getCommandData().description();
+                    } else if (c.getName().equals("help") || c.getName().equals("?")) {
+                        description = "commands.help.description";
+                    } else {
+                        description = null;
+                    }
+                    return new Pair<>(c.getName(), description != null ? BedrockTranslator.translate(description, translator, new Object[0], TranslatorOptions.IGNORE_STARTING_PERCENT) : null);
+                }), builder);
+            }).executes(cmd -> {
+                final String commandName = StringArgumentType.getString(cmd, "command");
+                CommandNode<UserConnection> node = this.dispatcher.getRoot().getChild(commandName);
+                for (int i = 0; i < 10 && node.getRedirect() != null; i++) {
+                    node = node.getRedirect();
+                }
+                final List<String> lines = new ArrayList<>();
+                if (node != null) {
+                    lines.add(resourcePacksStorage.getTranslations().get("commands.generic.usage.noparam"));
+                    final String[] usage = this.dispatcher.getAllUsage(node, cmd.getSource(), true);
+                    if (usage.length == 0) {
+                        lines.add("- /" + node.getName());
+                    } else {
+                        for (int i = 0; i < usage.length; i++) {
+                            usage[i] = "- /" + node.getName() + " " + usage[i];
+                        }
+                    }
+                    Collections.addAll(lines, usage);
+                } else {
+                    lines.add("§c" + BedrockTranslator.translate("%commands.generic.unknown", translator, new Object[]{commandName}));
+                }
+
+                for (String line : lines) {
+                    PacketFactory.sendSystemChat(cmd.getSource(), TextUtil.stringToGson(line));
+                }
+                return 1;
+            }));
+            this.dispatcher.register(literal("?").redirect(this.dispatcher.register(cmdBuilder)));
+        }
+    }
+
+    private void removeNotAllowedNodes(final CommandNode<UserConnection> node) {
+        node.getChildren().removeIf(n -> !n.canUse(this.getUser()));
+        node.getChildren().forEach(this::removeNotAllowedNodes);
     }
 
     private Map<CommandNode<UserConnection>, Integer> getNodeIndices(final RootCommandNode<UserConnection> root) {
