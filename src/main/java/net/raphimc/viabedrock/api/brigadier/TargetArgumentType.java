@@ -36,6 +36,7 @@ public class TargetArgumentType implements ArgumentType<Object> {
         return new TargetArgumentType();
     }
 
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         return null;
     }

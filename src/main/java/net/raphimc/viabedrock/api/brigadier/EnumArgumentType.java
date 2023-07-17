@@ -25,27 +25,34 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.raphimc.viabedrock.protocol.model.CommandData;
 
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class EnumArgumentType implements ArgumentType<Object> {
 
     private static final SimpleCommandExceptionType INVALID_ENUM_EXCEPTION = new SimpleCommandExceptionType(new LiteralMessage("Invalid enum"));
 
-    private final CommandData.EnumData enumData;
+    private final Set<String> values;
+    private final Set<String> completions;
 
-    public EnumArgumentType(final CommandData.EnumData enumData) {
-        this.enumData = enumData;
+    public EnumArgumentType(final Set<String> values, final Set<String> completions) {
+        this.values = values;
+        this.completions = completions;
     }
 
-    public static EnumArgumentType enumData(final CommandData.EnumData enumData) {
-        return new EnumArgumentType(enumData);
+    public static EnumArgumentType values(final Set<String> values) {
+        return new EnumArgumentType(values, values);
     }
 
+    public static EnumArgumentType valuesAndCompletions(final Set<String> values, final Set<String> completions) {
+        return new EnumArgumentType(values, completions);
+    }
+
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         final String s = reader.readUnquotedString();
-        if (!this.enumData.values().containsKey(s)) {
+        if (!this.values.contains(s)) {
             throw INVALID_ENUM_EXCEPTION.createWithContext(reader);
         }
 
@@ -54,7 +61,7 @@ public class EnumArgumentType implements ArgumentType<Object> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return SuggestionsUtil.suggestMatching(this.enumData.values().keySet(), builder);
+        return SuggestionsUtil.suggestMatching(this.completions, builder);
     }
 
 }

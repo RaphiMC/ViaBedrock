@@ -36,6 +36,7 @@ public class ValueArgumentType implements ArgumentType<Object> {
         return new ValueArgumentType();
     }
 
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         if (!reader.canRead()) {
             throw INVALID_VALUE_EXCEPTION.createWithContext(reader);

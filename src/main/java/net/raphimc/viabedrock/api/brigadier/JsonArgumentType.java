@@ -59,6 +59,7 @@ public class JsonArgumentType implements ArgumentType<Object> {
         return new JsonArgumentType();
     }
 
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         try (JsonReader r = new JsonReader(new java.io.StringReader(reader.getRemaining()))) {
             GsonUtil.getGson().fromJson(r, JsonObject.class);

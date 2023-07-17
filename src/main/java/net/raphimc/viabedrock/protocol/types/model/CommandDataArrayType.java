@@ -203,12 +203,16 @@ public class CommandDataArrayType extends Type<CommandData[]> {
         for (int i = 0; i < enumFlagsCount; i++) {
             final int valueIndex = buffer.readIntLE(); // value index
             final int enumIndex = buffer.readIntLE(); // enum index
+            final byte[] flagsBytes = BedrockTypes.BYTE_ARRAY.read(buffer); // flags
             final String valueKey = enumLiterals[valueIndex];
             final CommandData.EnumData enumData = enumPalette[enumIndex];
             final Set<Short> flags = enumData.values().get(valueKey);
-            final int flagsCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // flags count
-            for (int j = 0; j < flagsCount; j++) {
-                flags.add(buffer.readUnsignedByte()); // flag
+            if (flags == null) {
+                continue;
+            }
+
+            for (byte flag : flagsBytes) {
+                flags.add((short) (flag & 0xFF));
             }
         }
 

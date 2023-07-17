@@ -39,6 +39,7 @@ public class EquipmentSlotArgumentType implements ArgumentType<Object> {
         return new EquipmentSlotArgumentType();
     }
 
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         final String slot = reader.readUnquotedString();
         if (!SLOTS.contains(slot)) {

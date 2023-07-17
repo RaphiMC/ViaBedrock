@@ -104,7 +104,7 @@ public class CommandData {
         public static final short FLAG_CHEATS_ENABLED = 0;
         public static final short FLAG_OPERATOR_PERMISSIONS = 1;
         public static final short FLAG_HOST_PERMISSIONS = 2;
-        public static final short FLAG_ALLOW_ALIASES = 3;
+        public static final short FLAG_HIDE_FROM_COMPLETIONS = 3;
 
         private final String name;
         private final Map<String, Set<Short>> values;
@@ -276,9 +276,9 @@ public class CommandData {
             public static final int TYPE_BLOCK_STATES = 72;
             public static final int TYPE_COMMAND = 75;
 
-            public static final short FLAG_SUPPRESS_ENUM_AUTOCOMPLETION = 1;
-            public static final short FLAG_HAS_SEMANTIC_CONSTRAINT = 2;
-            public static final short FLAG_ENUM_AS_CHAINED_COMMAND = 4;
+            public static final short FLAG_FORCE_COLLAPSE_ENUM = 1 << 0; // Only visual change (<paramName: EnumName> -> <value1|value2>)
+            public static final short FLAG_HAS_ENUM_CONSTRAINT = 1 << 1;
+            public static final short FLAG_ENUM_AS_CHAINED_COMMAND = 1 << 2;
 
             private final String name;
             private final boolean optional;

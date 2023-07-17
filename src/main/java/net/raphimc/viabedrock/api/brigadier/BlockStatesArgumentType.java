@@ -36,6 +36,7 @@ public class BlockStatesArgumentType implements ArgumentType<Object> {
         return new BlockStatesArgumentType();
     }
 
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         if (!reader.canRead()) throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
         if (reader.peek() != '[') throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);

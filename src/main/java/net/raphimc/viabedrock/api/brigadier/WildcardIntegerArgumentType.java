@@ -32,6 +32,7 @@ public class WildcardIntegerArgumentType implements ArgumentType<Object> {
         return new WildcardIntegerArgumentType();
     }
 
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         if (!reader.canRead()) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt().createWithContext(reader);

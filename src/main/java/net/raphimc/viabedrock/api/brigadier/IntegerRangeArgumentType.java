@@ -36,6 +36,7 @@ public class IntegerRangeArgumentType implements ArgumentType<Object> {
         return new IntegerRangeArgumentType();
     }
 
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         if (!reader.canRead() || reader.peek() == ' ') throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
         if (reader.peek() == '!') reader.skip();

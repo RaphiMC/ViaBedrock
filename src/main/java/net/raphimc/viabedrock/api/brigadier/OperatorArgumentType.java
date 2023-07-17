@@ -39,6 +39,7 @@ public class OperatorArgumentType implements ArgumentType<Object> {
         return new OperatorArgumentType();
     }
 
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         final int start = reader.getCursor();
         while (reader.canRead() && reader.peek() != ' ') {

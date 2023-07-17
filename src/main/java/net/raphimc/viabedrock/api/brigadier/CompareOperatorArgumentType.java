@@ -39,6 +39,7 @@ public class CompareOperatorArgumentType implements ArgumentType<Object> {
         return new CompareOperatorArgumentType();
     }
 
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         final int start = reader.getCursor();
         while (reader.canRead() && reader.peek() != ' ') {

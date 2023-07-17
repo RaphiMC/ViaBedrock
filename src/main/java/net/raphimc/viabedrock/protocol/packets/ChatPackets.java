@@ -240,16 +240,20 @@ public class ChatPackets {
                 create(BedrockTypes.VAR_INT, ProtocolConstants.COMMAND_VERSION); // version
                 handler(PacketWrapper::clearInputBuffer);
                 handler(wrapper -> {
-                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-                    if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.HIDDEN && gameSession.getPlayerPermission() <= PlayerPermissions.OPERATOR)) {
-                        wrapper.cancel();
-                        PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
-                        return;
+                    final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
+                    int execResult = CommandsStorage.RESULT_NO_OP;
+                    if (commandsStorage != null) {
+                        execResult = commandsStorage.execute(wrapper.get(BedrockTypes.STRING, 0));
                     }
 
-                    final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
-                    if (commandsStorage != null && commandsStorage.execute(wrapper.get(BedrockTypes.STRING, 0))) {
+                    if (execResult == CommandsStorage.RESULT_CANCEL) {
                         wrapper.cancel();
+                    } else if (execResult != CommandsStorage.RESULT_ALLOW_SEND) {
+                        final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+                        if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.HIDDEN && gameSession.getPlayerPermission() <= PlayerPermissions.OPERATOR)) {
+                            wrapper.cancel();
+                            PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
+                        }
                     }
                 });
             }

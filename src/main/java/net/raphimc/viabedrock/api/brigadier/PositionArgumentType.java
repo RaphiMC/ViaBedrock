@@ -36,6 +36,7 @@ public class PositionArgumentType implements ArgumentType<Object> {
         return new PositionArgumentType();
     }
 
+    @Override
     public Object parse(StringReader reader) throws CommandSyntaxException {
         boolean hasHat = this.readCoordinate(reader, false);
         if (reader.canRead()) reader.skip();
