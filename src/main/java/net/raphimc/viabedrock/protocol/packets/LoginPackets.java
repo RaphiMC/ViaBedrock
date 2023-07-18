@@ -319,6 +319,7 @@ public class LoginPackets {
             extraData.put("identity", offlineUUID.toString());
             extraData.put("displayName", displayName);
             extraData.put("titleId", "896928775");
+            extraData.put("sandboxId", "RETAIL");
 
             final String identityJwt = Jwts.builder()
                     .signWith(privateKey, SignatureAlgorithm.ES384)
