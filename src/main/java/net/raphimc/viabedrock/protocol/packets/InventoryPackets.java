@@ -162,7 +162,12 @@ public class InventoryPackets {
                 return;
             }
 
-            final AForm form = FormSerializer.deserialize(data);
+            final AForm form;
+            try {
+                form = FormSerializer.deserialize(data);
+            } catch (Throwable e) { // Mojang client shows error modal form
+                throw new IllegalArgumentException("Error while deserializing form data: " + data, e);
+            }
             form.setTranslator(wrapper.user().get(ResourcePacksStorage.class)::translate);
             Via.getManager().getProviders().get(FormProvider.class).openModalForm(wrapper.user(), id, form);
         });
