@@ -45,19 +45,38 @@ import java.util.List;
 
 public class FormContainer extends FakeContainer {
 
+    private static final int SIZE = 27;
+
     private final int formId;
     private final AForm form;
+
+    private Item[] formItems;
+    private int page = 0;
 
     public FormContainer(UserConnection user, byte windowId, int formId, AForm form) {
         super(user, windowId, MenuType.CONTAINER, TextUtil.stringToComponent("Form: " + form.getTitle()));
 
         this.formId = formId;
         this.form = form;
+        this.updateFormItems();
     }
 
     @Override
     public boolean handleWindowClick(int revision, short slot, byte button, int action) throws Exception {
         if (action != WindowClickActions.PICKUP) return false;
+
+        if (this.formItems.length > SIZE && slot == SIZE - 1) {
+            final int pages = MathUtil.ceil(this.formItems.length / (SIZE - 1F));
+            if (button == 0) {
+                this.page++;
+            } else if (button == 1) {
+                this.page--;
+            }
+            this.page = MathUtil.clamp(this.page, 0, pages - 1);
+
+            return false;
+        }
+        slot += this.page * (SIZE - 1);
 
         if (this.form instanceof ModalForm) {
             final ModalForm modalForm = (ModalForm) this.form;
@@ -153,8 +172,15 @@ public class FormContainer extends FakeContainer {
                         items.add(FormContainer.this.createItem("minecraft:paper", textField.getValue(), description.toArray(new String[0])));
                         return items.toArray(new Item[0]);
                     }
+
+                    @Override
+                    public void onClosed() throws Exception {
+                        FormContainer.this.updateFormItems();
+                        super.onClosed();
+                    }
                 });
             }
+            this.updateFormItems();
         }
 
         return false;
@@ -167,6 +193,19 @@ public class FormContainer extends FakeContainer {
 
     @Override
     public Item[] getJavaItems(UserConnection user) {
+        if (this.formItems.length > SIZE) {
+            final Item[] items = new Item[SIZE];
+            final int begin = this.page * (SIZE - 1);
+            final int end = Math.min((this.page + 1) * (SIZE - 1), this.formItems.length);
+            System.arraycopy(this.formItems, begin, items, 0, end - begin);
+            items[SIZE - 1] = this.createItem("minecraft:arrow", "Page navigation", "§9Left click: §6Go to next page", "§9Right click: §6Go to previous page");
+            return items;
+        } else {
+            return this.formItems;
+        }
+    }
+
+    private void updateFormItems() {
         final List<Item> items = new ArrayList<>();
 
         if (this.form instanceof ModalForm) {
@@ -264,7 +303,7 @@ public class FormContainer extends FakeContainer {
             throw new IllegalArgumentException("Unknown form type: " + this.form.getClass().getSimpleName());
         }
 
-        return items.toArray(new Item[0]);
+        this.formItems = items.toArray(new Item[0]);
     }
 
     private Item createItem(final String identifier, final String name, final String... description) {

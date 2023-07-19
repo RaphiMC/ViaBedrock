@@ -19,31 +19,15 @@ package net.raphimc.viabedrock.protocol.providers.impl;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
-import net.lenni0451.mcstructs_bedrock.forms.types.ActionForm;
-import net.lenni0451.mcstructs_bedrock.forms.types.CustomForm;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.inventory.fake.FormContainer;
 import net.raphimc.viabedrock.protocol.providers.FormProvider;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
-
-import java.util.logging.Level;
 
 public class InventoryFormProvider extends FormProvider {
 
     @Override
     public void openModalForm(final UserConnection user, final int id, final AForm form) throws Exception {
         final InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
-
-        if (form instanceof ActionForm && ((ActionForm) form).getButtons().length > 26) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to open a form with more than 26 buttons");
-            this.sendModalFormResponse(user, id, null);
-            return;
-        } else if (form instanceof CustomForm && ((CustomForm) form).getElements().length > 26) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to open a form with more than 26 buttons");
-            this.sendModalFormResponse(user, id, null);
-            return;
-        }
-
         inventoryTracker.openFakeContainer(new FormContainer(user, inventoryTracker.getNextFakeWindowId(), id, form));
     }
 
