@@ -139,14 +139,7 @@ public class PlayPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_STACK_LATENCY, ClientboundPackets1_19_4.KEEP_ALIVE, new PacketHandlers() {
             @Override
             protected void register() {
-                map(BedrockTypes.LONG_LE, Type.LONG, t -> {
-                    if (t >= 0) {
-                        return t / 1000 * 1000;
-                    } else {
-                        final long result = (t - 383) / 1000 * 1000;
-                        return result > 0 ? result : result - 616;
-                    }
-                }); // timestamp
+                map(BedrockTypes.LONG_LE, Type.LONG, t -> t * 1_000_000); // timestamp
                 handler(wrapper -> {
                     if (!wrapper.read(Type.BOOLEAN)) { // from server
                         wrapper.cancel();
