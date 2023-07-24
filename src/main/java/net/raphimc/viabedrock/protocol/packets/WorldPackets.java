@@ -26,8 +26,7 @@ import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
 import com.viaversion.viaversion.util.MathUtil;
 import io.netty.buffer.ByteBuf;
@@ -206,9 +205,13 @@ public class WorldPackets {
                                                     throw new RuntimeException("First biome palette can not point to previous biome palette");
                                                 }
                                                 biomePalette = ((BedrockDataPalette) sections[i - 1].palette(PaletteType.BIOMES)).clone();
-                                            }
-                                            if (biomePalette.hasTagPalette()) {
-                                                throw new RuntimeException("Biome palette can not have tag palette");
+                                            } else if (biomePalette.hasTagPalette()) {
+                                                biomePalette.resolveTagPalette(tag -> {
+                                                    if (tag instanceof IntTag || tag instanceof LongTag) {
+                                                        return ((NumberTag) tag).asInt();
+                                                    }
+                                                    return -1;
+                                                });
                                             }
                                             sections[i].addPalette(PaletteType.BIOMES, biomePalette);
                                         }
