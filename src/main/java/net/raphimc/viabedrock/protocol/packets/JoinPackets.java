@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 
 public class JoinPackets {
 
-    private static final int DEFAULT_VIEW_DISTANCE = 8;
+    public static final int DEFAULT_VIEW_DISTANCE = 6;
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.START_GAME, null, wrapper -> {
@@ -309,6 +309,11 @@ public class JoinPackets {
                     thunderStrengthGameEvent.send(BedrockProtocol.class);
                 }
             }
+
+            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_19_4.UPDATE_VIEW_POSITION, wrapper.user());
+            updateViewPosition.write(Type.VAR_INT, (int) playerPosition.x() >> 4); // chunk x
+            updateViewPosition.write(Type.VAR_INT, (int) playerPosition.z() >> 4); // chunk z
+            updateViewPosition.send(BedrockProtocol.class);
 
             entityTracker.getClientPlayer().sendPlayerPositionPacketToClient(false);
 

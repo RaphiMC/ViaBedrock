@@ -49,6 +49,7 @@ import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.packets.JoinPackets;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
@@ -82,7 +83,7 @@ public class ChunkTracker extends StoredObject {
 
     private int centerX = 0;
     private int centerZ = 0;
-    private int radius = 5;
+    private int radius = JoinPackets.DEFAULT_VIEW_DISTANCE;
 
     public ChunkTracker(final UserConnection user, final int dimensionId) {
         super(user);
@@ -273,7 +274,16 @@ public class ChunkTracker extends StoredObject {
     }
 
     public boolean isInViewDistance(final int chunkX, final int chunkZ) {
-        return Math.abs(chunkX - this.centerX) <= this.radius && Math.abs(chunkZ - this.centerZ) <= this.radius;
+        final boolean isInRenderRange = Math.abs(chunkX - this.centerX) <= this.radius && Math.abs(chunkZ - this.centerZ) <= this.radius;
+        if (!isInRenderRange) { // Bedrock accepts chunks outside the chunk render range and uses the player position as a center to determine if a chunk is allowed to be loaded
+            final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
+            if (entityTracker == null) return false;
+            final int centerX = (int) entityTracker.getClientPlayer().position().x() >> 4;
+            final int centerZ = (int) entityTracker.getClientPlayer().position().z() >> 4;
+            return Math.abs(chunkX - centerX) <= this.radius && Math.abs(chunkZ - centerZ) <= this.radius;
+        }
+
+        return true;
     }
 
     public void removeOutOfViewDistanceChunks() throws Exception {
