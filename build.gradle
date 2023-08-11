@@ -34,12 +34,12 @@ repositories {
 
 dependencies {
     compileOnly "com.viaversion:viaversion:4.7.0"
-    compileOnly "org.yaml:snakeyaml:2.0"
-    compileOnly "com.google.guava:guava:32.1.1-jre"
-    compileOnly "io.netty:netty-handler:4.1.95.Final"
+    compileOnly "org.yaml:snakeyaml:2.1"
+    compileOnly "com.google.guava:guava:32.1.2-jre"
+    compileOnly "io.netty:netty-handler:4.1.96.Final"
     compileOnly "com.google.code.gson:gson:2.10.1"
 
-    api("io.netty:netty-codec-http:4.1.95.Final") {
+    api("io.netty:netty-codec-http:4.1.96.Final") {
         transitive = false
     }
     api "io.jsonwebtoken:jjwt-impl:0.11.5"
