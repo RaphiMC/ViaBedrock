@@ -1429,13 +1429,13 @@
   "minecraft:prismarine": {
     "block": {
       "minecraft:prismarine[prismarine_block_type=bricks]": {
-        "java_id": "minecraft:prismarine"
+        "java_id": "minecraft:prismarine_bricks"
       },
       "minecraft:prismarine[prismarine_block_type=default]": {
         "java_id": "minecraft:prismarine"
       },
       "minecraft:prismarine[prismarine_block_type=dark]": {
-        "java_id": "minecraft:prismarine"
+        "java_id": "minecraft:dark_prismarine"
       }
     }
   },
@@ -1536,13 +1536,13 @@
         "java_id": "minecraft:sandstone"
       },
       "minecraft:sandstone[sand_stone_type=heiroglyphs]": {
-        "java_id": "minecraft:sandstone"
+        "java_id": "minecraft:chiseled_sandstone"
       },
       "minecraft:sandstone[sand_stone_type=cut]": {
-        "java_id": "minecraft:sandstone"
+        "java_id": "minecraft:cut_sandstone"
       },
       "minecraft:sandstone[sand_stone_type=smooth]": {
-        "java_id": "minecraft:sandstone"
+        "java_id": "minecraft:smooth_sandstone"
       }
     }
   },
@@ -1552,13 +1552,13 @@
         "java_id": "minecraft:red_sandstone"
       },
       "minecraft:red_sandstone[sand_stone_type=heiroglyphs]": {
-        "java_id": "minecraft:red_sandstone"
+        "java_id": "minecraft:chiseled_red_sandstone"
       },
       "minecraft:red_sandstone[sand_stone_type=cut]": {
-        "java_id": "minecraft:red_sandstone"
+        "java_id": "minecraft:cut_red_sandstone"
       },
       "minecraft:red_sandstone[sand_stone_type=smooth]": {
-        "java_id": "minecraft:red_sandstone"
+        "java_id": "minecraft:smooth_red_sandstone"
       }
     }
   },
