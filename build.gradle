@@ -2,15 +2,17 @@ plugins {
     id "java-library"
     id "maven-publish"
     id "signing"
-    id "net.kyori.blossom" version "1.3.1"
+    id "net.raphimc.class-token-replacer" version "1.0.0"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
+base {
+    java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+    compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
 
-group = project.maven_group
-archivesBaseName = project.maven_name
-version = project.maven_version
+    group = project.maven_group ?: rootProject.maven_group
+    archivesName = project.maven_name ?: rootProject.maven_name
+    version = project.maven_version ?: rootProject.maven_version
+}
 
 configurations {
     testImplementation.extendsFrom compileOnly
@@ -23,8 +25,8 @@ repositories {
         url "https://repo.viaversion.com"
     }
     maven {
-        name = "Lenni0451 Snapshots"
-        url "https://maven.lenni0451.net/snapshots"
+        name = "Lenni0451"
+        url "https://maven.lenni0451.net/everything"
     }
     maven {
         name = "Minecraft Libraries"
@@ -33,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion:4.7.0"
+    compileOnly "com.viaversion:viaversion:4.8.0-1.20.2-pre2-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.2"
     compileOnly "com.google.guava:guava:32.1.2-jre"
     compileOnly "io.netty:netty-handler:4.1.97.Final"
@@ -59,8 +61,13 @@ dependencies {
     api "com.mojang:brigadier:1.0.18"
 }
 
-blossom {
-    replaceToken("\${version}", project.version, "src/main/java/net/raphimc/viabedrock/ViaBedrock.java")
+sourceSets {
+    main {
+        classTokenReplacer {
+            property("\${version}", project.version)
+            property("\${impl_version}", "git-${project.name}-${project.version}:${project.latestCommitHash()}")
+        }
+    }
 }
 
 java {
@@ -70,7 +77,7 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "${it}_${project.name ?: rootProject.name}" }
     }
 }
 
@@ -131,4 +138,13 @@ signing {
 
 project.tasks.withType(PublishToMavenRepository).forEach {
     it.dependsOn(project.tasks.withType(Sign))
+}
+
+String latestCommitHash() {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine "git", "rev-parse", "--short", "HEAD"
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
 }
