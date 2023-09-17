@@ -47,7 +47,7 @@ public class BlockStateRewriter extends StoredObject {
 
     private final Int2IntMap blockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Java
     private final Int2IntMap legacyBlockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Bedrock
-    private final BiMap<BlockState, Integer> blockStateTagMappings = HashBiMap.create(); // Bedrock -> Bedrock
+    private final BiMap<BlockState, Integer> blockStateMappings = HashBiMap.create(); // Bedrock -> Bedrock
     private final Int2ObjectMap<String> blockStateTags = new Int2ObjectOpenHashMap<>(); // Bedrock
     private final BlockStateSanitizer blockStateSanitizer;
 
@@ -113,7 +113,7 @@ public class BlockStateRewriter extends StoredObject {
             final BedrockBlockState bedrockBlockState = bedrockBlockStates.get(i);
             final int bedrockId = hashedRuntimeBlockIds ? bedrockBlockState.blockStateTag().<IntTag>get("network_id").asInt() : i;
 
-            this.blockStateTagMappings.put(bedrockBlockState, bedrockId);
+            this.blockStateMappings.put(bedrockBlockState, bedrockId);
 
             if (blockTags.containsKey(bedrockBlockState.namespacedIdentifier())) {
                 this.blockStateTags.put(bedrockId, blockTags.get(bedrockBlockState.namespacedIdentifier()));
@@ -133,7 +133,7 @@ public class BlockStateRewriter extends StoredObject {
             final int legacyData = entry.getIntKey() & 63;
             if (legacyData > 15) continue; // Dirty hack Mojang did in 1.12. Can be ignored safely as those values can't be used in chunk packets.
 
-            this.legacyBlockStateIdMappings.put(legacyId << 4 | legacyData & 15, this.blockStateTagMappings.getOrDefault(entry.getValue(), -1).intValue());
+            this.legacyBlockStateIdMappings.put(legacyId << 4 | legacyData & 15, this.blockStateMappings.getOrDefault(entry.getValue(), -1).intValue());
         }
 
         this.blockStateSanitizer = new BlockStateSanitizer(bedrockBlockStates);
@@ -153,11 +153,11 @@ public class BlockStateRewriter extends StoredObject {
     }
 
     public int bedrockId(final BlockState bedrockBlockState) {
-        return this.blockStateTagMappings.getOrDefault(bedrockBlockState, -1);
+        return this.blockStateMappings.getOrDefault(bedrockBlockState, -1);
     }
 
     public BlockState blockState(final int bedrockBlockStateId) {
-        return this.blockStateTagMappings.inverse().get(bedrockBlockStateId);
+        return this.blockStateMappings.inverse().get(bedrockBlockStateId);
     }
 
     public int bedrockId(final int legacyBlockStateId) {
