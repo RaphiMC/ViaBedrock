@@ -1,0 +1,25 @@
+{
+    "remappedMetas": {
+        "minecraft:boat": {
+            "6": "minecraft:mangrove_boat"
+        },
+        "minecraft:chest_boat": {
+            "6": "minecraft:mangrove_chest_boat"
+        }
+    },
+    "renamedIds": {
+        "minecraft:double_stone_slab": "minecraft:stone_block_slab",
+        "minecraft:double_stone_slab2": "minecraft:stone_block_slab2",
+        "minecraft:double_stone_slab3": "minecraft:stone_block_slab3",
+        "minecraft:double_stone_slab4": "minecraft:stone_block_slab4",
+        "minecraft:real_double_stone_slab": "minecraft:double_stone_block_slab",
+        "minecraft:real_double_stone_slab2": "minecraft:double_stone_block_slab2",
+        "minecraft:real_double_stone_slab3": "minecraft:double_stone_block_slab3",
+        "minecraft:real_double_stone_slab4": "minecraft:double_stone_block_slab4",
+        "minecraft:record_5": "minecraft:music_disc_5",
+        "minecraft:stone_slab": "minecraft:stone_block_slab",
+        "minecraft:stone_slab2": "minecraft:stone_block_slab2",
+        "minecraft:stone_slab3": "minecraft:stone_block_slab3",
+        "minecraft:stone_slab4": "minecraft:stone_block_slab4"
+    }
+}

@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.types;
+package net.raphimc.viabedrock.protocol.types.item;
 
 import com.viaversion.viaversion.api.type.PartialType;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.logging.Level;
 

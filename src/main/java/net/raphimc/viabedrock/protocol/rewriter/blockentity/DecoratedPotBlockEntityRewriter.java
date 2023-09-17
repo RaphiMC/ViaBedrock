@@ -28,7 +28,9 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
+import java.util.Collections;
 import java.util.logging.Level;
 
 public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
@@ -44,9 +46,9 @@ public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewr
                 final ListTag javaSherds = new ListTag(StringTag.class);
                 for (Tag sherd : bedrockSherds) {
                     final String bedrockIdentifier = ((StringTag) sherd).getValue();
-                    final String javaIdentifier = BedrockProtocol.MAPPINGS.getBedrockToJavaItems().get(bedrockIdentifier);
-                    if (javaIdentifier != null) {
-                        javaSherds.add(new StringTag(javaIdentifier));
+                    final ItemRewriter.Rewriter itemRewriter = BedrockProtocol.MAPPINGS.getBedrockToJavaMetaItems().getOrDefault(bedrockIdentifier, Collections.emptyMap()).getOrDefault(null, null);
+                    if (itemRewriter != null) {
+                        javaSherds.add(new StringTag(itemRewriter.identifier()));
                     } else if (bedrockIdentifier.isEmpty()) {
                         javaSherds.add(new StringTag("minecraft:brick"));
                     } else {

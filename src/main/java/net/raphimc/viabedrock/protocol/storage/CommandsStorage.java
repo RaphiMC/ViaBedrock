@@ -236,13 +236,10 @@ public class CommandsStorage extends StoredObject {
 
                         argument = argument(parameter.name() + ": " + parameter.enumData().name(), argumentType).suggests(argumentType::listSuggestions);
                     } else if (parameter.subCommandData() != null) {
-                        /*argument = argument(parameter.name() + ": " + parameter.subCommandData().name(), StringArgumentType.word()).suggests((context, builder) -> {
-                            return SuggestionsUtil.suggestMatching(parameter.subCommandData().values().keySet(), builder);
-                        });*/
-                        // TODO
+                        // TODO: Enhancement: Sub commands
                         continue;
                     } else if (parameter.postfix() != null) {
-                        // TODO
+                        // TODO: Enhancement: Postfix support
                         continue;
                     } else if (parameter.type() == null) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid command parameter: " + parameter);
@@ -263,7 +260,7 @@ public class CommandsStorage extends StoredObject {
                         final ArgumentType<?> argumentType = CompareOperatorArgumentType.compareOperator();
                         argument = argument(parameter.name() + ": compare operator", argumentType).suggests(argumentType::listSuggestions);
                     } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_TARGET1 || parameter.type() == CommandData.OverloadData.ParamData.TYPE_TARGET2) {
-                        // TODO
+                        // TODO: Enhancement: Implement target argument type
                         final ArgumentType<?> argumentType = TargetArgumentType.target();
                         argument = argument(parameter.name() + ": target", argumentType).suggests(argumentType::listSuggestions);
                     } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_FILE_PATH) {

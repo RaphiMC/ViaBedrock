@@ -22,17 +22,12 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
+import net.raphimc.viabedrock.api.util.FileSystemUtil;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class BlockStateUpgrader {
 
@@ -42,18 +37,9 @@ public class BlockStateUpgrader {
         this.schemas.add(new ValTagBlockStateUpgradeSchema());
 
         try {
-            final String path = "assets/viabedrock/block_state_upgrade_schema";
-
-            try (FileSystem fileSystem = getFileSystem(BlockStateUpgrader.class.getClassLoader().getResource(path).toURI())) {
-                final List<Path> files = Files.walk(fileSystem.getPath(path))
-                        .filter(f -> !f.toString().equals(path))
-                        .sorted(Comparator.comparing(Path::toString))
-                        .collect(Collectors.toList());
-
-                for (Path file : files) {
-                    final JsonObject json = GsonUtil.getGson().fromJson(new InputStreamReader(fileSystem.provider().newInputStream(file)), JsonObject.class);
-                    this.schemas.add(new JsonBlockStateUpgradeSchema(json));
-                }
+            for (byte[] data : FileSystemUtil.getFilesInDirectory("assets/viabedrock/block_state_upgrade_schema").values()) {
+                final JsonObject json = GsonUtil.getGson().fromJson(new String(data, StandardCharsets.UTF_8), JsonObject.class);
+                this.schemas.add(new JsonBlockStateUpgradeSchema(json));
             }
         } catch (Throwable e) {
             ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Failed to load block state upgrade schema", e);
@@ -67,16 +53,6 @@ public class BlockStateUpgrader {
         for (BlockStateUpgradeSchema schema : this.schemas) {
             schema.upgrade(tag);
         }
-    }
-
-    private FileSystem getFileSystem(final URI uri) throws IOException {
-        FileSystem fileSystem;
-        try {
-            fileSystem = FileSystems.getFileSystem(uri);
-        } catch (FileSystemNotFoundException e) {
-            fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
-        }
-        return fileSystem;
     }
 
 }

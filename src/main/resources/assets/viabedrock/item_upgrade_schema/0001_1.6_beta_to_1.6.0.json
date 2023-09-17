@@ -1,0 +1,10 @@
+{
+    "renamedIds": {
+        "minecraft:nametag": "minecraft:name_tag",
+        "minecraft:prismarineshard": "minecraft:prismarine_shard",
+        "minecraft:stone_slab": "minecraft:double_stone_slab",
+        "minecraft:stone_slab2": "minecraft:double_stone_slab2",
+        "minecraft:stone_slab3": "minecraft:double_stone_slab3",
+        "minecraft:stone_slab4": "minecraft:double_stone_slab4"
+    }
+}

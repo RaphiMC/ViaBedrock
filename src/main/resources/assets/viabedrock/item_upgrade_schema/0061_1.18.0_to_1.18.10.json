@@ -1,0 +1,16 @@
+{
+	"remappedMetas": {
+		"minecraft:banner_pattern": {
+			"7": "minecraft:globe_banner_pattern"
+		},
+		"minecraft:bucket": {
+			"13": "minecraft:tadpole_bucket"
+		},
+		"minecraft:spawn_egg": {
+			"132": "minecraft:frog_spawn_egg",
+			"133": "minecraft:tadpole_spawn_egg",
+			"134": "minecraft:allay_spawn_egg",
+			"135": "minecraft:firefly_spawn_egg"
+		}
+	}
+}

@@ -43,6 +43,7 @@ Additionally ViaBedrock uses assets and data dumps from other projects: See the 
 - [ ] Server-Authoritative Movement
 - [ ] Client-Authoritative Inventory
 - [ ] Server-Authoritative Inventory
+- [ ] Item data
 - [ ] Block breaking
 - [ ] Block placing
 - [ ] Respawning

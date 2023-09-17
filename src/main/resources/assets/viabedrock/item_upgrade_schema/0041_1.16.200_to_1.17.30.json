@@ -1,0 +1,12 @@
+{
+	"remappedMetas": {
+		"minecraft:bucket": {
+			"11": "minecraft:powder_snow_bucket",
+			"12": "minecraft:axolotl_bucket"
+		},
+		"minecraft:spawn_egg": {
+			"129": "minecraft:glow_squid_spawn_egg",
+			"130": "minecraft:axolotl_spawn_egg"
+		}
+	}
+}

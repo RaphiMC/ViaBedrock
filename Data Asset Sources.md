@@ -36,3 +36,6 @@ This file has been dumped from a vanilla server using a fabric mod.
 
 ### block_state_upgrade_schema/*
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)
+
+### item_upgrade_schema/*
+[PMMP/BedrockItemUpgradeSchema](https://github.com/pmmp/BedrockItemUpgradeSchema/tree/master/id_meta_upgrade_schema)

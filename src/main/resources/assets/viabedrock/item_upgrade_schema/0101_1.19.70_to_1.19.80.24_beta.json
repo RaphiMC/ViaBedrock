@@ -1,0 +1,36 @@
+{
+    "remappedMetas": {
+        "minecraft:boat": {
+            "8": "minecraft:cherry_boat"
+        },
+        "minecraft:chest_boat": {
+            "8": "minecraft:cherry_chest_boat"
+        },
+        "minecraft:fence": {
+            "0": "minecraft:oak_fence",
+            "1": "minecraft:spruce_fence",
+            "2": "minecraft:birch_fence",
+            "3": "minecraft:jungle_fence",
+            "4": "minecraft:acacia_fence",
+            "5": "minecraft:dark_oak_fence"
+        },
+        "minecraft:log": {
+            "0": "minecraft:oak_log",
+            "1": "minecraft:spruce_log",
+            "10": "minecraft:birch_log",
+            "11": "minecraft:jungle_log",
+            "2": "minecraft:birch_log",
+            "3": "minecraft:jungle_log",
+            "5": "minecraft:spruce_log",
+            "6": "minecraft:birch_log",
+            "7": "minecraft:jungle_log",
+            "9": "minecraft:spruce_log"
+        },
+        "minecraft:log2": {
+            "0": "minecraft:acacia_log",
+            "1": "minecraft:dark_oak_log",
+            "5": "minecraft:dark_oak_log",
+            "9": "minecraft:dark_oak_log"
+        }
+    }
+}

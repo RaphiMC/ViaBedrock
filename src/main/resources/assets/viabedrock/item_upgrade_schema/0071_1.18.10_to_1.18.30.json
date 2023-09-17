@@ -1,0 +1,23 @@
+{
+	"remappedMetas": {
+		"minecraft:chest_boat": {
+			"0": "minecraft:oak_chest_boat",
+			"1": "minecraft:spruce_chest_boat",
+			"2": "minecraft:birch_chest_boat",
+			"3": "minecraft:jungle_chest_boat",
+			"4": "minecraft:acacia_chest_boat",
+			"5": "minecraft:dark_oak_chest_boat"
+		},
+		"minecraft:spawn_egg": {
+			"131": "minecraft:warden_spawn_egg"
+		}
+	},
+	"renamedIds": {
+		"minecraft:concretepowder": "minecraft:concrete_powder",
+		"minecraft:invisiblebedrock": "minecraft:invisible_bedrock",
+		"minecraft:movingblock": "minecraft:moving_block",
+		"minecraft:pistonarmcollision": "minecraft:piston_arm_collision",
+		"minecraft:sealantern": "minecraft:sea_lantern",
+		"minecraft:stickypistonarmcollision": "minecraft:sticky_piston_arm_collision"
+	}
+}

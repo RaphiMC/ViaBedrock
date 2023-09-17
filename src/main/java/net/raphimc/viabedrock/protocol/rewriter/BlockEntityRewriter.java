@@ -151,7 +151,7 @@ public class BlockEntityRewriter {
         }
 
         default CompoundTag rewriteItem(final UserConnection user, final CompoundTag bedrockItemTag) {
-            return user.get(ItemRewriter.class).javaTag(bedrockItemTag);
+            return user.get(ItemRewriter.class).javaItem(bedrockItemTag);
         }
 
         default ListTag rewriteItemList(final UserConnection user, final ListTag bedrockItemList) {
@@ -159,7 +159,7 @@ public class BlockEntityRewriter {
             if (CompoundTag.class.equals(bedrockItemList.getElementType())) {
                 final ItemRewriter itemRewriter = user.get(ItemRewriter.class);
                 for (final Tag bedrockItemTag : bedrockItemList) {
-                    final CompoundTag javaItemTag = itemRewriter.javaTag((CompoundTag) bedrockItemTag);
+                    final CompoundTag javaItemTag = itemRewriter.javaItem((CompoundTag) bedrockItemTag);
                     this.copy((CompoundTag) bedrockItemTag, javaItemTag, "Slot", ByteTag.class);
                     javaItemList.add(javaItemTag);
                 }

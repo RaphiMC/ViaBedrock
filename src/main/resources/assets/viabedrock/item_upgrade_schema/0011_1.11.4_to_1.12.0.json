@@ -1,0 +1,20 @@
+{
+    "renamedIds": {
+        "minecraft:glazedterracotta.black": "minecraft:black_glazed_terracotta",
+        "minecraft:glazedterracotta.blue": "minecraft:blue_glazed_terracotta",
+        "minecraft:glazedterracotta.brown": "minecraft:brown_glazed_terracotta",
+        "minecraft:glazedterracotta.cyan": "minecraft:cyan_glazed_terracotta",
+        "minecraft:glazedterracotta.gray": "minecraft:gray_glazed_terracotta",
+        "minecraft:glazedterracotta.green": "minecraft:green_glazed_terracotta",
+        "minecraft:glazedterracotta.light_blue": "minecraft:light_blue_glazed_terracotta",
+        "minecraft:glazedterracotta.lime": "minecraft:lime_glazed_terracotta",
+        "minecraft:glazedterracotta.magenta": "minecraft:magenta_glazed_terracotta",
+        "minecraft:glazedterracotta.orange": "minecraft:orange_glazed_terracotta",
+        "minecraft:glazedterracotta.pink": "minecraft:pink_glazed_terracotta",
+        "minecraft:glazedterracotta.purple": "minecraft:purple_glazed_terracotta",
+        "minecraft:glazedterracotta.red": "minecraft:red_glazed_terracotta",
+        "minecraft:glazedterracotta.silver": "minecraft:silver_glazed_terracotta",
+        "minecraft:glazedterracotta.white": "minecraft:white_glazed_terracotta",
+        "minecraft:glazedterracotta.yellow": "minecraft:yellow_glazed_terracotta"
+    }
+}

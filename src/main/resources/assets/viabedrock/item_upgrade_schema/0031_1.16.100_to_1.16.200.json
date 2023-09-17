@@ -1,0 +1,7 @@
+{
+	"remappedMetas": {
+		"minecraft:spawn_egg": {
+			"128": "minecraft:goat_spawn_egg"
+		}
+	}
+}

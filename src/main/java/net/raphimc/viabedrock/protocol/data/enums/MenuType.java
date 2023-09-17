@@ -32,6 +32,8 @@ public enum MenuType {
     CONTAINER("minecraft:generic_9x3", windowId -> new ChestContainer(windowId, 27), "chest", "trapped_chest"),
     DO_NOT_USE_ANVIL("minecraft:anvil", windowId -> null, "anvil");
 
+    // TODO: Add remaining menu types
+
     private final Function<Byte, Container> containerSupplier;
     private final int javaMenuTypeId;
     private final List<String> acceptedTags;
