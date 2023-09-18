@@ -29,13 +29,9 @@ public class ClientboundPacketMappings implements PacketMappings {
     @Override
     public PacketMapping mappedPacket(State state, int unmappedId) {
         final PacketMapping packetMapping = this.delegate.mappedPacket(state, unmappedId);
-
-        if (packetMapping == null && state == State.LOGIN && this.delegate.mappedPacket(State.PLAY, unmappedId) != null) {
-            return RedirectToPlayPacketMapping.INSTANCE; // Bedrock is stateless. Some servers do funny stuff with packets in the "login" state
-        } else if (packetMapping == null) {
+        if (packetMapping == null) {
             return LogAndCancelPacketMapping.INSTANCE;
         }
-
         return packetMapping;
     }
 
