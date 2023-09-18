@@ -59,12 +59,7 @@ public class ItemUpgrader {
         if (metas == null) {
             return null;
         }
-        final String newIdentifier = metas.get(data);
-        if (newIdentifier == null) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to find matching meta remap for " + identifier + ":" + data);
-            return null;
-        }
-        return newIdentifier;
+        return metas.get(data);
     }
 
 }

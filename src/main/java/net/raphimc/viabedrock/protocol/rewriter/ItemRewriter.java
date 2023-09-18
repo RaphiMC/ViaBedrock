@@ -28,7 +28,6 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
-import net.lenni0451.mcstructs.core.TextFormatting;
 import net.lenni0451.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
@@ -116,8 +115,17 @@ public class ItemRewriter extends StoredObject {
                     rewriter = metaItemRewriter.get(meta);
                 }
             } else {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java item mapping: " + identifier);
-                throw new UnsupportedOperationException("Missing bedrock -> java item mapping: " + identifier); // TODO: Placeholder item
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java item mapping for " + identifier);
+
+                final ATextComponent nameComponent = TextUtil.stringToComponent("§cMissing item: " + identifier);
+                nameComponent.getStyle().setItalic(false);
+
+                final CompoundTag tag = new CompoundTag();
+                final CompoundTag displayTag = new CompoundTag();
+                displayTag.put("Name", new StringTag(TextUtil.componentToJson(nameComponent)));
+                tag.put("display", displayTag);
+
+                return new DataItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), (byte) MathUtil.clamp(bedrockItem.amount(), 0, 127), (short) 0, tag);
             }
         }
 
@@ -201,14 +209,11 @@ public class ItemRewriter extends StoredObject {
             }
             if (this.displayName != null) {
                 final String newName = "Bedrock " + this.displayName;
-                final ATextComponent component = TextUtil.stringToComponent(newName);
-                if (component.getStyle().getColor() == null) {
-                    component.getStyle().setFormatting(TextFormatting.WHITE);
-                }
-                component.getStyle().setItalic(false);
+                final ATextComponent nameComponent = TextUtil.stringToComponent(newName);
+                nameComponent.getStyle().setItalic(false);
 
                 final CompoundTag displayTag = new CompoundTag();
-                displayTag.put("Name", new StringTag(TextUtil.componentToJson(component)));
+                displayTag.put("Name", new StringTag(TextUtil.componentToJson(nameComponent)));
                 javaTag.put("display", displayTag);
             }
 
