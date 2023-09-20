@@ -61,5 +61,7 @@ public class AuthInputActions {
     public static final int MISSED_SWING = 39;
     public static final int START_CRAWLING = 40;
     public static final int STOP_CRAWLING = 41;
+    public static final int START_FLYING = 42;
+    public static final int STOP_FLYING = 43;
 
 }

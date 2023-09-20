@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.data;
 
 public class ProtocolConstants {
 
-    public static final int COMMAND_VERSION = 35;
+    public static final int COMMAND_VERSION = 36;
     public static final short REQUEST_CHUNK_RADIUS_MAX_RADIUS = 28;
     public static final int PAINTING_VARIANT_ID = 8;
 

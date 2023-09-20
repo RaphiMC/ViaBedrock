@@ -217,7 +217,8 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     COMPRESSED_BIOME_DEFINITION_LIST(301),
     TRIM_DATA(302),
     OPEN_SIGN(303),
-    AGENT_ANIMATION(304);
+    AGENT_ANIMATION(304),
+    REFRESH_ENTITLEMENTS(305);
 
     private static final ServerboundBedrockPackets[] REGISTRY = new ServerboundBedrockPackets[512];
 

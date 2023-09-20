@@ -1,0 +1,470 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 20,
+    "maxVersionPatch": 20,
+    "maxVersionRevision": 89,
+    "renamedProperties": {
+        "minecraft:amethyst_cluster": {
+            "facing_direction": "minecraft:block_face"
+        },
+        "minecraft:bamboo_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:bamboo_mosaic_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:bamboo_mosaic_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:bamboo_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:blackstone_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:blackstone_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:cherry_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:cherry_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:cobbled_deepslate_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:cobbled_deepslate_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:crimson_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:crimson_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:deepslate_brick_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:deepslate_brick_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:deepslate_tile_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:deepslate_tile_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:double_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:double_stone_block_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:double_stone_block_slab2": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:double_stone_block_slab3": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:double_stone_block_slab4": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:double_wooden_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:exposed_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:exposed_double_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:large_amethyst_bud": {
+            "facing_direction": "minecraft:block_face"
+        },
+        "minecraft:mangrove_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:mangrove_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:medium_amethyst_bud": {
+            "facing_direction": "minecraft:block_face"
+        },
+        "minecraft:mud_brick_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:mud_brick_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:oxidized_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:oxidized_double_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:polished_blackstone_brick_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:polished_blackstone_brick_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:polished_blackstone_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:polished_blackstone_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:polished_deepslate_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:polished_deepslate_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:small_amethyst_bud": {
+            "facing_direction": "minecraft:block_face"
+        },
+        "minecraft:stone_block_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:stone_block_slab2": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:stone_block_slab3": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:stone_block_slab4": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:warped_double_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:warped_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:waxed_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:waxed_double_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:waxed_exposed_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:waxed_exposed_double_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:waxed_oxidized_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:waxed_oxidized_double_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:waxed_weathered_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:waxed_weathered_double_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:weathered_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:weathered_double_cut_copper_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        },
+        "minecraft:wooden_slab": {
+            "top_slot_bit": "minecraft:vertical_half"
+        }
+    },
+    "remappedPropertyValues": {
+        "minecraft:amethyst_cluster": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:bamboo_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:bamboo_mosaic_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:bamboo_mosaic_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:bamboo_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:blackstone_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:blackstone_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:cherry_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:cherry_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:cobbled_deepslate_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:cobbled_deepslate_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:crimson_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:crimson_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:deepslate_brick_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:deepslate_brick_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:deepslate_tile_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:deepslate_tile_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:double_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:double_stone_block_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:double_stone_block_slab2": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:double_stone_block_slab3": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:double_stone_block_slab4": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:double_wooden_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:exposed_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:exposed_double_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:large_amethyst_bud": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:mangrove_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:mangrove_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:medium_amethyst_bud": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:mud_brick_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:mud_brick_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:oxidized_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:oxidized_double_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:polished_blackstone_brick_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:polished_blackstone_brick_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:polished_blackstone_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:polished_blackstone_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:polished_deepslate_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:polished_deepslate_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:small_amethyst_bud": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:stone_block_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:stone_block_slab2": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:stone_block_slab3": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:stone_block_slab4": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:warped_double_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:warped_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:waxed_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:waxed_double_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:waxed_exposed_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:waxed_exposed_double_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:waxed_oxidized_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:waxed_oxidized_double_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:waxed_weathered_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:waxed_weathered_double_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:weathered_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:weathered_double_cut_copper_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        },
+        "minecraft:wooden_slab": {
+            "top_slot_bit": "top_slot_bit_00"
+        }
+    },
+    "remappedPropertyValuesIndex": {
+        "facing_direction_00": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "down"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "up"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "north"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "south"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "west"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "east"
+                }
+            }
+        ],
+        "top_slot_bit_00": [
+            {
+                "old": {
+                    "byte": 0
+                },
+                "new": {
+                    "string": "bottom"
+                }
+            },
+            {
+                "old": {
+                    "byte": 1
+                },
+                "new": {
+                    "string": "top"
+                }
+            }
+        ]
+    },
+    "remappedStates": {
+        "minecraft:stained_glass": [
+            {
+                "oldState": {
+                    "color": {
+                        "string": "silver"
+                    }
+                },
+                "newName": "minecraft:light_gray_stained_glass",
+                "newState": null
+            },
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "color",
+                    "suffix": "_stained_glass"
+                },
+                "newState": null
+            }
+        ],
+        "minecraft:stained_glass_pane": [
+            {
+                "oldState": {
+                    "color": {
+                        "string": "silver"
+                    }
+                },
+                "newName": "minecraft:light_gray_stained_glass_pane",
+                "newState": null
+            },
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "color",
+                    "suffix": "_stained_glass_pane"
+                },
+                "newState": null
+            }
+        ]
+    }
+}

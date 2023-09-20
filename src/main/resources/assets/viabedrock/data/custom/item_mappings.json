@@ -880,54 +880,9 @@
     }
   },
   "minecraft:stained_glass": {
-    "block": {
-      "minecraft:stained_glass[color=white]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:white_stained_glass"
-      },
-      "minecraft:stained_glass[color=silver]": {
-        "java_id": "minecraft:light_gray_stained_glass"
-      },
-      "minecraft:stained_glass[color=gray]": {
-        "java_id": "minecraft:gray_stained_glass"
-      },
-      "minecraft:stained_glass[color=black]": {
-        "java_id": "minecraft:black_stained_glass"
-      },
-      "minecraft:stained_glass[color=brown]": {
-        "java_id": "minecraft:brown_stained_glass"
-      },
-      "minecraft:stained_glass[color=red]": {
-        "java_id": "minecraft:red_stained_glass"
-      },
-      "minecraft:stained_glass[color=orange]": {
-        "java_id": "minecraft:orange_stained_glass"
-      },
-      "minecraft:stained_glass[color=yellow]": {
-        "java_id": "minecraft:yellow_stained_glass"
-      },
-      "minecraft:stained_glass[color=lime]": {
-        "java_id": "minecraft:lime_stained_glass"
-      },
-      "minecraft:stained_glass[color=green]": {
-        "java_id": "minecraft:green_stained_glass"
-      },
-      "minecraft:stained_glass[color=cyan]": {
-        "java_id": "minecraft:cyan_stained_glass"
-      },
-      "minecraft:stained_glass[color=light_blue]": {
-        "java_id": "minecraft:light_blue_stained_glass"
-      },
-      "minecraft:stained_glass[color=blue]": {
-        "java_id": "minecraft:blue_stained_glass"
-      },
-      "minecraft:stained_glass[color=purple]": {
-        "java_id": "minecraft:purple_stained_glass"
-      },
-      "minecraft:stained_glass[color=magenta]": {
-        "java_id": "minecraft:magenta_stained_glass"
-      },
-      "minecraft:stained_glass[color=pink]": {
-        "java_id": "minecraft:pink_stained_glass"
       }
     }
   },
@@ -946,54 +901,9 @@
     }
   },
   "minecraft:stained_glass_pane": {
-    "block": {
-      "minecraft:stained_glass_pane[color=white]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:white_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=silver]": {
-        "java_id": "minecraft:light_gray_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=gray]": {
-        "java_id": "minecraft:gray_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=black]": {
-        "java_id": "minecraft:black_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=brown]": {
-        "java_id": "minecraft:brown_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=red]": {
-        "java_id": "minecraft:red_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=orange]": {
-        "java_id": "minecraft:orange_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=yellow]": {
-        "java_id": "minecraft:yellow_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=lime]": {
-        "java_id": "minecraft:lime_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=green]": {
-        "java_id": "minecraft:green_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=cyan]": {
-        "java_id": "minecraft:cyan_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=light_blue]": {
-        "java_id": "minecraft:light_blue_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=blue]": {
-        "java_id": "minecraft:blue_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=purple]": {
-        "java_id": "minecraft:purple_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=magenta]": {
-        "java_id": "minecraft:magenta_stained_glass_pane"
-      },
-      "minecraft:stained_glass_pane[color=pink]": {
-        "java_id": "minecraft:pink_stained_glass_pane"
       }
     }
   },
@@ -1013,150 +923,150 @@
   },
   "minecraft:stone_block_slab": {
     "block": {
-      "minecraft:stone_block_slab[stone_slab_type=smooth_stone,top_slot_bit=0]": {
+      "minecraft:stone_block_slab[stone_slab_type=smooth_stone,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:smooth_stone_slab"
       },
-      "minecraft:stone_block_slab[stone_slab_type=cobblestone,top_slot_bit=0]": {
+      "minecraft:stone_block_slab[stone_slab_type=cobblestone,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cobblestone_slab"
       },
-      "minecraft:stone_block_slab[stone_slab_type=stone_brick,top_slot_bit=0]": {
+      "minecraft:stone_block_slab[stone_slab_type=stone_brick,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:stone_brick_slab"
       },
-      "minecraft:stone_block_slab[stone_slab_type=sandstone,top_slot_bit=0]": {
+      "minecraft:stone_block_slab[stone_slab_type=sandstone,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:sandstone_slab"
       },
-      "minecraft:stone_block_slab[stone_slab_type=brick,top_slot_bit=0]": {
+      "minecraft:stone_block_slab[stone_slab_type=brick,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:brick_slab"
       },
-      "minecraft:stone_block_slab[stone_slab_type=nether_brick,top_slot_bit=0]": {
+      "minecraft:stone_block_slab[stone_slab_type=nether_brick,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:nether_brick_slab"
       },
-      "minecraft:stone_block_slab[stone_slab_type=quartz,top_slot_bit=0]": {
+      "minecraft:stone_block_slab[stone_slab_type=quartz,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:quartz_slab"
       }
     }
   },
   "minecraft:stone_block_slab4": {
     "block": {
-      "minecraft:stone_block_slab4[stone_slab_type_4=stone,top_slot_bit=0]": {
+      "minecraft:stone_block_slab4[stone_slab_type_4=stone,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:stone_slab"
       },
-      "minecraft:stone_block_slab4[stone_slab_type_4=mossy_stone_brick,top_slot_bit=0]": {
+      "minecraft:stone_block_slab4[stone_slab_type_4=mossy_stone_brick,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:mossy_stone_brick_slab"
       },
-      "minecraft:stone_block_slab4[stone_slab_type_4=cut_sandstone,top_slot_bit=0]": {
+      "minecraft:stone_block_slab4[stone_slab_type_4=cut_sandstone,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cut_sandstone_slab"
       },
-      "minecraft:stone_block_slab4[stone_slab_type_4=cut_red_sandstone,top_slot_bit=0]": {
+      "minecraft:stone_block_slab4[stone_slab_type_4=cut_red_sandstone,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cut_red_sandstone_slab"
       },
-      "minecraft:stone_block_slab4[stone_slab_type_4=smooth_quartz,top_slot_bit=0]": {
+      "minecraft:stone_block_slab4[stone_slab_type_4=smooth_quartz,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:smooth_quartz_slab"
       }
     }
   },
   "minecraft:stone_block_slab2": {
     "block": {
-      "minecraft:stone_block_slab2[stone_slab_type_2=mossy_cobblestone,top_slot_bit=0]": {
+      "minecraft:stone_block_slab2[stone_slab_type_2=mossy_cobblestone,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:mossy_cobblestone_slab"
       },
-      "minecraft:stone_block_slab2[stone_slab_type_2=smooth_sandstone,top_slot_bit=0]": {
+      "minecraft:stone_block_slab2[stone_slab_type_2=smooth_sandstone,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:smooth_sandstone_slab"
       },
-      "minecraft:stone_block_slab2[stone_slab_type_2=red_sandstone,top_slot_bit=0]": {
+      "minecraft:stone_block_slab2[stone_slab_type_2=red_sandstone,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:red_sandstone_slab"
       },
-      "minecraft:stone_block_slab2[stone_slab_type_2=red_nether_brick,top_slot_bit=0]": {
+      "minecraft:stone_block_slab2[stone_slab_type_2=red_nether_brick,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:red_nether_brick_slab"
       },
-      "minecraft:stone_block_slab2[stone_slab_type_2=purpur,top_slot_bit=0]": {
+      "minecraft:stone_block_slab2[stone_slab_type_2=purpur,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:purpur_slab"
       },
-      "minecraft:stone_block_slab2[stone_slab_type_2=prismarine_rough,top_slot_bit=0]": {
+      "minecraft:stone_block_slab2[stone_slab_type_2=prismarine_rough,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:prismarine_slab"
       },
-      "minecraft:stone_block_slab2[stone_slab_type_2=prismarine_dark,top_slot_bit=0]": {
+      "minecraft:stone_block_slab2[stone_slab_type_2=prismarine_dark,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:dark_prismarine_slab"
       },
-      "minecraft:stone_block_slab2[stone_slab_type_2=prismarine_brick,top_slot_bit=0]": {
+      "minecraft:stone_block_slab2[stone_slab_type_2=prismarine_brick,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:prismarine_brick_slab"
       }
     }
   },
   "minecraft:wooden_slab": {
     "block": {
-      "minecraft:wooden_slab[wood_type=oak,top_slot_bit=0]": {
+      "minecraft:wooden_slab[wood_type=oak,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:oak_slab"
       },
-      "minecraft:wooden_slab[wood_type=spruce,top_slot_bit=0]": {
+      "minecraft:wooden_slab[wood_type=spruce,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:spruce_slab"
       },
-      "minecraft:wooden_slab[wood_type=birch,top_slot_bit=0]": {
+      "minecraft:wooden_slab[wood_type=birch,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:birch_slab"
       },
-      "minecraft:wooden_slab[wood_type=jungle,top_slot_bit=0]": {
+      "minecraft:wooden_slab[wood_type=jungle,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:jungle_slab"
       },
-      "minecraft:wooden_slab[wood_type=acacia,top_slot_bit=0]": {
+      "minecraft:wooden_slab[wood_type=acacia,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:acacia_slab"
       },
-      "minecraft:wooden_slab[wood_type=dark_oak,top_slot_bit=0]": {
+      "minecraft:wooden_slab[wood_type=dark_oak,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:dark_oak_slab"
       }
     }
   },
   "minecraft:mangrove_slab": {
     "block": {
-      "minecraft:mangrove_slab[top_slot_bit=0]": {
+      "minecraft:mangrove_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:mangrove_slab"
       }
     }
   },
   "minecraft:cherry_slab": {
     "block": {
-      "minecraft:cherry_slab[top_slot_bit=0]": {
+      "minecraft:cherry_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cherry_slab"
       }
     }
   },
   "minecraft:bamboo_slab": {
     "block": {
-      "minecraft:bamboo_slab[top_slot_bit=0]": {
+      "minecraft:bamboo_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:bamboo_slab"
       }
     }
   },
   "minecraft:bamboo_mosaic_slab": {
     "block": {
-      "minecraft:bamboo_mosaic_slab[top_slot_bit=0]": {
+      "minecraft:bamboo_mosaic_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:bamboo_mosaic_slab"
       }
     }
   },
   "minecraft:stone_block_slab3": {
     "block": {
-      "minecraft:stone_block_slab3[stone_slab_type_3=smooth_red_sandstone,top_slot_bit=0]": {
+      "minecraft:stone_block_slab3[stone_slab_type_3=smooth_red_sandstone,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:smooth_red_sandstone_slab"
       },
-      "minecraft:stone_block_slab3[stone_slab_type_3=granite,top_slot_bit=0]": {
+      "minecraft:stone_block_slab3[stone_slab_type_3=granite,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:granite_slab"
       },
-      "minecraft:stone_block_slab3[stone_slab_type_3=polished_granite,top_slot_bit=0]": {
+      "minecraft:stone_block_slab3[stone_slab_type_3=polished_granite,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_granite_slab"
       },
-      "minecraft:stone_block_slab3[stone_slab_type_3=diorite,top_slot_bit=0]": {
+      "minecraft:stone_block_slab3[stone_slab_type_3=diorite,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:diorite_slab"
       },
-      "minecraft:stone_block_slab3[stone_slab_type_3=polished_diorite,top_slot_bit=0]": {
+      "minecraft:stone_block_slab3[stone_slab_type_3=polished_diorite,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_diorite_slab"
       },
-      "minecraft:stone_block_slab3[stone_slab_type_3=andesite,top_slot_bit=0]": {
+      "minecraft:stone_block_slab3[stone_slab_type_3=andesite,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:andesite_slab"
       },
-      "minecraft:stone_block_slab3[stone_slab_type_3=polished_andesite,top_slot_bit=0]": {
+      "minecraft:stone_block_slab3[stone_slab_type_3=polished_andesite,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_andesite_slab"
       },
-      "minecraft:stone_block_slab3[stone_slab_type_3=end_stone_brick,top_slot_bit=0]": {
+      "minecraft:stone_block_slab3[stone_slab_type_3=end_stone_brick,minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:end_stone_brick_slab"
       }
     }
@@ -1251,126 +1161,126 @@
   },
   "minecraft:crimson_slab": {
     "block": {
-      "minecraft:crimson_slab[top_slot_bit=0]": {
+      "minecraft:crimson_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:crimson_slab"
       }
     }
   },
   "minecraft:warped_slab": {
     "block": {
-      "minecraft:warped_slab[top_slot_bit=0]": {
+      "minecraft:warped_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:warped_slab"
       }
     }
   },
   "minecraft:blackstone_slab": {
     "block": {
-      "minecraft:blackstone_slab[top_slot_bit=0]": {
+      "minecraft:blackstone_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:blackstone_slab"
       }
     }
   },
   "minecraft:polished_blackstone_slab": {
     "block": {
-      "minecraft:polished_blackstone_slab[top_slot_bit=0]": {
+      "minecraft:polished_blackstone_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_blackstone_slab"
       }
     }
   },
   "minecraft:polished_blackstone_brick_slab": {
     "block": {
-      "minecraft:polished_blackstone_brick_slab[top_slot_bit=0]": {
+      "minecraft:polished_blackstone_brick_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_blackstone_brick_slab"
       }
     }
   },
   "minecraft:cut_copper_slab": {
     "block": {
-      "minecraft:cut_copper_slab[top_slot_bit=0]": {
+      "minecraft:cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cut_copper_slab"
       }
     }
   },
   "minecraft:exposed_cut_copper_slab": {
     "block": {
-      "minecraft:exposed_cut_copper_slab[top_slot_bit=0]": {
+      "minecraft:exposed_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:exposed_cut_copper_slab"
       }
     }
   },
   "minecraft:weathered_cut_copper_slab": {
     "block": {
-      "minecraft:weathered_cut_copper_slab[top_slot_bit=0]": {
+      "minecraft:weathered_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:weathered_cut_copper_slab"
       }
     }
   },
   "minecraft:oxidized_cut_copper_slab": {
     "block": {
-      "minecraft:oxidized_cut_copper_slab[top_slot_bit=0]": {
+      "minecraft:oxidized_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:oxidized_cut_copper_slab"
       }
     }
   },
   "minecraft:waxed_cut_copper_slab": {
     "block": {
-      "minecraft:waxed_cut_copper_slab[top_slot_bit=0]": {
+      "minecraft:waxed_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:waxed_cut_copper_slab"
       }
     }
   },
   "minecraft:waxed_exposed_cut_copper_slab": {
     "block": {
-      "minecraft:waxed_exposed_cut_copper_slab[top_slot_bit=0]": {
+      "minecraft:waxed_exposed_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:waxed_exposed_cut_copper_slab"
       }
     }
   },
   "minecraft:waxed_weathered_cut_copper_slab": {
     "block": {
-      "minecraft:waxed_weathered_cut_copper_slab[top_slot_bit=0]": {
+      "minecraft:waxed_weathered_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:waxed_weathered_cut_copper_slab"
       }
     }
   },
   "minecraft:waxed_oxidized_cut_copper_slab": {
     "block": {
-      "minecraft:waxed_oxidized_cut_copper_slab[top_slot_bit=0]": {
+      "minecraft:waxed_oxidized_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:waxed_oxidized_cut_copper_slab"
       }
     }
   },
   "minecraft:cobbled_deepslate_slab": {
     "block": {
-      "minecraft:cobbled_deepslate_slab[top_slot_bit=0]": {
+      "minecraft:cobbled_deepslate_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cobbled_deepslate_slab"
       }
     }
   },
   "minecraft:polished_deepslate_slab": {
     "block": {
-      "minecraft:polished_deepslate_slab[top_slot_bit=0]": {
+      "minecraft:polished_deepslate_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_deepslate_slab"
       }
     }
   },
   "minecraft:deepslate_tile_slab": {
     "block": {
-      "minecraft:deepslate_tile_slab[top_slot_bit=0]": {
+      "minecraft:deepslate_tile_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:deepslate_tile_slab"
       }
     }
   },
   "minecraft:deepslate_brick_slab": {
     "block": {
-      "minecraft:deepslate_brick_slab[top_slot_bit=0]": {
+      "minecraft:deepslate_brick_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:deepslate_brick_slab"
       }
     }
   },
   "minecraft:mud_brick_slab": {
     "block": {
-      "minecraft:mud_brick_slab[top_slot_bit=0]": {
+      "minecraft:mud_brick_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:mud_brick_slab"
       }
     }
@@ -2048,54 +1958,9 @@
     }
   },
   "minecraft:concrete_powder": {
-    "block": {
-      "minecraft:concrete_powder[color=white]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:white_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=silver]": {
-        "java_id": "minecraft:light_gray_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=gray]": {
-        "java_id": "minecraft:gray_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=black]": {
-        "java_id": "minecraft:black_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=brown]": {
-        "java_id": "minecraft:brown_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=red]": {
-        "java_id": "minecraft:red_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=orange]": {
-        "java_id": "minecraft:orange_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=yellow]": {
-        "java_id": "minecraft:yellow_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=lime]": {
-        "java_id": "minecraft:lime_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=green]": {
-        "java_id": "minecraft:green_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=cyan]": {
-        "java_id": "minecraft:cyan_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=light_blue]": {
-        "java_id": "minecraft:light_blue_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=blue]": {
-        "java_id": "minecraft:blue_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=purple]": {
-        "java_id": "minecraft:purple_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=magenta]": {
-        "java_id": "minecraft:magenta_concrete_powder"
-      },
-      "minecraft:concrete_powder[color=pink]": {
-        "java_id": "minecraft:pink_concrete_powder"
       }
     }
   },
@@ -2226,54 +2091,9 @@
     }
   },
   "minecraft:stained_hardened_clay": {
-    "block": {
-      "minecraft:stained_hardened_clay[color=white]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:white_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=silver]": {
-        "java_id": "minecraft:light_gray_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=gray]": {
-        "java_id": "minecraft:gray_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=black]": {
-        "java_id": "minecraft:black_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=brown]": {
-        "java_id": "minecraft:brown_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=red]": {
-        "java_id": "minecraft:red_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=orange]": {
-        "java_id": "minecraft:orange_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=yellow]": {
-        "java_id": "minecraft:yellow_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=lime]": {
-        "java_id": "minecraft:lime_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=green]": {
-        "java_id": "minecraft:green_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=cyan]": {
-        "java_id": "minecraft:cyan_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=light_blue]": {
-        "java_id": "minecraft:light_blue_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=blue]": {
-        "java_id": "minecraft:blue_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=purple]": {
-        "java_id": "minecraft:purple_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=magenta]": {
-        "java_id": "minecraft:magenta_concrete"
-      },
-      "minecraft:stained_hardened_clay[color=pink]": {
-        "java_id": "minecraft:pink_concrete"
       }
     }
   },
@@ -11386,6 +11206,454 @@
     "meta": {
       "": {
         "java_id": "minecraft:written_book"
+      }
+    }
+  },
+  "minecraft:white_concrete_powder": {
+    "block": {
+      "minecraft:white_concrete_powder": {
+        "java_id": "minecraft:white_concrete_powder"
+      }
+    }
+  },
+  "minecraft:orange_concrete_powder": {
+    "block": {
+      "minecraft:orange_concrete_powder": {
+        "java_id": "minecraft:orange_concrete_powder"
+      }
+    }
+  },
+  "minecraft:magenta_concrete_powder": {
+    "block": {
+      "minecraft:magenta_concrete_powder": {
+        "java_id": "minecraft:magenta_concrete_powder"
+      }
+    }
+  },
+  "minecraft:light_blue_concrete_powder": {
+    "block": {
+      "minecraft:light_blue_concrete_powder": {
+        "java_id": "minecraft:light_blue_concrete_powder"
+      }
+    }
+  },
+  "minecraft:yellow_concrete_powder": {
+    "block": {
+      "minecraft:yellow_concrete_powder": {
+        "java_id": "minecraft:yellow_concrete_powder"
+      }
+    }
+  },
+  "minecraft:lime_concrete_powder": {
+    "block": {
+      "minecraft:lime_concrete_powder": {
+        "java_id": "minecraft:lime_concrete_powder"
+      }
+    }
+  },
+  "minecraft:pink_concrete_powder": {
+    "block": {
+      "minecraft:pink_concrete_powder": {
+        "java_id": "minecraft:pink_concrete_powder"
+      }
+    }
+  },
+  "minecraft:gray_concrete_powder": {
+    "block": {
+      "minecraft:gray_concrete_powder": {
+        "java_id": "minecraft:gray_concrete_powder"
+      }
+    }
+  },
+  "minecraft:light_gray_concrete_powder": {
+    "block": {
+      "minecraft:light_gray_concrete_powder": {
+        "java_id": "minecraft:light_gray_concrete_powder"
+      }
+    }
+  },
+  "minecraft:cyan_concrete_powder": {
+    "block": {
+      "minecraft:cyan_concrete_powder": {
+        "java_id": "minecraft:cyan_concrete_powder"
+      }
+    }
+  },
+  "minecraft:purple_concrete_powder": {
+    "block": {
+      "minecraft:purple_concrete_powder": {
+        "java_id": "minecraft:purple_concrete_powder"
+      }
+    }
+  },
+  "minecraft:blue_concrete_powder": {
+    "block": {
+      "minecraft:blue_concrete_powder": {
+        "java_id": "minecraft:blue_concrete_powder"
+      }
+    }
+  },
+  "minecraft:brown_concrete_powder": {
+    "block": {
+      "minecraft:brown_concrete_powder": {
+        "java_id": "minecraft:brown_concrete_powder"
+      }
+    }
+  },
+  "minecraft:green_concrete_powder": {
+    "block": {
+      "minecraft:green_concrete_powder": {
+        "java_id": "minecraft:green_concrete_powder"
+      }
+    }
+  },
+  "minecraft:red_concrete_powder": {
+    "block": {
+      "minecraft:red_concrete_powder": {
+        "java_id": "minecraft:red_concrete_powder"
+      }
+    }
+  },
+  "minecraft:black_concrete_powder": {
+    "block": {
+      "minecraft:black_concrete_powder": {
+        "java_id": "minecraft:black_concrete_powder"
+      }
+    }
+  },
+  "minecraft:white_stained_glass": {
+    "block": {
+      "minecraft:white_stained_glass": {
+        "java_id": "minecraft:white_stained_glass"
+      }
+    }
+  },
+  "minecraft:orange_stained_glass": {
+    "block": {
+      "minecraft:orange_stained_glass": {
+        "java_id": "minecraft:orange_stained_glass"
+      }
+    }
+  },
+  "minecraft:magenta_stained_glass": {
+    "block": {
+      "minecraft:magenta_stained_glass": {
+        "java_id": "minecraft:magenta_stained_glass"
+      }
+    }
+  },
+  "minecraft:light_blue_stained_glass": {
+    "block": {
+      "minecraft:light_blue_stained_glass": {
+        "java_id": "minecraft:light_blue_stained_glass"
+      }
+    }
+  },
+  "minecraft:yellow_stained_glass": {
+    "block": {
+      "minecraft:yellow_stained_glass": {
+        "java_id": "minecraft:yellow_stained_glass"
+      }
+    }
+  },
+  "minecraft:lime_stained_glass": {
+    "block": {
+      "minecraft:lime_stained_glass": {
+        "java_id": "minecraft:lime_stained_glass"
+      }
+    }
+  },
+  "minecraft:pink_stained_glass": {
+    "block": {
+      "minecraft:pink_stained_glass": {
+        "java_id": "minecraft:pink_stained_glass"
+      }
+    }
+  },
+  "minecraft:gray_stained_glass": {
+    "block": {
+      "minecraft:gray_stained_glass": {
+        "java_id": "minecraft:gray_stained_glass"
+      }
+    }
+  },
+  "minecraft:light_gray_stained_glass": {
+    "block": {
+      "minecraft:light_gray_stained_glass": {
+        "java_id": "minecraft:light_gray_stained_glass"
+      }
+    }
+  },
+  "minecraft:cyan_stained_glass": {
+    "block": {
+      "minecraft:cyan_stained_glass": {
+        "java_id": "minecraft:cyan_stained_glass"
+      }
+    }
+  },
+  "minecraft:purple_stained_glass": {
+    "block": {
+      "minecraft:purple_stained_glass": {
+        "java_id": "minecraft:purple_stained_glass"
+      }
+    }
+  },
+  "minecraft:blue_stained_glass": {
+    "block": {
+      "minecraft:blue_stained_glass": {
+        "java_id": "minecraft:blue_stained_glass"
+      }
+    }
+  },
+  "minecraft:brown_stained_glass": {
+    "block": {
+      "minecraft:brown_stained_glass": {
+        "java_id": "minecraft:brown_stained_glass"
+      }
+    }
+  },
+  "minecraft:green_stained_glass": {
+    "block": {
+      "minecraft:green_stained_glass": {
+        "java_id": "minecraft:green_stained_glass"
+      }
+    }
+  },
+  "minecraft:red_stained_glass": {
+    "block": {
+      "minecraft:red_stained_glass": {
+        "java_id": "minecraft:red_stained_glass"
+      }
+    }
+  },
+  "minecraft:black_stained_glass": {
+    "block": {
+      "minecraft:black_stained_glass": {
+        "java_id": "minecraft:black_stained_glass"
+      }
+    }
+  },
+  "minecraft:white_stained_glass_pane": {
+    "block": {
+      "minecraft:white_stained_glass_pane": {
+        "java_id": "minecraft:white_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:orange_stained_glass_pane": {
+    "block": {
+      "minecraft:orange_stained_glass_pane": {
+        "java_id": "minecraft:orange_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:magenta_stained_glass_pane": {
+    "block": {
+      "minecraft:magenta_stained_glass_pane": {
+        "java_id": "minecraft:magenta_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:light_blue_stained_glass_pane": {
+    "block": {
+      "minecraft:light_blue_stained_glass_pane": {
+        "java_id": "minecraft:light_blue_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:yellow_stained_glass_pane": {
+    "block": {
+      "minecraft:yellow_stained_glass_pane": {
+        "java_id": "minecraft:yellow_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:lime_stained_glass_pane": {
+    "block": {
+      "minecraft:lime_stained_glass_pane": {
+        "java_id": "minecraft:lime_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:pink_stained_glass_pane": {
+    "block": {
+      "minecraft:pink_stained_glass_pane": {
+        "java_id": "minecraft:pink_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:gray_stained_glass_pane": {
+    "block": {
+      "minecraft:gray_stained_glass_pane": {
+        "java_id": "minecraft:gray_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:light_gray_stained_glass_pane": {
+    "block": {
+      "minecraft:light_gray_stained_glass_pane": {
+        "java_id": "minecraft:light_gray_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:cyan_stained_glass_pane": {
+    "block": {
+      "minecraft:cyan_stained_glass_pane": {
+        "java_id": "minecraft:cyan_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:purple_stained_glass_pane": {
+    "block": {
+      "minecraft:purple_stained_glass_pane": {
+        "java_id": "minecraft:purple_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:blue_stained_glass_pane": {
+    "block": {
+      "minecraft:blue_stained_glass_pane": {
+        "java_id": "minecraft:blue_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:brown_stained_glass_pane": {
+    "block": {
+      "minecraft:brown_stained_glass_pane": {
+        "java_id": "minecraft:brown_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:green_stained_glass_pane": {
+    "block": {
+      "minecraft:green_stained_glass_pane": {
+        "java_id": "minecraft:green_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:red_stained_glass_pane": {
+    "block": {
+      "minecraft:red_stained_glass_pane": {
+        "java_id": "minecraft:red_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:black_stained_glass_pane": {
+    "block": {
+      "minecraft:black_stained_glass_pane": {
+        "java_id": "minecraft:black_stained_glass_pane"
+      }
+    }
+  },
+  "minecraft:white_terracotta": {
+    "block": {
+      "minecraft:white_terracotta": {
+        "java_id": "minecraft:white_terracotta"
+      }
+    }
+  },
+  "minecraft:orange_terracotta": {
+    "block": {
+      "minecraft:orange_terracotta": {
+        "java_id": "minecraft:orange_terracotta"
+      }
+    }
+  },
+  "minecraft:magenta_terracotta": {
+    "block": {
+      "minecraft:magenta_terracotta": {
+        "java_id": "minecraft:magenta_terracotta"
+      }
+    }
+  },
+  "minecraft:light_blue_terracotta": {
+    "block": {
+      "minecraft:light_blue_terracotta": {
+        "java_id": "minecraft:light_blue_terracotta"
+      }
+    }
+  },
+  "minecraft:yellow_terracotta": {
+    "block": {
+      "minecraft:yellow_terracotta": {
+        "java_id": "minecraft:yellow_terracotta"
+      }
+    }
+  },
+  "minecraft:lime_terracotta": {
+    "block": {
+      "minecraft:lime_terracotta": {
+        "java_id": "minecraft:lime_terracotta"
+      }
+    }
+  },
+  "minecraft:pink_terracotta": {
+    "block": {
+      "minecraft:pink_terracotta": {
+        "java_id": "minecraft:pink_terracotta"
+      }
+    }
+  },
+  "minecraft:gray_terracotta": {
+    "block": {
+      "minecraft:gray_terracotta": {
+        "java_id": "minecraft:gray_terracotta"
+      }
+    }
+  },
+  "minecraft:light_gray_terracotta": {
+    "block": {
+      "minecraft:light_gray_terracotta": {
+        "java_id": "minecraft:light_gray_terracotta"
+      }
+    }
+  },
+  "minecraft:cyan_terracotta": {
+    "block": {
+      "minecraft:cyan_terracotta": {
+        "java_id": "minecraft:cyan_terracotta"
+      }
+    }
+  },
+  "minecraft:purple_terracotta": {
+    "block": {
+      "minecraft:purple_terracotta": {
+        "java_id": "minecraft:purple_terracotta"
+      }
+    }
+  },
+  "minecraft:blue_terracotta": {
+    "block": {
+      "minecraft:blue_terracotta": {
+        "java_id": "minecraft:blue_terracotta"
+      }
+    }
+  },
+  "minecraft:brown_terracotta": {
+    "block": {
+      "minecraft:brown_terracotta": {
+        "java_id": "minecraft:brown_terracotta"
+      }
+    }
+  },
+  "minecraft:green_terracotta": {
+    "block": {
+      "minecraft:green_terracotta": {
+        "java_id": "minecraft:green_terracotta"
+      }
+    }
+  },
+  "minecraft:red_terracotta": {
+    "block": {
+      "minecraft:red_terracotta": {
+        "java_id": "minecraft:red_terracotta"
+      }
+    }
+  },
+  "minecraft:black_terracotta": {
+    "block": {
+      "minecraft:black_terracotta": {
+        "java_id": "minecraft:black_terracotta"
       }
     }
   }

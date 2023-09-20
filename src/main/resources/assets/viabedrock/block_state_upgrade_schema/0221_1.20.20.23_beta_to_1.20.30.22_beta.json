@@ -1,0 +1,252 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 20,
+    "maxVersionPatch": 30,
+    "maxVersionRevision": 50,
+    "renamedProperties": {
+        "minecraft:anvil": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:big_dripleaf": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:blast_furnace": {
+            "facing_direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:calibrated_sculk_sensor": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:campfire": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:end_portal_frame": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:furnace": {
+            "facing_direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:lectern": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:lit_blast_furnace": {
+            "facing_direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:lit_furnace": {
+            "facing_direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:lit_smoker": {
+            "facing_direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:pink_petals": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:powered_comparator": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:powered_repeater": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:small_dripleaf_block": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:smoker": {
+            "facing_direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:soul_campfire": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:unpowered_comparator": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:unpowered_repeater": {
+            "direction": "minecraft:cardinal_direction"
+        }
+    },
+    "remappedPropertyValues": {
+        "minecraft:anvil": {
+            "direction": "direction_00"
+        },
+        "minecraft:big_dripleaf": {
+            "direction": "direction_00"
+        },
+        "minecraft:blast_furnace": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:calibrated_sculk_sensor": {
+            "direction": "direction_00"
+        },
+        "minecraft:campfire": {
+            "direction": "direction_00"
+        },
+        "minecraft:end_portal_frame": {
+            "direction": "direction_00"
+        },
+        "minecraft:furnace": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:lectern": {
+            "direction": "direction_00"
+        },
+        "minecraft:lit_blast_furnace": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:lit_furnace": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:lit_smoker": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:pink_petals": {
+            "direction": "direction_00"
+        },
+        "minecraft:powered_comparator": {
+            "direction": "direction_00"
+        },
+        "minecraft:powered_repeater": {
+            "direction": "direction_00"
+        },
+        "minecraft:small_dripleaf_block": {
+            "direction": "direction_00"
+        },
+        "minecraft:smoker": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:soul_campfire": {
+            "direction": "direction_00"
+        },
+        "minecraft:unpowered_comparator": {
+            "direction": "direction_00"
+        },
+        "minecraft:unpowered_repeater": {
+            "direction": "direction_00"
+        }
+    },
+    "remappedPropertyValuesIndex": {
+        "direction_00": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "south"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "west"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "north"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "east"
+                }
+            }
+        ],
+        "facing_direction_00": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "south"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "west"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "north"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "south"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "west"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "east"
+                }
+            }
+        ]
+    },
+    "remappedStates": {
+        "minecraft:concrete_powder": [
+            {
+                "oldState": {
+                    "color": {
+                        "string": "silver"
+                    }
+                },
+                "newName": "minecraft:light_gray_concrete_powder",
+                "newState": null
+            },
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "color",
+                    "suffix": "_concrete_powder"
+                },
+                "newState": null
+            }
+        ],
+        "minecraft:stained_hardened_clay": [
+            {
+                "oldState": {
+                    "color": {
+                        "string": "silver"
+                    }
+                },
+                "newName": "minecraft:light_gray_terracotta",
+                "newState": null
+            },
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "color",
+                    "suffix": "_terracotta"
+                },
+                "newState": null
+            }
+        ]
+    }
+}

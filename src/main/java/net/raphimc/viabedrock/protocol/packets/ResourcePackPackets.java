@@ -62,6 +62,11 @@ public class ResourcePackPackets {
             for (ResourcePack resourcePack : resourcePacks) {
                 resourcePacksStorage.addPack(resourcePack);
             }
+            final int cdnEntriesCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // cdn entries count
+            for (int i = 0; i < cdnEntriesCount; i++) {
+                wrapper.read(BedrockTypes.STRING); // pack id
+                wrapper.read(BedrockTypes.STRING); // remote url
+            }
 
             final PacketWrapper resourcePackClientResponse = PacketWrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, wrapper.user());
             final Set<String> missingPacks = new HashSet<>();

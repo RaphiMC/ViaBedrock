@@ -86,7 +86,7 @@ public class JoinPackets {
             final int difficulty = wrapper.read(BedrockTypes.VAR_INT); // difficulty
             final Position defaultSpawnPosition = wrapper.read(BedrockTypes.BLOCK_POSITION); // default spawn position
             wrapper.read(Type.BOOLEAN); // achievements disabled
-            final boolean isWorldEditor = wrapper.read(Type.BOOLEAN); // world editor
+            final int editorWorldType = wrapper.read(BedrockTypes.VAR_INT); // world editor type
             wrapper.read(Type.BOOLEAN); // created in world editor
             wrapper.read(Type.BOOLEAN); // exported from world editor
             wrapper.read(BedrockTypes.VAR_INT); // day cycle stop time
@@ -150,7 +150,7 @@ public class JoinPackets {
             final boolean hashedRuntimeBlockIds = wrapper.read(Type.BOOLEAN); // use hashed block runtime ids
             wrapper.read(Type.BOOLEAN); // server authoritative sounds
 
-            if (isWorldEditor) {
+            if (editorWorldType != 0) {
                 final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_4.DISCONNECT, wrapper.user());
                 disconnect.write(Type.COMPONENT, TextUtil.stringToGson(resourcePacksStorage.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
                 disconnect.send(BedrockProtocol.class);

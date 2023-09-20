@@ -53,5 +53,7 @@ public class PlayerActions {
     public static final int MISSED_SWING = 31;
     public static final int START_CRAWLING = 32;
     public static final int STOP_CRAWLING = 33;
+    public static final int START_FLYING = 34;
+    public static final int STOP_FLYING = 35;
 
 }
