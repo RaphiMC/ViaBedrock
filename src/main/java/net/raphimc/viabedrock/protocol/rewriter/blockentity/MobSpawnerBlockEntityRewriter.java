@@ -62,7 +62,7 @@ public class MobSpawnerBlockEntityRewriter implements BlockEntityRewriter.Rewrit
                 entityTag.put("id", new StringTag(javaEntityType.identifier()));
                 spawnData.put("entity", entityTag);
                 javaTag.put("SpawnData", spawnData);
-            } else if (!bedrockEntityIdentifier.isEmpty()) {
+            } else if (!Key.stripNamespace(bedrockEntityIdentifier).isEmpty()) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity identifier: " + bedrockEntityIdentifier);
                 final CompoundTag spawnData = new CompoundTag();
                 spawnData.put("entity", new CompoundTag());
