@@ -35,7 +35,7 @@ public class EndGatewayBlockEntityRewriter implements BlockEntityRewriter.Rewrit
         final CompoundTag javaTag = new CompoundTag();
 
         if (bedrockTag.get("Age") instanceof IntTag) {
-            javaTag.put("Age", new LongTag(((IntTag) bedrockTag.get("Age")).getValue()));
+            javaTag.put("Age", new LongTag(((IntTag) bedrockTag.get("Age")).asInt()));
         }
         if (bedrockTag.get("ExitPortal") instanceof ListTag) {
             final ListTag bedrockExitPortal = bedrockTag.get("ExitPortal");

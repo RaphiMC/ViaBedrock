@@ -535,7 +535,7 @@ public class ChunkTracker extends StoredObject {
                 final List<DataPalette> blockPalettes = bedrockSection.palettes(PaletteType.BLOCKS);
                 final DataPalette remappedBlockPalette = remappedSection.palette(PaletteType.BLOCKS);
 
-                if (blockPalettes.size() > 0) {
+                if (!blockPalettes.isEmpty()) {
                     final DataPalette layer0 = blockPalettes.get(0);
                     if (layer0.size() == 1) {
                         final int blockState = layer0.idByIndex(0);

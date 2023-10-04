@@ -425,7 +425,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockEntities = HashBiMap.create(entityIdentifiersListTag.size());
             for (Tag tag : entityIdentifiersListTag) {
                 final CompoundTag entry = (CompoundTag) tag;
-                this.bedrockEntities.put(entry.<StringTag>get("id").getValue(), entry.<IntTag>get("rid").getValue());
+                this.bedrockEntities.put(entry.<StringTag>get("id").getValue(), entry.<IntTag>get("rid").asInt());
             }
 
             Via.getManager().getProtocolManager().addMappingLoaderFuture(BedrockProtocol.class, Protocol1_19_4To1_19_3.class, () -> {

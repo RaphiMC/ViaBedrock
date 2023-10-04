@@ -21,16 +21,12 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.viaversion.viaversion.libs.gson.stream.JsonReader;
 import com.viaversion.viaversion.util.GsonUtil;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.CompletableFuture;
 
 public class JsonArgumentType implements ArgumentType<Object> {
 
@@ -68,11 +64,6 @@ public class JsonArgumentType implements ArgumentType<Object> {
         } catch (Throwable t) {
             throw INVALID_JSON_EXCEPTION.createWithContext(reader);
         }
-    }
-
-    @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return Suggestions.empty();
     }
 
     private int getPosition(JsonReader reader) {

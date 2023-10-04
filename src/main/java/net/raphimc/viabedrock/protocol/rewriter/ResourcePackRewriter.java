@@ -104,7 +104,7 @@ public class ResourcePackRewriter {
                 chars.add(row.toString());
             }
         }
-        if (providers.size() == 0) {
+        if (providers.isEmpty()) {
             return;
         }
 
