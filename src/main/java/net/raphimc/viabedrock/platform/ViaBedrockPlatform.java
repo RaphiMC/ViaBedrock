@@ -24,8 +24,8 @@ import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.ViaBedrockConfig;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
+import net.raphimc.viabedrock.api.protocol.EmptyBaseProtocol;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.EmptyBaseProtocol;
 
 import java.io.File;
 import java.util.logging.Logger;
