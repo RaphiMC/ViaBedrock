@@ -232,7 +232,7 @@ public class JoinPackets {
             joinGame.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(playerGameType, levelGameType)); // game mode
             joinGame.write(Type.BYTE, (byte) -1); // previous game mode
             joinGame.write(Type.STRING_ARRAY, new String[]{DimensionKeys.OVERWORLD, DimensionKeys.NETHER, DimensionKeys.END}); // dimension types
-            joinGame.write(Type.NBT, registries.clone()); // registries
+            joinGame.write(Type.NAMED_COMPOUND_TAG, registries.clone()); // registries
             joinGame.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension type
             joinGame.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension id
             joinGame.write(Type.LONG, 0L); // hashed seed

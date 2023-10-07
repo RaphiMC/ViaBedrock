@@ -400,7 +400,7 @@ public class ChunkTracker extends StoredObject {
                     final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_19_4.BLOCK_ENTITY_DATA, this.getUser());
                     blockEntityData.write(Type.POSITION1_14, blockPosition); // position
                     blockEntityData.write(Type.VAR_INT, javaBlockEntity.typeId()); // type
-                    blockEntityData.write(Type.NBT, javaBlockEntity.tag()); // block entity tag
+                    blockEntityData.write(Type.NAMED_COMPOUND_TAG, javaBlockEntity.tag()); // block entity tag
                     blockEntityData.scheduleSend(BedrockProtocol.class);
                 }
             } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {

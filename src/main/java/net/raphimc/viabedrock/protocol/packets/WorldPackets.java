@@ -464,7 +464,7 @@ public class WorldPackets {
 
                     if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
                         wrapper.write(Type.VAR_INT, javaBlockEntity.typeId()); // type
-                        wrapper.write(Type.NBT, javaBlockEntity.tag()); // block entity tag
+                        wrapper.write(Type.NAMED_COMPOUND_TAG, javaBlockEntity.tag()); // block entity tag
                     } else {
                         wrapper.cancel();
                     }
