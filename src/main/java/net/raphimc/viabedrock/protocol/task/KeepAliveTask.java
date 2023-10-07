@@ -32,7 +32,7 @@ public class KeepAliveTask implements Runnable {
     @Override
     public void run() {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
-            if (info.getProtocolInfo().getState().equals(State.PLAY) && info.getProtocolInfo().getPipeline().contains(BedrockProtocol.class)) {
+            if (info.getProtocolInfo().getServerState().equals(State.PLAY) && info.getProtocolInfo().getPipeline().contains(BedrockProtocol.class)) {
                 info.getChannel().eventLoop().submit(() -> {
                     try {
                         final PacketWrapper keepAlive = PacketWrapper.create(ClientboundPackets1_19_4.KEEP_ALIVE, info);

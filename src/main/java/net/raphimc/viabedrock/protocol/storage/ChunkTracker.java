@@ -470,6 +470,8 @@ public class ChunkTracker extends StoredObject {
         synchronized (this.dirtyChunks) {
             if (!this.dirtyChunks.isEmpty()) {
                 this.getUser().getChannel().eventLoop().submit(() -> {
+                    if (!this.getUser().getChannel().isActive()) return;
+
                     synchronized (this.dirtyChunks) {
                         for (Long dirtyChunk : this.dirtyChunks) {
                             final int chunkX = (int) (dirtyChunk >> 32);

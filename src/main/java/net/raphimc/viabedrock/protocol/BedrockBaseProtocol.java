@@ -17,11 +17,13 @@
  */
 package net.raphimc.viabedrock.protocol;
 
+import com.viaversion.viaversion.api.connection.ProtocolInfo;
 import com.viaversion.viaversion.api.protocol.AbstractSimpleProtocol;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.base.ServerboundHandshakePackets;
+import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 
 public class BedrockBaseProtocol extends AbstractSimpleProtocol {
@@ -46,6 +48,12 @@ public class BedrockBaseProtocol extends AbstractSimpleProtocol {
                     wrapper.user().put(new HandshakeStorage(wrapper.user(), protocolVersion, hostname, port));
                 });
             }
+        });
+
+        // Copied from BaseProtocol1_7
+        this.registerServerbound(State.LOGIN, ServerboundLoginPackets.LOGIN_ACKNOWLEDGED.getId(), ServerboundLoginPackets.LOGIN_ACKNOWLEDGED.getId(), wrapper -> {
+            final ProtocolInfo info = wrapper.user().getProtocolInfo();
+            info.setState(State.CONFIGURATION);
         });
     }
 

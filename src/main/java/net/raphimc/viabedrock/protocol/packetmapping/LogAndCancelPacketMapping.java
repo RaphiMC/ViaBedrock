@@ -41,7 +41,7 @@ public class LogAndCancelPacketMapping implements PacketMapping {
     public PacketHandler handler() {
         return wrapper -> {
             wrapper.cancel();
-            final State state = wrapper.user().getProtocolInfo().getState();
+            final State state = wrapper.user().getProtocolInfo().getServerState();
             final ByteBuf content = ((PacketWrapperImpl) wrapper).getInputBuffer();
             ViaBedrock.getPlatform().getLogger().warning("Received unknown packet " + wrapper.getId() + " in state " + state + " with content: " + ByteBufUtil.hexDump(content));
         };

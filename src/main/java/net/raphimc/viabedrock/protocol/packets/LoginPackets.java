@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.google.common.base.Joiner;
 import com.google.gson.*;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.ProtocolInfo;
@@ -24,6 +25,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
@@ -183,14 +185,20 @@ public class LoginPackets {
                         wrapper.write(Type.STRING, authChainData.getDisplayName()); // username
                         wrapper.write(Type.VAR_INT, 0); // properties length
 
-                        final ProtocolInfo protocolInfo = wrapper.user().getProtocolInfo();
-                        protocolInfo.setUsername(authChainData.getDisplayName());
-                        protocolInfo.setUuid(authChainData.getIdentity());
+                        final ProtocolInfo info = wrapper.user().getProtocolInfo();
+                        info.setUsername(authChainData.getDisplayName());
+                        info.setUuid(authChainData.getIdentity());
 
-                        protocolInfo.setState(State.PLAY);
+                        // Parts of BaseProtocol1_7 GAME_PROFILE handler
+                        if (info.getProtocolVersion() < ProtocolVersion.v1_20_2.getVersion()) {
+                            info.setState(State.PLAY);
+                        }
                         Via.getManager().getConnectionManager().onLoginSuccess(wrapper.user());
-                        if (!protocolInfo.getPipeline().hasNonBaseProtocols()) {
+                        if (!info.getPipeline().hasNonBaseProtocols()) {
                             wrapper.user().setActive(false);
+                        }
+                        if (Via.getManager().isDebug()) {
+                            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "{0} logged in with protocol {1}, Route: {2}", new Object[]{info.getUsername(), info.getProtocolVersion(), Joiner.on(", ").join(info.getPipeline().pipes(), ", ")});
                         }
 
                         final PacketWrapper clientCacheStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_STATUS, wrapper.user());

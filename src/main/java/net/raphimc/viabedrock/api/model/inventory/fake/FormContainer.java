@@ -76,7 +76,7 @@ public class FormContainer extends FakeContainer {
 
             return false;
         }
-        slot += this.page * (SIZE - 1);
+        slot += (short) (this.page * (SIZE - 1));
 
         if (this.form instanceof ModalForm) {
             final ModalForm modalForm = (ModalForm) this.form;

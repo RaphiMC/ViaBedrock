@@ -24,6 +24,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.BitSets;
@@ -253,7 +254,7 @@ public class JoinPackets {
             entityTracker.addEntity(clientPlayer);
             wrapper.user().put(entityTracker);
 
-            final PacketWrapper brandPluginMessage = PacketWrapper.create(ClientboundPackets1_19_4.PLUGIN_MESSAGE, wrapper.user());
+            final PacketWrapper brandPluginMessage = PacketWrapper.create(ClientboundPackets1_19_4.PLUGIN_MESSAGE, Unpooled.buffer(), wrapper.user());
             brandPluginMessage.write(Type.STRING, "minecraft:brand"); // channel
             brandPluginMessage.write(Type.STRING, "Bedrock" + (!serverEngine.isEmpty() ? " @" + serverEngine : "") + " v: " + vanillaVersion); // content
             brandPluginMessage.send(BedrockProtocol.class);

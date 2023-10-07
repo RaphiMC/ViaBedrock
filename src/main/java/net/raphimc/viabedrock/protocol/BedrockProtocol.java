@@ -187,7 +187,7 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
     public static void kickForIllegalState(final UserConnection user, final String reason, final Throwable e) {
         ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Illegal state: " + reason, e);
         try {
-            final PacketWrapper disconnect = PacketWrapper.create(user.getProtocolInfo().getState() == State.PLAY ? ClientboundPackets1_19_4.DISCONNECT : ClientboundLoginPackets.LOGIN_DISCONNECT, user);
+            final PacketWrapper disconnect = PacketWrapper.create(user.getProtocolInfo().getServerState() == State.PLAY ? ClientboundPackets1_19_4.DISCONNECT : ClientboundLoginPackets.LOGIN_DISCONNECT, user);
             disconnect.write(Type.COMPONENT, TextUtil.stringToGson("§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page."));
             disconnect.send(BedrockProtocol.class);
         } catch (Throwable ignored) {
