@@ -31,7 +31,6 @@ import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.gson.io.GsonDeserializer;
-import io.jsonwebtoken.io.Decoders;
 import io.netty.util.AsciiString;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -66,6 +65,7 @@ import java.util.logging.Level;
 public class LoginPackets {
 
     private static final KeyFactory EC_KEYFACTORY;
+    private static final String MOJANG_PUBLIC_KEY_BASE64 = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAECRXueJeTDqNRRgJi/vlRufByu/2G0i2Ebt6YMar5QX/R0DIIyrJMcUpruK4QveTfJSTp3Shlq4Gk34cD/4GUWwkv0DVuzeuB+tXija7HBxii03NHDbPAD0AKnLr2wdAp";
     private static final ECPublicKey MOJANG_PUBLIC_KEY;
     private static final int CLOCK_SKEW = 60;
 
@@ -75,7 +75,7 @@ public class LoginPackets {
     static {
         try {
             EC_KEYFACTORY = KeyFactory.getInstance("EC");
-            MOJANG_PUBLIC_KEY = publicKeyFromBase64("MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAECRXueJeTDqNRRgJi/vlRufByu/2G0i2Ebt6YMar5QX/R0DIIyrJMcUpruK4QveTfJSTp3Shlq4Gk34cD/4GUWwkv0DVuzeuB+tXija7HBxii03NHDbPAD0AKnLr2wdAp");
+            MOJANG_PUBLIC_KEY = publicKeyFromBase64(MOJANG_PUBLIC_KEY_BASE64);
         } catch (Throwable e) {
             throw new RuntimeException("Could not initialize the required cryptography", e);
         }
@@ -141,30 +141,18 @@ public class LoginPackets {
                     wrapper.cancel();
                     final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
 
-                    // So basically jjwt is shit and can't trim the header/body payload.
-                    // This causes it to think the payload isn't json and throw errors. To fix that we need to trim only the payload.
-                    // https://github.com/jwtk/jjwt/issues/687
-                    final boolean[] trim = {true};
-                    final Jws<Claims> jwt = Jwts.parserBuilder()
-                            .setAllowedClockSkewSeconds(CLOCK_SKEW)
-                            .setSigningKeyResolver(new SigningKeyResolverAdapter() {
+                    final Jws<Claims> jwt = Jwts.parser()
+                            .clockSkewSeconds(CLOCK_SKEW)
+                            .keyLocator(new LocatorAdapter<Key>() {
                                 @Override
-                                public Key resolveSigningKey(JwsHeader header, Claims claims) {
-                                    trim[0] = false;
+                                protected Key locate(ProtectedHeader header) {
                                     return publicKeyFromBase64((String) header.get("x5u"));
                                 }
                             })
-                            .base64UrlDecodeWith(s -> {
-                                if (trim[0]) {
-                                    return new String(Decoders.BASE64URL.decode(s), StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
-                                } else {
-                                    return Decoders.BASE64URL.decode(s);
-                                }
-                            })
                             .build()
-                            .parseClaimsJws(wrapper.read(BedrockTypes.STRING)); // jwt
+                            .parseSignedClaims(wrapper.read(BedrockTypes.STRING)); // jwt
 
-                    final byte[] salt = Base64.getDecoder().decode(jwt.getBody().get("salt", String.class));
+                    final byte[] salt = Base64.getDecoder().decode(jwt.getPayload().get("salt", String.class));
                     final SecretKey secretKey = ecdhKeyExchange(authChainData.getPrivateKey(), publicKeyFromBase64((String) jwt.getHeader().get("x5u")), salt);
                     Via.getManager().getProviders().get(NettyPipelineProvider.class).enableEncryption(wrapper.user(), secretKey);
 
@@ -281,33 +269,33 @@ public class LoginPackets {
             final PrivateKey privateKey = authChainData.getPrivateKey();
             final String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
 
-            final Jws<Claims> mojangJwt = Jwts.parserBuilder().setAllowedClockSkewSeconds(CLOCK_SKEW).setSigningKey(MOJANG_PUBLIC_KEY).deserializeJsonWith(GSON_DESERIALIZER).build().parseClaimsJws(authChainData.getMojangJwt());
-            final ECPublicKey mojangJwtPublicKey = publicKeyFromBase64(mojangJwt.getBody().get("identityPublicKey", String.class));
-            final Jws<Claims> identityJwt = Jwts.parserBuilder().setAllowedClockSkewSeconds(CLOCK_SKEW).setSigningKey(mojangJwtPublicKey).build().parseClaimsJws(authChainData.getIdentityJwt());
+            final Jws<Claims> mojangJwt = Jwts.parser().clockSkewSeconds(CLOCK_SKEW).verifyWith(MOJANG_PUBLIC_KEY).json(GSON_DESERIALIZER).build().parseSignedClaims(authChainData.getMojangJwt());
+            final ECPublicKey mojangJwtPublicKey = publicKeyFromBase64(mojangJwt.getPayload().get("identityPublicKey", String.class));
+            final Jws<Claims> identityJwt = Jwts.parser().clockSkewSeconds(CLOCK_SKEW).verifyWith(mojangJwtPublicKey).build().parseSignedClaims(authChainData.getIdentityJwt());
 
             if (authChainData.getSelfSignedJwt() == null) {
                 final String selfSignedJwt = Jwts.builder()
-                        .signWith(privateKey, SignatureAlgorithm.ES384)
-                        .setHeaderParam("x5u", encodedPublicKey)
+                        .signWith(privateKey, Jwts.SIG.ES384)
+                        .header().add("x5u", encodedPublicKey).and()
                         .claim("certificateAuthority", true)
                         .claim("identityPublicKey", mojangJwt.getHeader().get("x5u"))
-                        .setExpiration(Date.from(Instant.now().plus(2, ChronoUnit.DAYS)))
-                        .setNotBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
+                        .expiration(Date.from(Instant.now().plus(2, ChronoUnit.DAYS)))
+                        .notBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
                         .compact();
 
                 authChainData.setSelfSignedJwt(selfSignedJwt);
             }
             if (authChainData.getSkinJwt() == null) {
                 final String skinData = Jwts.builder()
-                        .signWith(privateKey, SignatureAlgorithm.ES384)
-                        .setHeaderParam("x5u", encodedPublicKey)
-                        .addClaims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(user))
+                        .signWith(privateKey, Jwts.SIG.ES384)
+                        .header().add("x5u", encodedPublicKey).and()
+                        .claims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(user))
                         .compact();
 
                 authChainData.setSkinJwt(skinData);
             }
 
-            final Map<String, Object> extraData = identityJwt.getBody().get("extraData", Map.class);
+            final Map<String, Object> extraData = identityJwt.getPayload().get("extraData", Map.class);
             authChainData.setXuid((String) extraData.get("XUID"));
             authChainData.setIdentity(UUID.fromString((String) extraData.get("identity")));
             authChainData.setDisplayName((String) extraData.get("displayName"));
@@ -330,15 +318,15 @@ public class LoginPackets {
             extraData.put("sandboxId", "RETAIL");
 
             final String identityJwt = Jwts.builder()
-                    .signWith(privateKey, SignatureAlgorithm.ES384)
-                    .setHeaderParam("x5u", encodedPublicKey)
+                    .signWith(privateKey, Jwts.SIG.ES384)
+                    .header().add("x5u", encodedPublicKey).and()
                     .claim("identityPublicKey", encodedPublicKey)
                     .claim("randomNonce", ThreadLocalRandom.current().nextLong())
                     .claim("extraData", extraData)
-                    .setIssuer("Mojang")
-                    .setIssuedAt(Date.from(Instant.now()))
-                    .setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
-                    .setNotBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
+                    .issuer("Mojang")
+                    .issuedAt(Date.from(Instant.now()))
+                    .expiration(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
+                    .notBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
                     .compact();
 
             final AuthChainData authChainData = new AuthChainData(user, null, identityJwt, publicKey, privateKey, UUID.randomUUID(), "");
@@ -348,9 +336,9 @@ public class LoginPackets {
             user.put(authChainData);
 
             final String skinData = Jwts.builder()
-                    .signWith(privateKey, SignatureAlgorithm.ES384)
-                    .setHeaderParam("x5u", encodedPublicKey)
-                    .addClaims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(user))
+                    .signWith(privateKey, Jwts.SIG.ES384)
+                    .header().add("x5u", encodedPublicKey).and()
+                    .claims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(user))
                     .compact();
 
             authChainData.setSkinJwt(skinData);
