@@ -30,6 +30,8 @@ public class InventoryTrackerTickTask implements Runnable {
             final InventoryTracker inventoryTracker = info.get(InventoryTracker.class);
             if (inventoryTracker != null) {
                 info.getChannel().eventLoop().submit(() -> {
+                    if (!info.getChannel().isActive()) return;
+
                     try {
                         inventoryTracker.tick();
                     } catch (Throwable e) {

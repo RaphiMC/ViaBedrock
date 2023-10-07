@@ -30,6 +30,8 @@ public class EntityTrackerTickTask implements Runnable {
             final EntityTracker entityTracker = info.get(EntityTracker.class);
             if (entityTracker != null) {
                 info.getChannel().eventLoop().submit(() -> {
+                    if (!info.getChannel().isActive()) return;
+
                     try {
                         entityTracker.tick();
                     } catch (Throwable e) {

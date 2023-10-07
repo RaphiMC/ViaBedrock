@@ -34,6 +34,8 @@ public class KeepAliveTask implements Runnable {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
             if (info.getProtocolInfo().getServerState().equals(State.PLAY) && info.getProtocolInfo().getPipeline().contains(BedrockProtocol.class)) {
                 info.getChannel().eventLoop().submit(() -> {
+                    if (!info.getChannel().isActive()) return;
+
                     try {
                         final PacketWrapper keepAlive = PacketWrapper.create(ClientboundPackets1_19_4.KEEP_ALIVE, info);
                         keepAlive.write(Type.LONG, INTERNAL_ID); // id
