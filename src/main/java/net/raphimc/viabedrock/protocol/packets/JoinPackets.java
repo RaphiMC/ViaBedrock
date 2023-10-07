@@ -311,11 +311,6 @@ public class JoinPackets {
                 }
             }
 
-            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_19_4.UPDATE_VIEW_POSITION, wrapper.user());
-            updateViewPosition.write(Type.VAR_INT, (int) playerPosition.x() >> 4); // chunk x
-            updateViewPosition.write(Type.VAR_INT, (int) playerPosition.z() >> 4); // chunk z
-            updateViewPosition.send(BedrockProtocol.class);
-
             entityTracker.getClientPlayer().sendPlayerPositionPacketToClient(false);
 
             final PacketWrapper requestChunkRadius = PacketWrapper.create(ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, wrapper.user());

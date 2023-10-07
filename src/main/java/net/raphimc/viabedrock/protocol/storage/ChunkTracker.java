@@ -117,16 +117,24 @@ public class ChunkTracker extends StoredObject {
     public void setCenter(final int x, final int z) throws Exception {
         this.centerX = x;
         this.centerZ = z;
-        this.removeOutOfViewDistanceChunks();
+        this.removeOutOfLoadDistanceChunks();
     }
 
     public void setRadius(final int radius) throws Exception {
         this.radius = radius;
-        this.removeOutOfViewDistanceChunks();
+        this.removeOutOfLoadDistanceChunks();
     }
 
-    public BedrockChunk createChunk(final int chunkX, final int chunkZ, final int nonNullSectionCount) {
-        if (!this.isInViewDistance(chunkX, chunkZ)) return null;
+    public BedrockChunk createChunk(final int chunkX, final int chunkZ, final int nonNullSectionCount) throws Exception {
+        if (!this.isInLoadDistance(chunkX, chunkZ)) return null;
+        if (!this.isInRenderDistance(chunkX, chunkZ)) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of render distance, but within load distance: " + chunkX + ", " + chunkZ);
+            final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
+            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_19_4.UPDATE_VIEW_POSITION, this.getUser());
+            updateViewPosition.write(Type.VAR_INT, (int) entityTracker.getClientPlayer().position().x() >> 4); // chunk x
+            updateViewPosition.write(Type.VAR_INT, (int) entityTracker.getClientPlayer().position().z() >> 4); // chunk z
+            updateViewPosition.send(BedrockProtocol.class);
+        }
 
         final BedrockChunk chunk = new BedrockChunk(chunkX, chunkZ, new BedrockChunkSection[this.worldHeight >> 4]);
         for (int i = 0; i < nonNullSectionCount && i < chunk.getSections().length; i++) {
@@ -156,7 +164,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public BedrockChunk getChunk(final int chunkX, final int chunkZ) {
-        if (!this.isInViewDistance(chunkX, chunkZ)) return null;
+        if (!this.isInLoadDistance(chunkX, chunkZ)) return null;
 
         synchronized (this.chunkLock) {
             return this.chunks.get(this.chunkKey(chunkX, chunkZ));
@@ -249,7 +257,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public boolean isChunkLoaded(final int chunkX, final int chunkZ) {
-        if (!this.isInViewDistance(chunkX, chunkZ)) return false;
+        if (!this.isInLoadDistance(chunkX, chunkZ)) return false;
 
         synchronized (this.chunkLock) {
             return this.chunks.containsKey(this.chunkKey(chunkX, chunkZ));
@@ -273,9 +281,8 @@ public class ChunkTracker extends StoredObject {
         }
     }
 
-    public boolean isInViewDistance(final int chunkX, final int chunkZ) {
-        final boolean isInRenderRange = Math.abs(chunkX - this.centerX) <= this.radius && Math.abs(chunkZ - this.centerZ) <= this.radius;
-        if (!isInRenderRange) { // Bedrock accepts chunks outside the chunk render range and uses the player position as a center to determine if a chunk is allowed to be loaded
+    public boolean isInLoadDistance(final int chunkX, final int chunkZ) {
+        if (!this.isInRenderDistance(chunkX, chunkZ)) { // Bedrock accepts chunks outside the chunk render range and uses the player position as a center to determine if a chunk is allowed to be loaded
             final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
             if (entityTracker == null) return false;
             final int centerX = (int) entityTracker.getClientPlayer().position().x() >> 4;
@@ -286,13 +293,17 @@ public class ChunkTracker extends StoredObject {
         return true;
     }
 
-    public void removeOutOfViewDistanceChunks() throws Exception {
+    public boolean isInRenderDistance(final int chunkX, final int chunkZ) {
+        return Math.abs(chunkX - this.centerX) <= this.radius && Math.abs(chunkZ - this.centerZ) <= this.radius;
+    }
+
+    public void removeOutOfLoadDistanceChunks() throws Exception {
         final Set<Long> chunksToRemove = new HashSet<>();
         synchronized (this.chunkLock) {
             for (long chunkKey : this.chunks.keySet()) {
                 final int chunkX = (int) (chunkKey >> 32);
                 final int chunkZ = (int) chunkKey;
-                if (this.isInViewDistance(chunkX, chunkZ)) continue;
+                if (this.isInLoadDistance(chunkX, chunkZ)) continue;
 
                 chunksToRemove.add(chunkKey);
             }
@@ -311,7 +322,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void requestSubChunk(final int chunkX, final int subChunkY, final int chunkZ) {
-        if (!this.isInViewDistance(chunkX, chunkZ)) return;
+        if (!this.isInLoadDistance(chunkX, chunkZ)) return;
 
         synchronized (this.subChunkLock) {
             this.subChunkRequests.add(new SubChunkPosition(chunkX, subChunkY, chunkZ));
@@ -319,7 +330,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public boolean mergeSubChunk(final int chunkX, final int subChunkY, final int chunkZ, final BedrockChunkSection other, final List<BedrockBlockEntity> blockEntities) {
-        if (!this.isInViewDistance(chunkX, chunkZ)) return false;
+        if (!this.isInLoadDistance(chunkX, chunkZ)) return false;
 
         final SubChunkPosition position = new SubChunkPosition(chunkX, subChunkY, chunkZ);
         synchronized (this.subChunkLock) {
@@ -492,7 +503,7 @@ public class ChunkTracker extends StoredObject {
         if (this.getUser().get(EntityTracker.class) == null || !this.getUser().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) return;
 
         synchronized (this.subChunkLock) {
-            this.subChunkRequests.removeIf(s -> !this.isInViewDistance(s.chunkX, s.chunkZ));
+            this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
 
             final Position basePosition = new Position(this.centerX, 0, this.centerZ);
             while (!this.subChunkRequests.isEmpty()) {
