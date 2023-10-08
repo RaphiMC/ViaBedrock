@@ -17,7 +17,9 @@
  */
 package net.raphimc.viabedrock.platform;
 
-public interface ViaBedrockConfig {
+import com.viaversion.viaversion.api.configuration.Config;
+
+public interface ViaBedrockConfig extends Config {
 
     /**
      * @return Whether the blob cache is enabled.
