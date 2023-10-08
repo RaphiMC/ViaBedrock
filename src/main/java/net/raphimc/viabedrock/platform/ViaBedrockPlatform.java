@@ -34,7 +34,7 @@ public interface ViaBedrockPlatform {
 
     default void init(final File dataFolder) {
         final ViaBedrockConfig config = new ViaBedrockConfig(new File(dataFolder, "viabedrock.yml"));
-        config.reloadConfig();
+        config.reload();
         ViaBedrock.init(this, config);
         Via.getManager().getSubPlatforms().add(ViaBedrock.IMPL_VERSION);
 
