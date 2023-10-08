@@ -23,9 +23,9 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.DataItem;
 import com.viaversion.viaversion.api.minecraft.item.Item;
-import com.viaversion.viaversion.api.minecraft.nbt.BinaryTagIO;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.gson.JsonObject;
+import com.viaversion.viaversion.libs.opennbt.stringified.SNBT;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.lenni0451.mcstructs.text.ATextComponent;
@@ -190,7 +190,7 @@ public class ItemRewriter extends StoredObject {
             CompoundTag javaTag = null;
             try {
                 if (javaMapping.has("java_tag")) {
-                    javaTag = BinaryTagIO.readString(javaMapping.get("java_tag").getAsString());
+                    javaTag = SNBT.deserializeCompoundTag(javaMapping.get("java_tag").getAsString());
                 }
             } catch (Throwable e) {
                 throw new RuntimeException("Failed to parse java tag for " + javaIdentifier, e);
