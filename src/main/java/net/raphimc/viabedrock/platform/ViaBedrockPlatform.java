@@ -36,6 +36,7 @@ public interface ViaBedrockPlatform {
         final ViaBedrockConfig config = new ViaBedrockConfig(new File(dataFolder, "viabedrock.yml"));
         config.reload();
         ViaBedrock.init(this, config);
+        Via.getManager().getConfigurationProvider().register(config);
         Via.getManager().getSubPlatforms().add(ViaBedrock.IMPL_VERSION);
 
         final ProtocolManager protocolManager = Via.getManager().getProtocolManager();

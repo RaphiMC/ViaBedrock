@@ -17,7 +17,6 @@
  */
 package net.raphimc.viabedrock;
 
-import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.util.Config;
 
 import java.io.File;
@@ -36,7 +35,6 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
 
     public ViaBedrockConfig(final File configFile) {
         super(configFile);
-        Via.getManager().getConfigurationProvider().register(this);
     }
 
     @Override
