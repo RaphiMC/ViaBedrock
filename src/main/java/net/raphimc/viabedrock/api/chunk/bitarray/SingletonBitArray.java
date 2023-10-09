@@ -18,6 +18,8 @@
 
 package net.raphimc.viabedrock.api.chunk.bitarray;
 
+import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
+
 public class SingletonBitArray implements BitArray {
 
     public static final SingletonBitArray INSTANCE = new SingletonBitArray();
@@ -36,7 +38,7 @@ public class SingletonBitArray implements BitArray {
 
     @Override
     public int size() {
-        return 1;
+        return ChunkSection.SIZE;
     }
 
     @Override
