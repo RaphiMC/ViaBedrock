@@ -128,6 +128,12 @@ public class BlockStateRewriter extends StoredObject {
             this.blockStateIdMappings.put(bedrockId, javaId);
         }
 
+        for (BedrockBlockState customBlockState : customBlockStates) {
+            final int bedrockId = this.blockStateMappings.get(customBlockState);
+            final int javaId = javaBlockStates.get(bedrockToJavaBlockStates.get(BedrockBlockState.INFO_UPDATE));
+            this.blockStateIdMappings.put(bedrockId, javaId);
+        }
+
         for (Int2ObjectMap.Entry<BedrockBlockState> entry : BedrockProtocol.MAPPINGS.getBedrockLegacyBlockStates().int2ObjectEntrySet()) {
             final int legacyId = entry.getIntKey() >> 6;
             final int legacyData = entry.getIntKey() & 63;
