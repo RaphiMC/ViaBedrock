@@ -32,8 +32,8 @@ import java.util.logging.Logger;
 
 public interface ViaBedrockPlatform {
 
-    default void init(final File dataFolder) {
-        final ViaBedrockConfig config = new ViaBedrockConfig(new File(dataFolder, "viabedrock.yml"));
+    default void init(final File configFile) {
+        final ViaBedrockConfig config = new ViaBedrockConfig(configFile);
         config.reload();
         ViaBedrock.init(this, config);
         Via.getManager().getConfigurationProvider().register(config);
