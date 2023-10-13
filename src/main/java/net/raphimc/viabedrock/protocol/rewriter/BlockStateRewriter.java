@@ -26,6 +26,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
+import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.block_state.BlockStateSanitizer;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
@@ -84,6 +85,47 @@ public class BlockStateRewriter extends StoredObject {
                     }
                 }
             }
+            if (blockProperty.properties().get("traits") instanceof ListTag) { // https://wiki.bedrock.dev/blocks/block-traits.html
+                final ListTag traits = blockProperty.properties().get("traits");
+                if (CompoundTag.class.equals(traits.getElementType())) {
+                    for (Tag traitTag : traits) {
+                        final CompoundTag trait = (CompoundTag) traitTag;
+                        if (trait.get("name") instanceof StringTag) {
+                            final String name = Key.namespaced(trait.<StringTag>get("name").getValue());
+                            final Map<String, Set<String>> traitStates = BedrockProtocol.MAPPINGS.getBedrockBlockTraits().get(name);
+                            if (traitStates == null) {
+                                throw new RuntimeException("Missing block trait states for " + name);
+                            }
+
+                            if (trait.get("enabled_states") instanceof CompoundTag) {
+                                final CompoundTag enabledStatesTag = trait.get("enabled_states");
+                                if (enabledStatesTag.size() != traitStates.size()) {
+                                    throw new RuntimeException("Invalid enabled_states tag for trait " + name + " (size mismatch)");
+                                }
+
+                                for (Map.Entry<String, Tag> tag : enabledStatesTag) {
+                                    final String key = Key.namespaced(tag.getKey());
+                                    final boolean enabled = tag.getValue() instanceof ByteTag && ((ByteTag) tag.getValue()).asByte() != 0;
+                                    if (enabled) {
+                                        if (traitStates.containsKey(key)) {
+                                            final Set<Tag> values = new LinkedHashSet<>();
+                                            for (String state : traitStates.get(key)) {
+                                                values.add(new StringTag(state));
+                                            }
+                                            propertiesMap.put(key, values);
+                                        } else {
+                                            throw new RuntimeException("Missing block trait states for trait " + name + " and key " + key);
+                                        }
+                                    }
+                                }
+                            } else {
+                                throw new RuntimeException("Missing enabled_states tag for trait " + name);
+                            }
+                        }
+                    }
+                }
+            }
+
             final List<CompoundTag> combinations = CombinationUtil.generateCombinations(propertiesMap).stream()
                     .map(stringTagMap -> {
                         final CompoundTag combination = new CompoundTag();

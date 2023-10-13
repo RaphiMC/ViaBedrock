@@ -77,8 +77,9 @@ public class BedrockMappingData extends MappingDataBase {
     private BlockStateUpgrader bedrockBlockStateUpgrader;
     private BiMap<BlockState, Integer> javaBlockStates;
     private List<BedrockBlockState> bedrockBlockStates;
-    private Map<String, String> bedrockBlockTags;
     private Map<BlockState, BlockState> bedrockToJavaBlockStates;
+    private Map<String, String> bedrockBlockTags;
+    private Map<String, Map<String, Set<String>>> bedrockBlockTraits;
     private IntSet javaPreWaterloggedStates;
     private Int2IntMap javaPottedBlockStates;
     private BiMap<String, Integer> bedrockLegacyBlocks;
@@ -170,6 +171,49 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
+            final JsonObject bedrockBlockTagsJson = this.readJson("custom/block_tags.json");
+            this.bedrockBlockTags = new HashMap<>();
+            for (Map.Entry<String, JsonElement> entry : bedrockBlockTagsJson.entrySet()) {
+                final String tagName = entry.getKey();
+                for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
+                    final String bedrockIdentifier = tagValueJson.getAsString();
+                    boolean contains = false;
+                    for (BedrockBlockState bedrockBlockState : this.bedrockBlockStates) {
+                        if (bedrockBlockState.namespacedIdentifier().equals(bedrockIdentifier)) {
+                            contains = true;
+                            break;
+                        }
+                    }
+                    if (!contains) {
+                        throw new RuntimeException("Unknown bedrock block: " + bedrockIdentifier);
+                    }
+                    if (this.bedrockBlockTags.put(bedrockIdentifier, tagName) != null) {
+                        throw new RuntimeException("Duplicate bedrock block tag for " + bedrockIdentifier);
+                    }
+                }
+            }
+
+            final JsonObject bedrockBlockTraitsJson = this.readJson("custom/block_traits.json");
+            this.bedrockBlockTraits = new HashMap<>(bedrockBlockTraitsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockBlockTraitsJson.entrySet()) {
+                final String traitName = entry.getKey();
+                final JsonObject traitStatesJson = entry.getValue().getAsJsonObject();
+                final Map<String, Set<String>> traitStates = new HashMap<>(traitStatesJson.size());
+                for (Map.Entry<String, JsonElement> traitStatesEntry : traitStatesJson.entrySet()) {
+                    final JsonArray statesJson = traitStatesEntry.getValue().getAsJsonArray();
+                    final Set<String> states = new LinkedHashSet<>(statesJson.size());
+                    for (JsonElement stateJson : statesJson) {
+                        if (!states.add(stateJson.getAsString())) {
+                            throw new RuntimeException("Duplicate bedrock block trait state for " + traitName + ": " + stateJson.getAsString());
+                        }
+                    }
+                    traitStates.put(traitStatesEntry.getKey(), states);
+                }
+                if (this.bedrockBlockTraits.put(traitName, traitStates) != null) {
+                    throw new RuntimeException("Duplicate bedrock block trait for " + traitName);
+                }
+            }
+
             final JsonArray javaPreWaterloggedStatesJson = this.readJson("custom/pre_waterlogged_states.json").getAsJsonArray("blockstates");
             this.javaPreWaterloggedStates = new IntOpenHashSet(javaPreWaterloggedStatesJson.size());
             for (JsonElement entry : javaPreWaterloggedStatesJson) {
@@ -203,28 +247,6 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             this.buildLegacyBlockStateMappings();
-
-            final JsonObject bedrockBlockTagsJson = this.readJson("custom/block_tags.json");
-            this.bedrockBlockTags = new HashMap<>();
-            for (Map.Entry<String, JsonElement> entry : bedrockBlockTagsJson.entrySet()) {
-                final String tagName = entry.getKey();
-                for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
-                    final String bedrockIdentifier = tagValueJson.getAsString();
-                    boolean contains = false;
-                    for (BedrockBlockState bedrockBlockState : this.bedrockBlockStates) {
-                        if (bedrockBlockState.namespacedIdentifier().equals(bedrockIdentifier)) {
-                            contains = true;
-                            break;
-                        }
-                    }
-                    if (!contains) {
-                        throw new RuntimeException("Unknown bedrock block: " + bedrockIdentifier);
-                    }
-                    if (this.bedrockBlockTags.put(bedrockIdentifier, tagName) != null) {
-                        throw new RuntimeException("Duplicate bedrock block tag for " + bedrockIdentifier);
-                    }
-                }
-            }
         }
 
         { // Biomes
@@ -540,12 +562,16 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaBlockStates;
     }
 
-    public List<BedrockBlockState> getBedrockBlockStates() {
-        return this.bedrockBlockStates;
-    }
-
     public Map<String, String> getBedrockBlockTags() {
         return this.bedrockBlockTags;
+    }
+
+    public Map<String, Map<String, Set<String>>> getBedrockBlockTraits() {
+        return this.bedrockBlockTraits;
+    }
+
+    public List<BedrockBlockState> getBedrockBlockStates() {
+        return this.bedrockBlockStates;
     }
 
     public Map<BlockState, BlockState> getBedrockToJavaBlockStates() {

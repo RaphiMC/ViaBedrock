@@ -1,0 +1,32 @@
+{
+  "minecraft:placement_direction": {
+    "minecraft:cardinal_direction": [
+      "south",
+      "north",
+      "west",
+      "east"
+    ],
+    "minecraft:facing_direction": [
+      "down",
+      "up",
+      "south",
+      "north",
+      "west",
+      "east"
+    ]
+  },
+  "minecraft:placement_position": {
+    "minecraft:block_face": [
+      "down",
+      "up",
+      "south",
+      "north",
+      "west",
+      "east"
+    ],
+    "minecraft:vertical_half": [
+      "bottom",
+      "top"
+    ]
+  }
+}
