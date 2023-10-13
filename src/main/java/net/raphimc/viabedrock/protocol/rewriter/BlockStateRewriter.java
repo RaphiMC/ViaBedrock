@@ -108,8 +108,9 @@ public class BlockStateRewriter extends StoredObject {
                                     final boolean enabled = tag.getValue() instanceof ByteTag && ((ByteTag) tag.getValue()).asByte() != 0;
                                     if (enabled) {
                                         if (traitStates.containsKey(key)) {
+                                            final Set<String> states = traitStates.get(key);
                                             final Set<Tag> values = new LinkedHashSet<>();
-                                            for (String state : traitStates.get(key)) {
+                                            for (String state : states) {
                                                 values.add(new StringTag(state));
                                             }
                                             propertiesMap.put(key, values);
