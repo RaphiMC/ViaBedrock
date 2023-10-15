@@ -44,8 +44,8 @@ dependencies {
     api("io.netty:netty-codec-http:4.1.100.Final") {
         transitive = false
     }
-    api "io.jsonwebtoken:jjwt-impl:0.12.2"
-    api("io.jsonwebtoken:jjwt-gson:0.12.2") {
+    api "io.jsonwebtoken:jjwt-impl:0.12.3"
+    api("io.jsonwebtoken:jjwt-gson:0.12.3") {
         exclude group: "com.google.code.gson", module: "gson"
     }
     api("net.lenni0451.mcstructs-bedrock:text:1.2.0") {
@@ -89,7 +89,7 @@ publishing {
     repositories {
         maven {
             name = "reposilite"
-            url = project.maven_version.endsWith("SNAPSHOT") ? "https://maven.lenni0451.net/snapshots" : "https://maven.lenni0451.net/releases"
+            url = "https://maven.lenni0451.net/" + (project.maven_version.endsWith("SNAPSHOT") ? "snapshots" : "releases")
 
             credentials(PasswordCredentials)
             authentication {
