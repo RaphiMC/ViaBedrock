@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
 import java.util.UUID;
@@ -30,7 +30,7 @@ public class Entity {
     protected final long runtimeId;
     protected final int javaId;
     protected final UUID javaUuid;
-    protected final Entity1_19_4Types type;
+    protected final EntityTypes1_19_4 type;
 
     /**
      * x, y, z
@@ -44,7 +44,7 @@ public class Entity {
     protected String name;
     protected int age;
 
-    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid, final Entity1_19_4Types type) {
+    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid, final EntityTypes1_19_4 type) {
         this.user = user;
         this.uniqueId = uniqueId;
         this.runtimeId = runtimeId;
@@ -77,7 +77,7 @@ public class Entity {
         return this.javaUuid;
     }
 
-    public Entity1_19_4Types type() {
+    public EntityTypes1_19_4 type() {
         return this.type;
     }
 

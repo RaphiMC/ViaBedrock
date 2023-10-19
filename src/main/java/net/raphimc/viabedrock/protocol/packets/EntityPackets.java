@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.packets;
 
 import com.google.common.collect.Lists;
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
 import com.viaversion.viaversion.api.minecraft.metadata.Metadata;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
@@ -71,7 +71,7 @@ public class EntityPackets {
 
             // TODO: Handle remaining fields
 
-            final Entity1_19_4Types javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(identifier));
+            final EntityTypes1_19_4 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(identifier));
             if (javaEntityType == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity identifier: " + identifier);
                 wrapper.cancel();
@@ -287,12 +287,12 @@ public class EntityPackets {
             final PaintingVariant painting = PaintingVariant.getByName(wrapper.read(BedrockTypes.STRING)); // motive
             final Position3f positionOffset = painting.getJavaPositionOffset(direction);
 
-            final Entity entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, Entity1_19_4Types.PAINTING);
+            final Entity entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, EntityTypes1_19_4.PAINTING);
             entity.setPosition(position);
 
             wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Type.UUID, entity.javaUuid()); // uuid
-            wrapper.write(Type.VAR_INT, Entity1_19_4Types.PAINTING.getId()); // type id
+            wrapper.write(Type.VAR_INT, EntityTypes1_19_4.PAINTING.getId()); // type id
             wrapper.write(Type.DOUBLE, (double) position.x() + positionOffset.x()); // x
             wrapper.write(Type.DOUBLE, (double) position.y() + positionOffset.y()); // y
             wrapper.write(Type.DOUBLE, (double) position.z() + positionOffset.z()); // z

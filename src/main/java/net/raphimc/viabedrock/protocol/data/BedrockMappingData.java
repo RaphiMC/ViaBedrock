@@ -22,7 +22,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.io.ByteStreams;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.gson.JsonArray;
@@ -101,7 +101,7 @@ public class BedrockMappingData extends MappingDataBase {
 
     // Entities
     private BiMap<String, Integer> bedrockEntities;
-    private Map<String, Entity1_19_4Types> bedrockToJavaEntities;
+    private Map<String, EntityTypes1_19_4> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
 
     // Effects
@@ -465,8 +465,8 @@ public class BedrockMappingData extends MappingDataBase {
                         unmappedIdentifiers.add(bedrockIdentifier);
                         continue;
                     }
-                    Entity1_19_4Types javaEntityType = null;
-                    for (Entity1_19_4Types type : Entity1_19_4Types.values()) {
+                    EntityTypes1_19_4 javaEntityType = null;
+                    for (EntityTypes1_19_4 type : EntityTypes1_19_4.values()) {
                         if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
                             javaEntityType = type;
                             break;
@@ -638,7 +638,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockEntities;
     }
 
-    public Map<String, Entity1_19_4Types> getBedrockToJavaEntities() {
+    public Map<String, EntityTypes1_19_4> getBedrockToJavaEntities() {
         return this.bedrockToJavaEntities;
     }
 

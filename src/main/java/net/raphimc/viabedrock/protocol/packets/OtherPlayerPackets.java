@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
 import com.viaversion.viaversion.api.minecraft.metadata.Metadata;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
@@ -73,7 +73,7 @@ public class OtherPlayerPackets {
 
             // TODO: Handle remaining fields
 
-            final PlayerEntity entity = (PlayerEntity) entityTracker.addEntity(abilities.uniqueEntityId(), runtimeEntityId, uuid, Entity1_19_4Types.PLAYER);
+            final PlayerEntity entity = (PlayerEntity) entityTracker.addEntity(abilities.uniqueEntityId(), runtimeEntityId, uuid, EntityTypes1_19_4.PLAYER);
             entity.setPosition(position);
             entity.setRotation(rotation);
             entity.updateName(username);
@@ -131,7 +131,7 @@ public class OtherPlayerPackets {
                 wrapper.cancel();
                 return;
             }
-            if (!entity.type().isOrHasParent(Entity1_19_4Types.PLAYER)) {
+            if (!entity.type().isOrHasParent(EntityTypes1_19_4.PLAYER)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received move player packet for non-player entity: " + entity.type());
                 wrapper.cancel();
                 return;
