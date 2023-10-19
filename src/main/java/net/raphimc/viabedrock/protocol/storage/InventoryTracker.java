@@ -145,8 +145,8 @@ public class InventoryTracker extends StoredObject {
     public void writeWindowItems(final PacketWrapper wrapper, final Container container) {
         wrapper.write(Type.UNSIGNED_BYTE, (short) container.windowId()); // window id
         wrapper.write(Type.VAR_INT, 0); // revision
-        wrapper.write(Type.FLAT_VAR_INT_ITEM_ARRAY_VAR_INT, container.getJavaItems(this.getUser())); // items
-        wrapper.write(Type.FLAT_VAR_INT_ITEM, this.getUser().get(ItemRewriter.class).javaItem(this.currentCursorItem)); // cursor item
+        wrapper.write(Type.ITEM1_13_2_ARRAY, container.getJavaItems(this.getUser())); // items
+        wrapper.write(Type.ITEM1_13_2, this.getUser().get(ItemRewriter.class).javaItem(this.currentCursorItem)); // cursor item
     }
 
     public void tick() throws Exception {

@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.storage;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
@@ -48,7 +48,7 @@ public class EntityTracker extends StoredObject {
         super(user);
     }
 
-    public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final Entity1_19_4Types type) throws Exception {
+    public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final EntityTypes1_19_4 type) throws Exception {
         switch (type) {
             case PLAYER:
                 return this.addEntity(new PlayerEntity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), uuid != null ? uuid : UUID.randomUUID()));
@@ -110,7 +110,7 @@ public class EntityTracker extends StoredObject {
         final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets1_19_4.SPAWN_ENTITY, this.getUser());
         spawnEntity.write(Type.VAR_INT, javaId); // entity id
         spawnEntity.write(Type.UUID, UUID.randomUUID()); // uuid
-        spawnEntity.write(Type.VAR_INT, blockState.identifier().equals("frame") ? Entity1_19_4Types.ITEM_FRAME.getId() : Entity1_19_4Types.GLOW_ITEM_FRAME.getId()); // type id
+        spawnEntity.write(Type.VAR_INT, blockState.identifier().equals("frame") ? EntityTypes1_19_4.ITEM_FRAME.getId() : EntityTypes1_19_4.GLOW_ITEM_FRAME.getId()); // type id
         spawnEntity.write(Type.DOUBLE, (double) position.x()); // x
         spawnEntity.write(Type.DOUBLE, (double) position.y()); // y
         spawnEntity.write(Type.DOUBLE, (double) position.z()); // z

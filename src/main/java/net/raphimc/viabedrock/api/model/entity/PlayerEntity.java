@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.Entity1_19_4Types;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
@@ -31,7 +31,7 @@ import java.util.UUID;
 public class PlayerEntity extends Entity {
 
     public PlayerEntity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid) {
-        super(user, uniqueId, runtimeId, javaId, javaUuid, Entity1_19_4Types.PLAYER);
+        super(user, uniqueId, runtimeId, javaId, javaUuid, EntityTypes1_19_4.PLAYER);
     }
 
     public void createTeam() throws Exception {

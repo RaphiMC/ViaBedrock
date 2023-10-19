@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.types.metadata;
 
 import com.viaversion.viaversion.api.minecraft.metadata.MetaType;
 import com.viaversion.viaversion.api.minecraft.metadata.Metadata;
-import com.viaversion.viaversion.api.type.types.minecraft.MetaTypeTemplate;
+import com.viaversion.viaversion.api.type.types.metadata.MetaTypeTemplate;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
