@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.types.item;
 
-import com.viaversion.viaversion.api.type.PartialType;
+import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -26,14 +26,18 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.logging.Level;
 
-public class BedrockItemType extends PartialType<BedrockItem, Integer> {
+public class BedrockItemType extends Type<BedrockItem> {
+
+    private final int blockingId;
 
     public BedrockItemType(final int blockingId) {
-        super(blockingId, BedrockItem.class);
+        super(BedrockItem.class);
+
+        this.blockingId = blockingId;
     }
 
     @Override
-    public BedrockItem read(ByteBuf buffer, Integer blockingId) throws Exception {
+    public BedrockItem read(ByteBuf buffer) throws Exception {
         final int id = BedrockTypes.VAR_INT.read(buffer);
         if (id == 0) {
             return null;
@@ -64,7 +68,7 @@ public class BedrockItemType extends PartialType<BedrockItem, Integer> {
         item.setCanPlace(BedrockTypes.UTF8_STRING_ARRAY.read(extraData));
         item.setCanBreak(BedrockTypes.UTF8_STRING_ARRAY.read(extraData));
 
-        if (item.identifier() == blockingId) {
+        if (item.identifier() == this.blockingId) {
             item.setBlockingTicks(extraData.readLongLE());
         }
 
@@ -76,7 +80,7 @@ public class BedrockItemType extends PartialType<BedrockItem, Integer> {
     }
 
     @Override
-    public void write(ByteBuf buffer, Integer blockingId, BedrockItem value) throws Exception {
+    public void write(ByteBuf buffer, BedrockItem value) throws Exception {
         if (value == null) {
             BedrockTypes.VAR_INT.write(buffer, 0);
             return;
@@ -104,7 +108,7 @@ public class BedrockItemType extends PartialType<BedrockItem, Integer> {
         BedrockTypes.UTF8_STRING_ARRAY.write(extraData, value.canPlace());
         BedrockTypes.UTF8_STRING_ARRAY.write(extraData, value.canBreak());
 
-        if (value.identifier() == blockingId) {
+        if (value.identifier() == this.blockingId) {
             extraData.writeLongLE(value.blockingTicks());
         }
 
