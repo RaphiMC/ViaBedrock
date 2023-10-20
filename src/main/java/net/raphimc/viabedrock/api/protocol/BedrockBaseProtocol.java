@@ -45,7 +45,7 @@ public class BedrockBaseProtocol extends AbstractSimpleProtocol {
                     final String hostname = wrapper.read(Type.STRING); // hostname
                     final int port = wrapper.read(Type.UNSIGNED_SHORT); // port
 
-                    wrapper.user().put(new HandshakeStorage(wrapper.user(), protocolVersion, hostname, port));
+                    wrapper.user().put(new HandshakeStorage(protocolVersion, hostname, port));
                 });
             }
         });

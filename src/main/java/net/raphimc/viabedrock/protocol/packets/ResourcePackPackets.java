@@ -47,7 +47,7 @@ public class ResourcePackPackets {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACKS_INFO twice");
             }
 
-            final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage(wrapper.user());
+            final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage();
             wrapper.user().put(resourcePacksStorage);
 
             wrapper.read(Type.BOOLEAN); // must accept

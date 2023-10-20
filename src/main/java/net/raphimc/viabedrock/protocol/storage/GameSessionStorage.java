@@ -18,11 +18,10 @@
 package net.raphimc.viabedrock.protocol.storage;
 
 import com.vdurmont.semver4j.Semver;
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.connection.StorableObject;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 
-public class GameSessionStorage extends StoredObject {
+public class GameSessionStorage implements StorableObject {
 
     private CompoundTag javaRegistries;
     private CompoundTag bedrockBiomeDefinitions;
@@ -35,10 +34,6 @@ public class GameSessionStorage extends StoredObject {
     private boolean commandsEnabled;
     private int playerPermission;
     private int commandPermission;
-
-    public GameSessionStorage(final UserConnection user) {
-        super(user);
-    }
 
     public CompoundTag getJavaRegistries() {
         return this.javaRegistries;

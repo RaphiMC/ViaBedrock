@@ -17,21 +17,16 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.connection.StorableObject;
 import com.viaversion.viaversion.util.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class PlayerListStorage extends StoredObject {
+public class PlayerListStorage implements StorableObject {
 
     private final Map<UUID, Pair<Long, String>> playerList = new HashMap<>();
-
-    public PlayerListStorage(final UserConnection user) {
-        super(user);
-    }
 
     public Pair<Long, String> addPlayer(final UUID uuid, final long playerListId, final String name) {
         return this.playerList.put(uuid, new Pair<>(playerListId, name));

@@ -17,20 +17,15 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.connection.StorableObject;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ChannelStorage extends StoredObject {
+public class ChannelStorage implements StorableObject {
 
     private final Set<String> channels = new HashSet<>();
-
-    public ChannelStorage(final UserConnection user) {
-        super(user);
-    }
 
     public void addChannels(final String[] channels) {
         this.channels.addAll(Arrays.asList(channels));

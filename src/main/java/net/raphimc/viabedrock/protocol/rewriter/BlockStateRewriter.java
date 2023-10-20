@@ -19,8 +19,7 @@ package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.connection.StorableObject;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -41,7 +40,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-public class BlockStateRewriter extends StoredObject {
+public class BlockStateRewriter implements StorableObject {
 
     public static final String TAG_WATER = "water";
     public static final String TAG_ITEM_FRAME = "item_frame";
@@ -52,9 +51,7 @@ public class BlockStateRewriter extends StoredObject {
     private final Int2ObjectMap<String> blockStateTags = new Int2ObjectOpenHashMap<>(); // Bedrock
     private final BlockStateSanitizer blockStateSanitizer;
 
-    public BlockStateRewriter(final UserConnection user, final BlockProperties[] blockProperties, final boolean hashedRuntimeBlockIds) {
-        super(user);
-
+    public BlockStateRewriter(final BlockProperties[] blockProperties, final boolean hashedRuntimeBlockIds) {
         this.blockStateIdMappings.defaultReturnValue(-1);
         this.legacyBlockStateIdMappings.defaultReturnValue(-1);
 

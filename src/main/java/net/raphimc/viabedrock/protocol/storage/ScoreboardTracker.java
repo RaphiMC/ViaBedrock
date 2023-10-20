@@ -17,8 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.connection.StorableObject;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardEntry;
 import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardObjective;
@@ -26,13 +25,9 @@ import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardObjective;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ScoreboardTracker extends StoredObject {
+public class ScoreboardTracker implements StorableObject {
 
     private final Map<String, ScoreboardObjective> objectives = new HashMap<>();
-
-    public ScoreboardTracker(final UserConnection user) {
-        super(user);
-    }
 
     public boolean hasObjective(final String name) {
         return this.objectives.containsKey(name);

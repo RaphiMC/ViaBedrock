@@ -17,8 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.connection.StorableObject;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -26,7 +25,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import java.util.*;
 import java.util.function.Function;
 
-public class ResourcePacksStorage extends StoredObject {
+public class ResourcePacksStorage implements StorableObject {
 
     private final Map<UUID, ResourcePack> packs = new HashMap<>();
     private final Set<UUID> preloadedPacks = new HashSet<>();
@@ -37,9 +36,7 @@ public class ResourcePacksStorage extends StoredObject {
 
     private Map<String, String> translations;
 
-    public ResourcePacksStorage(final UserConnection user) {
-        super(user);
-
+    public ResourcePacksStorage() {
         this.addPreloadedPack(BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack());
     }
 

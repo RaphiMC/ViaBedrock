@@ -138,12 +138,12 @@ public class BedrockProtocol extends AbstractProtocol<ClientboundBedrockPackets,
 
     @Override
     public void init(UserConnection user) {
-        user.put(new SpawnPositionStorage(user));
+        user.put(new SpawnPositionStorage());
         user.put(new BlobCache(user));
-        user.put(new PlayerListStorage(user));
+        user.put(new PlayerListStorage());
         user.put(new PacketSyncStorage(user));
-        user.put(new ChannelStorage(user));
-        user.put(new ScoreboardTracker(user));
+        user.put(new ChannelStorage());
+        user.put(new ScoreboardTracker());
         user.put(new InventoryTracker(user));
     }
 

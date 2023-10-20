@@ -17,14 +17,13 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.connection.StorableObject;
 
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.UUID;
 
-public class AuthChainData extends StoredObject {
+public class AuthChainData implements StorableObject {
 
     private final String mojangJwt;
     private final String identityJwt;
@@ -39,9 +38,7 @@ public class AuthChainData extends StoredObject {
     private UUID identity;
     private String xuid;
 
-    public AuthChainData(final UserConnection user, final String mojangJwt, final String identityJwt, final ECPublicKey publicKey, final ECPrivateKey privateKey, final UUID deviceId, final String playFabId) {
-        super(user);
-
+    public AuthChainData(final String mojangJwt, final String identityJwt, final ECPublicKey publicKey, final ECPrivateKey privateKey, final UUID deviceId, final String playFabId) {
         this.mojangJwt = mojangJwt;
         this.identityJwt = identityJwt;
         this.publicKey = publicKey;

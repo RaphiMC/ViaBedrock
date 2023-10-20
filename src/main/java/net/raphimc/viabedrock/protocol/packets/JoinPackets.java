@@ -199,7 +199,7 @@ public class JoinPackets {
 
             biomeRegistry.put("value", BiomeRegistry.buildJavaBiomeRegistry(BedrockProtocol.MAPPINGS.getBedrockBiomeDefinitions()));
 
-            final GameSessionStorage gameSession = new GameSessionStorage(wrapper.user());
+            final GameSessionStorage gameSession = new GameSessionStorage();
             wrapper.user().put(gameSession);
             gameSession.setBedrockVanillaVersion(version);
             gameSession.setJavaRegistries(registries);
@@ -246,7 +246,7 @@ public class JoinPackets {
             joinGame.write(Type.VAR_INT, 0); // portal cooldown
             joinGame.send(BedrockProtocol.class);
 
-            wrapper.user().put(new BlockStateRewriter(wrapper.user(), blockProperties, hashedRuntimeBlockIds));
+            wrapper.user().put(new BlockStateRewriter(blockProperties, hashedRuntimeBlockIds));
             wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
             wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
             final EntityTracker entityTracker = new EntityTracker(wrapper.user());

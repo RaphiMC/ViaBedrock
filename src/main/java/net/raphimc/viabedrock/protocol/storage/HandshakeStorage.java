@@ -17,18 +17,15 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.connection.StorableObject;
 
-public class HandshakeStorage extends StoredObject {
+public class HandshakeStorage implements StorableObject {
 
     private final int protocolVersion;
     private final String hostname;
     private final int port;
 
-    public HandshakeStorage(final UserConnection user, final int protocolVersion, final String hostname, final int port) {
-        super(user);
-
+    public HandshakeStorage(final int protocolVersion, final String hostname, final int port) {
         this.protocolVersion = protocolVersion;
         this.hostname = hostname;
         this.port = port;

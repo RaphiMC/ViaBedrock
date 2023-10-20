@@ -17,19 +17,14 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.connection.StorableObject;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
-public class SpawnPositionStorage extends StoredObject {
+public class SpawnPositionStorage implements StorableObject {
 
     private final Int2ObjectMap<Position> spawnPositions = new Int2ObjectOpenHashMap<>();
-
-    public SpawnPositionStorage(final UserConnection user) {
-        super(user);
-    }
 
     public void setSpawnPosition(final int dimension, final Position position) {
         this.spawnPositions.put(dimension, position);
