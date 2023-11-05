@@ -33,6 +33,8 @@ public class ResourcePacksStorage implements StorableObject {
     private final List<UUID> behaviourPackStack = new ArrayList<>();
 
     private boolean completedTransfer;
+    private boolean javaClientWaitingForPack;
+    private boolean loadedOnJavaClient;
 
     private Map<String, String> translations;
 
@@ -116,6 +118,27 @@ public class ResourcePacksStorage implements StorableObject {
 
     public void setCompletedTransfer() {
         this.completedTransfer = true;
+    }
+
+    public boolean isJavaClientWaitingForPack() {
+        return this.javaClientWaitingForPack;
+    }
+
+    public void setJavaClientWaitingForPack(final boolean state) {
+        this.javaClientWaitingForPack = state;
+    }
+
+    public boolean isLoadedOnJavaClient() {
+        return this.loadedOnJavaClient;
+    }
+
+    public void setLoadedOnJavaClient() {
+        this.javaClientWaitingForPack = false;
+        this.loadedOnJavaClient = true;
+    }
+
+    public boolean hasFinishedLoading() {
+        return this.translations != null;
     }
 
     public Map<String, String> getTranslations() {

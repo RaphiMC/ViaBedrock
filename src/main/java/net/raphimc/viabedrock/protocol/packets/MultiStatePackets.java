@@ -239,18 +239,6 @@ public class MultiStatePackets {
                                 setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
 
                                 clientPlayer.closeDownloadingTerrainScreen();
-
-                                if (wrapper.user().getProtocolInfo().getProtocolVersion() >= ProtocolConstants.JAVA_VERSION.getVersion()) {
-                                    final UUID httpToken = UUID.randomUUID();
-                                    ViaBedrock.getResourcePackServer().addConnection(httpToken, wrapper.user());
-
-                                    final PacketWrapper resourcePack = PacketWrapper.create(ClientboundPackets1_20_2.RESOURCE_PACK, wrapper.user());
-                                    resourcePack.write(Type.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + httpToken); // url
-                                    resourcePack.write(Type.STRING, ""); // hash
-                                    resourcePack.write(Type.BOOLEAN, false); // requires accept
-                                    resourcePack.write(Type.OPTIONAL_COMPONENT, TextUtil.stringToGson("\nFor the best possible experience, you should accept the resource pack.")); // prompt message
-                                    resourcePack.send(BedrockProtocol.class);
-                                }
                             } else {
                                 wrapper.setPacketType(ClientboundPackets1_20_2.DISCONNECT);
                                 writePlayStatusKickMessage(wrapper, status);

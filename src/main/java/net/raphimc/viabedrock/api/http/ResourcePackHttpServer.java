@@ -34,7 +34,6 @@ import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -60,7 +59,7 @@ public class ResourcePackHttpServer {
                         channel.pipeline().addLast("chunked_writer", new ChunkedWriteHandler());
                         channel.pipeline().addLast("http_handler", new SimpleChannelInboundHandler<Object>() {
                             @Override
-                            protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws IOException {
+                            protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws InterruptedException {
                                 if (msg instanceof HttpRequest) {
                                     final HttpRequest request = (HttpRequest) msg;
                                     if (!request.method().equals(HttpMethod.GET)) {
@@ -80,9 +79,14 @@ public class ResourcePackHttpServer {
                                         return;
                                     }
 
+                                    final ResourcePacksStorage resourcePacksStorage = user.get(ResourcePacksStorage.class);
+                                    while (!resourcePacksStorage.hasFinishedLoading()) {
+                                        Thread.sleep(100);
+                                    }
+
                                     try {
                                         final long start = System.currentTimeMillis();
-                                        final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(user.get(ResourcePacksStorage.class));
+                                        final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage);
                                         final byte[] data = javaContent.toZip();
                                         Via.getPlatform().getLogger().log(Level.INFO, "Converted packs in " + (System.currentTimeMillis() - start) + "ms");
 
