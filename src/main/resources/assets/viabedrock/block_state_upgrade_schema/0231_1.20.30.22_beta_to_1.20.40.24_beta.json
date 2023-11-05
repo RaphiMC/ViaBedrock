@@ -1,0 +1,86 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 20,
+    "maxVersionPatch": 40,
+    "maxVersionRevision": 3,
+    "renamedProperties": {
+        "minecraft:chest": {
+            "facing_direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:ender_chest": {
+            "facing_direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:stonecutter_block": {
+            "facing_direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:trapped_chest": {
+            "facing_direction": "minecraft:cardinal_direction"
+        }
+    },
+    "remappedPropertyValues": {
+        "minecraft:chest": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:ender_chest": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:stonecutter_block": {
+            "facing_direction": "facing_direction_00"
+        },
+        "minecraft:trapped_chest": {
+            "facing_direction": "facing_direction_00"
+        }
+    },
+    "remappedPropertyValuesIndex": {
+        "facing_direction_00": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "north"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "north"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "north"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "south"
+                }
+            },
+            {
+                "old": {
+                    "int": 4
+                },
+                "new": {
+                    "string": "west"
+                }
+            },
+            {
+                "old": {
+                    "int": 5
+                },
+                "new": {
+                    "string": "east"
+                }
+            }
+        ]
+    }
+}

@@ -13,7 +13,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/7a28ef5c5f98ea4b5603f1a3b3404bef2d2047b5/core/src/main/resources/bedrock/block_palette.1_20_30.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/574dad015d11c072d9fc7c5989d94f9689078b77/core/src/main/resources/bedrock/block_palette.1_20_40.nbt)
 
 ### data/bedrock/entity_identifiers.nbt
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
@@ -33,6 +33,9 @@ This file has been dumped from a vanilla server using a fabric mod.
 
 ### data/java/tags.nbt
 This file has been dumped from a vanilla server using a fabric mod.
+
+### data/custom/block_traits.json
+[wiki.bedrock.dev](https://wiki.bedrock.dev/blocks/block-traits.html)
 
 ### block_state_upgrade_schema/*
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)

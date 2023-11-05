@@ -55,5 +55,6 @@ public class PlayerActions {
     public static final int STOP_CRAWLING = 33;
     public static final int START_FLYING = 34;
     public static final int STOP_FLYING = 35;
+    public static final int ACK_ENTITY_DATA = 36;
 
 }

@@ -26,6 +26,7 @@ import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.libs.gson.JsonNull;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundConfigurationPackets1_20_2;
 import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
@@ -57,6 +58,7 @@ import java.util.logging.Level;
 public class MultiStatePackets {
 
     private static final PacketHandler DISCONNECT_HANDLER = wrapper -> {
+        wrapper.read(BedrockTypes.VAR_INT); // reason
         final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
         if (hasMessage) {
             final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
@@ -65,7 +67,7 @@ public class MultiStatePackets {
             final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
             wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translatedMessage)); // reason
         } else {
-            wrapper.write(Type.COMPONENT, com.viaversion.viaversion.libs.gson.JsonNull.INSTANCE); // reason
+            wrapper.write(Type.COMPONENT, JsonNull.INSTANCE); // reason
         }
     };
 

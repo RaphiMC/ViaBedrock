@@ -63,5 +63,6 @@ public class AuthInputActions {
     public static final int STOP_CRAWLING = 41;
     public static final int START_FLYING = 42;
     public static final int STOP_FLYING = 43;
+    public static final int ACK_ENTITY_DATA = 44;
 
 }
