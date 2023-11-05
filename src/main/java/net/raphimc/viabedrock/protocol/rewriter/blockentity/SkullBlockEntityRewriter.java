@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.google.common.collect.ImmutableMap;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
@@ -30,8 +31,6 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
-import java.util.Collections;
-
 public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     private static final int PLAYER_HEAD_TYPE = 3;
@@ -39,7 +38,7 @@ public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
     private static final int SKULL_WITH_ROTATION_UPDATE;
 
     static {
-        final BlockState blockState = new BlockState("skeleton_skull", Collections.singletonMap("rotation", "0"));
+        final BlockState blockState = new BlockState("skeleton_skull", ImmutableMap.of("powered", "false", "rotation", "0"));
         SKULL_WITH_ROTATION_UPDATE = BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(blockState, -1);
         if (SKULL_WITH_ROTATION_UPDATE == -1) {
             throw new IllegalStateException("Unable to find skull block state with rotation 0");

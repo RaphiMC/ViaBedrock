@@ -21,13 +21,13 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.gson.JsonElement;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 public class PacketFactory {
 
     public static PacketWrapper systemChat(final UserConnection user, final JsonElement message) {
-        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_19_4.SYSTEM_CHAT, user);
+        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_20_2.SYSTEM_CHAT, user);
         systemChat.write(Type.COMPONENT, message); // message
         systemChat.write(Type.BOOLEAN, false); // overlay
         return systemChat;

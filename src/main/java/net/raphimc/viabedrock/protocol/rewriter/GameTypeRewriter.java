@@ -21,7 +21,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameTypes;
 
 public class GameTypeRewriter {
 
-    public static short gameTypeToGameMode(final int gameType) {
+    public static byte gameTypeToGameMode(final int gameType) {
         switch (gameType) {
             case GameTypes.SURVIVAL:
             case GameTypes.SURVIVAL_VIEWER:
@@ -39,8 +39,8 @@ public class GameTypeRewriter {
         }
     }
 
-    public static short getEffectiveGameMode(final int playerGameType, final int levelGameType) {
-        short effectiveGameMode = gameTypeToGameMode(playerGameType);
+    public static byte getEffectiveGameMode(final int playerGameType, final int levelGameType) {
+        byte effectiveGameMode = gameTypeToGameMode(playerGameType);
         if (effectiveGameMode == -1) {
             effectiveGameMode = gameTypeToGameMode(levelGameType);
         }

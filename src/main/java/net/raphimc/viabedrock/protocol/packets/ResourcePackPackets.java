@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.packets;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ServerboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ServerboundPackets1_20_2;
 import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -185,7 +185,7 @@ public class ResourcePackPackets {
             resourcePackClientResponse.sendToServer(BedrockProtocol.class);
         });
 
-        protocol.registerServerbound(ServerboundPackets1_19_4.RESOURCE_PACK_STATUS, null, PacketWrapper::cancel);
+        protocol.registerServerbound(ServerboundPackets1_20_2.RESOURCE_PACK_STATUS, null, PacketWrapper::cancel);
     }
 
 }

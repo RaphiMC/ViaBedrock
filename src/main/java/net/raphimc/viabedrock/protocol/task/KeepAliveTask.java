@@ -22,7 +22,8 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundConfigurationPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 public class KeepAliveTask implements Runnable {
@@ -32,12 +33,13 @@ public class KeepAliveTask implements Runnable {
     @Override
     public void run() {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
-            if (info.getProtocolInfo().getServerState().equals(State.PLAY) && info.getProtocolInfo().getPipeline().contains(BedrockProtocol.class)) {
+            final State state = info.getProtocolInfo().getServerState();
+            if ((state.equals(State.PLAY) || state.equals(State.CONFIGURATION)) && info.getProtocolInfo().getPipeline().contains(BedrockProtocol.class)) {
                 info.getChannel().eventLoop().submit(() -> {
                     if (!info.getChannel().isActive()) return;
 
                     try {
-                        final PacketWrapper keepAlive = PacketWrapper.create(ClientboundPackets1_19_4.KEEP_ALIVE, info);
+                        final PacketWrapper keepAlive = PacketWrapper.create(state == State.PLAY ? ClientboundPackets1_20_2.KEEP_ALIVE : ClientboundConfigurationPackets1_20_2.KEEP_ALIVE, info);
                         keepAlive.write(Type.LONG, INTERNAL_ID); // id
                         keepAlive.send(BedrockProtocol.class);
                     } catch (Throwable e) {

@@ -24,6 +24,7 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.base.ServerboundHandshakePackets;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
+import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 
 public class BedrockBaseProtocol extends AbstractSimpleProtocol {
@@ -41,7 +42,7 @@ public class BedrockBaseProtocol extends AbstractSimpleProtocol {
             public void register() {
                 handler(wrapper -> {
                     wrapper.cancel();
-                    final int protocolVersion = wrapper.read(Type.VAR_INT) - 1_000_000; // protocol id
+                    final int protocolVersion = wrapper.read(Type.VAR_INT) - BedrockProtocolVersion.PROTOCOL_ID_OVERLAP_PREVENTION_OFFSET; // protocol id
                     final String hostname = wrapper.read(Type.STRING); // hostname
                     final int port = wrapper.read(Type.UNSIGNED_SHORT); // port
 

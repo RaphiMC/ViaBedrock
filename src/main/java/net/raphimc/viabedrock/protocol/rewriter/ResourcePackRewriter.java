@@ -21,6 +21,7 @@ import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.awt.image.BufferedImage;
@@ -28,6 +29,7 @@ import java.util.Locale;
 
 public class ResourcePackRewriter {
 
+    // TODO: 1.20.2 added overlay packs. Maybe that's useful?
     public static ResourcePack.Content bedrockToJava(final ResourcePacksStorage resourcePacksStorage) {
         final ResourcePack.Content javaContent = new ResourcePack.Content();
 
@@ -45,7 +47,7 @@ public class ResourcePackRewriter {
         final JsonObject root = new JsonObject();
         final JsonObject pack = new JsonObject();
         root.add("pack", pack);
-        pack.addProperty("pack_format", 15);
+        pack.addProperty("pack_format", ProtocolConstants.JAVA_PACK_VERSION);
         pack.addProperty("description", "ViaBedrock Resource Pack");
         return root;
     }

@@ -21,7 +21,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
@@ -30,7 +30,7 @@ import java.net.InetSocketAddress;
 public class TransferProvider implements Provider {
 
     public void connectToServer(final UserConnection user, final InetSocketAddress newAddress) throws Exception {
-        final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_4.DISCONNECT, user);
+        final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_20_2.DISCONNECT, user);
         disconnect.write(Type.COMPONENT, TextUtil.stringToGson("§cThe server tried to transfer you to §e" + newAddress.getHostString() + ":" + newAddress.getPort() + "§c.\nPlease connect manually to that address."));
         disconnect.send(BedrockProtocol.class);
     }

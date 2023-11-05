@@ -21,9 +21,11 @@ import com.vdurmont.semver4j.Semver;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundConfigurationPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.BitSets;
@@ -53,13 +55,12 @@ import java.util.stream.Collectors;
 
 public class JoinPackets {
 
-    public static final int DEFAULT_VIEW_DISTANCE = 6;
-
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.START_GAME, null, wrapper -> {
             wrapper.cancel(); // We need to fix the order of the packets
             final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
             final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
+            final ClientSettingsStorage clientSettingsStorage = wrapper.user().get(ClientSettingsStorage.class);
 
             if (wrapper.user().has(GameSessionStorage.class)) {
                 return; // Mojang client silently ignores multiple start game packets
@@ -151,7 +152,7 @@ public class JoinPackets {
             wrapper.read(Type.BOOLEAN); // server authoritative sounds
 
             if (editorWorldType != 0) {
-                final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_19_4.DISCONNECT, wrapper.user());
+                final PacketWrapper disconnect = PacketWrapper.create(ClientboundPackets1_20_2.DISCONNECT, wrapper.user());
                 disconnect.write(Type.COMPONENT, TextUtil.stringToGson(resourcePacksStorage.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"))); // reason
                 disconnect.send(BedrockProtocol.class);
                 return;
@@ -225,21 +226,43 @@ public class JoinPackets {
             clientPlayer.setGameType(playerGameType);
             clientPlayer.setName(wrapper.user().getProtocolInfo().getUsername());
 
-            final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_19_4.JOIN_GAME, wrapper.user());
+            final PacketWrapper registryData = PacketWrapper.create(ClientboundConfigurationPackets1_20_2.REGISTRY_DATA, wrapper.user());
+            registryData.write(Type.COMPOUND_TAG, registries.clone()); // registries
+            registryData.send(BedrockProtocol.class);
+
+            final PacketWrapper updateTags = PacketWrapper.create(ClientboundConfigurationPackets1_20_2.UPDATE_TAGS, wrapper.user());
+            updateTags.write(Type.VAR_INT, BedrockProtocol.MAPPINGS.getJavaTags().size()); // number of registries
+            for (Map.Entry<String, Tag> registryEntry : BedrockProtocol.MAPPINGS.getJavaTags().entrySet()) {
+                final CompoundTag tag = (CompoundTag) registryEntry.getValue();
+                updateTags.write(Type.STRING, registryEntry.getKey()); // registry key
+                updateTags.write(Type.VAR_INT, tag.size()); // number of tags
+                for (Map.Entry<String, Tag> tagEntry : tag.entrySet()) {
+                    updateTags.write(Type.STRING, tagEntry.getKey()); // tag name
+                    updateTags.write(Type.VAR_INT_ARRAY_PRIMITIVE, ((IntArrayTag) tagEntry.getValue()).getValue()); // tag ids
+                }
+            }
+            updateTags.send(BedrockProtocol.class);
+
+            final PacketWrapper finishConfiguration = PacketWrapper.create(ClientboundConfigurationPackets1_20_2.FINISH_CONFIGURATION, wrapper.user());
+            finishConfiguration.send(BedrockProtocol.class);
+
+            wrapper.user().getProtocolInfo().setServerState(State.PLAY);
+
+            final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_20_2.JOIN_GAME, wrapper.user());
             joinGame.write(Type.INT, clientPlayer.javaId()); // entity id
             joinGame.write(Type.BOOLEAN, false); // hardcore
-            joinGame.write(Type.UNSIGNED_BYTE, GameTypeRewriter.getEffectiveGameMode(playerGameType, levelGameType)); // game mode
-            joinGame.write(Type.BYTE, (byte) -1); // previous game mode
             joinGame.write(Type.STRING_ARRAY, new String[]{DimensionKeys.OVERWORLD, DimensionKeys.NETHER, DimensionKeys.END}); // dimension types
-            joinGame.write(Type.NAMED_COMPOUND_TAG, registries.clone()); // registries
+            joinGame.write(Type.VAR_INT, 100); // max players
+            joinGame.write(Type.VAR_INT, clientSettingsStorage.getViewDistance()); // view distance
+            joinGame.write(Type.VAR_INT, clientSettingsStorage.getViewDistance()); // simulation distance
+            joinGame.write(Type.BOOLEAN, false); // reduced debug info
+            joinGame.write(Type.BOOLEAN, true); // show death screen
+            joinGame.write(Type.BOOLEAN, false); // limited crafting
             joinGame.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension type
             joinGame.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension id
             joinGame.write(Type.LONG, 0L); // hashed seed
-            joinGame.write(Type.VAR_INT, 100); // max players
-            joinGame.write(Type.VAR_INT, DEFAULT_VIEW_DISTANCE); // view distance
-            joinGame.write(Type.VAR_INT, DEFAULT_VIEW_DISTANCE); // simulation distance
-            joinGame.write(Type.BOOLEAN, false); // reduced debug info
-            joinGame.write(Type.BOOLEAN, true); // show death screen
+            joinGame.write(Type.BYTE, GameTypeRewriter.getEffectiveGameMode(playerGameType, levelGameType)); // game mode
+            joinGame.write(Type.BYTE, (byte) -1); // previous game mode
             joinGame.write(Type.BOOLEAN, false); // is debug
             joinGame.write(Type.BOOLEAN, gameSession.isFlatGenerator()); // is flat
             joinGame.write(Type.OPTIONAL_GLOBAL_POSITION, null); // last death location
@@ -253,35 +276,22 @@ public class JoinPackets {
             entityTracker.addEntity(clientPlayer);
             wrapper.user().put(entityTracker);
 
-            final PacketWrapper brandPluginMessage = PacketWrapper.create(ClientboundPackets1_19_4.PLUGIN_MESSAGE, wrapper.user());
+            final PacketWrapper brandPluginMessage = PacketWrapper.create(ClientboundPackets1_20_2.PLUGIN_MESSAGE, wrapper.user());
             brandPluginMessage.write(Type.STRING, "minecraft:brand"); // channel
             brandPluginMessage.write(Type.STRING, "Bedrock" + (!serverEngine.isEmpty() ? " @" + serverEngine : "") + " v: " + vanillaVersion); // content
             brandPluginMessage.send(BedrockProtocol.class);
 
-            final PacketWrapper serverDifficulty = PacketWrapper.create(ClientboundPackets1_19_4.SERVER_DIFFICULTY, wrapper.user());
+            final PacketWrapper serverDifficulty = PacketWrapper.create(ClientboundPackets1_20_2.SERVER_DIFFICULTY, wrapper.user());
             serverDifficulty.write(Type.UNSIGNED_BYTE, (short) difficulty); // difficulty
             serverDifficulty.write(Type.BOOLEAN, false); // locked
             serverDifficulty.send(BedrockProtocol.class);
 
-            final PacketWrapper tags = PacketWrapper.create(ClientboundPackets1_19_4.TAGS, wrapper.user());
-            tags.write(Type.VAR_INT, BedrockProtocol.MAPPINGS.getJavaTags().size()); // number of registries
-            for (Map.Entry<String, Tag> registryEntry : BedrockProtocol.MAPPINGS.getJavaTags().entrySet()) {
-                final CompoundTag tag = (CompoundTag) registryEntry.getValue();
-                tags.write(Type.STRING, registryEntry.getKey()); // registry key
-                tags.write(Type.VAR_INT, tag.size()); // number of tags
-                for (Map.Entry<String, Tag> tagEntry : tag.entrySet()) {
-                    tags.write(Type.STRING, tagEntry.getKey()); // tag name
-                    tags.write(Type.VAR_INT_ARRAY_PRIMITIVE, ((IntArrayTag) tagEntry.getValue()).getValue()); // tag ids
-                }
-            }
-            tags.send(BedrockProtocol.class);
-
-            final PacketWrapper tabList = PacketWrapper.create(ClientboundPackets1_19_4.TAB_LIST, wrapper.user());
+            final PacketWrapper tabList = PacketWrapper.create(ClientboundPackets1_20_2.TAB_LIST, wrapper.user());
             tabList.write(Type.COMPONENT, TextUtil.stringToGson(levelName + "\n")); // header
             tabList.write(Type.COMPONENT, TextUtil.stringToGson("§aViaBedrock §3v" + ViaBedrock.VERSION + "\n§7https://github.com/RaphiMC/ViaBedrock")); // footer
             tabList.send(BedrockProtocol.class);
 
-            final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_19_4.PLAYER_INFO_UPDATE, wrapper.user());
+            final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_20_2.PLAYER_INFO_UPDATE, wrapper.user());
             playerInfoUpdate.write(JavaTypes.PROFILE_ACTIONS_ENUM, BitSets.create(6, 0, 2)); // actions | ADD_PLAYER, UPDATE_GAME_MODE
             playerInfoUpdate.write(Type.VAR_INT, 1); // length
             playerInfoUpdate.write(Type.UUID, clientPlayer.javaUuid()); // uuid
@@ -291,19 +301,19 @@ public class JoinPackets {
             playerInfoUpdate.send(BedrockProtocol.class);
 
             if (rainLevel > 0F || lightningLevel > 0F) {
-                final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
+                final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_20_2.GAME_EVENT, wrapper.user());
                 rainStartGameEvent.write(Type.UNSIGNED_BYTE, GameEvents.RAIN_STARTED); // event id
                 rainStartGameEvent.write(Type.FLOAT, 0F); // value
                 rainStartGameEvent.send(BedrockProtocol.class);
 
                 if (rainLevel > 0F) {
-                    final PacketWrapper rainStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
+                    final PacketWrapper rainStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_20_2.GAME_EVENT, wrapper.user());
                     rainStrengthGameEvent.write(Type.UNSIGNED_BYTE, GameEvents.RAIN_GRADIENT_CHANGED); // event id
                     rainStrengthGameEvent.write(Type.FLOAT, rainLevel); // value
                     rainStrengthGameEvent.send(BedrockProtocol.class);
                 }
                 if (lightningLevel > 0F) {
-                    final PacketWrapper thunderStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_19_4.GAME_EVENT, wrapper.user());
+                    final PacketWrapper thunderStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_20_2.GAME_EVENT, wrapper.user());
                     thunderStrengthGameEvent.write(Type.UNSIGNED_BYTE, GameEvents.THUNDER_GRADIENT_CHANGED); // event id
                     thunderStrengthGameEvent.write(Type.FLOAT, lightningLevel); // value
                     thunderStrengthGameEvent.send(BedrockProtocol.class);
@@ -313,8 +323,8 @@ public class JoinPackets {
             entityTracker.getClientPlayer().sendPlayerPositionPacketToClient(false);
 
             final PacketWrapper requestChunkRadius = PacketWrapper.create(ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, wrapper.user());
-            requestChunkRadius.write(BedrockTypes.VAR_INT, DEFAULT_VIEW_DISTANCE); // radius
-            requestChunkRadius.write(Type.UNSIGNED_BYTE, ProtocolConstants.REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
+            requestChunkRadius.write(BedrockTypes.VAR_INT, clientSettingsStorage.getViewDistance()); // radius
+            requestChunkRadius.write(Type.UNSIGNED_BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
             requestChunkRadius.sendToServer(BedrockProtocol.class);
 
             final PacketWrapper tickSync = PacketWrapper.create(ServerboundBedrockPackets.TICK_SYNC, wrapper.user());

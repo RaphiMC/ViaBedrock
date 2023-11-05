@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.api;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +26,9 @@ import java.util.List;
 public class BedrockProtocolVersion {
 
     public static final List<ProtocolVersion> PROTOCOLS = new ArrayList<>();
-    public static final String LATEST_BEDROCK_VERSION = "1.20.30";
+    public static final int PROTOCOL_ID_OVERLAP_PREVENTION_OFFSET = 1_000_000;
 
-    public static final ProtocolVersion bedrockLatest = registerBedrock(1_000_618, "Bedrock " + LATEST_BEDROCK_VERSION);
+    public static final ProtocolVersion bedrockLatest = registerBedrock(PROTOCOL_ID_OVERLAP_PREVENTION_OFFSET + ProtocolConstants.BEDROCK_PROTOCOL_VERSION, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME);
 
     private static ProtocolVersion registerBedrock(final int version, final String name) {
         final ProtocolVersion protocolVersion = ProtocolVersion.register(version, name);

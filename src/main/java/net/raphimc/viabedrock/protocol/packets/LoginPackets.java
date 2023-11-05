@@ -17,28 +17,20 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
-import com.google.common.base.Joiner;
 import com.google.gson.*;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.ProtocolInfo;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.gson.io.GsonDeserializer;
 import io.netty.util.AsciiString;
-import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
-import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
@@ -59,8 +51,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
-import java.util.logging.Level;
 
 public class LoginPackets {
 
@@ -82,24 +72,7 @@ public class LoginPackets {
     }
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.DISCONNECT.getId(), ClientboundLoginPackets.LOGIN_DISCONNECT.getId(), new PacketHandlers() {
-            @Override
-            public void register() {
-                handler(wrapper -> {
-                    final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
-                    if (hasMessage) {
-                        final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
-                        final Function<String, String> translator = k -> translations.getOrDefault(k, k);
-                        final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
-                        final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
-                        wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translatedMessage)); // reason
-                    } else {
-                        wrapper.write(Type.COMPONENT, com.viaversion.viaversion.libs.gson.JsonNull.INSTANCE); // reason
-                    }
-                });
-            }
-        });
-        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.NETWORK_SETTINGS.getId(), -1, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_SETTINGS, null, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -134,7 +107,7 @@ public class LoginPackets {
                 });
             }
         });
-        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE.getId(), -1, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE, null, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -161,46 +134,8 @@ public class LoginPackets {
                 });
             }
         });
-        protocol.registerClientbound(State.LOGIN, ClientboundBedrockPackets.PLAY_STATUS.getId(), ClientboundLoginPackets.GAME_PROFILE.getId(), new PacketHandlers() {
-            @Override
-            public void register() {
-                handler(wrapper -> {
-                    final int status = wrapper.read(Type.INT); // status
 
-                    if (status == PlayStatus.LOGIN_SUCCESS) {
-                        final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
-                        wrapper.write(Type.UUID, authChainData.getIdentity()); // uuid
-                        wrapper.write(Type.STRING, authChainData.getDisplayName()); // username
-                        wrapper.write(Type.VAR_INT, 0); // properties length
-
-                        final ProtocolInfo info = wrapper.user().getProtocolInfo();
-                        info.setUsername(authChainData.getDisplayName());
-                        info.setUuid(authChainData.getIdentity());
-
-                        // Parts of BaseProtocol1_7 GAME_PROFILE handler
-                        if (info.getProtocolVersion() < ProtocolVersion.v1_20_2.getVersion()) {
-                            info.setState(State.PLAY);
-                        }
-                        Via.getManager().getConnectionManager().onLoginSuccess(wrapper.user());
-                        if (!info.getPipeline().hasNonBaseProtocols()) {
-                            wrapper.user().setActive(false);
-                        }
-                        if (Via.getManager().isDebug()) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "{0} logged in with protocol {1}, Route: {2}", new Object[]{info.getUsername(), info.getProtocolVersion(), Joiner.on(", ").join(info.getPipeline().pipes(), ", ")});
-                        }
-
-                        final PacketWrapper clientCacheStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_STATUS, wrapper.user());
-                        clientCacheStatus.write(Type.BOOLEAN, ViaBedrock.getConfig().isBlobCacheEnabled()); // is supported
-                        clientCacheStatus.sendToServer(BedrockProtocol.class);
-                    } else {
-                        wrapper.setPacketType(ClientboundLoginPackets.LOGIN_DISCONNECT);
-                        writePlayStatusKickMessage(wrapper, status);
-                    }
-                });
-            }
-        });
-
-        protocol.registerServerbound(State.LOGIN, ServerboundLoginPackets.HELLO.getId(), ServerboundBedrockPackets.REQUEST_NETWORK_SETTINGS.getId(), new PacketHandlers() {
+        protocol.registerServerboundTransition(ServerboundLoginPackets.HELLO, ServerboundBedrockPackets.REQUEST_NETWORK_SETTINGS, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -208,7 +143,7 @@ public class LoginPackets {
 
                     final ProtocolInfo protocolInfo = wrapper.user().getProtocolInfo();
                     protocolInfo.setUsername(wrapper.read(Type.STRING));
-                    protocolInfo.setUuid(wrapper.read(Type.OPTIONAL_UUID));
+                    protocolInfo.setUuid(wrapper.read(Type.UUID));
 
                     wrapper.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
 
@@ -216,41 +151,7 @@ public class LoginPackets {
                 });
             }
         });
-    }
-
-    public static void writePlayStatusKickMessage(final PacketWrapper wrapper, final int status) {
-        final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
-
-        switch (status) {
-            case PlayStatus.LOGIN_FAILED_CLIENT_OLD:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.outdatedClient")));
-                break;
-            case PlayStatus.LOGIN_FAILED_SERVER_OLD:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.outdatedServer")));
-                break;
-            case PlayStatus.LOGIN_FAILED_INVALID_TENANT:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.invalidTenant")));
-                break;
-            case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.editionMismatchEduToVanilla")));
-                break;
-            case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_VANILLA_TO_EDU:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.editionMismatchVanillaToEdu")));
-                break;
-            case PlayStatus.FAILED_SERVER_FULL_SUB_CLIENT:
-            case PlayStatus.VANILLA_TO_EDITOR_MISMATCH:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title")));
-                break;
-            case PlayStatus.EDITOR_TO_VANILLA_MISMATCH:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.editor.mismatchEditorToVanilla")));
-                break;
-            default: // Mojang client silently ignores invalid values
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received invalid login status: " + status);
-            case PlayStatus.PLAYER_SPAWN:
-            case PlayStatus.LOGIN_SUCCESS:
-                wrapper.cancel();
-                break;
-        }
+        protocol.registerServerboundTransition(ServerboundLoginPackets.LOGIN_ACKNOWLEDGED, null, PacketWrapper::cancel);
     }
 
     private static ECPublicKey publicKeyFromBase64(final String base64) {

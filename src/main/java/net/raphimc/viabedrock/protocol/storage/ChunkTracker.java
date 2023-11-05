@@ -24,9 +24,10 @@ import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.api.minecraft.chunks.*;
+import com.viaversion.viaversion.api.minecraft.metadata.ChunkPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.types.chunk.ChunkType1_18;
+import com.viaversion.viaversion.api.type.types.chunk.ChunkType1_20_2;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
@@ -34,8 +35,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.NumberTag;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
-import com.viaversion.viaversion.protocols.protocol1_20to1_19_4.Protocol1_20To1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
 import com.viaversion.viaversion.util.MathUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
@@ -49,7 +49,6 @@ import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.packets.JoinPackets;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
@@ -71,7 +70,7 @@ public class ChunkTracker extends StoredObject {
     private final int dimensionId;
     private final int minY;
     private final int worldHeight;
-    private final ChunkType1_18 chunkType;
+    private final Type<Chunk> chunkType;
 
     private final Object chunkLock = new Object();
     private final Map<Long, BedrockChunk> chunks = new HashMap<>();
@@ -83,7 +82,7 @@ public class ChunkTracker extends StoredObject {
 
     private int centerX = 0;
     private int centerZ = 0;
-    private int radius = JoinPackets.DEFAULT_VIEW_DISTANCE;
+    private int radius;
 
     public ChunkTracker(final UserConnection user, final int dimensionId) {
         super(user);
@@ -111,7 +110,10 @@ public class ChunkTracker extends StoredObject {
         this.minY = pair.keyInt();
         this.worldHeight = pair.valueInt();
 
-        this.chunkType = new ChunkType1_18(this.worldHeight >> 4, MathUtil.ceilLog2(Protocol1_20To1_19_4.MAPPINGS.getBlockStateMappings().mappedSize()), MathUtil.ceilLog2(biomes.size()));
+        this.chunkType = new ChunkType1_20_2(this.worldHeight >> 4, MathUtil.ceilLog2(BedrockProtocol.MAPPINGS.getJavaBlockStates().size()), MathUtil.ceilLog2(biomes.size()));
+
+        final ChunkTracker oldChunkTracker = user.get(ChunkTracker.class);
+        this.radius = oldChunkTracker != null ? oldChunkTracker.radius : user.get(ClientSettingsStorage.class).getViewDistance();
     }
 
     public void setCenter(final int x, final int z) throws Exception {
@@ -130,7 +132,7 @@ public class ChunkTracker extends StoredObject {
         if (!this.isInRenderDistance(chunkX, chunkZ)) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of render distance, but within load distance: " + chunkX + ", " + chunkZ);
             final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
-            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_19_4.UPDATE_VIEW_POSITION, this.getUser());
+            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_20_2.UPDATE_VIEW_POSITION, this.getUser());
             updateViewPosition.write(Type.VAR_INT, (int) entityTracker.getClientPlayer().position().x() >> 4); // chunk x
             updateViewPosition.write(Type.VAR_INT, (int) entityTracker.getClientPlayer().position().z() >> 4); // chunk z
             updateViewPosition.send(BedrockProtocol.class);
@@ -151,15 +153,14 @@ public class ChunkTracker extends StoredObject {
         return chunk;
     }
 
-    public void unloadChunk(final int chunkX, final int chunkZ) throws Exception {
+    public void unloadChunk(final ChunkPosition chunkPos) throws Exception {
         synchronized (this.chunkLock) {
-            this.chunks.remove(this.chunkKey(chunkX, chunkZ));
+            this.chunks.remove(chunkPos.chunkKey());
         }
-        this.getUser().get(EntityTracker.class).removeItemFrame(chunkX, chunkZ);
+        this.getUser().get(EntityTracker.class).removeItemFrame(chunkPos);
 
-        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_19_4.UNLOAD_CHUNK, this.getUser());
-        unloadChunk.write(Type.INT, chunkX); // chunk x
-        unloadChunk.write(Type.INT, chunkZ); // chunk z
+        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_20_2.UNLOAD_CHUNK, this.getUser());
+        unloadChunk.write(Type.CHUNK_POSITION, chunkPos); // chunk position
         unloadChunk.send(BedrockProtocol.class);
     }
 
@@ -298,20 +299,18 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void removeOutOfLoadDistanceChunks() throws Exception {
-        final Set<Long> chunksToRemove = new HashSet<>();
+        final Set<ChunkPosition> chunksToRemove = new HashSet<>();
         synchronized (this.chunkLock) {
             for (long chunkKey : this.chunks.keySet()) {
                 final int chunkX = (int) (chunkKey >> 32);
                 final int chunkZ = (int) chunkKey;
                 if (this.isInLoadDistance(chunkX, chunkZ)) continue;
 
-                chunksToRemove.add(chunkKey);
+                chunksToRemove.add(new ChunkPosition(chunkKey));
             }
         }
-        for (long chunkKey : chunksToRemove) {
-            final int chunkX = (int) (chunkKey >> 32);
-            final int chunkZ = (int) chunkKey;
-            this.unloadChunk(chunkX, chunkZ);
+        for (ChunkPosition chunkPos : chunksToRemove) {
+            this.unloadChunk(chunkPos);
         }
     }
 
@@ -408,10 +407,10 @@ public class ChunkTracker extends StoredObject {
                 }
 
                 if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
-                    final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_19_4.BLOCK_ENTITY_DATA, this.getUser());
+                    final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_20_2.BLOCK_ENTITY_DATA, this.getUser());
                     blockEntityData.write(Type.POSITION1_14, blockPosition); // position
                     blockEntityData.write(Type.VAR_INT, javaBlockEntity.typeId()); // type
-                    blockEntityData.write(Type.NAMED_COMPOUND_TAG, javaBlockEntity.tag()); // block entity tag
+                    blockEntityData.write(Type.COMPOUND_TAG, javaBlockEntity.tag()); // block entity tag
                     blockEntityData.scheduleSend(BedrockProtocol.class);
                 }
             } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
@@ -441,7 +440,7 @@ public class ChunkTracker extends StoredObject {
         }
         final Chunk remappedChunk = this.remapChunk(chunk);
 
-        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_19_4.CHUNK_DATA, this.getUser());
+        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_20_2.CHUNK_DATA, this.getUser());
         final BitSet lightMask = new BitSet();
         lightMask.set(0, remappedChunk.getSections().length + 2);
         wrapper.write(this.chunkType, remappedChunk); // chunk

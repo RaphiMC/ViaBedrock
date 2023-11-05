@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.model.scoreboard;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.HashMap;
@@ -82,7 +82,7 @@ public class ScoreboardObjective {
     }
 
     public void updateEntry(final UserConnection user, final ScoreboardEntry entry, final int action) throws Exception {
-        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_19_4.UPDATE_SCORE, user);
+        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_20_2.UPDATE_SCORE, user);
         updateScore.write(Type.STRING, entry.javaName()); // player name
         updateScore.write(Type.VAR_INT, action); // action
         updateScore.write(Type.STRING, this.name); // objective name

@@ -23,7 +23,6 @@ import com.google.common.io.ByteStreams;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
@@ -110,7 +109,7 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, String> bedrockToJavaEffects;
 
     public BedrockMappingData() {
-        super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolVersion.v1_20.getName());
+        super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolConstants.JAVA_VERSION.getName());
     }
 
     @Override
@@ -119,7 +118,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.getLogger().info("Loading " + this.unmappedVersion + " -> " + this.mappedVersion + " mappings...");
         }
 
-        final JsonObject javaMapping1_20Json = this.readJson("java/mapping-1.20.json");
+        final JsonObject javaViaMappingJson = this.readJson("java/via_mappings.json");
 
         { // Bedrock misc
             this.bedrockVanillaResourcePack = this.readResourcePack("bedrock/vanilla.mcpack", UUID.fromString("0575c61f-a5da-4b7f-9961-ffda2908861e"), "0.0.1");
@@ -131,7 +130,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.javaRegistries = this.readNBT("java/registries.nbt");
             this.javaTags = this.readNBT("java/tags.nbt");
 
-            final JsonArray javaCommandArgumentTypesJson = javaMapping1_20Json.getAsJsonArray("argumenttypes");
+            final JsonArray javaCommandArgumentTypesJson = javaViaMappingJson.getAsJsonArray("argumenttypes");
             this.javaCommandArgumentTypes = HashBiMap.create(javaCommandArgumentTypesJson.size());
             for (int i = 0; i < javaCommandArgumentTypesJson.size(); i++) {
                 this.javaCommandArgumentTypes.put(Key.namespaced(javaCommandArgumentTypesJson.get(i).getAsString()), i);
@@ -142,7 +141,7 @@ public class BedrockMappingData extends MappingDataBase {
         { // Block states
             this.bedrockBlockStateUpgrader = new BlockStateUpgrader();
 
-            final JsonArray javaBlockStatesJson = javaMapping1_20Json.getAsJsonArray("blockstates");
+            final JsonArray javaBlockStatesJson = javaViaMappingJson.getAsJsonArray("blockstates");
             this.javaBlockStates = HashBiMap.create(javaBlockStatesJson.size());
             for (int i = 0; i < javaBlockStatesJson.size(); i++) {
                 final BlockState blockState = BlockState.fromString(javaBlockStatesJson.get(i).getAsString());
@@ -298,7 +297,7 @@ public class BedrockMappingData extends MappingDataBase {
         { // Items
             this.bedrockItemUpgrader = new ItemUpgrader();
 
-            final JsonArray javaItemsJson = javaMapping1_20Json.get("items").getAsJsonArray();
+            final JsonArray javaItemsJson = javaViaMappingJson.get("items").getAsJsonArray();
             this.javaItems = HashBiMap.create(javaItemsJson.size());
             for (int i = 0; i < javaItemsJson.size(); i++) {
                 this.javaItems.put(Key.namespaced(javaItemsJson.get(i).getAsString()), i);
@@ -432,7 +431,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            final JsonArray javaMenusJson = javaMapping1_20Json.get("menus").getAsJsonArray();
+            final JsonArray javaMenusJson = javaViaMappingJson.get("menus").getAsJsonArray();
             this.javaMenus = HashBiMap.create(javaMenusJson.size());
             for (int i = 0; i < javaMenusJson.size(); i++) {
                 this.javaMenus.put(Key.namespaced(javaMenusJson.get(i).getAsString()), i);
@@ -486,7 +485,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             });
 
-            final JsonArray javaBlockEntitiesJson = javaMapping1_20Json.get("blockentities").getAsJsonArray();
+            final JsonArray javaBlockEntitiesJson = javaViaMappingJson.get("blockentities").getAsJsonArray();
             this.javaBlockEntities = HashBiMap.create(javaBlockEntitiesJson.size());
             for (int i = 0; i < javaBlockEntitiesJson.size(); i++) {
                 this.javaBlockEntities.put(javaBlockEntitiesJson.get(i).getAsString(), i);

@@ -25,8 +25,8 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 This file has been copied from the official bedrock client's assets folder:  
 `%MC-Root%\data\skin_packs\vanilla\*`
 
-### data/java/mapping-1.20.json
-[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.20.json)
+### data/java/via_mappings.json
+[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.20.2.json)
 
 ### data/java/registries.nbt
 This file has been dumped from a vanilla server using a fabric mod.

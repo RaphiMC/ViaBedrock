@@ -21,7 +21,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -35,7 +35,7 @@ public class PlayerEntity extends Entity {
     }
 
     public void createTeam() throws Exception {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
+        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_2.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
         teams.write(Type.BYTE, (byte) 0); // mode | 0 = ADD
         teams.write(Type.COMPONENT, TextUtil.stringToGson("vb_" + this.javaId)); // display name
@@ -52,7 +52,7 @@ public class PlayerEntity extends Entity {
     public void updateName(final String name) throws Exception {
         this.setName(name);
 
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
+        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_2.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
         teams.write(Type.BYTE, (byte) 2); // mode | 2 = UPDATE
         teams.write(Type.COMPONENT, TextUtil.stringToGson("vb_" + this.javaId)); // display name
@@ -66,7 +66,7 @@ public class PlayerEntity extends Entity {
     }
 
     public void deleteTeam() throws Exception {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_19_4.TEAMS, this.user);
+        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_2.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
         teams.write(Type.BYTE, (byte) 1); // mode | 1 = REMOVE
         teams.send(BedrockProtocol.class);

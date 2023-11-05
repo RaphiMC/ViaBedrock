@@ -19,9 +19,9 @@ package net.raphimc.viabedrock.protocol.providers;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
-import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.DeviceOS;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
@@ -77,7 +77,7 @@ public class SkinProvider implements Provider {
         claims.put("LanguageCode", "en_US");
         claims.put("PlatformOfflineId", "");
         claims.put("PlatformOnlineId", "");
-        claims.put("GameVersion", BedrockProtocolVersion.LATEST_BEDROCK_VERSION);
+        claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);
         claims.put("ServerAddress", handshakeStorage.getHostname() + ":" + handshakeStorage.getPort());
         claims.put("ThirdPartyName", user.getProtocolInfo().getUsername());
         claims.put("ThirdPartyNameOnly", false);

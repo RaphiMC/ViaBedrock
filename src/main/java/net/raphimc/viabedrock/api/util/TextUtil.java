@@ -22,8 +22,8 @@ import com.viaversion.viaversion.libs.gson.JsonParser;
 import net.lenni0451.mcstructs.core.TextFormatting;
 import net.lenni0451.mcstructs.text.ATextComponent;
 import net.lenni0451.mcstructs.text.serializer.LegacyStringDeserializer;
-import net.lenni0451.mcstructs.text.serializer.TextComponentSerializer;
 import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -53,7 +53,7 @@ public class TextUtil {
     }
 
     public static String componentToJson(final ATextComponent textComponent) {
-        return TextComponentSerializer.V1_19_4.serialize(textComponent);
+        return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serialize(textComponent);
     }
 
     public static JsonElement stringToGson(final String text) {

@@ -22,6 +22,7 @@ import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -36,8 +37,8 @@ public class BeaconBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        this.mapEffect(bedrockTag, javaTag, "primary", "Primary");
-        this.mapEffect(bedrockTag, javaTag, "secondary", "Secondary");
+        this.mapEffect(bedrockTag, javaTag, "primary", "primary_effect");
+        this.mapEffect(bedrockTag, javaTag, "secondary", "secondary_effect");
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }
@@ -50,7 +51,7 @@ public class BeaconBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown beacon effect: " + bedrockId);
                 return;
             }
-            newTag.put(newName, new IntTag(BedrockProtocol.MAPPINGS.getJavaEffects().get(BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(bedrockIdentifier))));
+            newTag.put(newName, new StringTag(BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(bedrockIdentifier)));
         }
     }
 

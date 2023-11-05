@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.ClientboundPackets1_19_4;
+import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
 import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.api.model.inventory.InventoryContainer;
 import net.raphimc.viabedrock.api.model.inventory.fake.FakeContainer;
@@ -71,13 +71,13 @@ public class InventoryTracker extends StoredObject {
     public void openFakeContainer(final FakeContainer container) throws Exception {
         this.currentFakeContainer = container;
 
-        final PacketWrapper openWindow = PacketWrapper.create(ClientboundPackets1_19_4.OPEN_WINDOW, this.getUser());
+        final PacketWrapper openWindow = PacketWrapper.create(ClientboundPackets1_20_2.OPEN_WINDOW, this.getUser());
         openWindow.write(Type.VAR_INT, (int) container.windowId()); // window id
         openWindow.write(Type.VAR_INT, container.menuType().javaMenuTypeId()); // type
         openWindow.write(Type.COMPONENT, TextUtil.componentToGson(container.title())); // title
         openWindow.scheduleSend(BedrockProtocol.class);
 
-        final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_19_4.WINDOW_ITEMS, this.getUser());
+        final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_2.WINDOW_ITEMS, this.getUser());
         this.writeWindowItems(windowItems, container);
         windowItems.scheduleSend(BedrockProtocol.class);
     }
@@ -114,7 +114,7 @@ public class InventoryTracker extends StoredObject {
             throw new IllegalStateException("There is no container to close");
         }
 
-        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_19_4.CLOSE_WINDOW, this.getUser());
+        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_20_2.CLOSE_WINDOW, this.getUser());
         closeWindow.write(Type.UNSIGNED_BYTE, (short) this.pendingCloseContainer.windowId()); // window id
         closeWindow.send(BedrockProtocol.class);
 
@@ -132,11 +132,11 @@ public class InventoryTracker extends StoredObject {
         if (targetContainer.windowId() != windowId) return;
         if (!targetContainer.handleWindowClick(revision, slot, button, action)) {
             if (targetContainer != this.inventoryContainer) {
-                final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_19_4.WINDOW_ITEMS, this.getUser());
+                final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_2.WINDOW_ITEMS, this.getUser());
                 this.writeWindowItems(windowItems, this.inventoryContainer);
                 windowItems.send(BedrockProtocol.class);
             }
-            final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_19_4.WINDOW_ITEMS, this.getUser());
+            final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_2.WINDOW_ITEMS, this.getUser());
             this.writeWindowItems(windowItems, targetContainer);
             windowItems.send(BedrockProtocol.class);
         }
@@ -145,8 +145,8 @@ public class InventoryTracker extends StoredObject {
     public void writeWindowItems(final PacketWrapper wrapper, final Container container) {
         wrapper.write(Type.UNSIGNED_BYTE, (short) container.windowId()); // window id
         wrapper.write(Type.VAR_INT, 0); // revision
-        wrapper.write(Type.ITEM1_13_2_ARRAY, container.getJavaItems(this.getUser())); // items
-        wrapper.write(Type.ITEM1_13_2, this.getUser().get(ItemRewriter.class).javaItem(this.currentCursorItem)); // cursor item
+        wrapper.write(Type.ITEM1_20_2_ARRAY, container.getJavaItems(this.getUser())); // items
+        wrapper.write(Type.ITEM1_20_2, this.getUser().get(ItemRewriter.class).javaItem(this.currentCursorItem)); // cursor item
     }
 
     public void tick() throws Exception {
