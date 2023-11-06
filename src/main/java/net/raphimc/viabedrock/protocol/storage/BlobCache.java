@@ -43,7 +43,7 @@ public class BlobCache extends StoredObject {
     private final List<Long> missing = new ArrayList<>();
     private final List<Long> acked = new ArrayList<>();
 
-    private final Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
+    private final Deflater deflater = new Deflater(Deflater.BEST_SPEED);
     private final Inflater inflater = new Inflater();
     private final byte[] compressionBuffer = new byte[8192];
 
