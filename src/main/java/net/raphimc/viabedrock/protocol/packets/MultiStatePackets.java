@@ -74,7 +74,7 @@ public class MultiStatePackets {
     private static final PacketHandler PACKET_VIOLATION_WARNING_HANDLER = wrapper -> {
         final int type = wrapper.read(BedrockTypes.VAR_INT) + 1; // type
         final int severity = wrapper.read(BedrockTypes.VAR_INT) + 1; // severity
-        final int packetIdCause = wrapper.read(BedrockTypes.VAR_INT) - 1; // cause packet id
+        final int packetIdCause = wrapper.read(BedrockTypes.VAR_INT); // cause packet id
         final String context = wrapper.read(BedrockTypes.STRING); // context
 
         final String[] types = new String[]{"Unknown", "Malformed packet"};
