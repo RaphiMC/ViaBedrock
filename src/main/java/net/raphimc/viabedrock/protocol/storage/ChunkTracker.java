@@ -148,7 +148,7 @@ public class ChunkTracker extends StoredObject {
             }
         }
         synchronized (this.chunkLock) {
-            this.chunks.put(this.chunkKey(chunk.getX(), chunk.getZ()), chunk);
+            this.chunks.put(ChunkPosition.chunkKey(chunk.getX(), chunk.getZ()), chunk);
         }
         return chunk;
     }
@@ -168,7 +168,7 @@ public class ChunkTracker extends StoredObject {
         if (!this.isInLoadDistance(chunkX, chunkZ)) return null;
 
         synchronized (this.chunkLock) {
-            return this.chunks.get(this.chunkKey(chunkX, chunkZ));
+            return this.chunks.get(ChunkPosition.chunkKey(chunkX, chunkZ));
         }
     }
 
@@ -257,17 +257,18 @@ public class ChunkTracker extends StoredObject {
         chunk.blockEntities().add(bedrockBlockEntity);
     }
 
-    public boolean isChunkLoaded(final int chunkX, final int chunkZ) {
-        if (!this.isInLoadDistance(chunkX, chunkZ)) return false;
+    public boolean isChunkLoaded(final ChunkPosition chunkPos) {
+        if (!this.isInLoadDistance(chunkPos.chunkX(), chunkPos.chunkZ())) return false;
 
         synchronized (this.chunkLock) {
-            return this.chunks.containsKey(this.chunkKey(chunkX, chunkZ));
+            return this.chunks.containsKey(chunkPos.chunkKey());
         }
     }
 
     public boolean isInUnloadedChunkSection(final Position3f playerPosition) {
         final Position chunkSectionPosition = new Position((int) Math.floor(playerPosition.x() / 16), (int) Math.floor((playerPosition.y() - 1.62F) / 16), (int) Math.floor(playerPosition.z() / 16));
-        if (!this.isChunkLoaded(chunkSectionPosition.x(), chunkSectionPosition.z())) {
+        final ChunkPosition chunkPos = new ChunkPosition(chunkSectionPosition.x(), chunkSectionPosition.z());
+        if (!this.isChunkLoaded(chunkPos)) {
             return true;
         }
         final BedrockChunkSection chunkSection = this.getChunkSection(chunkSectionPosition.x(), chunkSectionPosition.y(), chunkSectionPosition.z());
@@ -278,7 +279,7 @@ public class ChunkTracker extends StoredObject {
             return true;
         }
         synchronized (this.dirtyChunks) {
-            return this.dirtyChunks.contains(this.chunkKey(chunkSectionPosition.x(), chunkSectionPosition.z()));
+            return this.dirtyChunks.contains(chunkPos.chunkKey());
         }
     }
 
@@ -302,11 +303,10 @@ public class ChunkTracker extends StoredObject {
         final Set<ChunkPosition> chunksToRemove = new HashSet<>();
         synchronized (this.chunkLock) {
             for (long chunkKey : this.chunks.keySet()) {
-                final int chunkX = (int) (chunkKey >> 32);
-                final int chunkZ = (int) chunkKey;
-                if (this.isInLoadDistance(chunkX, chunkZ)) continue;
+                final ChunkPosition chunkPos = new ChunkPosition(chunkKey);
+                if (this.isInLoadDistance(chunkPos.chunkX(), chunkPos.chunkZ())) continue;
 
-                chunksToRemove.add(new ChunkPosition(chunkKey));
+                chunksToRemove.add(chunkPos);
             }
         }
         for (ChunkPosition chunkPos : chunksToRemove) {
@@ -429,7 +429,7 @@ public class ChunkTracker extends StoredObject {
 
     public void sendChunkInNextTick(final int chunkX, final int chunkZ) {
         synchronized (this.dirtyChunks) {
-            this.dirtyChunks.add(this.chunkKey(chunkX, chunkZ));
+            this.dirtyChunks.add(ChunkPosition.chunkKey(chunkX, chunkZ));
         }
     }
 
@@ -484,13 +484,12 @@ public class ChunkTracker extends StoredObject {
 
                     synchronized (this.dirtyChunks) {
                         for (Long dirtyChunk : this.dirtyChunks) {
-                            final int chunkX = (int) (dirtyChunk >> 32);
-                            final int chunkZ = dirtyChunk.intValue();
+                            final ChunkPosition chunkPos = new ChunkPosition(dirtyChunk);
 
                             try {
-                                this.sendChunk(chunkX, chunkZ);
+                                this.sendChunk(chunkPos.chunkX(), chunkPos.chunkZ());
                             } catch (Throwable e) {
-                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to send chunk " + chunkX + ", " + chunkZ, e);
+                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to send chunk " + chunkPos.chunkX() + ", " + chunkPos.chunkZ(), e);
                             }
                         }
                         this.dirtyChunks.clear();
@@ -521,10 +520,6 @@ public class ChunkTracker extends StoredObject {
                 subChunkRequest.sendToServer(BedrockProtocol.class);
             }
         }
-    }
-
-    private long chunkKey(final int chunkX, final int chunkZ) {
-        return ((long) chunkX << 32) | (chunkZ & 0xFFFFFFFFL);
     }
 
     private Chunk remapChunk(final Chunk chunk) throws Exception {
