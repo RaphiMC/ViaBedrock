@@ -40,10 +40,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractActions;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
@@ -58,14 +55,14 @@ import java.util.logging.Level;
 public class MultiStatePackets {
 
     private static final PacketHandler DISCONNECT_HANDLER = wrapper -> {
-        wrapper.read(BedrockTypes.VAR_INT); // reason
+        final DisconnectReason disconnectReason = DisconnectReason.fromId(wrapper.read(BedrockTypes.VAR_INT)); // reason
         final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
         if (hasMessage) {
             final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
             final Function<String, String> translator = k -> translations.getOrDefault(k, k);
             final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
             final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
-            wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translatedMessage)); // reason
+            wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translatedMessage + " §r(Reason: " + disconnectReason + ")")); // reason
         } else {
             wrapper.write(Type.COMPONENT, JsonNull.INSTANCE); // reason
         }
