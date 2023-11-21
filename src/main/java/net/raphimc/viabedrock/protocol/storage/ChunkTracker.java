@@ -631,6 +631,8 @@ public class ChunkTracker extends StoredObject {
                                     } else {
                                         remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
                                     }
+                                } else {
+                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid layer 2 block state. L1: " + prevBlockState + ", L2: " + blockState);
                                 }
                             }
                         }

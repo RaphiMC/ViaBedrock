@@ -50,6 +50,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.JavaTypes;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -66,9 +67,10 @@ public class JoinPackets {
                 return; // Mojang client silently ignores multiple start game packets
             }
 
-            if (resourcePacksStorage == null || !resourcePacksStorage.hasCompletedTransfer()) {
-                BedrockProtocol.kickForIllegalState(wrapper.user(), "Pack negotiation not completed");
-                return;
+            if (!resourcePacksStorage.hasFinishedLoading()) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Pack negotiation not completed before joining game. Skipping resource pack loading");
+                resourcePacksStorage.setCompletedTransfer();
+                resourcePacksStorage.setPackStack(new UUID[0], new UUID[0]);
             }
 
             final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
