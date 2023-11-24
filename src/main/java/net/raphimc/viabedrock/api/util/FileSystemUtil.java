@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.api.util;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,9 +37,13 @@ public class FileSystemUtil {
         if (uri.getScheme().equals("file")) {
             return getFilesInPath(Paths.get(uri));
         } else if (uri.getScheme().equals("jar")) {
-            try (FileSystem fileSystem = getOrCreateFileSystem(uri)) {
-                return getFilesInPath(fileSystem.getPath(assetPath));
-            }
+            return runInFileSystem(uri, fileSystem -> {
+                try {
+                    return getFilesInPath(fileSystem.getPath(assetPath));
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
         } else {
             throw new IllegalArgumentException("Unsupported URI scheme: " + uri.getScheme());
         }
@@ -52,7 +58,7 @@ public class FileSystemUtil {
                         try {
                             return Files.readAllBytes(f);
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            throw new UncheckedIOException(e);
                         }
                     }, (u, v) -> {
                         throw new IllegalStateException("Duplicate key");
@@ -60,14 +66,16 @@ public class FileSystemUtil {
         }
     }
 
-    private static FileSystem getOrCreateFileSystem(final URI uri) throws IOException {
-        FileSystem fileSystem;
+    private static <R> R runInFileSystem(final URI uri, final Function<FileSystem, R> action) {
         try {
-            fileSystem = FileSystems.getFileSystem(uri);
+            return action.apply(FileSystems.getFileSystem(uri));
         } catch (FileSystemNotFoundException e) {
-            fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap());
+            try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+                return action.apply(fileSystem);
+            } catch (IOException e1) {
+                throw new UncheckedIOException(e1);
+            }
         }
-        return fileSystem;
     }
 
 }
