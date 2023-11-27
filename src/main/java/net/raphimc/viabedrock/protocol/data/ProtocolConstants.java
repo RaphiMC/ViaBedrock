@@ -29,6 +29,7 @@ public class ProtocolConstants {
 
     public static final String BEDROCK_VERSION_NAME = "1.20.40";
     public static final int BEDROCK_PROTOCOL_VERSION = 622;
+    public static final int BEDROCK_RAKNET_PROTOCOL_VERSION = 11;
     public static final int BEDROCK_COMMAND_VERSION = 36;
     public static final short BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS = 28;
 
