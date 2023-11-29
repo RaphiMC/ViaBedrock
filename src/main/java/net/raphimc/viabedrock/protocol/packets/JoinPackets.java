@@ -60,17 +60,19 @@ public class JoinPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.START_GAME, null, wrapper -> {
             wrapper.cancel(); // We need to fix the order of the packets
             final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
-            final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
+            ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
             final ClientSettingsStorage clientSettingsStorage = wrapper.user().get(ClientSettingsStorage.class);
 
             if (wrapper.user().has(GameSessionStorage.class)) {
                 return; // Mojang client silently ignores multiple start game packets
             }
 
-            if (!resourcePacksStorage.hasFinishedLoading()) {
+            if (resourcePacksStorage == null || !resourcePacksStorage.hasFinishedLoading()) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Pack negotiation not completed before joining game. Skipping resource pack loading");
+                resourcePacksStorage = new ResourcePacksStorage();
                 resourcePacksStorage.setCompletedTransfer();
                 resourcePacksStorage.setPackStack(new UUID[0], new UUID[0]);
+                wrapper.user().put(resourcePacksStorage);
             }
 
             final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id

@@ -119,7 +119,6 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     public void init(UserConnection user) {
         user.put(new ClientSettingsStorage("en_us", 12, 0, true, (short) 127, 1, false, true));
         user.put(new SpawnPositionStorage());
-        user.put(new ResourcePacksStorage());
         user.put(new BlobCache(user));
         user.put(new PlayerListStorage());
         user.put(new PacketSyncStorage(user));

@@ -59,7 +59,6 @@ public class ResourcePackPackets {
             wrapper.read(Type.BOOLEAN); // scripting
             wrapper.read(Type.BOOLEAN); // server packs force enabled
 
-
             final ResourcePack[] behaviorPacks = wrapper.read(BedrockTypes.BEHAVIOUR_PACK_ARRAY);
             for (ResourcePack behaviorPack : behaviorPacks) {
                 resourcePacksStorage.addPack(behaviorPack);
