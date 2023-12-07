@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.model.inventory.fake;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import net.lenni0451.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -57,7 +57,7 @@ public abstract class FakeContainer extends Container {
     }
 
     protected void close() throws Exception {
-        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_20_2.CLOSE_WINDOW, this.user);
+        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_20_3.CLOSE_WINDOW, this.user);
         closeWindow.write(Type.UNSIGNED_BYTE, (short) this.windowId); // window id
         closeWindow.send(BedrockProtocol.class);
 

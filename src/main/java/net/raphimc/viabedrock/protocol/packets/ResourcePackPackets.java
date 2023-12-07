@@ -21,8 +21,8 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundConfigurationPackets1_20_2;
 import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ServerboundConfigurationPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundConfigurationPackets1_20_3;
 import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -33,6 +33,7 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ResourcePackStatus;
+import net.raphimc.viabedrock.protocol.model.Experiment;
 import net.raphimc.viabedrock.protocol.providers.ResourcePackProvider;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -45,7 +46,7 @@ import java.util.logging.Level;
 public class ResourcePackPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientboundTransition(ClientboundBedrockPackets.RESOURCE_PACKS_INFO, ClientboundConfigurationPackets1_20_2.RESOURCE_PACK, (PacketHandler) wrapper -> {
+        protocol.registerClientboundTransition(ClientboundBedrockPackets.RESOURCE_PACKS_INFO, ClientboundConfigurationPackets1_20_3.RESOURCE_PACK_PUSH, (PacketHandler) wrapper -> {
             if (wrapper.user().has(ResourcePacksStorage.class)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACKS_INFO twice");
                 wrapper.cancel();
@@ -77,10 +78,11 @@ public class ResourcePackPackets {
                 final UUID httpToken = UUID.randomUUID();
                 ViaBedrock.getResourcePackServer().addConnection(httpToken, wrapper.user());
 
+                wrapper.write(Type.UUID, UUID.randomUUID()); // pack id
                 wrapper.write(Type.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + httpToken); // url
                 wrapper.write(Type.STRING, ""); // hash
                 wrapper.write(Type.BOOLEAN, false); // requires accept
-                wrapper.write(Type.OPTIONAL_COMPONENT, TextUtil.stringToGson(
+                wrapper.write(Type.OPTIONAL_TAG, TextUtil.stringToNbt(
                         "\n§aIf you press 'Yes', the resource packs will be downloaded and converted to the Java Edition format. " +
                                 "This may take a while, depending on your internet connection and the size of the packs. " +
                                 "If you press 'No', you can join without loading the resource packs but you will have a worse gameplay experience.")
@@ -88,6 +90,7 @@ public class ResourcePackPackets {
             } else {
                 wrapper.cancel();
                 final PacketWrapper resourcePack = PacketWrapper.create(ServerboundConfigurationPackets1_20_2.RESOURCE_PACK, wrapper.user());
+                resourcePack.write(Type.UUID, UUID.randomUUID()); // pack id
                 resourcePack.write(Type.VAR_INT, 1); // status | 1 = DECLINED
                 resourcePack.sendToServer(BedrockProtocol.class, false);
             }
@@ -160,13 +163,23 @@ public class ResourcePackPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_STACK, null, wrapper -> {
             wrapper.cancel();
             final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
+            if (resourcePacksStorage.hasFinishedLoading()) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACK_STACK after loading completion");
+                return;
+            }
 
             wrapper.read(Type.BOOLEAN); // must accept
             final Triple<UUID, String, String>[] behaviourPacks = wrapper.read(BedrockTypes.PACK_ID_AND_VERSION_AND_NAME_ARRAY); // behaviour packs
             final Triple<UUID, String, String>[] resourcePacks = wrapper.read(BedrockTypes.PACK_ID_AND_VERSION_AND_NAME_ARRAY); // resource packs
             wrapper.read(BedrockTypes.STRING); // game version
-            wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
+            final Experiment[] experiments = wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
             wrapper.read(Type.BOOLEAN); // experiments previously toggled
+
+            for (Experiment experiment : experiments) {
+                if (experiment.enabled()) {
+                    Via.getPlatform().getLogger().log(Level.WARNING, "This server uses an experimental resource pack: " + experiment.name());
+                }
+            }
 
             final UUID[] behaviourPackIds = new UUID[behaviourPacks.length];
             for (int i = 0; i < behaviourPacks.length; i++) {
@@ -191,6 +204,7 @@ public class ResourcePackPackets {
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_2.RESOURCE_PACK, ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, wrapper -> {
             final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
 
+            wrapper.read(Type.UUID); // pack id
             final int status = wrapper.read(Type.VAR_INT); // status
             switch (status) {
                 case 0: // SUCCESSFULLY_LOADED
@@ -203,12 +217,15 @@ public class ResourcePackPackets {
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     break;
                 case 2: // FAILED_DOWNLOAD
+                case 5: // INVALID_URL
+                case 6: // FAILED_RELOAD
+                case 7: // DISCARDED
                     if (!resourcePacksStorage.hasFinishedLoading()) {
                         wrapper.cancel();
                     }
 
                     resourcePacksStorage.setJavaClientWaitingForPack(false);
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Client resource pack download/application failed");
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Client resource pack download/loading failed");
                     wrapper.write(Type.UNSIGNED_BYTE, ResourcePackStatus.COMPLETED); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     break;
@@ -242,6 +259,9 @@ public class ResourcePackPackets {
                         wrapper.write(Type.UNSIGNED_BYTE, ResourcePackStatus.HAVE_ALL_PACKS); // status
                         wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     }
+                    break;
+                case 4: // DOWNLOADED
+                    wrapper.cancel();
                     break;
                 default:
                     BedrockProtocol.kickForIllegalState(wrapper.user(), "Unknown resource pack status: " + status);

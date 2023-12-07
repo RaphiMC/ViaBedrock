@@ -22,8 +22,8 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundConfigurationPackets1_20_2;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundConfigurationPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 public class KeepAliveTask implements Runnable {
@@ -39,7 +39,7 @@ public class KeepAliveTask implements Runnable {
                     if (!info.getChannel().isActive()) return;
 
                     try {
-                        final PacketWrapper keepAlive = PacketWrapper.create(state == State.PLAY ? ClientboundPackets1_20_2.KEEP_ALIVE : ClientboundConfigurationPackets1_20_2.KEEP_ALIVE, info);
+                        final PacketWrapper keepAlive = PacketWrapper.create(state == State.PLAY ? ClientboundPackets1_20_3.KEEP_ALIVE : ClientboundConfigurationPackets1_20_3.KEEP_ALIVE, info);
                         keepAlive.write(Type.LONG, INTERNAL_ID); // id
                         keepAlive.send(BedrockProtocol.class);
                     } catch (Throwable e) {

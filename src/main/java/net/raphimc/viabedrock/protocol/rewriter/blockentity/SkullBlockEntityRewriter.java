@@ -36,13 +36,28 @@ public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
     private static final int PLAYER_HEAD_TYPE = 3;
     private static final int MAX_TYPE = 6;
     private static final int SKULL_WITH_ROTATION_UPDATE;
+    private static final int SKULL_BLOCK_STATE_COUNT;
 
     static {
-        final BlockState blockState = new BlockState("skeleton_skull", ImmutableMap.of("powered", "false", "rotation", "0"));
-        SKULL_WITH_ROTATION_UPDATE = BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(blockState, -1);
+        final BlockState unpoweredRotation0SkeletonSkull = new BlockState("skeleton_skull", ImmutableMap.of("powered", "false", "rotation", "0"));
+        SKULL_WITH_ROTATION_UPDATE = BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(unpoweredRotation0SkeletonSkull, -1);
         if (SKULL_WITH_ROTATION_UPDATE == -1) {
-            throw new IllegalStateException("Unable to find skull block state with rotation 0");
+            throw new IllegalStateException("Unable to find " + unpoweredRotation0SkeletonSkull.toBlockStateString());
         }
+
+        final BlockState poweredRotation0SkeletonSkull = new BlockState("skeleton_skull", ImmutableMap.of("powered", "true", "rotation", "0"));
+        final int poweredRotation0SkeletonSkullId = BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(poweredRotation0SkeletonSkull, -1);
+        if (poweredRotation0SkeletonSkullId == -1) {
+            throw new IllegalStateException("Unable to find " + poweredRotation0SkeletonSkull.toBlockStateString());
+        }
+
+        final BlockState poweredRotation0WitherSkeletonSkull = new BlockState("wither_skeleton_skull", ImmutableMap.of("powered", "true", "rotation", "0"));
+        final int poweredRotation0WitherSkeletonSkullId = BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(poweredRotation0WitherSkeletonSkull, -1);
+        if (poweredRotation0WitherSkeletonSkullId == -1) {
+            throw new IllegalStateException("Unable to find " + poweredRotation0WitherSkeletonSkull.toBlockStateString());
+        }
+
+        SKULL_BLOCK_STATE_COUNT = poweredRotation0WitherSkeletonSkullId - poweredRotation0SkeletonSkullId;
     }
 
     @Override
@@ -60,7 +75,7 @@ public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
                 javaBlockState += this.convertRotation(bedrockTag.<FloatTag>get("Rotation").asFloat());
             }
         }
-        javaBlockState += type * 20;
+        javaBlockState += type * SKULL_BLOCK_STATE_COUNT;
 
         return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, new CompoundTag()), javaBlockState);
     }

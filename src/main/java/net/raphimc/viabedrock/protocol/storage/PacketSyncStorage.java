@@ -24,8 +24,8 @@ import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundConfigurationPackets1_20_2;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundConfigurationPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
@@ -49,7 +49,7 @@ public class PacketSyncStorage extends StoredObject {
         final int id = ID.getAndIncrement();
 
         final State state = this.getUser().getProtocolInfo().getServerState();
-        final PacketWrapper pingPacket = PacketWrapper.create(state == State.PLAY ? ClientboundPackets1_20_2.PING : ClientboundConfigurationPackets1_20_2.PING, this.getUser());
+        final PacketWrapper pingPacket = PacketWrapper.create(state == State.PLAY ? ClientboundPackets1_20_3.PING : ClientboundConfigurationPackets1_20_3.PING, this.getUser());
         pingPacket.write(Type.INT, id); // parameter
         pingPacket.send(BedrockProtocol.class);
 

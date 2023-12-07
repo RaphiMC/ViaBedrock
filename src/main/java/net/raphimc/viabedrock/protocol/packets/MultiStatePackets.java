@@ -26,16 +26,15 @@ import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.gson.JsonNull;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundConfigurationPackets1_20_2;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
 import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ServerboundConfigurationPackets1_20_2;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ServerboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundConfigurationPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ServerboundPackets1_20_3;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
-import net.raphimc.viabedrock.api.util.TextUtil;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -62,9 +61,9 @@ public class MultiStatePackets {
             final Function<String, String> translator = k -> translations.getOrDefault(k, k);
             final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
             final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
-            wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translatedMessage + " §r(Reason: " + disconnectReason + ")")); // reason
+            PacketFactory.writeDisconnect(wrapper, translatedMessage + " §r(Reason: " + disconnectReason + ")");
         } else {
-            wrapper.write(Type.COMPONENT, JsonNull.INSTANCE); // reason
+            PacketFactory.writeDisconnect(wrapper, null);
         }
     };
 
@@ -83,7 +82,7 @@ public class MultiStatePackets {
                 + "Violating Packet: " + (ServerboundBedrockPackets.getPacket(packetIdCause) != null ? ServerboundBedrockPackets.getPacket(packetIdCause).name() : packetIdCause) + "\n"
                 + (context.isEmpty() ? "No context provided" : (" Context: '" + context + "'"))
                 + "\n\nPlease report this issue on the ViaBedrock GitHub page!";
-        wrapper.write(Type.COMPONENT, TextUtil.stringToGson(reason));
+        PacketFactory.writeDisconnect(wrapper, reason);
     };
 
     private static final PacketHandlers KEEP_ALIVE_HANDLER = new PacketHandlers() {
@@ -142,14 +141,14 @@ public class MultiStatePackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.DISCONNECT,
-                ClientboundPackets1_20_2.DISCONNECT, DISCONNECT_HANDLER,
+                ClientboundPackets1_20_3.DISCONNECT, DISCONNECT_HANDLER,
                 ClientboundLoginPackets.LOGIN_DISCONNECT, DISCONNECT_HANDLER,
-                ClientboundConfigurationPackets1_20_2.DISCONNECT, DISCONNECT_HANDLER
+                ClientboundConfigurationPackets1_20_3.DISCONNECT, DISCONNECT_HANDLER
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING,
-                ClientboundPackets1_20_2.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
+                ClientboundPackets1_20_3.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
                 ClientboundLoginPackets.LOGIN_DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
-                ClientboundConfigurationPackets1_20_2.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER
+                ClientboundConfigurationPackets1_20_3.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.PLAY_STATUS,
                 State.LOGIN, new PacketHandlers() {
@@ -237,7 +236,7 @@ public class MultiStatePackets {
 
                                 clientPlayer.closeDownloadingTerrainScreen();
                             } else {
-                                wrapper.setPacketType(ClientboundPackets1_20_2.DISCONNECT);
+                                wrapper.setPacketType(ClientboundPackets1_20_3.DISCONNECT);
                                 writePlayStatusKickMessage(wrapper, status);
                             }
                         });
@@ -245,11 +244,11 @@ public class MultiStatePackets {
                 }
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
-                ClientboundPackets1_20_2.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER,
-                ClientboundConfigurationPackets1_20_2.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER
+                ClientboundPackets1_20_3.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER,
+                ClientboundConfigurationPackets1_20_3.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER
         );
 
-        protocol.registerServerbound(ServerboundPackets1_20_2.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, KEEP_ALIVE_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_20_3.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, KEEP_ALIVE_HANDLER);
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_2.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, KEEP_ALIVE_HANDLER);
     }
 
@@ -264,26 +263,26 @@ public class MultiStatePackets {
 
         switch (status) {
             case PlayStatus.LOGIN_FAILED_CLIENT_OLD:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.outdatedClient")));
+                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.outdatedClient"));
                 break;
             case PlayStatus.LOGIN_FAILED_SERVER_OLD:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.outdatedServer")));
+                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.outdatedServer"));
                 break;
             case PlayStatus.LOGIN_FAILED_INVALID_TENANT:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.invalidTenant")));
+                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.invalidTenant"));
                 break;
             case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.editionMismatchEduToVanilla")));
+                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchEduToVanilla"));
                 break;
             case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_VANILLA_TO_EDU:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.editionMismatchVanillaToEdu")));
+                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchVanillaToEdu"));
                 break;
             case PlayStatus.FAILED_SERVER_FULL_SUB_CLIENT:
             case PlayStatus.VANILLA_TO_EDITOR_MISMATCH:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title")));
+                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title"));
                 break;
             case PlayStatus.EDITOR_TO_VANILLA_MISMATCH:
-                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(translations.get("disconnectionScreen.editor.mismatchEditorToVanilla")));
+                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.editor.mismatchEditorToVanilla"));
                 break;
             default: // Mojang client silently ignores invalid values
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received invalid login status: " + status);

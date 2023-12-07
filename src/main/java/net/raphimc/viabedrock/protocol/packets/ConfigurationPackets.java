@@ -21,7 +21,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ServerboundConfigurationPackets1_20_2;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ServerboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ServerboundPackets1_20_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 public class ConfigurationPackets {
@@ -40,7 +40,7 @@ public class ConfigurationPackets {
             wrapper.user().getProtocolInfo().setClientState(State.PLAY);
         });
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_2.PONG, null, MultiStatePackets.PONG_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_20_2.CONFIGURATION_ACKNOWLEDGED, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_20_3.CONFIGURATION_ACKNOWLEDGED, null, wrapper -> {
             wrapper.cancel();
             wrapper.user().getProtocolInfo().setClientState(State.CONFIGURATION);
         });

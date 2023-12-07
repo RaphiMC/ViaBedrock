@@ -21,17 +21,18 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.ViaProviders;
 import com.viaversion.viaversion.api.protocol.packet.Direction;
+import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.packet.mapping.PacketMappings;
-import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.exception.CancelException;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ServerboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundConfigurationPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ServerboundPackets1_20_3;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.protocol.StatelessTransitionProtocol;
-import net.raphimc.viabedrock.api.util.TextUtil;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.packetmapping.ClientboundPacketMappings;
 import net.raphimc.viabedrock.protocol.packets.*;
@@ -45,7 +46,7 @@ import net.raphimc.viabedrock.protocol.task.*;
 import java.util.EnumSet;
 import java.util.logging.Level;
 
-public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedrockPackets, ClientboundPackets1_20_2, ServerboundBedrockPackets, ServerboundPackets1_20_2> {
+public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedrockPackets, ClientboundPackets1_20_3, ServerboundBedrockPackets, ServerboundPackets1_20_3> {
 
     public static final BedrockMappingData MAPPINGS = new BedrockMappingData();
 
@@ -65,7 +66,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     );
 
     public BedrockProtocol() {
-        super(ClientboundBedrockPackets.class, ClientboundPackets1_20_2.class, ServerboundBedrockPackets.class, ServerboundPackets1_20_2.class);
+        super(ClientboundBedrockPackets.class, ClientboundPackets1_20_3.class, ServerboundBedrockPackets.class, ServerboundPackets1_20_3.class);
     }
 
     @Override
@@ -92,7 +93,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
                 this.cancelClientbound(packet);
             }
         }
-        for (ServerboundPackets1_20_2 packet : this.unmappedServerboundPacketType.getEnumConstants()) {
+        for (ServerboundPackets1_20_3 packet : this.unmappedServerboundPacketType.getEnumConstants()) {
             if (!this.hasRegisteredServerbound(packet)) {
                 this.cancelServerbound(packet);
             }
@@ -154,12 +155,12 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         /*if (direction == Direction.CLIENTBOUND) {
             System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ClientboundBedrockPackets.getPacket(packetWrapper.getId()) + ", packetWrapper = " + packetWrapper);
         } else {
-            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_20_2.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
+            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_20_3.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
         }*/
         super.transform(direction, state, packetWrapper);
 
         /*if (direction == Direction.CLIENTBOUND) {
-            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_20_2.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
+            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_20_3.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
         } else {
             System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ServerboundBedrockPackets.getPacket(packetWrapper.getId()) + ", packetWrapper = " + packetWrapper);
         }*/
@@ -171,9 +172,24 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
 
     public static void kickForIllegalState(final UserConnection user, final String reason, final Throwable e) {
         ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Illegal state: " + reason, e);
+
+        final PacketType disconnectPacketType;
+        switch (user.getProtocolInfo().getServerState()) {
+            case LOGIN:
+                disconnectPacketType = ClientboundLoginPackets.LOGIN_DISCONNECT;
+                break;
+            case CONFIGURATION:
+                disconnectPacketType = ClientboundConfigurationPackets1_20_3.DISCONNECT;
+                break;
+            case PLAY:
+                disconnectPacketType = ClientboundPackets1_20_3.DISCONNECT;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected state: " + user.getProtocolInfo().getServerState());
+        }
         try {
-            final PacketWrapper disconnect = PacketWrapper.create(user.getProtocolInfo().getServerState() == State.PLAY ? ClientboundPackets1_20_2.DISCONNECT : ClientboundLoginPackets.LOGIN_DISCONNECT, user);
-            disconnect.write(Type.COMPONENT, TextUtil.stringToGson("§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page."));
+            final PacketWrapper disconnect = PacketWrapper.create(disconnectPacketType, user);
+            PacketFactory.writeDisconnect(disconnect, "§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page.");
             disconnect.send(BedrockProtocol.class);
         } catch (Throwable ignored) {
         }

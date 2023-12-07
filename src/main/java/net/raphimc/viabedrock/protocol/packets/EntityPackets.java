@@ -18,13 +18,13 @@
 package net.raphimc.viabedrock.protocol.packets;
 
 import com.google.common.collect.Lists;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_3;
 import com.viaversion.viaversion.api.minecraft.metadata.Metadata;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.types.version.Types1_20_2;
+import com.viaversion.viaversion.api.type.types.version.Types1_20_3;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
@@ -46,7 +46,7 @@ import java.util.logging.Level;
 public class EntityPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.ADD_ENTITY, ClientboundPackets1_20_2.SPAWN_ENTITY, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.ADD_ENTITY, ClientboundPackets1_20_3.SPAWN_ENTITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
@@ -70,7 +70,7 @@ public class EntityPackets {
 
             // TODO: Handle remaining fields
 
-            final EntityTypes1_19_4 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(identifier));
+            final EntityTypes1_20_3 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(identifier));
             if (javaEntityType == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity identifier: " + identifier);
                 wrapper.cancel();
@@ -95,7 +95,7 @@ public class EntityPackets {
             wrapper.write(Type.SHORT, (short) (motion.y() * 8000F)); // velocity y
             wrapper.write(Type.SHORT, (short) (motion.z() * 8000F)); // velocity z
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.MOVE_ENTITY_ABSOLUTE, ClientboundPackets1_20_2.ENTITY_TELEPORT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.MOVE_ENTITY_ABSOLUTE, ClientboundPackets1_20_3.ENTITY_TELEPORT, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
@@ -131,7 +131,7 @@ public class EntityPackets {
                     wrapper.write(Type.BOOLEAN, entity.isOnGround()); // on ground
                 } else { // teleport
                     // The player should keep the motions, but this is not possible with the current Java Edition protocol
-                    wrapper.setPacketType(ClientboundPackets1_20_2.PLAYER_POSITION);
+                    wrapper.setPacketType(ClientboundPackets1_20_3.PLAYER_POSITION);
                     entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, true, true);
                 }
                 return;
@@ -141,7 +141,7 @@ public class EntityPackets {
             entity.setRotation(new Position3f(pitch, yaw, headYaw));
             entity.setOnGround(onGround);
 
-            final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_20_2.ENTITY_HEAD_LOOK, wrapper.user());
+            final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_20_3.ENTITY_HEAD_LOOK, wrapper.user());
             entityHeadLook.write(Type.VAR_INT, entity.javaId()); // entity id
             entityHeadLook.write(Type.BYTE, MathUtil.float2Byte(headYaw)); // head yaw
             entityHeadLook.send(BedrockProtocol.class);
@@ -154,7 +154,7 @@ public class EntityPackets {
             wrapper.write(Type.BYTE, MathUtil.float2Byte(pitch)); // pitch
             wrapper.write(Type.BOOLEAN, onGround); // on ground
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.MOVE_ENTITY_DELTA, ClientboundPackets1_20_2.ENTITY_TELEPORT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.MOVE_ENTITY_DELTA, ClientboundPackets1_20_3.ENTITY_TELEPORT, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
@@ -206,7 +206,7 @@ public class EntityPackets {
                     wrapper.write(Type.BOOLEAN, entity.isOnGround()); // on ground
                 } else { // teleport
                     // The player should keep the motions, but this is not possible with the current Java Edition protocol
-                    wrapper.setPacketType(ClientboundPackets1_20_2.PLAYER_POSITION);
+                    wrapper.setPacketType(ClientboundPackets1_20_3.PLAYER_POSITION);
                     entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, true, true);
                 }
                 return;
@@ -230,7 +230,7 @@ public class EntityPackets {
             if (hasHeadYaw) {
                 entity.setRotation(new Position3f(entity.rotation().x(), entity.rotation().y(), MathUtil.byte2Float(wrapper.read(Type.BYTE))));
 
-                final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_20_2.ENTITY_HEAD_LOOK, wrapper.user());
+                final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_20_3.ENTITY_HEAD_LOOK, wrapper.user());
                 entityHeadLook.write(Type.VAR_INT, entity.javaId()); // entity id
                 entityHeadLook.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().z())); // head yaw
                 entityHeadLook.send(BedrockProtocol.class);
@@ -245,7 +245,7 @@ public class EntityPackets {
             wrapper.write(Type.BYTE, MathUtil.float2Byte(entity.rotation().x())); // pitch
             wrapper.write(Type.BOOLEAN, entity.isOnGround()); // on ground
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_ENTITY_MOTION, ClientboundPackets1_20_2.ENTITY_VELOCITY, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_ENTITY_MOTION, ClientboundPackets1_20_3.ENTITY_VELOCITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
@@ -262,7 +262,7 @@ public class EntityPackets {
             wrapper.write(Type.SHORT, (short) (motion.y() * 8000F)); // velocity y
             wrapper.write(Type.SHORT, (short) (motion.z() * 8000F)); // velocity z
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.REMOVE_ENTITY, ClientboundPackets1_20_2.REMOVE_ENTITIES, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.REMOVE_ENTITY, ClientboundPackets1_20_3.REMOVE_ENTITIES, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
@@ -276,7 +276,7 @@ public class EntityPackets {
 
             wrapper.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{entity.javaId()}); // entity ids
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.ADD_PAINTING, ClientboundPackets1_20_2.SPAWN_ENTITY, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.ADD_PAINTING, ClientboundPackets1_20_3.SPAWN_ENTITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
@@ -286,12 +286,12 @@ public class EntityPackets {
             final PaintingVariant painting = PaintingVariant.getByName(wrapper.read(BedrockTypes.STRING)); // motive
             final Position3f positionOffset = painting.getJavaPositionOffset(direction);
 
-            final Entity entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, EntityTypes1_19_4.PAINTING);
+            final Entity entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, EntityTypes1_20_3.PAINTING);
             entity.setPosition(position);
 
             wrapper.write(Type.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Type.UUID, entity.javaUuid()); // uuid
-            wrapper.write(Type.VAR_INT, EntityTypes1_19_4.PAINTING.getId()); // type id
+            wrapper.write(Type.VAR_INT, EntityTypes1_20_3.PAINTING.getId()); // type id
             wrapper.write(Type.DOUBLE, (double) position.x() + positionOffset.x()); // x
             wrapper.write(Type.DOUBLE, (double) position.y() + positionOffset.y()); // y
             wrapper.write(Type.DOUBLE, (double) position.z() + positionOffset.z()); // z
@@ -303,9 +303,9 @@ public class EntityPackets {
             wrapper.write(Type.SHORT, (short) 0); // velocity y
             wrapper.write(Type.SHORT, (short) 0); // velocity z
 
-            final PacketWrapper entityMetadata = PacketWrapper.create(ClientboundPackets1_20_2.ENTITY_METADATA, wrapper.user());
+            final PacketWrapper entityMetadata = PacketWrapper.create(ClientboundPackets1_20_3.ENTITY_METADATA, wrapper.user());
             entityMetadata.write(Type.VAR_INT, entity.javaId()); // entity id
-            entityMetadata.write(Types1_20_2.METADATA_LIST, Lists.newArrayList(new Metadata(ProtocolConstants.JAVA_PAINTING_VARIANT_ID, Types1_20_2.META_TYPES.paintingVariantType, painting.ordinal()))); // metadata
+            entityMetadata.write(Types1_20_3.METADATA_LIST, Lists.newArrayList(new Metadata(ProtocolConstants.JAVA_PAINTING_VARIANT_ID, Types1_20_3.META_TYPES.paintingVariantType, painting.ordinal()))); // metadata
 
             wrapper.send(BedrockProtocol.class);
             wrapper.cancel();

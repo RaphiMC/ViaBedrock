@@ -71,7 +71,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     INVENTORY_SLOT(50),
     CONTAINER_SET_DATA(51),
     CRAFTING_DATA(52),
-    CRAFTING_EVENT(53),
     GUI_DATA_PICK_ITEM(54),
     BLOCK_ENTITY_DATA(56),
     PLAYER_INPUT(57),
@@ -218,7 +217,9 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     TRIM_DATA(302),
     OPEN_SIGN(303),
     AGENT_ANIMATION(304),
-    REFRESH_ENTITLEMENTS(305);
+    REFRESH_ENTITLEMENTS(305),
+    TOGGLE_CRAFTER_SLOT_REQUEST(306),
+    SET_PLAYER_INVENTORY_OPTIONS(307);
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

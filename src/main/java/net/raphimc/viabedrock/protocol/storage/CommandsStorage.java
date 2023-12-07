@@ -38,7 +38,7 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
@@ -95,7 +95,7 @@ public class CommandsStorage extends StoredObject {
     public void updateCommandTree() throws Exception {
         this.buildCommandTree();
 
-        final PacketWrapper declareCommands = PacketWrapper.create(ClientboundPackets1_20_2.DECLARE_COMMANDS, this.getUser());
+        final PacketWrapper declareCommands = PacketWrapper.create(ClientboundPackets1_20_3.DECLARE_COMMANDS, this.getUser());
         this.writeCommandTree(declareCommands);
         declareCommands.send(BedrockProtocol.class);
     }
@@ -334,7 +334,7 @@ public class CommandsStorage extends StoredObject {
             final Function<String, String> translator = resourcePacksStorage.getTranslationLookup();
             final LiteralArgumentBuilder<UserConnection> cmdBuilder = literal("help");
             cmdBuilder.executes(cmd -> {
-                PacketFactory.sendSystemChat(cmd.getSource(), TextUtil.stringToGson("§c" + BedrockTranslator.translate("%commands.generic.usage", translator, new Object[]{"/help <command>"})));
+                PacketFactory.sendSystemChat(cmd.getSource(), TextUtil.stringToNbt("§c" + BedrockTranslator.translate("%commands.generic.usage", translator, new Object[]{"/help <command>"})));
                 return RESULT_CANCEL;
             });
             cmdBuilder.then(argument("command", StringArgumentType.greedyString()).suggests((context, builder) -> SuggestionsUtil.suggestMatching(this.dispatcher.getRoot().getChildren().stream().map(c -> {
@@ -370,7 +370,7 @@ public class CommandsStorage extends StoredObject {
                 }
 
                 for (String line : lines) {
-                    PacketFactory.sendSystemChat(cmd.getSource(), TextUtil.stringToGson(line));
+                    PacketFactory.sendSystemChat(cmd.getSource(), TextUtil.stringToNbt(line));
                 }
                 return RESULT_CANCEL;
             }));

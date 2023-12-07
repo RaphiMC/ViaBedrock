@@ -28,9 +28,6 @@ import java.util.UUID;
 
 public class ScoreboardEntry {
 
-    public static final int ACTION_CHANGE = 0;
-    public static final int ACTION_REMOVE = 1;
-
     private boolean isPlayerId;
     private Long entityId;
     private String fakePlayerName;

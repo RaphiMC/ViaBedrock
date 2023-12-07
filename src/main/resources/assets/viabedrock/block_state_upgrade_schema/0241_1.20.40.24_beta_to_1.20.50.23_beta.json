@@ -1,0 +1,57 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 20,
+    "maxVersionPatch": 50,
+    "maxVersionRevision": 1,
+    "remappedStates": {
+        "minecraft:planks": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "wood_type",
+                    "suffix": "_planks"
+                },
+                "newState": null
+            }
+        ],
+        "minecraft:stone": [
+            {
+                "oldState": {
+                    "stone_type": {
+                        "string": "andesite_smooth"
+                    }
+                },
+                "newName": "minecraft:polished_andesite",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "stone_type": {
+                        "string": "diorite_smooth"
+                    }
+                },
+                "newName": "minecraft:polished_diorite",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "stone_type": {
+                        "string": "granite_smooth"
+                    }
+                },
+                "newName": "minecraft:polished_granite",
+                "newState": null
+            },
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "stone_type",
+                    "suffix": ""
+                },
+                "newState": null
+            }
+        ]
+    }
+}

@@ -48,7 +48,7 @@ public class FlowerPotBlockEntityRewriter implements BlockEntityRewriter.Rewrite
         final BlockStateRewriter blockStateRewriter = user.get(BlockStateRewriter.class);
         final int bedrockBlockState;
         if (bedrockTag.get("item") instanceof ShortTag && bedrockTag.get("mData") instanceof IntTag) {
-            final int id = bedrockTag.<ShortTag>get("item").asShort();
+            final short id = bedrockTag.<ShortTag>get("item").asShort();
             final int metadata = bedrockTag.<IntTag>get("mData").asInt();
             if (metadata < 0 || metadata > 15) return defaultJavaBlockEntity;
             final int legacyBlockStateId = (id << 4) | metadata;

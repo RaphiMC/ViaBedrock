@@ -13,7 +13,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/574dad015d11c072d9fc7c5989d94f9689078b77/core/src/main/resources/bedrock/block_palette.1_20_40.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/998caee156d38245a15e560f15864319ad125cbb/core/src/main/resources/bedrock/block_palette.1_20_50.nbt)
 
 ### data/bedrock/entity_identifiers.nbt
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
@@ -26,7 +26,7 @@ This file has been copied from the official bedrock client's assets folder:
 `%MC-Root%\data\skin_packs\vanilla\*`
 
 ### data/java/via_mappings.json
-[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.20.2.json)
+[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.20.3.json)
 
 ### data/java/registries.nbt
 This file has been dumped from a vanilla server using a fabric mod.

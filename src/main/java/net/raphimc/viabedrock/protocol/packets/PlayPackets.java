@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.protocol.packets;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ServerboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ServerboundPackets1_20_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -34,7 +34,7 @@ import java.net.InetSocketAddress;
 public class PlayPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_20_2.SERVER_DIFFICULTY, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_20_3.SERVER_DIFFICULTY, new PacketHandlers() {
             @Override
             public void register() {
                 map(BedrockTypes.UNSIGNED_VAR_INT, Type.UNSIGNED_BYTE); // difficulty
@@ -58,9 +58,9 @@ public class PlayPackets {
             Via.getManager().getProviders().get(TransferProvider.class).connectToServer(wrapper.user(), new InetSocketAddress(hostname, port));
         });
 
-        protocol.registerServerbound(ServerboundPackets1_20_2.CLIENT_SETTINGS, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, MultiStatePackets.CLIENT_SETTINGS_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_20_2.PONG, null, MultiStatePackets.PONG_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_20_2.PLUGIN_MESSAGE, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_20_3.CLIENT_SETTINGS, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, MultiStatePackets.CLIENT_SETTINGS_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_20_3.PONG, null, MultiStatePackets.PONG_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_20_3.PLUGIN_MESSAGE, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
     }
 
 }

@@ -23,8 +23,8 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ServerboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ServerboundPackets1_20_3;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
@@ -54,7 +54,7 @@ import java.util.logging.Level;
 public class ChatPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_20_2.SYSTEM_CHAT, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_20_3.SYSTEM_CHAT, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -80,7 +80,7 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, BedrockTranslator.translate("§7§o%commands.message.display.incoming", translator, new String[]{sourceName, message})}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
                                 }
 
-                                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(message));
+                                wrapper.write(Type.TAG, TextUtil.stringToNbt(message));
                                 wrapper.write(Type.BOOLEAN, false); // overlay
                                 break;
                             }
@@ -97,7 +97,7 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
-                                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(message)); // message
+                                wrapper.write(Type.TAG, TextUtil.stringToNbt(message)); // message
                                 wrapper.write(Type.BOOLEAN, false); // overlay
                                 break;
                             }
@@ -109,7 +109,7 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
-                                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(message)); // message
+                                wrapper.write(Type.TAG, TextUtil.stringToNbt(message)); // message
                                 wrapper.write(Type.BOOLEAN, type == TextTypes.TIP); // overlay
                                 break;
                             }
@@ -122,7 +122,7 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate(message, translator, parameters);
                                 }
 
-                                wrapper.write(Type.COMPONENT, TextUtil.stringToGson(message)); // message
+                                wrapper.write(Type.TAG, TextUtil.stringToNbt(message)); // message
                                 wrapper.write(Type.BOOLEAN, type == TextTypes.POPUP || type == TextTypes.JUKEBOX_POPUP); // overlay
                                 break;
                             }
@@ -139,7 +139,7 @@ public class ChatPackets {
                 read(BedrockTypes.STRING); // platform chat id
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_20_2.SYSTEM_CHAT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_20_3.SYSTEM_CHAT, wrapper -> {
             final CommandOrigin originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN); // origin
             final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
@@ -173,10 +173,10 @@ public class ChatPackets {
                 wrapper.read(BedrockTypes.STRING); // data
             }
 
-            wrapper.write(Type.COMPONENT, TextUtil.stringToGson(message.toString()));
+            wrapper.write(Type.TAG, TextUtil.stringToNbt(message.toString()));
             wrapper.write(Type.BOOLEAN, false); // overlay
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.AVAILABLE_COMMANDS, ClientboundPackets1_20_2.DECLARE_COMMANDS, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.AVAILABLE_COMMANDS, ClientboundPackets1_20_3.DECLARE_COMMANDS, wrapper -> {
             final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
             final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
             wrapper.user().put(commandsStorage);
@@ -209,7 +209,7 @@ public class ChatPackets {
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_20_2.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_20_3.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
             @Override
             public void register() {
                 create(Type.UNSIGNED_BYTE, TextTypes.CHAT); // type
@@ -223,12 +223,12 @@ public class ChatPackets {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     if (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.COMMANDS_ONLY) {
                         wrapper.cancel();
-                        PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute")));
+                        PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute")));
                     }
                 });
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_20_2.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_20_3.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, new PacketHandlers() {
             @Override
             public void register() {
                 map(Type.STRING, BedrockTypes.STRING, c -> '/' + c); // command
@@ -252,13 +252,13 @@ public class ChatPackets {
                         final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                         if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.HIDDEN && gameSession.getPlayerPermission() <= PlayerPermissions.OPERATOR)) {
                             wrapper.cancel();
-                            PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToGson("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
+                            PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
                         }
                     }
                 });
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_20_2.TAB_COMPLETE, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_20_3.TAB_COMPLETE, null, wrapper -> {
             wrapper.cancel();
             final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
             if (commandsStorage == null) return;
@@ -271,7 +271,7 @@ public class ChatPackets {
 
             final Suggestions suggestions = commandsStorage.complete(command);
 
-            final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets1_20_2.TAB_COMPLETE, wrapper.user());
+            final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets1_20_3.TAB_COMPLETE, wrapper.user());
             tabComplete.write(Type.VAR_INT, id); // transaction id
             tabComplete.write(Type.VAR_INT, suggestions.getRange().getStart()); // start index
             tabComplete.write(Type.VAR_INT, suggestions.getRange().getLength()); // length

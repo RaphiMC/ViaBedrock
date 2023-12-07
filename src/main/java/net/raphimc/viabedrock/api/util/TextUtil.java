@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.api.util;
 
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonParser;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.lenni0451.mcstructs.core.TextFormatting;
 import net.lenni0451.mcstructs.text.ATextComponent;
 import net.lenni0451.mcstructs.text.serializer.LegacyStringDeserializer;
@@ -53,15 +54,19 @@ public class TextUtil {
     }
 
     public static String componentToJson(final ATextComponent textComponent) {
-        return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serialize(textComponent);
+        return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeJsonString(textComponent);
     }
 
     public static JsonElement stringToGson(final String text) {
         return JsonParser.parseString(stringToJson(text));
     }
 
-    public static JsonElement componentToGson(final ATextComponent textComponent) {
-        return JsonParser.parseString(componentToJson(textComponent));
+    public static Tag stringToNbt(final String text) {
+        return componentToNbt(stringToComponent(text));
+    }
+
+    public static Tag componentToNbt(final ATextComponent textComponent) {
+        return NbtUtil.mcStructsToVia(ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeNbt(textComponent));
     }
 
     public static ATextComponent stringToComponent(final String text) {

@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.model.scoreboard;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.HashMap;
@@ -66,29 +66,35 @@ public class ScoreboardObjective {
         this.entries.put(scoreboardId, entry);
 
         entry.updateJavaName(user);
-        this.updateEntry(user, entry, ScoreboardEntry.ACTION_CHANGE);
+        this.updateEntry0(user, entry);
     }
 
     public void updateEntry(final UserConnection user, final ScoreboardEntry entry) throws Exception {
-        this.updateEntry(user, entry, ScoreboardEntry.ACTION_REMOVE);
+        this.removeEntry0(user, entry);
         entry.updateJavaName(user);
-        this.updateEntry(user, entry, ScoreboardEntry.ACTION_CHANGE);
+        this.updateEntry0(user, entry);
     }
 
     public void removeEntry(final UserConnection user, final long scoreboardId) throws Exception {
         final ScoreboardEntry entry = this.entries.remove(scoreboardId);
 
-        this.updateEntry(user, entry, ScoreboardEntry.ACTION_REMOVE);
+        this.removeEntry0(user, entry);
     }
 
-    public void updateEntry(final UserConnection user, final ScoreboardEntry entry, final int action) throws Exception {
-        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_20_2.UPDATE_SCORE, user);
+    public void updateEntry0(final UserConnection user, final ScoreboardEntry entry) throws Exception {
+        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_20_3.UPDATE_SCORE, user);
         updateScore.write(Type.STRING, entry.javaName()); // player name
-        updateScore.write(Type.VAR_INT, action); // action
         updateScore.write(Type.STRING, this.name); // objective name
-        if (action == ScoreboardEntry.ACTION_CHANGE) {
-            updateScore.write(Type.VAR_INT, ascending ? -entry.score() : entry.score()); // score
-        }
+        updateScore.write(Type.VAR_INT, ascending ? -entry.score() : entry.score()); // score
+        updateScore.write(Type.OPTIONAL_TAG, null); // display name
+        updateScore.write(Type.BOOLEAN, false); // has number format
+        updateScore.send(BedrockProtocol.class);
+    }
+
+    public void removeEntry0(final UserConnection user, final ScoreboardEntry entry) throws Exception {
+        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_20_3.RESET_SCORE, user);
+        updateScore.write(Type.STRING, entry.javaName()); // player name
+        updateScore.write(Type.OPTIONAL_STRING, this.name); // objective name
         updateScore.send(BedrockProtocol.class);
     }
 

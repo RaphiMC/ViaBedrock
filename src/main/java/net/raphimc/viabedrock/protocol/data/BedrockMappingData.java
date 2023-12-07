@@ -22,7 +22,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.io.ByteStreams;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_3;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
@@ -30,7 +30,7 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.gson.JsonPrimitive;
 import com.viaversion.viaversion.libs.opennbt.NBTIO;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
-import com.viaversion.viaversion.protocols.protocol1_19_4to1_19_3.Protocol1_19_4To1_19_3;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.Protocol1_20_3To1_20_2;
 import com.viaversion.viaversion.util.GsonUtil;
 import com.viaversion.viaversion.util.Key;
 import io.netty.buffer.ByteBuf;
@@ -100,13 +100,16 @@ public class BedrockMappingData extends MappingDataBase {
 
     // Entities
     private BiMap<String, Integer> bedrockEntities;
-    private Map<String, EntityTypes1_19_4> bedrockToJavaEntities;
+    private Map<String, EntityTypes1_20_3> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
 
     // Effects
     private BiMap<String, Integer> javaEffects;
     private BiMap<String, Integer> bedrockEffects;
     private Map<String, String> bedrockToJavaEffects;
+
+    // Other stuff
+    private BiMap<String, String> bedrockToJavaExperimentalFeatures;
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolConstants.JAVA_VERSION.getName());
@@ -413,7 +416,7 @@ public class BedrockMappingData extends MappingDataBase {
                 for (Map.Entry<Integer, ItemRewriter.Rewriter> metaEntry : entry.getValue().entrySet()) {
                     final Integer meta = metaEntry.getKey();
                     if (meta != null) {
-                        final String newBedrockIdentifier = bedrockItemUpgrader.upgradeMetaItem(bedrockIdentifier, meta);
+                        final String newBedrockIdentifier = this.bedrockItemUpgrader.upgradeMetaItem(bedrockIdentifier, meta);
                         if (newBedrockIdentifier != null) {
                             if (newBedrockIdentifier.equals(metaEntry.getValue().identifier())) {
                                 throw new RuntimeException("Redundant bedrock -> java item mapping for " + bedrockIdentifier + ":" + meta);
@@ -449,7 +452,7 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockEntities.put(entry.<StringTag>get("id").getValue(), entry.<IntTag>get("rid").asInt());
             }
 
-            Via.getManager().getProtocolManager().addMappingLoaderFuture(BedrockProtocol.class, Protocol1_19_4To1_19_3.class, () -> {
+            Via.getManager().getProtocolManager().addMappingLoaderFuture(BedrockProtocol.class, Protocol1_20_3To1_20_2.class, () -> {
                 final JsonObject bedrockToJavaEntityMappingsJson = this.readJson("custom/entity_mappings.json");
                 this.bedrockToJavaEntities = new HashMap<>(bedrockToJavaEntityMappingsJson.size());
                 final Set<String> unmappedIdentifiers = new HashSet<>();
@@ -464,8 +467,8 @@ public class BedrockMappingData extends MappingDataBase {
                         unmappedIdentifiers.add(bedrockIdentifier);
                         continue;
                     }
-                    EntityTypes1_19_4 javaEntityType = null;
-                    for (EntityTypes1_19_4 type : EntityTypes1_19_4.values()) {
+                    EntityTypes1_20_3 javaEntityType = null;
+                    for (EntityTypes1_20_3 type : EntityTypes1_20_3.values()) {
                         if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
                             javaEntityType = type;
                             break;
@@ -525,6 +528,14 @@ public class BedrockMappingData extends MappingDataBase {
                 if (!this.javaEffects.containsKey(javaIdentifier)) {
                     throw new IllegalStateException("Missing java effect mapping for: " + javaIdentifier);
                 }
+            }
+        }
+
+        { // Other stuff
+            final JsonObject bedrockToJavaExperimentalFeatureMappingsJson = this.readJson("custom/experimental_feature_mappings.json");
+            this.bedrockToJavaExperimentalFeatures = HashBiMap.create(bedrockToJavaExperimentalFeatureMappingsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaExperimentalFeatureMappingsJson.entrySet()) {
+                this.bedrockToJavaExperimentalFeatures.put(entry.getKey(), entry.getValue().getAsString());
             }
         }
     }
@@ -637,7 +648,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockEntities;
     }
 
-    public Map<String, EntityTypes1_19_4> getBedrockToJavaEntities() {
+    public Map<String, EntityTypes1_20_3> getBedrockToJavaEntities() {
         return this.bedrockToJavaEntities;
     }
 
@@ -655,6 +666,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<String, String> getBedrockToJavaEffects() {
         return this.bedrockToJavaEffects;
+    }
+
+    public BiMap<String, String> getBedrockToJavaExperimentalFeatures() {
+        return this.bedrockToJavaExperimentalFeatures;
     }
 
     @Override

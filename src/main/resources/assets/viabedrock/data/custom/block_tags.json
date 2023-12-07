@@ -58,6 +58,9 @@
   "conduit": [
     "minecraft:conduit"
   ],
+  "crafter": [
+    "minecraft:crafter"
+  ],
   "daylight_detector": [
     "minecraft:daylight_detector",
     "minecraft:daylight_detector_inverted"

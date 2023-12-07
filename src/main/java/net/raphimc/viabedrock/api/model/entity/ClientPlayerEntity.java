@@ -21,7 +21,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -29,7 +29,10 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.storage.*;
+import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
+import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
+import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
+import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.UUID;
@@ -79,13 +82,10 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void closeDownloadingTerrainScreen() throws Exception {
-        final SpawnPositionStorage spawnPositionStorage = this.user.get(SpawnPositionStorage.class);
-        final ChunkTracker chunkTracker = this.user.get(ChunkTracker.class);
-
-        final PacketWrapper spawnPosition = PacketWrapper.create(ClientboundPackets1_20_2.SPAWN_POSITION, this.user);
-        spawnPosition.write(Type.POSITION1_14, spawnPositionStorage.getSpawnPosition(chunkTracker.getDimensionId())); // position
-        spawnPosition.write(Type.FLOAT, 0F); // angle
-        spawnPosition.send(BedrockProtocol.class);
+        final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_20_3.GAME_EVENT, this.user);
+        gameEvent.write(Type.UNSIGNED_BYTE, (short) 13); // LEVEL_CHUNKS_LOAD_START
+        gameEvent.write(Type.FLOAT, 0F); // value
+        gameEvent.send(BedrockProtocol.class);
     }
 
     public void sendPlayerPositionPacketToClient(final boolean keepRotation) throws Exception {
@@ -93,7 +93,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void sendPlayerPositionPacketToClient(final boolean keepRotation, final boolean fakeTeleport) throws Exception {
-        final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets1_20_2.PLAYER_POSITION, this.user);
+        final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets1_20_3.PLAYER_POSITION, this.user);
         this.writePlayerPositionPacketToClient(playerPosition, keepRotation, fakeTeleport);
         playerPosition.send(BedrockProtocol.class);
     }

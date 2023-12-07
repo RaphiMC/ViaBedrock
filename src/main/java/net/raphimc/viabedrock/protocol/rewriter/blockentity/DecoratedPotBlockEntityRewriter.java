@@ -59,6 +59,9 @@ public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewr
                 javaTag.put("sherds", javaSherds);
             }
         }
+        if (bedrockTag.get("item") instanceof CompoundTag) {
+            javaTag.put("item", this.rewriteItem(user, bedrockTag.get("item")));
+        }
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }

@@ -20,11 +20,11 @@ package net.raphimc.viabedrock.protocol.storage;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_19_4;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_3;
 import com.viaversion.viaversion.api.minecraft.metadata.ChunkPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ClientboundPackets1_20_2;
+import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
@@ -49,7 +49,7 @@ public class EntityTracker extends StoredObject {
         super(user);
     }
 
-    public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final EntityTypes1_19_4 type) throws Exception {
+    public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final EntityTypes1_20_3 type) throws Exception {
         switch (type) {
             case PLAYER:
                 return this.addEntity(new PlayerEntity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), uuid != null ? uuid : UUID.randomUUID()));
@@ -69,7 +69,7 @@ public class EntityTracker extends StoredObject {
         final Entity prevEntity = this.entities.put(entity.uniqueId(), entity);
         if (prevEntity != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate unique entity ID: " + entity.uniqueId());
-            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_20_2.REMOVE_ENTITIES, this.getUser());
+            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_20_3.REMOVE_ENTITIES, this.getUser());
             removeEntities.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
 
@@ -108,10 +108,10 @@ public class EntityTracker extends StoredObject {
         final int javaId = ID_COUNTER.getAndIncrement();
         this.itemFrames.put(position, javaId);
 
-        final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets1_20_2.SPAWN_ENTITY, this.getUser());
+        final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets1_20_3.SPAWN_ENTITY, this.getUser());
         spawnEntity.write(Type.VAR_INT, javaId); // entity id
         spawnEntity.write(Type.UUID, UUID.randomUUID()); // uuid
-        spawnEntity.write(Type.VAR_INT, blockState.identifier().equals("frame") ? EntityTypes1_19_4.ITEM_FRAME.getId() : EntityTypes1_19_4.GLOW_ITEM_FRAME.getId()); // type id
+        spawnEntity.write(Type.VAR_INT, blockState.identifier().equals("frame") ? EntityTypes1_20_3.ITEM_FRAME.getId() : EntityTypes1_20_3.GLOW_ITEM_FRAME.getId()); // type id
         spawnEntity.write(Type.DOUBLE, (double) position.x()); // x
         spawnEntity.write(Type.DOUBLE, (double) position.y()); // y
         spawnEntity.write(Type.DOUBLE, (double) position.z()); // z
@@ -135,7 +135,7 @@ public class EntityTracker extends StoredObject {
             return;
         }
 
-        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_20_2.REMOVE_ENTITIES, this.getUser());
+        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_20_3.REMOVE_ENTITIES, this.getUser());
         removeEntities.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{javaId}); // entity ids
         removeEntities.send(BedrockProtocol.class);
     }

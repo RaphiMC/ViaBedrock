@@ -1,25 +1,45 @@
 {
-  "minecraft:planks": {
+  "minecraft:oak_planks": {
     "block": {
-      "minecraft:planks[wood_type=oak]": {
+      "minecraft:oak_planks": {
         "java_id": "minecraft:oak_planks"
-      },
-      "minecraft:planks[wood_type=spruce]": {
-        "java_id": "minecraft:spruce_planks"
-      },
-      "minecraft:planks[wood_type=birch]": {
-        "java_id": "minecraft:birch_planks"
-      },
-      "minecraft:planks[wood_type=jungle]": {
-        "java_id": "minecraft:jungle_planks"
-      },
-      "minecraft:planks[wood_type=acacia]": {
-        "java_id": "minecraft:acacia_planks"
-      },
-      "minecraft:planks[wood_type=dark_oak]": {
-        "java_id": "minecraft:dark_oak_planks"
       }
     }
+  },
+  "minecraft:spruce_planks": {
+    "block": {
+      "minecraft:spruce_planks": {
+        "java_id": "minecraft:spruce_planks"
+      }
+    }
+  },
+  "minecraft:birch_planks": {
+    "block": {
+      "minecraft:birch_planks": {
+        "java_id": "minecraft:birch_planks"
+      }
+    }
+  },
+  "minecraft:jungle_planks": {
+    "block": {
+      "minecraft:jungle_planks": {
+        "java_id": "minecraft:jungle_planks"
+      }
+    }
+  },
+  "minecraft:acacia_planks": {
+    "block": {
+      "minecraft:acacia_planks": {
+        "java_id": "minecraft:acacia_planks"
+      }
+    }
+  },
+  "minecraft:dark_oak_planks": {
+      "block": {
+      "minecraft:dark_oak_planks": {
+          "java_id": "minecraft:dark_oak_planks"
+      }
+      }
   },
   "minecraft:mangrove_planks": {
     "block": {
@@ -42,13 +62,6 @@
       }
     }
   },
-  "minecraft:bamboo_mosaic": {
-    "block": {
-      "minecraft:bamboo_mosaic": {
-        "java_id": "minecraft:bamboo_mosaic"
-      }
-    }
-  },
   "minecraft:crimson_planks": {
     "block": {
       "minecraft:crimson_planks": {
@@ -60,6 +73,13 @@
     "block": {
       "minecraft:warped_planks": {
         "java_id": "minecraft:warped_planks"
+      }
+    }
+  },
+  "minecraft:bamboo_mosaic": {
+    "block": {
+      "minecraft:bamboo_mosaic": {
+        "java_id": "minecraft:bamboo_mosaic"
       }
     }
   },
@@ -694,6 +714,13 @@
     "block": {
       "minecraft:mud_brick_stairs": {
         "java_id": "minecraft:mud_brick_stairs"
+      }
+    }
+  },
+  "minecraft:planks": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:oak_planks"
       }
     }
   },
@@ -2357,26 +2384,50 @@
   },
   "minecraft:stone": {
     "block": {
-      "minecraft:stone[stone_type=stone]": {
+      "minecraft:stone": {
         "java_id": "minecraft:stone"
-      },
-      "minecraft:stone[stone_type=granite]": {
-        "java_id": "minecraft:stone"
-      },
-      "minecraft:stone[stone_type=diorite]": {
-        "java_id": "minecraft:stone"
-      },
-      "minecraft:stone[stone_type=andesite]": {
-        "java_id": "minecraft:stone"
-      },
-      "minecraft:stone[stone_type=granite_smooth]": {
-        "java_id": "minecraft:stone"
-      },
-      "minecraft:stone[stone_type=diorite_smooth]": {
-        "java_id": "minecraft:stone"
-      },
-      "minecraft:stone[stone_type=andesite_smooth]": {
-        "java_id": "minecraft:stone"
+      }
+    }
+  },
+  "minecraft:granite": {
+    "block": {
+      "minecraft:granite": {
+        "java_id": "minecraft:granite"
+      }
+    }
+  },
+  "minecraft:diorite": {
+    "block": {
+      "minecraft:diorite": {
+        "java_id": "minecraft:diorite"
+      }
+    }
+  },
+  "minecraft:andesite": {
+    "block": {
+      "minecraft:andesite": {
+        "java_id": "minecraft:andesite"
+      }
+    }
+  },
+  "minecraft:polished_granite": {
+    "block": {
+      "minecraft:polished_granite": {
+        "java_id": "minecraft:polished_granite"
+      }
+    }
+  },
+  "minecraft:polished_diorite": {
+    "block": {
+      "minecraft:polished_diorite": {
+        "java_id": "minecraft:polished_diorite"
+      }
+    }
+  },
+  "minecraft:polished_andesite": {
+    "block": {
+      "minecraft:polished_andesite": {
+        "java_id": "minecraft:polished_andesite"
       }
     }
   },
@@ -3086,7 +3137,7 @@
         "java_id": "minecraft:fern"
       },
       "minecraft:tallgrass[tall_grass_type=tall]": {
-        "java_id": "minecraft:grass"
+        "java_id": "minecraft:short_grass"
       }
     }
   },
@@ -9118,7 +9169,7 @@
   "minecraft:carrots": {
     "block": {
       "minecraft:carrots": {
-        "java_id": "minecraft:grass",
+        "java_id": "minecraft:short_grass",
         "java_display_name": "Carrots"
       }
     }
@@ -9195,7 +9246,7 @@
   "minecraft:cocoa": {
     "block": {
       "minecraft:cocoa": {
-        "java_id": "minecraft:grass",
+        "java_id": "minecraft:short_grass",
         "java_display_name": "Cocoa"
       }
     }
@@ -11654,6 +11705,408 @@
     "block": {
       "minecraft:black_terracotta": {
         "java_id": "minecraft:black_terracotta"
+      }
+    }
+  },
+  "minecraft:copper_bulb": {
+    "block": {
+      "minecraft:copper_bulb": {
+        "java_id": "minecraft:copper_bulb"
+      }
+    }
+  },
+  "minecraft:exposed_copper_bulb": {
+    "block": {
+      "minecraft:exposed_copper_bulb": {
+        "java_id": "minecraft:exposed_copper_bulb"
+      }
+    }
+  },
+  "minecraft:oxidized_copper_bulb": {
+    "block": {
+      "minecraft:oxidized_copper_bulb": {
+        "java_id": "minecraft:oxidized_copper_bulb"
+      }
+    }
+  },
+  "minecraft:weathered_copper_bulb": {
+    "block": {
+      "minecraft:weathered_copper_bulb": {
+        "java_id": "minecraft:weathered_copper_bulb"
+      }
+    }
+  },
+  "minecraft:waxed_copper_bulb": {
+    "block": {
+      "minecraft:waxed_copper_bulb": {
+        "java_id": "minecraft:waxed_copper_bulb"
+      }
+    }
+  },
+  "minecraft:waxed_exposed_copper_bulb": {
+    "block": {
+      "minecraft:waxed_exposed_copper_bulb": {
+        "java_id": "minecraft:waxed_exposed_copper_bulb"
+      }
+    }
+  },
+  "minecraft:waxed_oxidized_copper_bulb": {
+    "block": {
+      "minecraft:waxed_oxidized_copper_bulb": {
+        "java_id": "minecraft:waxed_oxidized_copper_bulb"
+      }
+    }
+  },
+  "minecraft:waxed_weathered_copper_bulb": {
+    "block": {
+      "minecraft:waxed_weathered_copper_bulb": {
+        "java_id": "minecraft:waxed_weathered_copper_bulb"
+      }
+    }
+  },
+  "minecraft:copper_door": {
+    "block": {
+      "minecraft:copper_door": {
+        "java_id": "minecraft:copper_door"
+      }
+    }
+  },
+  "minecraft:exposed_copper_door": {
+    "block": {
+      "minecraft:exposed_copper_door": {
+        "java_id": "minecraft:exposed_copper_door"
+      }
+    }
+  },
+  "minecraft:oxidized_copper_door": {
+    "block": {
+      "minecraft:oxidized_copper_door": {
+        "java_id": "minecraft:oxidized_copper_door"
+      }
+    }
+  },
+  "minecraft:weathered_copper_door": {
+    "block": {
+      "minecraft:weathered_copper_door": {
+        "java_id": "minecraft:weathered_copper_door"
+      }
+    }
+  },
+  "minecraft:waxed_copper_door": {
+    "block": {
+      "minecraft:waxed_copper_door": {
+        "java_id": "minecraft:waxed_copper_door"
+      }
+    }
+  },
+  "minecraft:waxed_exposed_copper_door": {
+    "block": {
+      "minecraft:waxed_exposed_copper_door": {
+        "java_id": "minecraft:waxed_exposed_copper_door"
+      }
+    }
+  },
+  "minecraft:waxed_oxidized_copper_door": {
+    "block": {
+      "minecraft:waxed_oxidized_copper_door": {
+        "java_id": "minecraft:waxed_oxidized_copper_door"
+      }
+    }
+  },
+  "minecraft:waxed_weathered_copper_door": {
+    "block": {
+      "minecraft:waxed_weathered_copper_door": {
+        "java_id": "minecraft:waxed_weathered_copper_door"
+      }
+    }
+  },
+  "minecraft:copper_grate": {
+    "block": {
+      "minecraft:copper_grate": {
+        "java_id": "minecraft:copper_grate"
+      }
+    }
+  },
+  "minecraft:exposed_copper_grate": {
+    "block": {
+      "minecraft:exposed_copper_grate": {
+        "java_id": "minecraft:exposed_copper_grate"
+      }
+    }
+  },
+  "minecraft:oxidized_copper_grate": {
+    "block": {
+      "minecraft:oxidized_copper_grate": {
+        "java_id": "minecraft:oxidized_copper_grate"
+      }
+    }
+  },
+  "minecraft:weathered_copper_grate": {
+    "block": {
+      "minecraft:weathered_copper_grate": {
+        "java_id": "minecraft:weathered_copper_grate"
+      }
+    }
+  },
+  "minecraft:waxed_copper_grate": {
+    "block": {
+      "minecraft:waxed_copper_grate": {
+        "java_id": "minecraft:waxed_copper_grate"
+      }
+    }
+  },
+  "minecraft:waxed_exposed_copper_grate": {
+    "block": {
+      "minecraft:waxed_exposed_copper_grate": {
+        "java_id": "minecraft:waxed_exposed_copper_grate"
+      }
+    }
+  },
+  "minecraft:waxed_oxidized_copper_grate": {
+    "block": {
+      "minecraft:waxed_oxidized_copper_grate": {
+        "java_id": "minecraft:waxed_oxidized_copper_grate"
+      }
+    }
+  },
+  "minecraft:waxed_weathered_copper_grate": {
+    "block": {
+      "minecraft:waxed_weathered_copper_grate": {
+        "java_id": "minecraft:waxed_weathered_copper_grate"
+      }
+    }
+  },
+  "minecraft:copper_trapdoor": {
+    "block": {
+      "minecraft:copper_trapdoor[open_bit=0]": {
+        "java_id": "minecraft:copper_trapdoor"
+      }
+    }
+  },
+  "minecraft:exposed_copper_trapdoor": {
+    "block": {
+      "minecraft:exposed_copper_trapdoor[open_bit=0]": {
+        "java_id": "minecraft:exposed_copper_trapdoor"
+      }
+    }
+  },
+  "minecraft:oxidized_copper_trapdoor": {
+    "block": {
+      "minecraft:oxidized_copper_trapdoor[open_bit=0]": {
+        "java_id": "minecraft:oxidized_copper_trapdoor"
+      }
+    }
+  },
+  "minecraft:weathered_copper_trapdoor": {
+    "block": {
+      "minecraft:weathered_copper_trapdoor[open_bit=0]": {
+        "java_id": "minecraft:weathered_copper_trapdoor"
+      }
+    }
+  },
+  "minecraft:waxed_copper_trapdoor": {
+    "block": {
+      "minecraft:waxed_copper_trapdoor[open_bit=0]": {
+        "java_id": "minecraft:waxed_copper_trapdoor"
+      }
+    }
+  },
+  "minecraft:waxed_exposed_copper_trapdoor": {
+    "block": {
+      "minecraft:waxed_exposed_copper_trapdoor[open_bit=0]": {
+        "java_id": "minecraft:waxed_exposed_copper_trapdoor"
+      }
+    }
+  },
+  "minecraft:waxed_oxidized_copper_trapdoor": {
+    "block": {
+      "minecraft:waxed_oxidized_copper_trapdoor[open_bit=0]": {
+        "java_id": "minecraft:waxed_oxidized_copper_trapdoor"
+      }
+    }
+  },
+  "minecraft:waxed_weathered_copper_trapdoor": {
+    "block": {
+      "minecraft:waxed_weathered_copper_trapdoor[open_bit=0]": {
+        "java_id": "minecraft:waxed_weathered_copper_trapdoor"
+      }
+    }
+  },
+  "minecraft:chiseled_copper": {
+    "block": {
+      "minecraft:chiseled_copper": {
+        "java_id": "minecraft:chiseled_copper"
+      }
+    }
+  },
+  "minecraft:exposed_chiseled_copper": {
+    "block": {
+      "minecraft:exposed_chiseled_copper": {
+        "java_id": "minecraft:exposed_chiseled_copper"
+      }
+    }
+  },
+  "minecraft:oxidized_chiseled_copper": {
+    "block": {
+      "minecraft:oxidized_chiseled_copper": {
+        "java_id": "minecraft:oxidized_chiseled_copper"
+      }
+    }
+  },
+  "minecraft:weathered_chiseled_copper": {
+    "block": {
+      "minecraft:weathered_chiseled_copper": {
+        "java_id": "minecraft:weathered_chiseled_copper"
+      }
+    }
+  },
+  "minecraft:waxed_chiseled_copper": {
+    "block": {
+      "minecraft:waxed_chiseled_copper": {
+        "java_id": "minecraft:waxed_chiseled_copper"
+      }
+    }
+  },
+  "minecraft:waxed_exposed_chiseled_copper": {
+    "block": {
+      "minecraft:waxed_exposed_chiseled_copper": {
+        "java_id": "minecraft:waxed_exposed_chiseled_copper"
+      }
+    }
+  },
+  "minecraft:waxed_oxidized_chiseled_copper": {
+    "block": {
+      "minecraft:waxed_oxidized_chiseled_copper": {
+        "java_id": "minecraft:waxed_oxidized_chiseled_copper"
+      }
+    }
+  },
+  "minecraft:waxed_weathered_chiseled_copper": {
+    "block": {
+      "minecraft:waxed_weathered_chiseled_copper": {
+        "java_id": "minecraft:waxed_weathered_chiseled_copper"
+      }
+    }
+  },
+  "minecraft:tuff_stairs": {
+    "block": {
+      "minecraft:tuff_stairs": {
+        "java_id": "minecraft:tuff_stairs"
+      }
+    }
+  },
+  "minecraft:tuff_wall": {
+    "block": {
+      "minecraft:tuff_wall": {
+        "java_id": "minecraft:tuff_wall"
+      }
+    }
+  },
+  "minecraft:tuff_slab": {
+    "block": {
+      "minecraft:tuff_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:tuff_slab"
+      }
+    }
+  },
+  "minecraft:tuff_double_slab": {
+    "block": {
+      "minecraft:tuff_double_slab": {
+        "java_id": "minecraft:tuff",
+        "java_display_name": "Tuff Double Slab"
+      }
+    }
+  },
+  "minecraft:tuff_bricks": {
+    "block": {
+      "minecraft:tuff_bricks": {
+        "java_id": "minecraft:tuff_bricks"
+      }
+    }
+  },
+  "minecraft:tuff_brick_wall": {
+    "block": {
+      "minecraft:tuff_brick_wall": {
+        "java_id": "minecraft:tuff_brick_wall"
+      }
+    }
+  },
+  "minecraft:tuff_brick_stairs": {
+    "block": {
+      "minecraft:tuff_brick_stairs": {
+        "java_id": "minecraft:tuff_brick_stairs"
+      }
+    }
+  },
+  "minecraft:tuff_brick_slab": {
+    "block": {
+      "minecraft:tuff_brick_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:tuff_brick_slab"
+      }
+    }
+  },
+  "minecraft:tuff_brick_double_slab": {
+    "block": {
+      "minecraft:tuff_brick_double_slab": {
+        "java_id": "minecraft:tuff_bricks",
+        "java_display_name": "Tuff Brick Double Slab"
+      }
+    }
+  },
+  "minecraft:polished_tuff": {
+    "block": {
+      "minecraft:polished_tuff": {
+        "java_id": "minecraft:polished_tuff"
+      }
+    }
+  },
+  "minecraft:polished_tuff_wall": {
+    "block": {
+      "minecraft:polished_tuff_wall": {
+        "java_id": "minecraft:polished_tuff_wall"
+      }
+    }
+  },
+  "minecraft:polished_tuff_stairs": {
+    "block": {
+      "minecraft:polished_tuff_stairs": {
+        "java_id": "minecraft:polished_tuff_stairs"
+      }
+    }
+  },
+  "minecraft:polished_tuff_slab": {
+    "block": {
+      "minecraft:polished_tuff_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:polished_tuff_slab"
+      }
+    }
+  },
+  "minecraft:polished_tuff_double_slab": {
+    "block": {
+      "minecraft:polished_tuff_double_slab": {
+        "java_id": "minecraft:polished_tuff",
+        "java_display_name": "Polished Tuff Double Slab"
+      }
+    }
+  },
+  "minecraft:chiseled_tuff": {
+    "block": {
+      "minecraft:chiseled_tuff": {
+        "java_id": "minecraft:chiseled_tuff"
+      }
+    }
+  },
+  "minecraft:chiseled_tuff_bricks": {
+    "block": {
+      "minecraft:chiseled_tuff_bricks": {
+        "java_id": "minecraft:chiseled_tuff_bricks"
+      }
+    }
+  },
+  "minecraft:crafter": {
+    "block": {
+      "minecraft:crafter": {
+        "java_id": "minecraft:crafter"
       }
     }
   }

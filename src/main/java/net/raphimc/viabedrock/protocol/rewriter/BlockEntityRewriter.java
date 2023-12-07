@@ -63,6 +63,7 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put("command_block", new CommandBlockBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("comparator", new ComparatorBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("conduit", new ConduitBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("crafter", new CrafterBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("daylight_detector", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("decorated_pot", new DecoratedPotBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("dispenser", new LootableBlockEntityRewriter());
@@ -114,7 +115,7 @@ public class BlockEntityRewriter {
 
             return javaBlockEntity;
         } else {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block entity translation for " + bedrockBlockEntity.tag());
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block entity translation for " + bedrockBlockStateId + "(" + bedrockBlockEntity.tag() + ")");
         }
 
         return null;

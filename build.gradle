@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:4.9.0-23w44a-SNAPSHOT"
+    compileOnly "com.viaversion:viaversion-common:4.9.1"
     compileOnly "org.yaml:snakeyaml:2.2"
     compileOnly "com.google.guava:guava:32.1.3-jre"
     compileOnly "io.netty:netty-handler:4.1.101.Final"
@@ -54,7 +54,7 @@ dependencies {
     api("net.lenni0451.mcstructs-bedrock:forms:1.2.0") {
         exclude group: "com.google.code.gson", module: "gson"
     }
-    api("net.lenni0451.mcstructs:text:2.4.0-SNAPSHOT") {
+    api("net.lenni0451.mcstructs:text:2.4.0") {
         exclude group: "com.google.code.gson", module: "gson"
     }
     api "com.vdurmont:semver4j:3.1.0"

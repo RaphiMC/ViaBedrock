@@ -30,6 +30,7 @@ import java.util.Locale;
 public class ResourcePackRewriter {
 
     // TODO: 1.20.2 added overlay packs. Maybe that's useful?
+    // TODO: 1.20.3 added the ability to load multiple separate packs
     public static ResourcePack.Content bedrockToJava(final ResourcePacksStorage resourcePacksStorage) {
         final ResourcePack.Content javaContent = new ResourcePack.Content();
 
