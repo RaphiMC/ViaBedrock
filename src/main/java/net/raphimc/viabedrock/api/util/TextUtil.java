@@ -18,12 +18,13 @@
 package net.raphimc.viabedrock.api.util;
 
 import com.viaversion.viaversion.libs.gson.JsonElement;
-import com.viaversion.viaversion.libs.gson.JsonParser;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.lenni0451.mcstructs.core.TextFormatting;
 import net.lenni0451.mcstructs.text.ATextComponent;
 import net.lenni0451.mcstructs.text.serializer.LegacyStringDeserializer;
 import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
+import net.raphimc.viabedrock.api.util.converter.JsonConverter;
+import net.raphimc.viabedrock.api.util.converter.NbtConverter;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
 import java.util.HashSet;
@@ -58,7 +59,11 @@ public class TextUtil {
     }
 
     public static JsonElement stringToGson(final String text) {
-        return JsonParser.parseString(stringToJson(text));
+        return componentToGson(stringToComponent(text));
+    }
+
+    public static JsonElement componentToGson(final ATextComponent textComponent) {
+        return JsonConverter.gsonToVia(ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeJsonTree(textComponent));
     }
 
     public static Tag stringToNbt(final String text) {
@@ -66,7 +71,7 @@ public class TextUtil {
     }
 
     public static Tag componentToNbt(final ATextComponent textComponent) {
-        return NbtUtil.mcStructsToVia(ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeNbt(textComponent));
+        return NbtConverter.mcStructsToVia(ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeNbt(textComponent));
     }
 
     public static ATextComponent stringToComponent(final String text) {
