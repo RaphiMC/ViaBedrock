@@ -151,95 +151,85 @@ public class MultiStatePackets {
                 ClientboundConfigurationPackets1_20_3.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.PLAY_STATUS,
-                State.LOGIN, new PacketHandlers() {
-                    @Override
-                    public void register() {
-                        handler(wrapper -> {
-                            final int status = wrapper.read(Type.INT); // status
+                State.LOGIN, (PacketHandler) wrapper -> {
+                    final int status = wrapper.read(Type.INT); // status
 
-                            if (status == PlayStatus.LOGIN_SUCCESS) {
-                                wrapper.setPacketType(ClientboundLoginPackets.GAME_PROFILE);
-                                final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
-                                wrapper.write(Type.UUID, authChainData.getIdentity()); // uuid
-                                wrapper.write(Type.STRING, authChainData.getDisplayName()); // username
-                                wrapper.write(Type.VAR_INT, 0); // properties length
+                    if (status == PlayStatus.LOGIN_SUCCESS) {
+                        wrapper.setPacketType(ClientboundLoginPackets.GAME_PROFILE);
+                        final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
+                        wrapper.write(Type.UUID, authChainData.getIdentity()); // uuid
+                        wrapper.write(Type.STRING, authChainData.getDisplayName()); // username
+                        wrapper.write(Type.VAR_INT, 0); // properties length
 
-                                final ProtocolInfo info = wrapper.user().getProtocolInfo();
-                                info.setUsername(authChainData.getDisplayName());
-                                info.setUuid(authChainData.getIdentity());
+                        final ProtocolInfo info = wrapper.user().getProtocolInfo();
+                        info.setUsername(authChainData.getDisplayName());
+                        info.setUuid(authChainData.getIdentity());
 
-                                // Parts of BaseProtocol1_7 GAME_PROFILE handler
-                                Via.getManager().getConnectionManager().onLoginSuccess(wrapper.user());
-                                if (!info.getPipeline().hasNonBaseProtocols()) {
-                                    wrapper.user().setActive(false);
-                                }
-                                if (Via.getManager().isDebug()) {
-                                    ViaBedrock.getPlatform().getLogger().log(Level.INFO, "{0} logged in with protocol {1}, Route: {2}", new Object[]{info.getUsername(), info.getProtocolVersion(), Joiner.on(", ").join(info.getPipeline().pipes(), ", ")});
-                                }
+                        // Parts of BaseProtocol1_7 GAME_PROFILE handler
+                        Via.getManager().getConnectionManager().onLoginSuccess(wrapper.user());
+                        if (!info.getPipeline().hasNonBaseProtocols()) {
+                            wrapper.user().setActive(false);
+                        }
+                        if (Via.getManager().isDebug()) {
+                            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "{0} logged in with protocol {1}, Route: {2}", new Object[]{info.getUsername(), info.getProtocolVersion(), Joiner.on(", ").join(info.getPipeline().pipes(), ", ")});
+                        }
 
-                                sendClientCacheStatus(wrapper.user());
-                            } else {
-                                wrapper.setPacketType(ClientboundLoginPackets.LOGIN_DISCONNECT);
-                                writePlayStatusKickMessage(wrapper, status);
-                            }
-                        });
+                        sendClientCacheStatus(wrapper.user());
+                    } else {
+                        wrapper.setPacketType(ClientboundLoginPackets.LOGIN_DISCONNECT);
+                        writePlayStatusKickMessage(wrapper, status);
                     }
-                }, State.PLAY, new PacketHandlers() {
-                    @Override
-                    protected void register() {
-                        handler(wrapper -> {
-                            final int status = wrapper.read(Type.INT); // status
+                }, State.PLAY, (PacketHandler) wrapper -> {
+                    final int status = wrapper.read(Type.INT); // status
 
-                            if (status == PlayStatus.LOGIN_SUCCESS) {
-                                wrapper.cancel();
-                                sendClientCacheStatus(wrapper.user());
-                            } else if (status == PlayStatus.PLAYER_SPAWN) { // Spawn player
-                                wrapper.cancel();
-                                final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
-                                final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+                    if (status == PlayStatus.LOGIN_SUCCESS) {
+                        wrapper.cancel();
+                        sendClientCacheStatus(wrapper.user());
+                    } else if (status == PlayStatus.PLAYER_SPAWN) { // Spawn player
+                        wrapper.cancel();
+                        final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+                        final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
-                                final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
-                                if (clientPlayer.isInitiallySpawned()) {
-                                    if (clientPlayer.isChangingDimension()) {
-                                        clientPlayer.closeDownloadingTerrainScreen();
-                                    }
-
-                                    return;
-                                }
-                                if (gameSession.getBedrockBiomeDefinitions() == null) {
-                                    BedrockProtocol.kickForIllegalState(wrapper.user(), "Tried to spawn the client player before the biome definitions were loaded!");
-                                    return;
-                                }
-
-                                final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
-                                interact.write(Type.UNSIGNED_BYTE, InteractActions.MOUSEOVER); // action
-                                interact.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
-                                interact.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // mouse position
-                                interact.sendToServer(BedrockProtocol.class);
-
-                                // TODO: Mob Equipment with current held item
-
-                                final PacketWrapper emoteList = PacketWrapper.create(ServerboundBedrockPackets.EMOTE_LIST, wrapper.user());
-                                emoteList.write(BedrockTypes.VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
-                                emoteList.write(BedrockTypes.UUID_ARRAY, new UUID[0]); // emote ids
-                                emoteList.sendToServer(BedrockProtocol.class);
-
-                                clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
-                                clientPlayer.setInitiallySpawned();
-                                if (gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
-                                    clientPlayer.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
-                                }
-
-                                final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());
-                                setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
-                                setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
-
+                        final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
+                        if (clientPlayer.isInitiallySpawned()) {
+                            if (clientPlayer.isChangingDimension()) {
                                 clientPlayer.closeDownloadingTerrainScreen();
-                            } else {
-                                wrapper.setPacketType(ClientboundPackets1_20_3.DISCONNECT);
-                                writePlayStatusKickMessage(wrapper, status);
                             }
-                        });
+
+                            return;
+                        }
+                        if (gameSession.getBedrockBiomeDefinitions() == null) {
+                            BedrockProtocol.kickForIllegalState(wrapper.user(), "Tried to spawn the client player before the biome definitions were loaded!");
+                            return;
+                        }
+
+                        final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
+                        interact.write(Type.UNSIGNED_BYTE, InteractActions.MOUSEOVER); // action
+                        interact.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+                        interact.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // mouse position
+                        interact.sendToServer(BedrockProtocol.class);
+
+                        // TODO: Mob Equipment with current held item
+
+                        final PacketWrapper emoteList = PacketWrapper.create(ServerboundBedrockPackets.EMOTE_LIST, wrapper.user());
+                        emoteList.write(BedrockTypes.VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+                        emoteList.write(BedrockTypes.UUID_ARRAY, new UUID[0]); // emote ids
+                        emoteList.sendToServer(BedrockProtocol.class);
+
+                        clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
+                        clientPlayer.setInitiallySpawned();
+                        if (gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
+                            clientPlayer.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
+                        }
+
+                        final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());
+                        setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+                        setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
+
+                        clientPlayer.closeDownloadingTerrainScreen();
+                    } else {
+                        wrapper.setPacketType(ClientboundPackets1_20_3.DISCONNECT);
+                        writePlayStatusKickMessage(wrapper, status);
                     }
                 }
         );
