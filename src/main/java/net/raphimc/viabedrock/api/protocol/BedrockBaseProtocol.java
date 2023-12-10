@@ -20,7 +20,6 @@ package net.raphimc.viabedrock.api.protocol;
 import com.viaversion.viaversion.api.connection.ProtocolInfo;
 import com.viaversion.viaversion.api.protocol.AbstractSimpleProtocol;
 import com.viaversion.viaversion.api.protocol.packet.State;
-import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.base.ServerboundHandshakePackets;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
@@ -37,18 +36,13 @@ public class BedrockBaseProtocol extends AbstractSimpleProtocol {
 
     @Override
     protected void registerPackets() {
-        this.registerServerbound(State.HANDSHAKE, ServerboundHandshakePackets.CLIENT_INTENTION.getId(), -1, new PacketHandlers() {
-            @Override
-            public void register() {
-                handler(wrapper -> {
-                    wrapper.cancel();
-                    final int protocolVersion = wrapper.read(Type.VAR_INT) - BedrockProtocolVersion.PROTOCOL_ID_OVERLAP_PREVENTION_OFFSET; // protocol id
-                    final String hostname = wrapper.read(Type.STRING); // hostname
-                    final int port = wrapper.read(Type.UNSIGNED_SHORT); // port
+        this.registerServerbound(State.HANDSHAKE, ServerboundHandshakePackets.CLIENT_INTENTION.getId(), -1, wrapper -> {
+            wrapper.cancel();
+            final int protocolVersion = wrapper.read(Type.VAR_INT) - BedrockProtocolVersion.PROTOCOL_ID_OVERLAP_PREVENTION_OFFSET; // protocol id
+            final String hostname = wrapper.read(Type.STRING); // hostname
+            final int port = wrapper.read(Type.UNSIGNED_SHORT); // port
 
-                    wrapper.user().put(new HandshakeStorage(protocolVersion, hostname, port));
-                });
-            }
+            wrapper.user().put(new HandshakeStorage(protocolVersion, hostname, port));
         });
 
         // Copied from BaseProtocol1_7

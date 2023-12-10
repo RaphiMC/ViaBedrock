@@ -22,7 +22,6 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.ProtocolInfo;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
 import io.jsonwebtoken.*;
@@ -72,84 +71,69 @@ public class LoginPackets {
     }
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_SETTINGS, null, new PacketHandlers() {
-            @Override
-            public void register() {
-                handler(wrapper -> {
-                    wrapper.cancel();
-                    final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
-                    final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
+        protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_SETTINGS, null, wrapper -> {
+            wrapper.cancel();
+            final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
+            final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
 
-                    final int threshold = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression threshold
-                    final int algorithm = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression algorithm
-                    Via.getManager().getProviders().get(NettyPipelineProvider.class).enableCompression(wrapper.user(), threshold, algorithm);
+            final int threshold = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression threshold
+            final int algorithm = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression algorithm
+            Via.getManager().getProviders().get(NettyPipelineProvider.class).enableCompression(wrapper.user(), threshold, algorithm);
 
-                    final JsonObject rootObj = new JsonObject();
-                    final JsonArray chain = new JsonArray();
-                    if (authChainData.getSelfSignedJwt() != null) {
-                        chain.add(new JsonPrimitive(authChainData.getSelfSignedJwt()));
-                    }
-                    if (authChainData.getMojangJwt() != null) {
-                        chain.add(new JsonPrimitive(authChainData.getMojangJwt()));
-                    }
-                    if (authChainData.getIdentityJwt() != null) {
-                        chain.add(new JsonPrimitive(authChainData.getIdentityJwt()));
-                    }
-                    rootObj.add("chain", chain);
-                    final String chainData = rootObj.toString();
-
-                    final PacketWrapper login = PacketWrapper.create(ServerboundBedrockPackets.LOGIN, wrapper.user());
-                    login.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
-                    login.write(BedrockTypes.UNSIGNED_VAR_INT, chainData.length() + authChainData.getSkinJwt().length() + 8); // length
-                    login.write(BedrockTypes.ASCII_STRING, AsciiString.of(chainData)); // chain data
-                    login.write(BedrockTypes.ASCII_STRING, AsciiString.of(authChainData.getSkinJwt())); // skin data
-                    login.sendToServer(BedrockProtocol.class);
-                });
+            final JsonObject rootObj = new JsonObject();
+            final JsonArray chain = new JsonArray();
+            if (authChainData.getSelfSignedJwt() != null) {
+                chain.add(new JsonPrimitive(authChainData.getSelfSignedJwt()));
             }
+            if (authChainData.getMojangJwt() != null) {
+                chain.add(new JsonPrimitive(authChainData.getMojangJwt()));
+            }
+            if (authChainData.getIdentityJwt() != null) {
+                chain.add(new JsonPrimitive(authChainData.getIdentityJwt()));
+            }
+            rootObj.add("chain", chain);
+            final String chainData = rootObj.toString();
+
+            final PacketWrapper login = PacketWrapper.create(ServerboundBedrockPackets.LOGIN, wrapper.user());
+            login.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
+            login.write(BedrockTypes.UNSIGNED_VAR_INT, chainData.length() + authChainData.getSkinJwt().length() + 8); // length
+            login.write(BedrockTypes.ASCII_STRING, AsciiString.of(chainData)); // chain data
+            login.write(BedrockTypes.ASCII_STRING, AsciiString.of(authChainData.getSkinJwt())); // skin data
+            login.sendToServer(BedrockProtocol.class);
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE, null, new PacketHandlers() {
-            @Override
-            public void register() {
-                handler(wrapper -> {
-                    wrapper.cancel();
-                    final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
+        protocol.registerClientbound(ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE, null, wrapper -> {
+            wrapper.cancel();
+            final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
 
-                    final Jws<Claims> jwt = Jwts.parser()
-                            .clockSkewSeconds(CLOCK_SKEW)
-                            .keyLocator(new LocatorAdapter<Key>() {
-                                @Override
-                                protected Key locate(ProtectedHeader header) {
-                                    return publicKeyFromBase64((String) header.get("x5u"));
-                                }
-                            })
-                            .build()
-                            .parseSignedClaims(wrapper.read(BedrockTypes.STRING)); // jwt
+            final Jws<Claims> jwt = Jwts.parser()
+                    .clockSkewSeconds(CLOCK_SKEW)
+                    .keyLocator(new LocatorAdapter<Key>() {
+                        @Override
+                        protected Key locate(ProtectedHeader header) {
+                            return publicKeyFromBase64((String) header.get("x5u"));
+                        }
+                    })
+                    .build()
+                    .parseSignedClaims(wrapper.read(BedrockTypes.STRING)); // jwt
 
-                    final byte[] salt = Base64.getDecoder().decode(jwt.getPayload().get("salt", String.class));
-                    final SecretKey secretKey = ecdhKeyExchange(authChainData.getPrivateKey(), publicKeyFromBase64((String) jwt.getHeader().get("x5u")), salt);
-                    Via.getManager().getProviders().get(NettyPipelineProvider.class).enableEncryption(wrapper.user(), secretKey);
+            final byte[] salt = Base64.getDecoder().decode(jwt.getPayload().get("salt", String.class));
+            final SecretKey secretKey = ecdhKeyExchange(authChainData.getPrivateKey(), publicKeyFromBase64((String) jwt.getHeader().get("x5u")), salt);
+            Via.getManager().getProviders().get(NettyPipelineProvider.class).enableEncryption(wrapper.user(), secretKey);
 
-                    final PacketWrapper clientToServerHandshake = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_TO_SERVER_HANDSHAKE, wrapper.user());
-                    clientToServerHandshake.sendToServer(BedrockProtocol.class);
-                });
-            }
+            final PacketWrapper clientToServerHandshake = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_TO_SERVER_HANDSHAKE, wrapper.user());
+            clientToServerHandshake.sendToServer(BedrockProtocol.class);
         });
 
-        protocol.registerServerboundTransition(ServerboundLoginPackets.HELLO, ServerboundBedrockPackets.REQUEST_NETWORK_SETTINGS, new PacketHandlers() {
-            @Override
-            public void register() {
-                handler(wrapper -> {
-                    final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
+        protocol.registerServerboundTransition(ServerboundLoginPackets.HELLO, ServerboundBedrockPackets.REQUEST_NETWORK_SETTINGS, wrapper -> {
+            final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
 
-                    final ProtocolInfo protocolInfo = wrapper.user().getProtocolInfo();
-                    protocolInfo.setUsername(wrapper.read(Type.STRING));
-                    protocolInfo.setUuid(wrapper.read(Type.UUID));
+            final ProtocolInfo protocolInfo = wrapper.user().getProtocolInfo();
+            protocolInfo.setUsername(wrapper.read(Type.STRING));
+            protocolInfo.setUuid(wrapper.read(Type.UUID));
 
-                    wrapper.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
+            wrapper.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
 
-                    validateAndFillAuthChainData(wrapper.user());
-                });
-            }
+            validateAndFillAuthChainData(wrapper.user());
         });
         protocol.registerServerboundTransition(ServerboundLoginPackets.LOGIN_ACKNOWLEDGED, null, PacketWrapper::cancel);
     }
