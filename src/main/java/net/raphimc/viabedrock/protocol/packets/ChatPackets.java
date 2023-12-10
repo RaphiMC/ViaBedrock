@@ -278,9 +278,10 @@ public class ChatPackets {
             tabComplete.write(Type.VAR_INT, suggestions.getList().size()); // count
             for (Suggestion suggestion : suggestions.getList()) {
                 tabComplete.write(Type.STRING, suggestion.getText()); // text
-                tabComplete.write(Type.BOOLEAN, suggestion.getTooltip() != null); // has tooltip
                 if (suggestion.getTooltip() != null) {
-                    tabComplete.write(Type.STRING, TextUtil.stringToJson(suggestion.getTooltip().getString())); // tooltip
+                    tabComplete.write(Type.OPTIONAL_TAG, TextUtil.stringToNbt(suggestion.getTooltip().getString())); // tooltip
+                } else {
+                    tabComplete.write(Type.OPTIONAL_TAG, null); // tooltip
                 }
             }
             tabComplete.send(BedrockProtocol.class);
