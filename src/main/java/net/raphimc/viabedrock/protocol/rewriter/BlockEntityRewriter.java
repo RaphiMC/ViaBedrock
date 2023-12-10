@@ -115,7 +115,7 @@ public class BlockEntityRewriter {
 
             return javaBlockEntity;
         } else {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block entity translation for " + bedrockBlockStateId + "(" + bedrockBlockEntity.tag() + ")");
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block entity translation for " + bedrockBlockStateId + " (" + bedrockBlockEntity.tag() + ")");
         }
 
         return null;
