@@ -20,10 +20,10 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.api.type.types.UUIDIntArrayType;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntArrayTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.LongTag;
+import com.viaversion.viaversion.util.UUIDUtil;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
@@ -41,7 +41,7 @@ public class ConduitBlockEntityRewriter implements BlockEntityRewriter.Rewriter 
 
             final Entity entity = user.get(EntityTracker.class).getEntityByUid(target);
             if (entity != null) {
-                javaTag.put("Target", new IntArrayTag(UUIDIntArrayType.uuidToIntArray(entity.javaUuid())));
+                javaTag.put("Target", new IntArrayTag(UUIDUtil.toIntArray(entity.javaUuid())));
             }
         }
 
