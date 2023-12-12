@@ -53,7 +53,10 @@ import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
-import net.raphimc.viabedrock.protocol.storage.*;
+import net.raphimc.viabedrock.protocol.storage.BlobCache;
+import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
+import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;
 
@@ -68,7 +71,6 @@ public class WorldPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.SET_SPAWN_POSITION, ClientboundPackets1_20_3.SPAWN_POSITION, wrapper -> {
-            final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
 
             final int type = wrapper.read(BedrockTypes.VAR_INT); // type
@@ -81,7 +83,6 @@ public class WorldPackets {
             final int dimensionId = wrapper.read(BedrockTypes.VAR_INT); // dimension
             wrapper.read(BedrockTypes.BLOCK_POSITION); // spawn position
 
-            spawnPositionStorage.setSpawnPosition(dimensionId, compassPosition);
             if (chunkTracker.getDimensionId() != dimensionId) {
                 wrapper.cancel();
                 return;
@@ -103,7 +104,6 @@ public class WorldPackets {
             }
 
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-            final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
 
             wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
             final EntityTracker oldEntityTracker = wrapper.user().get(EntityTracker.class);
@@ -112,8 +112,6 @@ public class WorldPackets {
             final EntityTracker newEntityTracker = new EntityTracker(wrapper.user());
             newEntityTracker.addEntity(clientPlayer);
             wrapper.user().put(newEntityTracker);
-
-            spawnPositionStorage.setSpawnPosition(dimensionId, new Position((int) position.x(), (int) position.y(), (int) position.z()));
 
             clientPlayer.setPosition(new Position3f(position.x(), position.y() + clientPlayer.eyeOffset(), position.z()));
             if (gameSession.getMovementMode() == ServerMovementModes.CLIENT) {

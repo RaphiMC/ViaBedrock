@@ -65,7 +65,6 @@ public class JoinPackets {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.START_GAME,
                 State.CONFIGURATION, (PacketHandler) wrapper -> {
                     wrapper.cancel(); // We need to fix the order of the packets
-                    final SpawnPositionStorage spawnPositionStorage = wrapper.user().get(SpawnPositionStorage.class);
                     ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
                     final ClientSettingsStorage clientSettingsStorage = wrapper.user().get(ClientSettingsStorage.class);
 
@@ -226,8 +225,6 @@ public class JoinPackets {
                     } else if (movementMode >= ServerMovementModes.SERVER) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses server authoritative movement. This is not stable yet.");
                     }
-
-                    spawnPositionStorage.setSpawnPosition(dimensionId, defaultSpawnPosition);
 
                     final ClientPlayerEntity clientPlayer = new ClientPlayerEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, 0, wrapper.user().getProtocolInfo().getUuid());
                     clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + clientPlayer.eyeOffset(), playerPosition.z()));
