@@ -85,6 +85,8 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                         final String suffix = newFlattenedName.get("suffix").getAsString();
 
                         mappings.add(new RemappedStatesEntry(oldStateTag, newStateTag, copiedStates, states -> {
+                            if (!states.contains(flattenedProperty)) return null;
+
                             final String flattenedName = prefix + states.get(flattenedProperty).getValue().toString() + suffix;
                             return flattenedName.toLowerCase(Locale.ROOT);
                         }));
@@ -119,7 +121,10 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                                     }
                                 }
 
-                                tag.put("name", new StringTag(mapping.nameFunction.apply(states)));
+                                final String newName = mapping.nameFunction.apply(states);
+                                if (newName != null) {
+                                    tag.put("name", new StringTag(newName));
+                                }
                                 tag.put("states", newStates);
 
                                 throw StopUpgrade.INSTANCE;
