@@ -28,10 +28,7 @@ import com.viaversion.viaversion.api.minecraft.metadata.ChunkPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.types.chunk.ChunkType1_20_2;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
-import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
-import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
+import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.NumberTag;
@@ -355,10 +352,10 @@ public class ChunkTracker extends StoredObject {
         return true;
     }
 
-    public int handleBlockChange(final Position blockPosition, final int layer, final int blockState) throws Exception {
+    public IntObjectPair<BlockEntity> handleBlockChange(final Position blockPosition, final int layer, final int blockState) throws Exception {
         final BedrockChunkSection section = this.getChunkSection(blockPosition);
         if (section == null) {
-            return -1;
+            return null;
         }
 
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
@@ -369,7 +366,7 @@ public class ChunkTracker extends StoredObject {
 
         if (section.hasPendingBlockUpdates()) {
             section.addPendingBlockUpdate(sectionX, sectionY, sectionZ, layer, blockState);
-            return -1;
+            return null;
         }
 
         while (section.palettesCount(PaletteType.BLOCKS) <= layer) {
@@ -407,18 +404,14 @@ public class ChunkTracker extends StoredObject {
                 }
 
                 if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
-                    final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_20_3.BLOCK_ENTITY_DATA, this.getUser());
-                    blockEntityData.write(Type.POSITION1_14, blockPosition); // position
-                    blockEntityData.write(Type.VAR_INT, javaBlockEntity.typeId()); // type
-                    blockEntityData.write(Type.COMPOUND_TAG, javaBlockEntity.tag()); // block entity tag
-                    blockEntityData.scheduleSend(BedrockProtocol.class);
+                    return new IntObjectImmutablePair<>(remappedBlockState, javaBlockEntity);
                 }
             } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
                 this.getUser().get(EntityTracker.class).spawnItemFrame(blockPosition, blockStateRewriter.blockState(blockState));
             }
         }
 
-        return remappedBlockState;
+        return new IntObjectImmutablePair<>(remappedBlockState, null);
     }
 
     public BedrockChunkSection handleBlockPalette(final BedrockChunkSection section) {
