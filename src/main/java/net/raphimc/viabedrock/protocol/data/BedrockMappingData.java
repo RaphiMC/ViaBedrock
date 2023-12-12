@@ -37,7 +37,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
-import net.raphimc.viabedrock.api.chunk.block_state.BlockStateUpgrader;
+import net.raphimc.viabedrock.api.chunk.blockstate.BlockStateUpgrader;
 import net.raphimc.viabedrock.api.item.ItemUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;

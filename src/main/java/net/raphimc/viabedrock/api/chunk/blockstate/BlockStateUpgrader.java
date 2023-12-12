@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.chunk.block_state;
+package net.raphimc.viabedrock.api.chunk.blockstate;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;

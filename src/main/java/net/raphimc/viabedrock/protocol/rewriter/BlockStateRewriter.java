@@ -27,7 +27,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.chunk.block_state.BlockStateSanitizer;
+import net.raphimc.viabedrock.api.chunk.blockstate.BlockStateSanitizer;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.util.BlockStateHasher;
