@@ -38,10 +38,10 @@ dependencies {
     compileOnly "com.viaversion:viaversion-common:4.9.3-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.2"
     compileOnly "com.google.guava:guava:32.1.3-jre"
-    compileOnly "io.netty:netty-handler:4.1.101.Final"
+    compileOnly "io.netty:netty-handler:4.1.103.Final"
     compileOnly "com.google.code.gson:gson:2.10.1"
 
-    api("io.netty:netty-codec-http:4.1.101.Final") {
+    api("io.netty:netty-codec-http:4.1.103.Final") {
         transitive = false
     }
     api "io.jsonwebtoken:jjwt-impl:0.12.3"
