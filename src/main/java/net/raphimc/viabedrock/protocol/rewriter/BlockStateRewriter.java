@@ -215,7 +215,7 @@ public class BlockStateRewriter implements StorableObject {
     }
 
     public int waterlog(final int javaBlockStateId) {
-        if (BedrockProtocol.MAPPINGS.getJavaPreWaterloggedStates().contains(javaBlockStateId)) {
+        if (BedrockProtocol.MAPPINGS.getJavaPreWaterloggedBlockStates().contains(javaBlockStateId)) {
             return javaBlockStateId;
         }
 

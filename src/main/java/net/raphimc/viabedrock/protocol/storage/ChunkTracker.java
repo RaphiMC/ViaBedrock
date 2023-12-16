@@ -31,8 +31,10 @@ import com.viaversion.viaversion.api.type.types.chunk.ChunkType1_20_2;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.LongArrayTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.NumberTag;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.util.CompactArrayUtil;
 import com.viaversion.viaversion.util.MathUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
@@ -56,6 +58,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 // TODO: Feature: Block connections
+// TODO: Feature: Lighting
 public class ChunkTracker extends StoredObject {
 
     private static final byte[] FULL_LIGHT = new byte[2048];
@@ -236,14 +239,7 @@ public class ChunkTracker extends StoredObject {
         final BedrockChunk chunk = this.getChunk(blockPosition.x() >> 4, blockPosition.z() >> 4);
         if (chunk == null) return null;
 
-        for (BlockEntity blockEntity : chunk.blockEntities()) {
-            final BedrockBlockEntity bedrockBlockEntity = (BedrockBlockEntity) blockEntity;
-            if (bedrockBlockEntity.position().equals(blockPosition)) {
-                return bedrockBlockEntity;
-            }
-        }
-
-        return null;
+        return chunk.getBlockEntityAt(blockPosition);
     }
 
     public void addBlockEntity(final BedrockBlockEntity bedrockBlockEntity) {
@@ -427,7 +423,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void sendChunk(final int chunkX, final int chunkZ) throws Exception {
-        final Chunk chunk = this.getChunk(chunkX, chunkZ);
+        final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
         if (chunk == null) {
             return;
         }
@@ -491,7 +487,9 @@ public class ChunkTracker extends StoredObject {
             }
         }
 
-        if (this.getUser().get(EntityTracker.class) == null || !this.getUser().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) return;
+        if (this.getUser().get(EntityTracker.class) == null || !this.getUser().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
+            return;
+        }
 
         synchronized (this.subChunkLock) {
             this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
@@ -515,96 +513,83 @@ public class ChunkTracker extends StoredObject {
         }
     }
 
-    private Chunk remapChunk(final Chunk chunk) throws Exception {
+    private Chunk remapChunk(final BedrockChunk chunk) throws Exception {
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
         final int airId = this.airId();
 
         final Chunk remappedChunk = new Chunk1_18(chunk.getX(), chunk.getZ(), new ChunkSection[chunk.getSections().length], new CompoundTag(), new ArrayList<>());
-        final ChunkSection[] sections = chunk.getSections();
+
+        final BedrockChunkSection[] bedrockSections = chunk.getSections();
         final ChunkSection[] remappedSections = remappedChunk.getSections();
-        for (int idx = 0; idx < sections.length; idx++) {
-            final ChunkSection section = sections[idx];
-
+        for (int idx = 0; idx < bedrockSections.length; idx++) {
+            final BedrockChunkSection bedrockSection = bedrockSections[idx];
+            final List<DataPalette> blockPalettes = bedrockSection.palettes(PaletteType.BLOCKS);
             final ChunkSection remappedSection = remappedSections[idx] = new ChunkSectionImpl(false);
-            remappedSection.addPalette(PaletteType.BIOMES, new DataPaletteImpl(ChunkSection.BIOME_SIZE));
-            remappedSection.palette(PaletteType.BLOCKS).addId(0);
-            remappedSection.palette(PaletteType.BIOMES).addId(0);
+            final DataPalette remappedBlockPalette = remappedSection.palette(PaletteType.BLOCKS);
 
-            if (section instanceof BedrockChunkSection) {
-                final BedrockChunkSection bedrockSection = (BedrockChunkSection) section;
-                final List<DataPalette> blockPalettes = bedrockSection.palettes(PaletteType.BLOCKS);
-                final DataPalette remappedBlockPalette = remappedSection.palette(PaletteType.BLOCKS);
+            if (!blockPalettes.isEmpty()) {
+                final DataPalette layer0 = blockPalettes.get(0);
+                if (layer0.size() == 1) {
+                    remappedBlockPalette.addId(layer0.idByIndex(0));
+                } else {
+                    this.transferPaletteData(layer0, remappedBlockPalette);
+                }
 
-                if (!blockPalettes.isEmpty()) {
-                    final DataPalette layer0 = blockPalettes.get(0);
-                    if (layer0.size() == 1) {
-                        final int blockState = layer0.idByIndex(0);
-                        int remappedBlockState = blockStateRewriter.javaId(blockState);
-                        if (remappedBlockState == -1) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + blockState);
-                            remappedBlockState = 0;
-                        }
-                        remappedBlockPalette.setIdByIndex(0, remappedBlockState);
-                        if (remappedBlockState != 0) {
-                            remappedSection.setNonAirBlocksCount(16 * 16 * 16);
-                        }
-                    } else {
-                        int nonAirBlocks = 0;
-                        for (int x = 0; x < 16; x++) {
-                            for (int y = 0; y < 16; y++) {
-                                for (int z = 0; z < 16; z++) {
-                                    final int blockState = layer0.idAt(x, y, z);
-                                    if (blockState == airId) continue;
+                final String[] paletteIndexBlockStateTags = new String[remappedBlockPalette.size()];
+                for (int i = 0; i < remappedBlockPalette.size(); i++) {
+                    final int bedrockBlockState = remappedBlockPalette.idByIndex(i);
+                    int javaBlockState = blockStateRewriter.javaId(bedrockBlockState);
+                    if (javaBlockState == -1) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockBlockState);
+                        javaBlockState = 0;
+                    }
+                    remappedBlockPalette.setIdByIndex(i, javaBlockState);
 
-                                    int remappedBlockState = blockStateRewriter.javaId(blockState);
-                                    if (remappedBlockState == -1) {
-                                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + blockState);
-                                        remappedBlockState = 0;
-                                    }
-                                    if (remappedBlockState != 0) {
-                                        nonAirBlocks++;
-                                    }
-                                    final String tag = blockStateRewriter.tag(blockState);
+                    paletteIndexBlockStateTags[i] = blockStateRewriter.tag(bedrockBlockState);
+                }
 
-                                    final int absY = this.minY + idx * 16 + y;
-                                    CHECK_BLOCK_ENTITY:
-                                    if (BlockEntityRewriter.isJavaBlockEntity(tag)) {
-                                        for (BlockEntity blockEntity : chunk.blockEntities()) {
-                                            final BedrockBlockEntity bedrockBlockEntity = (BedrockBlockEntity) blockEntity;
-                                            final Position position = bedrockBlockEntity.position();
-                                            if ((position.x() & 15) == x && position.y() == absY && (position.z() & 15) == z) {
-                                                final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), blockState, bedrockBlockEntity);
-                                                if (javaBlockEntity instanceof BlockEntityWithBlockState) {
-                                                    final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
-                                                    if (blockEntityWithBlockState.hasBlockState()) {
-                                                        remappedBlockState = blockEntityWithBlockState.blockState();
-                                                    }
-                                                }
-                                                if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
-                                                    remappedChunk.blockEntities().add(javaBlockEntity);
-                                                }
-                                                break CHECK_BLOCK_ENTITY;
-                                            }
+                int nonAirBlockCount = 0;
+                for (int x = 0; x < 16; x++) {
+                    for (int y = 0; y < 16; y++) {
+                        for (int z = 0; z < 16; z++) {
+                            final int paletteIndex = remappedBlockPalette.paletteIndexAt(remappedBlockPalette.index(x, y, z));
+                            final int javaBlockState = remappedBlockPalette.idByIndex(paletteIndex);
+                            if (javaBlockState != 0) {
+                                nonAirBlockCount++;
+                            }
+
+                            final String tag = paletteIndexBlockStateTags[paletteIndex];
+                            if (tag == null) continue;
+
+                            final int absY = this.minY + idx * 16 + y;
+                            final Position position = new Position(chunk.getX() * 16 + x, absY, chunk.getZ() * 16 + z);
+                            if (BlockEntityRewriter.isJavaBlockEntity(tag)) {
+                                final BedrockBlockEntity bedrockBlockEntity = chunk.getBlockEntityAt(position);
+                                if (bedrockBlockEntity != null) {
+                                    final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), layer0.idAt(x, y, z), bedrockBlockEntity);
+                                    if (javaBlockEntity instanceof BlockEntityWithBlockState) {
+                                        final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
+                                        if (blockEntityWithBlockState.hasBlockState()) {
+                                            remappedBlockPalette.setIdAt(x, y, z, blockEntityWithBlockState.blockState());
                                         }
-
-                                        if (BedrockProtocol.MAPPINGS.getJavaBlockEntities().containsKey(tag)) {
-                                            final int javaType = BedrockProtocol.MAPPINGS.getJavaBlockEntities().get(tag);
-                                            final BlockEntity javaBlockEntity = new BlockEntityImpl(BlockEntity.pack(x, z), (short) absY, javaType, new CompoundTag());
-                                            remappedChunk.blockEntities().add(javaBlockEntity);
-                                        }
-                                    } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
-                                        final Position position = new Position(chunk.getX() * 16 + x, absY, chunk.getZ() * 16 + z);
-                                        this.getUser().get(EntityTracker.class).spawnItemFrame(position, blockStateRewriter.blockState(blockState));
                                     }
-                                    remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
+                                    if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
+                                        remappedChunk.blockEntities().add(javaBlockEntity);
+                                    }
+                                } else if (BedrockProtocol.MAPPINGS.getJavaBlockEntities().containsKey(tag)) {
+                                    final int javaType = BedrockProtocol.MAPPINGS.getJavaBlockEntities().get(tag);
+                                    final BlockEntity javaBlockEntity = new BlockEntityImpl(BlockEntity.pack(x, z), (short) absY, javaType, new CompoundTag());
+                                    remappedChunk.blockEntities().add(javaBlockEntity);
                                 }
+                            } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
+                                this.getUser().get(EntityTracker.class).spawnItemFrame(position, blockStateRewriter.blockState(layer0.idAt(x, y, z)));
                             }
                         }
-                        remappedSection.setNonAirBlocksCount(nonAirBlocks);
                     }
                 }
+                remappedSection.setNonAirBlocksCount(nonAirBlockCount);
+
                 if (blockPalettes.size() > 1) {
-                    final DataPalette layer0 = blockPalettes.get(0);
                     final DataPalette layer1 = blockPalettes.get(1);
                     if (layer1.size() == 1 && layer1.idByIndex(0) == airId) continue;
 
@@ -631,46 +616,51 @@ public class ChunkTracker extends StoredObject {
                         }
                     }
                 }
+            } else {
+                remappedBlockPalette.addId(0);
+            }
 
-                final DataPalette biomePalette = bedrockSection.palette(PaletteType.BIOMES);
-                final DataPalette remappedBiomePalette = remappedSection.palette(PaletteType.BIOMES);
-                if (biomePalette != null) {
-                    if (biomePalette.size() == 1) {
-                        final int biomeId = biomePalette.idByIndex(0);
-                        int remappedBiomeId = biomeId + 1;
-                        if (!BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().containsKey(biomeId)) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
-                            remappedBiomeId = 0;
-                        }
-                        remappedBiomePalette.setIdByIndex(0, remappedBiomeId);
-                    } else {
-                        for (int x = 0; x < 4; x++) {
-                            for (int y = 0; y < 4; y++) {
-                                for (int z = 0; z < 4; z++) {
-                                    final Int2IntMap subBiomes = new Int2IntOpenHashMap();
-                                    int maxBiomeId = -1;
-                                    int maxValue = -1;
-                                    for (int subX = 0; subX < 4; subX++) {
-                                        for (int subY = 0; subY < 4; subY++) {
-                                            for (int subZ = 0; subZ < 4; subZ++) {
-                                                final int biomeId = biomePalette.idAt(x * 4 + subX, y * 4 + subY, z * 4 + subZ);
-                                                final int value = subBiomes.getOrDefault(biomeId, 0) + 1;
-                                                subBiomes.put(biomeId, value);
-                                                if (value > maxValue) {
-                                                    maxBiomeId = biomeId;
-                                                    maxValue = value;
-                                                }
+            final DataPalette biomePalette = bedrockSection.palette(PaletteType.BIOMES);
+            final DataPalette remappedBiomePalette = new DataPaletteImpl(ChunkSection.BIOME_SIZE);
+            remappedBiomePalette.addId(0);
+            remappedSection.addPalette(PaletteType.BIOMES, remappedBiomePalette);
+
+            if (biomePalette != null) {
+                if (biomePalette.size() == 1) {
+                    final int biomeId = biomePalette.idByIndex(0);
+                    int remappedBiomeId = biomeId + 1;
+                    if (!BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().containsKey(biomeId)) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
+                        remappedBiomeId = 0;
+                    }
+                    remappedBiomePalette.setIdByIndex(0, remappedBiomeId);
+                } else {
+                    for (int x = 0; x < 4; x++) {
+                        for (int y = 0; y < 4; y++) {
+                            for (int z = 0; z < 4; z++) {
+                                final Int2IntMap subBiomes = new Int2IntOpenHashMap();
+                                int maxBiomeId = -1;
+                                int maxValue = -1;
+                                for (int subX = 0; subX < 4; subX++) {
+                                    for (int subY = 0; subY < 4; subY++) {
+                                        for (int subZ = 0; subZ < 4; subZ++) {
+                                            final int biomeId = biomePalette.idAt(x * 4 + subX, y * 4 + subY, z * 4 + subZ);
+                                            final int value = subBiomes.getOrDefault(biomeId, 0) + 1;
+                                            subBiomes.put(biomeId, value);
+                                            if (value > maxValue) {
+                                                maxBiomeId = biomeId;
+                                                maxValue = value;
                                             }
                                         }
                                     }
-                                    final int biomeId = maxBiomeId;
-                                    int remappedBiomeId = biomeId + 1;
-                                    if (!BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().containsKey(biomeId)) {
-                                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
-                                        remappedBiomeId = 0;
-                                    }
-                                    remappedBiomePalette.setIdAt(x, y, z, remappedBiomeId);
                                 }
+                                final int biomeId = maxBiomeId;
+                                int remappedBiomeId = biomeId + 1;
+                                if (!BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().containsKey(biomeId)) {
+                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
+                                    remappedBiomeId = 0;
+                                }
+                                remappedBiomePalette.setIdAt(x, y, z, remappedBiomeId);
                             }
                         }
                     }
@@ -678,69 +668,114 @@ public class ChunkTracker extends StoredObject {
             }
         }
 
-        // TODO: Enhancement: Heightmap
-        // TODO: Enhancement: Lighting
+        final IntSet motionBlockingBlockStates = BedrockProtocol.MAPPINGS.getJavaHeightMapBlockStates().get("motion_blocking");
+        final int[] worldSurface = new int[16 * 16];
+        final int[] motionBlocking = new int[16 * 16];
+        Arrays.fill(worldSurface, Integer.MIN_VALUE);
+        Arrays.fill(motionBlocking, Integer.MIN_VALUE);
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                final int index = z << 4 | x;
+                FIND_Y:
+                for (int idx = remappedSections.length - 1; idx >= 0; idx--) {
+                    final DataPalette blockPalette = remappedSections[idx].palette(PaletteType.BLOCKS);
+                    if (blockPalette.size() == 1 && blockPalette.idByIndex(0) == 0) continue;
+
+                    for (int y = 15; y >= 0; y--) {
+                        final int blockState = blockPalette.idAt(x, y, z);
+                        if (blockState != 0) {
+                            final int value = idx * 16 + y + 1;
+
+                            if (worldSurface[index] == Integer.MIN_VALUE) {
+                                worldSurface[index] = value;
+                            }
+                            if (motionBlocking[index] == Integer.MIN_VALUE && motionBlockingBlockStates.contains(blockState)) {
+                                motionBlocking[index] = value;
+                                break FIND_Y;
+                            }
+                        }
+                    }
+                }
+
+                if (worldSurface[index] == Integer.MIN_VALUE) {
+                    worldSurface[index] = this.minY;
+                }
+                if (motionBlocking[index] == Integer.MIN_VALUE) {
+                    motionBlocking[index] = this.minY;
+                }
+            }
+        }
+
+
+        remappedChunk.getHeightMap().put("WORLD_SURFACE", new LongArrayTag(CompactArrayUtil.createCompactArrayWithPadding(9, worldSurface.length, i -> worldSurface[i])));
+        remappedChunk.getHeightMap().put("MOTION_BLOCKING", new LongArrayTag(CompactArrayUtil.createCompactArrayWithPadding(9, motionBlocking.length, i -> motionBlocking[i])));
 
         return remappedChunk;
     }
 
-    private void resolveTagPalette(final ChunkSection section) {
+    private void resolveTagPalette(final BedrockChunkSection bedrockSection) {
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
 
-        if (section instanceof BedrockChunkSection) {
-            final BedrockChunkSection bedrockSection = (BedrockChunkSection) section;
-            final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
-            for (DataPalette palette : palettes) {
-                if (palette instanceof BedrockDataPalette) {
-                    final BedrockDataPalette bedrockPalette = (BedrockDataPalette) palette;
-                    if (bedrockPalette.hasTagPalette()) {
-                        bedrockPalette.addId(this.airId());
-                        bedrockPalette.resolveTagPalette(tag -> {
-                            int remappedBlockState = blockStateRewriter.bedrockId((CompoundTag) tag);
-                            if (remappedBlockState == -1) {
-                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
-                                remappedBlockState = blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
-                            }
-                            return remappedBlockState;
-                        });
-                    }
+        final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
+        for (DataPalette palette : palettes) {
+            if (palette instanceof BedrockDataPalette) {
+                final BedrockDataPalette bedrockPalette = (BedrockDataPalette) palette;
+                if (bedrockPalette.hasTagPalette()) {
+                    bedrockPalette.addId(this.airId());
+                    bedrockPalette.resolveTagPalette(tag -> {
+                        int remappedBlockState = blockStateRewriter.bedrockId((CompoundTag) tag);
+                        if (remappedBlockState == -1) {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
+                            remappedBlockState = blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
+                        }
+                        return remappedBlockState;
+                    });
                 }
             }
         }
     }
 
-    private void replaceLegacyBlocks(final ChunkSection section) {
+    private void replaceLegacyBlocks(final BedrockChunkSection bedrockSection) {
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
 
-        if (section instanceof BedrockChunkSection) {
-            final BedrockChunkSection bedrockSection = (BedrockChunkSection) section;
-            final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
-            for (DataPalette palette : palettes) {
-                if (palette instanceof BedrockBlockArray) {
-                    final BedrockBlockArray blockArray = (BedrockBlockArray) palette;
-                    final BedrockDataPalette dataPalette = new BedrockDataPalette();
-                    dataPalette.addId(this.airId());
-                    for (int x = 0; x < 16; x++) {
-                        for (int y = 0; y < 16; y++) {
-                            for (int z = 0; z < 16; z++) {
-                                final int blockState = blockArray.idAt(x, y, z);
-                                if (blockState == 0) continue;
-                                int remappedBlockState = blockStateRewriter.bedrockId(blockState);
-                                if (remappedBlockState == -1) {
-                                    Via.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + blockState);
-                                    remappedBlockState = this.airId();
-                                }
-                                dataPalette.setIdAt(x, y, z, remappedBlockState);
-                            }
-                        }
+        final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
+        for (DataPalette palette : palettes) {
+            if (palette instanceof BedrockBlockArray) {
+                final BedrockBlockArray blockArray = (BedrockBlockArray) palette;
+                final BedrockDataPalette dataPalette = new BedrockDataPalette();
+                this.transferPaletteData(blockArray, dataPalette);
+                for (int i = 0; i < dataPalette.size(); i++) {
+                    final int blockState = dataPalette.idByIndex(i);
+                    int remappedBlockState = blockStateRewriter.bedrockId(blockState);
+                    if (remappedBlockState == -1) {
+                        Via.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + blockState);
+                        remappedBlockState = this.airId();
                     }
-                    palettes.set(palettes.indexOf(palette), dataPalette);
+                    dataPalette.setIdByIndex(i, remappedBlockState);
+                }
+                palettes.set(palettes.indexOf(palette), dataPalette);
+            }
+        }
+    }
+
+    /**
+     * Transfers the palette data between two different palette types.
+     *
+     * @param source The source palette
+     * @param target The target palette
+     */
+    private void transferPaletteData(final DataPalette source, final DataPalette target) {
+        for (int x = 0; x < 16; x++) {
+            for (int y = 0; y < 16; y++) {
+                for (int z = 0; z < 16; z++) {
+                    target.setIdAt(x, y, z, source.idAt(x, y, z));
                 }
             }
         }
     }
 
     private static class SubChunkPosition {
+
         private final int chunkX;
         private final int subChunkY;
         private final int chunkZ;
@@ -772,6 +807,7 @@ public class ChunkTracker extends StoredObject {
                     ", chunkZ=" + chunkZ +
                     '}';
         }
+
     }
 
 }

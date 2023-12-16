@@ -51,8 +51,22 @@ public class BedrockChunk extends Chunk1_18 {
         this.requestSubChunks = requestSubChunks;
     }
 
+    public BedrockBlockEntity getBlockEntityAt(final Position position) {
+        for (BlockEntity blockEntity : this.blockEntities) {
+            final BedrockBlockEntity bedrockBlockEntity = (BedrockBlockEntity) blockEntity;
+            if (bedrockBlockEntity.position().equals(position)) {
+                return bedrockBlockEntity;
+            }
+        }
+
+        return null;
+    }
+
     public void removeBlockEntityAt(final Position position) {
-        this.blockEntities().removeIf(blockEntity -> ((BedrockBlockEntity) blockEntity).position().equals(position));
+        final BedrockBlockEntity blockEntity = this.getBlockEntityAt(position);
+        if (blockEntity != null) {
+            this.blockEntities.remove(blockEntity);
+        }
     }
 
 }

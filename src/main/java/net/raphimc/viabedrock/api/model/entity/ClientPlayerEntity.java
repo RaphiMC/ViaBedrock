@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
@@ -83,7 +84,7 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     public void closeDownloadingTerrainScreen() throws Exception {
         final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_20_3.GAME_EVENT, this.user);
-        gameEvent.write(Type.UNSIGNED_BYTE, (short) 13); // LEVEL_CHUNKS_LOAD_START
+        gameEvent.write(Type.UNSIGNED_BYTE, GameEvents.LEVEL_CHUNKS_LOAD_START);
         gameEvent.write(Type.FLOAT, 0F); // value
         gameEvent.send(BedrockProtocol.class);
     }

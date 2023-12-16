@@ -31,5 +31,7 @@ public class GameEvents {
     public static final short PUFFERFISH_STING = 9;
     public static final short ELDER_GUARDIAN_EFFECT = 10;
     public static final short IMMEDIATE_RESPAWN = 11;
+    public static final short LIMITED_CRAFTING_TOGGLED = 12;
+    public static final short LEVEL_CHUNKS_LOAD_START = 13;
 
 }

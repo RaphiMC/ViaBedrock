@@ -109,7 +109,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         providers.register(TransferProvider.class, new TransferProvider());
         providers.register(FormProvider.class, new InventoryFormProvider());
 
-        Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 5L);
+        Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 2L);
         Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
         Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 1L);
         Via.getPlatform().runRepeatingSync(new KeepAliveTask(), 20L);

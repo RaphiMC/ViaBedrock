@@ -28,6 +28,9 @@ This file has been copied from the official bedrock client's assets folder:
 ### data/java/via_mappings.json
 [ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.20.3.json)
 
+### data/java/heightmap_blockstates.nbt
+This file has been dumped using a fabric mod.
+
 ### data/java/registries.nbt
 This file has been dumped from a vanilla server using a fabric mod.
 

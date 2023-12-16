@@ -25,6 +25,7 @@ import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 import com.viaversion.viaversion.api.minecraft.chunks.PaletteType;
 import com.viaversion.viaversion.api.minecraft.metadata.ChunkPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
@@ -68,6 +69,32 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 
 public class WorldPackets {
+
+    private static final PacketHandler BLOCK_CHANGE_HANDLER = wrapper -> {
+        final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+        final Position position = wrapper.get(Type.POSITION1_14, 0);
+        final int blockState = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // block state
+        wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // flags
+        final int layer = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // layer
+        if (layer < 0 || layer > 1) {
+            wrapper.cancel();
+            return;
+        }
+
+        final IntObjectPair<BlockEntity> remappedBlock = chunkTracker.handleBlockChange(position, layer, blockState);
+        if (remappedBlock == null) {
+            wrapper.cancel();
+            return;
+        }
+
+        wrapper.write(Type.VAR_INT, remappedBlock.keyInt()); // block state
+
+        if (remappedBlock.value() != null) {
+            wrapper.send(BedrockProtocol.class);
+            wrapper.cancel();
+            PacketFactory.sendBlockEntityData(wrapper.user(), position, remappedBlock.value());
+        }
+    };
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.SET_SPAWN_POSITION, ClientboundPackets1_20_3.SPAWN_POSITION, wrapper -> {
@@ -330,64 +357,16 @@ public class WorldPackets {
             @Override
             protected void register() {
                 map(BedrockTypes.BLOCK_POSITION, Type.POSITION1_14); // position
-                handler(wrapper -> {
-                    final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
-                    final Position position = wrapper.get(Type.POSITION1_14, 0);
-                    final int blockState = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // block state
-                    wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // flags
-                    final int layer = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // layer
-                    if (layer < 0 || layer > 1) {
-                        wrapper.cancel();
-                        return;
-                    }
-
-                    final IntObjectPair<BlockEntity> remappedBlock = chunkTracker.handleBlockChange(position, layer, blockState);
-                    if (remappedBlock == null) {
-                        wrapper.cancel();
-                        return;
-                    }
-
-                    wrapper.write(Type.VAR_INT, remappedBlock.keyInt()); // block state
-
-                    if (remappedBlock.value() != null) {
-                        wrapper.send(BedrockProtocol.class);
-                        wrapper.cancel();
-                        PacketFactory.sendBlockEntityData(wrapper.user(), position, remappedBlock.value());
-                    }
-                });
+                handler(BLOCK_CHANGE_HANDLER);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_BLOCK_SYNCED, ClientboundPackets1_20_3.BLOCK_CHANGE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(BedrockTypes.BLOCK_POSITION, Type.POSITION1_14); // position
-                handler(wrapper -> {
-                    final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
-                    final Position position = wrapper.get(Type.POSITION1_14, 0);
-                    final int blockState = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // block state
-                    wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // flags
-                    final int layer = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // layer
-                    wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
-                    wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // block sync type
-                    if (layer < 0 || layer > 1) {
-                        wrapper.cancel();
-                        return;
-                    }
-
-                    final IntObjectPair<BlockEntity> remappedBlock = chunkTracker.handleBlockChange(position, layer, blockState);
-                    if (remappedBlock == null) {
-                        wrapper.cancel();
-                        return;
-                    }
-
-                    wrapper.write(Type.VAR_INT, remappedBlock.keyInt()); // block state
-
-                    if (remappedBlock.value() != null) {
-                        wrapper.send(BedrockProtocol.class);
-                        wrapper.cancel();
-                        PacketFactory.sendBlockEntityData(wrapper.user(), position, remappedBlock.value());
-                    }
-                });
+                handler(BLOCK_CHANGE_HANDLER);
+                read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+                read(BedrockTypes.UNSIGNED_VAR_LONG); // block sync type
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SUB_CHUNK_BLOCKS, null, wrapper -> {
@@ -437,25 +416,22 @@ public class WorldPackets {
             protected void register() {
                 map(BedrockTypes.BLOCK_POSITION, Type.POSITION1_14); // position
                 handler(wrapper -> {
-                    final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
-
                     final Tag tag = wrapper.read(BedrockTypes.NETWORK_TAG); // block entity tag
                     if (!(tag instanceof CompoundTag)) {
                         wrapper.cancel();
                         return;
                     }
 
+                    final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
                     final BedrockBlockEntity bedrockBlockEntity = new BedrockBlockEntity(wrapper.get(Type.POSITION1_14, 0), (CompoundTag) tag);
                     chunkTracker.addBlockEntity(bedrockBlockEntity);
 
                     final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(wrapper.user(), chunkTracker.getBlockState(bedrockBlockEntity.position()), bedrockBlockEntity);
-
                     if (javaBlockEntity instanceof BlockEntityWithBlockState) {
                         final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
-
                         if (blockEntityWithBlockState.hasBlockState()) {
                             final PacketWrapper blockChange = PacketWrapper.create(ClientboundPackets1_20_3.BLOCK_CHANGE, wrapper.user());
-                            blockChange.write(Type.POSITION1_14, wrapper.get(Type.POSITION1_14, 0)); // position
+                            blockChange.write(Type.POSITION1_14, bedrockBlockEntity.position()); // position
                             blockChange.write(Type.VAR_INT, blockEntityWithBlockState.blockState()); // block state
                             blockChange.send(BedrockProtocol.class);
                         }
@@ -484,7 +460,6 @@ public class WorldPackets {
             updateViewPosition.write(Type.VAR_INT, position.z() >> 4); // chunk z
             updateViewPosition.send(BedrockProtocol.class);
 
-            // TODO: Handle remaining fields
             final int count = wrapper.read(BedrockTypes.INT_LE); // saved chunks count
             for (int i = 0; i < count; i++) {
                 wrapper.read(BedrockTypes.VAR_INT); // chunk x

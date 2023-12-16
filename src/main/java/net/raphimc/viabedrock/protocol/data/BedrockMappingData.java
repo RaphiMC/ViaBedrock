@@ -79,10 +79,11 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<BlockState, BlockState> bedrockToJavaBlockStates;
     private Map<String, String> bedrockBlockTags;
     private Map<String, Map<String, Set<String>>> bedrockBlockTraits;
-    private IntSet javaPreWaterloggedStates;
-    private Int2IntMap javaPottedBlockStates;
     private BiMap<String, Integer> bedrockLegacyBlocks;
     private Int2ObjectMap<BedrockBlockState> bedrockLegacyBlockStates;
+    private IntSet javaPreWaterloggedBlockStates;
+    private Int2IntMap javaPottedBlockStates;
+    private Map<String, IntSet> javaHeightMapBlockStates;
 
     // Biomes
     private Map<String, CompoundTag> bedrockBiomeDefinitions;
@@ -216,15 +217,23 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            final JsonArray javaPreWaterloggedStatesJson = this.readJson("custom/pre_waterlogged_states.json").getAsJsonArray("blockstates");
-            this.javaPreWaterloggedStates = new IntOpenHashSet(javaPreWaterloggedStatesJson.size());
-            for (JsonElement entry : javaPreWaterloggedStatesJson) {
+            final JsonObject bedrockLegacyBlocksJson = this.readJson("bedrock/block_legacy_id_map.json");
+            this.bedrockLegacyBlocks = HashBiMap.create(bedrockLegacyBlocksJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockLegacyBlocksJson.entrySet()) {
+                this.bedrockLegacyBlocks.put(entry.getKey().toLowerCase(Locale.ROOT), entry.getValue().getAsInt());
+            }
+
+            this.buildLegacyBlockStateMappings();
+
+            final JsonArray javaPreWaterloggedBlockStatesJson = this.readJson("custom/pre_waterlogged_blockstates.json").getAsJsonArray("blockstates");
+            this.javaPreWaterloggedBlockStates = new IntOpenHashSet(javaPreWaterloggedBlockStatesJson.size());
+            for (JsonElement entry : javaPreWaterloggedBlockStatesJson) {
                 final BlockState javaBlockState = BlockState.fromString(entry.getAsString());
                 if (!this.javaBlockStates.containsKey(javaBlockState)) {
                     throw new RuntimeException("Unknown java block state: " + javaBlockState.toBlockStateString());
                 }
 
-                this.javaPreWaterloggedStates.add(this.javaBlockStates.get(javaBlockState).intValue());
+                this.javaPreWaterloggedBlockStates.add(this.javaBlockStates.get(javaBlockState).intValue());
             }
 
             final JsonObject javaPottedBlockStatesJson = this.readJson("custom/potted_blockstates.json");
@@ -242,13 +251,16 @@ public class BedrockMappingData extends MappingDataBase {
                 this.javaPottedBlockStates.put(this.javaBlockStates.get(javaBlockState).intValue(), this.javaBlockStates.get(javaPottedBlockState).intValue());
             }
 
-            final JsonObject bedrockLegacyBlocksJson = this.readJson("bedrock/block_legacy_id_map.json");
-            this.bedrockLegacyBlocks = HashBiMap.create(bedrockLegacyBlocksJson.size());
-            for (Map.Entry<String, JsonElement> entry : bedrockLegacyBlocksJson.entrySet()) {
-                this.bedrockLegacyBlocks.put(entry.getKey().toLowerCase(Locale.ROOT), entry.getValue().getAsInt());
+            final CompoundTag javaHeightMapBlockStatesTag = this.readNBT("java/heightmap_blockstates.nbt");
+            this.javaHeightMapBlockStates = new HashMap<>(javaHeightMapBlockStatesTag.size());
+            for (Map.Entry<String, Tag> entry : javaHeightMapBlockStatesTag.getValue().entrySet()) {
+                final IntSet blockStates = new IntOpenHashSet();
+                final IntArrayTag blockStatesArrayTag = (IntArrayTag) entry.getValue();
+                for (int blockState : blockStatesArrayTag.getValue()) {
+                    blockStates.add(blockState);
+                }
+                this.javaHeightMapBlockStates.put(entry.getKey(), blockStates);
             }
-
-            this.buildLegacyBlockStateMappings();
         }
 
         { // Biomes
@@ -572,14 +584,6 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaBlockStates;
     }
 
-    public Map<String, String> getBedrockBlockTags() {
-        return this.bedrockBlockTags;
-    }
-
-    public Map<String, Map<String, Set<String>>> getBedrockBlockTraits() {
-        return this.bedrockBlockTraits;
-    }
-
     public List<BedrockBlockState> getBedrockBlockStates() {
         return this.bedrockBlockStates;
     }
@@ -588,12 +592,12 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaBlockStates;
     }
 
-    public IntSet getJavaPreWaterloggedStates() {
-        return this.javaPreWaterloggedStates;
+    public Map<String, String> getBedrockBlockTags() {
+        return this.bedrockBlockTags;
     }
 
-    public Int2IntMap getJavaPottedBlockStates() {
-        return this.javaPottedBlockStates;
+    public Map<String, Map<String, Set<String>>> getBedrockBlockTraits() {
+        return this.bedrockBlockTraits;
     }
 
     public BiMap<String, Integer> getBedrockLegacyBlocks() {
@@ -602,6 +606,18 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Int2ObjectMap<BedrockBlockState> getBedrockLegacyBlockStates() {
         return this.bedrockLegacyBlockStates;
+    }
+
+    public IntSet getJavaPreWaterloggedBlockStates() {
+        return this.javaPreWaterloggedBlockStates;
+    }
+
+    public Int2IntMap getJavaPottedBlockStates() {
+        return this.javaPottedBlockStates;
+    }
+
+    public Map<String, IntSet> getJavaHeightMapBlockStates() {
+        return this.javaHeightMapBlockStates;
     }
 
     public Map<String, CompoundTag> getBedrockBiomeDefinitions() {
