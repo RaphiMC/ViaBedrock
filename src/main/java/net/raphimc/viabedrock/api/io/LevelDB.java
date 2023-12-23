@@ -29,11 +29,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-public class LevelDb implements Closeable {
+public class LevelDB implements Closeable {
 
     private final DB db;
 
-    public LevelDb(final File path) throws IOException {
+    public LevelDB(final File path) throws IOException {
         final Options options = new Options().createIfMissing(true).verifyChecksums(true).maxOpenFiles(50).compressionType(CompressionType.NONE);
 
         DB db = null;

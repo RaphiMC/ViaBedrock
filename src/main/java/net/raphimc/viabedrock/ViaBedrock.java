@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock;
 
 import net.raphimc.viabedrock.api.http.ResourcePackHttpServer;
-import net.raphimc.viabedrock.api.io.LevelDb;
+import net.raphimc.viabedrock.api.io.LevelDB;
 import net.raphimc.viabedrock.platform.ViaBedrockPlatform;
 
 import java.net.InetSocketAddress;
@@ -32,7 +32,7 @@ public class ViaBedrock {
     private static ViaBedrockPlatform platform;
     private static ViaBedrockConfig config;
     private static ResourcePackHttpServer resourcePackServer;
-    private static LevelDb blobCache;
+    private static LevelDB blobCache;
 
     private ViaBedrock() {
     }
@@ -50,7 +50,7 @@ public class ViaBedrock {
             throw new IllegalStateException("Failed to start resource pack HTTP server", e);
         }
         try {
-            ViaBedrock.blobCache = new LevelDb(platform.getBlobCacheFolder());
+            ViaBedrock.blobCache = new LevelDB(platform.getBlobCacheFolder());
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
@@ -76,7 +76,7 @@ public class ViaBedrock {
         return ViaBedrock.resourcePackServer;
     }
 
-    public static LevelDb getBlobCache() {
+    public static LevelDB getBlobCache() {
         return ViaBedrock.blobCache;
     }
 
