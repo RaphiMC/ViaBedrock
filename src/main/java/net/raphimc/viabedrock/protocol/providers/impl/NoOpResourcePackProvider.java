@@ -15,17 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.providers;
+package net.raphimc.viabedrock.protocol.providers.impl;
 
-import com.viaversion.viaversion.api.platform.providers.Provider;
 import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.protocol.providers.ResourcePackProvider;
 
-public abstract class ResourcePackProvider implements Provider {
+public class NoOpResourcePackProvider extends ResourcePackProvider {
 
-    public abstract boolean hasPack(final ResourcePack pack) throws Exception;
+    @Override
+    public boolean hasPack(final ResourcePack pack) {
+        return false;
+    }
 
-    public abstract void loadPack(final ResourcePack pack) throws Exception;
+    @Override
+    public void loadPack(final ResourcePack pack) {
+        throw new UnsupportedOperationException("NoOpResourcePackProvider cannot load packs");
+    }
 
-    public abstract void addPack(final ResourcePack pack) throws Exception;
+    @Override
+    public void addPack(final ResourcePack pack) {
+    }
 
 }

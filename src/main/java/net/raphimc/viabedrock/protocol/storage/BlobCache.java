@@ -32,9 +32,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
 public class BlobCache extends StoredObject {
 
@@ -42,10 +39,6 @@ public class BlobCache extends StoredObject {
 
     private final List<Long> missing = new ArrayList<>();
     private final List<Long> acked = new ArrayList<>();
-
-    private final Deflater deflater = new Deflater(Deflater.BEST_SPEED);
-    private final Inflater inflater = new Inflater();
-    private final byte[] compressionBuffer = new byte[8192];
 
     public BlobCache(final UserConnection user) {
         super(user);
@@ -77,13 +70,12 @@ public class BlobCache extends StoredObject {
     public void addBlob(final long hash, final byte[] blob) {
         this.acked.add(hash);
 
-        final byte[] compressedBlob = this.compress(blob);
-        final byte[] previousBlob = Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(hash, compressedBlob);
+        final byte[] previousBlob = Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(hash, blob);
         if (this.pending.containsKey(hash)) {
             this.pending.remove(hash).complete(blob);
         }
 
-        if (previousBlob != null && !Arrays.equals(previousBlob, compressedBlob)) {
+        if (previousBlob != null && !Arrays.equals(previousBlob, blob)) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Overwriting blob with hash " + hash + "!");
         }
     }
@@ -125,7 +117,7 @@ public class BlobCache extends StoredObject {
             final ByteArrayOutputStream output = new ByteArrayOutputStream();
             try {
                 for (long hash : hashes) {
-                    output.write(this.decompress(Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(hash)));
+                    output.write(Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(hash));
                 }
             } catch (final IOException ignored) {
             }
@@ -158,37 +150,6 @@ public class BlobCache extends StoredObject {
         }
 
         return rootFuture;
-    }
-
-    private byte[] compress(final byte[] data) {
-        this.deflater.setInput(data);
-        this.deflater.finish();
-
-        final ByteArrayOutputStream compressed = new ByteArrayOutputStream();
-        while (!this.deflater.finished()) {
-            final int size = this.deflater.deflate(this.compressionBuffer);
-            compressed.write(this.compressionBuffer, 0, size);
-        }
-        this.deflater.reset();
-        return compressed.toByteArray();
-    }
-
-    private byte[] decompress(final byte[] compressed) {
-        if (compressed.length == 0) return compressed;
-
-        this.inflater.setInput(compressed);
-        final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try {
-            while (!this.inflater.finished()) {
-                final int size = this.inflater.inflate(this.compressionBuffer);
-                data.write(this.compressionBuffer, 0, size);
-            }
-        } catch (final DataFormatException e) {
-            throw new RuntimeException(e);
-        } finally {
-            this.inflater.reset();
-        }
-        return data.toByteArray();
     }
 
 }

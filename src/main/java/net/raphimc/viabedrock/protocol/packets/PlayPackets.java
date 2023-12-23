@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
@@ -61,6 +62,12 @@ public class PlayPackets {
         protocol.registerServerbound(ServerboundPackets1_20_3.CLIENT_SETTINGS, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, MultiStatePackets.CLIENT_SETTINGS_HANDLER);
         protocol.registerServerbound(ServerboundPackets1_20_3.PONG, null, MultiStatePackets.PONG_HANDLER);
         protocol.registerServerbound(ServerboundPackets1_20_3.PLUGIN_MESSAGE, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_20_3.PING_REQUEST, null, wrapper -> {
+            wrapper.cancel();
+            final PacketWrapper pongResponse = wrapper.create(ClientboundPackets1_20_3.PONG_RESPONSE);
+            pongResponse.write(Type.LONG, wrapper.read(Type.LONG)); // time
+            pongResponse.send(BedrockProtocol.class);
+        });
     }
 
 }

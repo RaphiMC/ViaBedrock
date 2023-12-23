@@ -15,17 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.providers;
+package net.raphimc.viabedrock.protocol.providers.impl;
 
-import com.viaversion.viaversion.api.platform.providers.Provider;
-import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 
-public abstract class ResourcePackProvider implements Provider {
+public class NoOpBlobCacheProvider extends BlobCacheProvider {
 
-    public abstract boolean hasPack(final ResourcePack pack) throws Exception;
+    @Override
+    public byte[] addBlob(final long hash, final byte[] blob) {
+        throw new UnsupportedOperationException();
+    }
 
-    public abstract void loadPack(final ResourcePack pack) throws Exception;
+    @Override
+    public boolean hasBlob(final long hash) {
+        return false;
+    }
 
-    public abstract void addPack(final ResourcePack pack) throws Exception;
+    @Override
+    public byte[] getBlob(final long hash) {
+        throw new UnsupportedOperationException();
+    }
 
 }

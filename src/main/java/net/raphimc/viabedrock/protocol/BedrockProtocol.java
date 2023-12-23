@@ -33,12 +33,11 @@ import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.Serverb
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.protocol.StatelessTransitionProtocol;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.packetmapping.ClientboundPacketMappings;
 import net.raphimc.viabedrock.protocol.packets.*;
 import net.raphimc.viabedrock.protocol.providers.*;
-import net.raphimc.viabedrock.protocol.providers.impl.DiskResourcePackProvider;
-import net.raphimc.viabedrock.protocol.providers.impl.InMemoryBlobCacheProvider;
 import net.raphimc.viabedrock.protocol.providers.impl.InventoryFormProvider;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.task.*;
@@ -103,15 +102,19 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     @Override
     public void register(ViaProviders providers) {
         providers.require(NettyPipelineProvider.class);
-        providers.register(ResourcePackProvider.class, new DiskResourcePackProvider());
-        providers.register(BlobCacheProvider.class, new InMemoryBlobCacheProvider());
+        providers.register(ResourcePackProvider.class, ViaBedrock.getConfig().getPackCacheMode().createProvider());
+        providers.register(BlobCacheProvider.class, ViaBedrock.getConfig().getBlobCacheMode().createProvider());
         providers.register(SkinProvider.class, new SkinProvider());
         providers.register(TransferProvider.class, new TransferProvider());
         providers.register(FormProvider.class, new InventoryFormProvider());
 
+        if (!ViaBedrock.getConfig().getBlobCacheMode().equals(ViaBedrockConfig.BlobCacheMode.DISABLED)) {
+            providers.get(BlobCacheProvider.class).addBlob(0L, new byte[0]);
+        }
+
         Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 2L);
         Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
-        Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 1L);
+        Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 2L);
         Via.getPlatform().runRepeatingSync(new KeepAliveTask(), 20L);
         Via.getPlatform().runRepeatingSync(new InventoryTrackerTickTask(), 1L);
     }

@@ -45,6 +45,7 @@ public interface ViaBedrockPlatform {
         protocolManager.registerBaseProtocol(new EmptyBaseProtocol(), Range.singleton(BedrockProtocolVersion.bedrockLatest.getVersion()));
 
         this.getServerPacksFolder().mkdirs();
+        this.getBlobCacheFolder().mkdirs();
     }
 
     Logger getLogger();
@@ -57,6 +58,10 @@ public interface ViaBedrockPlatform {
 
     default File getServerPacksFolder() {
         return new File(this.getDataCacheFolder(), "server_packs");
+    }
+
+    default File getBlobCacheFolder() {
+        return new File(this.getDataCacheFolder(), "blob_cache");
     }
 
 }

@@ -18,13 +18,18 @@
 package net.raphimc.viabedrock.platform;
 
 import com.viaversion.viaversion.api.configuration.Config;
+import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
+import net.raphimc.viabedrock.protocol.providers.ResourcePackProvider;
+import net.raphimc.viabedrock.protocol.providers.impl.*;
+
+import java.util.function.Supplier;
 
 public interface ViaBedrockConfig extends Config {
 
     /**
-     * @return Whether the blob cache is enabled.
+     * @return The blob cache mode to use.
      */
-    boolean isBlobCacheEnabled();
+    BlobCacheMode getBlobCacheMode();
 
     /**
      * @return The host to use for the resource pack HTTP server.
@@ -42,8 +47,82 @@ public interface ViaBedrockConfig extends Config {
     String getResourcePackUrl();
 
     /**
-     * @return Whether the server packs should be stored on disk.
+     * @return The pack cache mode to use.
      */
-    boolean storePacks();
+    PackCacheMode getPackCacheMode();
+
+    enum BlobCacheMode {
+
+        /**
+         * The blob cache will be disabled.
+         */
+        DISABLED(NoOpBlobCacheProvider::new),
+        /**
+         * The blob cache will be enabled and blobs will be stored in memory.
+         */
+        MEMORY(InMemoryBlobCacheProvider::new),
+        /**
+         * The blob cache will be enabled and blobs will be stored on disk.
+         */
+        DISK(DiskBlobCacheProvider::new);
+
+        private final Supplier<BlobCacheProvider> providerSupplier;
+
+        BlobCacheMode(final Supplier<BlobCacheProvider> providerSupplier) {
+            this.providerSupplier = providerSupplier;
+        }
+
+        public static BlobCacheMode byName(String name) {
+            for (BlobCacheMode mode : values()) {
+                if (mode.name().equalsIgnoreCase(name)) {
+                    return mode;
+                }
+            }
+
+            return DISABLED;
+        }
+
+        public BlobCacheProvider createProvider() {
+            return this.providerSupplier.get();
+        }
+
+    }
+
+    enum PackCacheMode {
+
+        /**
+         * The pack cache will be disabled.
+         */
+        DISABLED(NoOpResourcePackProvider::new),
+        /**
+         * The pack cache will be enabled and packs will be stored in memory.
+         */
+        MEMORY(InMemoryResourcePackProvider::new),
+        /**
+         * The pack cache will be enabled and packs will be stored on disk.
+         */
+        DISK(DiskResourcePackProvider::new);
+
+        private final Supplier<ResourcePackProvider> providerSupplier;
+
+        PackCacheMode(final Supplier<ResourcePackProvider> providerSupplier) {
+            this.providerSupplier = providerSupplier;
+        }
+
+        public static PackCacheMode byName(String name) {
+            for (PackCacheMode mode : values()) {
+                if (mode.name().equalsIgnoreCase(name)) {
+                    return mode;
+                }
+            }
+
+            return DISABLED;
+        }
+
+        public ResourcePackProvider createProvider() {
+            return this.providerSupplier.get();
+        }
+
+    }
 
 }

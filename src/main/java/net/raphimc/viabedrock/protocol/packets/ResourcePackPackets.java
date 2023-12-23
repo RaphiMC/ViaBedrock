@@ -144,7 +144,7 @@ public class ResourcePackPackets {
 
             if (resourcePacksStorage.hasPack(idAndVersion.key()) && !resourcePacksStorage.getPack(idAndVersion.key()).isDecompressed()) {
                 final ResourcePack resourcePack = resourcePacksStorage.getPack(idAndVersion.key());
-                if (resourcePack.processDataChunk(chunkIndex, data) && ViaBedrock.getConfig().storePacks()) {
+                if (resourcePack.processDataChunk(chunkIndex, data)) {
                     Via.getManager().getProviders().get(ResourcePackProvider.class).addPack(resourcePack);
                 }
             } else {
@@ -243,7 +243,7 @@ public class ResourcePackPackets {
                     for (ResourcePack pack : resourcePacksStorage.getPacks()) {
                         if (resourcePacksStorage.isPreloaded(pack.packId())) continue;
 
-                        if (ViaBedrock.getConfig().storePacks() && Via.getManager().getProviders().get(ResourcePackProvider.class).hasPack(pack)) {
+                        if (Via.getManager().getProviders().get(ResourcePackProvider.class).hasPack(pack)) {
                             Via.getManager().getProviders().get(ResourcePackProvider.class).loadPack(pack);
                         } else {
                             missingPacks.add(pack.packId() + "_" + pack.version());
