@@ -591,26 +591,26 @@ public class ChunkTracker extends StoredObject {
 
                 if (blockPalettes.size() > 1) {
                     final DataPalette layer1 = blockPalettes.get(1);
-                    if (layer1.size() == 1 && layer1.idByIndex(0) == airId) continue;
+                    if (layer1.size() != 1 || layer1.idByIndex(0) != airId) {
+                        for (int x = 0; x < 16; x++) {
+                            for (int y = 0; y < 16; y++) {
+                                for (int z = 0; z < 16; z++) {
+                                    final int prevBlockState = layer0.idAt(x, y, z);
+                                    if (prevBlockState == airId) continue;
+                                    final int blockState = layer1.idAt(x, y, z);
+                                    if (blockState == airId) continue;
+                                    final int javaBlockState = remappedBlockPalette.idAt(x, y, z);
 
-                    for (int x = 0; x < 16; x++) {
-                        for (int y = 0; y < 16; y++) {
-                            for (int z = 0; z < 16; z++) {
-                                final int prevBlockState = layer0.idAt(x, y, z);
-                                if (prevBlockState == airId) continue;
-                                final int blockState = layer1.idAt(x, y, z);
-                                if (blockState == airId) continue;
-                                final int javaBlockState = remappedBlockPalette.idAt(x, y, z);
-
-                                if (BlockStateRewriter.TAG_WATER.equals(blockStateRewriter.tag(blockState))) { // Waterlogging
-                                    final int remappedBlockState = blockStateRewriter.waterlog(javaBlockState);
-                                    if (remappedBlockState == -1) {
-                                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing waterlogged block state: " + prevBlockState);
+                                    if (BlockStateRewriter.TAG_WATER.equals(blockStateRewriter.tag(blockState))) { // Waterlogging
+                                        final int remappedBlockState = blockStateRewriter.waterlog(javaBlockState);
+                                        if (remappedBlockState == -1) {
+                                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing waterlogged block state: " + prevBlockState);
+                                        } else {
+                                            remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
+                                        }
                                     } else {
-                                        remappedBlockPalette.setIdAt(x, y, z, remappedBlockState);
+                                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid layer 2 block state. L1: " + prevBlockState + ", L2: " + blockState);
                                     }
-                                } else {
-                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid layer 2 block state. L1: " + prevBlockState + ", L2: " + blockState);
                                 }
                             }
                         }
