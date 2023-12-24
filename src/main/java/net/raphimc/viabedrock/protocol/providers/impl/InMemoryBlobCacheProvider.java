@@ -19,40 +19,16 @@ package net.raphimc.viabedrock.protocol.providers.impl;
 
 import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.zip.DataFormatException;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
 public class InMemoryBlobCacheProvider extends BlobCacheProvider {
 
     private final Map<Long, byte[]> blobs = new ConcurrentHashMap<>();
 
-    private final Deflater deflater;
-    private final Inflater inflater;
-    private final byte[] compressionBuffer;
-
-    public InMemoryBlobCacheProvider() {
-        this(true);
-    }
-
-    public InMemoryBlobCacheProvider(final boolean compress) {
-        if (compress) {
-            this.deflater = new Deflater(Deflater.BEST_SPEED);
-            this.inflater = new Inflater();
-            this.compressionBuffer = new byte[8192];
-        } else {
-            this.deflater = null;
-            this.inflater = null;
-            this.compressionBuffer = null;
-        }
-    }
-
     @Override
     public byte[] addBlob(final long hash, final byte[] blob) {
-        return this.decompress(this.blobs.put(hash, this.compress(blob)));
+        return this.blobs.put(hash, blob);
     }
 
     @Override
@@ -62,42 +38,7 @@ public class InMemoryBlobCacheProvider extends BlobCacheProvider {
 
     @Override
     public byte[] getBlob(final long hash) {
-        return this.decompress(this.blobs.get(hash));
-    }
-
-    private byte[] compress(final byte[] data) {
-        if (data == null) return null;
-        if (this.deflater == null || data.length == 0) return data;
-
-        this.deflater.setInput(data);
-        this.deflater.finish();
-
-        final ByteArrayOutputStream compressed = new ByteArrayOutputStream();
-        while (!this.deflater.finished()) {
-            final int size = this.deflater.deflate(this.compressionBuffer);
-            compressed.write(this.compressionBuffer, 0, size);
-        }
-        this.deflater.reset();
-        return compressed.toByteArray();
-    }
-
-    private byte[] decompress(final byte[] compressed) {
-        if (compressed == null) return null;
-        if (this.inflater == null || compressed.length == 0) return compressed;
-
-        this.inflater.setInput(compressed);
-        final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try {
-            while (!this.inflater.finished()) {
-                final int size = this.inflater.inflate(this.compressionBuffer);
-                data.write(this.compressionBuffer, 0, size);
-            }
-        } catch (final DataFormatException e) {
-            throw new RuntimeException(e);
-        } finally {
-            this.inflater.reset();
-        }
-        return data.toByteArray();
+        return this.blobs.get(hash);
     }
 
 }
