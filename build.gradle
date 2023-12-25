@@ -2,6 +2,7 @@ plugins {
     id "java-library"
     id "maven-publish"
     id "signing"
+    id "idea"
     id "net.raphimc.class-token-replacer" version "1.0.0"
 }
 
@@ -141,6 +142,14 @@ signing {
 
 project.tasks.withType(PublishToMavenRepository).forEach {
     it.dependsOn(project.tasks.withType(Sign))
+}
+
+idea {
+    module {
+        ["run"].each {
+            excludeDirs << file("$it")
+        }
+    }
 }
 
 String latestCommitHash() {
