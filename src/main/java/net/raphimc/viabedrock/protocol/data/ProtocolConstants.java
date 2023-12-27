@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.data;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-import net.lenni0451.mcstructs.text.serializer.TextComponentCodec;
+import com.viaversion.viaversion.libs.mcstructs.text.serializer.TextComponentCodec;
 
 public class ProtocolConstants {
 

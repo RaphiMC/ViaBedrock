@@ -18,13 +18,12 @@
 package net.raphimc.viabedrock.api.util;
 
 import com.viaversion.viaversion.libs.gson.JsonElement;
+import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
+import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.serializer.LegacyStringDeserializer;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
-import net.lenni0451.mcstructs.core.TextFormatting;
-import net.lenni0451.mcstructs.text.ATextComponent;
-import net.lenni0451.mcstructs.text.serializer.LegacyStringDeserializer;
+import com.viaversion.viaversion.util.NBTConverter;
 import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
-import net.raphimc.viabedrock.api.util.converter.JsonConverter;
-import net.raphimc.viabedrock.api.util.converter.NbtConverter;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
 import java.util.HashSet;
@@ -63,7 +62,7 @@ public class TextUtil {
     }
 
     public static JsonElement componentToGson(final ATextComponent textComponent) {
-        return JsonConverter.gsonToVia(ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeJsonTree(textComponent));
+        return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeJsonTree(textComponent);
     }
 
     public static Tag stringToNbt(final String text) {
@@ -71,7 +70,7 @@ public class TextUtil {
     }
 
     public static Tag componentToNbt(final ATextComponent textComponent) {
-        return NbtConverter.mcStructsToVia(ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeNbt(textComponent));
+        return NBTConverter.mcStructsToVia(ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeNbt(textComponent));
     }
 
     public static ATextComponent stringToComponent(final String text) {

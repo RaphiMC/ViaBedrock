@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.api.model.inventory.fake;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
-import net.lenni0451.mcstructs.text.ATextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
