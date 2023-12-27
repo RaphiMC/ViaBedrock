@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.providers.impl;
 
 import com.google.common.primitives.Longs;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.LZ4;
 import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
 
 import java.nio.charset.StandardCharsets;
@@ -30,13 +31,12 @@ public class DiskBlobCacheProvider extends BlobCacheProvider {
 
     @Override
     public byte[] addBlob(final long hash, final byte[] blob) {
-        final byte[] blobKey = this.createBlobKey(hash);
-        final byte[] oldBlob = ViaBedrock.getBlobCache().get(blobKey);
+        final byte[] oldBlob = this.getBlob(hash);
         if (Arrays.equals(blob, oldBlob)) {
             return oldBlob;
         }
 
-        ViaBedrock.getBlobCache().put(blobKey, blob);
+        ViaBedrock.getBlobCache().put(this.createBlobKey(hash), LZ4.compress(blob));
         return oldBlob;
     }
 
@@ -47,7 +47,7 @@ public class DiskBlobCacheProvider extends BlobCacheProvider {
 
     @Override
     public byte[] getBlob(final long hash) {
-        return ViaBedrock.getBlobCache().get(this.createBlobKey(hash));
+        return LZ4.decompress(ViaBedrock.getBlobCache().get(this.createBlobKey(hash)));
     }
 
     private byte[] createBlobKey(final long hash) {

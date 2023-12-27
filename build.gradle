@@ -63,6 +63,7 @@ dependencies {
     api("org.iq80.leveldb:leveldb:0.12") {
         exclude group: "com.google.guava"
     }
+    api "org.lz4:lz4-pure-java:1.8.0"
 }
 
 sourceSets {

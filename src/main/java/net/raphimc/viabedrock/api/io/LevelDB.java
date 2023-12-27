@@ -34,7 +34,7 @@ public class LevelDB implements Closeable {
     private final DB db;
 
     public LevelDB(final File path) throws IOException {
-        final Options options = new Options().createIfMissing(true).verifyChecksums(true).maxOpenFiles(50).compressionType(CompressionType.NONE);
+        final Options options = new Options().createIfMissing(true).verifyChecksums(true).maxOpenFiles(100).compressionType(CompressionType.NONE);
 
         DB db = null;
         try {
