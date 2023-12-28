@@ -706,9 +706,9 @@ public class ChunkTracker extends StoredObject {
             }
         }
 
-
-        remappedChunk.getHeightMap().put("WORLD_SURFACE", new LongArrayTag(CompactArrayUtil.createCompactArrayWithPadding(9, worldSurface.length, i -> worldSurface[i])));
-        remappedChunk.getHeightMap().put("MOTION_BLOCKING", new LongArrayTag(CompactArrayUtil.createCompactArrayWithPadding(9, motionBlocking.length, i -> motionBlocking[i])));
+        final int bitsPerEntry = MathUtil.ceilLog2(this.worldHeight + 1);
+        remappedChunk.getHeightMap().put("WORLD_SURFACE", new LongArrayTag(CompactArrayUtil.createCompactArrayWithPadding(bitsPerEntry, worldSurface.length, i -> worldSurface[i])));
+        remappedChunk.getHeightMap().put("MOTION_BLOCKING", new LongArrayTag(CompactArrayUtil.createCompactArrayWithPadding(bitsPerEntry, motionBlocking.length, i -> motionBlocking[i])));
 
         return remappedChunk;
     }
