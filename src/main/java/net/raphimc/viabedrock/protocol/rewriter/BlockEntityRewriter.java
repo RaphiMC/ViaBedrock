@@ -43,10 +43,13 @@ public class BlockEntityRewriter {
     static {
         // TODO: Enhancement: Add missing block entities
         BLOCK_ENTITY_REWRITERS.put("brewing_stand", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("calibrated_sculk_sensor", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("campfire", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("note_block", NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("piston", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("moving_block", NULL_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("sculk_sensor", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("sculk_shrieker", NOOP_REWRITER);
 
         BLOCK_ENTITY_REWRITERS.put("banner", new BannerBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("barrel", new LootableBlockEntityRewriter());
@@ -56,7 +59,6 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put("bell", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("blast_furnace", new FurnaceBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("brushable_block", new BrushableBlockBlockEntityRewriter());
-        BLOCK_ENTITY_REWRITERS.put("calibrated_sculk_sensor", new SculkBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("cauldron", NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("chest", new LootableBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("chiseled_bookshelf", new ChiseledBookshelfBlockEntityRewriter());
@@ -84,8 +86,6 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put("mob_spawner", new MobSpawnerBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("nether_reactor", NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("sculk_catalyst", NOOP_REWRITER);
-        BLOCK_ENTITY_REWRITERS.put("sculk_sensor", new SculkBlockEntityRewriter());
-        BLOCK_ENTITY_REWRITERS.put("sculk_shrieker", new SculkBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("shulker_box", new LootableBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("sign", new SignBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("skull", new SkullBlockEntityRewriter());
