@@ -28,13 +28,13 @@ public class GameTypeRewriter {
             case GameTypes.CREATIVE_VIEWER:
             default: // Mojang client defaults to survival in case of out of bounds values
                 return 0;
-            case GameTypes.CREATIVE: // CREATIVE
+            case GameTypes.CREATIVE:
                 return 1;
-            case GameTypes.ADVENTURE: // ADVENTURE
+            case GameTypes.ADVENTURE:
                 return 2;
-            case GameTypes.DEFAULT: // DEFAULT
+            case GameTypes.DEFAULT:
                 return -1;
-            case GameTypes.SPECTATOR: // SPECTATOR
+            case GameTypes.SPECTATOR:
                 return 3;
         }
     }

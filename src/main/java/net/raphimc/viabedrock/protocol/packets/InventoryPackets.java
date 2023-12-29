@@ -71,7 +71,7 @@ public class InventoryPackets {
                 return;
             }
             if (menuType.equals(MenuType.INVENTORY)) {
-                // TODO
+                // TODO: Implement
                 wrapper.cancel();
                 return;
             }

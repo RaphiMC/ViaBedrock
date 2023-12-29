@@ -33,6 +33,7 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ResourcePackStatus;
+import net.raphimc.viabedrock.protocol.data.enums.java.JavaResourcePackStatus;
 import net.raphimc.viabedrock.protocol.model.Experiment;
 import net.raphimc.viabedrock.protocol.providers.ResourcePackProvider;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
@@ -207,7 +208,7 @@ public class ResourcePackPackets {
             wrapper.read(Type.UUID); // pack id
             final int status = wrapper.read(Type.VAR_INT); // status
             switch (status) {
-                case 0: // SUCCESSFULLY_LOADED
+                case JavaResourcePackStatus.SUCCESSFULLY_LOADED:
                     if (!resourcePacksStorage.hasFinishedLoading()) {
                         wrapper.cancel();
                     }
@@ -216,10 +217,10 @@ public class ResourcePackPackets {
                     wrapper.write(Type.UNSIGNED_BYTE, ResourcePackStatus.COMPLETED); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     break;
-                case 2: // FAILED_DOWNLOAD
-                case 5: // INVALID_URL
-                case 6: // FAILED_RELOAD
-                case 7: // DISCARDED
+                case JavaResourcePackStatus.FAILED_DOWNLOAD:
+                case JavaResourcePackStatus.INVALID_URL:
+                case JavaResourcePackStatus.FAILED_RELOAD:
+                case JavaResourcePackStatus.DISCARDED:
                     if (!resourcePacksStorage.hasFinishedLoading()) {
                         wrapper.cancel();
                     }
@@ -229,7 +230,7 @@ public class ResourcePackPackets {
                     wrapper.write(Type.UNSIGNED_BYTE, ResourcePackStatus.COMPLETED); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     break;
-                case 1: // DECLINED
+                case JavaResourcePackStatus.DECLINED:
                     final ResourcePacksStorage emptyResourcePackStorage = new ResourcePacksStorage();
                     emptyResourcePackStorage.setCompletedTransfer();
                     wrapper.user().put(emptyResourcePackStorage);
@@ -237,7 +238,7 @@ public class ResourcePackPackets {
                     wrapper.write(Type.UNSIGNED_BYTE, ResourcePackStatus.HAVE_ALL_PACKS); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     break;
-                case 3: // ACCEPTED
+                case JavaResourcePackStatus.ACCEPTED:
                     resourcePacksStorage.setJavaClientWaitingForPack(true);
                     final Set<String> missingPacks = new HashSet<>();
                     for (ResourcePack pack : resourcePacksStorage.getPacks()) {
@@ -260,7 +261,7 @@ public class ResourcePackPackets {
                         wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     }
                     break;
-                case 4: // DOWNLOADED
+                case JavaResourcePackStatus.DOWNLOADED:
                     wrapper.cancel();
                     break;
                 default:
