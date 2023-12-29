@@ -22,7 +22,6 @@ import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.serializer.LegacyStringDeserializer;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
-import com.viaversion.viaversion.util.NBTConverter;
 import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
@@ -70,7 +69,7 @@ public class TextUtil {
     }
 
     public static Tag componentToNbt(final ATextComponent textComponent) {
-        return NBTConverter.mcStructsToVia(ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeNbt(textComponent));
+        return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeNbt(textComponent);
     }
 
     public static ATextComponent stringToComponent(final String text) {
