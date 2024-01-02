@@ -39,6 +39,7 @@ import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.data.enums.java.WindowClickActions;
 import net.raphimc.viabedrock.protocol.providers.FormProvider;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
+import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -298,7 +299,7 @@ public class FormContainer extends FakeContainer {
                 }
             }
 
-            items.add(this.createItem("minecraft:oak_button", "Submit"));
+            items.add(this.createItem("minecraft:oak_button", this.user.get(ResourcePacksStorage.class).getTranslations().get("gui.submit")));
         } else {
             throw new IllegalArgumentException("Unknown form type: " + this.form.getClass().getSimpleName());
         }
@@ -314,7 +315,7 @@ public class FormContainer extends FakeContainer {
 
         final CompoundTag tag = new CompoundTag();
         final CompoundTag displayTag = new CompoundTag();
-        displayTag.put("Name", new StringTag(this.stringToJson(name)));
+        displayTag.put("Name", new StringTag(this.stringToJson(name.replace("\n", " | "))));
         if (description.length > 0) {
             final ListTag loreTags = new ListTag(StringTag.class);
             for (String desc : description) {
