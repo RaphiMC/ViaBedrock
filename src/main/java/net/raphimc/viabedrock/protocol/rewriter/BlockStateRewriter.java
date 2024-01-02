@@ -56,15 +56,32 @@ public class BlockStateRewriter implements StorableObject {
         this.legacyBlockStateIdMappings.defaultReturnValue(-1);
 
         final List<BedrockBlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
-        final List<BedrockBlockState> customBlockStates = new ArrayList<>();
         final Map<BlockState, Integer> javaBlockStates = BedrockProtocol.MAPPINGS.getJavaBlockStates();
         final Map<BlockState, BlockState> bedrockToJavaBlockStates = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates();
         final Map<String, String> blockTags = BedrockProtocol.MAPPINGS.getBedrockBlockTags();
+        final Set<String> bedrockBlockIdentifiers = bedrockBlockStates.stream().map(BedrockBlockState::namespacedIdentifier).collect(Collectors.toSet());
+        final List<BedrockBlockState> customBlockStates = new ArrayList<>();
 
+        final Map<String, CompoundTag> effectiveBlockProperties = new HashMap<>();
         for (BlockProperties blockProperty : blockProperties) {
+            final String identifier = Key.namespaced(blockProperty.name().toLowerCase(Locale.ROOT));
+            if (bedrockBlockIdentifiers.contains(identifier)) {
+                continue; // Mojang client does not allow overriding vanilla block states
+            }
+
+            if (!effectiveBlockProperties.containsKey(identifier)) {
+                effectiveBlockProperties.put(identifier, blockProperty.properties());
+            }
+        }
+
+        for (Map.Entry<String, CompoundTag> blockProperty : effectiveBlockProperties.entrySet()) {
+            if (!(blockProperty.getValue().get("menu_category") instanceof CompoundTag)) { // Mojang client crashes if this tag is missing
+                throw new IllegalStateException("Missing menu_category tag for " + blockProperty.getKey());
+            }
+
             final Map<String, Set<Tag>> propertiesMap = new LinkedHashMap<>();
-            if (blockProperty.properties().get("properties") instanceof ListTag) {
-                final ListTag properties = blockProperty.properties().get("properties");
+            if (blockProperty.getValue().get("properties") instanceof ListTag) { // https://wiki.bedrock.dev/blocks/block-states.html
+                final ListTag properties = blockProperty.getValue().get("properties");
                 if (CompoundTag.class.equals(properties.getElementType())) {
                     for (Tag propertyTag : properties) {
                         final CompoundTag property = (CompoundTag) propertyTag;
@@ -82,8 +99,8 @@ public class BlockStateRewriter implements StorableObject {
                     }
                 }
             }
-            if (blockProperty.properties().get("traits") instanceof ListTag) { // https://wiki.bedrock.dev/blocks/block-traits.html
-                final ListTag traits = blockProperty.properties().get("traits");
+            if (blockProperty.getValue().get("traits") instanceof ListTag) { // https://wiki.bedrock.dev/blocks/block-traits.html
+                final ListTag traits = blockProperty.getValue().get("traits");
                 if (CompoundTag.class.equals(traits.getElementType())) {
                     for (Tag traitTag : traits) {
                         final CompoundTag trait = (CompoundTag) traitTag;
@@ -138,7 +155,7 @@ public class BlockStateRewriter implements StorableObject {
 
             for (CompoundTag combination : combinations) {
                 final CompoundTag blockStateTag = new CompoundTag();
-                blockStateTag.put("name", new StringTag(blockProperty.name()));
+                blockStateTag.put("name", new StringTag(blockProperty.getKey()));
                 blockStateTag.put("states", combination);
                 blockStateTag.put("network_id", new IntTag(BlockStateHasher.hash(blockStateTag)));
 
