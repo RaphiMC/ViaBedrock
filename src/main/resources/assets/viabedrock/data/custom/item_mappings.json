@@ -5239,7 +5239,7 @@
       "37": {
         "java_id": "minecraft:tipped_arrow",
         "java_display_name": "Arrow of Decay",
-        "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",duration:100}],CustomPotionColor:4013879}"
+        "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",amplifier:1,duration:800}],CustomPotionColor:4013879}"
       },
       "38": {
         "java_id": "minecraft:tipped_arrow",
@@ -5769,7 +5769,7 @@
       "36": {
         "java_id": "minecraft:potion",
         "java_display_name": "Potion of Decay",
-        "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",duration:100}],CustomPotionColor:4013879}"
+        "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",amplifier:1,duration:800}],CustomPotionColor:4013879}"
       },
       "37": {
         "java_id": "minecraft:potion",
@@ -5950,7 +5950,7 @@
       "36": {
         "java_id": "minecraft:splash_potion",
         "java_display_name": "Potion of Decay",
-        "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",duration:100}],CustomPotionColor:4013879}"
+        "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",amplifier:1,duration:800}],CustomPotionColor:4013879}"
       },
       "37": {
         "java_id": "minecraft:splash_potion",
@@ -6131,7 +6131,7 @@
       "36": {
         "java_id": "minecraft:lingering_potion",
         "java_display_name": "Potion of Decay",
-        "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",duration:100}],CustomPotionColor:4013879}"
+        "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",amplifier:1,duration:800}],CustomPotionColor:4013879}"
       },
       "37": {
         "java_id": "minecraft:lingering_potion",
