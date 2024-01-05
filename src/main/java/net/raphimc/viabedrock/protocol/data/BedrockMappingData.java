@@ -28,8 +28,9 @@ import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.gson.JsonPrimitive;
-import com.viaversion.viaversion.libs.opennbt.NBTIO;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
+import com.viaversion.viaversion.libs.opennbt.tag.io.NBTIO;
+import com.viaversion.viaversion.libs.opennbt.tag.limiter.TagLimiter;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.Protocol1_20_3To1_20_2;
 import com.viaversion.viaversion.util.GsonUtil;
 import com.viaversion.viaversion.util.Key;
@@ -50,10 +51,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -731,7 +729,7 @@ public class BedrockMappingData extends MappingDataBase {
                 return null;
             }
 
-            return NBTIO.readTag(new GZIPInputStream(inputStream));
+            return NBTIO.readTag(new DataInputStream(new GZIPInputStream(inputStream)), TagLimiter.noop(), true, CompoundTag.class);
         } catch (IOException e) {
             this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
             return null;

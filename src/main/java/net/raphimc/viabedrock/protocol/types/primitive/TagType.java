@@ -18,8 +18,10 @@
 package net.raphimc.viabedrock.protocol.types.primitive;
 
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.types.misc.NamedCompoundTagType;
 import com.viaversion.viaversion.libs.opennbt.tag.TagRegistry;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import com.viaversion.viaversion.libs.opennbt.tag.limiter.TagLimiter;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.api.io.NetworkByteBufInputStream;
 import net.raphimc.viabedrock.api.io.NetworkByteBufOutputStream;
@@ -37,10 +39,7 @@ public class TagType extends Type<Tag> {
         BedrockTypes.STRING.read(buffer);
         if (id == 0) return null;
 
-        final Tag tag = TagRegistry.createInstance(id);
-        tag.read(new NetworkByteBufInputStream(buffer));
-
-        return tag;
+        return TagRegistry.read(id, new NetworkByteBufInputStream(buffer), TagLimiter.create(NamedCompoundTagType.MAX_NBT_BYTES, NamedCompoundTagType.MAX_NESTING_LEVEL), 0);
     }
 
     @Override

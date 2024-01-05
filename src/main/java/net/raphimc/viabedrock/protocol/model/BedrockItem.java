@@ -163,7 +163,7 @@ public class BedrockItem implements Item {
 
     @Override
     public BedrockItem copy() {
-        return new BedrockItem(this.id, this.data, this.amount, this.tag != null ? this.tag.clone() : null, this.canPlace.clone(), this.canBreak.clone(), this.blockingTicks, this.blockRuntimeId, this.usingNetId, this.netId);
+        return new BedrockItem(this.id, this.data, this.amount, this.tag != null ? this.tag.copy() : null, this.canPlace.clone(), this.canBreak.clone(), this.blockingTicks, this.blockRuntimeId, this.usingNetId, this.netId);
     }
 
     @Override

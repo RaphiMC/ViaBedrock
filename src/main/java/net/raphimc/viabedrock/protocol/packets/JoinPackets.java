@@ -176,7 +176,7 @@ public class JoinPackets {
                         version = new Semver("99.99.99");
                     }
 
-                    final CompoundTag registries = BedrockProtocol.MAPPINGS.getJavaRegistries().clone();
+                    final CompoundTag registries = BedrockProtocol.MAPPINGS.getJavaRegistries().copy();
                     final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
                     final CompoundTag biomeRegistry = registries.get("minecraft:worldgen/biome");
                     final ListTag dimensions = dimensionRegistry.get("value");
@@ -234,7 +234,7 @@ public class JoinPackets {
                     clientPlayer.setName(wrapper.user().getProtocolInfo().getUsername());
 
                     final PacketWrapper registryData = PacketWrapper.create(ClientboundConfigurationPackets1_20_3.REGISTRY_DATA, wrapper.user());
-                    registryData.write(Type.COMPOUND_TAG, registries.clone()); // registries
+                    registryData.write(Type.COMPOUND_TAG, registries.copy()); // registries
                     registryData.send(BedrockProtocol.class);
 
                     if (!enabledFeatures.isEmpty()) {

@@ -114,7 +114,7 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                             }
 
                             if (matches) {
-                                final CompoundTag newStates = mapping.newStateTag.clone();
+                                final CompoundTag newStates = mapping.newStateTag.copy();
                                 for (String property : mapping.copiedStates) {
                                     if (states.contains(property)) {
                                         newStates.put(property, states.get(property));

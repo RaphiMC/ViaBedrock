@@ -205,7 +205,7 @@ public class ItemRewriter extends StoredObject {
 
             final CompoundTag javaTag = new CompoundTag();
             if (this.overrideTag != null) {
-                javaTag.setValue(this.overrideTag.clone().getValue());
+                javaTag.setValue(this.overrideTag.copy().getValue());
             }
             if (this.displayName != null) {
                 final String newName = "Bedrock " + this.displayName;

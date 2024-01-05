@@ -48,7 +48,7 @@ public class ValTagBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                     blockState = BedrockProtocol.MAPPINGS.getBedrockLegacyBlockStates().get(id << 6);
                 }
 
-                tag.put("states", blockState.blockStateTag().get("states").clone());
+                tag.put("states", blockState.blockStateTag().get("states").copy());
 
                 throw StopUpgrade.INSTANCE;
             }

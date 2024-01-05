@@ -33,7 +33,7 @@ public class BlockProperties {
 
     public BlockProperties(final BlockProperties blockProperties) {
         this.name = blockProperties.name;
-        this.properties = blockProperties.properties.clone();
+        this.properties = blockProperties.properties.copy();
     }
 
     public String name() {

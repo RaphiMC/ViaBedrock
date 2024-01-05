@@ -145,7 +145,7 @@ public class BlockStateRewriter implements StorableObject {
                     .map(stringTagMap -> {
                         final CompoundTag combination = new CompoundTag();
                         for (Map.Entry<String, Tag> entry : stringTagMap.entrySet()) {
-                            combination.put(entry.getKey(), entry.getValue().clone());
+                            combination.put(entry.getKey(), entry.getValue().copy());
                         }
                         return combination;
                     }).collect(Collectors.toList());
@@ -203,7 +203,7 @@ public class BlockStateRewriter implements StorableObject {
     }
 
     public int bedrockId(final CompoundTag bedrockBlockStateTag) {
-        final CompoundTag bedrockBlockStateTagClone = bedrockBlockStateTag.clone();
+        final CompoundTag bedrockBlockStateTagClone = bedrockBlockStateTag.copy();
         try {
             BedrockProtocol.MAPPINGS.getBedrockBlockStateUpgrader().upgradeToLatest(bedrockBlockStateTagClone);
             this.blockStateSanitizer.sanitize(bedrockBlockStateTagClone);
