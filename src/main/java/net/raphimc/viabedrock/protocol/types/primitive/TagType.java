@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.protocol.types.primitive;
 
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.types.misc.NamedCompoundTagType;
 import com.viaversion.viaversion.libs.opennbt.tag.TagRegistry;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.libs.opennbt.tag.limiter.TagLimiter;
@@ -39,7 +38,7 @@ public class TagType extends Type<Tag> {
         BedrockTypes.STRING.read(buffer);
         if (id == 0) return null;
 
-        return TagRegistry.read(id, new NetworkByteBufInputStream(buffer), TagLimiter.create(NamedCompoundTagType.MAX_NBT_BYTES, NamedCompoundTagType.MAX_NESTING_LEVEL), 0);
+        return TagRegistry.read(id, new NetworkByteBufInputStream(buffer), TagLimiter.noop(), 0);
     }
 
     @Override
