@@ -145,7 +145,7 @@ public class WorldPackets {
                 clientPlayer.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
             }
             clientPlayer.setChangingDimension(true);
-            clientPlayer.sendPlayerPositionPacketToClient(true, true);
+            clientPlayer.sendPlayerPositionPacketToClient(true);
 
             wrapper.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension type
             wrapper.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension id
@@ -296,7 +296,9 @@ public class WorldPackets {
                 final byte result = wrapper.read(Type.BYTE); // result
                 final byte[] data = result != SubChunkResults.SUCCESS_ALL_AIR || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
                 final byte heightmapResult = wrapper.read(Type.BYTE); // heightmap result
-                final byte[] heightmapData = heightmapResult == 1 ? wrapper.read(new ByteArrayType(256)) : new byte[0]; // heightmap data
+                if (heightmapResult == 1) { // HAS_DATA
+                    wrapper.read(new ByteArrayType(256)); // heightmap data
+                }
 
                 final Consumer<byte[]> dataConsumer = combinedData -> {
                     try {

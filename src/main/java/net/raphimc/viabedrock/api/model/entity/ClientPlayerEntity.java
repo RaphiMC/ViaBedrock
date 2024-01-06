@@ -32,7 +32,6 @@ import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
-import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -76,10 +75,6 @@ public class ClientPlayerEntity extends PlayerEntity {
         if (this.gameSession.getMovementMode() >= ServerMovementModes.SERVER) {
             this.sendAuthInputPacketToServer(this.initiallySpawned ? PlayModes.SCREEN : PlayModes.NORMAL);
         }
-
-        if (this.respawning && this.gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
-            this.sendMovePlayerPacketToServer(MovePlayerModes.RESPAWN);
-        }
     }
 
     public void closeDownloadingTerrainScreen() throws Exception {
@@ -90,12 +85,8 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void sendPlayerPositionPacketToClient(final boolean keepRotation) throws Exception {
-        this.sendPlayerPositionPacketToClient(keepRotation, true);
-    }
-
-    public void sendPlayerPositionPacketToClient(final boolean keepRotation, final boolean fakeTeleport) throws Exception {
         final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets1_20_3.PLAYER_POSITION, this.user);
-        this.writePlayerPositionPacketToClient(playerPosition, keepRotation, fakeTeleport);
+        this.writePlayerPositionPacketToClient(playerPosition, keepRotation, true);
         playerPosition.send(BedrockProtocol.class);
     }
 
@@ -254,10 +245,6 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
     }
 
-    public int nextTeleportId() {
-        return this.pendingTeleportId = TELEPORT_ID.getAndIncrement();
-    }
-
     @Override
     public void setPosition(final Position3f position) {
         this.prevPosition = position;
@@ -314,6 +301,10 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.gameType = gameType;
     }
 
+    private int nextTeleportId() {
+        return this.pendingTeleportId = TELEPORT_ID.getAndIncrement();
+    }
+
     private boolean preMove(final Position3f newPosition, final boolean positionLook) throws Exception {
         final ChunkTracker chunkTracker = this.user.get(ChunkTracker.class);
 
@@ -340,17 +331,6 @@ public class ClientPlayerEntity extends PlayerEntity {
             this.wasInsideUnloadedChunk = false;
             this.waitingForPositionSync = true;
             this.sendPlayerPositionPacketToClient(true);
-
-            if (this.changingDimension) {
-                this.user.get(PacketSyncStorage.class).syncWithClient(() -> {
-                    this.sendPlayerActionPacketToServer(PlayerActions.DIMENSION_CHANGE_SUCCESS, 0);
-                    this.closeDownloadingTerrainScreen();
-                    changingDimension = false;
-                    respawning = false;
-                    return null;
-                });
-            }
-
             return false;
         }
         // Loaded -> Unloaded chunk

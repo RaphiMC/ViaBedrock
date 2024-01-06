@@ -28,8 +28,10 @@ import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerActions;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.RespawnStates;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClientStatus;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
@@ -79,7 +81,13 @@ public class ClientPlayerPackets {
 
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             if (action == PlayerActions.DIMENSION_CHANGE_SUCCESS && clientPlayer.isChangingDimension()) {
+                if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerMovementModes.CLIENT) {
+                    clientPlayer.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
+                }
+                clientPlayer.sendPlayerPositionPacketToClient(false);
                 clientPlayer.closeDownloadingTerrainScreen();
+                clientPlayer.setChangingDimension(false);
+                clientPlayer.sendPlayerActionPacketToServer(PlayerActions.DIMENSION_CHANGE_SUCCESS, 0);
             }
             // TODO: Handle remaining actions
         });

@@ -148,9 +148,6 @@ public class OtherPlayerPackets {
             if ((mode == MovePlayerModes.TELEPORT || mode == MovePlayerModes.RESPAWN) && entity instanceof ClientPlayerEntity) {
                 final ClientPlayerEntity clientPlayer = (ClientPlayerEntity) entity;
                 wrapper.setPacketType(ClientboundPackets1_20_3.PLAYER_POSITION);
-                if (mode == MovePlayerModes.RESPAWN && clientPlayer.isChangingDimension()) {
-                    clientPlayer.setRespawning(true);
-                }
                 clientPlayer.writePlayerPositionPacketToClient(wrapper, false, mode == MovePlayerModes.RESPAWN);
                 return;
             }
