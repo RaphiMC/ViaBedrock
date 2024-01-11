@@ -39,7 +39,7 @@ public class KeepAliveTask implements Runnable {
                     if (!info.getChannel().isActive()) return;
 
                     try {
-                        final PacketWrapper keepAlive = PacketWrapper.create(state == State.PLAY ? ClientboundPackets1_20_3.KEEP_ALIVE : ClientboundConfigurationPackets1_20_3.KEEP_ALIVE, info);
+                        final PacketWrapper keepAlive = PacketWrapper.create(info.getProtocolInfo().getServerState() == State.PLAY ? ClientboundPackets1_20_3.KEEP_ALIVE : ClientboundConfigurationPackets1_20_3.KEEP_ALIVE, info);
                         keepAlive.write(Type.LONG, INTERNAL_ID); // id
                         keepAlive.send(BedrockProtocol.class);
                     } catch (Throwable e) {
