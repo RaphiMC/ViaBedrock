@@ -39,11 +39,9 @@ public class SkinProvider implements Provider {
     public Map<String, Object> getClientPlayerSkin(final UserConnection user) {
         final HandshakeStorage handshakeStorage = user.get(HandshakeStorage.class);
         final AuthChainData authChainData = user.get(AuthChainData.class);
-
         final BufferedImage skin = BedrockProtocol.MAPPINGS.getSteveSkin();
 
         final Map<String, Object> claims = new HashMap<>();
-
         claims.put("PlayFabId", authChainData.getPlayFabId().toLowerCase(Locale.ROOT));
         claims.put("SkinId", "Custom" + authChainData.getDeviceId());
         claims.put("SkinResourcePatch", Base64.getEncoder().encodeToString("{\"geometry\":{\"default\":\"geometry.humanoid.custom\"}}".getBytes(StandardCharsets.UTF_8)));
@@ -73,7 +71,7 @@ public class SkinProvider implements Provider {
         claims.put("UIProfile", 0);
         claims.put("DeviceId", authChainData.getDeviceId().toString());
         claims.put("DeviceModel", "");
-        claims.put("DeviceOS", DeviceOS.UWP.ordinal());
+        claims.put("DeviceOS", DeviceOS.ANDROID.ordinal());
         claims.put("LanguageCode", "en_US");
         claims.put("PlatformOfflineId", "");
         claims.put("PlatformOnlineId", "");
@@ -85,7 +83,6 @@ public class SkinProvider implements Provider {
         claims.put("TrustedSkin", false);
         claims.put("OverrideSkin", false);
         claims.put("CompatibleWithClientSideChunkGen", false);
-
         return claims;
     }
 
