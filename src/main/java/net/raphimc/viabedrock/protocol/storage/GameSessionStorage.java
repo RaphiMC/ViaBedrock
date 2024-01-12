@@ -37,6 +37,7 @@ public class GameSessionStorage implements StorableObject {
     private boolean flatGenerator;
     private int movementMode;
     private int levelGameType;
+    private boolean sentStartGameResponsePackets;
 
     private byte chatRestrictionLevel;
     private boolean commandsEnabled;
@@ -102,6 +103,14 @@ public class GameSessionStorage implements StorableObject {
 
     public void setLevelGameType(final int levelGameType) {
         this.levelGameType = levelGameType;
+    }
+
+    public boolean hasSentStartGameResponsePackets() {
+        return this.sentStartGameResponsePackets;
+    }
+
+    public void setSentStartGameResponsePackets(final boolean sentStartGameResponsePackets) {
+        this.sentStartGameResponsePackets = sentStartGameResponsePackets;
     }
 
     public byte getChatRestrictionLevel() {

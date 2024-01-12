@@ -220,7 +220,6 @@ public class JoinPackets {
                 State.CONFIGURATION, (PacketHandler) wrapper -> {
                     wrapper.cancel(); // We need to fix the order of the packets
                     ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
-                    final ClientSettingsStorage clientSettingsStorage = wrapper.user().get(ClientSettingsStorage.class);
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
                     if (resourcePacksStorage == null || !resourcePacksStorage.hasFinishedLoading()) {
@@ -384,20 +383,14 @@ public class JoinPackets {
                     }
 
                     handleGameJoin(wrapper.user());
-
-                    final PacketWrapper requestChunkRadius = PacketWrapper.create(ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, wrapper.user());
-                    requestChunkRadius.write(BedrockTypes.VAR_INT, clientSettingsStorage.getViewDistance()); // radius
-                    requestChunkRadius.write(Type.UNSIGNED_BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
-                    requestChunkRadius.sendToServer(BedrockProtocol.class);
-
-                    final PacketWrapper tickSync = PacketWrapper.create(ServerboundBedrockPackets.TICK_SYNC, wrapper.user());
-                    tickSync.write(BedrockTypes.LONG_LE, 0L); // request timestamp
-                    tickSync.write(BedrockTypes.LONG_LE, 0L); // response timestamp
-                    tickSync.sendToServer(BedrockProtocol.class);
+                    sendStartGameResponsePackets(wrapper.user());
 
                     if (gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
                         clientPlayer.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
                     }
+                }, State.LOGIN, (PacketHandler) wrapper -> {
+                    wrapper.cancel();
+                    sendStartGameResponsePackets(wrapper.user());
                 }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Mojang client silently ignores multiple start game packets
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.BIOME_DEFINITION_LIST,
@@ -580,6 +573,22 @@ public class JoinPackets {
                 thunderStrengthGameEvent.send(BedrockProtocol.class);
             }
         }
+    }
+
+    private static void sendStartGameResponsePackets(final UserConnection user) throws Exception {
+        final GameSessionStorage gameSession = user.get(GameSessionStorage.class);
+        if (gameSession.hasSentStartGameResponsePackets()) return;
+        gameSession.setSentStartGameResponsePackets(true);
+
+        final PacketWrapper requestChunkRadius = PacketWrapper.create(ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, user);
+        requestChunkRadius.write(BedrockTypes.VAR_INT, user.get(ClientSettingsStorage.class).getViewDistance()); // radius
+        requestChunkRadius.write(Type.UNSIGNED_BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
+        requestChunkRadius.sendToServer(BedrockProtocol.class);
+
+        final PacketWrapper tickSync = PacketWrapper.create(ServerboundBedrockPackets.TICK_SYNC, user);
+        tickSync.write(BedrockTypes.LONG_LE, 0L); // request timestamp
+        tickSync.write(BedrockTypes.LONG_LE, 0L); // response timestamp
+        tickSync.sendToServer(BedrockProtocol.class);
     }
 
 }
