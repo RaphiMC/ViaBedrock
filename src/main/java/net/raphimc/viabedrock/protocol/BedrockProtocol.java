@@ -60,6 +60,9 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
             ClientboundBedrockPackets.DISCONNECT,
             ClientboundBedrockPackets.PACKET_VIOLATION_WARNING,
             ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
+            ClientboundBedrockPackets.BIOME_DEFINITION_LIST,
+            ClientboundBedrockPackets.COMPRESSED_BIOME_DEFINITION_LIST,
+            ClientboundBedrockPackets.DIMENSION_DATA,
             //ClientboundBedrockPackets.AVAILABLE_COMMANDS, // Java doesn't support that
             ClientboundBedrockPackets.START_GAME
     );
@@ -122,10 +125,11 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     @Override
     public void init(UserConnection user) {
         user.put(new ClientSettingsStorage("en_us", 12, 0, true, (short) 127, 1, false, true));
+        user.put(new GameSessionStorage());
         user.put(new BlobCache(user));
-        user.put(new PlayerListStorage());
         user.put(new PacketSyncStorage(user));
         user.put(new ChannelStorage());
+        user.put(new PlayerListStorage());
         user.put(new ScoreboardTracker());
         user.put(new InventoryTracker(user));
     }

@@ -465,6 +465,17 @@ public class ChunkTracker extends StoredObject {
         return this.getUser().get(BlockStateRewriter.class).bedrockId(BedrockBlockState.AIR);
     }
 
+    public boolean isEmpty() {
+        boolean empty = true;
+        synchronized (this.chunkLock) {
+            empty &= this.chunks.isEmpty();
+        }
+        synchronized (this.subChunkLock) {
+            empty &= this.subChunkRequests.isEmpty() && this.pendingSubChunks.isEmpty();
+        }
+        return empty;
+    }
+
     public void tick() throws Exception {
         synchronized (this.dirtyChunks) {
             if (!this.dirtyChunks.isEmpty()) {

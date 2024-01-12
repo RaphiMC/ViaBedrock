@@ -84,7 +84,7 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, IntSet> javaHeightMapBlockStates;
 
     // Biomes
-    private Map<String, CompoundTag> bedrockBiomeDefinitions;
+    private CompoundTag bedrockBiomeDefinitions;
     private BiMap<String, Integer> bedrockBiomes;
     private Map<String, Map<String, Object>> bedrockToJavaBiomeExtraData;
 
@@ -262,17 +262,13 @@ public class BedrockMappingData extends MappingDataBase {
         }
 
         { // Biomes
-            final CompoundTag bedrockBiomeDefinitionsTag = this.readNBT("bedrock/biome_definitions.nbt");
-            this.bedrockBiomeDefinitions = new HashMap<>(bedrockBiomeDefinitionsTag.size());
-            for (Map.Entry<String, Tag> entry : bedrockBiomeDefinitionsTag.getValue().entrySet()) {
-                this.bedrockBiomeDefinitions.put(entry.getKey(), (CompoundTag) entry.getValue());
-            }
+            this.bedrockBiomeDefinitions = this.readNBT("bedrock/biome_definitions.nbt");
 
             final JsonObject bedrockBiomesJson = this.readJson("bedrock/biomes.json", JsonObject.class);
             this.bedrockBiomes = HashBiMap.create(bedrockBiomesJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockBiomesJson.entrySet()) {
                 final String bedrockBiomeName = entry.getKey();
-                if (!this.bedrockBiomeDefinitions.containsKey(bedrockBiomeName)) {
+                if (!this.bedrockBiomeDefinitions.contains(bedrockBiomeName)) {
                     throw new RuntimeException("Unknown bedrock biome: " + bedrockBiomeName);
                 }
 
@@ -618,7 +614,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaHeightMapBlockStates;
     }
 
-    public Map<String, CompoundTag> getBedrockBiomeDefinitions() {
+    public CompoundTag getBedrockBiomeDefinitions() {
         return this.bedrockBiomeDefinitions;
     }
 

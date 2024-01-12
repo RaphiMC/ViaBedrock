@@ -30,8 +30,8 @@ public class ConfigurationPackets {
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_2.CLIENT_INFORMATION, null, new PacketHandlers() {
             @Override
             protected void register() {
-                handler(PacketWrapper::cancel);
                 handler(MultiStatePackets.CLIENT_SETTINGS_HANDLER);
+                handler(PacketWrapper::cancel);
             }
         });
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_2.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);

@@ -19,12 +19,20 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.vdurmont.semver4j.Semver;
 import com.viaversion.viaversion.api.connection.StorableObject;
+import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
+import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.JavaRegistries;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GameSessionStorage implements StorableObject {
 
     private CompoundTag javaRegistries;
-    private CompoundTag bedrockBiomeDefinitions;
+    private CompoundTag bedrockBiomeDefinitions = BedrockProtocol.MAPPINGS.getBedrockBiomeDefinitions();
+    private final Map<String, IntIntPair> bedrockDimensionDefinitions = new HashMap<>();
     private Semver bedrockVanillaVersion;
     private boolean flatGenerator;
     private int movementMode;
@@ -35,12 +43,15 @@ public class GameSessionStorage implements StorableObject {
     private int playerPermission;
     private int commandPermission;
 
-    public CompoundTag getJavaRegistries() {
-        return this.javaRegistries;
+    public GameSessionStorage() {
+        this.bedrockDimensionDefinitions.put("minecraft:the_nether", new IntIntImmutablePair(0, 128));
     }
 
-    public void setJavaRegistries(final CompoundTag javaRegistries) {
-        this.javaRegistries = javaRegistries;
+    public CompoundTag getJavaRegistries() {
+        if (this.javaRegistries == null) {
+            this.javaRegistries = JavaRegistries.createJavaRegistries(this);
+        }
+        return this.javaRegistries;
     }
 
     public CompoundTag getBedrockBiomeDefinitions() {
@@ -49,6 +60,16 @@ public class GameSessionStorage implements StorableObject {
 
     public void setBedrockBiomeDefinitions(final CompoundTag bedrockBiomeDefinitions) {
         this.bedrockBiomeDefinitions = bedrockBiomeDefinitions;
+        this.javaRegistries = null;
+    }
+
+    public Map<String, IntIntPair> getBedrockDimensionDefinitions() {
+        return this.bedrockDimensionDefinitions;
+    }
+
+    public void putBedrockDimensionDefinition(final String dimensionIdentifier, final IntIntPair dimensionDefinition) {
+        this.bedrockDimensionDefinitions.put(dimensionIdentifier, dimensionDefinition);
+        this.javaRegistries = null;
     }
 
     public Semver getBedrockVanillaVersion() {

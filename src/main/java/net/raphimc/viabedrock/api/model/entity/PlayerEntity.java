@@ -21,6 +21,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_3;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
@@ -42,7 +43,7 @@ public class PlayerEntity extends Entity {
         teams.write(Type.BYTE, (byte) 3); // flags
         teams.write(Type.STRING, "always"); // name tag visibility
         teams.write(Type.STRING, "never"); // collision rule
-        teams.write(Type.VAR_INT, 21); // color | 21 = RESET
+        teams.write(Type.VAR_INT, TextFormatting.RESET.getOrdinal()); // color
         teams.write(Type.TAG, TextUtil.stringToNbt("")); // prefix
         teams.write(Type.TAG, TextUtil.stringToNbt("")); // suffix
         teams.write(Type.STRING_ARRAY, new String[]{StringUtil.encodeUUID(this.javaUuid)}); // players
@@ -59,7 +60,7 @@ public class PlayerEntity extends Entity {
         teams.write(Type.BYTE, (byte) 3); // flags
         teams.write(Type.STRING, "always"); // name tag visibility
         teams.write(Type.STRING, "never"); // collision rule
-        teams.write(Type.VAR_INT, 21); // color | 21 = RESET
+        teams.write(Type.VAR_INT, TextFormatting.RESET.getOrdinal()); // color
         teams.write(Type.TAG, TextUtil.stringToNbt(name)); // prefix
         teams.write(Type.TAG, TextUtil.stringToNbt("")); // suffix
         teams.send(BedrockProtocol.class);

@@ -59,6 +59,10 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity addEntity(final Entity entity) throws Exception {
+        return this.addEntity(entity, true);
+    }
+
+    public Entity addEntity(final Entity entity, final boolean updateTeam) throws Exception {
         if (entity instanceof ClientPlayerEntity) {
             this.clientPlayerEntity = (ClientPlayerEntity) entity;
         }
@@ -73,12 +77,12 @@ public class EntityTracker extends StoredObject {
             removeEntities.write(Type.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
 
-            if (prevEntity instanceof PlayerEntity) {
+            if (updateTeam && prevEntity instanceof PlayerEntity) {
                 ((PlayerEntity) prevEntity).deleteTeam();
             }
         }
 
-        if (entity instanceof PlayerEntity) {
+        if (updateTeam && entity instanceof PlayerEntity) {
             ((PlayerEntity) entity).createTeam();
         }
 
@@ -178,6 +182,10 @@ public class EntityTracker extends StoredObject {
 
     public ClientPlayerEntity getClientPlayer() {
         return this.clientPlayerEntity;
+    }
+
+    public boolean isEmpty() {
+        return this.entities.isEmpty() || (this.entities.size() == 1 && this.entities.containsKey(this.clientPlayerEntity.uniqueId()));
     }
 
 }

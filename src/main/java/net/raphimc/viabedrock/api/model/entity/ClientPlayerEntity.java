@@ -62,8 +62,8 @@ public class ClientPlayerEntity extends PlayerEntity {
     // Misc data
     private int gameType;
 
-    public ClientPlayerEntity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid) {
-        super(user, uniqueId, runtimeId, javaId, javaUuid);
+    public ClientPlayerEntity(final UserConnection user, final long uniqueId, final long runtimeId, final UUID javaUuid) {
+        super(user, uniqueId, runtimeId, 0, javaUuid);
 
         this.gameSession = user.get(GameSessionStorage.class);
     }

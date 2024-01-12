@@ -17,10 +17,12 @@
  */
 package net.raphimc.viabedrock.protocol.data;
 
+import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 
 import java.awt.*;
 import java.util.List;
@@ -28,11 +30,46 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-public class BiomeRegistry {
+public class JavaRegistries {
 
-    public static ListTag buildJavaBiomeRegistry(final Map<String, CompoundTag> biomeDefinitions) {
+    public static CompoundTag createJavaRegistries(final GameSessionStorage gameSession) {
+        final CompoundTag registries = BedrockProtocol.MAPPINGS.getJavaRegistries().copy();
+        final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
+        final CompoundTag biomeRegistry = registries.get("minecraft:worldgen/biome");
+
+        modifyDimensionRegistry(gameSession, dimensionRegistry);
+        biomeRegistry.put("value", buildJavaBiomeRegistry(gameSession.getBedrockBiomeDefinitions()));
+
+        return registries;
+    }
+
+    private static void modifyDimensionRegistry(final GameSessionStorage gameSession, final CompoundTag dimensionRegistry) {
+        final ListTag dimensions = dimensionRegistry.get("value");
+        final Map<String, CompoundTag> dimensionMap = dimensions.getValue()
+                .stream()
+                .map(CompoundTag.class::cast)
+                .collect(Collectors.toMap(tag -> tag.get("name").getValue().toString(), tag -> tag.get("element")));
+
+        if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
+            dimensionMap.get("minecraft:overworld").put("min_y", new IntTag(0));
+            dimensionMap.get("minecraft:overworld").put("height", new IntTag(256));
+            dimensionMap.get("minecraft:overworld").put("logical_height", new IntTag(256));
+            dimensionMap.get("minecraft:overworld_caves").put("min_y", new IntTag(0));
+            dimensionMap.get("minecraft:overworld_caves").put("height", new IntTag(256));
+            dimensionMap.get("minecraft:overworld_caves").put("logical_height", new IntTag(256));
+        }
+        for (Map.Entry<String, IntIntPair> entry : gameSession.getBedrockDimensionDefinitions().entrySet()) {
+            final CompoundTag dimensionTag = new CompoundTag();
+            final int height = entry.getValue().rightInt() - entry.getValue().leftInt();
+            dimensionTag.put("min_y", new IntTag(entry.getValue().leftInt()));
+            dimensionTag.put("height", new IntTag(height));
+            dimensionTag.put("logical_height", new IntTag(height));
+            dimensionMap.get(entry.getKey()).putAll(dimensionTag);
+        }
+    }
+
+    private static ListTag buildJavaBiomeRegistry(final CompoundTag biomeDefinitions) {
         final ListTag javaBiomes = new ListTag();
-
         javaBiomes.add(getTheVoidBiome());
 
         final Map<String, Object> fogColor = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("fog_color");
@@ -42,10 +79,10 @@ public class BiomeRegistry {
         final Map<String, Object> grassColorModifier = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("grass_color_modifier");
         final Map<String, Object> moodSound = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("mood_sound");
 
-        for (Map.Entry<String, CompoundTag> entry : biomeDefinitions.entrySet()) {
+        for (Map.Entry<String, Tag> entry : biomeDefinitions.entrySet()) {
             final String bedrockIdentifier = entry.getKey();
             final String javaIdentifier = "minecraft:" + bedrockIdentifier;
-            final CompoundTag bedrockBiome = entry.getValue();
+            final CompoundTag bedrockBiome = (CompoundTag) entry.getValue();
             final CompoundTag javaBiome = new CompoundTag();
             final int bedrockId = BedrockProtocol.MAPPINGS.getBedrockBiomes().getOrDefault(bedrockIdentifier, -1);
             final int javaId = bedrockId + 1;

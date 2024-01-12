@@ -17,12 +17,6 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
-import com.google.common.base.Joiner;
-import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.connection.ProtocolInfo;
-import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
@@ -32,25 +26,21 @@ import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.Clientb
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ServerboundPackets1_20_3;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
-import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
-import net.raphimc.viabedrock.protocol.model.Position3f;
-import net.raphimc.viabedrock.protocol.storage.*;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.DisconnectReason;
+import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
+import net.raphimc.viabedrock.protocol.storage.ClientSettingsStorage;
+import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
 import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
-import java.util.logging.Level;
 
 public class MultiStatePackets {
 
@@ -99,7 +89,7 @@ public class MultiStatePackets {
         }
     };
 
-    public static final PacketHandlers NETWORK_STACK_LATENCY_HANDLER = new PacketHandlers() {
+    private static final PacketHandlers NETWORK_STACK_LATENCY_HANDLER = new PacketHandlers() {
         @Override
         protected void register() {
             map(BedrockTypes.LONG_LE, Type.LONG, t -> t * 1_000_000); // timestamp
@@ -151,89 +141,6 @@ public class MultiStatePackets {
                 ClientboundLoginPackets.LOGIN_DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
                 ClientboundConfigurationPackets1_20_3.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER
         );
-        protocol.registerClientboundTransition(ClientboundBedrockPackets.PLAY_STATUS,
-                State.LOGIN, (PacketHandler) wrapper -> {
-                    final int status = wrapper.read(Type.INT); // status
-
-                    if (status == PlayStatus.LOGIN_SUCCESS) {
-                        wrapper.setPacketType(ClientboundLoginPackets.GAME_PROFILE);
-                        final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
-                        wrapper.write(Type.UUID, authChainData.getIdentity()); // uuid
-                        wrapper.write(Type.STRING, authChainData.getDisplayName()); // username
-                        wrapper.write(Type.VAR_INT, 0); // properties length
-
-                        final ProtocolInfo info = wrapper.user().getProtocolInfo();
-                        info.setUsername(authChainData.getDisplayName());
-                        info.setUuid(authChainData.getIdentity());
-
-                        // Parts of BaseProtocol1_7 GAME_PROFILE handler
-                        Via.getManager().getConnectionManager().onLoginSuccess(wrapper.user());
-                        if (!info.getPipeline().hasNonBaseProtocols()) {
-                            wrapper.user().setActive(false);
-                        }
-                        if (Via.getManager().isDebug()) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "{0} logged in with protocol {1}, Route: {2}", new Object[]{info.getUsername(), info.getProtocolVersion(), Joiner.on(", ").join(info.getPipeline().pipes(), ", ")});
-                        }
-
-                        sendClientCacheStatus(wrapper.user());
-                    } else {
-                        wrapper.setPacketType(ClientboundLoginPackets.LOGIN_DISCONNECT);
-                        writePlayStatusKickMessage(wrapper, status);
-                    }
-                }, State.PLAY, (PacketHandler) wrapper -> {
-                    final int status = wrapper.read(Type.INT); // status
-
-                    if (status == PlayStatus.LOGIN_SUCCESS) {
-                        wrapper.cancel();
-                        sendClientCacheStatus(wrapper.user());
-                    } else if (status == PlayStatus.PLAYER_SPAWN) { // Spawn player
-                        wrapper.cancel();
-                        final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
-                        final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-
-                        final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
-                        if (clientPlayer.isInitiallySpawned()) {
-                            if (clientPlayer.isChangingDimension()) {
-                                clientPlayer.closeDownloadingTerrainScreen();
-                            }
-
-                            return;
-                        }
-                        if (gameSession.getBedrockBiomeDefinitions() == null) {
-                            BedrockProtocol.kickForIllegalState(wrapper.user(), "Tried to spawn the client player before the biome definitions were loaded!");
-                            return;
-                        }
-
-                        final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
-                        interact.write(Type.UNSIGNED_BYTE, InteractActions.MOUSEOVER); // action
-                        interact.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
-                        interact.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // mouse position
-                        interact.sendToServer(BedrockProtocol.class);
-
-                        // TODO: Mob Equipment with current held item
-
-                        final PacketWrapper emoteList = PacketWrapper.create(ServerboundBedrockPackets.EMOTE_LIST, wrapper.user());
-                        emoteList.write(BedrockTypes.VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
-                        emoteList.write(BedrockTypes.UUID_ARRAY, new UUID[0]); // emote ids
-                        emoteList.sendToServer(BedrockProtocol.class);
-
-                        clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
-                        clientPlayer.setInitiallySpawned();
-                        if (gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
-                            clientPlayer.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
-                        }
-
-                        final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());
-                        setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
-                        setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
-
-                        clientPlayer.closeDownloadingTerrainScreen();
-                    } else {
-                        wrapper.setPacketType(ClientboundPackets1_20_3.DISCONNECT);
-                        writePlayStatusKickMessage(wrapper, status);
-                    }
-                }
-        );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
                 ClientboundPackets1_20_3.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER,
                 ClientboundConfigurationPackets1_20_3.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER
@@ -241,47 +148,6 @@ public class MultiStatePackets {
 
         protocol.registerServerbound(ServerboundPackets1_20_3.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, KEEP_ALIVE_HANDLER);
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_2.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, KEEP_ALIVE_HANDLER);
-    }
-
-    private static void sendClientCacheStatus(final UserConnection user) throws Exception {
-        final PacketWrapper clientCacheStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_STATUS, user);
-        clientCacheStatus.write(Type.BOOLEAN, !ViaBedrock.getConfig().getBlobCacheMode().equals(ViaBedrockConfig.BlobCacheMode.DISABLED)); // is supported
-        clientCacheStatus.sendToServer(BedrockProtocol.class);
-    }
-
-    private static void writePlayStatusKickMessage(final PacketWrapper wrapper, final int status) {
-        final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
-
-        switch (status) {
-            case PlayStatus.LOGIN_FAILED_CLIENT_OLD:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.outdatedClient"));
-                break;
-            case PlayStatus.LOGIN_FAILED_SERVER_OLD:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.outdatedServer"));
-                break;
-            case PlayStatus.LOGIN_FAILED_INVALID_TENANT:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.invalidTenant"));
-                break;
-            case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_EDU_TO_VANILLA:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchEduToVanilla"));
-                break;
-            case PlayStatus.LOGIN_FAILED_EDITION_MISMATCH_VANILLA_TO_EDU:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchVanillaToEdu"));
-                break;
-            case PlayStatus.FAILED_SERVER_FULL_SUB_CLIENT:
-            case PlayStatus.VANILLA_TO_EDITOR_MISMATCH:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title"));
-                break;
-            case PlayStatus.EDITOR_TO_VANILLA_MISMATCH:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.editor.mismatchEditorToVanilla"));
-                break;
-            default: // Mojang client silently ignores invalid values
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received invalid login status: " + status);
-            case PlayStatus.PLAYER_SPAWN:
-            case PlayStatus.LOGIN_SUCCESS:
-                wrapper.cancel();
-                break;
-        }
     }
 
 }
