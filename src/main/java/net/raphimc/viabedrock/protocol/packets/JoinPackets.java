@@ -115,14 +115,15 @@ public class JoinPackets {
         if (wrapper.isCancelled()) return;
         wrapper.cancel();
 
-        final PacketWrapper startConfiguration = PacketWrapper.create(ClientboundPackets1_20_3.START_CONFIGURATION, wrapper.user());
-        startConfiguration.send(BedrockProtocol.class);
-        wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
-
         wrapper.user().put(new ChunkTracker(wrapper.user(), wrapper.user().get(ChunkTracker.class).getDimensionId()));
-
         if (wrapper.user().getProtocolInfo().getProtocolVersion() >= ProtocolVersion.v1_20_2.getVersion()) {
+            final PacketWrapper startConfiguration = PacketWrapper.create(ClientboundPackets1_20_3.START_CONFIGURATION, wrapper.user());
+            startConfiguration.send(BedrockProtocol.class);
+            wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
+
             handleGameJoin(wrapper.user());
+        } else {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Skipping reconfigure packet as it is not supported by the client. This may cause issues.");
         }
     };
 
