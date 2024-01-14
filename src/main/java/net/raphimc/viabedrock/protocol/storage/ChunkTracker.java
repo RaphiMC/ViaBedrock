@@ -412,7 +412,7 @@ public class ChunkTracker extends StoredObject {
 
     public BedrockChunkSection handleBlockPalette(final BedrockChunkSection section) {
         this.replaceLegacyBlocks(section);
-        this.resolveTagPalette(section);
+        this.resolvePersistentIds(section);
         return section;
     }
 
@@ -724,16 +724,16 @@ public class ChunkTracker extends StoredObject {
         return remappedChunk;
     }
 
-    private void resolveTagPalette(final BedrockChunkSection bedrockSection) {
+    private void resolvePersistentIds(final BedrockChunkSection bedrockSection) {
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
 
         final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
         for (DataPalette palette : palettes) {
             if (palette instanceof BedrockDataPalette) {
                 final BedrockDataPalette bedrockPalette = (BedrockDataPalette) palette;
-                if (bedrockPalette.hasTagPalette()) {
+                if (bedrockPalette.usesPersistentIds()) {
                     bedrockPalette.addId(this.airId());
-                    bedrockPalette.resolveTagPalette(tag -> {
+                    bedrockPalette.resolvePersistentIds(tag -> {
                         int remappedBlockState = blockStateRewriter.bedrockId((CompoundTag) tag);
                         if (remappedBlockState == -1) {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);

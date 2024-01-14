@@ -34,15 +34,20 @@ import java.util.List;
 
 public class DataPaletteType extends Type<BedrockDataPalette> {
 
-    public DataPaletteType() {
+    private final boolean allowPersistentIds;
+
+    public DataPaletteType(final boolean allowPersistentIds) {
         super(BedrockDataPalette.class);
+
+        // Mojang client reads runtime ids regardless of the header flag if allowPersistentIds is false
+        this.allowPersistentIds = allowPersistentIds;
     }
 
     @Override
     public BedrockDataPalette read(ByteBuf buffer) throws Exception {
         final short header = buffer.readUnsignedByte();
         final int bitArrayVersion = header >> 1;
-        final boolean isRuntime = (header & 1) != 0;
+        final boolean isRuntime = (header & 1) != 0 || !this.allowPersistentIds;
 
         if (bitArrayVersion == 127) { // 127 = Same values as previous palette
             return null;
@@ -82,7 +87,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
 
         final BitArray bitArray = value.getBitArray();
         final BitArrayVersion version = bitArray.getVersion();
-        final boolean isRuntime = !value.hasTagPalette();
+        final boolean isRuntime = !value.usesPersistentIds() || !this.allowPersistentIds;
         buffer.writeByte((version.getBits() << 1) | (isRuntime ? 1 : 0));
 
         if (!(bitArray instanceof SingletonBitArray)) {
@@ -103,7 +108,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
             }
         } else {
             for (int i = 0; i < value.size(); i++) {
-                BedrockTypes.NETWORK_TAG.write(buffer, value.getTagPalette().get(i));
+                BedrockTypes.NETWORK_TAG.write(buffer, value.getPersistentPalette().get(i));
             }
         }
     }

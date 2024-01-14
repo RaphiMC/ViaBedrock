@@ -96,7 +96,8 @@ public class BedrockTypes {
     public static final Type<Triple<UUID, String, String>[]> PACK_ID_AND_VERSION_AND_NAME_ARRAY = new ArrayType<>(PACK_ID_AND_VERSION_AND_NAME, UNSIGNED_VAR_INT);
     public static final Type<BlockChangeEntry> BLOCK_CHANGE_ENTRY = new BlockChangeEntryType();
     public static final Type<BlockChangeEntry[]> BLOCK_CHANGE_ENTRY_ARRAY = new ArrayType<>(BLOCK_CHANGE_ENTRY, UNSIGNED_VAR_INT);
-    public static final Type<BedrockDataPalette> DATA_PALETTE = new DataPaletteType();
+    public static final Type<BedrockDataPalette> DATA_PALETTE = new DataPaletteType(true);
+    public static final Type<BedrockDataPalette> RUNTIME_DATA_PALETTE = new DataPaletteType(false);
     public static final Type<Metadata> METADATA = new MetadataType();
     public static final Type<Metadata[]> METADATA_ARRAY = new ArrayType<>(METADATA, UNSIGNED_VAR_INT);
     public static final Type<SkinData> SKIN = new SkinType();

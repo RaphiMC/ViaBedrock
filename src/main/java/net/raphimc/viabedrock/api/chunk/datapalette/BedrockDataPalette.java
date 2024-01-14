@@ -33,7 +33,7 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
     private final IntList palette;
     private BitArray bitArray;
 
-    private List<Tag> tagPalette;
+    private List<Tag> persistentPalette;
 
     public BedrockDataPalette() {
         this(BitArrayVersion.V2);
@@ -49,10 +49,10 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
         this.bitArray = bitArray;
     }
 
-    public BedrockDataPalette(final List<Tag> tagPalette, final BitArray bitArray) {
-        this.tagPalette = tagPalette;
+    public BedrockDataPalette(final List<Tag> persistentPalette, final BitArray bitArray) {
+        this.persistentPalette = persistentPalette;
         this.bitArray = bitArray;
-        this.palette = new IntArrayList(tagPalette.size());
+        this.palette = new IntArrayList(persistentPalette.size());
     }
 
     @Override
@@ -62,13 +62,13 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     @Override
     public int idAt(final int sectionCoordinate) {
-        this.checkTagPalette();
+        this.checkPersistentIds();
         return this.palette.getInt(this.bitArray.get(sectionCoordinate));
     }
 
     @Override
     public void setIdAt(final int sectionCoordinate, final int id) {
-        this.checkTagPalette();
+        this.checkPersistentIds();
         int index = this.palette.indexOf(id);
         if (index == -1) {
             index = this.palette.size();
@@ -80,13 +80,13 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     @Override
     public int idByIndex(final int index) {
-        this.checkTagPalette();
+        this.checkPersistentIds();
         return this.palette.getInt(index);
     }
 
     @Override
     public void setIdByIndex(final int index, final int id) {
-        this.checkTagPalette();
+        this.checkPersistentIds();
         this.palette.set(index, id);
     }
 
@@ -119,7 +119,7 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     @Override
     public void replaceId(final int oldId, final int newId) {
-        this.checkTagPalette();
+        this.checkPersistentIds();
         final int index = this.palette.indexOf(oldId);
         if (index == -1) return;
 
@@ -132,8 +132,8 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     @Override
     public int size() {
-        if (this.hasTagPalette()) {
-            return this.tagPalette.size();
+        if (this.usesPersistentIds()) {
+            return this.persistentPalette.size();
         }
 
         return this.palette.size();
@@ -141,8 +141,8 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     @Override
     public void clear() {
-        if (this.hasTagPalette()) {
-            this.tagPalette = null;
+        if (this.usesPersistentIds()) {
+            this.persistentPalette = null;
         }
 
         this.palette.clear();
@@ -157,27 +157,27 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
         return this.bitArray;
     }
 
-    public boolean hasTagPalette() {
-        return this.tagPalette != null;
+    public boolean usesPersistentIds() {
+        return this.persistentPalette != null;
     }
 
-    public List<Tag> getTagPalette() {
-        return this.tagPalette;
+    public List<Tag> getPersistentPalette() {
+        return this.persistentPalette;
     }
 
-    public void resolveTagPalette(final Object2IntFunction<Tag> tagToRuntimeId) {
-        if (this.hasTagPalette()) {
+    public void resolvePersistentIds(final Object2IntFunction<Tag> persistentToRuntimeId) {
+        if (this.usesPersistentIds()) {
             this.palette.clear();
-            for (final Tag tag : this.tagPalette) {
-                this.palette.add(tagToRuntimeId.getInt(tag));
+            for (final Tag tag : this.persistentPalette) {
+                this.palette.add(persistentToRuntimeId.getInt(tag));
             }
-            this.tagPalette = null;
+            this.persistentPalette = null;
         }
     }
 
-    private void checkTagPalette() {
-        if (this.hasTagPalette()) {
-            throw new IllegalStateException("The tag palette has not been resolved yet");
+    private void checkPersistentIds() {
+        if (this.usesPersistentIds()) {
+            throw new IllegalStateException("Palette uses persistent ids");
         }
     }
 
