@@ -633,18 +633,11 @@ public class ChunkTracker extends StoredObject {
 
             final DataPalette biomePalette = bedrockSection.palette(PaletteType.BIOMES);
             final DataPalette remappedBiomePalette = new DataPaletteImpl(ChunkSection.BIOME_SIZE);
-            remappedBiomePalette.addId(0);
             remappedSection.addPalette(PaletteType.BIOMES, remappedBiomePalette);
 
             if (biomePalette != null) {
                 if (biomePalette.size() == 1) {
-                    final int biomeId = biomePalette.idByIndex(0);
-                    int remappedBiomeId = biomeId + 1;
-                    if (!BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().containsKey(biomeId)) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
-                        remappedBiomeId = 0;
-                    }
-                    remappedBiomePalette.setIdByIndex(0, remappedBiomeId);
+                    remappedBiomePalette.addId(biomePalette.idByIndex(0));
                 } else {
                     for (int x = 0; x < 4; x++) {
                         for (int y = 0; y < 4; y++) {
@@ -665,17 +658,23 @@ public class ChunkTracker extends StoredObject {
                                         }
                                     }
                                 }
-                                final int biomeId = maxBiomeId;
-                                int remappedBiomeId = biomeId + 1;
-                                if (!BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().containsKey(biomeId)) {
-                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + biomeId);
-                                    remappedBiomeId = 0;
-                                }
-                                remappedBiomePalette.setIdAt(x, y, z, remappedBiomeId);
+                                remappedBiomePalette.setIdAt(x, y, z, maxBiomeId);
                             }
                         }
                     }
                 }
+
+                for (int i = 0; i < remappedBiomePalette.size(); i++) {
+                    final int bedrockBiome = remappedBiomePalette.idByIndex(i);
+                    int javaBiome = bedrockBiome + 1;
+                    if (!BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().containsKey(bedrockBiome)) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + bedrockBiome);
+                        javaBiome = 0;
+                    }
+                    remappedBiomePalette.setIdByIndex(i, javaBiome);
+                }
+            } else {
+                remappedBiomePalette.addId(0);
             }
         }
 
