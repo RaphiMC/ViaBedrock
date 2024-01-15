@@ -57,7 +57,6 @@ import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
-import net.raphimc.viabedrock.protocol.types.JavaTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -349,9 +348,9 @@ public class JoinPackets {
                     gameSession.setFlatGenerator(generatorId == 2);
                     gameSession.setMovementMode(movementMode);
                     gameSession.setLevelGameType(levelGameType);
+                    gameSession.setAbilities(new PlayerAbilities(uniqueEntityId, playerPermission, CommandPermissions.NORMAL, new Int2ObjectOpenHashMap<>()));
                     gameSession.setChatRestrictionLevel(chatRestrictionLevel);
                     gameSession.setCommandsEnabled(commandsEnabled);
-                    gameSession.setAbilities(new PlayerAbilities(uniqueEntityId, playerPermission, CommandPermissions.NORMAL, new Int2ObjectOpenHashMap<>()));
 
                     final ClientPlayerEntity clientPlayer = new ClientPlayerEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, wrapper.user().getProtocolInfo().getUuid());
                     clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + clientPlayer.eyeOffset(), playerPosition.z()));
@@ -544,7 +543,7 @@ public class JoinPackets {
         tabList.send(BedrockProtocol.class);
 
         final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_20_3.PLAYER_INFO_UPDATE, user);
-        playerInfoUpdate.write(JavaTypes.PROFILE_ACTIONS_ENUM, BitSets.create(6, 0, 2)); // actions | ADD_PLAYER, UPDATE_GAME_MODE
+        playerInfoUpdate.write(Type.PROFILE_ACTIONS_ENUM, BitSets.create(6, 0, 2)); // actions | ADD_PLAYER, UPDATE_GAME_MODE
         playerInfoUpdate.write(Type.VAR_INT, 1); // length
         playerInfoUpdate.write(Type.UUID, clientPlayer.javaUuid()); // uuid
         playerInfoUpdate.write(Type.STRING, StringUtil.encodeUUID(clientPlayer.javaUuid())); // username

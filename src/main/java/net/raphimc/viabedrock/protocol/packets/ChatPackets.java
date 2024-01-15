@@ -244,7 +244,7 @@ public class ChatPackets {
                         wrapper.cancel();
                     } else if (execResult != CommandsStorage.RESULT_ALLOW_SEND) {
                         final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-                        if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.HIDDEN && gameSession.getPlayerPermission() <= PlayerPermissions.OPERATOR)) {
+                        if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.HIDDEN && gameSession.getAbilities().playerPermission() <= PlayerPermissions.OPERATOR)) {
                             wrapper.cancel();
                             PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
                         }

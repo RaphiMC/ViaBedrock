@@ -41,7 +41,6 @@ import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.storage.ScoreboardTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
-import net.raphimc.viabedrock.protocol.types.JavaTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +61,7 @@ public class HudPackets {
                 final UUID[] uuids = new UUID[length];
                 final long[] playerListIds = new long[length];
                 final String[] names = new String[length];
-                wrapper.write(JavaTypes.PROFILE_ACTIONS_ENUM, BitSets.create(6, 0, 3, 5)); // actions | ADD_PLAYER, UPDATE_LISTED, UPDATE_DISPLAY_NAME
+                wrapper.write(Type.PROFILE_ACTIONS_ENUM, BitSets.create(6, 0, 3, 5)); // actions | ADD_PLAYER, UPDATE_LISTED, UPDATE_DISPLAY_NAME
                 wrapper.write(Type.VAR_INT, length); // length
                 for (int i = 0; i < length; i++) {
                     uuids[i] = wrapper.read(BedrockTypes.UUID); // uuid

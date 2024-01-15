@@ -43,7 +43,6 @@ import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
-import net.raphimc.viabedrock.protocol.types.JavaTypes;
 
 import java.util.UUID;
 
@@ -109,7 +108,7 @@ public class ClientPlayerPackets {
                     final int gameMode = GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType());
 
                     final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_20_3.PLAYER_INFO_UPDATE, wrapper.user());
-                    playerInfoUpdate.write(JavaTypes.PROFILE_ACTIONS_ENUM, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
+                    playerInfoUpdate.write(Type.PROFILE_ACTIONS_ENUM, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
                     playerInfoUpdate.write(Type.VAR_INT, 1); // length
                     playerInfoUpdate.write(Type.UUID, entityTracker.getClientPlayer().javaUuid()); // uuid
                     playerInfoUpdate.write(Type.VAR_INT, gameMode); // game mode
@@ -132,7 +131,7 @@ public class ClientPlayerPackets {
                     final int gameMode = GameTypeRewriter.getEffectiveGameMode(entityTracker.getClientPlayer().getGameType(), gameType);
 
                     final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_20_3.PLAYER_INFO_UPDATE, wrapper.user());
-                    playerInfoUpdate.write(JavaTypes.PROFILE_ACTIONS_ENUM, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
+                    playerInfoUpdate.write(Type.PROFILE_ACTIONS_ENUM, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
                     playerInfoUpdate.write(Type.VAR_INT, 1); // length
                     playerInfoUpdate.write(Type.UUID, entityTracker.getClientPlayer().javaUuid()); // uuid
                     playerInfoUpdate.write(Type.VAR_INT, gameMode); // game mode
@@ -157,7 +156,7 @@ public class ClientPlayerPackets {
             }
 
             final int gameMode = GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType());
-            wrapper.write(JavaTypes.PROFILE_ACTIONS_ENUM, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
+            wrapper.write(Type.PROFILE_ACTIONS_ENUM, BitSets.create(6, 2)); // actions | UPDATE_GAME_MODE
             wrapper.write(Type.VAR_INT, 1); // length
             wrapper.write(Type.UUID, playerListEntry.key()); // uuid
             wrapper.write(Type.VAR_INT, gameMode); // game mode
