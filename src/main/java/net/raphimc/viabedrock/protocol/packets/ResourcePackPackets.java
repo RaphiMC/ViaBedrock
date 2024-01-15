@@ -178,7 +178,7 @@ public class ResourcePackPackets {
 
             for (Experiment experiment : experiments) {
                 if (experiment.enabled()) {
-                    Via.getPlatform().getLogger().log(Level.WARNING, "This server uses an experimental resource pack: " + experiment.name());
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses an experimental resource pack: " + experiment.name());
                 }
             }
 

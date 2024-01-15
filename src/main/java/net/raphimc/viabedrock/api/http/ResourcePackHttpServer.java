@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.api.http;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -88,7 +87,7 @@ public class ResourcePackHttpServer {
                                         final long start = System.currentTimeMillis();
                                         final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage);
                                         final byte[] data = javaContent.toZip();
-                                        Via.getPlatform().getLogger().log(Level.INFO, "Converted packs in " + (System.currentTimeMillis() - start) + "ms");
+                                        ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Converted packs in " + (System.currentTimeMillis() - start) + "ms");
 
                                         final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
                                         response.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);

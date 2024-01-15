@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
@@ -177,13 +178,11 @@ public class ClientPlayerPackets {
 
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
             if (abilities.uniqueEntityId() == entityTracker.getClientPlayer().uniqueId()) {
-                gameSession.setPlayerPermission(abilities.playerPermission());
-                gameSession.setCommandPermission(abilities.commandPermission());
-                // TODO: Handle remaining fields
-
-                final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
-                if (commandsStorage != null) {
-                    commandsStorage.updateCommandTree();
+                final PlayerAbilities oldAbilities = gameSession.getAbilities();
+                if (!abilities.equals(oldAbilities)) {
+                    // TODO: Handle remaining fields
+                    gameSession.setAbilities(abilities);
+                    handleAbilitiesUpdate(wrapper.user());
                 }
             }
         });
@@ -222,6 +221,13 @@ public class ClientPlayerPackets {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             entityTracker.getClientPlayer().confirmTeleport(wrapper.read(Type.VAR_INT));
         });
+    }
+
+    public static void handleAbilitiesUpdate(final UserConnection user) throws Exception {
+        final CommandsStorage commandsStorage = user.get(CommandsStorage.class);
+        if (commandsStorage != null) {
+            commandsStorage.updateCommandTree();
+        }
     }
 
 }

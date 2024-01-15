@@ -192,7 +192,7 @@ public class CommandsStorage extends StoredObject {
             final String name = command.alias() != null ? Iterables.getFirst(command.alias().values().keySet(), null) : command.name();
             if (name == null) continue;
 
-            if (gameSession.getCommandPermission() < command.permission()) {
+            if (gameSession.getAbilities().commandPermission() < command.permission()) {
                 continue;
             }
             if ((command.flags() & CommandData.FLAG_HIDDEN_FROM_COMMAND_BLOCK) != 0 && (command.flags() & CommandData.FLAG_HIDDEN_FROM_PLAYER) != 0 && (command.flags() & CommandData.FLAG_HIDDEN_FROM_AUTOMATION) != 0) {
@@ -222,10 +222,10 @@ public class CommandsStorage extends StoredObject {
                                 if (!gameSession.areCommandsEnabled() && entry.getValue().contains(CommandData.EnumData.FLAG_CHEATS_ENABLED)) {
                                     return true;
                                 }
-                                if (entry.getValue().contains(CommandData.EnumData.FLAG_OPERATOR_PERMISSIONS) && gameSession.getCommandPermission() < CommandPermissions.OPERATOR) {
+                                if (entry.getValue().contains(CommandData.EnumData.FLAG_OPERATOR_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissions.OPERATOR) {
                                     return true;
                                 }
-                                return entry.getValue().contains(CommandData.EnumData.FLAG_HOST_PERMISSIONS) && gameSession.getCommandPermission() < CommandPermissions.HOST;
+                                return entry.getValue().contains(CommandData.EnumData.FLAG_HOST_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissions.HOST;
                             });
                             final Set<String> values = new HashSet<>(enumDataValues.keySet());
                             enumDataValues.entrySet().removeIf(entry -> entry.getValue().contains(CommandData.EnumData.FLAG_HIDE_FROM_COMPLETIONS));

@@ -28,6 +28,7 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntArrayTag;
@@ -46,10 +47,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractActions;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.DimensionKeys;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEvents;
 import net.raphimc.viabedrock.protocol.model.*;
@@ -326,7 +324,7 @@ public class JoinPackets {
                             version = new Semver(vanillaVersion, Semver.SemverType.LOOSE);
                         }
                     } catch (Throwable e) {
-                        Via.getPlatform().getLogger().log(Level.SEVERE, "Invalid vanilla version: " + vanillaVersion);
+                        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Invalid vanilla version: " + vanillaVersion);
                         version = new Semver("99.99.99");
                     }
 
@@ -336,7 +334,7 @@ public class JoinPackets {
                             if (BedrockProtocol.MAPPINGS.getBedrockToJavaExperimentalFeatures().containsKey(experiment.name())) {
                                 enabledFeatures.add(BedrockProtocol.MAPPINGS.getBedrockToJavaExperimentalFeatures().get(experiment.name()));
                             } else {
-                                Via.getPlatform().getLogger().log(Level.WARNING, "This server uses an unsupported experimental feature: " + experiment.name());
+                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses an unsupported experimental feature: " + experiment.name());
                             }
                         }
                     }
@@ -353,7 +351,7 @@ public class JoinPackets {
                     gameSession.setLevelGameType(levelGameType);
                     gameSession.setChatRestrictionLevel(chatRestrictionLevel);
                     gameSession.setCommandsEnabled(commandsEnabled);
-                    gameSession.setPlayerPermission(playerPermission);
+                    gameSession.setAbilities(new PlayerAbilities(uniqueEntityId, playerPermission, CommandPermissions.NORMAL, new Int2ObjectOpenHashMap<>()));
 
                     final ClientPlayerEntity clientPlayer = new ClientPlayerEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, wrapper.user().getProtocolInfo().getUuid());
                     clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + clientPlayer.eyeOffset(), playerPosition.z()));
@@ -553,6 +551,8 @@ public class JoinPackets {
         playerInfoUpdate.write(Type.VAR_INT, 0); // property count
         playerInfoUpdate.write(Type.VAR_INT, (int) GameTypeRewriter.getEffectiveGameMode(clientPlayer.getGameType(), gameSession.getLevelGameType())); // game mode
         playerInfoUpdate.send(BedrockProtocol.class);
+
+        ClientPlayerPackets.handleAbilitiesUpdate(user);
 
         if (joinGameStorage.getRainLevel() > 0F || joinGameStorage.getLightningLevel() > 0F) {
             final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_20_3.GAME_EVENT, user);

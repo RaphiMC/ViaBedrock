@@ -24,6 +24,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
+import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,10 +40,10 @@ public class GameSessionStorage implements StorableObject {
     private int levelGameType;
     private boolean sentStartGameResponsePackets;
 
+    private PlayerAbilities abilities;
+
     private byte chatRestrictionLevel;
     private boolean commandsEnabled;
-    private int playerPermission;
-    private int commandPermission;
 
     public GameSessionStorage() {
         this.bedrockDimensionDefinitions.put("minecraft:the_nether", new IntIntImmutablePair(0, 128));
@@ -113,6 +114,14 @@ public class GameSessionStorage implements StorableObject {
         this.sentStartGameResponsePackets = sentStartGameResponsePackets;
     }
 
+    public PlayerAbilities getAbilities() {
+        return this.abilities;
+    }
+
+    public void setAbilities(final PlayerAbilities abilities) {
+        this.abilities = abilities;
+    }
+
     public byte getChatRestrictionLevel() {
         return this.chatRestrictionLevel;
     }
@@ -127,22 +136,6 @@ public class GameSessionStorage implements StorableObject {
 
     public void setCommandsEnabled(final boolean commandsEnabled) {
         this.commandsEnabled = commandsEnabled;
-    }
-
-    public int getPlayerPermission() {
-        return this.playerPermission;
-    }
-
-    public void setPlayerPermission(final int playerPermission) {
-        this.playerPermission = playerPermission;
-    }
-
-    public int getCommandPermission() {
-        return this.commandPermission;
-    }
-
-    public void setCommandPermission(final int commandPermission) {
-        this.commandPermission = commandPermission;
     }
 
 }

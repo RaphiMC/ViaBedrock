@@ -17,7 +17,6 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
@@ -758,7 +757,7 @@ public class ChunkTracker extends StoredObject {
                     final int blockState = dataPalette.idByIndex(i);
                     int remappedBlockState = blockStateRewriter.bedrockId(blockState);
                     if (remappedBlockState == -1) {
-                        Via.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + blockState);
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + blockState);
                         remappedBlockState = this.airId();
                     }
                     dataPalette.setIdByIndex(i, remappedBlockState);
