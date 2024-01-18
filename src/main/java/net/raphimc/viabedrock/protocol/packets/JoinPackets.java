@@ -391,17 +391,17 @@ public class JoinPackets {
                 }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Mojang client silently ignores multiple start game packets
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.BIOME_DEFINITION_LIST,
+                // Biomes are technically data driven, but the client seems to ignore most of the defined data and instead uses hardcoded values.
                 State.CONFIGURATION, new PacketHandlers() {
                     @Override
                     protected void register() {
-                        handler(BIOME_DEFINITION_LIST_HANDLER);
                         handler(PacketWrapper::cancel);
                     }
                 }, State.PLAY, new PacketHandlers() {
                     @Override
                     protected void register() {
                         handler(REQUIRE_UNINITIALIZED_WORLD_HANDLER);
-                        handler(PacketWrapper::cancel); // TODO: Support changing the biome definitions after join game
+                        handler(PacketWrapper::cancel);
                     }
                 }
         );
@@ -409,15 +409,13 @@ public class JoinPackets {
                 State.CONFIGURATION, new PacketHandlers() {
                     @Override
                     protected void register() {
-                        handler(COMPRESSED_BIOME_DEFINITION_LIST_HANDLER);
                         handler(PacketWrapper::cancel);
                     }
                 }, State.PLAY, new PacketHandlers() {
                     @Override
                     protected void register() {
                         handler(REQUIRE_UNINITIALIZED_WORLD_HANDLER);
-                        handler(COMPRESSED_BIOME_DEFINITION_LIST_HANDLER);
-                        handler(RECONFIGURE_HANDLER);
+                        handler(PacketWrapper::cancel);
                     }
                 }
         );

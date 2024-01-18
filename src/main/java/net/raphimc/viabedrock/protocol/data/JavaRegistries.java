@@ -105,10 +105,10 @@ public class JavaRegistries {
             final CompoundTag effects = new CompoundTag();
             element.put("effects", effects);
 
-            final float blue_spores = bedrockBiome.<FloatTag>get("blue_spores").asFloat();
-            final float white_ash = bedrockBiome.<FloatTag>get("white_ash").asFloat();
-            final float red_spores = bedrockBiome.<FloatTag>get("red_spores").asFloat();
-            final float ash = bedrockBiome.<FloatTag>get("ash").asFloat();
+            final float blue_spores = bedrockBiome.get("blue_spores") instanceof FloatTag ? bedrockBiome.<FloatTag>get("blue_spores").asFloat() : 0;
+            final float white_ash = bedrockBiome.get("white_ash") instanceof FloatTag ? bedrockBiome.<FloatTag>get("white_ash").asFloat() : 0;
+            final float red_spores = bedrockBiome.get("red_spores") instanceof FloatTag ? bedrockBiome.<FloatTag>get("red_spores").asFloat() : 0;
+            final float ash = bedrockBiome.get("ash") instanceof FloatTag ? bedrockBiome.<FloatTag>get("ash").asFloat() : 0;
             if (blue_spores > 0) {
                 effects.put("particle", createParticle("minecraft:warped_spore", blue_spores / 10F));
             } else if (white_ash > 0) {
