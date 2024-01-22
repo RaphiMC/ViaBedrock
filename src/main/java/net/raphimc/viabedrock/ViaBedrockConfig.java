@@ -28,6 +28,7 @@ import java.util.Map;
 public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.platform.ViaBedrockConfig {
 
     private BlobCacheMode blobCacheMode;
+    private boolean enableResourcePack;
     private String resourcePackHost;
     private int resourcePackPort;
     private String resourcePackUrl;
@@ -45,6 +46,7 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
 
     private void loadFields() {
         this.blobCacheMode = BlobCacheMode.byName(this.getString("blob-cache", "disk"));
+        this.enableResourcePack = this.getBoolean("enable-resource-pack", true);
         this.resourcePackHost = this.getString("resource-pack-host", "127.0.0.1");
         this.resourcePackPort = this.getInt("resource-pack-port", 0);
         this.resourcePackUrl = this.getString("resource-pack-url", "");
@@ -68,6 +70,11 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
     @Override
     public BlobCacheMode getBlobCacheMode() {
         return this.blobCacheMode;
+    }
+
+    @Override
+    public boolean getEnableResourcePack() {
+        return enableResourcePack;
     }
 
     @Override
