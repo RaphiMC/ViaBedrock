@@ -32,9 +32,9 @@ public interface ViaBedrockConfig extends Config {
     BlobCacheMode getBlobCacheMode();
 
     /**
-     * @return Whether we should host a resource pack HTTP server.
+     * @return If true, starts the resource pack HTTP server and enables resource pack translation
      */
-    boolean getEnableResourcePack();
+    boolean shouldTranslateResourcePacks();
 
     /**
      * @return The host to use for the resource pack HTTP server.

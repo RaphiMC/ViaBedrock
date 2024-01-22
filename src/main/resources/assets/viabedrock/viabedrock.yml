@@ -1,5 +1,7 @@
 # Controls blob caching (Reduces network usage and loading time), Valid options: "disabled", "memory", "disk"
 blob-cache: "disk"
+# If enabled, starts the resource pack HTTP server and enables resource pack translation
+translate-resource-packs: true
 # Resource pack HTTP server address
 resource-pack-host: 127.0.0.1
 # Resource pack HTTP server port (0 = random available port)

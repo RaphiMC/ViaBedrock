@@ -43,7 +43,7 @@ public class ViaBedrock {
         ViaBedrock.platform = platform;
         ViaBedrock.config = config;
 
-        if (config.getEnableResourcePack()) {
+        if (config.shouldTranslateResourcePacks()) {
             try {
                 ViaBedrock.resourcePackServer = new ResourcePackHttpServer(new InetSocketAddress(config.getResourcePackHost(), config.getResourcePackPort()));
                 platform.getLogger().log(Level.INFO, "Started resource pack HTTP server on " + resourcePackServer.getUrl());
