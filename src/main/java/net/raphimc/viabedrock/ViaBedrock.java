@@ -43,11 +43,13 @@ public class ViaBedrock {
         ViaBedrock.platform = platform;
         ViaBedrock.config = config;
 
-        try {
-            ViaBedrock.resourcePackServer = new ResourcePackHttpServer(new InetSocketAddress(config.getResourcePackHost(), config.getResourcePackPort()));
-            platform.getLogger().log(Level.INFO, "Started resource pack HTTP server on " + resourcePackServer.getUrl());
-        } catch (Throwable e) {
-            throw new IllegalStateException("Failed to start resource pack HTTP server", e);
+        if (config.getEnableResourcePack()) {
+            try {
+                ViaBedrock.resourcePackServer = new ResourcePackHttpServer(new InetSocketAddress(config.getResourcePackHost(), config.getResourcePackPort()));
+                platform.getLogger().log(Level.INFO, "Started resource pack HTTP server on " + resourcePackServer.getUrl());
+            } catch (Throwable e) {
+                throw new IllegalStateException("Failed to start resource pack HTTP server", e);
+            }
         }
         try {
             ViaBedrock.blobCache = new LevelDB(platform.getBlobCacheFolder());
