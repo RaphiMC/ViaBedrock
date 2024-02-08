@@ -43,6 +43,10 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) throws Exception {
+        if (!in.isReadable()) {
+            return;
+        }
+
         final int inputSize = in.readableBytes();
         final CompressionAlgorithm compressionAlgorithm = this.protocolCompression.getCompressionAlgorithmForSize(inputSize);
         if (compressionAlgorithm instanceof NoopCompression) {
@@ -66,6 +70,10 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        if (!in.isReadable()) {
+            return;
+        }
+
         final int algorithm = in.readUnsignedByte();
         final CompressionAlgorithm compressionAlgorithm = this.protocolCompression.getAlgorithmById(algorithm);
         if (compressionAlgorithm instanceof NoopCompression) {
