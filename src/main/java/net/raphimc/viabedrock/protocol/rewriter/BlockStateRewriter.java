@@ -75,6 +75,9 @@ public class BlockStateRewriter implements StorableObject {
         }
 
         for (Map.Entry<String, CompoundTag> blockProperty : effectiveBlockProperties.entrySet()) {
+            if (!(blockProperty.getValue().get("vanilla_block_data") instanceof CompoundTag)) { // Mojang client ignores blocks without this tag
+                continue;
+            }
             if (!(blockProperty.getValue().get("menu_category") instanceof CompoundTag)) { // Mojang client crashes if this tag is missing
                 throw new IllegalStateException("Missing menu_category tag for " + blockProperty.getKey());
             }
