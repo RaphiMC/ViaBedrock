@@ -43,27 +43,25 @@ import net.raphimc.viabedrock.api.item.ItemUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.ResourcePack;
-import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 public class BedrockMappingData extends MappingDataBase {
 
     // Bedrock misc
     private ResourcePack bedrockVanillaResourcePack;
-    private BufferedImage bedrockSteveSkin;
-    private JsonObject bedrockSkinGeometry;
+    private ResourcePack bedrockVanillaSkinPack;
 
     // Java misc
     private CompoundTag javaRegistries;
@@ -123,9 +121,9 @@ public class BedrockMappingData extends MappingDataBase {
         final JsonObject javaViaMappingJson = this.readJson("java/via_mappings.json");
 
         { // Bedrock misc
-            this.bedrockVanillaResourcePack = this.readResourcePack("bedrock/vanilla.mcpack", UUID.fromString("0575c61f-a5da-4b7f-9961-ffda2908861e"), "0.0.1");
-            this.bedrockSteveSkin = this.readImage("bedrock/skin/steve.png");
-            this.bedrockSkinGeometry = JsonUtil.sort(this.readJson("bedrock/skin/geometry.json"), Comparator.naturalOrder());
+            this.bedrockVanillaResourcePack = this.readResourcePack("bedrock/vanilla_resource_pack.mcpack", UUID.fromString("0575c61f-a5da-4b7f-9961-ffda2908861e"), "0.0.1");
+            this.bedrockVanillaSkinPack = this.readResourcePack("bedrock/vanilla_skin_pack.mcpack", UUID.fromString("c18e65aa-7b21-4637-9b63-8ad63622ef01"), "1.0.0");
+            this.bedrockVanillaSkinPack.setType(ResourcePack.TYPE_SKINS);
         }
 
         { // Java misc
@@ -152,7 +150,7 @@ public class BedrockMappingData extends MappingDataBase {
 
             final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.nbt").get("blocks");
             this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
-            for (Tag tag : bedrockBlockStatesTag.getValue()) {
+            for (Tag tag : bedrockBlockStatesTag) {
                 this.bedrockBlockStates.add(BedrockBlockState.fromNbt((CompoundTag) tag));
             }
 
@@ -194,7 +192,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            final JsonObject bedrockBlockTraitsJson = this.readJson("custom/block_traits.json");
+            final JsonObject bedrockBlockTraitsJson = this.readJson("bedrock/block_traits.json");
             this.bedrockBlockTraits = new HashMap<>(bedrockBlockTraitsJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockBlockTraitsJson.entrySet()) {
                 final String traitName = entry.getKey();
@@ -550,12 +548,8 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockVanillaResourcePack;
     }
 
-    public BufferedImage getSteveSkin() {
-        return this.bedrockSteveSkin;
-    }
-
-    public JsonObject getBedrockSkinGeometry() {
-        return this.bedrockSkinGeometry;
+    public ResourcePack getBedrockVanillaSkinPack() {
+        return this.bedrockVanillaSkinPack;
     }
 
     public CompoundTag getJavaRegistries() {
@@ -701,22 +695,6 @@ public class BedrockMappingData extends MappingDataBase {
         }
     }
 
-    private List<String> readTextList(String file) {
-        file = "assets/viabedrock/data/" + file;
-        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
-            if (inputStream == null) {
-                this.getLogger().severe("Could not open " + file);
-                return Collections.emptyList();
-            }
-
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            return reader.lines().collect(Collectors.toList());
-        } catch (IOException e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
-            return Collections.emptyList();
-        }
-    }
-
     private CompoundTag readNBT(String file) {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
@@ -745,21 +723,6 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             return GsonUtil.getGson().fromJson(new InputStreamReader(inputStream), classOfT);
-        } catch (IOException e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
-            return null;
-        }
-    }
-
-    private BufferedImage readImage(String file) {
-        file = "assets/viabedrock/data/" + file;
-        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
-            if (inputStream == null) {
-                this.getLogger().severe("Could not open " + file);
-                return null;
-            }
-
-            return ImageIO.read(inputStream);
         } catch (IOException e) {
             this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
             return null;

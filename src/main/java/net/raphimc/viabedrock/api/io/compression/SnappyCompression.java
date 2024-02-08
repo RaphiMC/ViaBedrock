@@ -15,22 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.netty;
+package net.raphimc.viabedrock.api.io.compression;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.handler.codec.compression.Snappy;
 
-import java.util.List;
+public class SnappyCompression implements CompressionAlgorithm {
 
-public class SnappyCompression extends ByteToMessageCodec<ByteBuf> {
+    public static final int ID = 1;
 
     private final Snappy snappy = new Snappy();
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
+    public void compress(final ByteBuf in, final ByteBuf out) {
         if (in.readableBytes() <= Short.MAX_VALUE) {
             this.snappy.encode(in, out, in.readableBytes());
             this.snappy.reset();
@@ -53,11 +51,14 @@ public class SnappyCompression extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-        final ByteBuf uncompressedData = ctx.alloc().buffer();
-        this.snappy.decode(in, uncompressedData);
+    public void decompress(final ByteBuf in, final ByteBuf out) {
+        this.snappy.decode(in, out);
         this.snappy.reset();
-        out.add(uncompressedData);
+    }
+
+    @Override
+    public int getId() {
+        return ID;
     }
 
 }

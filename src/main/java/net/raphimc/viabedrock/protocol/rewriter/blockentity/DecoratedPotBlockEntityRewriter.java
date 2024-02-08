@@ -20,10 +20,7 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -62,6 +59,8 @@ public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewr
         if (bedrockTag.get("item") instanceof CompoundTag) {
             javaTag.put("item", this.rewriteItem(user, bedrockTag.get("item")));
         }
+        this.copy(bedrockTag, javaTag, "LootTable", StringTag.class);
+        this.copy(bedrockTag, javaTag, "LootTableSeed", IntTag.class);
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }

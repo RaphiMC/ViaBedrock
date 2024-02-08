@@ -27,12 +27,14 @@ import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.gson.io.GsonDeserializer;
 import io.netty.util.AsciiString;
+import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
+import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -73,12 +75,19 @@ public class LoginPackets {
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_SETTINGS, null, wrapper -> {
             wrapper.cancel();
+            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
             final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
 
             final int threshold = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression threshold
             final int algorithm = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression algorithm
-            Via.getManager().getProviders().get(NettyPipelineProvider.class).enableCompression(wrapper.user(), threshold, algorithm);
+            final ProtocolCompression protocolCompression = new ProtocolCompression(algorithm, threshold);
+            if (gameSession.getProtocolCompression() == null) {
+                Via.getManager().getProviders().get(NettyPipelineProvider.class).enableCompression(wrapper.user(), protocolCompression);
+            } else {
+                gameSession.getProtocolCompression().end();
+            }
+            gameSession.setProtocolCompression(protocolCompression);
 
             final JsonObject rootObj = new JsonObject();
             final JsonArray chain = new JsonArray();

@@ -141,8 +141,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     LEVEL_EVENT_GENERIC(124),
     LECTERN_UPDATE(125),
     VIDEO_STREAM_CONNECT(126),
-    ADD_ECS_ENTITY(127),
-    REMOVE_ECS_ENTITY(128),
     CLIENT_CACHE_STATUS(129),
     ON_SCREEN_TEXTURE_ANIMATION(130),
     MAP_CREATE_LOCKED_COPY(131),
@@ -219,7 +217,8 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     AGENT_ANIMATION(304),
     REFRESH_ENTITLEMENTS(305),
     TOGGLE_CRAFTER_SLOT_REQUEST(306),
-    SET_PLAYER_INVENTORY_OPTIONS(307);
+    SET_PLAYER_INVENTORY_OPTIONS(307),
+    SET_HUD(308);
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

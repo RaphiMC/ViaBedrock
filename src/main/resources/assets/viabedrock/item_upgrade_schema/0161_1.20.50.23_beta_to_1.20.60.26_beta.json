@@ -1,0 +1,47 @@
+{
+    "remappedMetas": {
+        "minecraft:hard_stained_glass": {
+            "0": "minecraft:hard_white_stained_glass",
+            "1": "minecraft:hard_orange_stained_glass",
+            "10": "minecraft:hard_purple_stained_glass",
+            "11": "minecraft:hard_blue_stained_glass",
+            "12": "minecraft:hard_brown_stained_glass",
+            "13": "minecraft:hard_green_stained_glass",
+            "14": "minecraft:hard_red_stained_glass",
+            "15": "minecraft:hard_black_stained_glass",
+            "2": "minecraft:hard_magenta_stained_glass",
+            "3": "minecraft:hard_light_blue_stained_glass",
+            "4": "minecraft:hard_yellow_stained_glass",
+            "5": "minecraft:hard_lime_stained_glass",
+            "6": "minecraft:hard_pink_stained_glass",
+            "7": "minecraft:hard_gray_stained_glass",
+            "8": "minecraft:hard_light_gray_stained_glass",
+            "9": "minecraft:hard_cyan_stained_glass"
+        },
+        "minecraft:hard_stained_glass_pane": {
+            "0": "minecraft:hard_white_stained_glass_pane",
+            "1": "minecraft:hard_orange_stained_glass_pane",
+            "10": "minecraft:hard_purple_stained_glass_pane",
+            "11": "minecraft:hard_blue_stained_glass_pane",
+            "12": "minecraft:hard_brown_stained_glass_pane",
+            "13": "minecraft:hard_green_stained_glass_pane",
+            "14": "minecraft:hard_red_stained_glass_pane",
+            "15": "minecraft:hard_black_stained_glass_pane",
+            "2": "minecraft:hard_magenta_stained_glass_pane",
+            "3": "minecraft:hard_light_blue_stained_glass_pane",
+            "4": "minecraft:hard_yellow_stained_glass_pane",
+            "5": "minecraft:hard_lime_stained_glass_pane",
+            "6": "minecraft:hard_pink_stained_glass_pane",
+            "7": "minecraft:hard_gray_stained_glass_pane",
+            "8": "minecraft:hard_light_gray_stained_glass_pane",
+            "9": "minecraft:hard_cyan_stained_glass_pane"
+        },
+        "minecraft:spawn_egg": {
+            "140": "minecraft:breeze_spawn_egg",
+            "142": "minecraft:armadillo_spawn_egg"
+        }
+    },
+    "renamedIds": {
+        "minecraft:scute": "minecraft:turtle_scute"
+    }
+}

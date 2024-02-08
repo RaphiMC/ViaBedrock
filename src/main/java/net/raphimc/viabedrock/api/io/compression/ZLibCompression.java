@@ -15,36 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.netty;
+package net.raphimc.viabedrock.api.io.compression;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageCodec;
 
-import java.util.List;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-public class ZLibCompression extends ByteToMessageCodec<ByteBuf> {
+public class ZLibCompression implements CompressionAlgorithm {
 
+    public static final int ID = 0;
+
+    private final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
+    private final Inflater inflater = new Inflater(true);
     private final byte[] deflateBuffer = new byte[8192];
     private final byte[] inflateBuffer = new byte[8192];
 
-    private Deflater deflater;
-    private Inflater inflater;
-
     @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        super.handlerRemoved(ctx);
-
-        if (this.inflater != null) this.inflater.end();
-        if (this.deflater != null) this.deflater.end();
-    }
-
-    @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
-        if (this.deflater == null) this.deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
-
+    public void compress(final ByteBuf in, final ByteBuf out) {
         final byte[] uncompressedData = new byte[in.readableBytes()];
         in.readBytes(uncompressedData);
         this.deflater.setInput(uncompressedData);
@@ -56,18 +44,25 @@ public class ZLibCompression extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        if (this.inflater == null) this.inflater = new Inflater(true);
-
+    public void decompress(final ByteBuf in, final ByteBuf out) throws Exception {
         final byte[] compressedData = new byte[in.readableBytes()];
         in.readBytes(compressedData);
         this.inflater.setInput(compressedData);
-        final ByteBuf uncompressedData = ctx.alloc().buffer();
         while (!this.inflater.finished()) {
-            uncompressedData.writeBytes(this.inflateBuffer, 0, this.inflater.inflate(this.inflateBuffer));
+            out.writeBytes(this.inflateBuffer, 0, this.inflater.inflate(this.inflateBuffer));
         }
         this.inflater.reset();
-        out.add(uncompressedData);
+    }
+
+    @Override
+    public void end() {
+        this.inflater.end();
+        this.deflater.end();
+    }
+
+    @Override
+    public int getId() {
+        return ID;
     }
 
 }

@@ -69,7 +69,7 @@ public class HudPackets {
                     playerListIds[i] = wrapper.read(BedrockTypes.VAR_LONG); // player list id
                     names[i] = wrapper.read(BedrockTypes.STRING); // username
                     wrapper.write(Type.STRING, StringUtil.encodeUUID(uuids[i])); // username
-                    wrapper.write(Type.VAR_INT, 5); // property count
+                    wrapper.write(Type.VAR_INT, 6); // property count
                     wrapper.write(Type.STRING, "xuid"); // property name
                     wrapper.write(Type.STRING, wrapper.read(BedrockTypes.STRING)); // xuid
                     wrapper.write(Type.OPTIONAL_STRING, null); // signature
@@ -84,6 +84,9 @@ public class HudPackets {
                     wrapper.write(Type.STRING, wrapper.read(Type.BOOLEAN).toString()); // is teacher
                     wrapper.write(Type.OPTIONAL_STRING, null); // signature
                     wrapper.write(Type.STRING, "is_host"); // property name
+                    wrapper.write(Type.STRING, wrapper.read(Type.BOOLEAN).toString()); // is host
+                    wrapper.write(Type.OPTIONAL_STRING, null); // signature
+                    wrapper.write(Type.STRING, "is_subclient"); // property name
                     wrapper.write(Type.STRING, wrapper.read(Type.BOOLEAN).toString()); // is host
                     wrapper.write(Type.OPTIONAL_STRING, null); // signature
 

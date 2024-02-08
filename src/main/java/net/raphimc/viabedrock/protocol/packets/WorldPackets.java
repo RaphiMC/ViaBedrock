@@ -166,6 +166,11 @@ public class WorldPackets {
 
             final int chunkX = wrapper.read(BedrockTypes.VAR_INT); // chunk x
             final int chunkZ = wrapper.read(BedrockTypes.VAR_INT); // chunk z
+            final int dimensionId = wrapper.read(BedrockTypes.VAR_INT); // dimension id
+            if (dimensionId != chunkTracker.getDimensionId()) {
+                return;
+            }
+
             final int sectionCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // sub chunk count
             if (sectionCount < -2) { // Mojang client silently ignores this packet
                 return;

@@ -219,7 +219,8 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     AGENT_ANIMATION(304),
     REFRESH_ENTITLEMENTS(305),
     TOGGLE_CRAFTER_SLOT_REQUEST(306),
-    SET_PLAYER_INVENTORY_OPTIONS(307);
+    SET_PLAYER_INVENTORY_OPTIONS(307),
+    SET_HUD(308);
 
     private static final ServerboundBedrockPackets[] REGISTRY = new ServerboundBedrockPackets[512];
 

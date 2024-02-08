@@ -13,7 +13,10 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/998caee156d38245a15e560f15864319ad125cbb/core/src/main/resources/bedrock/block_palette.1_20_50.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/e6636ec9fe454d4891d4f56aba8d3e43aeeee17d/core/src/main/resources/bedrock/block_palette.1_20_60.nbt)
+
+### data/bedrock/block_traits.json
+[wiki.bedrock.dev](https://wiki.bedrock.dev/blocks/block-traits.html)
 
 ### data/bedrock/entity_identifiers.nbt
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
@@ -21,9 +24,13 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 ### data/bedrock/runtime_item_states.json
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
-### data/bedrock/skin/*
-This file has been copied from the official bedrock client's assets folder:  
-`%MC-Root%\data\skin_packs\vanilla\*`
+### data/bedrock/vanilla_resource_pack.mcpack
+These files have been copied from the official bedrock client's assets folder:  
+`%MC-Root%/data/resource_packs/vanilla/`
+
+### data/bedrock/vanilla_skin_pack.mcpack
+These files have been copied from the official bedrock client's assets folder:  
+`%MC-Root%/data/skin_packs/vanilla/`
 
 ### data/java/via_mappings.json
 [ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.20.3.json)
@@ -36,9 +43,6 @@ This file has been dumped from a vanilla server using a fabric mod.
 
 ### data/java/tags.nbt
 This file has been dumped from a vanilla server using a fabric mod.
-
-### data/custom/block_traits.json
-[wiki.bedrock.dev](https://wiki.bedrock.dev/blocks/block-traits.html)
 
 ### block_state_upgrade_schema/*
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)

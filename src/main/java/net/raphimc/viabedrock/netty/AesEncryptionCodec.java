@@ -36,7 +36,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 
-public class AesEncryption extends ByteToMessageCodec<ByteBuf> {
+public class AesEncryptionCodec extends ByteToMessageCodec<ByteBuf> {
 
     private final SecretKey secretKey;
     private final Cipher inCipher;
@@ -45,7 +45,7 @@ public class AesEncryption extends ByteToMessageCodec<ByteBuf> {
     private long sentPacketCounter;
     private long receivedPacketCounter;
 
-    public AesEncryption(final SecretKey secretKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
+    public AesEncryptionCodec(final SecretKey secretKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
         final byte[] iv = new byte[16];
         System.arraycopy(secretKey.getEncoded(), 0, iv, 0, 12);
         iv[15] = 2;

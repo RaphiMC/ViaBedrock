@@ -19,7 +19,10 @@ package net.raphimc.viabedrock.protocol.providers;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
+import com.viaversion.viaversion.libs.gson.JsonObject;
+import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
+import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.DeviceOS;
@@ -39,7 +42,10 @@ public class SkinProvider implements Provider {
     public Map<String, Object> getClientPlayerSkin(final UserConnection user) {
         final HandshakeStorage handshakeStorage = user.get(HandshakeStorage.class);
         final AuthChainData authChainData = user.get(AuthChainData.class);
-        final BufferedImage skin = BedrockProtocol.MAPPINGS.getSteveSkin();
+
+        final ResourcePack.Content skinPackContent = BedrockProtocol.MAPPINGS.getBedrockVanillaSkinPack().content();
+        final BufferedImage skin = skinPackContent.getImage("steve.png");
+        final JsonObject skinGeometry = JsonUtil.sort(skinPackContent.getJson("geometry.json"), Comparator.naturalOrder());
 
         final Map<String, Object> claims = new HashMap<>();
         claims.put("PlayFabId", authChainData.getPlayFabId().toLowerCase(Locale.ROOT));
@@ -53,7 +59,7 @@ public class SkinProvider implements Provider {
         claims.put("CapeImageWidth", 0);
         claims.put("CapeData", "");
         claims.put("CapeId", "");
-        claims.put("SkinGeometryData", Base64.getEncoder().encodeToString(BedrockProtocol.MAPPINGS.getBedrockSkinGeometry().toString().getBytes(StandardCharsets.UTF_8)));
+        claims.put("SkinGeometryData", Base64.getEncoder().encodeToString(skinGeometry.toString().getBytes(StandardCharsets.UTF_8)));
         claims.put("SkinGeometryDataEngineVersion", Base64.getEncoder().encodeToString("0.0.0".getBytes(StandardCharsets.UTF_8)));
         claims.put("SkinAnimationData", "");
         claims.put("ArmSize", "wide");
