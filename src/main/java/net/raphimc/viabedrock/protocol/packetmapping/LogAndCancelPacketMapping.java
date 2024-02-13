@@ -47,4 +47,9 @@ public class LogAndCancelPacketMapping implements PacketMapping {
         };
     }
 
+    @Override
+    public void appendHandler(PacketHandler handler) {
+        throw new UnsupportedOperationException("LogAndCancelPacketMapping does not support appending handlers");
+    }
+
 }
