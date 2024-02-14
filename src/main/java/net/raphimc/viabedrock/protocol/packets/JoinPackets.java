@@ -113,7 +113,7 @@ public class JoinPackets {
         wrapper.cancel();
 
         wrapper.user().put(new ChunkTracker(wrapper.user(), wrapper.user().get(ChunkTracker.class).getDimensionId()));
-        if (wrapper.user().getProtocolInfo().getProtocolVersion() >= ProtocolVersion.v1_20_2.getVersion()) {
+        if (wrapper.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolVersion.v1_20_2)) {
             final PacketWrapper startConfiguration = PacketWrapper.create(ClientboundPackets1_20_3.START_CONFIGURATION, wrapper.user());
             startConfiguration.send(BedrockProtocol.class);
             wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
@@ -146,7 +146,7 @@ public class JoinPackets {
                             wrapper.user().setActive(false);
                         }
                         if (Via.getManager().isDebug()) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "{0} logged in with protocol {1}, Route: {2}", new Object[]{info.getUsername(), info.getProtocolVersion(), Joiner.on(", ").join(info.getPipeline().pipes(), ", ")});
+                            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "{0} logged in with protocol {1}, Route: {2}", new Object[]{info.getUsername(), info.protocolVersion().getName(), Joiner.on(", ").join(info.getPipeline().pipes(), ", ")});
                         }
 
                         sendClientCacheStatus(wrapper.user());

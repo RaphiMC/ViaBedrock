@@ -21,19 +21,33 @@ import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
+import static com.viaversion.viaversion.api.protocol.version.VersionType.SPECIAL;
 
 public class BedrockProtocolVersion {
 
     public static final List<ProtocolVersion> PROTOCOLS = new ArrayList<>();
-    public static final int PROTOCOL_ID_OVERLAP_PREVENTION_OFFSET = 1_000_000;
 
-    public static final ProtocolVersion bedrockLatest = registerBedrock(PROTOCOL_ID_OVERLAP_PREVENTION_OFFSET + ProtocolConstants.BEDROCK_PROTOCOL_VERSION, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME);
+    public static final ProtocolVersion bedrockLatest = new ProtocolVersion(SPECIAL, ProtocolConstants.BEDROCK_PROTOCOL_VERSION, -1, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME, null) {
+        @Override
+        protected Comparator<ProtocolVersion> customComparator() {
+            return (o1, o2) -> {
+                if (o1 == bedrockLatest) {
+                    o1 = ProtocolConstants.JAVA_VERSION;
+                }
+                if (o2 == bedrockLatest) {
+                    o2 = ProtocolConstants.JAVA_VERSION;
+                }
+                return o1.compareTo(o2);
+            };
+        }
+    };
 
-    private static ProtocolVersion registerBedrock(final int version, final String name) {
-        final ProtocolVersion protocolVersion = ProtocolVersion.register(version, name);
-        PROTOCOLS.add(protocolVersion);
-        return protocolVersion;
+    static {
+        ProtocolVersion.register(bedrockLatest);
+        PROTOCOLS.add(bedrockLatest);
     }
 
 }

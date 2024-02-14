@@ -75,7 +75,7 @@ public class ResourcePackPackets {
                 wrapper.read(BedrockTypes.STRING); // remote url
             }
 
-            if (ViaBedrock.getConfig().shouldTranslateResourcePacks() && wrapper.user().getProtocolInfo().getProtocolVersion() >= ProtocolConstants.JAVA_VERSION.getVersion()) {
+            if (ViaBedrock.getConfig().shouldTranslateResourcePacks() && wrapper.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolConstants.JAVA_VERSION)) {
                 final UUID httpToken = UUID.randomUUID();
                 ViaBedrock.getResourcePackServer().addConnection(httpToken, wrapper.user());
 

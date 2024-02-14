@@ -42,7 +42,7 @@ public interface ViaBedrockPlatform {
         final ProtocolManager protocolManager = Via.getManager().getProtocolManager();
 
         protocolManager.registerProtocol(new BedrockProtocol(), ProtocolConstants.JAVA_VERSION, BedrockProtocolVersion.bedrockLatest);
-        protocolManager.registerBaseProtocol(new EmptyBaseProtocol(), Range.singleton(BedrockProtocolVersion.bedrockLatest.getVersion()));
+        protocolManager.registerBaseProtocol(new EmptyBaseProtocol(), Range.singleton(BedrockProtocolVersion.bedrockLatest));
 
         this.getServerPacksFolder().mkdirs();
         this.getBlobCacheFolder().mkdirs();

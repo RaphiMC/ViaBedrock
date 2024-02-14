@@ -54,7 +54,7 @@ public class StatusPackets {
 
             statusResponse.addProperty("description", "");
             version.addProperty("name", "");
-            version.addProperty("protocol", wrapper.user().getProtocolInfo().getProtocolVersion());
+            version.addProperty("protocol", wrapper.user().getProtocolInfo().protocolVersion().getVersion());
             players.addProperty("max", -1);
             players.addProperty("online", -1);
 
