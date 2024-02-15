@@ -26,31 +26,28 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileSystemUtil {
 
     public static Map<Path, byte[]> getFilesInDirectory(final String assetPath) throws IOException, URISyntaxException {
-        final URI uri = FileSystemUtil.class.getClassLoader().getResource(assetPath).toURI();
-        if (uri.getScheme().equals("file")) {
-            return getFilesInPath(Paths.get(uri));
-        } else if (uri.getScheme().equals("jar")) {
-            return runInFileSystem(uri, fileSystem -> {
-                try {
-                    return getFilesInPath(fileSystem.getPath(assetPath));
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            });
-        } else {
-            throw new IllegalArgumentException("Unsupported URI scheme: " + uri.getScheme());
+        final Path path = getPath(FileSystemUtil.class.getClassLoader().getResource(assetPath).toURI());
+        return getFilesInPath(path);
+    }
+
+    @SuppressWarnings({"DuplicateExpressions", "resource"})
+    private static Path getPath(final URI uri) throws IOException {
+        try {
+            return Paths.get(uri);
+        } catch (FileSystemNotFoundException e) {
+            FileSystems.newFileSystem(uri, Collections.emptyMap());
+            return Paths.get(uri);
         }
     }
 
     private static Map<Path, byte[]> getFilesInPath(final Path path) throws IOException {
-        try (Stream<Path> stream = Files.walk(path)) {
+        try (Stream<Path> stream = Files.list(path)) {
             return stream
                     .filter(Files::isRegularFile)
                     .sorted(Comparator.comparing(Path::toString))
@@ -63,18 +60,6 @@ public class FileSystemUtil {
                     }, (u, v) -> {
                         throw new IllegalStateException("Duplicate key");
                     }, LinkedHashMap::new));
-        }
-    }
-
-    private static <R> R runInFileSystem(final URI uri, final Function<FileSystem, R> action) {
-        try {
-            return action.apply(FileSystems.getFileSystem(uri));
-        } catch (FileSystemNotFoundException e) {
-            try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
-                return action.apply(fileSystem);
-            } catch (IOException e1) {
-                throw new UncheckedIOException(e1);
-            }
         }
     }
 
