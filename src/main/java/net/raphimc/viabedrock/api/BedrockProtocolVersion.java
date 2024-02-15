@@ -18,32 +18,17 @@
 package net.raphimc.viabedrock.api;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+import com.viaversion.viaversion.protocol.RedirectProtocolVersion;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-
-import static com.viaversion.viaversion.api.protocol.version.VersionType.SPECIAL;
 
 public class BedrockProtocolVersion {
 
     public static final List<ProtocolVersion> PROTOCOLS = new ArrayList<>();
 
-    public static final ProtocolVersion bedrockLatest = new ProtocolVersion(SPECIAL, ProtocolConstants.BEDROCK_PROTOCOL_VERSION, -1, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME, null) {
-        @Override
-        protected Comparator<ProtocolVersion> customComparator() {
-            return (o1, o2) -> {
-                if (o1 == bedrockLatest) {
-                    o1 = ProtocolConstants.JAVA_VERSION;
-                }
-                if (o2 == bedrockLatest) {
-                    o2 = ProtocolConstants.JAVA_VERSION;
-                }
-                return o1.compareTo(o2);
-            };
-        }
-    };
+    public static final ProtocolVersion bedrockLatest = new RedirectProtocolVersion(ProtocolConstants.BEDROCK_PROTOCOL_VERSION, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME, ProtocolConstants.JAVA_VERSION);
 
     static {
         ProtocolVersion.register(bedrockLatest);
