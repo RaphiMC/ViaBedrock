@@ -17,13 +17,11 @@
  */
 package net.raphimc.viabedrock.platform;
 
-import com.google.common.collect.Range;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.ProtocolManager;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.ViaBedrockConfig;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
-import net.raphimc.viabedrock.api.protocol.EmptyBaseProtocol;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
@@ -40,9 +38,7 @@ public interface ViaBedrockPlatform {
         Via.getManager().getSubPlatforms().add(ViaBedrock.IMPL_VERSION);
 
         final ProtocolManager protocolManager = Via.getManager().getProtocolManager();
-
         protocolManager.registerProtocol(new BedrockProtocol(), ProtocolConstants.JAVA_VERSION, BedrockProtocolVersion.bedrockLatest);
-        protocolManager.registerBaseProtocol(new EmptyBaseProtocol(), Range.singleton(BedrockProtocolVersion.bedrockLatest));
 
         this.getServerPacksFolder().mkdirs();
         this.getBlobCacheFolder().mkdirs();
