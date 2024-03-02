@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
+import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 
@@ -111,6 +112,11 @@ public class BedrockItem implements Item {
     @Override
     public void setTag(final CompoundTag tag) {
         this.tag = tag;
+    }
+
+    @Override
+    public StructuredDataContainer structuredData() {
+        throw new UnsupportedOperationException();
     }
 
     public String[] canPlace() {
