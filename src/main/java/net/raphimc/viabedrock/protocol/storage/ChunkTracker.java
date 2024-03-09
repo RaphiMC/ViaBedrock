@@ -91,12 +91,11 @@ public class ChunkTracker extends StoredObject {
         final CompoundTag registries = gameSession.getJavaRegistries();
         final String dimensionKey = DimensionIdRewriter.dimensionIdToDimensionKey(this.dimensionId);
         final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
-        final ListTag dimensions = dimensionRegistry.get("value");
+        final ListTag<?> dimensions = dimensionRegistry.get("value");
         final CompoundTag biomeRegistry = registries.get("minecraft:worldgen/biome");
-        final ListTag biomes = biomeRegistry.get("value");
+        final ListTag<?> biomes = biomeRegistry.get("value");
 
-        final IntIntPair pair = dimensions.getValue()
-                .stream()
+        final IntIntPair pair = dimensions.stream()
                 .map(CompoundTag.class::cast)
                 .filter(t -> t.get("name").getValue().toString().equals(dimensionKey))
                 .findFirst()

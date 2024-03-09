@@ -148,7 +148,7 @@ public class BedrockMappingData extends MappingDataBase {
                 this.javaBlockStates.put(blockState, i);
             }
 
-            final ListTag bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.nbt").get("blocks");
+            final ListTag<?> bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.nbt").get("blocks");
             this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
             for (Tag tag : bedrockBlockStatesTag) {
                 this.bedrockBlockStates.add(BedrockBlockState.fromNbt((CompoundTag) tag));
@@ -449,7 +449,7 @@ public class BedrockMappingData extends MappingDataBase {
 
         { // Entities
             final CompoundTag entityIdentifiersTag = this.readNBT("bedrock/entity_identifiers.nbt");
-            final ListTag entityIdentifiersListTag = entityIdentifiersTag.get("idlist");
+            final ListTag<?> entityIdentifiersListTag = entityIdentifiersTag.get("idlist");
             this.bedrockEntities = HashBiMap.create(entityIdentifiersListTag.size());
             for (Tag tag : entityIdentifiersListTag) {
                 final CompoundTag entry = (CompoundTag) tag;

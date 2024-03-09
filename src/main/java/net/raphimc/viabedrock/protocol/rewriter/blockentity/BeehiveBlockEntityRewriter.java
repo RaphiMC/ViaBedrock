@@ -23,7 +23,6 @@ import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 
@@ -34,18 +33,15 @@ public class BeehiveBlockEntityRewriter implements BlockEntityRewriter.Rewriter 
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("Occupants") instanceof ListTag) {
-            final ListTag bedrockOccupants = bedrockTag.get("Occupants");
-            if (CompoundTag.class.equals(bedrockOccupants.getElementType())) {
-                final ListTag javaBees = new ListTag(bedrockOccupants.getElementType());
-                for (Tag bedrockOccupantTag : bedrockOccupants) {
-                    final CompoundTag bedrockOccupant = (CompoundTag) bedrockOccupantTag;
-                    final CompoundTag javaBee = new CompoundTag();
-                    this.copy(bedrockOccupant, javaBee, "TicksLeftToStay", "MinOccupationTicks", IntTag.class);
-                    javaBees.add(javaBee);
-                }
-                javaTag.put("Bees", javaBees);
+        final ListTag<CompoundTag> bedrockOccupants = bedrockTag.getListTag("Occupants", CompoundTag.class);
+        if (bedrockOccupants != null) {
+            final ListTag<CompoundTag> javaBees = new ListTag<>(CompoundTag.class);
+            for (CompoundTag bedrockOccupant : bedrockOccupants) {
+                final CompoundTag javaBee = new CompoundTag();
+                this.copy(bedrockOccupant, javaBee, "TicksLeftToStay", "MinOccupationTicks", IntTag.class);
+                javaBees.add(javaBee);
             }
+            javaTag.put("Bees", javaBees);
         }
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);

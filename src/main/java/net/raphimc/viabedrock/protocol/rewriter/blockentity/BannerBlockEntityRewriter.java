@@ -20,7 +20,10 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
@@ -49,7 +52,7 @@ public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             final int type = bedrockTag.<IntTag>get("Type").asInt();
             if (type == 1) { // ominous banner
                 bedrockTag.put("Base", new IntTag(DyeColor.WHITE.bedrockId()));
-                final ListTag patterns = new ListTag();
+                final ListTag<CompoundTag> patterns = new ListTag<>(CompoundTag.class);
                 patterns.add(this.createPattern("mr", 6));
                 patterns.add(this.createPattern("bs", 7));
                 patterns.add(this.createPattern("cs", 8));
@@ -62,20 +65,17 @@ public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             }
         }
 
-        if (bedrockTag.get("Patterns") instanceof ListTag) {
-            final ListTag bedrockPatterns = bedrockTag.get("Patterns");
-            if (CompoundTag.class.equals(bedrockPatterns.getElementType())) {
-                final ListTag javaPatterns = new ListTag();
-                for (Tag bedrockPatternTag : bedrockPatterns) {
-                    final CompoundTag bedrockPattern = (CompoundTag) bedrockPatternTag;
-                    if (!(bedrockPattern.get("Pattern") instanceof StringTag)) continue;
+        final ListTag<CompoundTag> bedrockPatterns = bedrockTag.getListTag("Patterns", CompoundTag.class);
+        if (bedrockPatterns != null) {
+            final ListTag<CompoundTag> javaPatterns = new ListTag<>(CompoundTag.class);
+            for (CompoundTag bedrockPattern : bedrockPatterns) {
+                if (!(bedrockPattern.get("Pattern") instanceof StringTag)) continue;
 
-                    final String pattern = bedrockPattern.<StringTag>get("Pattern").getValue();
-                    final DyeColor color = DyeColor.getByBedrockId(bedrockPattern.get("Color") instanceof IntTag ? bedrockPattern.<IntTag>get("Color").asInt() : DyeColor.BLACK.bedrockId(), DyeColor.PURPLE);
-                    javaPatterns.add(this.createPattern(pattern, color.javaId()));
-                }
-                javaTag.put("Patterns", javaPatterns);
+                final String pattern = bedrockPattern.<StringTag>get("Pattern").getValue();
+                final DyeColor color = DyeColor.getByBedrockId(bedrockPattern.get("Color") instanceof IntTag ? bedrockPattern.<IntTag>get("Color").asInt() : DyeColor.BLACK.bedrockId(), DyeColor.PURPLE);
+                javaPatterns.add(this.createPattern(pattern, color.javaId()));
             }
+            javaTag.put("Patterns", javaPatterns);
         }
 
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());

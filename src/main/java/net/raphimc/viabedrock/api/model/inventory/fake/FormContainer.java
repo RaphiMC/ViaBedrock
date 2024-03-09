@@ -317,7 +317,7 @@ public class FormContainer extends FakeContainer {
         final CompoundTag displayTag = new CompoundTag();
         displayTag.put("Name", new StringTag(this.stringToJson(name.replace("\n", " | "))));
         if (description.length > 0) {
-            final ListTag loreTags = new ListTag(StringTag.class);
+            final ListTag<StringTag> loreTags = new ListTag<>(StringTag.class);
             for (String desc : description) {
                 for (final String line : BedrockTextUtils.split(desc, "\n")) {
                     loreTags.add(new StringTag(this.stringToJson(line)));

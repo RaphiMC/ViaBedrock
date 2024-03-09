@@ -111,7 +111,7 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         }
 
         if (!components.isEmpty()) {
-            final ListTag messages = new ListTag(StringTag.class);
+            final ListTag<StringTag> messages = new ListTag<>(StringTag.class);
             for (int i = 0; i < 4; i++) {
                 messages.add(new StringTag(components.size() > i ? TextUtil.componentToJson(components.get(i)) : TextUtil.stringToJson("")));
             }

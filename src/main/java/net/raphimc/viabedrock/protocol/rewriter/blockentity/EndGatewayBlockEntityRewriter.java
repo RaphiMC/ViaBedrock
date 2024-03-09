@@ -37,15 +37,13 @@ public class EndGatewayBlockEntityRewriter implements BlockEntityRewriter.Rewrit
         if (bedrockTag.get("Age") instanceof IntTag) {
             javaTag.put("Age", new LongTag(((IntTag) bedrockTag.get("Age")).asInt()));
         }
-        if (bedrockTag.get("ExitPortal") instanceof ListTag) {
-            final ListTag bedrockExitPortal = bedrockTag.get("ExitPortal");
-            if (IntTag.class.equals(bedrockExitPortal.getElementType()) && bedrockExitPortal.size() == 3) {
-                final CompoundTag javaExitPortal = new CompoundTag();
-                javaExitPortal.put("X", bedrockExitPortal.get(0));
-                javaExitPortal.put("Y", bedrockExitPortal.get(1));
-                javaExitPortal.put("Z", bedrockExitPortal.get(2));
-                javaTag.put("ExitPortal", javaExitPortal);
-            }
+        final ListTag<IntTag> bedrockExitPortal = bedrockTag.getListTag("ExitPortal", IntTag.class);
+        if (bedrockExitPortal != null && bedrockExitPortal.size() == 3) {
+            final CompoundTag javaExitPortal = new CompoundTag();
+            javaExitPortal.put("X", bedrockExitPortal.get(0));
+            javaExitPortal.put("Y", bedrockExitPortal.get(1));
+            javaExitPortal.put("Z", bedrockExitPortal.get(2));
+            javaTag.put("ExitPortal", javaExitPortal);
         }
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);

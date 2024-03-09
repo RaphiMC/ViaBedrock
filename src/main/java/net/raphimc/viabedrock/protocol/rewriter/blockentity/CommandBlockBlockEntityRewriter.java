@@ -51,16 +51,14 @@ public class CommandBlockBlockEntityRewriter implements BlockEntityRewriter.Rewr
             final Function<String, String> translator = user.get(ResourcePacksStorage.class).getTranslationLookup();
 
             final List<String> lastOutputParams = new ArrayList<>();
-            if (bedrockTag.get("LastOutputParams") instanceof ListTag) {
-                final ListTag bedrockLastOutputParams = bedrockTag.get("LastOutputParams");
-                if (StringTag.class.equals(bedrockLastOutputParams.getElementType())) {
-                    for (Tag bedrockLastOutputParam : bedrockLastOutputParams) {
-                        lastOutputParams.add(((StringTag) bedrockLastOutputParam).getValue());
-                    }
+            final ListTag<StringTag> bedrockLastOutputParams = bedrockTag.getListTag("LastOutputParams", StringTag.class);
+            if (bedrockLastOutputParams != null) {
+                for (StringTag bedrockLastOutputParam : bedrockLastOutputParams) {
+                    lastOutputParams.add(bedrockLastOutputParam.getValue());
                 }
             }
 
-            final String bedrockLastOutput = bedrockTag.<StringTag>get("LastOutput").getValue();
+            final String bedrockLastOutput = bedrockTag.getStringTag("LastOutput").getValue();
             final String javaLastOutput = TextUtil.stringToJson(BedrockTranslator.translate(bedrockLastOutput, translator, lastOutputParams.toArray()));
             javaTag.put("LastOutput", new StringTag(javaLastOutput));
         }

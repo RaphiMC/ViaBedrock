@@ -44,9 +44,8 @@ public class JavaRegistries {
     }
 
     private static void modifyDimensionRegistry(final GameSessionStorage gameSession, final CompoundTag dimensionRegistry) {
-        final ListTag dimensions = dimensionRegistry.get("value");
-        final Map<String, CompoundTag> dimensionMap = dimensions.getValue()
-                .stream()
+        final ListTag<?> dimensions = dimensionRegistry.get("value");
+        final Map<String, CompoundTag> dimensionMap = dimensions.stream()
                 .map(CompoundTag.class::cast)
                 .collect(Collectors.toMap(tag -> tag.get("name").getValue().toString(), tag -> tag.get("element")));
 
@@ -68,8 +67,8 @@ public class JavaRegistries {
         }
     }
 
-    private static ListTag buildJavaBiomeRegistry(final CompoundTag biomeDefinitions) {
-        final ListTag javaBiomes = new ListTag();
+    private static ListTag<CompoundTag> buildJavaBiomeRegistry(final CompoundTag biomeDefinitions) {
+        final ListTag<CompoundTag> javaBiomes = new ListTag<>(CompoundTag.class);
         javaBiomes.add(getTheVoidBiome());
 
         final Map<String, Object> fogColor = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("fog_color");
@@ -100,7 +99,7 @@ public class JavaRegistries {
             element.put("downfall", bedrockBiome.get("downfall"));
             element.put("has_precipitation", bedrockBiome.get("rain"));
 
-            final List<String> tags = bedrockBiome.<ListTag>get("tags").getValue().stream().map(StringTag.class::cast).map(StringTag::getValue).collect(Collectors.toList());
+            final List<String> tags = bedrockBiome.getListTag("tags").stream().map(StringTag.class::cast).map(StringTag::getValue).collect(Collectors.toList());
 
             final CompoundTag effects = new CompoundTag();
             element.put("effects", effects);

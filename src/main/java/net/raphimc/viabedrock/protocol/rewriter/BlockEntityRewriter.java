@@ -20,7 +20,10 @@ package net.raphimc.viabedrock.protocol.rewriter;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
@@ -155,15 +158,13 @@ public class BlockEntityRewriter {
             return user.get(ItemRewriter.class).javaItem(bedrockItemTag);
         }
 
-        default ListTag rewriteItemList(final UserConnection user, final ListTag bedrockItemList) {
-            final ListTag javaItemList = new ListTag(bedrockItemList.getElementType());
-            if (CompoundTag.class.equals(bedrockItemList.getElementType())) {
-                final ItemRewriter itemRewriter = user.get(ItemRewriter.class);
-                for (final Tag bedrockItemTag : bedrockItemList) {
-                    final CompoundTag javaItemTag = itemRewriter.javaItem((CompoundTag) bedrockItemTag);
-                    this.copy((CompoundTag) bedrockItemTag, javaItemTag, "Slot", ByteTag.class);
-                    javaItemList.add(javaItemTag);
-                }
+        default ListTag<?> rewriteItemList(final UserConnection user, final ListTag<CompoundTag> bedrockItemList) {
+            final ListTag<CompoundTag> javaItemList = new ListTag<>(CompoundTag.class);
+            final ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+            for (final CompoundTag bedrockItemTag : bedrockItemList) {
+                final CompoundTag javaItemTag = itemRewriter.javaItem(bedrockItemTag);
+                this.copy(bedrockItemTag, javaItemTag, "Slot", ByteTag.class);
+                javaItemList.add(javaItemTag);
             }
             return javaItemList;
         }
