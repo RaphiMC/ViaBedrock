@@ -266,15 +266,15 @@ public class CommandData {
             public static final int TYPE_TARGET2 = 10;
             public static final int TYPE_FILE_PATH = 17;
             public static final int TYPE_INT_RANGE = 23;
-            public static final int TYPE_EQUIPMENT_SLOT = 43;
-            public static final int TYPE_STRING = 44;
-            public static final int TYPE_BLOCK_POSITION = 52;
-            public static final int TYPE_POSITION = 53;
-            public static final int TYPE_MESSAGE = 56;
-            public static final int TYPE_TEXT = 58;
-            public static final int TYPE_JSON = 62;
-            public static final int TYPE_BLOCK_STATES = 72;
-            public static final int TYPE_COMMAND = 75;
+            public static final int TYPE_EQUIPMENT_SLOT = 47;
+            public static final int TYPE_STRING = 56;
+            public static final int TYPE_BLOCK_POSITION = 64;
+            public static final int TYPE_POSITION = 65;
+            public static final int TYPE_MESSAGE = 68;
+            public static final int TYPE_TEXT = 70;
+            public static final int TYPE_JSON = 74;
+            public static final int TYPE_BLOCK_STATES = 84;
+            public static final int TYPE_COMMAND = 87;
 
             public static final short FLAG_FORCE_COLLAPSE_ENUM = 1 << 0; // Only visual change (<paramName: EnumName> -> <value1|value2>)
             public static final short FLAG_HAS_ENUM_CONSTRAINT = 1 << 1;

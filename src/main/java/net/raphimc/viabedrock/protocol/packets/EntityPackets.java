@@ -250,6 +250,7 @@ public class EntityPackets {
 
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // tick
 
             final Entity entity = entityTracker.getEntityByRid(runtimeEntityId);
             if (entity == null) {

@@ -65,5 +65,7 @@ public class AuthInputActions {
     public static final int STOP_FLYING = 43;
     public static final int ACK_ENTITY_DATA = 44;
     public static final int CLIENT_PREDICTED_VEHICLE = 45;
+    public static final int PADDLE_LEFT = 46;
+    public static final int PADDLE_RIGHT = 47;
 
 }

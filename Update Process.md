@@ -14,11 +14,13 @@ This file lists the steps necessary to update ViaBedrock.
 10. Update rewriters
 11. Done!
 
-Bedrock 1.20.60 -> Java 1.20.5
+Bedrock 1.20.70 -> Java 1.20.5
 * Items
   * minecraft:armadillo_scute
   * minecraft:armadillo_spawn_egg
-  * minecraft:breeze_spawn_egg
   * minecraft:wolf_armor
+  * minecraft:bogged_spawn_egg
+  * minecraft:vault
+  * minecraft:wind_charge
 * Check BlockEntities
 * Check block_id in custom blocks

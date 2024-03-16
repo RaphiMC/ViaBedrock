@@ -87,7 +87,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     MAP_INFO_REQUEST(68),
     REQUEST_CHUNK_RADIUS(69),
     CHUNK_RADIUS_UPDATED(70),
-    ITEM_FRAME_DROP_ITEM(71),
     GAME_RULES_CHANGED(72),
     CAMERA(73),
     BOSS_EVENT(74),

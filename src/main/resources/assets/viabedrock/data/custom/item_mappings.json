@@ -35,11 +35,11 @@
     }
   },
   "minecraft:dark_oak_planks": {
-      "block": {
+    "block": {
       "minecraft:dark_oak_planks": {
-          "java_id": "minecraft:dark_oak_planks"
+        "java_id": "minecraft:dark_oak_planks"
       }
-      }
+    }
   },
   "minecraft:mangrove_planks": {
     "block": {
@@ -1021,23 +1021,50 @@
     }
   },
   "minecraft:wooden_slab": {
-    "block": {
-      "minecraft:wooden_slab[wood_type=oak,minecraft:vertical_half=bottom]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:oak_slab"
-      },
-      "minecraft:wooden_slab[wood_type=spruce,minecraft:vertical_half=bottom]": {
+      }
+    }
+  },
+  "minecraft:oak_slab": {
+    "block": {
+      "minecraft:oak_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:oak_slab"
+      }
+    }
+  },
+  "minecraft:spruce_slab": {
+    "block": {
+      "minecraft:spruce_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:spruce_slab"
-      },
-      "minecraft:wooden_slab[wood_type=birch,minecraft:vertical_half=bottom]": {
+      }
+    }
+  },
+  "minecraft:birch_slab": {
+    "block": {
+      "minecraft:birch_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:birch_slab"
-      },
-      "minecraft:wooden_slab[wood_type=jungle,minecraft:vertical_half=bottom]": {
+      }
+    }
+  },
+  "minecraft:jungle_slab": {
+    "block": {
+      "minecraft:jungle_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:jungle_slab"
-      },
-      "minecraft:wooden_slab[wood_type=acacia,minecraft:vertical_half=bottom]": {
+      }
+    }
+  },
+  "minecraft:acacia_slab": {
+    "block": {
+      "minecraft:acacia_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:acacia_slab"
-      },
-      "minecraft:wooden_slab[wood_type=dark_oak,minecraft:vertical_half=bottom]": {
+      }
+    }
+  },
+  "minecraft:dark_oak_slab": {
+    "block": {
+      "minecraft:dark_oak_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:dark_oak_slab"
       }
     }
@@ -1134,31 +1161,51 @@
       }
     }
   },
-  "minecraft:double_wooden_slab": {
+  "minecraft:oak_double_slab": {
     "block": {
-      "minecraft:double_wooden_slab[wood_type=oak]": {
+      "minecraft:oak_double_slab": {
         "java_id": "minecraft:oak_planks",
-        "java_display_name": "Double Wooden Slab"
-      },
-      "minecraft:double_wooden_slab[wood_type=spruce]": {
+        "java_display_name": "Oak Double Slab"
+      }
+    }
+  },
+  "minecraft:spruce_double_slab": {
+    "block": {
+      "minecraft:spruce_double_slab": {
         "java_id": "minecraft:spruce_planks",
-        "java_display_name": "Double Wooden Slab"
-      },
-      "minecraft:double_wooden_slab[wood_type=birch]": {
+        "java_display_name": "Spruce Double Slab"
+      }
+    }
+  },
+  "minecraft:birch_double_slab": {
+    "block": {
+      "minecraft:birch_double_slab": {
         "java_id": "minecraft:birch_planks",
-        "java_display_name": "Double Wooden Slab"
-      },
-      "minecraft:double_wooden_slab[wood_type=jungle]": {
+        "java_display_name": "Birch Double Slab"
+      }
+    }
+  },
+  "minecraft:jungle_double_slab": {
+    "block": {
+      "minecraft:jungle_double_slab": {
         "java_id": "minecraft:jungle_planks",
-        "java_display_name": "Double Wooden Slab"
-      },
-      "minecraft:double_wooden_slab[wood_type=acacia]": {
+        "java_display_name": "Jungle Double Slab"
+      }
+    }
+  },
+  "minecraft:acacia_double_slab": {
+    "block": {
+      "minecraft:acacia_double_slab": {
         "java_id": "minecraft:acacia_planks",
-        "java_display_name": "Double Wooden Slab"
-      },
-      "minecraft:double_wooden_slab[wood_type=dark_oak]": {
+        "java_display_name": "Acacia Double Slab"
+      }
+    }
+  },
+  "minecraft:dark_oak_double_slab": {
+    "block": {
+      "minecraft:dark_oak_double_slab": {
         "java_id": "minecraft:dark_oak_planks",
-        "java_display_name": "Double Wooden Slab"
+        "java_display_name": "Dark Oak Double Slab"
       }
     }
   },
@@ -2347,9 +2394,9 @@
       }
     }
   },
-  "minecraft:grass": {
+  "minecraft:grass_block": {
     "block": {
-      "minecraft:grass": {
+      "minecraft:grass_block": {
         "java_id": "minecraft:grass_block"
       }
     }
@@ -2757,41 +2804,92 @@
     }
   },
   "minecraft:wood": {
-    "block": {
-      "minecraft:wood[pillar_axis=y,stripped_bit=0,wood_type=oak]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:oak_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=1,wood_type=oak]": {
+      }
+    }
+  },
+  "minecraft:oak_wood": {
+    "block": {
+      "minecraft:oak_wood[pillar_axis=y]": {
+        "java_id": "minecraft:oak_log"
+      }
+    }
+  },
+  "minecraft:stripped_oak_wood": {
+    "block": {
+      "minecraft:stripped_oak_wood[pillar_axis=y]": {
         "java_id": "minecraft:stripped_oak_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=0,wood_type=spruce]": {
+      }
+    }
+  },
+  "minecraft:spruce_wood": {
+    "block": {
+      "minecraft:spruce_wood[pillar_axis=y]": {
         "java_id": "minecraft:spruce_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=1,wood_type=spruce]": {
+      }
+    }
+  },
+  "minecraft:stripped_spruce_wood": {
+    "block": {
+      "minecraft:stripped_spruce_wood[pillar_axis=y]": {
         "java_id": "minecraft:stripped_spruce_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=0,wood_type=birch]": {
+      }
+    }
+  },
+  "minecraft:birch_wood": {
+    "block": {
+      "minecraft:birch_wood[pillar_axis=y]": {
         "java_id": "minecraft:birch_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=1,wood_type=birch]": {
+      }
+    }
+  },
+  "minecraft:stripped_birch_wood": {
+    "block": {
+      "minecraft:stripped_birch_wood[pillar_axis=y]": {
         "java_id": "minecraft:stripped_birch_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=0,wood_type=jungle]": {
+      }
+    }
+  },
+  "minecraft:jungle_wood": {
+    "block": {
+      "minecraft:jungle_wood[pillar_axis=y]": {
         "java_id": "minecraft:jungle_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=1,wood_type=jungle]": {
+      }
+    }
+  },
+  "minecraft:stripped_jungle_wood": {
+    "block": {
+      "minecraft:stripped_jungle_wood[pillar_axis=y]": {
         "java_id": "minecraft:stripped_jungle_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=0,wood_type=acacia]": {
+      }
+    }
+  },
+  "minecraft:acacia_wood": {
+    "block": {
+      "minecraft:acacia_wood[pillar_axis=y]": {
         "java_id": "minecraft:acacia_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=1,wood_type=acacia]": {
+      }
+    }
+  },
+  "minecraft:stripped_acacia_wood": {
+    "block": {
+      "minecraft:stripped_acacia_wood[pillar_axis=y]": {
         "java_id": "minecraft:stripped_acacia_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=0,wood_type=dark_oak]": {
+      }
+    }
+  },
+  "minecraft:dark_oak_wood": {
+    "block": {
+      "minecraft:dark_oak_wood[pillar_axis=y]": {
         "java_id": "minecraft:dark_oak_log"
-      },
-      "minecraft:wood[pillar_axis=y,stripped_bit=1,wood_type=dark_oak]": {
+      }
+    }
+  },
+  "minecraft:stripped_dark_oak_wood": {
+    "block": {
+      "minecraft:stripped_dark_oak_wood[pillar_axis=y]": {
         "java_id": "minecraft:stripped_dark_oak_log"
       }
     }
@@ -2867,27 +2965,57 @@
     }
   },
   "minecraft:leaves": {
-    "block": {
-      "minecraft:leaves[old_leaf_type=oak]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:oak_leaves"
-      },
-      "minecraft:leaves[old_leaf_type=spruce]": {
-        "java_id": "minecraft:spruce_leaves"
-      },
-      "minecraft:leaves[old_leaf_type=birch]": {
-        "java_id": "minecraft:birch_leaves"
-      },
-      "minecraft:leaves[old_leaf_type=jungle]": {
-        "java_id": "minecraft:jungle_leaves"
       }
     }
   },
   "minecraft:leaves2": {
-    "block": {
-      "minecraft:leaves2[new_leaf_type=acacia]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:acacia_leaves"
-      },
-      "minecraft:leaves2[new_leaf_type=dark_oak]": {
+      }
+    }
+  },
+  "minecraft:oak_leaves": {
+    "block": {
+      "minecraft:oak_leaves": {
+        "java_id": "minecraft:oak_leaves"
+      }
+    }
+  },
+  "minecraft:spruce_leaves": {
+    "block": {
+      "minecraft:spruce_leaves": {
+        "java_id": "minecraft:spruce_leaves"
+      }
+    }
+  },
+  "minecraft:birch_leaves": {
+    "block": {
+      "minecraft:birch_leaves": {
+        "java_id": "minecraft:birch_leaves"
+      }
+    }
+  },
+  "minecraft:jungle_leaves": {
+    "block": {
+      "minecraft:jungle_leaves": {
+        "java_id": "minecraft:jungle_leaves"
+      }
+    }
+  },
+  "minecraft:acacia_leaves": {
+    "block": {
+      "minecraft:acacia_leaves": {
+        "java_id": "minecraft:acacia_leaves"
+      }
+    }
+  },
+  "minecraft:dark_oak_leaves": {
+    "block": {
+      "minecraft:dark_oak_leaves": {
         "java_id": "minecraft:dark_oak_leaves"
       }
     }
@@ -4536,7 +4664,7 @@
   "minecraft:breeze_spawn_egg": {
     "meta": {
       "": {
-        "java_id": "minecraft:dirt"
+        "java_id": "minecraft:breeze_spawn_egg"
       }
     }
   },
@@ -12284,6 +12412,27 @@
   "minecraft:wolf_armor": {
     "meta": {
       "": {
+        "java_id": "minecraft:dirt"
+      }
+    }
+  },
+  "minecraft:bogged_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:dirt"
+      }
+    }
+  },
+  "minecraft:wind_charge": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:dirt"
+      }
+    }
+  },
+  "minecraft:vault": {
+    "block": {
+      "minecraft:vault": {
         "java_id": "minecraft:dirt"
       }
     }

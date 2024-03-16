@@ -1,0 +1,103 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 20,
+    "maxVersionPatch": 70,
+    "maxVersionRevision": 4,
+    "renamedIds": {
+        "minecraft:grass": "minecraft:grass_block"
+    },
+    "remappedStates": {
+        "minecraft:double_wooden_slab": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "wood_type",
+                    "suffix": "_double_slab"
+                },
+                "newState": null,
+                "copiedState": [
+                    "minecraft:vertical_half"
+                ]
+            }
+        ],
+        "minecraft:leaves": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "old_leaf_type",
+                    "suffix": "_leaves"
+                },
+                "newState": null,
+                "copiedState": [
+                    "persistent_bit",
+                    "update_bit"
+                ]
+            }
+        ],
+        "minecraft:leaves2": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "new_leaf_type",
+                    "suffix": "_leaves"
+                },
+                "newState": null,
+                "copiedState": [
+                    "persistent_bit",
+                    "update_bit"
+                ]
+            }
+        ],
+        "minecraft:wood": [
+            {
+                "oldState": {
+                    "stripped_bit": {
+                        "byte": 0
+                    }
+                },
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "wood_type",
+                    "suffix": "_wood"
+                },
+                "newState": null,
+                "copiedState": [
+                    "pillar_axis"
+                ]
+            },
+            {
+                "oldState": {
+                    "stripped_bit": {
+                        "byte": 1
+                    }
+                },
+                "newFlattenedName": {
+                    "prefix": "minecraft:stripped_",
+                    "flattenedProperty": "wood_type",
+                    "suffix": "_wood"
+                },
+                "newState": null,
+                "copiedState": [
+                    "pillar_axis"
+                ]
+            }
+        ],
+        "minecraft:wooden_slab": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "wood_type",
+                    "suffix": "_slab"
+                },
+                "newState": null,
+                "copiedState": [
+                    "minecraft:vertical_half"
+                ]
+            }
+        ]
+    }
+}
