@@ -148,8 +148,9 @@ def enumSourceDir = layout.buildDirectory.dir("generated/enums/main/java")
 def enumGeneratorTask = tasks.register("enumGeneratorTask", EnumGeneratorTask) {
     commitHash = "29488668ac9c7447f12a923650085ad128f5d5cc" // https://github.com/Mojang/bedrock-protocol-docs
     outputDirectory = enumSourceDir
-    tasks.compileJava.dependsOn(this)
 }
+tasks.compileJava.dependsOn(enumGeneratorTask)
+tasks.sourcesJar.dependsOn(enumGeneratorTask)
 
 sourceSets.main.java.srcDir(enumSourceDir)
 

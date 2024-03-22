@@ -289,15 +289,15 @@ public class HudPackets {
                 final ScoreboardEntry entry;
                 switch (action) {
                     case Change:
-                        final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
+                        final IdentityDefinition_Type type = IdentityDefinition_Type.getByValue(wrapper.read(Type.UNSIGNED_BYTE)); // type
                         Long entityId = null;
                         String fakePlayerName = null;
-                        if (type == 1 || type == 2) { // PLAYER or ENTITY
+                        if (type == IdentityDefinition_Type.Player || type == IdentityDefinition_Type.Entity) {
                             entityId = wrapper.read(BedrockTypes.VAR_LONG); // entity id
-                        } else if (type == 3) { // FAKE_PLAYER
+                        } else if (type == IdentityDefinition_Type.FakePlayer) {
                             fakePlayerName = wrapper.read(BedrockTypes.STRING); // fake player name
                         }
-                        entry = new ScoreboardEntry(score, type == 1, entityId, fakePlayerName);
+                        entry = new ScoreboardEntry(score, type == IdentityDefinition_Type.Player, entityId, fakePlayerName);
                         break;
                     case Remove:
                         entry = null;
