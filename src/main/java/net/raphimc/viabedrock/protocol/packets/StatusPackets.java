@@ -122,7 +122,7 @@ public class StatusPackets {
         });
 
         protocol.registerServerbound(State.STATUS, ServerboundStatusPackets.STATUS_REQUEST.getId(), 1/*UNCONNECTED_PING*/, wrapper -> {
-            wrapper.write(Type.LONG, System.currentTimeMillis()); // timestamp
+            wrapper.write(Type.LONG, System.nanoTime() / 1_000_000); // timestamp (system uptime)
         });
         protocol.registerServerbound(State.STATUS, ServerboundStatusPackets.PING_REQUEST.getId(), -1, wrapper -> {
             wrapper.cancel(); // Ping is added as a part of the player sample instead
