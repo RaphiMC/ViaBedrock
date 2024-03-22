@@ -45,6 +45,7 @@ import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -123,7 +124,7 @@ public class BedrockMappingData extends MappingDataBase {
         { // Bedrock misc
             this.bedrockVanillaResourcePack = this.readResourcePack("bedrock/vanilla_resource_pack.mcpack", UUID.fromString("0575c61f-a5da-4b7f-9961-ffda2908861e"), "0.0.1");
             this.bedrockVanillaSkinPack = this.readResourcePack("bedrock/vanilla_skin_pack.mcpack", UUID.fromString("c18e65aa-7b21-4637-9b63-8ad63622ef01"), "1.0.0");
-            this.bedrockVanillaSkinPack.setType(ResourcePack.TYPE_SKINS);
+            this.bedrockVanillaSkinPack.setType(PackType.Skins);
         }
 
         { // Java misc
@@ -685,7 +686,7 @@ public class BedrockMappingData extends MappingDataBase {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
             final byte[] bytes = ByteStreams.toByteArray(inputStream);
-            final ResourcePack resourcePack = new ResourcePack(uuid, version, "", "", "", false, false, 0, ResourcePack.TYPE_RESOURCE);
+            final ResourcePack resourcePack = new ResourcePack(uuid, version, "", "", "", false, false, 0, PackType.Resources);
             resourcePack.setCompressedDataLength(bytes.length, bytes.length);
             resourcePack.processDataChunk(0, bytes);
             return resourcePack;

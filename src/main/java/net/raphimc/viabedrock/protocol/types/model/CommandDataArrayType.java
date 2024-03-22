@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.types.model;
 import com.google.common.collect.Sets;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandParamTypes;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -145,7 +146,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
                             if (index >= 0 && index < dynamicEnumPalette.length) {
                                 params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, null, dynamicEnumPalette[index], null, null);
                             } else {
-                                params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, CommandData.OverloadData.ParamData.TYPE_STRING, null, null, null);
+                                params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, CommandParamTypes.TYPE_STRING, null, null, null);
                             }
                         });
                         continue;

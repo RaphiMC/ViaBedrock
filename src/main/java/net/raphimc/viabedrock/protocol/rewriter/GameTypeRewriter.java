@@ -17,37 +17,39 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameTypes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameType;
+import net.raphimc.viabedrock.protocol.data.enums.java.GameMode;
 
 public class GameTypeRewriter {
 
-    public static byte gameTypeToGameMode(final int gameType) {
+    public static GameMode gameTypeToGameMode(final int gameTypeId) {
+        final GameType gameType = GameType.getByValue(gameTypeId, GameType.Survival);
         switch (gameType) {
-            case GameTypes.SURVIVAL:
-            case GameTypes.SURVIVAL_VIEWER:
-            case GameTypes.CREATIVE_VIEWER:
-            default: // Mojang client defaults to survival in case of out of bounds values
-                return 0;
-            case GameTypes.CREATIVE:
-                return 1;
-            case GameTypes.ADVENTURE:
-                return 2;
-            case GameTypes.DEFAULT:
-                return -1;
-            case GameTypes.SPECTATOR:
-                return 3;
+            case Undefined:
+            case Default:
+                return null;
+            case Survival:
+                return GameMode.SURVIVAL;
+            case Creative:
+                return GameMode.CREATIVE;
+            case Adventure:
+                return GameMode.ADVENTURE;
+            case Spectator:
+                return GameMode.SPECTATOR;
+            default:
+                throw new IllegalStateException("Unhandled game type: " + gameType);
         }
     }
 
-    public static byte getEffectiveGameMode(final int playerGameType, final int levelGameType) {
-        byte effectiveGameMode = gameTypeToGameMode(playerGameType);
-        if (effectiveGameMode == -1) {
-            effectiveGameMode = gameTypeToGameMode(levelGameType);
+    public static byte getEffectiveGameMode(final int playerGameTypeId, final int levelGameTypeId) {
+        GameMode effectiveGameMode = gameTypeToGameMode(playerGameTypeId);
+        if (effectiveGameMode == null) {
+            effectiveGameMode = gameTypeToGameMode(levelGameTypeId);
         }
-        if (effectiveGameMode == -1) {
-            effectiveGameMode = 0; // Mojang client defaults to survival in case of out of bounds values
+        if (effectiveGameMode == null) {
+            effectiveGameMode = GameMode.SURVIVAL; // Mojang client defaults to survival in case of out of bounds values
         }
-        return effectiveGameMode;
+        return (byte) effectiveGameMode.ordinal();
     }
 
 }

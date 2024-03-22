@@ -37,12 +37,9 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ChatRestrictionLevels;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOutputTypes;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerPermissions;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.TextTypes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.model.CommandData;
-import net.raphimc.viabedrock.protocol.model.CommandOrigin;
+import net.raphimc.viabedrock.protocol.model.CommandOriginData;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -58,25 +55,31 @@ public class ChatPackets {
             @Override
             public void register() {
                 handler(wrapper -> {
-                    final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
+                    final short rawType = wrapper.read(Type.UNSIGNED_BYTE); // type
+                    final TextPacketType type = TextPacketType.getByValue(rawType);
+                    if (type == null) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown text type: " + rawType);
+                        wrapper.cancel();
+                        return;
+                    }
                     final boolean needsTranslation = wrapper.read(Type.BOOLEAN); // needs translation
 
                     final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTranslationLookup();
                     String originalMessage = null;
                     try {
                         switch (type) {
-                            case TextTypes.CHAT:
-                            case TextTypes.WHISPER:
-                            case TextTypes.ANNOUNCEMENT: {
+                            case Chat:
+                            case Whisper:
+                            case Announcement: {
                                 final String sourceName = wrapper.read(BedrockTypes.STRING); // source name
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 if (needsTranslation) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
-                                if (type == TextTypes.CHAT && !sourceName.isEmpty()) {
+                                if (type == TextPacketType.Chat && !sourceName.isEmpty()) {
                                     message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, message}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
-                                } else if (type == TextTypes.WHISPER) {
+                                } else if (type == TextPacketType.Whisper) {
                                     message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, BedrockTranslator.translate("§7§o%commands.message.display.incoming", translator, new String[]{sourceName, message})}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
                                 }
 
@@ -84,9 +87,9 @@ public class ChatPackets {
                                 wrapper.write(Type.BOOLEAN, false); // overlay
                                 break;
                             }
-                            case TextTypes.OBJECT:
-                            case TextTypes.OBJECT_WHISPER:
-                            case TextTypes.OBJECT_ANNOUNCEMENT: {
+                            case TextObjectWhisper:
+                            case TextObject:
+                            case TextObjectAnnouncement: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
                                 rootComponent.forEach(c -> {
@@ -101,21 +104,21 @@ public class ChatPackets {
                                 wrapper.write(Type.BOOLEAN, false); // overlay
                                 break;
                             }
-                            case TextTypes.RAW:
-                            case TextTypes.SYSTEM:
-                            case TextTypes.TIP: {
+                            case Raw:
+                            case SystemMessage:
+                            case Tip: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 if (needsTranslation) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
                                 wrapper.write(Type.TAG, TextUtil.stringToNbt(message)); // message
-                                wrapper.write(Type.BOOLEAN, type == TextTypes.TIP); // overlay
+                                wrapper.write(Type.BOOLEAN, type == TextPacketType.Tip); // overlay
                                 break;
                             }
-                            case TextTypes.TRANSLATION:
-                            case TextTypes.POPUP:
-                            case TextTypes.JUKEBOX_POPUP: {
+                            case Translate:
+                            case Popup:
+                            case JukeboxPopup: {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
                                 if (needsTranslation) {
@@ -123,12 +126,11 @@ public class ChatPackets {
                                 }
 
                                 wrapper.write(Type.TAG, TextUtil.stringToNbt(message)); // message
-                                wrapper.write(Type.BOOLEAN, type == TextTypes.POPUP || type == TextTypes.JUKEBOX_POPUP); // overlay
+                                wrapper.write(Type.BOOLEAN, type == TextPacketType.Popup || type == TextPacketType.JukeboxPopup); // overlay
                                 break;
                             }
-                            default: // Mojang client silently ignores unknown actions
-                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown text type: " + type);
-                                wrapper.cancel();
+                            default:
+                                throw new IllegalStateException("Unhandled text type: " + type);
                         }
                     } catch (Throwable e) { // Mojang client silently ignores errors
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalMessage + "' (" + type + ")", e);
@@ -140,17 +142,17 @@ public class ChatPackets {
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_20_3.SYSTEM_CHAT, wrapper -> {
-            final CommandOrigin originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN); // origin
-            final short type = wrapper.read(Type.UNSIGNED_BYTE); // type
+            final CommandOriginData originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN_DATA); // origin
+            final CommandOutputType type = CommandOutputType.getByValue(wrapper.read(Type.UNSIGNED_BYTE), CommandOutputType.None); // type
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
 
-            if (originData.type() != CommandOrigin.TYPE_PLAYER) { // Mojang client silently ignores non TYPE_PLAYER origins
+            if (originData.type() != CommandOriginType.Player) { // Mojang client ignores non player origins
                 wrapper.cancel();
                 return;
             }
+
             final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTranslationLookup();
             final StringBuilder message = new StringBuilder();
-
             final int messageCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // message count
             for (int i = 0; i < messageCount; i++) {
                 final boolean internal = wrapper.read(Type.BOOLEAN); // is internal
@@ -163,7 +165,7 @@ public class ChatPackets {
                     message.append("\n");
                 }
             }
-            if (type == CommandOutputTypes.DATA_SET) {
+            if (type == CommandOutputType.DataSet) {
                 wrapper.read(BedrockTypes.STRING); // data
             }
 
@@ -185,28 +187,38 @@ public class ChatPackets {
             final Set<String> values = Sets.newHashSet(wrapper.read(BedrockTypes.STRING_ARRAY)); // values
 
             final CommandData.EnumData dynamicEnum = commandsStorage.getDynamicEnum(name);
-            if (dynamicEnum == null) { // Mojang client silently ignores unknown enums
+            if (dynamicEnum == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received update for unknown dynamic enum: " + name);
                 return;
             }
 
-            final byte action = wrapper.read(Type.BYTE); // action
-            if (action == 0) { // ADD
-                dynamicEnum.addValues(values);
-            } else if (action == 1) { // REMOVE
-                dynamicEnum.removeValues(values);
-            } else if (action == 2) { // REPLACE
-                dynamicEnum.values().clear();
-                dynamicEnum.addValues(values);
-            } else { // Mojang client silently ignores unknown actions
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown dynamic enum action: " + action);
+            final byte rawAction = wrapper.read(Type.BYTE); // action
+            final SoftEnumUpdateType action = SoftEnumUpdateType.getByValue(rawAction);
+            if (action == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown dynamic enum action: " + rawAction);
+                return;
+            }
+
+            switch (action) {
+                case Add:
+                    dynamicEnum.addValues(values);
+                    break;
+                case Remove:
+                    dynamicEnum.removeValues(values);
+                    break;
+                case Replace:
+                    dynamicEnum.values().clear();
+                    dynamicEnum.addValues(values);
+                    break;
+                default:
+                    throw new IllegalStateException("Unhandled dynamic enum action: " + action);
             }
         });
 
         protocol.registerServerbound(ServerboundPackets1_20_3.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
             @Override
             public void register() {
-                create(Type.UNSIGNED_BYTE, TextTypes.CHAT); // type
+                create(Type.UNSIGNED_BYTE, (short) TextPacketType.Chat.getValue()); // type
                 create(Type.BOOLEAN, false); // needs translation
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(EntityTracker.class).getClientPlayer().name())); // source name
                 map(Type.STRING, BedrockTypes.STRING); // message
@@ -215,7 +227,7 @@ public class ChatPackets {
                 handler(PacketWrapper::clearInputBuffer);
                 handler(wrapper -> {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-                    if (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.COMMANDS_ONLY) {
+                    if (gameSession.getChatRestrictionLevel() != ChatRestrictionLevel.None) {
                         wrapper.cancel();
                         PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute")));
                     }
@@ -228,7 +240,7 @@ public class ChatPackets {
                 map(Type.STRING, BedrockTypes.STRING, c -> '/' + c); // command
                 handler(wrapper -> {
                     final UUID uuid = wrapper.user().getProtocolInfo().getUuid();
-                    wrapper.write(BedrockTypes.COMMAND_ORIGIN, new CommandOrigin(CommandOrigin.TYPE_PLAYER, uuid, "")); // origin
+                    wrapper.write(BedrockTypes.COMMAND_ORIGIN_DATA, new CommandOriginData(CommandOriginType.Player, uuid, "")); // origin
                 });
                 create(Type.BOOLEAN, false); // internal
                 create(BedrockTypes.VAR_INT, ProtocolConstants.BEDROCK_COMMAND_VERSION); // version
@@ -244,7 +256,7 @@ public class ChatPackets {
                         wrapper.cancel();
                     } else if (execResult != CommandsStorage.RESULT_ALLOW_SEND) {
                         final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-                        if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() >= ChatRestrictionLevels.HIDDEN && gameSession.getAbilities().playerPermission() <= PlayerPermissions.OPERATOR)) {
+                        if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() == ChatRestrictionLevel.Disabled && gameSession.getAbilities().playerPermission() <= PlayerPermissionLevel.Operator.getValue())) {
                             wrapper.cancel();
                             PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
                         }

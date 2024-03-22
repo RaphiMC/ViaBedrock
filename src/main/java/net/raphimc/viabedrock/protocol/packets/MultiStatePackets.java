@@ -31,7 +31,9 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.DisconnectReason;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.Connection_DisconnectFailReason;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketViolationSeverity;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketViolationType;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.ClientSettingsStorage;
 import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
@@ -45,7 +47,7 @@ import java.util.function.Function;
 public class MultiStatePackets {
 
     private static final PacketHandler DISCONNECT_HANDLER = wrapper -> {
-        final DisconnectReason disconnectReason = DisconnectReason.fromId(wrapper.read(BedrockTypes.VAR_INT)); // reason
+        final Connection_DisconnectFailReason disconnectReason = Connection_DisconnectFailReason.getByValue(wrapper.read(BedrockTypes.VAR_INT), Connection_DisconnectFailReason.Unknown); // reason
         final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
         if (hasMessage) {
             final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
@@ -59,18 +61,17 @@ public class MultiStatePackets {
     };
 
     private static final PacketHandler PACKET_VIOLATION_WARNING_HANDLER = wrapper -> {
-        final int type = wrapper.read(BedrockTypes.VAR_INT) + 1; // type
-        final int severity = wrapper.read(BedrockTypes.VAR_INT) + 1; // severity
+        final PacketViolationType type = PacketViolationType.getByValue(wrapper.read(BedrockTypes.VAR_INT), PacketViolationType.Unknown); // type
+        final PacketViolationSeverity severity = PacketViolationSeverity.getByValue(wrapper.read(BedrockTypes.VAR_INT), PacketViolationSeverity.Unknown); // severity
         final int packetIdCause = wrapper.read(BedrockTypes.VAR_INT); // cause packet id
         final String context = wrapper.read(BedrockTypes.STRING); // context
 
-        final String[] types = new String[]{"Unknown", "Malformed packet"};
-        final String[] severities = new String[]{"Unknown", "Warning", "Final warning", "Terminating connection"};
+        final ServerboundBedrockPackets packet = ServerboundBedrockPackets.getPacket(packetIdCause);
 
         final String reason = "§4Packet violation warning: §c"
-                + (type >= 0 && type <= types.length ? types[type] : type)
-                + " (" + (severity >= 0 && severity <= severities.length ? severities[severity] : severity) + ")\n"
-                + "Violating Packet: " + (ServerboundBedrockPackets.getPacket(packetIdCause) != null ? ServerboundBedrockPackets.getPacket(packetIdCause).name() : packetIdCause) + "\n"
+                + type.name()
+                + " (" + severity.name() + ")\n"
+                + "Violating Packet: " + (packet != null ? packet.name() : packetIdCause) + "\n"
                 + (context.isEmpty() ? "No context provided" : (" Context: '" + context + "'"))
                 + "\n\nPlease report this issue on the ViaBedrock GitHub page!";
         PacketFactory.writeDisconnect(wrapper, reason);

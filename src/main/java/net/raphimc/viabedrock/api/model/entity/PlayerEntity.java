@@ -26,6 +26,7 @@ import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.Clientb
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.java.PlayerTeamAction;
 
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ public class PlayerEntity extends Entity {
     public void createTeam() throws Exception {
         final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_3.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
-        teams.write(Type.BYTE, (byte) 0); // mode | 0 = ADD
+        teams.write(Type.BYTE, (byte) PlayerTeamAction.ADD.ordinal()); // mode
         teams.write(Type.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
         teams.write(Type.BYTE, (byte) 3); // flags
         teams.write(Type.STRING, "always"); // name tag visibility
@@ -55,7 +56,7 @@ public class PlayerEntity extends Entity {
 
         final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_3.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
-        teams.write(Type.BYTE, (byte) 2); // mode | 2 = UPDATE
+        teams.write(Type.BYTE, (byte) PlayerTeamAction.CHANGE.ordinal()); // mode
         teams.write(Type.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
         teams.write(Type.BYTE, (byte) 3); // flags
         teams.write(Type.STRING, "always"); // name tag visibility
@@ -69,7 +70,7 @@ public class PlayerEntity extends Entity {
     public void deleteTeam() throws Exception {
         final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_3.TEAMS, this.user);
         teams.write(Type.STRING, "vb_" + this.javaId); // team name
-        teams.write(Type.BYTE, (byte) 1); // mode | 1 = REMOVE
+        teams.write(Type.BYTE, (byte) PlayerTeamAction.REMOVE.ordinal()); // mode
         teams.send(BedrockProtocol.class);
     }
 

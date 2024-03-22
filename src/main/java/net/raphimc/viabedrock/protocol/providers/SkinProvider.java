@@ -25,7 +25,9 @@ import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.DeviceOS;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.BuildPlatform;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.InputMode;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.UIProfile;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
@@ -71,13 +73,13 @@ public class SkinProvider implements Provider {
         claims.put("CapeOnClassicSkin", false);
         claims.put("ClientRandomId", ThreadLocalRandom.current().nextLong()); // ?
         claims.put("SelfSignedId", UUID.randomUUID().toString()); // ?
-        claims.put("CurrentInputMode", 1);
-        claims.put("DefaultInputMode", 1);
+        claims.put("CurrentInputMode", InputMode.Mouse.getValue());
+        claims.put("DefaultInputMode", InputMode.Mouse.getValue());
         claims.put("GuiScale", -1L);
-        claims.put("UIProfile", 0);
+        claims.put("UIProfile", UIProfile.Classic.getValue());
         claims.put("DeviceId", authChainData.getDeviceId().toString());
         claims.put("DeviceModel", "");
-        claims.put("DeviceOS", DeviceOS.ANDROID.ordinal());
+        claims.put("DeviceOS", BuildPlatform.Google.getValue());
         claims.put("LanguageCode", "en_US");
         claims.put("PlatformOfflineId", "");
         claims.put("PlatformOnlineId", "");

@@ -17,9 +17,13 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public class ClientStatus {
+public enum PlayerInfoUpdateAction {
 
-    public static final int PERFORM_RESPAWN = 0;
-    public static final int REQUEST_STATS = 1;
+    ADD_PLAYER,
+    INITIALIZE_CHAT,
+    UPDATE_GAME_MODE,
+    UPDATE_LISTED,
+    UPDATE_LATENCY,
+    UPDATE_DISPLAY_NAME,
 
 }

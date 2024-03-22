@@ -33,8 +33,8 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
     @Override
     public PlayerAbilities read(ByteBuf buffer) throws Exception {
         final long uniqueEntityId = buffer.readLongLE();
-        final int playerPermission = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
-        final int commandPermission = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
+        final byte playerPermission = buffer.readByte();
+        final byte commandPermission = buffer.readByte();
 
         final int layerCount = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
         final Int2ObjectMap<PlayerAbilities.Abilities> abilityLayers = new Int2ObjectOpenHashMap<>(layerCount);

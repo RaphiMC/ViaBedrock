@@ -11,7 +11,7 @@ hs_err_pid*
 # Project files
 /.idea/*
 !/.idea/copyright/
-/.gradle/
-/build/
+.gradle/
+build/
 /out/
 /run/

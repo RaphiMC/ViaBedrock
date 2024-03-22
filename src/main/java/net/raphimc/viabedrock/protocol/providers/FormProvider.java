@@ -24,13 +24,11 @@ import com.viaversion.viaversion.api.type.Type;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public abstract class FormProvider implements Provider {
-
-    private static final byte USER_CLOSED = 0;
-    private static final byte USER_BUSY = 1;
 
     public abstract void openModalForm(final UserConnection user, final int id, final AForm form) throws Exception;
 
@@ -43,7 +41,7 @@ public abstract class FormProvider implements Provider {
             modalFormResponse.write(Type.BOOLEAN, false); // has cancel reason
         } else {
             modalFormResponse.write(Type.BOOLEAN, true); // has cancel reason
-            modalFormResponse.write(Type.BYTE, this.isAnyScreenOpen(user) ? USER_BUSY : USER_CLOSED); // cancel reason
+            modalFormResponse.write(Type.BYTE, (byte) (this.isAnyScreenOpen(user) ? ModalFormCancelReason.UserBusy : ModalFormCancelReason.UserClosed).getValue()); // cancel reason
         }
         modalFormResponse.sendToServer(BedrockProtocol.class);
     }

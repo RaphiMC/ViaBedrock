@@ -15,13 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.bedrock;
+package net.raphimc.viabedrock.protocol.data.enums;
 
-public class PlayerPermissions {
+public enum Dimension {
 
-    public static final int VISITOR = 0;
-    public static final int MEMBER = 1;
-    public static final int OPERATOR = 2;
-    public static final int CUSTOM = 3;
+    OVERWORLD("minecraft:overworld"),
+    NETHER("minecraft:the_nether"),
+    END("minecraft:the_end");
+
+    public static String[] getDimensionKeys() {
+        return new String[]{OVERWORLD.getKey(), NETHER.getKey(), END.getKey()};
+    }
+
+    public static Dimension getByValue(final int value) {
+        if (value < 0 || value >= values().length) {
+            return null;
+        }
+        return values()[value];
+    }
+
+    private final String key;
+
+    Dimension(final String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return this.key;
+    }
 
 }

@@ -15,16 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.bedrock;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public class SubChunkResults {
+public enum GameEventType {
 
-    public static final byte UNDEFINED = 0;
-    public static final byte SUCCESS = 1;
-    public static final byte CHUNK_NOT_FOUND = 2;
-    public static final byte INVALID_DIMENSION = 3;
-    public static final byte PLAYER_NOT_FOUND = 4;
-    public static final byte INDEX_OUT_OF_BOUNDS = 5;
-    public static final byte SUCCESS_ALL_AIR = 6;
+    NO_RESPAWN_BLOCK_AVAILABLE,
+    START_RAINING,
+    STOP_RAINING,
+    CHANGE_GAME_MODE,
+    WIN_GAME,
+    DEMO_EVENT,
+    ARROW_HIT_PLAYER,
+    RAIN_LEVEL_CHANGE,
+    THUNDER_LEVEL_CHANGE,
+    PUFFER_FISH_STING,
+    GUARDIAN_ELDER_EFFECT,
+    IMMEDIATE_RESPAWN,
+    LIMITED_CRAFTING,
+    LEVEL_CHUNKS_LOAD_START,
 
 }

@@ -21,6 +21,7 @@ import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.UUID;
@@ -50,7 +51,7 @@ public class BehaviourPackType extends Type<ResourcePack> {
             packUUID = new UUID(0L, 0L);
         }
 
-        return new ResourcePack(packUUID, packVersion, contentKey, subPackName, contentId, scripting, false, packSize, ResourcePack.TYPE_BEHAVIOR);
+        return new ResourcePack(packUUID, packVersion, contentKey, subPackName, contentId, scripting, false, packSize, PackType.Behavior);
     }
 
     @Override

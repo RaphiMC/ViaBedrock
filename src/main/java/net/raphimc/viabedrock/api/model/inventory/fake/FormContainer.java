@@ -36,7 +36,7 @@ import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
-import net.raphimc.viabedrock.protocol.data.enums.java.WindowClickActions;
+import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.providers.FormProvider;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
@@ -63,8 +63,8 @@ public class FormContainer extends FakeContainer {
     }
 
     @Override
-    public boolean handleWindowClick(int revision, short slot, byte button, int action) throws Exception {
-        if (action != WindowClickActions.PICKUP) return false;
+    public boolean handleWindowClick(int revision, short slot, byte button, ClickType action) throws Exception {
+        if (action != ClickType.PICKUP) return false;
 
         if (this.formItems.length > SIZE && slot == SIZE - 1) {
             final int pages = MathUtil.ceil(this.formItems.length / (SIZE - 1F));

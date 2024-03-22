@@ -84,7 +84,7 @@ public class BedrockTypes {
     public static final Type<BlockProperties[]> BLOCK_PROPERTIES_ARRAY = new ArrayType<>(BLOCK_PROPERTIES, UNSIGNED_VAR_INT);
     public static final Type<ItemEntry> ITEM_ENTRY = new ItemEntryType();
     public static final Type<ItemEntry[]> ITEM_ENTRY_ARRAY = new ArrayType<>(ITEM_ENTRY, UNSIGNED_VAR_INT);
-    public static final Type<CommandOrigin> COMMAND_ORIGIN = new CommandOriginType();
+    public static final Type<CommandOriginData> COMMAND_ORIGIN_DATA = new CommandOriginDataType();
     public static final Type<BedrockChunkSection> CHUNK_SECTION = new ChunkSectionType();
     public static final Type<Position> SUB_CHUNK_OFFSET = new SubChunkOffsetType();
     public static final Type<ResourcePack> BEHAVIOUR_PACK = new BehaviourPackType();

@@ -19,36 +19,37 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.model.CommandOrigin;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginType;
+import net.raphimc.viabedrock.protocol.model.CommandOriginData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class CommandOriginType extends Type<CommandOrigin> {
+public class CommandOriginDataType extends Type<CommandOriginData> {
 
-    public CommandOriginType() {
-        super(CommandOrigin.class);
+    public CommandOriginDataType() {
+        super(CommandOriginData.class);
     }
 
     @Override
-    public CommandOrigin read(ByteBuf buffer) throws Exception {
-        final int type = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
+    public CommandOriginData read(ByteBuf buffer) throws Exception {
+        final CommandOriginType type = CommandOriginType.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer), CommandOriginType.ExecuteContext);
         final java.util.UUID uuid = BedrockTypes.UUID.read(buffer);
         final String requestId = BedrockTypes.STRING.read(buffer);
 
         long event = -1;
-        if (type == CommandOrigin.TYPE_DEV_CONSOLE || type == CommandOrigin.TYPE_TEST) {
+        if (type == CommandOriginType.DevConsole || type == CommandOriginType.Test) {
             event = BedrockTypes.VAR_LONG.read(buffer);
         }
 
-        return new CommandOrigin(type, uuid, requestId, event);
+        return new CommandOriginData(type, uuid, requestId, event);
     }
 
     @Override
-    public void write(ByteBuf buffer, CommandOrigin value) throws Exception {
-        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.type());
+    public void write(ByteBuf buffer, CommandOriginData value) throws Exception {
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.type().getValue());
         BedrockTypes.UUID.write(buffer, value.uuid());
         BedrockTypes.STRING.write(buffer, value.requestId());
 
-        if (value.type() == CommandOrigin.TYPE_DEV_CONSOLE || value.type() == CommandOrigin.TYPE_TEST) {
+        if (value.type() == CommandOriginType.DevConsole || value.type() == CommandOriginType.Test) {
             BedrockTypes.VAR_LONG.write(buffer, value.event());
         }
     }

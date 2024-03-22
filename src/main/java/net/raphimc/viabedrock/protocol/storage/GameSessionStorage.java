@@ -25,6 +25,8 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ChatRestrictionLevel;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerAuthMovementMode;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 
 import java.util.HashMap;
@@ -39,13 +41,13 @@ public class GameSessionStorage implements StorableObject {
     private final Map<String, IntIntPair> bedrockDimensionDefinitions = new HashMap<>();
     private Semver bedrockVanillaVersion;
     private boolean flatGenerator;
-    private int movementMode;
+    private ServerAuthMovementMode movementMode;
     private int levelGameType;
     private boolean sentStartGameResponsePackets;
 
     private PlayerAbilities abilities;
 
-    private byte chatRestrictionLevel;
+    private ChatRestrictionLevel chatRestrictionLevel;
     private boolean commandsEnabled;
 
     public GameSessionStorage() {
@@ -101,11 +103,11 @@ public class GameSessionStorage implements StorableObject {
         this.flatGenerator = flatGenerator;
     }
 
-    public int getMovementMode() {
+    public ServerAuthMovementMode getMovementMode() {
         return this.movementMode;
     }
 
-    public void setMovementMode(final int movementMode) {
+    public void setMovementMode(final ServerAuthMovementMode movementMode) {
         this.movementMode = movementMode;
     }
 
@@ -133,11 +135,11 @@ public class GameSessionStorage implements StorableObject {
         this.abilities = abilities;
     }
 
-    public byte getChatRestrictionLevel() {
+    public ChatRestrictionLevel getChatRestrictionLevel() {
         return this.chatRestrictionLevel;
     }
 
-    public void setChatRestrictionLevel(final byte chatRestrictionLevel) {
+    public void setChatRestrictionLevel(final ChatRestrictionLevel chatRestrictionLevel) {
         this.chatRestrictionLevel = chatRestrictionLevel;
     }
 

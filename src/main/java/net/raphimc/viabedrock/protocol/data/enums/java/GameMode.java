@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.bedrock;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public class CommandOutputTypes {
+public enum GameMode {
 
-    public static final short NONE = 0;
-    public static final short LAST_OUTPUT = 1;
-    public static final short SILENT = 2;
-    public static final short ALL_OUTPUT = 3;
-    public static final short DATA_SET = 4;
+    SURVIVAL,
+    CREATIVE,
+    ADVENTURE,
+    SPECTATOR,
 
 }

@@ -15,18 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.bedrock;
+package net.raphimc.viabedrock.generator.util;
 
-public class PlayModes {
+public class Pair<K, V> {
 
-    public static final int NORMAL = 0;
-    public static final int TEASER = 1;
-    public static final int SCREEN = 2;
-    public static final int VIEWER = 3;
-    public static final int REALITY = 4;
-    public static final int PLACEMENT = 5;
-    public static final int LIVING_ROOM = 6;
-    public static final int EXIT_LEVEL = 7;
-    public static final int EXIT_LEVEL_LIVING_ROOM = 8;
+    private final K key;
+    private final V value;
+
+    public Pair(final K key, final V value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public K getKey() {
+        return this.key;
+    }
+
+    public V getValue() {
+        return this.value;
+    }
+
+    @Override
+    public String toString() {
+        return "Pair{" +
+                "key=" + this.key +
+                ", value=" + this.value +
+                '}';
+    }
 
 }

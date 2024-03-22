@@ -15,21 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.bedrock;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public class TextTypes {
+public enum ResourcePackAction {
 
-    public static final short RAW = 0;
-    public static final short CHAT = 1;
-    public static final short TRANSLATION = 2;
-    public static final short POPUP = 3;
-    public static final short JUKEBOX_POPUP = 4;
-    public static final short TIP = 5;
-    public static final short SYSTEM = 6;
-    public static final short WHISPER = 7;
-    public static final short ANNOUNCEMENT = 8;
-    public static final short OBJECT = 9;
-    public static final short OBJECT_WHISPER = 10;
-    public static final short OBJECT_ANNOUNCEMENT = 11;
+    SUCCESSFULLY_LOADED,
+    DECLINED,
+    FAILED_DOWNLOAD,
+    ACCEPTED,
+    DOWNLOADED,
+    INVALID_URL,
+    FAILED_RELOAD,
+    DISCARDED,
 
 }

@@ -24,11 +24,11 @@ import java.util.Objects;
 public class PlayerAbilities {
 
     private final long uniqueEntityId;
-    private final int playerPermission;
-    private final int commandPermission;
+    private final byte playerPermission;
+    private final byte commandPermission;
     private final Int2ObjectMap<Abilities> abilityLayers;
 
-    public PlayerAbilities(final long uniqueEntityId, final int playerPermission, final int commandPermission, final Int2ObjectMap<Abilities> abilityLayers) {
+    public PlayerAbilities(final long uniqueEntityId, final byte playerPermission, final byte commandPermission, final Int2ObjectMap<Abilities> abilityLayers) {
         this.uniqueEntityId = uniqueEntityId;
         this.playerPermission = playerPermission;
         this.commandPermission = commandPermission;
@@ -39,11 +39,11 @@ public class PlayerAbilities {
         return this.uniqueEntityId;
     }
 
-    public int playerPermission() {
+    public byte playerPermission() {
         return this.playerPermission;
     }
 
-    public int commandPermission() {
+    public byte commandPermission() {
         return this.commandPermission;
     }
 

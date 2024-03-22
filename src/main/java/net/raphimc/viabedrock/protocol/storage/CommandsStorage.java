@@ -48,7 +48,7 @@ import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ArgumentTypeRegistry;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandPermissions;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 
 import java.util.*;
@@ -195,10 +195,10 @@ public class CommandsStorage extends StoredObject {
             if (gameSession.getAbilities().commandPermission() < command.permission()) {
                 continue;
             }
-            if ((command.flags() & CommandData.FLAG_HIDDEN_FROM_COMMAND_BLOCK) != 0 && (command.flags() & CommandData.FLAG_HIDDEN_FROM_PLAYER) != 0 && (command.flags() & CommandData.FLAG_HIDDEN_FROM_AUTOMATION) != 0) {
+            if ((command.flags() & CommandFlags.HIDDEN_FROM_COMMAND_BLOCK) != 0 && (command.flags() & CommandFlags.HIDDEN_FROM_PLAYER) != 0 && (command.flags() & CommandFlags.HIDDEN_FROM_AUTOMATION) != 0) {
                 continue;
             }
-            if (!gameSession.areCommandsEnabled() && (command.flags() & CommandData.FLAG_NOT_CHEAT) == 0) {
+            if (!gameSession.areCommandsEnabled() && (command.flags() & CommandFlags.NOT_CHEAT) == 0) {
                 continue;
             }
 
@@ -211,25 +211,28 @@ public class CommandsStorage extends StoredObject {
 
                     final ArgumentBuilder<UserConnection, ?> argument;
                     if (parameter.enumData() != null) {
-                        if ((parameter.flags() & CommandData.OverloadData.ParamData.FLAG_ENUM_AS_CHAINED_COMMAND) != 0) {
+                        if ((parameter.flags() & CommandParameterOption.EnumAsChainedCommand.getValue()) != 0) {
                             throw new UnsupportedOperationException("Enum as chained command is not supported yet");
                         }
 
                         final ArgumentType<?> argumentType;
-                        if ((parameter.flags() & CommandData.OverloadData.ParamData.FLAG_HAS_ENUM_CONSTRAINT) != 0) {
+                        if ((parameter.flags() & CommandParameterOption.HasSemanticConstraint.getValue()) != 0) {
                             final Map<String, Set<Short>> enumDataValues = new HashMap<>(parameter.enumData().values());
                             enumDataValues.entrySet().removeIf(entry -> {
-                                if (!gameSession.areCommandsEnabled() && entry.getValue().contains(CommandData.EnumData.FLAG_CHEATS_ENABLED)) {
+                                if (!gameSession.areCommandsEnabled() && entry.getValue().contains(CommandEnumFlags.CHEATS_ENABLED)) {
                                     return true;
                                 }
-                                if (entry.getValue().contains(CommandData.EnumData.FLAG_OPERATOR_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissions.OPERATOR) {
+                                if (entry.getValue().contains(CommandEnumFlags.OPERATOR_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissionLevel.GameDirectors.getValue()) {
                                     return true;
                                 }
-                                return entry.getValue().contains(CommandData.EnumData.FLAG_HOST_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissions.HOST;
+                                return entry.getValue().contains(CommandEnumFlags.HOST_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissionLevel.Host.getValue();
                             });
                             final Set<String> values = new HashSet<>(enumDataValues.keySet());
-                            enumDataValues.entrySet().removeIf(entry -> entry.getValue().contains(CommandData.EnumData.FLAG_HIDE_FROM_COMPLETIONS));
+                            enumDataValues.entrySet().removeIf(entry -> entry.getValue().contains(CommandEnumFlags.HIDE_FROM_COMPLETIONS));
                             argumentType = EnumArgumentType.valuesAndCompletions(values, enumDataValues.keySet());
+                        } else if ((parameter.flags() & CommandParameterOption.EnumAutocompleteExpansion.getValue()) != 0) {
+                            // Only changes the visual representation of the enum: <paramName: enumName> -> <value1|value2|value3>
+                            argumentType = EnumArgumentType.values(parameter.enumData().values().keySet());
                         } else {
                             argumentType = EnumArgumentType.values(parameter.enumData().values().keySet());
                         }
@@ -244,50 +247,50 @@ public class CommandsStorage extends StoredObject {
                     } else if (parameter.type() == null) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid command parameter: " + parameter);
                         argument = argument(parameter.name() + ": unknown", StringArgumentType.greedyString());
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_INT) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_INT) {
                         argument = argument(parameter.name() + ": int", IntegerArgumentType.integer());
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_FLOAT1 || parameter.type() == CommandData.OverloadData.ParamData.TYPE_FLOAT2) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_FLOAT1 || parameter.type() == CommandParamTypes.TYPE_FLOAT2) {
                         argument = argument(parameter.name() + ": float", FloatArgumentType.floatArg());
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_VALUE) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_VALUE) {
                         final ArgumentType<?> argumentType = ValueArgumentType.value();
                         argument = argument(parameter.name() + ": value", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_WILDCARD_INT) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_WILDCARD_INT) {
                         final ArgumentType<?> argumentType = WildcardIntegerArgumentType.wildcardInteger();
                         argument = argument(parameter.name() + ": wildcard int", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_OPERATOR) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_OPERATOR) {
                         argument = argument(parameter.name() + ": operator", OperatorArgumentType.operator());
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_COMPARE_OPERATOR) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_COMPARE_OPERATOR) {
                         final ArgumentType<?> argumentType = CompareOperatorArgumentType.compareOperator();
                         argument = argument(parameter.name() + ": compare operator", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_TARGET1 || parameter.type() == CommandData.OverloadData.ParamData.TYPE_TARGET2) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_TARGET1 || parameter.type() == CommandParamTypes.TYPE_TARGET2) {
                         // TODO: Enhancement: Implement target argument type
                         final ArgumentType<?> argumentType = TargetArgumentType.target();
                         argument = argument(parameter.name() + ": target", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_FILE_PATH) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_FILE_PATH) {
                         argument = argument(parameter.name() + ": filepath", StringArgumentType.string());
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_INT_RANGE) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_INT_RANGE) {
                         final ArgumentType<?> argumentType = IntegerRangeArgumentType.integerRange();
                         argument = argument(parameter.name() + ": integer range", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_EQUIPMENT_SLOT) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_EQUIPMENT_SLOT) {
                         final ArgumentType<?> argumentType = EquipmentSlotArgumentType.equipmentSlot();
                         argument = argument(parameter.name() + ": equipment slots", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_STRING) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_STRING) {
                         argument = argument(parameter.name() + ": string", StringArgumentType.string());
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_BLOCK_POSITION) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_BLOCK_POSITION) {
                         argument = argument(parameter.name() + ": x y z", BlockPositionArgumentType.blockPosition());
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_POSITION) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_POSITION) {
                         argument = argument(parameter.name() + ": x y z", PositionArgumentType.position());
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_MESSAGE) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_MESSAGE) {
                         argument = argument(parameter.name() + ": message", StringArgumentType.greedyString());
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_TEXT) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_TEXT) {
                         argument = argument(parameter.name() + ": text", StringArgumentType.greedyString());
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_JSON) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_JSON) {
                         final ArgumentType<?> argumentType = JsonArgumentType.json();
                         argument = argument(parameter.name() + ": json", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_BLOCK_STATES) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_BLOCK_STATES) {
                         final ArgumentType<?> argumentType = BlockStatesArgumentType.blockStates();
                         argument = argument(parameter.name() + ": block states", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandData.OverloadData.ParamData.TYPE_COMMAND) {
+                    } else if (parameter.type() == CommandParamTypes.TYPE_COMMAND) {
                         hasRedirect = true;
                         last = null;
                         continue;

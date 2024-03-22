@@ -46,10 +46,10 @@ import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
-import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.*;
@@ -66,7 +66,7 @@ public class ChunkTracker extends StoredObject {
         Arrays.fill(FULL_LIGHT, (byte) 0xFF);
     }
 
-    private final int dimensionId;
+    private final Dimension dimension;
     private final int minY;
     private final int worldHeight;
     private final Type<Chunk> chunkType;
@@ -83,13 +83,13 @@ public class ChunkTracker extends StoredObject {
     private int centerZ = 0;
     private int radius;
 
-    public ChunkTracker(final UserConnection user, final int dimensionId) {
+    public ChunkTracker(final UserConnection user, final Dimension dimension) {
         super(user);
-        this.dimensionId = dimensionId;
+        this.dimension = dimension;
 
         final GameSessionStorage gameSession = user.get(GameSessionStorage.class);
         final CompoundTag registries = gameSession.getJavaRegistries();
-        final String dimensionKey = DimensionIdRewriter.dimensionIdToDimensionKey(this.dimensionId);
+        final String dimensionKey = this.dimension.getKey();
         final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
         final ListTag<?> dimensions = dimensionRegistry.get("value");
         final CompoundTag biomeRegistry = registries.get("minecraft:worldgen/biome");
@@ -443,8 +443,8 @@ public class ChunkTracker extends StoredObject {
         wrapper.send(BedrockProtocol.class);
     }
 
-    public int getDimensionId() {
-        return this.dimensionId;
+    public Dimension getDimension() {
+        return this.dimension;
     }
 
     public int getMinY() {
@@ -509,7 +509,7 @@ public class ChunkTracker extends StoredObject {
                 this.subChunkRequests.removeAll(group);
 
                 final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.getUser());
-                subChunkRequest.write(BedrockTypes.VAR_INT, this.dimensionId); // dimension id
+                subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
                 subChunkRequest.write(BedrockTypes.POSITION_3I, basePosition); // base position
                 subChunkRequest.write(BedrockTypes.INT_LE, group.size()); // sub chunk offset count
                 for (SubChunkPosition subChunkPosition : group) {

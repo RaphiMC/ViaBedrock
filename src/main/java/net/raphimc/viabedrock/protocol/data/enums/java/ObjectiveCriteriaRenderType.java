@@ -15,16 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.bedrock;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public class GameTypes {
+public enum ObjectiveCriteriaRenderType {
 
-    public static final int SURVIVAL = 0;
-    public static final int CREATIVE = 1;
-    public static final int ADVENTURE = 2;
-    public static final int SURVIVAL_VIEWER = 3;
-    public static final int CREATIVE_VIEWER = 4;
-    public static final int DEFAULT = 5;
-    public static final int SPECTATOR = 6;
+    INTEGER,
+    HEARTS,
 
 }

@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.bedrock;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public class DimensionIds {
+public enum PlayerTeamAction {
 
-    public static final int OVERWORLD = 0;
-    public static final int NETHER = 1;
-    public static final int END = 2;
-    public static final int OVERWORLD_CAVES = 3;
+    ADD,
+    REMOVE,
+    CHANGE,
+    JOIN,
+    LEAVE,
 
 }

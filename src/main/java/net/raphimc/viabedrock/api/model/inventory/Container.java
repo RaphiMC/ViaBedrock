@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.api.model.inventory;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
+import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
@@ -41,7 +42,7 @@ public abstract class Container {
         System.arraycopy(items, 0, this.items, 0, items.length);
     }
 
-    public boolean handleWindowClick(final int revision, final short slot, final byte button, final int action) throws Exception {
+    public boolean handleWindowClick(final int revision, final short slot, final byte button, final ClickType action) throws Exception {
         return false;
     }
 

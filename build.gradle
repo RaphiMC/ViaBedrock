@@ -1,8 +1,10 @@
+import net.raphimc.viabedrock.generator.EnumGeneratorTask
+
 plugins {
     id "java-library"
     id "maven-publish"
     id "signing"
-    id "idea"
+    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.8"
     id "net.raphimc.class-token-replacer" version "1.0.0"
 }
 
@@ -142,10 +144,24 @@ project.tasks.withType(PublishToMavenRepository).forEach {
     it.dependsOn(project.tasks.withType(Sign))
 }
 
+def enumSourceDir = layout.buildDirectory.dir("generated/enums/main/java")
+def enumGeneratorTask = tasks.register("enumGeneratorTask", EnumGeneratorTask) {
+    commitHash = "29488668ac9c7447f12a923650085ad128f5d5cc" // https://github.com/Mojang/bedrock-protocol-docs
+    outputDirectory = enumSourceDir
+    tasks.compileJava.dependsOn(this)
+}
+
+sourceSets.main.java.srcDir(enumSourceDir)
+
 idea {
     module {
         ["run"].each {
             excludeDirs << file("$it")
+        }
+    }
+    project.settings {
+        taskTriggers {
+            afterSync enumGeneratorTask
         }
     }
 }

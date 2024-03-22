@@ -21,16 +21,6 @@ import java.util.*;
 
 public class CommandData {
 
-    public static final int FLAG_TEST_USAGE = 1 << 0;
-    public static final int FLAG_HIDDEN_FROM_COMMAND_BLOCK = 1 << 1;
-    public static final int FLAG_HIDDEN_FROM_PLAYER = 1 << 2;
-    public static final int FLAG_HIDDEN_FROM_AUTOMATION = 1 << 3;
-    public static final int FLAG_LOCAL_SYNC = 1 << 4;
-    public static final int FLAG_EXECUTE_DISALLOWED = 1 << 5;
-    public static final int FLAG_MESSAGE_TYPE = 1 << 6;
-    public static final int FLAG_NOT_CHEAT = 1 << 7;
-    public static final int FLAG_ASYNC = 1 << 8;
-
     private final String name;
     private final String description;
     private final int flags;
@@ -100,11 +90,6 @@ public class CommandData {
 
 
     public static class EnumData {
-
-        public static final short FLAG_CHEATS_ENABLED = 0;
-        public static final short FLAG_OPERATOR_PERMISSIONS = 1;
-        public static final short FLAG_HOST_PERMISSIONS = 2;
-        public static final short FLAG_HIDE_FROM_COMPLETIONS = 3;
 
         private final String name;
         private final Map<String, Set<Short>> values;
@@ -254,31 +239,6 @@ public class CommandData {
         }
 
         public static class ParamData {
-
-            public static final int TYPE_INT = 1;
-            public static final int TYPE_FLOAT1 = 2;
-            public static final int TYPE_FLOAT2 = 3;
-            public static final int TYPE_VALUE = 4;
-            public static final int TYPE_WILDCARD_INT = 5;
-            public static final int TYPE_OPERATOR = 6;
-            public static final int TYPE_COMPARE_OPERATOR = 7;
-            public static final int TYPE_TARGET1 = 8;
-            public static final int TYPE_TARGET2 = 10;
-            public static final int TYPE_FILE_PATH = 17;
-            public static final int TYPE_INT_RANGE = 23;
-            public static final int TYPE_EQUIPMENT_SLOT = 47;
-            public static final int TYPE_STRING = 56;
-            public static final int TYPE_BLOCK_POSITION = 64;
-            public static final int TYPE_POSITION = 65;
-            public static final int TYPE_MESSAGE = 68;
-            public static final int TYPE_TEXT = 70;
-            public static final int TYPE_JSON = 74;
-            public static final int TYPE_BLOCK_STATES = 84;
-            public static final int TYPE_COMMAND = 87;
-
-            public static final short FLAG_FORCE_COLLAPSE_ENUM = 1 << 0; // Only visual change (<paramName: EnumName> -> <value1|value2>)
-            public static final short FLAG_HAS_ENUM_CONSTRAINT = 1 << 1;
-            public static final short FLAG_ENUM_AS_CHAINED_COMMAND = 1 << 2;
 
             private final String name;
             private final boolean optional;

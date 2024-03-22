@@ -15,18 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.bedrock;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public class TitleTypes {
+public enum ScoreboardObjectiveAction {
 
-    public static final int CLEAR = 0;
-    public static final int RESET = 1;
-    public static final int TITLE = 2;
-    public static final int SUBTITLE = 3;
-    public static final int ACTIONBAR = 4;
-    public static final int TIMES = 5;
-    public static final int TITLE_JSON = 6;
-    public static final int SUBTITLE_JSON = 7;
-    public static final int ACTIONBAR_JSON = 8;
+    ADD,
+    REMOVE,
+    CHANGE,
 
 }

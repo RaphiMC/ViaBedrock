@@ -15,39 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.bedrock;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public enum DeviceOS {
+public enum ClickType {
 
-    UNKNOWN("Unknown"),
-    ANDROID("Android"),
-    IOS("iOS"),
-    MAC_OS("macOS"),
-    FIRE_OS("FireOS"),
-    GEAR_VR("Gear VR"),
-    HOLOLENS("Hololens"),
-    UWP("UWP"),
-    WIN32("Windows x86"),
-    DEDICATED("Dedicated"),
-    TVOS("Apple TV"),
-    PS4("PS4"),
-    SWITCH("Switch"),
-    XBOX_ONE("Xbox One"),
-    WINDOWS_PHONE("Windows Phone"),
-    LINUX("Linux");
-
-    private final String name;
-
-    DeviceOS(final String name) {
-        this.name = name;
-    }
-
-    public static DeviceOS fromId(final int id) {
-        return id >= 0 && id < values().length ? values()[id] : UNKNOWN;
-    }
-
-    public String getDisplayName() {
-        return this.name;
-    }
+    PICKUP,
+    QUICK_MOVE,
+    SWAP,
+    CLONE,
+    THROW,
+    QUICK_CRAFT,
+    PICKUP_ALL,
 
 }

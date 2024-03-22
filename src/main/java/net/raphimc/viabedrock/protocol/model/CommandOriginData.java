@@ -17,52 +17,37 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginType;
+
 import java.util.Objects;
 import java.util.UUID;
 
-public class CommandOrigin {
+public class CommandOriginData {
 
-    public static final int TYPE_PLAYER = 0;
-    public static final int TYPE_BLOCK = 1;
-    public static final int TYPE_MINECART_BLOCK = 2;
-    public static final int TYPE_DEV_CONSOLE = 3;
-    public static final int TYPE_TEST = 4;
-    public static final int TYPE_AUTOMATION_PLAYER = 5;
-    public static final int TYPE_CLIENT_AUTOMATION = 6;
-    public static final int TYPE_DEDICATED_SERVER = 7;
-    public static final int TYPE_ENTITY = 8;
-    public static final int TYPE_VIRTUAL = 9;
-    public static final int TYPE_GAME_ARGUMENT = 10;
-    public static final int TYPE_ENTITY_SERVER = 11;
-    public static final int TYPE_PRECOMPILED = 12;
-    public static final int TYPE_GAME_DIRECTOR_ENTITY_SERVER = 13;
-    public static final int TYPE_SCRIPT = 14;
-    public static final int TYPE_EXECUTE_CONTEXT = 15;
-
-    private final int type;
+    private final CommandOriginType type;
     private final UUID uuid;
     private final String requestId;
     private final long event;
 
-    public CommandOrigin(final int type, final UUID uuid, final String requestId) {
+    public CommandOriginData(final CommandOriginType type, final UUID uuid, final String requestId) {
         this(type, uuid, requestId, -1);
     }
 
-    public CommandOrigin(final int type, final UUID uuid, final String requestId, final long event) {
+    public CommandOriginData(final CommandOriginType type, final UUID uuid, final String requestId, final long event) {
         this.type = type;
         this.uuid = uuid;
         this.requestId = requestId;
         this.event = event;
     }
 
-    public CommandOrigin(final CommandOrigin type) {
+    public CommandOriginData(final CommandOriginData type) {
         this.type = type.type;
         this.uuid = type.uuid;
         this.requestId = type.requestId;
         this.event = type.event;
     }
 
-    public int type() {
+    public CommandOriginType type() {
         return this.type;
     }
 
@@ -82,7 +67,7 @@ public class CommandOrigin {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CommandOrigin that = (CommandOrigin) o;
+        CommandOriginData that = (CommandOriginData) o;
         return type == that.type && event == that.event && Objects.equals(uuid, that.uuid) && Objects.equals(requestId, that.requestId);
     }
 
@@ -93,7 +78,7 @@ public class CommandOrigin {
 
     @Override
     public String toString() {
-        return "CommandOrigin{" +
+        return "CommandOriginData{" +
                 "type=" + type +
                 ", uuid=" + uuid +
                 ", requestId='" + requestId + '\'' +

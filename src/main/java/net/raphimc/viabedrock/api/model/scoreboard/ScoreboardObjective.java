@@ -22,6 +22,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ObjectiveSortOrder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,12 +31,12 @@ public class ScoreboardObjective {
 
     private final String name;
     private final Map<Long, ScoreboardEntry> entries;
-    private final boolean ascending;
+    private final ObjectiveSortOrder sortOrder;
 
-    public ScoreboardObjective(final String name, final boolean ascending) {
+    public ScoreboardObjective(final String name, final ObjectiveSortOrder sortOrder) {
         this.name = name;
         this.entries = new HashMap<>();
-        this.ascending = ascending;
+        this.sortOrder = sortOrder;
     }
 
     public ScoreboardEntry getEntry(final long scoreboardId) {
@@ -85,7 +86,7 @@ public class ScoreboardObjective {
         final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_20_3.UPDATE_SCORE, user);
         updateScore.write(Type.STRING, entry.javaName()); // player name
         updateScore.write(Type.STRING, this.name); // objective name
-        updateScore.write(Type.VAR_INT, ascending ? -entry.score() : entry.score()); // score
+        updateScore.write(Type.VAR_INT, this.sortOrder == ObjectiveSortOrder.Ascending ? -entry.score() : entry.score()); // score
         updateScore.write(Type.OPTIONAL_TAG, null); // display name
         updateScore.write(Type.BOOLEAN, false); // has number format
         updateScore.send(BedrockProtocol.class);

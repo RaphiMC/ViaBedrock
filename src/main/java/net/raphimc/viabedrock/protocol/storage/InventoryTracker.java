@@ -29,7 +29,8 @@ import net.raphimc.viabedrock.api.model.inventory.fake.FakeContainer;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.WindowIds;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
+import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
@@ -43,7 +44,7 @@ public class InventoryTracker extends StoredObject {
     private static final int MAX_FAKE_ID = 111;
     private final AtomicInteger FAKE_ID_COUNTER = new AtomicInteger(MIN_FAKE_ID);
 
-    private final Container inventoryContainer = new InventoryContainer(WindowIds.INVENTORY);
+    private final Container inventoryContainer = new InventoryContainer((byte) ContainerID.CONTAINER_ID_INVENTORY.getValue());
 
     private Position currentContainerPosition = null;
     private Container currentContainer = null;
@@ -57,7 +58,7 @@ public class InventoryTracker extends StoredObject {
     }
 
     public Container getContainer(final byte windowId) {
-        if (windowId == WindowIds.INVENTORY) return this.inventoryContainer;
+        if (windowId == ContainerID.CONTAINER_ID_INVENTORY.getValue()) return this.inventoryContainer;
         if (this.currentContainer != null && this.currentContainer.windowId() == windowId) return this.currentContainer;
 
         return null;
@@ -124,7 +125,7 @@ public class InventoryTracker extends StoredObject {
         containerClose.sendToServer(BedrockProtocol.class);
     }
 
-    public void handleWindowClick(final byte windowId, final int revision, final short slot, final byte button, final int action) throws Exception {
+    public void handleWindowClick(final byte windowId, final int revision, final short slot, final byte button, final ClickType action) throws Exception {
         if (this.pendingCloseContainer != null) return;
         final Container targetContainer = this.currentContainer != null ? this.currentContainer : this.currentFakeContainer;
         if (targetContainer == null) return;

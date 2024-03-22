@@ -17,10 +17,16 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class ChatRestrictionLevels {
+public class CommandFlags {
 
-    public static final byte UNRESTRICTED = 0;
-    public static final byte COMMANDS_ONLY = 1;
-    public static final byte HIDDEN = 2;
+    public static final int TEST_USAGE = 1 << 0;
+    public static final int HIDDEN_FROM_COMMAND_BLOCK = 1 << 1;
+    public static final int HIDDEN_FROM_PLAYER = 1 << 2;
+    public static final int HIDDEN_FROM_AUTOMATION = 1 << 3;
+    public static final int LOCAL_SYNC = 1 << 4;
+    public static final int EXECUTE_DISALLOWED = 1 << 5;
+    public static final int MESSAGE_TYPE = 1 << 6;
+    public static final int NOT_CHEAT = 1 << 7;
+    public static final int ASYNC = 1 << 8;
 
 }

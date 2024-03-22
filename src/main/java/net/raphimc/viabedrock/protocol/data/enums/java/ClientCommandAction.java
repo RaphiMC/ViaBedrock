@@ -15,12 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.data.enums.bedrock;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public class ServerMovementModes {
+public enum ClientCommandAction {
 
-    public static final int CLIENT = 0;
-    public static final int SERVER = 1;
-    public static final int SERVER_WITH_REWIND = 2;
+    PERFORM_RESPAWN,
+    REQUEST_STATS,
 
 }

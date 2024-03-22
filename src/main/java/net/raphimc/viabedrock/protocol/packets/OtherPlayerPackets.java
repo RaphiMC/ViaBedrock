@@ -32,7 +32,8 @@ import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerPositionModeComponent_PositionMode;
+import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.EntityLink;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
@@ -78,7 +79,7 @@ public class OtherPlayerPackets {
             entity.updateName(username);
 
             final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_20_3.PLAYER_INFO_UPDATE, wrapper.user());
-            playerInfoUpdate.write(Type.PROFILE_ACTIONS_ENUM, BitSets.create(6, 0, 2)); // actions | ADD_PLAYER, UPDATE_GAME_MODE
+            playerInfoUpdate.write(Type.PROFILE_ACTIONS_ENUM, BitSets.create(6, PlayerInfoUpdateAction.ADD_PLAYER.ordinal(), PlayerInfoUpdateAction.UPDATE_GAME_MODE.ordinal())); // actions
             playerInfoUpdate.write(Type.VAR_INT, 1); // length
             playerInfoUpdate.write(Type.UUID, uuid); // uuid
             playerInfoUpdate.write(Type.STRING, StringUtil.encodeUUID(uuid)); // username
@@ -115,10 +116,10 @@ public class OtherPlayerPackets {
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
-            final short mode = wrapper.read(Type.UNSIGNED_BYTE); // mode
+            final PlayerPositionModeComponent_PositionMode mode = PlayerPositionModeComponent_PositionMode.getByValue(wrapper.read(Type.UNSIGNED_BYTE), PlayerPositionModeComponent_PositionMode.OnlyHeadRot); // mode
             final boolean onGround = wrapper.read(Type.BOOLEAN); // on ground
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // riding runtime entity id
-            if (mode == MovePlayerModes.TELEPORT) {
+            if (mode == PlayerPositionModeComponent_PositionMode.Teleport) {
                 wrapper.read(BedrockTypes.INT_LE); // teleportation cause
                 wrapper.read(BedrockTypes.INT_LE); // entity type
             }
@@ -135,8 +136,8 @@ public class OtherPlayerPackets {
                 return;
             }
 
-            if (mode == MovePlayerModes.HEAD_ROTATION) {
-                BedrockProtocol.kickForIllegalState(wrapper.user(), "Head rotation is not implemented");
+            if (mode == PlayerPositionModeComponent_PositionMode.OnlyHeadRot) {
+                BedrockProtocol.kickForIllegalState(wrapper.user(), "PlayerPositionModeComponent_PositionMode.OnlyHeadRot is not implemented");
                 return;
             }
 
@@ -144,10 +145,10 @@ public class OtherPlayerPackets {
             entity.setRotation(rotation);
             entity.setOnGround(onGround);
 
-            if ((mode == MovePlayerModes.TELEPORT || mode == MovePlayerModes.RESPAWN) && entity instanceof ClientPlayerEntity) {
+            if ((mode == PlayerPositionModeComponent_PositionMode.Teleport || mode == PlayerPositionModeComponent_PositionMode.Respawn) && entity instanceof ClientPlayerEntity) {
                 final ClientPlayerEntity clientPlayer = (ClientPlayerEntity) entity;
                 wrapper.setPacketType(ClientboundPackets1_20_3.PLAYER_POSITION);
-                clientPlayer.writePlayerPositionPacketToClient(wrapper, false, mode == MovePlayerModes.RESPAWN);
+                clientPlayer.writePlayerPositionPacketToClient(wrapper, false, mode == PlayerPositionModeComponent_PositionMode.Respawn);
                 return;
             }
 

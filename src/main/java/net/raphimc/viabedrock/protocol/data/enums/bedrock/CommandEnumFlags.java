@@ -17,12 +17,11 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class ResourcePackStatus {
+public class CommandEnumFlags {
 
-    public static final short NONE = 0;
-    public static final short REFUSED = 1;
-    public static final short SEND_PACKS = 2;
-    public static final short HAVE_ALL_PACKS = 3;
-    public static final short COMPLETED = 4;
+    public static final short CHEATS_ENABLED = 0;
+    public static final short OPERATOR_PERMISSIONS = 1;
+    public static final short HOST_PERMISSIONS = 2;
+    public static final short HIDE_FROM_COMPLETIONS = 3;
 
 }

@@ -47,13 +47,11 @@ import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MovePlayerModes;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerMovementModes;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkResults;
+import net.raphimc.viabedrock.protocol.data.enums.Dimension;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.rewriter.DimensionIdRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.storage.BlobCache;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
@@ -101,17 +99,17 @@ public class WorldPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.SET_SPAWN_POSITION, ClientboundPackets1_20_3.SPAWN_POSITION, wrapper -> {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
 
-            final int type = wrapper.read(BedrockTypes.VAR_INT); // type
-            if (type != 1) { // WORLD_SPAWN
+            final SpawnPositionType type = SpawnPositionType.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // type
+            if (type != SpawnPositionType.WorldSpawn) {
                 wrapper.cancel();
                 return;
             }
 
             final Position compassPosition = wrapper.read(BedrockTypes.BLOCK_POSITION); // compass position
-            final int dimensionId = wrapper.read(BedrockTypes.VAR_INT); // dimension
+            final Dimension dimension = Dimension.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // dimension
             wrapper.read(BedrockTypes.BLOCK_POSITION); // spawn position
 
-            if (chunkTracker.getDimensionId() != dimensionId) {
+            if (chunkTracker.getDimension() != dimension) {
                 wrapper.cancel();
                 return;
             }
@@ -120,20 +118,20 @@ public class WorldPackets {
             wrapper.write(Type.FLOAT, 0F); // angle
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CHANGE_DIMENSION, ClientboundPackets1_20_3.RESPAWN, wrapper -> {
-            final int dimensionId = wrapper.read(BedrockTypes.VAR_INT); // dimension
+            final Dimension dimension = Dimension.values()[wrapper.read(BedrockTypes.VAR_INT)]; // dimension
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final boolean respawn = wrapper.read(Type.BOOLEAN); // respawn
 
             // TODO: Handle respawn boolean and handle keep data mask
             // TODO: Is this allowed? HiveMC does that
-            if (dimensionId == wrapper.user().get(ChunkTracker.class).getDimensionId()) {
+            if (dimension == wrapper.user().get(ChunkTracker.class).getDimension()) {
                 BedrockProtocol.kickForIllegalState(wrapper.user(), "Changing dimension to the same dimension is not supported");
                 return;
             }
 
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
-            wrapper.user().put(new ChunkTracker(wrapper.user(), dimensionId));
+            wrapper.user().put(new ChunkTracker(wrapper.user(), dimension));
             final EntityTracker oldEntityTracker = wrapper.user().get(EntityTracker.class);
             final ClientPlayerEntity clientPlayer = oldEntityTracker.getClientPlayer();
             oldEntityTracker.prepareForRespawn();
@@ -142,14 +140,14 @@ public class WorldPackets {
             wrapper.user().put(newEntityTracker);
 
             clientPlayer.setPosition(new Position3f(position.x(), position.y() + clientPlayer.eyeOffset(), position.z()));
-            if (gameSession.getMovementMode() == ServerMovementModes.CLIENT) {
-                clientPlayer.sendMovePlayerPacketToServer(MovePlayerModes.NORMAL);
+            if (gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
+                clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
             }
             clientPlayer.setChangingDimension(true);
             clientPlayer.sendPlayerPositionPacketToClient(true);
 
-            wrapper.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension type
-            wrapper.write(Type.STRING, DimensionIdRewriter.dimensionIdToDimensionKey(dimensionId)); // dimension id
+            wrapper.write(Type.STRING, dimension.getKey()); // dimension type
+            wrapper.write(Type.STRING, dimension.getKey()); // dimension id
             wrapper.write(Type.LONG, 0L); // hashed seed
             wrapper.write(Type.BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.getGameType(), gameSession.getLevelGameType())); // game mode
             wrapper.write(Type.BYTE, (byte) -1); // previous game mode
@@ -166,13 +164,13 @@ public class WorldPackets {
 
             final int chunkX = wrapper.read(BedrockTypes.VAR_INT); // chunk x
             final int chunkZ = wrapper.read(BedrockTypes.VAR_INT); // chunk z
-            final int dimensionId = wrapper.read(BedrockTypes.VAR_INT); // dimension id
-            if (dimensionId != chunkTracker.getDimensionId()) {
+            final Dimension dimension = Dimension.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // dimension
+            if (dimension != chunkTracker.getDimension()) {
                 return;
             }
 
             final int sectionCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // sub chunk count
-            if (sectionCount < -2) { // Mojang client silently ignores this packet
+            if (sectionCount < -2) { // Mojang client ignores this packet
                 return;
             }
 
@@ -281,8 +279,8 @@ public class WorldPackets {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
 
             final boolean cachingEnabled = wrapper.read(Type.BOOLEAN); // caching enabled
-            final int dimensionId = wrapper.read(BedrockTypes.VAR_INT); // dimension id
-            if (dimensionId != chunkTracker.getDimensionId()) {
+            final Dimension dimension = Dimension.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // dimension
+            if (dimension != chunkTracker.getDimension()) {
                 return;
             }
 
@@ -293,19 +291,19 @@ public class WorldPackets {
                 final Position offset = wrapper.read(BedrockTypes.SUB_CHUNK_OFFSET); // offset
                 final Position absolute = new Position(center.x() + offset.x(), center.y() + offset.y(), center.z() + offset.z());
                 final byte result = wrapper.read(Type.BYTE); // result
-                final byte[] data = result != SubChunkResults.SUCCESS_ALL_AIR || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
+                final byte[] data = result != SubChunkPacket_SubChunkRequestResult.SuccessAllAir.getValue() || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
                 final byte heightmapResult = wrapper.read(Type.BYTE); // heightmap result
-                if (heightmapResult == 1) { // HAS_DATA
+                if (heightmapResult == SubChunkPacket_HeightMapDataType.HasData.getValue()) {
                     wrapper.read(new ByteArrayType(256)); // heightmap data
                 }
 
                 final Consumer<byte[]> dataConsumer = combinedData -> {
                     try {
-                        if (result == SubChunkResults.SUCCESS_ALL_AIR) {
+                        if (result == SubChunkPacket_SubChunkRequestResult.SuccessAllAir.getValue()) {
                             if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), new BedrockChunkSectionImpl(), new ArrayList<>())) {
                                 chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
                             }
-                        } else if (result == SubChunkResults.SUCCESS) {
+                        } else if (result == SubChunkPacket_SubChunkRequestResult.Success.getValue()) {
                             final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
 
                             BedrockChunkSection section = new BedrockChunkSectionImpl();

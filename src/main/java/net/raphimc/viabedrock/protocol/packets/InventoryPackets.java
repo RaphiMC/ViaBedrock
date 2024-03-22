@@ -38,7 +38,8 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.WindowIds;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
+import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.providers.FormProvider;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
@@ -178,7 +179,7 @@ public class InventoryPackets {
             final int revision = wrapper.read(Type.VAR_INT); // revision
             final short slot = wrapper.read(Type.SHORT); // slot
             final byte button = wrapper.read(Type.BYTE); // button
-            final int action = wrapper.read(Type.VAR_INT); // action
+            final ClickType action = ClickType.values()[wrapper.read(Type.VAR_INT)]; // action
 
             wrapper.user().get(InventoryTracker.class).handleWindowClick(windowId, revision, slot, button, action);
         });
@@ -189,7 +190,7 @@ public class InventoryPackets {
                 create(Type.BOOLEAN, false); // server initiated
                 handler(wrapper -> {
                     final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-                    if (wrapper.get(Type.BYTE, 0) == WindowIds.INVENTORY) {
+                    if (wrapper.get(Type.BYTE, 0) == ContainerID.CONTAINER_ID_INVENTORY.getValue()) {
                         if (inventoryTracker.getCurrentContainer() != null) {
                             wrapper.set(Type.BYTE, 0, inventoryTracker.getCurrentContainer().windowId());
                         } else {

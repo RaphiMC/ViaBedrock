@@ -1,4 +1,5 @@
 import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
@@ -35,7 +36,7 @@ public class ResourcePackConverterTest {
         System.out.println("Reading took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();
-        final ResourcePack resourcePack = new ResourcePack(UUID.randomUUID(), "1.0.0", "", "", "", false, false, 0, ResourcePack.TYPE_RESOURCE);
+        final ResourcePack resourcePack = new ResourcePack(UUID.randomUUID(), "1.0.0", "", "", "", false, false, 0, PackType.Resources);
         resourcePack.setCompressedDataLength(bytes.length, bytes.length);
         resourcePack.processDataChunk(0, bytes);
 
