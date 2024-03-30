@@ -4,5 +4,5 @@ repositories {
 
 dependencies {
     implementation "org.jsoup:jsoup:1.17.2"
-    implementation "commons-io:commons-io:2.15.1"
+    implementation "commons-io:commons-io:2.16.0"
 }
