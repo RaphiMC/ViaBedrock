@@ -21,6 +21,8 @@ import com.google.common.collect.Sets;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.packet.State;
+import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
@@ -172,12 +174,18 @@ public class ChatPackets {
             wrapper.write(Type.TAG, TextUtil.stringToNbt(message.toString()));
             wrapper.write(Type.BOOLEAN, false); // overlay
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.AVAILABLE_COMMANDS, ClientboundPackets1_20_3.DECLARE_COMMANDS, wrapper -> {
-            final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
-            final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
-            wrapper.user().put(commandsStorage);
-            commandsStorage.writeCommandTree(wrapper);
-        });
+        protocol.registerClientboundTransition(ClientboundBedrockPackets.AVAILABLE_COMMANDS,
+                State.CONFIGURATION, (PacketHandler) wrapper -> {
+                    final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
+                    wrapper.user().put(new CommandsStorage(wrapper.user(), commands));
+                    wrapper.cancel(); // Will be sent in JoinPackets#handleGameJoin
+                }, ClientboundPackets1_20_3.DECLARE_COMMANDS, (PacketHandler) wrapper -> {
+                    final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
+                    final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
+                    wrapper.user().put(commandsStorage);
+                    commandsStorage.writeCommandTree(wrapper);
+                }
+        );
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SOFT_ENUM, null, wrapper -> {
             wrapper.cancel();
             final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);

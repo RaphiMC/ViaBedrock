@@ -24,18 +24,21 @@ import com.viaversion.viaversion.api.protocol.packet.Direction;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
-import com.viaversion.viaversion.api.protocol.packet.mapping.PacketMappings;
+import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.exception.CancelException;
+import com.viaversion.viaversion.protocol.packet.PacketWrapperImpl;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundConfigurationPackets1_20_3;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ServerboundPackets1_20_3;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.protocol.StatelessTransitionProtocol;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
-import net.raphimc.viabedrock.protocol.packetmapping.ClientboundPacketMappings;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.packets.*;
 import net.raphimc.viabedrock.protocol.providers.*;
 import net.raphimc.viabedrock.protocol.providers.impl.InventoryFormProvider;
@@ -49,23 +52,30 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
 
     public static final BedrockMappingData MAPPINGS = new BedrockMappingData();
 
-    private static final EnumSet<ClientboundBedrockPackets> BEFORE_PLAY_STATE_WHITELIST = EnumSet.of(
+    private static final EnumSet<ClientboundBedrockPackets> LOGIN_STATE_WHITELIST = EnumSet.of(
             ClientboundBedrockPackets.NETWORK_SETTINGS,
             ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE,
             ClientboundBedrockPackets.PLAY_STATUS,
+            ClientboundBedrockPackets.DISCONNECT,
+            ClientboundBedrockPackets.PACKET_VIOLATION_WARNING,
+            ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
+            ClientboundBedrockPackets.START_GAME
+    );
+
+    private static final EnumSet<ClientboundBedrockPackets> BEFORE_PLAY_STATE_WHITELIST = EnumSet.of(
             ClientboundBedrockPackets.RESOURCE_PACKS_INFO,
             ClientboundBedrockPackets.RESOURCE_PACK_DATA_INFO,
             ClientboundBedrockPackets.RESOURCE_PACK_CHUNK_DATA,
             ClientboundBedrockPackets.RESOURCE_PACK_STACK,
-            ClientboundBedrockPackets.DISCONNECT,
-            ClientboundBedrockPackets.PACKET_VIOLATION_WARNING,
-            ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
             ClientboundBedrockPackets.BIOME_DEFINITION_LIST,
             ClientboundBedrockPackets.COMPRESSED_BIOME_DEFINITION_LIST,
             ClientboundBedrockPackets.DIMENSION_DATA,
-            //ClientboundBedrockPackets.AVAILABLE_COMMANDS, // Java doesn't support that
-            ClientboundBedrockPackets.START_GAME
+            ClientboundBedrockPackets.AVAILABLE_COMMANDS
     );
+
+    static {
+        BEFORE_PLAY_STATE_WHITELIST.addAll(LOGIN_STATE_WHITELIST);
+    }
 
     public BedrockProtocol() {
         super(ClientboundBedrockPackets.class, ClientboundPackets1_20_3.class, ServerboundBedrockPackets.class, ServerboundPackets1_20_3.class);
@@ -144,31 +154,39 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     }
 
     @Override
-    protected PacketMappings createClientboundPacketMappings() {
-        return new ClientboundPacketMappings();
-    }
-
-    @Override
-    public void transform(Direction direction, State state, PacketWrapper packetWrapper) throws Exception {
-        if (direction == Direction.CLIENTBOUND && state != State.STATUS && packetWrapper.user().getProtocolInfo().getServerState() != State.PLAY) {
-            final ClientboundBedrockPackets packet = ClientboundBedrockPackets.getPacket(packetWrapper.getId());
-            if (packet != null && !BEFORE_PLAY_STATE_WHITELIST.contains(packet)) { // Mojang client ignores most packets before receiving the START_GAME packet
+    public void transform(Direction direction, State state, PacketWrapper wrapper) throws Exception {
+        if (direction == Direction.CLIENTBOUND && state != State.STATUS) {
+            State serverState = wrapper.user().getProtocolInfo().getServerState();
+            final ClientboundBedrockPackets packet = ClientboundBedrockPackets.getPacket(wrapper.getId());
+            if (packet == null) {
+                final ByteBuf content = ((PacketWrapperImpl) wrapper).getInputBuffer();
+                ViaBedrock.getPlatform().getLogger().warning("Received unknown packet " + wrapper.getId() + " in state " + serverState + " with content: " + ByteBufUtil.hexDump(content));
+                throw CancelException.generate();
+            }
+            if (serverState == State.LOGIN && !LOGIN_STATE_WHITELIST.contains(packet)) { // Mojang client can skip the login state
+                ViaBedrock.getPlatform().getLogger().warning("Server skipped LOGIN state");
+                final PacketWrapper playStatus = PacketWrapper.create(ClientboundBedrockPackets.PLAY_STATUS, wrapper.user());
+                playStatus.write(Type.INT, PlayStatus.LoginSuccess.getValue()); // status
+                playStatus.send(BedrockProtocol.class, false);
+                wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
+                serverState = State.CONFIGURATION;
+            }
+            if (serverState != State.PLAY && !BEFORE_PLAY_STATE_WHITELIST.contains(packet)) { // Mojang client ignores most packets before receiving the START_GAME packet
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received packet " + packet + " outside PLAY state. Ignoring it.");
                 throw CancelException.generate();
             }
         }
 
         /*if (direction == Direction.CLIENTBOUND) {
-            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ClientboundBedrockPackets.getPacket(packetWrapper.getId()) + ", packetWrapper = " + packetWrapper);
+            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ClientboundBedrockPackets.getPacket(wrapper.getId()) + ", wrapper = " + wrapper);
         } else {
-            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_20_3.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
+            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_20_3.values()[wrapper.getId()] + ", wrapper = " + wrapper);
         }*/
-        super.transform(direction, state, packetWrapper);
-
+        super.transform(direction, state, wrapper);
         /*if (direction == Direction.CLIENTBOUND) {
-            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_20_3.values()[packetWrapper.getId()] + ", packetWrapper = " + packetWrapper);
+            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_20_3.values()[wrapper.getId()] + ", wrapper = " + wrapper);
         } else {
-            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ServerboundBedrockPackets.getPacket(packetWrapper.getId()) + ", packetWrapper = " + packetWrapper);
+            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ServerboundBedrockPackets.getPacket(wrapper.getId()) + ", wrapper = " + wrapper);
         }*/
     }
 

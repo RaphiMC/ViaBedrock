@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
@@ -144,6 +145,18 @@ public class MultiStatePackets {
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
                 ClientboundPackets1_20_3.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER,
+                State.LOGIN, (PacketHandler) wrapper -> {
+                    NETWORK_STACK_LATENCY_HANDLER.handle(wrapper);
+                    if (!wrapper.isCancelled()) {
+                        wrapper.resetReader();
+                        KEEP_ALIVE_HANDLER.handle(wrapper);
+                        if (!wrapper.isCancelled()) {
+                            wrapper.setPacketType(ServerboundBedrockPackets.NETWORK_STACK_LATENCY);
+                            wrapper.sendToServer(BedrockProtocol.class);
+                            wrapper.cancel();
+                        }
+                    }
+                },
                 ClientboundConfigurationPackets1_20_3.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER
         );
 
