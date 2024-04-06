@@ -28,12 +28,6 @@
         "minecraft:lever": {
             "facing_direction": "lever_direction"
         },
-        "minecraft:log": {
-            "direction": "pillar_axis"
-        },
-        "minecraft:log2": {
-            "direction": "pillar_axis"
-        },
         "minecraft:purpur_block": {
             "direction": "pillar_axis"
         },
@@ -191,12 +185,6 @@
         },
         "minecraft:lit_smoker": {
             "facing_direction": "facing_direction_00"
-        },
-        "minecraft:log": {
-            "direction": "direction_01"
-        },
-        "minecraft:log2": {
-            "direction": "direction_01"
         },
         "minecraft:magenta_glazed_terracotta": {
             "facing_direction": "facing_direction_00"
@@ -426,32 +414,6 @@
                 }
             }
         ],
-        "direction_01": [
-            {
-                "old": {
-                    "int": 0
-                },
-                "new": {
-                    "string": "y"
-                }
-            },
-            {
-                "old": {
-                    "int": 1
-                },
-                "new": {
-                    "string": "x"
-                }
-            },
-            {
-                "old": {
-                    "int": 2
-                },
-                "new": {
-                    "string": "z"
-                }
-            }
-        ],
         "facing_direction_00": [
             {
                 "old": {
@@ -676,6 +638,14 @@
                         "int": 14
                     }
                 }
+            },
+            {
+                "oldState": null,
+                "newName": "minecraft:end_rod",
+                "newState": null,
+                "copiedState": [
+                    "facing_direction"
+                ]
             }
         ],
         "minecraft:log": [
@@ -766,6 +736,54 @@
                         "string": "spruce"
                     }
                 }
+            },
+            {
+                "oldState": {
+                    "direction": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:log",
+                "newState": {
+                    "pillar_axis": {
+                        "string": "y"
+                    }
+                },
+                "copiedState": [
+                    "old_log_type"
+                ]
+            },
+            {
+                "oldState": {
+                    "direction": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:log",
+                "newState": {
+                    "pillar_axis": {
+                        "string": "x"
+                    }
+                },
+                "copiedState": [
+                    "old_log_type"
+                ]
+            },
+            {
+                "oldState": {
+                    "direction": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:log",
+                "newState": {
+                    "pillar_axis": {
+                        "string": "z"
+                    }
+                },
+                "copiedState": [
+                    "old_log_type"
+                ]
             }
         ],
         "minecraft:log2": [
@@ -812,6 +830,54 @@
                         "string": "dark_oak"
                     }
                 }
+            },
+            {
+                "oldState": {
+                    "direction": {
+                        "int": 0
+                    }
+                },
+                "newName": "minecraft:log2",
+                "newState": {
+                    "pillar_axis": {
+                        "string": "y"
+                    }
+                },
+                "copiedState": [
+                    "new_log_type"
+                ]
+            },
+            {
+                "oldState": {
+                    "direction": {
+                        "int": 1
+                    }
+                },
+                "newName": "minecraft:log2",
+                "newState": {
+                    "pillar_axis": {
+                        "string": "x"
+                    }
+                },
+                "copiedState": [
+                    "new_log_type"
+                ]
+            },
+            {
+                "oldState": {
+                    "direction": {
+                        "int": 2
+                    }
+                },
+                "newName": "minecraft:log2",
+                "newState": {
+                    "pillar_axis": {
+                        "string": "z"
+                    }
+                },
+                "copiedState": [
+                    "new_log_type"
+                ]
             }
         ]
     }

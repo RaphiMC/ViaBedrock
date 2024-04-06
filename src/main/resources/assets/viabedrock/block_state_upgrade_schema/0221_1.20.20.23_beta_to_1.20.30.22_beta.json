@@ -210,40 +210,28 @@
     "remappedStates": {
         "minecraft:concrete_powder": [
             {
-                "oldState": {
-                    "color": {
-                        "string": "silver"
-                    }
-                },
-                "newName": "minecraft:light_gray_concrete_powder",
-                "newState": null
-            },
-            {
                 "oldState": null,
                 "newFlattenedName": {
                     "prefix": "minecraft:",
                     "flattenedProperty": "color",
-                    "suffix": "_concrete_powder"
+                    "suffix": "_concrete_powder",
+                    "flattenedValueRemaps": {
+                        "silver": "light_gray"
+                    }
                 },
                 "newState": null
             }
         ],
         "minecraft:stained_hardened_clay": [
             {
-                "oldState": {
-                    "color": {
-                        "string": "silver"
-                    }
-                },
-                "newName": "minecraft:light_gray_terracotta",
-                "newState": null
-            },
-            {
                 "oldState": null,
                 "newFlattenedName": {
                     "prefix": "minecraft:",
                     "flattenedProperty": "color",
-                    "suffix": "_terracotta"
+                    "suffix": "_terracotta",
+                    "flattenedValueRemaps": {
+                        "silver": "light_gray"
+                    }
                 },
                 "newState": null
             }

@@ -68,40 +68,28 @@
     "remappedStates": {
         "minecraft:concrete": [
             {
-                "oldState": {
-                    "color": {
-                        "string": "silver"
-                    }
-                },
-                "newName": "minecraft:light_gray_concrete",
-                "newState": null
-            },
-            {
                 "oldState": null,
                 "newFlattenedName": {
                     "prefix": "minecraft:",
                     "flattenedProperty": "color",
-                    "suffix": "_concrete"
+                    "suffix": "_concrete",
+                    "flattenedValueRemaps": {
+                        "silver": "light_gray"
+                    }
                 },
                 "newState": null
             }
         ],
         "minecraft:shulker_box": [
             {
-                "oldState": {
-                    "color": {
-                        "string": "silver"
-                    }
-                },
-                "newName": "minecraft:light_gray_shulker_box",
-                "newState": null
-            },
-            {
                 "oldState": null,
                 "newFlattenedName": {
                     "prefix": "minecraft:",
                     "flattenedProperty": "color",
-                    "suffix": "_shulker_box"
+                    "suffix": "_shulker_box",
+                    "flattenedValueRemaps": {
+                        "silver": "light_gray"
+                    }
                 },
                 "newState": null
             }

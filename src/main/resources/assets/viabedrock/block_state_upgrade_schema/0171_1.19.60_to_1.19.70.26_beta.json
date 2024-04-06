@@ -6,20 +6,14 @@
     "remappedStates": {
         "minecraft:wool": [
             {
-                "oldState": {
-                    "color": {
-                        "string": "silver"
-                    }
-                },
-                "newName": "minecraft:light_gray_wool",
-                "newState": null
-            },
-            {
                 "oldState": null,
                 "newFlattenedName": {
                     "prefix": "minecraft:",
                     "flattenedProperty": "color",
-                    "suffix": "_wool"
+                    "suffix": "_wool",
+                    "flattenedValueRemaps": {
+                        "silver": "light_gray"
+                    }
                 },
                 "newState": null
             }

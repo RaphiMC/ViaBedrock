@@ -6,40 +6,28 @@
     "remappedStates": {
         "minecraft:hard_stained_glass": [
             {
-                "oldState": {
-                    "color": {
-                        "string": "silver"
-                    }
-                },
-                "newName": "minecraft:hard_light_gray_stained_glass",
-                "newState": null
-            },
-            {
                 "oldState": null,
                 "newFlattenedName": {
                     "prefix": "minecraft:hard_",
                     "flattenedProperty": "color",
-                    "suffix": "_stained_glass"
+                    "suffix": "_stained_glass",
+                    "flattenedValueRemaps": {
+                        "silver": "light_gray"
+                    }
                 },
                 "newState": null
             }
         ],
         "minecraft:hard_stained_glass_pane": [
             {
-                "oldState": {
-                    "color": {
-                        "string": "silver"
-                    }
-                },
-                "newName": "minecraft:hard_light_gray_stained_glass_pane",
-                "newState": null
-            },
-            {
                 "oldState": null,
                 "newFlattenedName": {
                     "prefix": "minecraft:hard_",
                     "flattenedProperty": "color",
-                    "suffix": "_stained_glass_pane"
+                    "suffix": "_stained_glass_pane",
+                    "flattenedValueRemaps": {
+                        "silver": "light_gray"
+                    }
                 },
                 "newState": null
             }

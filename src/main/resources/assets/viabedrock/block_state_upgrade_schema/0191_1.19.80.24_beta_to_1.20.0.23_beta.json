@@ -103,20 +103,14 @@
     "remappedStates": {
         "minecraft:carpet": [
             {
-                "oldState": {
-                    "color": {
-                        "string": "silver"
-                    }
-                },
-                "newName": "minecraft:light_gray_carpet",
-                "newState": null
-            },
-            {
                 "oldState": null,
                 "newFlattenedName": {
                     "prefix": "minecraft:",
                     "flattenedProperty": "color",
-                    "suffix": "_carpet"
+                    "suffix": "_carpet",
+                    "flattenedValueRemaps": {
+                        "silver": "light_gray"
+                    }
                 },
                 "newState": null
             }
@@ -124,122 +118,42 @@
         "minecraft:coral": [
             {
                 "oldState": {
-                    "coral_color": {
-                        "string": "blue"
-                    },
                     "dead_bit": {
                         "byte": 0
                     }
                 },
-                "newName": "minecraft:tube_coral",
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "coral_color",
+                    "suffix": "_coral",
+                    "flattenedValueRemaps": {
+                        "blue": "tube",
+                        "pink": "brain",
+                        "purple": "bubble",
+                        "red": "fire",
+                        "yellow": "horn"
+                    }
+                },
                 "newState": null
             },
             {
                 "oldState": {
-                    "coral_color": {
-                        "string": "blue"
-                    },
                     "dead_bit": {
                         "byte": 1
                     }
                 },
-                "newName": "minecraft:dead_tube_coral",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "coral_color": {
-                        "string": "pink"
-                    },
-                    "dead_bit": {
-                        "byte": 0
+                "newFlattenedName": {
+                    "prefix": "minecraft:dead_",
+                    "flattenedProperty": "coral_color",
+                    "suffix": "_coral",
+                    "flattenedValueRemaps": {
+                        "blue": "tube",
+                        "pink": "brain",
+                        "purple": "bubble",
+                        "red": "fire",
+                        "yellow": "horn"
                     }
                 },
-                "newName": "minecraft:brain_coral",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "coral_color": {
-                        "string": "pink"
-                    },
-                    "dead_bit": {
-                        "byte": 1
-                    }
-                },
-                "newName": "minecraft:dead_brain_coral",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "coral_color": {
-                        "string": "purple"
-                    },
-                    "dead_bit": {
-                        "byte": 0
-                    }
-                },
-                "newName": "minecraft:bubble_coral",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "coral_color": {
-                        "string": "purple"
-                    },
-                    "dead_bit": {
-                        "byte": 1
-                    }
-                },
-                "newName": "minecraft:dead_bubble_coral",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "coral_color": {
-                        "string": "red"
-                    },
-                    "dead_bit": {
-                        "byte": 0
-                    }
-                },
-                "newName": "minecraft:fire_coral",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "coral_color": {
-                        "string": "red"
-                    },
-                    "dead_bit": {
-                        "byte": 1
-                    }
-                },
-                "newName": "minecraft:dead_fire_coral",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "coral_color": {
-                        "string": "yellow"
-                    },
-                    "dead_bit": {
-                        "byte": 0
-                    }
-                },
-                "newName": "minecraft:horn_coral",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "coral_color": {
-                        "string": "yellow"
-                    },
-                    "dead_bit": {
-                        "byte": 1
-                    }
-                },
-                "newName": "minecraft:dead_horn_coral",
                 "newState": null
             }
         ]

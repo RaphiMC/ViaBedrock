@@ -17,38 +17,16 @@
         ],
         "minecraft:stone": [
             {
-                "oldState": {
-                    "stone_type": {
-                        "string": "andesite_smooth"
-                    }
-                },
-                "newName": "minecraft:polished_andesite",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "stone_type": {
-                        "string": "diorite_smooth"
-                    }
-                },
-                "newName": "minecraft:polished_diorite",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "stone_type": {
-                        "string": "granite_smooth"
-                    }
-                },
-                "newName": "minecraft:polished_granite",
-                "newState": null
-            },
-            {
                 "oldState": null,
                 "newFlattenedName": {
                     "prefix": "minecraft:",
                     "flattenedProperty": "stone_type",
-                    "suffix": ""
+                    "suffix": "",
+                    "flattenedValueRemaps": {
+                        "andesite_smooth": "polished_andesite",
+                        "diorite_smooth": "polished_diorite",
+                        "granite_smooth": "polished_granite"
+                    }
                 },
                 "newState": null
             }
