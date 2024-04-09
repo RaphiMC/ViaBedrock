@@ -20,11 +20,14 @@ package net.raphimc.viabedrock.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.io.compression.CompressionAlgorithm;
 import net.raphimc.viabedrock.api.io.compression.NoopCompression;
 import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
 
 import java.util.List;
+import java.util.logging.Level;
 
 public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
 
@@ -50,7 +53,7 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
         final int inputSize = in.readableBytes();
         final CompressionAlgorithm compressionAlgorithm = this.protocolCompression.getCompressionAlgorithmForSize(inputSize);
         if (compressionAlgorithm instanceof NoopCompression) {
-            out.writeByte(NoopCompression.ID);
+            out.writeByte(PacketCompressionAlgorithm.None.getValue());
             out.writeBytes(in);
             return;
         }
@@ -58,11 +61,11 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
         in.markReaderIndex();
         compressionAlgorithm.compress(in, compressedData);
         if (compressedData.readableBytes() < inputSize) {
-            out.writeByte(compressionAlgorithm.getId());
+            out.writeByte(compressionAlgorithm.getAlgorithm().getValue());
             out.writeBytes(compressedData);
         } else {
             in.resetReaderIndex();
-            out.writeByte(NoopCompression.ID);
+            out.writeByte(PacketCompressionAlgorithm.None.getValue());
             out.writeBytes(in);
         }
         compressedData.release();
@@ -74,14 +77,19 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
             return;
         }
 
-        final int algorithm = in.readUnsignedByte();
-        final CompressionAlgorithm compressionAlgorithm = this.protocolCompression.getAlgorithmById(algorithm);
+        final PacketCompressionAlgorithm algorithm = PacketCompressionAlgorithm.getByValue(in.readUnsignedByte());
+        if (algorithm == null) { // Mojang client just drops the packet if it doesn't know the algorithm
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown compression algorithm. Dropping packet.");
+            return;
+        }
+
+        final CompressionAlgorithm compressionAlgorithm = this.protocolCompression.getCompressionAlgorithm(algorithm);
         if (compressionAlgorithm instanceof NoopCompression) {
             out.add(in.retain());
             return;
         }
         final ByteBuf uncompressedData = ctx.alloc().buffer();
-        compressionAlgorithm.decompress(in, uncompressedData);
+        compressionAlgorithm.decompress(in, uncompressedData); // Mojang client would drop packets with invalid data, but this would be too insane to do
         out.add(uncompressedData);
     }
 

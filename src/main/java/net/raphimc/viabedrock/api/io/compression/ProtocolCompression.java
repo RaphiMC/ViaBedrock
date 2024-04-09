@@ -17,6 +17,8 @@
  */
 package net.raphimc.viabedrock.api.io.compression;
 
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
+
 public class ProtocolCompression {
 
     private final CompressionAlgorithm preferredCompressionAlgorithm;
@@ -24,8 +26,8 @@ public class ProtocolCompression {
     private ZLibCompression zLibCompression;
     private SnappyCompression snappyCompression;
 
-    public ProtocolCompression(final int preferredCompressionAlgorithm, final int threshold) {
-        this.preferredCompressionAlgorithm = this.getAlgorithmById(preferredCompressionAlgorithm);
+    public ProtocolCompression(final PacketCompressionAlgorithm preferredCompressionAlgorithm, final int threshold) {
+        this.preferredCompressionAlgorithm = this.getCompressionAlgorithm(preferredCompressionAlgorithm);
         this.threshold = threshold;
     }
 
@@ -46,22 +48,22 @@ public class ProtocolCompression {
         }
     }
 
-    public CompressionAlgorithm getAlgorithmById(final int algorithm) {
+    public CompressionAlgorithm getCompressionAlgorithm(final PacketCompressionAlgorithm algorithm) {
         switch (algorithm) {
-            case NoopCompression.ID:
+            case None:
                 return NoopCompression.INSTANCE;
-            case ZLibCompression.ID:
+            case ZLib:
                 if (this.zLibCompression == null) {
                     this.zLibCompression = new ZLibCompression();
                 }
                 return this.zLibCompression;
-            case SnappyCompression.ID:
+            case Snappy:
                 if (this.snappyCompression == null) {
                     this.snappyCompression = new SnappyCompression();
                 }
                 return this.snappyCompression;
             default:
-                throw new IllegalArgumentException("Unknown compression algorithm " + algorithm);
+                throw new IllegalStateException("Unhandled packet compression algorithm " + algorithm);
         }
     }
 

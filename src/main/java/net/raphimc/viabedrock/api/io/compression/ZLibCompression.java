@@ -18,13 +18,12 @@
 package net.raphimc.viabedrock.api.io.compression;
 
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
 
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 public class ZLibCompression implements CompressionAlgorithm {
-
-    public static final int ID = 0;
 
     private final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
     private final Inflater inflater = new Inflater(true);
@@ -61,8 +60,8 @@ public class ZLibCompression implements CompressionAlgorithm {
     }
 
     @Override
-    public int getId() {
-        return ID;
+    public PacketCompressionAlgorithm getAlgorithm() {
+        return PacketCompressionAlgorithm.ZLib;
     }
 
 }

@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.api.io.compression;
 
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
 
 public interface CompressionAlgorithm {
 
@@ -28,6 +29,6 @@ public interface CompressionAlgorithm {
     default void end() {
     }
 
-    int getId();
+    PacketCompressionAlgorithm getAlgorithm();
 
 }

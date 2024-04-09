@@ -18,10 +18,10 @@
 package net.raphimc.viabedrock.api.io.compression;
 
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
 
 public class NoopCompression implements CompressionAlgorithm {
 
-    public static final int ID = 255;
     public static final NoopCompression INSTANCE = new NoopCompression();
 
     @Override
@@ -35,8 +35,8 @@ public class NoopCompression implements CompressionAlgorithm {
     }
 
     @Override
-    public int getId() {
-        return ID;
+    public PacketCompressionAlgorithm getAlgorithm() {
+        return PacketCompressionAlgorithm.None;
     }
 
 }

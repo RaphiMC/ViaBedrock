@@ -20,10 +20,9 @@ package net.raphimc.viabedrock.api.io.compression;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.compression.Snappy;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
 
 public class SnappyCompression implements CompressionAlgorithm {
-
-    public static final int ID = 1;
 
     private final Snappy snappy = new Snappy();
 
@@ -57,8 +56,8 @@ public class SnappyCompression implements CompressionAlgorithm {
     }
 
     @Override
-    public int getId() {
-        return ID;
+    public PacketCompressionAlgorithm getAlgorithm() {
+        return PacketCompressionAlgorithm.Snappy;
     }
 
 }

@@ -31,6 +31,7 @@ import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
 import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.providers.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
@@ -80,7 +81,7 @@ public class LoginPackets {
             final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
 
             final int threshold = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression threshold
-            final int algorithm = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression algorithm
+            final PacketCompressionAlgorithm algorithm = PacketCompressionAlgorithm.getByValue(wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE), PacketCompressionAlgorithm.None); // compression algorithm
             final ProtocolCompression protocolCompression = new ProtocolCompression(algorithm, threshold);
             if (gameSession.getProtocolCompression() == null) {
                 Via.getManager().getProviders().get(NettyPipelineProvider.class).enableCompression(wrapper.user(), protocolCompression);

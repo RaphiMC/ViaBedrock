@@ -76,6 +76,11 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                 } else if (fieldValue.equals("std::numeric_limits::min()")) {
                     fieldValue = "Integer.MIN_VALUE";
                 }
+
+                if (enumName.equals("PacketCompressionAlgorithm") && fieldName.equals("None")) {
+                    fieldValue = "0xFF";
+                }
+
                 final String[] splitChars = {"|", "-"};
                 for (String splitChar : splitChars) {
                     if (fieldValue.contains(splitChar) && !fieldValue.startsWith(splitChar)) {
