@@ -44,7 +44,7 @@ public class TextUtil {
         } else if (f.equals(BedrockTextFormatting.RESET)) {
             return TextFormatting.RESET;
         } else {
-            throw new IllegalArgumentException("Unknown formatting: " + f);
+            throw new IllegalArgumentException("Unhandled formatting: " + f);
         }
     }).orElse(null);
 

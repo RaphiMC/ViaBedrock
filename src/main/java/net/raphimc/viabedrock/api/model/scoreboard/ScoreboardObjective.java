@@ -22,6 +22,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ObjectiveSortOrder;
 
 import java.util.HashMap;
@@ -55,7 +56,7 @@ public class ScoreboardObjective {
 
     public ScoreboardEntry getEntryForPlayer(final long playerListId) {
         for (ScoreboardEntry value : this.entries.values()) {
-            if (value.entityId() != null && value.isPlayerId() && playerListId == value.entityId()) {
+            if (value.entityId() != null && value.type() == IdentityDefinition_Type.Player && playerListId == value.entityId()) {
                 return value;
             }
         }

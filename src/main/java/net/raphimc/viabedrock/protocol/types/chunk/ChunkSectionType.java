@@ -58,7 +58,7 @@ public class ChunkSectionType extends Type<BedrockChunkSection> {
 
     @Override
     public void write(ByteBuf buffer, BedrockChunkSection value) throws Exception {
-        throw new UnsupportedOperationException("ChunkSectionType is only for reading");
+        throw new UnsupportedOperationException("Cannot serialize ChunkSectionType");
     }
 
 }

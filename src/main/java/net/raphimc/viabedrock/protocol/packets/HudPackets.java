@@ -62,8 +62,7 @@ public class HudPackets {
             final short rawAction = wrapper.read(Type.UNSIGNED_BYTE); // action
             final PlayerListPacketType action = PlayerListPacketType.getByValue(rawAction);
             if (action == null) { // Mojang client crashes if the action is not valid
-                BedrockProtocol.kickForIllegalState(wrapper.user(), "Unknown player list action: " + rawAction);
-                return;
+                throw new IllegalStateException("Unknown player list action: " + rawAction);
             }
             switch (action) {
                 case Add: {
@@ -289,15 +288,24 @@ public class HudPackets {
                 final ScoreboardEntry entry;
                 switch (action) {
                     case Change:
-                        final IdentityDefinition_Type type = IdentityDefinition_Type.getByValue(wrapper.read(Type.UNSIGNED_BYTE)); // type
+                        final short rawType = wrapper.read(Type.UNSIGNED_BYTE); // type
+                        final IdentityDefinition_Type type = IdentityDefinition_Type.getByValue(rawType, IdentityDefinition_Type.Invalid); // type
                         Long entityId = null;
                         String fakePlayerName = null;
-                        if (type == IdentityDefinition_Type.Player || type == IdentityDefinition_Type.Entity) {
-                            entityId = wrapper.read(BedrockTypes.VAR_LONG); // entity id
-                        } else if (type == IdentityDefinition_Type.FakePlayer) {
-                            fakePlayerName = wrapper.read(BedrockTypes.STRING); // fake player name
+                        switch (type) {
+                            case Player:
+                            case Entity:
+                                entityId = wrapper.read(BedrockTypes.VAR_LONG); // entity id
+                                break;
+                            case FakePlayer:
+                                fakePlayerName = wrapper.read(BedrockTypes.STRING); // fake player name
+                                break;
+                            case Invalid: // Mojang client disconnects if the type is not valid
+                                throw new IllegalStateException("Invalid scoreboard identity type: " + rawType);
+                            default:
+                                throw new IllegalStateException("Unhandled scoreboard identity type: " + rawType);
                         }
-                        entry = new ScoreboardEntry(score, type == IdentityDefinition_Type.Player, entityId, fakePlayerName);
+                        entry = new ScoreboardEntry(score, type, entityId, fakePlayerName);
                         break;
                     case Remove:
                         entry = null;
@@ -329,7 +337,7 @@ public class HudPackets {
             wrapper.cancel();
             final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
 
-            final int rawAction = wrapper.read(Type.UNSIGNED_BYTE); // action
+            final short rawAction = wrapper.read(Type.UNSIGNED_BYTE); // action
             final ScoreboardIdentityPacketType action = ScoreboardIdentityPacketType.getByValue(rawAction);
             if (action == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown scoreboard identity action: " + rawAction);
@@ -346,7 +354,7 @@ public class HudPackets {
                         final ScoreboardEntry scoreboardEntry = entry.value();
 
                         if (scoreboardEntry.entityId() == null) {
-                            scoreboardEntry.updateTarget(true, playerListId, scoreboardEntry.fakePlayerName());
+                            scoreboardEntry.updateTarget(IdentityDefinition_Type.Player, playerListId, scoreboardEntry.fakePlayerName());
                             entry.key().updateEntry(wrapper.user(), scoreboardEntry);
                         }
                         break;
@@ -356,7 +364,7 @@ public class HudPackets {
                         final ScoreboardEntry scoreboardEntry = entry.value();
 
                         if (scoreboardEntry.fakePlayerName() != null) {
-                            scoreboardEntry.updateTarget(false, null, scoreboardEntry.fakePlayerName());
+                            scoreboardEntry.updateTarget(IdentityDefinition_Type.FakePlayer, null, scoreboardEntry.fakePlayerName());
                             entry.key().updateEntry(wrapper.user(), scoreboardEntry);
                         }
                         break;

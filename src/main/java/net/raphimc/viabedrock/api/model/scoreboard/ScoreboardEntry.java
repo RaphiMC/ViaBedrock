@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.api.model.scoreboard;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.api.util.StringUtil;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
@@ -28,24 +29,24 @@ import java.util.UUID;
 
 public class ScoreboardEntry {
 
-    private boolean isPlayerId;
+    private IdentityDefinition_Type type;
     private Long entityId;
     private String fakePlayerName;
 
     private int score;
     private String javaName;
 
-    public ScoreboardEntry(final int score, final boolean isPlayerId, final Long entityId, final String fakePlayerName) {
-        this.updateTarget(isPlayerId, entityId, fakePlayerName);
+    public ScoreboardEntry(final int score, final IdentityDefinition_Type type, final Long entityId, final String fakePlayerName) {
+        this.updateTarget(type, entityId, fakePlayerName);
         this.score = score;
     }
 
     public boolean isSameTarget(final ScoreboardEntry entry) {
-        return this.isPlayerId == entry.isPlayerId && Objects.equals(this.entityId, entry.entityId) && Objects.equals(this.fakePlayerName, entry.fakePlayerName);
+        return this.type == entry.type && Objects.equals(this.entityId, entry.entityId) && Objects.equals(this.fakePlayerName, entry.fakePlayerName);
     }
 
-    public void updateTarget(final boolean isPlayerId, final Long entityId, final String fakePlayerName) {
-        this.isPlayerId = isPlayerId;
+    public void updateTarget(final IdentityDefinition_Type type, final Long entityId, final String fakePlayerName) {
+        this.type = type;
         this.entityId = entityId;
         this.fakePlayerName = fakePlayerName;
     }
@@ -54,8 +55,8 @@ public class ScoreboardEntry {
         return this.entityId != null || this.fakePlayerName != null;
     }
 
-    public boolean isPlayerId() {
-        return this.isPlayerId;
+    public IdentityDefinition_Type type() {
+        return this.type;
     }
 
     public Long entityId() {
@@ -79,18 +80,22 @@ public class ScoreboardEntry {
     }
 
     public void updateJavaName(final UserConnection user) {
-        if (this.entityId != null && this.isPlayerId) {
-            final PlayerListStorage playerList = user.get(PlayerListStorage.class);
-            final Pair<UUID, String> player = playerList.getPlayer(this.entityId);
-            if (player != null) {
-                this.javaName = player.value();
-            } else {
-                this.javaName = StringUtil.encodeLong(this.entityId) + user.get(ResourcePacksStorage.class).getTranslations().get("commands.scoreboard.players.offlinePlayerName");
-            }
-        } else if (this.entityId != null) {
-            this.javaName = String.valueOf(this.entityId);
-        } else if (this.fakePlayerName != null) {
-            this.javaName = this.fakePlayerName;
+        switch (this.type) {
+            case Player:
+                final PlayerListStorage playerList = user.get(PlayerListStorage.class);
+                final Pair<UUID, String> player = playerList.getPlayer(this.entityId);
+                if (player != null) {
+                    this.javaName = player.value();
+                } else {
+                    this.javaName = StringUtil.encodeLong(this.entityId) + user.get(ResourcePacksStorage.class).getTranslations().get("commands.scoreboard.players.offlinePlayerName");
+                }
+                break;
+            case Entity:
+                this.javaName = String.valueOf(this.entityId);
+                break;
+            case FakePlayer:
+                this.javaName = this.fakePlayerName;
+                break;
         }
     }
 

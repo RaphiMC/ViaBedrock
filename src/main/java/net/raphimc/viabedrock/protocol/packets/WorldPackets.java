@@ -260,8 +260,7 @@ public class WorldPackets {
                 final Long[] blobs = wrapper.read(BedrockTypes.LONG_ARRAY); // blob ids
                 final int expectedLength = sectionCount < 0 ? 1 : sectionCount + 1;
                 if (blobs.length != expectedLength) { // Mojang client writes random memory contents into the request and most likely crashes
-                    BedrockProtocol.kickForIllegalState(wrapper.user(), "Invalid blob count: " + blobs.length + " (expected " + expectedLength + ")");
-                    return;
+                    throw new IllegalStateException("Invalid blob count: " + blobs.length + " (expected " + expectedLength + ")");
                 }
                 final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
                 wrapper.user().get(BlobCache.class).getBlob(blobs).thenAccept(blob -> {
