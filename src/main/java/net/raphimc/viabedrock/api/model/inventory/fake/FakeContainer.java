@@ -33,8 +33,8 @@ public abstract class FakeContainer extends Container {
     protected final UserConnection user;
     protected final ATextComponent title;
 
-    public FakeContainer(final UserConnection user, final byte windowId, final MenuType menuType, final ATextComponent title) {
-        super(windowId, menuType, 0);
+    public FakeContainer(final UserConnection user, final MenuType menuType, final ATextComponent title) {
+        super(user.get(InventoryTracker.class).getNextFakeWindowId(), menuType, 0);
 
         this.user = user;
         this.title = title;

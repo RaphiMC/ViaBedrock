@@ -27,8 +27,7 @@ public class InventoryFormProvider extends FormProvider {
 
     @Override
     public void openModalForm(final UserConnection user, final int id, final AForm form) throws Exception {
-        final InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
-        inventoryTracker.openFakeContainer(new FormContainer(user, inventoryTracker.getNextFakeWindowId(), id, form));
+        user.get(InventoryTracker.class).openFakeContainer(new FormContainer(user, id, form));
     }
 
 }

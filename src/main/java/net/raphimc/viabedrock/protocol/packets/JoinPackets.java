@@ -258,7 +258,7 @@ public class JoinPackets {
                     final Dimension dimension = Dimension.values()[wrapper.read(BedrockTypes.VAR_INT)]; // dimension
                     final GeneratorType generatorType = GeneratorType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GeneratorType.Undefined); // generator id
                     final int levelGameType = wrapper.read(BedrockTypes.VAR_INT); // level game type
-                    final int difficulty = wrapper.read(BedrockTypes.VAR_INT); // difficulty
+                    final Difficulty difficulty = Difficulty.getByValue(wrapper.read(BedrockTypes.VAR_INT), Difficulty.Unknown); // difficulty
                     wrapper.read(BedrockTypes.BLOCK_POSITION); // default spawn position
                     wrapper.read(Type.BOOLEAN); // achievements disabled
                     final Editor_WorldType editorWorldType = Editor_WorldType.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // world editor type
@@ -549,7 +549,7 @@ public class JoinPackets {
         clientPlayer.sendPlayerPositionPacketToClient(false);
 
         final PacketWrapper serverDifficulty = PacketWrapper.create(ClientboundPackets1_20_3.SERVER_DIFFICULTY, user);
-        serverDifficulty.write(Type.UNSIGNED_BYTE, (short) joinGameStorage.getDifficulty()); // difficulty
+        serverDifficulty.write(Type.UNSIGNED_BYTE, (short) joinGameStorage.getDifficulty().getValue()); // difficulty
         serverDifficulty.write(Type.BOOLEAN, false); // locked
         serverDifficulty.send(BedrockProtocol.class);
 

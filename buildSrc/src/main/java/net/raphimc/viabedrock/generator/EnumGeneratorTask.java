@@ -69,6 +69,14 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                 if (fieldName.equals("9800")) {
                     fieldName = "_9800";
                 }
+                if (fieldName.equalsIgnoreCase("Count")) continue;
+                if (fieldName.equalsIgnoreCase("_count")) continue;
+                if (fieldName.equalsIgnoreCase("total")) continue;
+                if (fieldName.equalsIgnoreCase("All")) continue;
+                if (fieldName.equalsIgnoreCase("NumEnchantments")) continue;
+                if (fieldName.equalsIgnoreCase("NumTagTypes")) continue;
+                if (fieldName.equalsIgnoreCase("AbilityCount")) continue;
+                if (fieldName.equalsIgnoreCase("NumModes")) continue;
 
                 String fieldValue = value.split(" = ")[1];
                 if (fieldValue.equals("std::numeric_limits::max()")) {

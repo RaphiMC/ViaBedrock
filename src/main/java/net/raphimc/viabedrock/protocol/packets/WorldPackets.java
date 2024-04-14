@@ -289,8 +289,8 @@ public class WorldPackets {
             for (long i = 0; i < count; i++) {
                 final Position offset = wrapper.read(BedrockTypes.SUB_CHUNK_OFFSET); // offset
                 final Position absolute = new Position(center.x() + offset.x(), center.y() + offset.y(), center.z() + offset.z());
-                final byte result = wrapper.read(Type.BYTE); // result
-                final byte[] data = result != SubChunkPacket_SubChunkRequestResult.SuccessAllAir.getValue() || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
+                final SubChunkPacket_SubChunkRequestResult result = SubChunkPacket_SubChunkRequestResult.getByValue(wrapper.read(Type.BYTE), SubChunkPacket_SubChunkRequestResult.Undefined); // result
+                final byte[] data = result != SubChunkPacket_SubChunkRequestResult.SuccessAllAir || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
                 final byte heightmapResult = wrapper.read(Type.BYTE); // heightmap result
                 if (heightmapResult == SubChunkPacket_HeightMapDataType.HasData.getValue()) {
                     wrapper.read(new ByteArrayType(256)); // heightmap data
@@ -298,11 +298,11 @@ public class WorldPackets {
 
                 final Consumer<byte[]> dataConsumer = combinedData -> {
                     try {
-                        if (result == SubChunkPacket_SubChunkRequestResult.SuccessAllAir.getValue()) {
+                        if (result == SubChunkPacket_SubChunkRequestResult.SuccessAllAir) {
                             if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), new BedrockChunkSectionImpl(), new ArrayList<>())) {
                                 chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
                             }
-                        } else if (result == SubChunkPacket_SubChunkRequestResult.Success.getValue()) {
+                        } else if (result == SubChunkPacket_SubChunkRequestResult.Success) {
                             final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
 
                             BedrockChunkSection section = new BedrockChunkSectionImpl();

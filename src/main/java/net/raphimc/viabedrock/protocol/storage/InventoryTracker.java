@@ -23,12 +23,13 @@ import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.api.model.inventory.InventoryContainer;
 import net.raphimc.viabedrock.api.model.inventory.fake.FakeContainer;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
@@ -37,11 +38,12 @@ import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 public class InventoryTracker extends StoredObject {
 
-    private static final int MIN_FAKE_ID = 101;
-    private static final int MAX_FAKE_ID = 111;
+    private static final int MIN_FAKE_ID = ContainerID.CONTAINER_ID_LAST.getValue() + 1;
+    private static final int MAX_FAKE_ID = ContainerID.CONTAINER_ID_OFFHAND.getValue() - 1;
     private final AtomicInteger FAKE_ID_COUNTER = new AtomicInteger(MIN_FAKE_ID);
 
     private final Container inventoryContainer = new InventoryContainer((byte) ContainerID.CONTAINER_ID_INVENTORY.getValue());
@@ -76,11 +78,11 @@ public class InventoryTracker extends StoredObject {
         openWindow.write(Type.VAR_INT, (int) container.windowId()); // window id
         openWindow.write(Type.VAR_INT, container.menuType().javaMenuTypeId()); // type
         openWindow.write(Type.TAG, TextUtil.componentToNbt(container.title())); // title
-        openWindow.scheduleSend(BedrockProtocol.class);
+        openWindow.send(BedrockProtocol.class);
 
         final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_3.WINDOW_ITEMS, this.getUser());
         this.writeWindowItems(windowItems, container);
-        windowItems.scheduleSend(BedrockProtocol.class);
+        windowItems.send(BedrockProtocol.class);
     }
 
     public void setCurrentContainerClosed() throws Exception {
@@ -118,11 +120,7 @@ public class InventoryTracker extends StoredObject {
         final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_20_3.CLOSE_WINDOW, this.getUser());
         closeWindow.write(Type.UNSIGNED_BYTE, (short) this.pendingCloseContainer.windowId()); // window id
         closeWindow.send(BedrockProtocol.class);
-
-        final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, this.getUser());
-        containerClose.write(Type.BYTE, this.pendingCloseContainer.windowId()); // window id
-        containerClose.write(Type.BOOLEAN, false); // server initiated
-        containerClose.sendToServer(BedrockProtocol.class);
+        PacketFactory.sendContainerClose(this.getUser(), this.pendingCloseContainer.windowId());
     }
 
     public void handleWindowClick(final byte windowId, final int revision, final short slot, final byte button, final ClickType action) throws Exception {
@@ -157,6 +155,7 @@ public class InventoryTracker extends StoredObject {
             final int blockState = chunkTracker.getBlockState(this.currentContainerPosition);
             final String tag = blockStateRewriter.tag(blockState);
             if (!this.currentContainer.menuType().isAcceptedTag(tag)) {
+                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + this.currentContainer.menuType().bedrockContainerType() + " because block state is not valid for container type: " + blockState);
                 this.closeCurrentContainer();
                 return;
             }
@@ -165,6 +164,7 @@ public class InventoryTracker extends StoredObject {
             final Position3f containerPosition = new Position3f(this.currentContainerPosition.x() + 0.5F, this.currentContainerPosition.y() + 0.5F, this.currentContainerPosition.z() + 0.5F);
             final Position3f playerPosition = entityTracker.getClientPlayer().position();
             if (playerPosition.distanceTo(containerPosition) > 6) {
+                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + this.currentContainer.menuType().bedrockContainerType() + " because player is too far away (" + playerPosition.distanceTo(containerPosition) + " > 6)");
                 this.closeCurrentContainer();
             }
         }
@@ -198,7 +198,7 @@ public class InventoryTracker extends StoredObject {
         final int id = this.FAKE_ID_COUNTER.getAndIncrement();
         if (id > MAX_FAKE_ID) {
             this.FAKE_ID_COUNTER.set(MIN_FAKE_ID);
-            return MIN_FAKE_ID;
+            return (byte) MIN_FAKE_ID;
         }
         return (byte) id;
     }

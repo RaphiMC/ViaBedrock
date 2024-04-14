@@ -23,7 +23,7 @@ public class EntityLink {
 
     private final long from;
     private final long to;
-    private final short type;
+    private final short type; // TODO: Enum: Use ActorLinkType
     private final boolean immediate;
     private final boolean riderInitiated;
 

@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.Position;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
@@ -33,12 +32,14 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.api.model.inventory.fake.FakeContainer;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.providers.FormProvider;
@@ -56,19 +57,19 @@ public class InventoryPackets {
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_20_3.OPEN_WINDOW, wrapper -> {
             final byte windowId = wrapper.read(Type.BYTE); // window id
-            final byte type = wrapper.read(Type.BYTE); // type
+            final byte rawType = wrapper.read(Type.BYTE); // type
             final Position position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
-            final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
-            final MenuType menuType = MenuType.getByBedrockId(type);
-
+            wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
+            final ContainerType type = ContainerType.getByValue(rawType);
+            if (type == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown container type: " + rawType);
+                return;
+            }
+            final MenuType menuType = MenuType.getByBedrockContainerType(type);
             if (menuType == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to open unknown menu type: " + type);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to open unimplemented container: " + type);
                 wrapper.cancel();
-
-                final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, wrapper.user());
-                containerClose.write(Type.BYTE, windowId); // window id
-                containerClose.write(Type.BOOLEAN, false); // server initiated
-                containerClose.sendToServer(BedrockProtocol.class);
+                PacketFactory.sendContainerClose(wrapper.user(), windowId);
                 return;
             }
             if (menuType.equals(MenuType.INVENTORY)) {
@@ -79,25 +80,11 @@ public class InventoryPackets {
 
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = wrapper.user().get(BlockStateRewriter.class);
-            final int blockState = chunkTracker.getBlockState(position);
-            final String tag = blockStateRewriter.tag(blockState);
-            if (!menuType.isAcceptedTag(tag)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to open " + menuType + ", but tag was not correct for block state: " + blockState);
-                wrapper.cancel();
-                return;
-            }
-
-            ATextComponent title = new TranslationComponent("container." + tag);
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final BedrockBlockEntity blockEntity = chunkTracker.getBlockEntity(position);
+            ATextComponent title = new TranslationComponent("container." + blockStateRewriter.tag(chunkTracker.getBlockState(position)));
             if (blockEntity != null && blockEntity.tag().get("CustomName") instanceof StringTag) {
                 title = TextUtil.stringToComponent(wrapper.user().get(ResourcePacksStorage.class).translate(blockEntity.tag().<StringTag>get("CustomName").getValue()));
-            }
-
-            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            if (inventoryTracker.isContainerOpen()) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to open " + menuType + ", but another container is already open");
-                wrapper.cancel();
-                return;
             }
 
             final Container container = menuType.createContainer(windowId);
@@ -116,13 +103,12 @@ public class InventoryPackets {
                     final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
                     final Container container = serverInitiated ? inventoryTracker.getCurrentContainer() : inventoryTracker.getPendingCloseContainer();
                     if (container != null) {
+                        wrapper.send(BedrockProtocol.class);
+                        wrapper.cancel();
                         inventoryTracker.setCurrentContainerClosed();
 
                         if (serverInitiated) {
-                            final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, wrapper.user());
-                            containerClose.write(Type.BYTE, container.windowId()); // window id
-                            containerClose.write(Type.BOOLEAN, false); // server initiated
-                            containerClose.sendToServer(BedrockProtocol.class);
+                            PacketFactory.sendContainerClose(wrapper.user(), container.windowId());
                         }
                     } else if (inventoryTracker.getCurrentFakeContainer() != null) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Server tried to close container, but no container was open");

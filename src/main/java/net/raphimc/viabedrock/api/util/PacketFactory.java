@@ -26,6 +26,7 @@ import com.viaversion.viaversion.libs.gson.JsonNull;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 
 public class PacketFactory {
 
@@ -44,6 +45,13 @@ public class PacketFactory {
         return blockEntityData;
     }
 
+    public static PacketWrapper containerClose(final UserConnection user, final byte windowId) {
+        final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, user);
+        containerClose.write(Type.BYTE, windowId); // window id
+        containerClose.write(Type.BOOLEAN, false); // server initiated
+        return containerClose;
+    }
+
     public static <T extends Throwable> void sendSystemChat(final UserConnection user, final Tag message) throws T {
         try {
             systemChat(user, message).send(BedrockProtocol.class);
@@ -55,6 +63,14 @@ public class PacketFactory {
     public static <T extends Throwable> void sendBlockEntityData(final UserConnection user, final Position position, final BlockEntity blockEntity) throws T {
         try {
             blockEntityData(user, position, blockEntity).send(BedrockProtocol.class);
+        } catch (Throwable e) {
+            throw (T) e;
+        }
+    }
+
+    public static <T extends Throwable> void sendContainerClose(final UserConnection user, final byte windowId) throws T {
+        try {
+            containerClose(user, windowId).sendToServer(BedrockProtocol.class);
         } catch (Throwable e) {
             throw (T) e;
         }

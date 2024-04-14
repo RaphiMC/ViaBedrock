@@ -21,26 +21,30 @@ import net.raphimc.viabedrock.api.model.inventory.ChestContainer;
 import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.api.model.inventory.InventoryContainer;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 
 public enum MenuType {
 
-    INVENTORY(null, InventoryContainer::new),
-    CONTAINER("minecraft:generic_9x3", windowId -> new ChestContainer(windowId, 27), "chest", "trapped_chest"),
-    DO_NOT_USE_ANVIL("minecraft:anvil", windowId -> null, "anvil");
+    INVENTORY(ContainerType.INVENTORY, null, InventoryContainer::new),
+    CONTAINER(ContainerType.CONTAINER, "minecraft:generic_9x3", windowId -> new ChestContainer(windowId, 27), "chest", "trapped_chest"),
+    DO_NOT_USE_ANVIL(ContainerType.ANVIL, "minecraft:anvil", windowId -> null, "anvil");
 
     // TODO: Add remaining menu types
 
-    private final Function<Byte, Container> containerSupplier;
+    private final ContainerType bedrockContainerType;
     private final int javaMenuTypeId;
-    private final List<String> acceptedTags;
+    private final Function<Byte, Container> containerSupplier;
+    private final Set<String> acceptedTags;
 
-    MenuType(final String javaMenuType, final Function<Byte, Container> containerSupplier, final String... acceptedTags) {
+    MenuType(final ContainerType bedrockContainerType, final String javaMenuType, final Function<Byte, Container> containerSupplier, final String... acceptedTags) {
+        this.bedrockContainerType = bedrockContainerType;
         this.containerSupplier = containerSupplier;
-        this.acceptedTags = Arrays.asList(acceptedTags);
+        this.acceptedTags = new HashSet<>(Arrays.asList(acceptedTags));
 
         if (javaMenuType != null) {
             this.javaMenuTypeId = BedrockProtocol.MAPPINGS.getJavaMenus().getOrDefault(javaMenuType, -1);
@@ -52,11 +56,18 @@ public enum MenuType {
         }
     }
 
-    public static MenuType getByBedrockId(final int id) {
-        if (id == -1) return INVENTORY;
-        if (id < 0 || id >= values().length - 1) return null;
+    public static MenuType getByBedrockContainerType(final ContainerType containerType) {
+        for (final MenuType menuType : values()) {
+            if (menuType.bedrockContainerType() == containerType) {
+                return menuType;
+            }
+        }
 
-        return values()[id + 1];
+        return null;
+    }
+
+    public ContainerType bedrockContainerType() {
+        return this.bedrockContainerType;
     }
 
     public int javaMenuTypeId() {

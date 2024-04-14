@@ -31,7 +31,7 @@ public class AnvilTextInputContainer extends FakeContainer {
     private final Consumer<String> onRename;
 
     public AnvilTextInputContainer(UserConnection user, FakeContainer parent, ATextComponent title, Consumer<String> onRename) {
-        super(user, parent.windowId(), MenuType.DO_NOT_USE_ANVIL, title);
+        super(user, MenuType.DO_NOT_USE_ANVIL, title);
 
         this.parent = parent;
         this.onRename = onRename;

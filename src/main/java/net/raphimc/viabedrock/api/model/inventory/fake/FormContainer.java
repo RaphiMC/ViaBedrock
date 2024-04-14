@@ -54,8 +54,8 @@ public class FormContainer extends FakeContainer {
     private Item[] formItems;
     private int page = 0;
 
-    public FormContainer(UserConnection user, byte windowId, int formId, AForm form) {
-        super(user, windowId, MenuType.CONTAINER, TextUtil.stringToComponent("Form: " + form.getTitle()));
+    public FormContainer(UserConnection user, int formId, AForm form) {
+        super(user, MenuType.CONTAINER, TextUtil.stringToComponent("Form: " + form.getTitle()));
 
         this.formId = formId;
         this.form = form;

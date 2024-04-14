@@ -26,7 +26,7 @@ public class PlayerAbilities {
     private final long uniqueEntityId;
     private final byte playerPermission;
     private final byte commandPermission;
-    private final Int2ObjectMap<Abilities> abilityLayers;
+    private final Int2ObjectMap<Abilities> abilityLayers; // TODO: Enum: Use SerializedAbilitiesData_SerializedAbilitiesLayer as key
 
     public PlayerAbilities(final long uniqueEntityId, final byte playerPermission, final byte commandPermission, final Int2ObjectMap<Abilities> abilityLayers) {
         this.uniqueEntityId = uniqueEntityId;
