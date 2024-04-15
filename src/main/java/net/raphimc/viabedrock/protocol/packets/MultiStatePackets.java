@@ -33,6 +33,7 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.Connection_DisconnectFailReason;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MinecraftPacketIds;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketViolationSeverity;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketViolationType;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
@@ -67,7 +68,7 @@ public class MultiStatePackets {
         final int packetIdCause = wrapper.read(BedrockTypes.VAR_INT); // cause packet id
         final String context = wrapper.read(BedrockTypes.STRING); // context
 
-        final ServerboundBedrockPackets packet = ServerboundBedrockPackets.getPacket(packetIdCause);
+        final MinecraftPacketIds packet = MinecraftPacketIds.getByValue(packetIdCause);
 
         final String reason = "§4Packet violation warning: §c"
                 + type.name()
