@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -33,7 +33,7 @@ public abstract class FormProvider implements Provider {
     public abstract void openModalForm(final UserConnection user, final int id, final AForm form) throws Exception;
 
     public void sendModalFormResponse(final UserConnection user, final int id, final AForm form) throws Exception {
-        final PacketWrapper modalFormResponse = PacketWrapper.create(ClientboundBedrockPackets.MODAL_FORM_RESPONSE, user);
+        final PacketWrapper modalFormResponse = PacketWrapper.create(ServerboundBedrockPackets.MODAL_FORM_RESPONSE, user);
         modalFormResponse.write(BedrockTypes.UNSIGNED_VAR_INT, id); // id
         modalFormResponse.write(Type.BOOLEAN, form != null); // has response
         if (form != null) {

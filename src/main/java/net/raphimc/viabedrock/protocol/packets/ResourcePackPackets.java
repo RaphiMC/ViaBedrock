@@ -126,7 +126,7 @@ public class ResourcePackPackets {
             }
 
             for (int i = 0; i < actualChunkCount; i++) {
-                final PacketWrapper resourcePackChunkRequest = wrapper.create(ClientboundBedrockPackets.RESOURCE_PACK_CHUNK_REQUEST);
+                final PacketWrapper resourcePackChunkRequest = wrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CHUNK_REQUEST);
                 resourcePackChunkRequest.write(BedrockTypes.PACK_ID_AND_VERSION, idAndVersion); // pack id and version
                 resourcePackChunkRequest.write(BedrockTypes.INT_LE, i); // chunk index
                 resourcePackChunkRequest.sendToServer(BedrockProtocol.class);
@@ -157,7 +157,7 @@ public class ResourcePackPackets {
             if (resourcePacksStorage.areAllPacksDecompressed()) {
                 resourcePacksStorage.setCompletedTransfer();
                 ViaBedrock.getPlatform().getLogger().log(Level.INFO, "All packs have been decompressed and decrypted");
-                final PacketWrapper resourcePackClientResponse = wrapper.create(ClientboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
+                final PacketWrapper resourcePackClientResponse = wrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
                 resourcePackClientResponse.write(Type.UNSIGNED_BYTE, (short) ResourcePackResponse.DownloadingFinished.getValue()); // status
                 resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
                 resourcePackClientResponse.sendToServer(BedrockProtocol.class);
@@ -197,7 +197,7 @@ public class ResourcePackPackets {
             resourcePacksStorage.setPackStack(resourcePackIds, behaviourPackIds);
 
             if (!resourcePacksStorage.isJavaClientWaitingForPack()) {
-                final PacketWrapper resourcePackClientResponse = wrapper.create(ClientboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
+                final PacketWrapper resourcePackClientResponse = wrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
                 resourcePackClientResponse.write(Type.UNSIGNED_BYTE, (short) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
                 resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                 resourcePackClientResponse.sendToServer(BedrockProtocol.class);
