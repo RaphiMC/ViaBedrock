@@ -21,7 +21,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -78,14 +78,14 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void closeDownloadingTerrainScreen() throws Exception {
-        final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_20_3.GAME_EVENT, this.user);
+        final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_20_5.GAME_EVENT, this.user);
         gameEvent.write(Type.UNSIGNED_BYTE, (short) GameEventType.LEVEL_CHUNKS_LOAD_START.ordinal()); // event id
         gameEvent.write(Type.FLOAT, 0F); // value
         gameEvent.send(BedrockProtocol.class);
     }
 
     public void sendPlayerPositionPacketToClient(final boolean keepRotation) throws Exception {
-        final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets1_20_3.PLAYER_POSITION, this.user);
+        final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets1_20_5.PLAYER_POSITION, this.user);
         this.writePlayerPositionPacketToClient(playerPosition, keepRotation, true);
         playerPosition.send(BedrockProtocol.class);
     }

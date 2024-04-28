@@ -24,21 +24,21 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.gson.JsonNull;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 
 public class PacketFactory {
 
     public static PacketWrapper systemChat(final UserConnection user, final Tag message) {
-        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_20_3.SYSTEM_CHAT, user);
+        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_20_5.SYSTEM_CHAT, user);
         systemChat.write(Type.TAG, message); // message
         systemChat.write(Type.BOOLEAN, false); // overlay
         return systemChat;
     }
 
     public static PacketWrapper blockEntityData(final UserConnection user, final Position position, final BlockEntity blockEntity) {
-        final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_20_3.BLOCK_ENTITY_DATA, user);
+        final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_20_5.BLOCK_ENTITY_DATA, user);
         blockEntityData.write(Type.POSITION1_14, position); // position
         blockEntityData.write(Type.VAR_INT, blockEntity.typeId()); // type
         blockEntityData.write(Type.COMPOUND_TAG, blockEntity.tag()); // block entity tag

@@ -43,6 +43,7 @@ public class GameSessionStorage implements StorableObject {
     private boolean flatGenerator;
     private ServerAuthMovementMode movementMode;
     private int levelGameType;
+    private boolean hardcoreMode;
     private boolean sentStartGameResponsePackets;
 
     private PlayerAbilities abilities;
@@ -117,6 +118,14 @@ public class GameSessionStorage implements StorableObject {
 
     public void setLevelGameType(final int levelGameType) {
         this.levelGameType = levelGameType;
+    }
+
+    public boolean isHardcoreMode() {
+        return this.hardcoreMode;
+    }
+
+    public void setHardcoreMode(final boolean hardcoreMode) {
+        this.hardcoreMode = hardcoreMode;
     }
 
     public boolean hasSentStartGameResponsePackets() {

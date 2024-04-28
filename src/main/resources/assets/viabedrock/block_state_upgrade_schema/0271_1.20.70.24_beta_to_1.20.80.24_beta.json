@@ -1,0 +1,89 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 20,
+    "maxVersionPatch": 80,
+    "maxVersionRevision": 3,
+    "removedProperties": {
+        "minecraft:bamboo_sapling": [
+            "sapling_type"
+        ]
+    },
+    "remappedStates": {
+        "minecraft:coral_fan": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "coral_color",
+                    "suffix": "_coral_fan",
+                    "flattenedValueRemaps": {
+                        "blue": "tube",
+                        "pink": "brain",
+                        "purple": "bubble",
+                        "red": "fire",
+                        "yellow": "horn"
+                    }
+                },
+                "newState": null,
+                "copiedState": [
+                    "coral_fan_direction"
+                ]
+            }
+        ],
+        "minecraft:coral_fan_dead": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:dead_",
+                    "flattenedProperty": "coral_color",
+                    "suffix": "_coral_fan",
+                    "flattenedValueRemaps": {
+                        "blue": "tube",
+                        "pink": "brain",
+                        "purple": "bubble",
+                        "red": "fire",
+                        "yellow": "horn"
+                    }
+                },
+                "newState": null,
+                "copiedState": [
+                    "coral_fan_direction"
+                ]
+            }
+        ],
+        "minecraft:red_flower": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "flower_type",
+                    "suffix": "",
+                    "flattenedValueRemaps": {
+                        "houstonia": "azure_bluet",
+                        "orchid": "blue_orchid",
+                        "oxeye": "oxeye_daisy",
+                        "tulip_orange": "orange_tulip",
+                        "tulip_pink": "pink_tulip",
+                        "tulip_red": "red_tulip",
+                        "tulip_white": "white_tulip"
+                    }
+                },
+                "newState": null
+            }
+        ],
+        "minecraft:sapling": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "sapling_type",
+                    "suffix": "_sapling"
+                },
+                "newState": null,
+                "copiedState": [
+                    "age_bit"
+                ]
+            }
+        ]
+    }
+}

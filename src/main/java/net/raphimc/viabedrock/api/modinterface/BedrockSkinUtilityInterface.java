@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.modinterface;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
@@ -51,7 +51,7 @@ public class BedrockSkinUtilityInterface {
         final int chunkCount = (int) Math.ceil(skinData.length / (double) maxPayloadSize);
 
         {
-            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_3.PLUGIN_MESSAGE, user);
+            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_5.PLUGIN_MESSAGE, user);
             pluginMessage.write(Type.STRING, CHANNEL); // Channel
             pluginMessage.write(Type.INT, MESSAGE_SKIN_INFORMATION);
             pluginMessage.write(Type.INT, VERSION);
@@ -68,7 +68,7 @@ public class BedrockSkinUtilityInterface {
             pluginMessage.send(BedrockProtocol.class);
         }
         for (int i = 0; i < chunkCount; i++) {
-            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_3.PLUGIN_MESSAGE, user);
+            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_5.PLUGIN_MESSAGE, user);
             pluginMessage.write(Type.STRING, CHANNEL); // Channel
             pluginMessage.write(Type.INT, MESSAGE_SKIN_DATA);
             pluginMessage.write(Type.UUID, uuid);
@@ -83,7 +83,7 @@ public class BedrockSkinUtilityInterface {
         if (skin.capeData() != null) {
             final byte[] capeData = ImageType.getImageData(skin.capeData());
 
-            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_3.PLUGIN_MESSAGE, user);
+            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_5.PLUGIN_MESSAGE, user);
             pluginMessage.write(Type.STRING, CHANNEL); // Channel
             pluginMessage.write(Type.INT, MESSAGE_CAPE);
             pluginMessage.write(Type.INT, VERSION);

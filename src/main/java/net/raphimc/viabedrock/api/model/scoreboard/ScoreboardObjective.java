@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.model.scoreboard;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ObjectiveSortOrder;
@@ -84,7 +84,7 @@ public class ScoreboardObjective {
     }
 
     public void updateEntry0(final UserConnection user, final ScoreboardEntry entry) throws Exception {
-        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_20_3.UPDATE_SCORE, user);
+        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_20_5.UPDATE_SCORE, user);
         updateScore.write(Type.STRING, entry.javaName()); // player name
         updateScore.write(Type.STRING, this.name); // objective name
         updateScore.write(Type.VAR_INT, this.sortOrder == ObjectiveSortOrder.Ascending ? -entry.score() : entry.score()); // score
@@ -94,7 +94,7 @@ public class ScoreboardObjective {
     }
 
     public void removeEntry0(final UserConnection user, final ScoreboardEntry entry) throws Exception {
-        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_20_3.RESET_SCORE, user);
+        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_20_5.RESET_SCORE, user);
         updateScore.write(Type.STRING, entry.javaName()); // player name
         updateScore.write(Type.OPTIONAL_STRING, this.name); // objective name
         updateScore.send(BedrockProtocol.class);

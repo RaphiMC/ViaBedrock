@@ -22,7 +22,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.io.ByteStreams;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_3;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
@@ -31,7 +31,6 @@ import com.viaversion.viaversion.libs.gson.JsonPrimitive;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.libs.opennbt.tag.io.NBTIO;
 import com.viaversion.viaversion.libs.opennbt.tag.limiter.TagLimiter;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.Protocol1_20_3To1_20_2;
 import com.viaversion.viaversion.util.GsonUtil;
 import com.viaversion.viaversion.util.Key;
 import io.netty.buffer.ByteBuf;
@@ -85,6 +84,7 @@ public class BedrockMappingData extends MappingDataBase {
     // Biomes
     private CompoundTag bedrockBiomeDefinitions;
     private BiMap<String, Integer> bedrockBiomes;
+    private BiMap<String, Integer> javaBiomes;
     private Map<String, Map<String, Object>> bedrockToJavaBiomeExtraData;
 
     // Items
@@ -98,7 +98,7 @@ public class BedrockMappingData extends MappingDataBase {
 
     // Entities
     private BiMap<String, Integer> bedrockEntities;
-    private Map<String, EntityTypes1_20_3> bedrockToJavaEntities;
+    private Map<String, EntityTypes1_20_5> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
 
     // Effects
@@ -280,6 +280,12 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
+            this.javaBiomes = HashBiMap.create(this.bedrockBiomes.size());
+            this.javaBiomes.put("the_void", 0);
+            for (String bedrockBiomeName : this.bedrockBiomes.keySet()) {
+                this.javaBiomes.put(bedrockBiomeName, this.javaBiomes.size());
+            }
+
             final JsonObject bedrockToJavaBiomeExtraDataJson = this.readJson("custom/biome_extra_data.json");
             this.bedrockToJavaBiomeExtraData = new HashMap<>(bedrockToJavaBiomeExtraDataJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaBiomeExtraDataJson.entrySet()) {
@@ -457,7 +463,7 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockEntities.put(entry.<StringTag>get("id").getValue(), entry.<IntTag>get("rid").asInt());
             }
 
-            Via.getManager().getProtocolManager().addMappingLoaderFuture(BedrockProtocol.class, Protocol1_20_3To1_20_2.class, () -> {
+            Via.getManager().getProtocolManager().addMappingLoaderFuture(BedrockProtocol.class, ProtocolConstants.JAVA_PROTOCOL_CLASS, () -> {
                 final JsonObject bedrockToJavaEntityMappingsJson = this.readJson("custom/entity_mappings.json");
                 this.bedrockToJavaEntities = new HashMap<>(bedrockToJavaEntityMappingsJson.size());
                 final Set<String> unmappedIdentifiers = new HashSet<>();
@@ -472,8 +478,8 @@ public class BedrockMappingData extends MappingDataBase {
                         unmappedIdentifiers.add(bedrockIdentifier);
                         continue;
                     }
-                    EntityTypes1_20_3 javaEntityType = null;
-                    for (EntityTypes1_20_3 type : EntityTypes1_20_3.values()) {
+                    EntityTypes1_20_5 javaEntityType = null;
+                    for (EntityTypes1_20_5 type : EntityTypes1_20_5.values()) {
                         if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
                             javaEntityType = type;
                             break;
@@ -617,6 +623,10 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockBiomes;
     }
 
+    public BiMap<String, Integer> getJavaBiomes() {
+        return this.javaBiomes;
+    }
+
     public Map<String, Map<String, Object>> getBedrockToJavaBiomeExtraData() {
         return this.bedrockToJavaBiomeExtraData;
     }
@@ -653,7 +663,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockEntities;
     }
 
-    public Map<String, EntityTypes1_20_3> getBedrockToJavaEntities() {
+    public Map<String, EntityTypes1_20_5> getBedrockToJavaEntities() {
         return this.bedrockToJavaEntities;
     }
 

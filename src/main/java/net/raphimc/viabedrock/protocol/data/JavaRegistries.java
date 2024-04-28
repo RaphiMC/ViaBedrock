@@ -34,28 +34,21 @@ public class JavaRegistries {
 
     public static CompoundTag createJavaRegistries(final GameSessionStorage gameSession) {
         final CompoundTag registries = BedrockProtocol.MAPPINGS.getJavaRegistries().copy();
-        final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
-        final CompoundTag biomeRegistry = registries.get("minecraft:worldgen/biome");
 
-        modifyDimensionRegistry(gameSession, dimensionRegistry);
-        biomeRegistry.put("value", buildJavaBiomeRegistry(gameSession.getBedrockBiomeDefinitions()));
+        registries.put("minecraft:worldgen/biome", buildJavaBiomeRegistry(gameSession.getBedrockBiomeDefinitions()));
+        modifyDimensionRegistry(gameSession, registries.get("minecraft:dimension_type"));
+        modifyWolfVariantRegistry(registries.get("minecraft:wolf_variant"));
+        registries.remove("minecraft:chat_type"); // Not needed
 
         return registries;
     }
 
     private static void modifyDimensionRegistry(final GameSessionStorage gameSession, final CompoundTag dimensionRegistry) {
-        final ListTag<?> dimensions = dimensionRegistry.get("value");
-        final Map<String, CompoundTag> dimensionMap = dimensions.stream()
-                .map(CompoundTag.class::cast)
-                .collect(Collectors.toMap(tag -> tag.get("name").getValue().toString(), tag -> tag.get("element")));
-
+        dimensionRegistry.remove("minecraft:overworld_caves");
         if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
-            dimensionMap.get("minecraft:overworld").put("min_y", new IntTag(0));
-            dimensionMap.get("minecraft:overworld").put("height", new IntTag(256));
-            dimensionMap.get("minecraft:overworld").put("logical_height", new IntTag(256));
-            dimensionMap.get("minecraft:overworld_caves").put("min_y", new IntTag(0));
-            dimensionMap.get("minecraft:overworld_caves").put("height", new IntTag(256));
-            dimensionMap.get("minecraft:overworld_caves").put("logical_height", new IntTag(256));
+            dimensionRegistry.<CompoundTag>get("minecraft:overworld").put("min_y", new IntTag(0));
+            dimensionRegistry.<CompoundTag>get("minecraft:overworld").put("height", new IntTag(256));
+            dimensionRegistry.<CompoundTag>get("minecraft:overworld").put("logical_height", new IntTag(256));
         }
         for (Map.Entry<String, IntIntPair> entry : gameSession.getBedrockDimensionDefinitions().entrySet()) {
             final CompoundTag dimensionTag = new CompoundTag();
@@ -63,13 +56,13 @@ public class JavaRegistries {
             dimensionTag.put("min_y", new IntTag(entry.getValue().leftInt()));
             dimensionTag.put("height", new IntTag(height));
             dimensionTag.put("logical_height", new IntTag(height));
-            dimensionMap.get(entry.getKey()).putAll(dimensionTag);
+            dimensionRegistry.<CompoundTag>get(entry.getKey()).putAll(dimensionTag);
         }
     }
 
-    private static ListTag<CompoundTag> buildJavaBiomeRegistry(final CompoundTag biomeDefinitions) {
-        final ListTag<CompoundTag> javaBiomes = new ListTag<>(CompoundTag.class);
-        javaBiomes.add(getTheVoidBiome());
+    private static CompoundTag buildJavaBiomeRegistry(final CompoundTag biomeDefinitions) {
+        final CompoundTag javaBiomes = new CompoundTag();
+        javaBiomes.put("minecraft:the_void", getTheVoidBiome());
 
         final Map<String, Object> fogColor = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("fog_color");
         final Map<String, Object> waterFogColor = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("water_fog_color");
@@ -78,31 +71,23 @@ public class JavaRegistries {
         final Map<String, Object> grassColorModifier = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("grass_color_modifier");
         final Map<String, Object> moodSound = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("mood_sound");
 
-        for (Map.Entry<String, Tag> entry : biomeDefinitions.entrySet()) {
-            final String bedrockIdentifier = entry.getKey();
-            final String javaIdentifier = "minecraft:" + bedrockIdentifier;
-            final CompoundTag bedrockBiome = (CompoundTag) entry.getValue();
-            final CompoundTag javaBiome = new CompoundTag();
-            final int bedrockId = BedrockProtocol.MAPPINGS.getBedrockBiomes().getOrDefault(bedrockIdentifier, -1);
-            final int javaId = bedrockId + 1;
-
-            if (bedrockId == -1) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome mapping for " + bedrockIdentifier);
+        for (String bedrockBiomeName : BedrockProtocol.MAPPINGS.getBedrockBiomes().keySet()) {
+            final CompoundTag bedrockBiome = biomeDefinitions.get(bedrockBiomeName);
+            if (bedrockBiome == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome definition for " + bedrockBiomeName);
                 continue;
             }
 
-            javaBiome.put("name", new StringTag(javaIdentifier));
-            javaBiome.put("id", new IntTag(javaId));
-            final CompoundTag element = new CompoundTag();
-            javaBiome.put("element", element);
-            element.put("temperature", bedrockBiome.get("temperature"));
-            element.put("downfall", bedrockBiome.get("downfall"));
-            element.put("has_precipitation", bedrockBiome.get("rain"));
+            final String javaIdentifier = "minecraft:" + bedrockBiomeName;
+            final CompoundTag javaBiome = new CompoundTag();
+            javaBiome.put("temperature", bedrockBiome.get("temperature"));
+            javaBiome.put("downfall", bedrockBiome.get("downfall"));
+            javaBiome.put("has_precipitation", bedrockBiome.get("rain"));
 
             final List<String> tags = bedrockBiome.getListTag("tags").stream().map(StringTag.class::cast).map(StringTag::getValue).collect(Collectors.toList());
 
             final CompoundTag effects = new CompoundTag();
-            element.put("effects", effects);
+            javaBiome.put("effects", effects);
 
             final float blue_spores = bedrockBiome.get("blue_spores") instanceof FloatTag ? bedrockBiome.<FloatTag>get("blue_spores").asFloat() : 0;
             final float white_ash = bedrockBiome.get("white_ash") instanceof FloatTag ? bedrockBiome.<FloatTag>get("white_ash").asFloat() : 0;
@@ -144,17 +129,17 @@ public class JavaRegistries {
                 }
             }
 
-            if (waterFogColor.containsKey(bedrockIdentifier)) {
-                effects.put("water_fog_color", new IntTag((Integer) waterFogColor.get(bedrockIdentifier)));
+            if (waterFogColor.containsKey(bedrockBiomeName)) {
+                effects.put("water_fog_color", new IntTag((Integer) waterFogColor.get(bedrockBiomeName)));
             }
 
             // One warning is enough
             if (!effects.contains("fog_color")) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing fog color for " + bedrockIdentifier + ": " + bedrockBiome);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing fog color for " + bedrockBiomeName + ": " + bedrockBiome);
             } else if (!effects.contains("water_fog_color")) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing water fog color for " + bedrockIdentifier + ": " + bedrockBiome);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing water fog color for " + bedrockBiomeName + ": " + bedrockBiome);
             } else if (!effects.contains("mood_sound")) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing mood sound for " + bedrockIdentifier + ": " + bedrockBiome);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing mood sound for " + bedrockBiomeName + ": " + bedrockBiome);
             }
 
             if (tags.contains("the_end")) {
@@ -165,25 +150,27 @@ public class JavaRegistries {
 
             // TODO: Enhancement: Biome sounds
 
-            javaBiomes.add(javaBiome);
+            javaBiomes.put(javaIdentifier, javaBiome);
         }
 
         return javaBiomes;
     }
 
+    private static void modifyWolfVariantRegistry(final CompoundTag wolfVariantRegistry) {
+        // Biomes are not used client-side, so clearing it is fine
+        for (Map.Entry<String, Tag> entry : wolfVariantRegistry.entrySet()) {
+            ((CompoundTag) entry.getValue()).put("biomes", new ListTag<>(StringTag.class));
+        }
+    }
+
     private static CompoundTag getTheVoidBiome() {
         final CompoundTag biome = new CompoundTag();
-        biome.put("name", new StringTag("minecraft:the_void"));
-        biome.put("id", new IntTag(0));
-
-        final CompoundTag element = new CompoundTag();
-        biome.put("element", element);
-        element.put("temperature", new FloatTag(0.5F));
-        element.put("downfall", new FloatTag(0.5F));
-        element.put("has_precipitation", new ByteTag((byte) 0));
+        biome.put("temperature", new FloatTag(0.5F));
+        biome.put("downfall", new FloatTag(0.5F));
+        biome.put("has_precipitation", new ByteTag((byte) 0));
 
         final CompoundTag effects = new CompoundTag();
-        element.put("effects", effects);
+        biome.put("effects", effects);
         effects.put("sky_color", new IntTag(8103167));
         effects.put("water_fog_color", new IntTag(329011));
         effects.put("fog_color", new IntTag(12638463));

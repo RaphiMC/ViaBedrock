@@ -209,6 +209,12 @@
   "trapped_chest": [
     "minecraft:trapped_chest"
   ],
+  "trial_spawner": [
+    "minecraft:trial_spawner"
+  ],
+  "vault": [
+    "minecraft:vault"
+  ],
   "water": [
     "minecraft:flowing_water",
     "minecraft:water"

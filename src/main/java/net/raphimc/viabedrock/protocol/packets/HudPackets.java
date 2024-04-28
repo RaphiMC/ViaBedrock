@@ -21,7 +21,7 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
@@ -55,7 +55,7 @@ import java.util.logging.Level;
 public class HudPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_LIST, ClientboundPackets1_20_3.PLAYER_INFO_UPDATE, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_LIST, ClientboundPackets1_20_5.PLAYER_INFO_UPDATE, wrapper -> {
             final PlayerListStorage playerListStorage = wrapper.user().get(PlayerListStorage.class);
             final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
 
@@ -125,24 +125,24 @@ public class HudPackets {
 
                     if (!toRemoveUUIDs.isEmpty()) {
                         // Remove duplicate players from the player list first because Mojang client overwrites entries if they are added twice
-                        final PacketWrapper playerInfoRemove = PacketWrapper.create(ClientboundPackets1_20_3.PLAYER_INFO_REMOVE, wrapper.user());
+                        final PacketWrapper playerInfoRemove = PacketWrapper.create(ClientboundPackets1_20_5.PLAYER_INFO_REMOVE, wrapper.user());
                         playerInfoRemove.write(Type.UUID_ARRAY, toRemoveUUIDs.toArray(new UUID[0])); // uuids
                         playerInfoRemove.send(BedrockProtocol.class);
 
-                        final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_20_3.CUSTOM_CHAT_COMPLETIONS, wrapper.user());
+                        final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_20_5.CUSTOM_CHAT_COMPLETIONS, wrapper.user());
                         customChatCompletions.write(Type.VAR_INT, CustomChatCompletionsAction.REMOVE.ordinal()); // action
                         customChatCompletions.write(Type.STRING_ARRAY, toRemoveNames.toArray(new String[0])); // entries
                         customChatCompletions.send(BedrockProtocol.class);
                     }
 
-                    final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_20_3.CUSTOM_CHAT_COMPLETIONS, wrapper.user());
+                    final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_20_5.CUSTOM_CHAT_COMPLETIONS, wrapper.user());
                     customChatCompletions.write(Type.VAR_INT, CustomChatCompletionsAction.ADD.ordinal()); // action
                     customChatCompletions.write(Type.STRING_ARRAY, names); // entries
                     customChatCompletions.send(BedrockProtocol.class);
                     break;
                 }
                 case Remove: {
-                    wrapper.setPacketType(ClientboundPackets1_20_3.PLAYER_INFO_REMOVE);
+                    wrapper.setPacketType(ClientboundPackets1_20_5.PLAYER_INFO_REMOVE);
                     final UUID[] uuids = wrapper.read(BedrockTypes.UUID_ARRAY); // uuids
                     wrapper.write(Type.UUID_ARRAY, uuids); // uuids
 
@@ -158,7 +158,7 @@ public class HudPackets {
                         }
                     }
 
-                    final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_20_3.CUSTOM_CHAT_COMPLETIONS, wrapper.user());
+                    final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_20_5.CUSTOM_CHAT_COMPLETIONS, wrapper.user());
                     customChatCompletions.write(Type.VAR_INT, CustomChatCompletionsAction.REMOVE.ordinal()); // action
                     customChatCompletions.write(Type.STRING_ARRAY, names.toArray(new String[0])); // entries
                     customChatCompletions.send(BedrockProtocol.class);
@@ -197,26 +197,26 @@ public class HudPackets {
                 switch (type) {
                     case Clear:
                     case Reset:
-                        wrapper.setPacketType(ClientboundPackets1_20_3.CLEAR_TITLES);
+                        wrapper.setPacketType(ClientboundPackets1_20_5.CLEAR_TITLES);
                         wrapper.write(Type.BOOLEAN, type == SetTitlePacket_TitleType.Reset); // reset
                         break;
                     case Title:
                     case TitleTextObject:
-                        wrapper.setPacketType(ClientboundPackets1_20_3.TITLE_TEXT);
+                        wrapper.setPacketType(ClientboundPackets1_20_5.TITLE_TEXT);
                         wrapper.write(Type.TAG, TextUtil.stringToNbt(text)); // text
                         break;
                     case Subtitle:
                     case SubtitleTextObject:
-                        wrapper.setPacketType(ClientboundPackets1_20_3.TITLE_SUBTITLE);
+                        wrapper.setPacketType(ClientboundPackets1_20_5.TITLE_SUBTITLE);
                         wrapper.write(Type.TAG, TextUtil.stringToNbt(text)); // text
                         break;
                     case Actionbar:
                     case ActionbarTextObject:
-                        wrapper.setPacketType(ClientboundPackets1_20_3.ACTIONBAR);
+                        wrapper.setPacketType(ClientboundPackets1_20_5.ACTIONBAR);
                         wrapper.write(Type.TAG, TextUtil.stringToNbt(text)); // text
                         break;
                     case Times:
-                        wrapper.setPacketType(ClientboundPackets1_20_3.TITLE_TIMES);
+                        wrapper.setPacketType(ClientboundPackets1_20_5.TITLE_TIMES);
                         wrapper.write(Type.INT, fadeInTicks); // fade in ticks
                         wrapper.write(Type.INT, stayTicks); // stay ticks
                         wrapper.write(Type.INT, fadeOutTicks); // fade out ticks
@@ -229,7 +229,7 @@ public class HudPackets {
                 wrapper.cancel();
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_DISPLAY_OBJECTIVE, ClientboundPackets1_20_3.DISPLAY_SCOREBOARD, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_DISPLAY_OBJECTIVE, ClientboundPackets1_20_5.DISPLAY_SCOREBOARD, wrapper -> {
             final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
 
             final String displaySlot = wrapper.read(BedrockTypes.STRING); // display slot
@@ -260,7 +260,7 @@ public class HudPackets {
             if (!scoreboardTracker.hasObjective(objectiveName)) {
                 scoreboardTracker.addObjective(objectiveName, new ScoreboardObjective(objectiveName, sortOrder));
 
-                final PacketWrapper scoreboardObjective = PacketWrapper.create(ClientboundPackets1_20_3.SCOREBOARD_OBJECTIVE, wrapper.user());
+                final PacketWrapper scoreboardObjective = PacketWrapper.create(ClientboundPackets1_20_5.SCOREBOARD_OBJECTIVE, wrapper.user());
                 scoreboardObjective.write(Type.STRING, objectiveName); // objective name
                 scoreboardObjective.write(Type.BYTE, (byte) ScoreboardObjectiveAction.ADD.ordinal()); // mode
                 scoreboardObjective.write(Type.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePacksStorage.class).translate(displayName))); // display name
@@ -374,7 +374,7 @@ public class HudPackets {
                 }
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.REMOVE_OBJECTIVE, ClientboundPackets1_20_3.SCOREBOARD_OBJECTIVE, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.REMOVE_OBJECTIVE, ClientboundPackets1_20_5.SCOREBOARD_OBJECTIVE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(BedrockTypes.STRING, Type.STRING); // objective name

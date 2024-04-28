@@ -24,8 +24,8 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.components.TranslationComponent;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ServerboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ServerboundPackets1_20_5;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
 import net.lenni0451.mcstructs_bedrock.forms.serializer.FormSerializer;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -55,7 +55,7 @@ import java.util.logging.Level;
 public class InventoryPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_20_3.OPEN_WINDOW, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_20_5.OPEN_WINDOW, wrapper -> {
             final byte windowId = wrapper.read(Type.BYTE); // window id
             final byte rawType = wrapper.read(Type.BYTE); // type
             final Position position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
@@ -94,7 +94,7 @@ public class InventoryPackets {
             wrapper.write(Type.VAR_INT, menuType.javaMenuTypeId()); // type
             wrapper.write(Type.TAG, TextUtil.componentToNbt(title)); // title
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_20_3.CLOSE_WINDOW, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_20_5.CLOSE_WINDOW, new PacketHandlers() {
             @Override
             protected void register() {
                 map(Type.BYTE, Type.UNSIGNED_BYTE); // window id
@@ -117,7 +117,7 @@ public class InventoryPackets {
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_20_3.WINDOW_ITEMS, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_20_5.WINDOW_ITEMS, wrapper -> {
             final int windowId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // window id
             final BedrockItem[] items = wrapper.read(wrapper.user().get(ItemRewriter.class).itemArrayType()); // items
 
@@ -159,7 +159,7 @@ public class InventoryPackets {
             Via.getManager().getProviders().get(FormProvider.class).openModalForm(wrapper.user(), id, form);
         });
 
-        protocol.registerServerbound(ServerboundPackets1_20_3.CLICK_WINDOW, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_20_5.CLICK_WINDOW, null, wrapper -> {
             wrapper.cancel();
             final byte windowId = wrapper.read(Type.UNSIGNED_BYTE).byteValue(); // window id
             final int revision = wrapper.read(Type.VAR_INT); // revision
@@ -169,7 +169,7 @@ public class InventoryPackets {
 
             wrapper.user().get(InventoryTracker.class).handleWindowClick(windowId, revision, slot, button, action);
         });
-        protocol.registerServerbound(ServerboundPackets1_20_3.CLOSE_WINDOW, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_20_5.CLOSE_WINDOW, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(Type.UNSIGNED_BYTE, Type.BYTE); // window id
@@ -191,7 +191,7 @@ public class InventoryPackets {
                 });
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_20_3.RENAME_ITEM, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_20_5.RENAME_ITEM, null, wrapper -> {
             wrapper.cancel();
             final String name = wrapper.read(Type.STRING); // name
             final FakeContainer fakeContainer = wrapper.user().get(InventoryTracker.class).getCurrentFakeContainer();

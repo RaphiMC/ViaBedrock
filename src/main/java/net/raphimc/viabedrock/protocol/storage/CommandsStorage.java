@@ -38,7 +38,7 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
@@ -95,7 +95,7 @@ public class CommandsStorage extends StoredObject {
     public void updateCommandTree() throws Exception {
         this.buildCommandTree();
 
-        final PacketWrapper declareCommands = PacketWrapper.create(ClientboundPackets1_20_3.DECLARE_COMMANDS, this.getUser());
+        final PacketWrapper declareCommands = PacketWrapper.create(ClientboundPackets1_20_5.DECLARE_COMMANDS, this.getUser());
         this.writeCommandTree(declareCommands);
         declareCommands.send(BedrockProtocol.class);
     }

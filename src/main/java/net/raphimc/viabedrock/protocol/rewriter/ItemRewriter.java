@@ -21,19 +21,21 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.item.DataItem;
+import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
+import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import com.viaversion.viaversion.libs.opennbt.stringified.SNBT;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -120,12 +122,10 @@ public class ItemRewriter extends StoredObject {
                 final ATextComponent nameComponent = TextUtil.stringToComponent("§cMissing item: " + identifier);
                 nameComponent.getStyle().setItalic(false);
 
-                final CompoundTag tag = new CompoundTag();
-                final CompoundTag displayTag = new CompoundTag();
-                displayTag.put("Name", new StringTag(TextUtil.componentToJson(nameComponent)));
-                tag.put("display", displayTag);
+                final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
+                data.set(StructuredDataKey.CUSTOM_NAME, TextUtil.componentToNbt(nameComponent));
 
-                return new DataItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), (byte) MathUtil.clamp(bedrockItem.amount(), 0, 127), (short) 0, tag);
+                return new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), (byte) MathUtil.clamp(bedrockItem.amount(), 0, 127), data);
             }
         }
 
@@ -203,21 +203,19 @@ public class ItemRewriter extends StoredObject {
         public Item toJava(final UserConnection user, final BedrockItem bedrockItem) {
             final int javaId = BedrockProtocol.MAPPINGS.getJavaItems().get(this.identifier);
 
-            final CompoundTag javaTag = new CompoundTag();
+            final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
             if (this.overrideTag != null) {
-                javaTag.setValue(this.overrideTag.copy().getValue());
+                // javaTag.setValue(this.overrideTag.copy().getValue());
+                // TODO: Update: Fix this
             }
             if (this.displayName != null) {
                 final String newName = "Bedrock " + this.displayName;
                 final ATextComponent nameComponent = TextUtil.stringToComponent(newName);
                 nameComponent.getStyle().setItalic(false);
-
-                final CompoundTag displayTag = new CompoundTag();
-                displayTag.put("Name", new StringTag(TextUtil.componentToJson(nameComponent)));
-                javaTag.put("display", displayTag);
+                data.set(StructuredDataKey.CUSTOM_NAME, TextUtil.componentToNbt(nameComponent));
             }
 
-            return new DataItem(javaId, (byte) MathUtil.clamp(bedrockItem.amount(), 0, 127), (short) 0, javaTag.isEmpty() ? null : javaTag);
+            return new StructuredItem(javaId, (byte) MathUtil.clamp(bedrockItem.amount(), 0, 127), data);
         }
 
         public String identifier() {

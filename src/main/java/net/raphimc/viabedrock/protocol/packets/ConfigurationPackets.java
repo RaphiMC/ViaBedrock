@@ -20,27 +20,27 @@ package net.raphimc.viabedrock.protocol.packets;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
-import com.viaversion.viaversion.protocols.protocol1_20_2to1_20.packet.ServerboundConfigurationPackets1_20_2;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ServerboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ServerboundConfigurationPackets1_20_5;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ServerboundPackets1_20_5;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 public class ConfigurationPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_2.CLIENT_INFORMATION, null, new PacketHandlers() {
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_5.CLIENT_INFORMATION, null, new PacketHandlers() {
             @Override
             protected void register() {
                 handler(MultiStatePackets.CLIENT_SETTINGS_HANDLER);
                 handler(PacketWrapper::cancel);
             }
         });
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_2.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_2.FINISH_CONFIGURATION, null, wrapper -> {
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_5.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_5.FINISH_CONFIGURATION, null, wrapper -> {
             wrapper.cancel();
             wrapper.user().getProtocolInfo().setClientState(State.PLAY);
         });
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_2.PONG, null, MultiStatePackets.PONG_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_20_3.CONFIGURATION_ACKNOWLEDGED, null, wrapper -> {
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_5.PONG, null, MultiStatePackets.PONG_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_20_5.CONFIGURATION_ACKNOWLEDGED, null, wrapper -> {
             wrapper.cancel();
             wrapper.user().getProtocolInfo().setClientState(State.CONFIGURATION);
         });

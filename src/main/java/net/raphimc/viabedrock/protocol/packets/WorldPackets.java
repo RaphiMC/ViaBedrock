@@ -31,7 +31,7 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.util.MathUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -69,7 +69,7 @@ import java.util.logging.Level;
 
 public class WorldPackets {
 
-    private static final PacketHandler BLOCK_CHANGE_HANDLER = wrapper -> {
+    private static final PacketHandler UPDATE_BLOCK_HANDLER = wrapper -> {
         final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
         final Position position = wrapper.get(Type.POSITION1_14, 0);
         final int blockState = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // block state
@@ -96,7 +96,7 @@ public class WorldPackets {
     };
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_SPAWN_POSITION, ClientboundPackets1_20_3.SPAWN_POSITION, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_SPAWN_POSITION, ClientboundPackets1_20_5.SPAWN_POSITION, wrapper -> {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
 
             final SpawnPositionType type = SpawnPositionType.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // type
@@ -117,7 +117,7 @@ public class WorldPackets {
             wrapper.write(Type.POSITION1_14, compassPosition); // position
             wrapper.write(Type.FLOAT, 0F); // angle
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.CHANGE_DIMENSION, ClientboundPackets1_20_3.RESPAWN, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.CHANGE_DIMENSION, ClientboundPackets1_20_5.RESPAWN, wrapper -> {
             final Dimension dimension = Dimension.values()[wrapper.read(BedrockTypes.VAR_INT)]; // dimension
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final boolean respawn = wrapper.read(Type.BOOLEAN); // respawn
@@ -146,8 +146,8 @@ public class WorldPackets {
             clientPlayer.setChangingDimension(true);
             clientPlayer.sendPlayerPositionPacketToClient(true);
 
-            wrapper.write(Type.STRING, dimension.getKey()); // dimension type
-            wrapper.write(Type.STRING, dimension.getKey()); // dimension id
+            wrapper.write(Type.VAR_INT, dimension.ordinal()); // dimension id
+            wrapper.write(Type.STRING, dimension.getKey()); // dimension name
             wrapper.write(Type.LONG, 0L); // hashed seed
             wrapper.write(Type.BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.getGameType(), gameSession.getLevelGameType())); // game mode
             wrapper.write(Type.BYTE, (byte) -1); // previous game mode
@@ -351,18 +351,18 @@ public class WorldPackets {
                 }
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_BLOCK, ClientboundPackets1_20_3.BLOCK_CHANGE, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_BLOCK, ClientboundPackets1_20_5.BLOCK_CHANGE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(BedrockTypes.BLOCK_POSITION, Type.POSITION1_14); // position
-                handler(BLOCK_CHANGE_HANDLER);
+                handler(UPDATE_BLOCK_HANDLER);
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_BLOCK_SYNCED, ClientboundPackets1_20_3.BLOCK_CHANGE, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_BLOCK_SYNCED, ClientboundPackets1_20_5.BLOCK_CHANGE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(BedrockTypes.BLOCK_POSITION, Type.POSITION1_14); // position
-                handler(BLOCK_CHANGE_HANDLER);
+                handler(UPDATE_BLOCK_HANDLER);
                 read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
                 read(BedrockTypes.UNSIGNED_VAR_LONG); // block sync type
             }
@@ -400,7 +400,7 @@ public class WorldPackets {
                 chunkKey |= (chunkPosition.z() & 0x3FFFFFL) << 20;
                 chunkKey |= (chunkPosition.y() & 0xFFFL);
 
-                final PacketWrapper multiBlockChange = wrapper.create(ClientboundPackets1_20_3.MULTI_BLOCK_CHANGE);
+                final PacketWrapper multiBlockChange = wrapper.create(ClientboundPackets1_20_5.MULTI_BLOCK_CHANGE);
                 multiBlockChange.write(Type.LONG, chunkKey); // chunk position
                 multiBlockChange.write(Type.VAR_LONG_BLOCK_CHANGE_RECORD_ARRAY, changes.toArray(new BlockChangeRecord[0])); // block change records
                 multiBlockChange.send(BedrockProtocol.class);
@@ -409,7 +409,7 @@ public class WorldPackets {
                 PacketFactory.sendBlockEntityData(wrapper.user(), entry.getKey(), entry.getValue());
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.BLOCK_ENTITY_DATA, ClientboundPackets1_20_3.BLOCK_ENTITY_DATA, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.BLOCK_ENTITY_DATA, ClientboundPackets1_20_5.BLOCK_ENTITY_DATA, new PacketHandlers() {
             @Override
             protected void register() {
                 map(BedrockTypes.BLOCK_POSITION, Type.POSITION1_14); // position
@@ -428,7 +428,7 @@ public class WorldPackets {
                     if (javaBlockEntity instanceof BlockEntityWithBlockState) {
                         final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
                         if (blockEntityWithBlockState.hasBlockState()) {
-                            final PacketWrapper blockChange = PacketWrapper.create(ClientboundPackets1_20_3.BLOCK_CHANGE, wrapper.user());
+                            final PacketWrapper blockChange = PacketWrapper.create(ClientboundPackets1_20_5.BLOCK_CHANGE, wrapper.user());
                             blockChange.write(Type.POSITION1_14, bedrockBlockEntity.position()); // position
                             blockChange.write(Type.VAR_INT, blockEntityWithBlockState.blockState()); // block state
                             blockChange.send(BedrockProtocol.class);
@@ -444,7 +444,7 @@ public class WorldPackets {
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_CHUNK_PUBLISHER_UPDATE, ClientboundPackets1_20_3.UPDATE_VIEW_DISTANCE, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_CHUNK_PUBLISHER_UPDATE, ClientboundPackets1_20_5.UPDATE_VIEW_DISTANCE, wrapper -> {
             final Position position = wrapper.read(BedrockTypes.POSITION_3I); // center position
             final int radius = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT) >> 4; // radius
             wrapper.write(Type.VAR_INT, radius); // radius
@@ -453,7 +453,7 @@ public class WorldPackets {
             chunkTracker.setRadius(radius);
             chunkTracker.setCenter(position.x() >> 4, position.z() >> 4);
 
-            final PacketWrapper updateViewPosition = wrapper.create(ClientboundPackets1_20_3.UPDATE_VIEW_POSITION);
+            final PacketWrapper updateViewPosition = wrapper.create(ClientboundPackets1_20_5.UPDATE_VIEW_POSITION);
             updateViewPosition.write(Type.VAR_INT, position.x() >> 4); // chunk x
             updateViewPosition.write(Type.VAR_INT, position.z() >> 4); // chunk z
             updateViewPosition.send(BedrockProtocol.class);
@@ -464,14 +464,14 @@ public class WorldPackets {
                 wrapper.read(BedrockTypes.VAR_INT); // chunk z
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.CHUNK_RADIUS_UPDATED, ClientboundPackets1_20_3.UPDATE_VIEW_DISTANCE, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.CHUNK_RADIUS_UPDATED, ClientboundPackets1_20_5.UPDATE_VIEW_DISTANCE, new PacketHandlers() {
             @Override
             public void register() {
                 map(BedrockTypes.VAR_INT, Type.VAR_INT); // radius
                 handler(wrapper -> wrapper.user().get(ChunkTracker.class).setRadius(wrapper.get(Type.VAR_INT, 0)));
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_TIME, ClientboundPackets1_20_3.TIME_UPDATE, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_TIME, ClientboundPackets1_20_5.TIME_UPDATE, new PacketHandlers() {
             @Override
             public void register() {
                 map(BedrockTypes.VAR_INT, Type.LONG); // game time

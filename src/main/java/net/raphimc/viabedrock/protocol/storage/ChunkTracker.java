@@ -29,10 +29,9 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.types.chunk.ChunkType1_20_2;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.LongArrayTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.NumberTag;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.util.CompactArrayUtil;
 import com.viaversion.viaversion.util.MathUtil;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -91,24 +90,11 @@ public class ChunkTracker extends StoredObject {
         final CompoundTag registries = gameSession.getJavaRegistries();
         final String dimensionKey = this.dimension.getKey();
         final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
-        final ListTag<?> dimensions = dimensionRegistry.get("value");
         final CompoundTag biomeRegistry = registries.get("minecraft:worldgen/biome");
-        final ListTag<?> biomes = biomeRegistry.get("value");
-
-        final IntIntPair pair = dimensions.stream()
-                .map(CompoundTag.class::cast)
-                .filter(t -> t.get("name").getValue().toString().equals(dimensionKey))
-                .findFirst()
-                .map(t -> (CompoundTag) t.get("element"))
-                .map(t -> new IntIntImmutablePair(((NumberTag) t.get("min_y")).asInt(), ((NumberTag) t.get("height")).asInt()))
-                .orElse(null);
-        if (pair == null) {
-            throw new IllegalStateException("Could not find dimension min_y/height for dimension " + dimensionKey);
-        }
-        this.minY = pair.keyInt();
-        this.worldHeight = pair.valueInt();
-
-        this.chunkType = new ChunkType1_20_2(this.worldHeight >> 4, MathUtil.ceilLog2(BedrockProtocol.MAPPINGS.getJavaBlockStates().size()), MathUtil.ceilLog2(biomes.size()));
+        final CompoundTag dimensionTag = dimensionRegistry.get(dimensionKey);
+        this.minY = dimensionTag.<NumberTag>get("min_y").asInt();
+        this.worldHeight = dimensionTag.<NumberTag>get("height").asInt();
+        this.chunkType = new ChunkType1_20_2(this.worldHeight >> 4, MathUtil.ceilLog2(BedrockProtocol.MAPPINGS.getJavaBlockStates().size()), MathUtil.ceilLog2(biomeRegistry.size()));
 
         final ChunkTracker oldChunkTracker = user.get(ChunkTracker.class);
         this.radius = oldChunkTracker != null ? oldChunkTracker.radius : user.get(ClientSettingsStorage.class).getViewDistance();
@@ -130,7 +116,7 @@ public class ChunkTracker extends StoredObject {
         if (!this.isInRenderDistance(chunkX, chunkZ)) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of render distance, but within load distance: " + chunkX + ", " + chunkZ);
             final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
-            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_20_3.UPDATE_VIEW_POSITION, this.getUser());
+            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_20_5.UPDATE_VIEW_POSITION, this.getUser());
             updateViewPosition.write(Type.VAR_INT, (int) entityTracker.getClientPlayer().position().x() >> 4); // chunk x
             updateViewPosition.write(Type.VAR_INT, (int) entityTracker.getClientPlayer().position().z() >> 4); // chunk z
             updateViewPosition.send(BedrockProtocol.class);
@@ -157,7 +143,7 @@ public class ChunkTracker extends StoredObject {
         }
         this.getUser().get(EntityTracker.class).removeItemFrame(chunkPos);
 
-        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_20_3.UNLOAD_CHUNK, this.getUser());
+        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_20_5.UNLOAD_CHUNK, this.getUser());
         unloadChunk.write(Type.CHUNK_POSITION, chunkPos); // chunk position
         unloadChunk.send(BedrockProtocol.class);
     }
@@ -427,7 +413,7 @@ public class ChunkTracker extends StoredObject {
         }
         final Chunk remappedChunk = this.remapChunk(chunk);
 
-        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_20_3.CHUNK_DATA, this.getUser());
+        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_20_5.CHUNK_DATA, this.getUser());
         final BitSet lightMask = new BitSet();
         lightMask.set(0, remappedChunk.getSections().length + 2);
         wrapper.write(this.chunkType, remappedChunk); // chunk
@@ -664,10 +650,13 @@ public class ChunkTracker extends StoredObject {
 
                 for (int i = 0; i < remappedBiomePalette.size(); i++) {
                     final int bedrockBiome = remappedBiomePalette.idByIndex(i);
-                    int javaBiome = bedrockBiome + 1;
-                    if (!BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().containsKey(bedrockBiome)) {
+                    final String bedrockBiomeName = BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().get(bedrockBiome);
+                    final int javaBiome;
+                    if (bedrockBiomeName == null) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + bedrockBiome);
-                        javaBiome = 0;
+                        javaBiome = BedrockProtocol.MAPPINGS.getJavaBiomes().get("the_void");
+                    } else {
+                        javaBiome = BedrockProtocol.MAPPINGS.getJavaBiomes().get(bedrockBiomeName);
                     }
                     remappedBiomePalette.setIdByIndex(i, javaBiome);
                 }

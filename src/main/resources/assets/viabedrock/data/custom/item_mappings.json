@@ -3049,23 +3049,50 @@
     }
   },
   "minecraft:sapling": {
-    "block": {
-      "minecraft:sapling[sapling_type=oak]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:oak_sapling"
-      },
-      "minecraft:sapling[sapling_type=spruce]": {
+      }
+    }
+  },
+  "minecraft:oak_sapling": {
+    "block": {
+      "minecraft:oak_sapling": {
+        "java_id": "minecraft:oak_sapling"
+      }
+    }
+  },
+  "minecraft:spruce_sapling": {
+    "block": {
+      "minecraft:spruce_sapling": {
         "java_id": "minecraft:spruce_sapling"
-      },
-      "minecraft:sapling[sapling_type=birch]": {
+      }
+    }
+  },
+  "minecraft:birch_sapling": {
+    "block": {
+      "minecraft:birch_sapling": {
         "java_id": "minecraft:birch_sapling"
-      },
-      "minecraft:sapling[sapling_type=jungle]": {
+      }
+    }
+  },
+  "minecraft:jungle_sapling": {
+    "block": {
+      "minecraft:jungle_sapling": {
         "java_id": "minecraft:jungle_sapling"
-      },
-      "minecraft:sapling[sapling_type=acacia]": {
+      }
+    }
+  },
+  "minecraft:acacia_sapling": {
+    "block": {
+      "minecraft:acacia_sapling": {
         "java_id": "minecraft:acacia_sapling"
-      },
-      "minecraft:sapling[sapling_type=dark_oak]": {
+      }
+    }
+  },
+  "minecraft:dark_oak_sapling": {
+    "block": {
+      "minecraft:dark_oak_sapling": {
         "java_id": "minecraft:dark_oak_sapling"
       }
     }
@@ -3369,39 +3396,85 @@
     }
   },
   "minecraft:coral_fan": {
-    "block": {
-      "minecraft:coral_fan[coral_color=red]": {
-        "java_id": "minecraft:fire_coral_fan"
-      },
-      "minecraft:coral_fan[coral_color=pink]": {
-        "java_id": "minecraft:brain_coral_fan"
-      },
-      "minecraft:coral_fan[coral_color=purple]": {
-        "java_id": "minecraft:bubble_coral_fan"
-      },
-      "minecraft:coral_fan[coral_color=blue]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:tube_coral_fan"
-      },
-      "minecraft:coral_fan[coral_color=yellow]": {
+      }
+    }
+  },
+  "minecraft:fire_coral_fan": {
+    "block": {
+      "minecraft:fire_coral_fan": {
+        "java_id": "minecraft:fire_coral_fan"
+      }
+    }
+  },
+  "minecraft:brain_coral_fan": {
+    "block": {
+      "minecraft:brain_coral_fan": {
+        "java_id": "minecraft:brain_coral_fan"
+      }
+    }
+  },
+  "minecraft:bubble_coral_fan": {
+    "block": {
+      "minecraft:bubble_coral_fan": {
+        "java_id": "minecraft:bubble_coral_fan"
+      }
+    }
+  },
+  "minecraft:tube_coral_fan": {
+    "block": {
+      "minecraft:tube_coral_fan": {
+        "java_id": "minecraft:tube_coral_fan"
+      }
+    }
+  },
+  "minecraft:horn_coral_fan": {
+    "block": {
+      "minecraft:horn_coral_fan": {
         "java_id": "minecraft:horn_coral_fan"
       }
     }
   },
   "minecraft:coral_fan_dead": {
-    "block": {
-      "minecraft:coral_fan_dead[coral_color=red]": {
-        "java_id": "minecraft:dead_fire_coral_fan"
-      },
-      "minecraft:coral_fan_dead[coral_color=pink]": {
-        "java_id": "minecraft:dead_brain_coral_fan"
-      },
-      "minecraft:coral_fan_dead[coral_color=purple]": {
-        "java_id": "minecraft:dead_bubble_coral_fan"
-      },
-      "minecraft:coral_fan_dead[coral_color=blue]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:dead_tube_coral_fan"
-      },
-      "minecraft:coral_fan_dead[coral_color=yellow]": {
+      }
+    }
+  },
+  "minecraft:dead_fire_coral_fan": {
+    "block": {
+      "minecraft:dead_fire_coral_fan": {
+        "java_id": "minecraft:dead_fire_coral_fan"
+      }
+    }
+  },
+  "minecraft:dead_brain_coral_fan": {
+    "block": {
+      "minecraft:dead_brain_coral_fan": {
+        "java_id": "minecraft:dead_brain_coral_fan"
+      }
+    }
+  },
+  "minecraft:dead_bubble_coral_fan": {
+    "block": {
+      "minecraft:dead_bubble_coral_fan": {
+        "java_id": "minecraft:dead_bubble_coral_fan"
+      }
+    }
+  },
+  "minecraft:dead_tube_coral_fan": {
+    "block": {
+      "minecraft:dead_tube_coral_fan": {
+        "java_id": "minecraft:dead_tube_coral_fan"
+      }
+    }
+  },
+  "minecraft:dead_horn_coral_fan": {
+    "block": {
+      "minecraft:dead_horn_coral_fan": {
         "java_id": "minecraft:dead_horn_coral_fan"
       }
     }
@@ -3428,38 +3501,85 @@
     }
   },
   "minecraft:red_flower": {
-    "block": {
-      "minecraft:red_flower[flower_type=poppy]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:poppy"
-      },
-      "minecraft:red_flower[flower_type=orchid]": {
+      }
+    }
+  },
+  "minecraft:poppy": {
+    "block": {
+      "minecraft:poppy": {
+        "java_id": "minecraft:poppy"
+      }
+    }
+  },
+  "minecraft:blue_orchid": {
+    "block": {
+      "minecraft:blue_orchid": {
         "java_id": "minecraft:blue_orchid"
-      },
-      "minecraft:red_flower[flower_type=allium]": {
+      }
+    }
+  },
+  "minecraft:allium": {
+    "block": {
+      "minecraft:allium": {
         "java_id": "minecraft:allium"
-      },
-      "minecraft:red_flower[flower_type=houstonia]": {
+      }
+    }
+  },
+  "minecraft:azure_bluet": {
+    "block": {
+      "minecraft:azure_bluet": {
         "java_id": "minecraft:azure_bluet"
-      },
-      "minecraft:red_flower[flower_type=tulip_red]": {
+      }
+    }
+  },
+  "minecraft:red_tulip": {
+    "block": {
+      "minecraft:red_tulip": {
         "java_id": "minecraft:red_tulip"
-      },
-      "minecraft:red_flower[flower_type=tulip_orange]": {
+      }
+    }
+  },
+  "minecraft:orange_tulip": {
+    "block": {
+      "minecraft:orange_tulip": {
         "java_id": "minecraft:orange_tulip"
-      },
-      "minecraft:red_flower[flower_type=tulip_white]": {
+      }
+    }
+  },
+  "minecraft:white_tulip": {
+    "block": {
+      "minecraft:white_tulip": {
         "java_id": "minecraft:white_tulip"
-      },
-      "minecraft:red_flower[flower_type=tulip_pink]": {
+      }
+    }
+  },
+  "minecraft:pink_tulip": {
+    "block": {
+      "minecraft:pink_tulip": {
         "java_id": "minecraft:pink_tulip"
-      },
-      "minecraft:red_flower[flower_type=oxeye]": {
+      }
+    }
+  },
+  "minecraft:oxeye_daisy": {
+    "block": {
+      "minecraft:oxeye_daisy": {
         "java_id": "minecraft:oxeye_daisy"
-      },
-      "minecraft:red_flower[flower_type=cornflower]": {
+      }
+    }
+  },
+  "minecraft:cornflower": {
+    "block": {
+      "minecraft:cornflower": {
         "java_id": "minecraft:cornflower"
-      },
-      "minecraft:red_flower[flower_type=lily_of_the_valley]": {
+      }
+    }
+  },
+  "minecraft:lily_of_the_valley": {
+    "block": {
+      "minecraft:lily_of_the_valley": {
         "java_id": "minecraft:lily_of_the_valley"
       }
     }
@@ -4657,7 +4777,7 @@
   "minecraft:armadillo_spawn_egg": {
     "meta": {
       "": {
-        "java_id": "minecraft:dirt"
+        "java_id": "minecraft:armadillo_spawn_egg"
       }
     }
   },
@@ -7509,14 +7629,14 @@
   "minecraft:turtle_scute": {
     "meta": {
       "": {
-        "java_id": "minecraft:scute"
+        "java_id": "minecraft:turtle_scute"
       }
     }
   },
   "minecraft:armadillo_scute": {
     "meta": {
       "": {
-        "java_id": "minecraft:dirt"
+        "java_id": "minecraft:armadillo_scute"
       }
     }
   },
@@ -8326,6 +8446,20 @@
       }
     }
   },
+  "minecraft:flow_banner_pattern": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:flow_banner_pattern"
+      }
+    }
+  },
+  "minecraft:guster_banner_pattern": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:guster_banner_pattern"
+      }
+    }
+  },
   "minecraft:angler_pottery_sherd": {
     "meta": {
       "": {
@@ -8466,6 +8600,27 @@
       }
     }
   },
+  "minecraft:flow_pottery_sherd": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:flow_pottery_sherd"
+      }
+    }
+  },
+  "minecraft:guster_pottery_sherd": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:guster_pottery_sherd"
+      }
+    }
+  },
+  "minecraft:scrape_pottery_sherd": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:scrape_pottery_sherd"
+      }
+    }
+  },
   "minecraft:netherite_upgrade_smithing_template": {
     "meta": {
       "": {
@@ -8582,6 +8737,20 @@
     "meta": {
       "": {
         "java_id": "minecraft:spire_armor_trim_smithing_template"
+      }
+    }
+  },
+  "minecraft:bolt_armor_trim_smithing_template": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:bolt_armor_trim_smithing_template"
+      }
+    }
+  },
+  "minecraft:flow_armor_trim_smithing_template": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:flow_armor_trim_smithing_template"
       }
     }
   },
@@ -12412,28 +12581,49 @@
   "minecraft:wolf_armor": {
     "meta": {
       "": {
-        "java_id": "minecraft:dirt"
+        "java_id": "minecraft:wolf_armor"
       }
     }
   },
   "minecraft:bogged_spawn_egg": {
     "meta": {
       "": {
-        "java_id": "minecraft:dirt"
+        "java_id": "minecraft:bogged_spawn_egg"
       }
     }
   },
   "minecraft:wind_charge": {
     "meta": {
       "": {
-        "java_id": "minecraft:dirt"
+        "java_id": "minecraft:wind_charge"
       }
     }
   },
   "minecraft:vault": {
     "block": {
       "minecraft:vault": {
-        "java_id": "minecraft:dirt"
+        "java_id": "minecraft:vault"
+      }
+    }
+  },
+  "minecraft:heavy_core": {
+    "block": {
+      "minecraft:heavy_core": {
+        "java_id": "minecraft:heavy_core"
+      }
+    }
+  },
+  "minecraft:breeze_rod": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:breeze_rod"
+      }
+    }
+  },
+  "minecraft:mace": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:mace"
       }
     }
   }

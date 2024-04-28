@@ -25,8 +25,8 @@ import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ClientboundPackets1_20_3;
-import com.viaversion.viaversion.protocols.protocol1_20_3to1_20_2.packet.ServerboundPackets1_20_3;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ServerboundPackets1_20_5;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
@@ -52,8 +52,39 @@ import java.util.logging.Level;
 
 public class ChatPackets {
 
+    private static final PacketHandler CHAT_COMMAND_HANDLER = new PacketHandlers() {
+        @Override
+        protected void register() {
+            map(Type.STRING, BedrockTypes.STRING, c -> '/' + c); // command
+            handler(wrapper -> {
+                final UUID uuid = wrapper.user().getProtocolInfo().getUuid();
+                wrapper.write(BedrockTypes.COMMAND_ORIGIN_DATA, new CommandOriginData(CommandOriginType.Player, uuid, "")); // origin
+            });
+            create(Type.BOOLEAN, false); // internal
+            create(BedrockTypes.VAR_INT, ProtocolConstants.BEDROCK_COMMAND_VERSION); // version
+            handler(PacketWrapper::clearInputBuffer);
+            handler(wrapper -> {
+                final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
+                int execResult = CommandsStorage.RESULT_NO_OP;
+                if (commandsStorage != null) {
+                    execResult = commandsStorage.execute(wrapper.get(BedrockTypes.STRING, 0));
+                }
+
+                if (execResult == CommandsStorage.RESULT_CANCEL) {
+                    wrapper.cancel();
+                } else if (execResult != CommandsStorage.RESULT_ALLOW_SEND) {
+                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+                    if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() == ChatRestrictionLevel.Disabled && gameSession.getAbilities().playerPermission() <= PlayerPermissionLevel.Operator.getValue())) {
+                        wrapper.cancel();
+                        PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
+                    }
+                }
+            });
+        }
+    };
+
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_20_3.SYSTEM_CHAT, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_20_5.SYSTEM_CHAT, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -143,7 +174,7 @@ public class ChatPackets {
                 read(BedrockTypes.STRING); // platform chat id
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_20_3.SYSTEM_CHAT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_20_5.SYSTEM_CHAT, wrapper -> {
             final CommandOriginData originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN_DATA); // origin
             final CommandOutputType type = CommandOutputType.getByValue(wrapper.read(Type.UNSIGNED_BYTE), CommandOutputType.None); // type
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
@@ -179,7 +210,7 @@ public class ChatPackets {
                     final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
                     wrapper.user().put(new CommandsStorage(wrapper.user(), commands));
                     wrapper.cancel(); // Will be sent in JoinPackets#handleGameJoin
-                }, ClientboundPackets1_20_3.DECLARE_COMMANDS, (PacketHandler) wrapper -> {
+                }, ClientboundPackets1_20_5.DECLARE_COMMANDS, (PacketHandler) wrapper -> {
                     final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
                     final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
                     wrapper.user().put(commandsStorage);
@@ -223,7 +254,7 @@ public class ChatPackets {
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_20_3.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_20_5.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
             @Override
             public void register() {
                 create(Type.UNSIGNED_BYTE, (short) TextPacketType.Chat.getValue()); // type
@@ -242,37 +273,9 @@ public class ChatPackets {
                 });
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_20_3.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, new PacketHandlers() {
-            @Override
-            public void register() {
-                map(Type.STRING, BedrockTypes.STRING, c -> '/' + c); // command
-                handler(wrapper -> {
-                    final UUID uuid = wrapper.user().getProtocolInfo().getUuid();
-                    wrapper.write(BedrockTypes.COMMAND_ORIGIN_DATA, new CommandOriginData(CommandOriginType.Player, uuid, "")); // origin
-                });
-                create(Type.BOOLEAN, false); // internal
-                create(BedrockTypes.VAR_INT, ProtocolConstants.BEDROCK_COMMAND_VERSION); // version
-                handler(PacketWrapper::clearInputBuffer);
-                handler(wrapper -> {
-                    final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
-                    int execResult = CommandsStorage.RESULT_NO_OP;
-                    if (commandsStorage != null) {
-                        execResult = commandsStorage.execute(wrapper.get(BedrockTypes.STRING, 0));
-                    }
-
-                    if (execResult == CommandsStorage.RESULT_CANCEL) {
-                        wrapper.cancel();
-                    } else if (execResult != CommandsStorage.RESULT_ALLOW_SEND) {
-                        final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-                        if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() == ChatRestrictionLevel.Disabled && gameSession.getAbilities().playerPermission() <= PlayerPermissionLevel.Operator.getValue())) {
-                            wrapper.cancel();
-                            PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
-                        }
-                    }
-                });
-            }
-        });
-        protocol.registerServerbound(ServerboundPackets1_20_3.TAB_COMPLETE, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_20_5.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, CHAT_COMMAND_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_20_5.CHAT_COMMAND_SIGNED, ServerboundBedrockPackets.COMMAND_REQUEST, CHAT_COMMAND_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_20_5.TAB_COMPLETE, null, wrapper -> {
             wrapper.cancel();
             final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
             if (commandsStorage == null) return;
@@ -285,7 +288,7 @@ public class ChatPackets {
 
             final Suggestions suggestions = commandsStorage.complete(command);
 
-            final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets1_20_3.TAB_COMPLETE, wrapper.user());
+            final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets1_20_5.TAB_COMPLETE, wrapper.user());
             tabComplete.write(Type.VAR_INT, id); // transaction id
             tabComplete.write(Type.VAR_INT, suggestions.getRange().getStart()); // start index
             tabComplete.write(Type.VAR_INT, suggestions.getRange().getLength()); // length

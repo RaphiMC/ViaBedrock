@@ -66,9 +66,6 @@ public abstract class EnumGeneratorTask extends DefaultTask {
             final Set<String> usedNames = new HashSet<>();
             for (String value : valuesString.split("\n")) {
                 String fieldName = value.split(" = ")[0];
-                if (fieldName.equals("9800")) {
-                    fieldName = "_9800";
-                }
                 if (fieldName.equalsIgnoreCase("Count")) continue;
                 if (fieldName.equalsIgnoreCase("_count")) continue;
                 if (fieldName.equalsIgnoreCase("total")) continue;
@@ -79,10 +76,18 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                 if (fieldName.equalsIgnoreCase("NumModes")) continue;
 
                 String fieldValue = value.split(" = ")[1];
-                if (fieldValue.equals("std::numeric_limits::max()")) {
-                    fieldValue = "Integer.MAX_VALUE";
-                } else if (fieldValue.equals("std::numeric_limits::min()")) {
-                    fieldValue = "Integer.MIN_VALUE";
+                switch (fieldValue) {
+                    case "std::numeric_limits::max()":
+                    case "std::numeric_limits<uint32_t>::max()":
+                        fieldValue = "Integer.MAX_VALUE";
+                        break;
+                    case "std::numeric_limits::min()":
+                    case "std::numeric_limits<uint32_t>::min()":
+                        fieldValue = "Integer.MIN_VALUE";
+                        break;
+                    case "NonTerminalBit":
+                        fieldValue = "0";
+                        break;
                 }
 
                 if (enumName.equals("PacketCompressionAlgorithm") && fieldName.equals("None")) {

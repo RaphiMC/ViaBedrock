@@ -19,13 +19,13 @@ package net.raphimc.viabedrock.api.model.inventory.fake;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.item.DataItem;
+import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
+import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
 import net.lenni0451.mcstructs_bedrock.forms.elements.*;
 import net.lenni0451.mcstructs_bedrock.forms.types.ActionForm;
@@ -35,6 +35,7 @@ import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTextUtils;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.providers.FormProvider;
@@ -313,30 +314,28 @@ public class FormContainer extends FakeContainer {
             throw new IllegalStateException("Unable to find item with identifier: " + identifier);
         }
 
-        final CompoundTag tag = new CompoundTag();
-        final CompoundTag displayTag = new CompoundTag();
-        displayTag.put("Name", new StringTag(this.stringToJson(name.replace("\n", " | "))));
+        final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
+        data.set(StructuredDataKey.CUSTOM_NAME, this.stringToNbt(name.replace("\n", " | ")));
         if (description.length > 0) {
-            final ListTag<StringTag> loreTags = new ListTag<>(StringTag.class);
+            final List<Tag> loreTags = new ArrayList<>();
             for (String desc : description) {
                 for (final String line : BedrockTextUtils.split(desc, "\n")) {
-                    loreTags.add(new StringTag(this.stringToJson(line)));
+                    loreTags.add(this.stringToNbt(line));
                 }
             }
-            displayTag.put("Lore", loreTags);
+            data.set(StructuredDataKey.LORE, loreTags.toArray(new Tag[0]));
         }
-        tag.put("display", displayTag);
 
-        return new DataItem(id, (byte) 1, (short) 0, tag);
+        return new StructuredItem(id, (byte) 1, data);
     }
 
-    private String stringToJson(final String text) {
+    private Tag stringToNbt(final String text) {
         final ATextComponent component = TextUtil.stringToComponent(text);
         if (component.getStyle().getColor() == null) {
             component.getStyle().setFormatting(TextFormatting.WHITE);
         }
         component.getStyle().setItalic(false);
-        return TextUtil.componentToJson(component);
+        return TextUtil.componentToNbt(component);
     }
 
 }
