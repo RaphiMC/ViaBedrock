@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.types.model;
 import com.google.common.collect.Sets;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandParamTypes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandRegistry_HardNonTerminal;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -134,7 +134,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
                     final int param = buffer.readIntLE(); // param
                     final boolean optional = buffer.readBoolean(); // optional
                     final short paramFlags = buffer.readUnsignedByte(); // flags
-                    Integer type = null;
+                    CommandRegistry_HardNonTerminal type = null;
                     CommandData.EnumData enumData = null;
                     CommandData.SubCommandData subCommandData = null;
                     String postfix = null;
@@ -146,7 +146,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
                             if (index >= 0 && index < dynamicEnumPalette.length) {
                                 params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, null, dynamicEnumPalette[index], null, null);
                             } else {
-                                params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, CommandParamTypes.TYPE_STRING, null, null, null);
+                                params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, CommandRegistry_HardNonTerminal.Id, null, null, null);
                             }
                         });
                         continue;
@@ -160,7 +160,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
                         final int index = param & ~FLAG_SUB_COMMAND & ~FLAG_VALID;
                         subCommandData = subCommands[index];
                     } else if ((param & FLAG_VALID) != 0) {
-                        type = param & ~FLAG_VALID;
+                        type = CommandRegistry_HardNonTerminal.getByValue(param);
                     }
 
                     params[k] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, type, enumData, subCommandData, postfix);

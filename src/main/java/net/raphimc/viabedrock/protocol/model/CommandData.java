@@ -17,6 +17,8 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandRegistry_HardNonTerminal;
+
 import java.util.*;
 
 public class CommandData {
@@ -243,12 +245,12 @@ public class CommandData {
             private final String name;
             private final boolean optional;
             private final short flags;
-            private final Integer type;
+            private final CommandRegistry_HardNonTerminal type;
             private final EnumData enumData;
             private final SubCommandData subCommandData;
             private final String postfix;
 
-            public ParamData(final String name, final boolean optional, final short flags, final Integer type, final EnumData enumData, final SubCommandData subCommandData, final String postfix) {
+            public ParamData(final String name, final boolean optional, final short flags, final CommandRegistry_HardNonTerminal type, final EnumData enumData, final SubCommandData subCommandData, final String postfix) {
                 this.name = name;
                 this.optional = optional;
                 this.flags = flags;
@@ -270,7 +272,7 @@ public class CommandData {
                 return this.flags;
             }
 
-            public Integer type() {
+            public CommandRegistry_HardNonTerminal type() {
                 return this.type;
             }
 

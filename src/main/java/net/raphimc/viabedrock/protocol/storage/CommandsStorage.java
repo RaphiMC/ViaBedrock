@@ -48,7 +48,10 @@ import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ArgumentTypeRegistry;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandEnumFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandParameterOption;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandPermissionLevel;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 
 import java.util.*;
@@ -244,58 +247,85 @@ public class CommandsStorage extends StoredObject {
                     } else if (parameter.postfix() != null) {
                         // TODO: Enhancement: Postfix support
                         continue;
-                    } else if (parameter.type() == null) {
+                    } else if (parameter.type() != null) {
+                        ArgumentType<?> argumentType = null;
+                        switch (parameter.type()) {
+                            case Int:
+                                argument = argument(parameter.name() + ": int", IntegerArgumentType.integer());
+                                break;
+                            case Float:
+                            case Val:
+                                argument = argument(parameter.name() + ": float", FloatArgumentType.floatArg());
+                                break;
+                            case RVal:
+                                argumentType = ValueArgumentType.value();
+                                argument = argument(parameter.name() + ": value", argumentType);
+                                break;
+                            case WildcardInt:
+                                argumentType = WildcardIntegerArgumentType.wildcardInteger();
+                                argument = argument(parameter.name() + ": wildcard int", argumentType);
+                                break;
+                            case Operator:
+                                argument = argument(parameter.name() + ": operator", OperatorArgumentType.operator());
+                                break;
+                            case CompareOperator:
+                                argumentType = CompareOperatorArgumentType.compareOperator();
+                                argument = argument(parameter.name() + ": compare operator", argumentType);
+                                break;
+                            case Selection:
+                            case WildcardSelection:
+                                // TODO: Enhancement: Implement target argument type
+                                argumentType = TargetArgumentType.target();
+                                argument = argument(parameter.name() + ": target", argumentType);
+                                break;
+                            case FilePath:
+                                argument = argument(parameter.name() + ": filepath", StringArgumentType.string());
+                                break;
+                            case FullIntegerRange:
+                                argumentType = IntegerRangeArgumentType.integerRange();
+                                argument = argument(parameter.name() + ": integer range", argumentType);
+                                break;
+                            case EquipmentSlotEnum:
+                                argumentType = EquipmentSlotArgumentType.equipmentSlot();
+                                argument = argument(parameter.name() + ": equipment slots", argumentType);
+                                break;
+                            case Id:
+                                argument = argument(parameter.name() + ": string", StringArgumentType.string());
+                                break;
+                            case Position:
+                                argument = argument(parameter.name() + ": x y z", BlockPositionArgumentType.blockPosition());
+                                break;
+                            case PositionFloat:
+                                argument = argument(parameter.name() + ": x y z", PositionArgumentType.position());
+                                break;
+                            case MessageRoot:
+                                argument = argument(parameter.name() + ": message", StringArgumentType.greedyString());
+                                break;
+                            case RawText:
+                                argument = argument(parameter.name() + ": text", StringArgumentType.greedyString());
+                                break;
+                            case JsonObject:
+                                argumentType = JsonArgumentType.json();
+                                argument = argument(parameter.name() + ": json", argumentType);
+                                break;
+                            case BlockStateArray:
+                                argumentType = BlockStatesArgumentType.blockStates();
+                                argument = argument(parameter.name() + ": block states", argumentType);
+                                break;
+                            case SlashCommand:
+                                hasRedirect = true;
+                                last = null;
+                                continue;
+                            default: // Mojang client crashes if the type isn't valid
+                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled command parameter type: " + parameter.type());
+                                argument = argument(parameter.name() + ": unknown", StringArgumentType.greedyString());
+                                break;
+                        }
+                        if (argumentType != null) {
+                            ((RequiredArgumentBuilder<UserConnection, ?>) argument).suggests(argumentType::listSuggestions);
+                        }
+                    } else { // Mojang client crashes if the type isn't valid
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid command parameter: " + parameter);
-                        argument = argument(parameter.name() + ": unknown", StringArgumentType.greedyString());
-                    } else if (parameter.type() == CommandParamTypes.TYPE_INT) {
-                        argument = argument(parameter.name() + ": int", IntegerArgumentType.integer());
-                    } else if (parameter.type() == CommandParamTypes.TYPE_FLOAT1 || parameter.type() == CommandParamTypes.TYPE_FLOAT2) {
-                        argument = argument(parameter.name() + ": float", FloatArgumentType.floatArg());
-                    } else if (parameter.type() == CommandParamTypes.TYPE_VALUE) {
-                        final ArgumentType<?> argumentType = ValueArgumentType.value();
-                        argument = argument(parameter.name() + ": value", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandParamTypes.TYPE_WILDCARD_INT) {
-                        final ArgumentType<?> argumentType = WildcardIntegerArgumentType.wildcardInteger();
-                        argument = argument(parameter.name() + ": wildcard int", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandParamTypes.TYPE_OPERATOR) {
-                        argument = argument(parameter.name() + ": operator", OperatorArgumentType.operator());
-                    } else if (parameter.type() == CommandParamTypes.TYPE_COMPARE_OPERATOR) {
-                        final ArgumentType<?> argumentType = CompareOperatorArgumentType.compareOperator();
-                        argument = argument(parameter.name() + ": compare operator", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandParamTypes.TYPE_TARGET1 || parameter.type() == CommandParamTypes.TYPE_TARGET2) {
-                        // TODO: Enhancement: Implement target argument type
-                        final ArgumentType<?> argumentType = TargetArgumentType.target();
-                        argument = argument(parameter.name() + ": target", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandParamTypes.TYPE_FILE_PATH) {
-                        argument = argument(parameter.name() + ": filepath", StringArgumentType.string());
-                    } else if (parameter.type() == CommandParamTypes.TYPE_INT_RANGE) {
-                        final ArgumentType<?> argumentType = IntegerRangeArgumentType.integerRange();
-                        argument = argument(parameter.name() + ": integer range", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandParamTypes.TYPE_EQUIPMENT_SLOT) {
-                        final ArgumentType<?> argumentType = EquipmentSlotArgumentType.equipmentSlot();
-                        argument = argument(parameter.name() + ": equipment slots", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandParamTypes.TYPE_STRING) {
-                        argument = argument(parameter.name() + ": string", StringArgumentType.string());
-                    } else if (parameter.type() == CommandParamTypes.TYPE_BLOCK_POSITION) {
-                        argument = argument(parameter.name() + ": x y z", BlockPositionArgumentType.blockPosition());
-                    } else if (parameter.type() == CommandParamTypes.TYPE_POSITION) {
-                        argument = argument(parameter.name() + ": x y z", PositionArgumentType.position());
-                    } else if (parameter.type() == CommandParamTypes.TYPE_MESSAGE) {
-                        argument = argument(parameter.name() + ": message", StringArgumentType.greedyString());
-                    } else if (parameter.type() == CommandParamTypes.TYPE_TEXT) {
-                        argument = argument(parameter.name() + ": text", StringArgumentType.greedyString());
-                    } else if (parameter.type() == CommandParamTypes.TYPE_JSON) {
-                        final ArgumentType<?> argumentType = JsonArgumentType.json();
-                        argument = argument(parameter.name() + ": json", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandParamTypes.TYPE_BLOCK_STATES) {
-                        final ArgumentType<?> argumentType = BlockStatesArgumentType.blockStates();
-                        argument = argument(parameter.name() + ": block states", argumentType).suggests(argumentType::listSuggestions);
-                    } else if (parameter.type() == CommandParamTypes.TYPE_COMMAND) {
-                        hasRedirect = true;
-                        last = null;
-                        continue;
-                    } else {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown command parameter type: " + parameter.type());
                         argument = argument(parameter.name() + ": unknown", StringArgumentType.greedyString());
                     }
 
