@@ -31,9 +31,7 @@ public class JukeboxBlockEntityRewriter implements BlockEntityRewriter.Rewriter 
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("RecordItem") instanceof CompoundTag) {
-            javaTag.put("RecordItem", this.rewriteItem(user, bedrockTag.get("RecordItem")));
-        }
+        this.copyItem(user, bedrockTag, javaTag, "RecordItem");
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }

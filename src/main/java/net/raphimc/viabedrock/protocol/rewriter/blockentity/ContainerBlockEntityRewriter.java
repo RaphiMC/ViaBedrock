@@ -21,17 +21,18 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 
-public class LockableBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
+public abstract class ContainerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        this.copy(bedrockTag, javaTag, "Lock", String.class);
+        this.copy(bedrockTag, javaTag, "Lock", StringTag.class);
         this.copyCustomName(user, bedrockTag, javaTag);
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);

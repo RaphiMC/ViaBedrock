@@ -24,14 +24,17 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.rewriter.blockentity.*;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class BlockEntityRewriter {
 
@@ -42,59 +45,59 @@ public class BlockEntityRewriter {
 
     static {
         // TODO: Enhancement: Add missing block entities
-        // TODO: Update: Fix this and readd logging of missing block entity translators
-        //BLOCK_ENTITY_REWRITERS.put("brewing_stand", NOOP_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("calibrated_sculk_sensor", NOOP_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("campfire", NOOP_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("note_block", NULL_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("piston", NOOP_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("moving_block", NULL_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("sculk_sensor", NOOP_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("sculk_shrieker", NOOP_REWRITER);
-        // TODO: trial_spawner, vault
+        BLOCK_ENTITY_REWRITERS.put("brewing_stand", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("calibrated_sculk_sensor", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("campfire", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("note_block", NULL_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("piston", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("moving_block", NULL_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("sculk_sensor", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("sculk_shrieker", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("trial_spawner", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("vault", NOOP_REWRITER);
 
-        //BLOCK_ENTITY_REWRITERS.put("banner", new BannerBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("barrel", new LootableBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("beacon", new BeaconBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("bed", new BedBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("beehive", new BeehiveBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("bell", NOOP_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("blast_furnace", new FurnaceBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("brushable_block", new BrushableBlockBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("cauldron", NULL_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("chest", new LootableBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("chiseled_bookshelf", new ChiseledBookshelfBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("command_block", new CommandBlockBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("comparator", new ComparatorBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("conduit", new ConduitBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("crafter", new CrafterBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("daylight_detector", NOOP_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("decorated_pot", new DecoratedPotBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("dispenser", new LootableBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("dropper", new LootableBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("enchanting_table", new EnchantingTableBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("end_gateway", new EndGatewayBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("end_portal", NOOP_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("ender_chest", NOOP_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("flower_pot", new FlowerPotBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("furnace", new FurnaceBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("hanging_sign", new SignBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("hopper", new HopperBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("item_frame", NULL_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("jigsaw", new JigsawBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("jukebox", new JukeboxBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("lectern", new LecternBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("lodestone", NULL_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("mob_spawner", new MobSpawnerBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("nether_reactor", NULL_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("sculk_catalyst", NOOP_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("shulker_box", new LootableBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("sign", new SignBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("skull", new SkullBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("smoker", new FurnaceBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("spore_blossom", NULL_REWRITER);
-        //BLOCK_ENTITY_REWRITERS.put("structure_block", new StructureBlockBlockEntityRewriter());
-        //BLOCK_ENTITY_REWRITERS.put("trapped_chest", new LootableBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("banner", new BannerBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("barrel", new LootableContainerBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("beacon", new BeaconBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("bed", new BedBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("beehive", new BeehiveBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("bell", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("blast_furnace", new FurnaceBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("brushable_block", new BrushableBlockBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("cauldron", NULL_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("chest", new LootableContainerBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("chiseled_bookshelf", new ChiseledBookshelfBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("command_block", new CommandBlockBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("comparator", new ComparatorBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("conduit", new ConduitBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("crafter", new CrafterBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("daylight_detector", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("decorated_pot", new DecoratedPotBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("dispenser", new LootableContainerBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("dropper", new LootableContainerBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("enchanting_table", new EnchantingTableBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("end_gateway", new EndGatewayBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("end_portal", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("ender_chest", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("flower_pot", new FlowerPotBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("furnace", new FurnaceBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("hanging_sign", new SignBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("hopper", new HopperBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("item_frame", NULL_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("jigsaw", new JigsawBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("jukebox", new JukeboxBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("lectern", new LecternBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("lodestone", NULL_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("mob_spawner", new MobSpawnerBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("nether_reactor", NULL_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("sculk_catalyst", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("shulker_box", new LootableContainerBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("sign", new SignBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("skull", new SkullBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("smoker", new FurnaceBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("spore_blossom", NULL_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("structure_block", new StructureBlockBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("trapped_chest", new LootableContainerBlockEntityRewriter());
     }
 
     public static BlockEntity toJava(final UserConnection user, final int bedrockBlockStateId, final BedrockBlockEntity bedrockBlockEntity) {
@@ -117,7 +120,7 @@ public class BlockEntityRewriter {
 
             return javaBlockEntity;
         } else {
-            //ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block entity translation for " + bedrockBlockStateId + " (" + bedrockBlockEntity.tag() + ")");
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block entity translation for " + bedrockBlockStateId + " (" + bedrockBlockEntity.tag() + ")");
         }
 
         return null;
@@ -131,25 +134,35 @@ public class BlockEntityRewriter {
 
         BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity);
 
-        default void copy(final CompoundTag oldTag, final CompoundTag newTag, final String key, final Class<?> expectedType) {
-            this.copy(oldTag, newTag, key, key, expectedType);
+        default void copy(final CompoundTag fromTag, final CompoundTag toTag, final String key, final Class<?> expectedType) {
+            this.copy(fromTag, toTag, key, key, expectedType);
         }
 
-        default void copy(final CompoundTag oldTag, final CompoundTag newTag, final String oldKey, final String newKey, final Class<?> expectedType) {
-            if (expectedType.isInstance(oldTag.get(oldKey))) {
-                newTag.put(newKey, oldTag.get(oldKey));
+        default void copy(final CompoundTag fromTag, final CompoundTag toTag, final String fromKey, final String toKey, final Class<?> expectedType) {
+            if (expectedType.isInstance(fromTag.get(fromKey))) {
+                toTag.put(toKey, fromTag.get(fromKey).copy());
             }
         }
 
-        default void copyCustomName(final UserConnection user, final CompoundTag oldTag, final CompoundTag newTag) {
-            if (oldTag.get("CustomName") instanceof StringTag) {
-                newTag.put("CustomName", this.rewriteCustomName(user, oldTag.get("CustomName")));
+        default void copyCustomName(final UserConnection user, final CompoundTag fromTag, final CompoundTag toTag) {
+            if (fromTag.get("CustomName") instanceof StringTag) {
+                toTag.put("CustomName", this.rewriteCustomName(user, fromTag.get("CustomName")));
             }
         }
 
-        default void copyItemList(final UserConnection user, final CompoundTag oldTag, final CompoundTag newTag) {
-            if (oldTag.get("Items") instanceof ListTag) {
-                newTag.put("Items", this.rewriteItemList(user, oldTag.get("Items")));
+        default void copyItemList(final UserConnection user, final CompoundTag fromTag, final CompoundTag toTag) {
+            if (fromTag.get("Items") instanceof ListTag) {
+                toTag.put("Items", this.rewriteItemList(user, fromTag.get("Items")));
+            }
+        }
+
+        default void copyItem(final UserConnection user, final CompoundTag fromTag, final CompoundTag toTag, final String key) {
+            this.copyItem(user, fromTag, toTag, key, key);
+        }
+
+        default void copyItem(final UserConnection user, final CompoundTag fromTag, final CompoundTag toTag, final String fromKey, final String toKey) {
+            if (fromTag.get(fromKey) instanceof CompoundTag) {
+                toTag.put(toKey, this.rewriteItem(user, fromTag.get(fromKey)));
             }
         }
 

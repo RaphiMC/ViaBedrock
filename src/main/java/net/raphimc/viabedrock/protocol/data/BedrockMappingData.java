@@ -108,6 +108,7 @@ public class BedrockMappingData extends MappingDataBase {
 
     // Other stuff
     private BiMap<String, String> bedrockToJavaExperimentalFeatures;
+    private BiMap<String, String> bedrockToJavaBannerPatterns;
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolConstants.JAVA_VERSION.getName());
@@ -548,6 +549,16 @@ public class BedrockMappingData extends MappingDataBase {
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaExperimentalFeatureMappingsJson.entrySet()) {
                 this.bedrockToJavaExperimentalFeatures.put(entry.getKey(), entry.getValue().getAsString());
             }
+
+            final JsonObject bedrockToJavaBannerPatternMappingsJson = this.readJson("custom/banner_pattern_mappings.json");
+            this.bedrockToJavaBannerPatterns = HashBiMap.create(bedrockToJavaBannerPatternMappingsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaBannerPatternMappingsJson.entrySet()) {
+                final String javaIdentifier = entry.getValue().getAsString();
+                if (!this.javaRegistries.<CompoundTag>get("minecraft:banner_pattern").contains(javaIdentifier)) {
+                    throw new RuntimeException("Unknown java banner pattern: " + javaIdentifier);
+                }
+                this.bedrockToJavaBannerPatterns.put(entry.getKey(), javaIdentifier);
+            }
         }
     }
 
@@ -685,6 +696,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public BiMap<String, String> getBedrockToJavaExperimentalFeatures() {
         return this.bedrockToJavaExperimentalFeatures;
+    }
+
+    public BiMap<String, String> getBedrockToJavaBannerPatterns() {
+        return this.bedrockToJavaBannerPatterns;
     }
 
     @Override

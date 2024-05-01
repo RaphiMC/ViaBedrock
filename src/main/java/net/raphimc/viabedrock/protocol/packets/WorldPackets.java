@@ -427,12 +427,10 @@ public class WorldPackets {
                     final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(wrapper.user(), chunkTracker.getBlockState(bedrockBlockEntity.position()), bedrockBlockEntity);
                     if (javaBlockEntity instanceof BlockEntityWithBlockState) {
                         final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
-                        if (blockEntityWithBlockState.hasBlockState()) {
-                            final PacketWrapper blockChange = PacketWrapper.create(ClientboundPackets1_20_5.BLOCK_CHANGE, wrapper.user());
-                            blockChange.write(Type.POSITION1_14, bedrockBlockEntity.position()); // position
-                            blockChange.write(Type.VAR_INT, blockEntityWithBlockState.blockState()); // block state
-                            blockChange.send(BedrockProtocol.class);
-                        }
+                        final PacketWrapper blockChange = PacketWrapper.create(ClientboundPackets1_20_5.BLOCK_CHANGE, wrapper.user());
+                        blockChange.write(Type.POSITION1_14, bedrockBlockEntity.position()); // position
+                        blockChange.write(Type.VAR_INT, blockEntityWithBlockState.blockState()); // block state
+                        blockChange.send(BedrockProtocol.class);
                     }
 
                     if (javaBlockEntity != null && javaBlockEntity.tag() != null) {

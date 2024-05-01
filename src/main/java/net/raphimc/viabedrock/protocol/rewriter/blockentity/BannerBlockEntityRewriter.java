@@ -24,6 +24,7 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
@@ -33,6 +34,8 @@ import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
 import java.util.Collections;
+import java.util.Locale;
+import java.util.logging.Level;
 
 public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
@@ -53,14 +56,14 @@ public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             if (type == 1) { // ominous banner
                 bedrockTag.put("Base", new IntTag(DyeColor.WHITE.bedrockId()));
                 final ListTag<CompoundTag> patterns = new ListTag<>(CompoundTag.class);
-                patterns.add(this.createPattern("mr", 6));
-                patterns.add(this.createPattern("bs", 7));
-                patterns.add(this.createPattern("cs", 8));
-                patterns.add(this.createPattern("bo", 7));
-                patterns.add(this.createPattern("ms", 0));
-                patterns.add(this.createPattern("hh", 7));
-                patterns.add(this.createPattern("mc", 7));
-                patterns.add(this.createPattern("bo", 0));
+                patterns.add(this.createBedrockPattern("mr", DyeColor.CYAN));
+                patterns.add(this.createBedrockPattern("bs", DyeColor.LIGHT_GRAY));
+                patterns.add(this.createBedrockPattern("cs", DyeColor.GRAY));
+                patterns.add(this.createBedrockPattern("bo", DyeColor.LIGHT_GRAY));
+                patterns.add(this.createBedrockPattern("ms", DyeColor.BLACK));
+                patterns.add(this.createBedrockPattern("hh", DyeColor.LIGHT_GRAY));
+                patterns.add(this.createBedrockPattern("mc", DyeColor.LIGHT_GRAY));
+                patterns.add(this.createBedrockPattern("bo", DyeColor.BLACK));
                 bedrockTag.put("Patterns", patterns);
             }
         }
@@ -73,9 +76,14 @@ public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
                 final String pattern = bedrockPattern.<StringTag>get("Pattern").getValue();
                 final DyeColor color = DyeColor.getByBedrockId(bedrockPattern.get("Color") instanceof IntTag ? bedrockPattern.<IntTag>get("Color").asInt() : DyeColor.BLACK.bedrockId(), DyeColor.PURPLE);
-                javaPatterns.add(this.createPattern(pattern, color.javaId()));
+                final String javaPattern = BedrockProtocol.MAPPINGS.getBedrockToJavaBannerPatterns().get(pattern);
+                if (javaPattern != null) {
+                    javaPatterns.add(this.createJavaPattern(javaPattern, color));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown banner pattern: " + pattern);
+                }
             }
-            javaTag.put("Patterns", javaPatterns);
+            javaTag.put("patterns", javaPatterns);
         }
 
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
@@ -88,10 +96,17 @@ public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag), javaBlockState);
     }
 
-    private CompoundTag createPattern(final String pattern, final int color) {
+    private CompoundTag createJavaPattern(final String pattern, final DyeColor color) {
+        final CompoundTag patternTag = new CompoundTag();
+        patternTag.put("pattern", new StringTag(pattern));
+        patternTag.put("color", new StringTag(color.name().toLowerCase(Locale.ROOT)));
+        return patternTag;
+    }
+
+    private CompoundTag createBedrockPattern(final String pattern, final DyeColor color) {
         final CompoundTag patternTag = new CompoundTag();
         patternTag.put("Pattern", new StringTag(pattern));
-        patternTag.put("Color", new IntTag(color));
+        patternTag.put("Color", new IntTag(color.bedrockId()));
         return patternTag;
     }
 

@@ -57,9 +57,7 @@ public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewr
             }
             javaTag.put("sherds", javaSherds);
         }
-        if (bedrockTag.get("item") instanceof CompoundTag) {
-            javaTag.put("item", this.rewriteItem(user, bedrockTag.get("item")));
-        }
+        this.copyItem(user, bedrockTag, javaTag, "item");
         this.copy(bedrockTag, javaTag, "LootTable", StringTag.class);
         this.copy(bedrockTag, javaTag, "LootTableSeed", IntTag.class);
 

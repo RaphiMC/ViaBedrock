@@ -133,7 +133,9 @@ public class ItemRewriter extends StoredObject {
     }
 
     public CompoundTag javaItem(final CompoundTag bedrockTag) {
-        return new CompoundTag(); // TODO: Support converting nbt items
+        final CompoundTag javaTag = new CompoundTag();
+        javaTag.putString("id", "minecraft:stone");
+        return javaTag; // TODO: Support converting nbt items
     }
 
     public Item[] javaItems(final BedrockItem[] bedrockItems) {

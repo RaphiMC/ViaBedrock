@@ -38,7 +38,8 @@ public class BeehiveBlockEntityRewriter implements BlockEntityRewriter.Rewriter 
             final ListTag<CompoundTag> javaBees = new ListTag<>(CompoundTag.class);
             for (CompoundTag bedrockOccupant : bedrockOccupants) {
                 final CompoundTag javaBee = new CompoundTag();
-                this.copy(bedrockOccupant, javaBee, "TicksLeftToStay", "MinOccupationTicks", IntTag.class);
+                this.copy(bedrockOccupant, javaBee, "TicksLeftToStay", "ticks_in_hive", IntTag.class);
+                this.copy(bedrockOccupant, javaBee, "TicksLeftToStay", "min_ticks_in_hive", IntTag.class);
                 javaBees.add(javaBee);
             }
             javaTag.put("Bees", javaBees);

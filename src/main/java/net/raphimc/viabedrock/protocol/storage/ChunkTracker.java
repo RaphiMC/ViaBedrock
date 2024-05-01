@@ -374,9 +374,7 @@ public class ChunkTracker extends StoredObject {
                     javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), blockState, bedrockBlockEntity);
                     if (javaBlockEntity instanceof BlockEntityWithBlockState) {
                         final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
-                        if (blockEntityWithBlockState.hasBlockState()) {
-                            remappedBlockState = blockEntityWithBlockState.blockState();
-                        }
+                        remappedBlockState = blockEntityWithBlockState.blockState();
                     }
                 } else if (BedrockProtocol.MAPPINGS.getJavaBlockEntities().containsKey(tag)) {
                     final int javaType = BedrockProtocol.MAPPINGS.getJavaBlockEntities().get(tag);
@@ -564,9 +562,7 @@ public class ChunkTracker extends StoredObject {
                                     final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), layer0.idAt(x, y, z), bedrockBlockEntity);
                                     if (javaBlockEntity instanceof BlockEntityWithBlockState) {
                                         final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
-                                        if (blockEntityWithBlockState.hasBlockState()) {
-                                            remappedBlockPalette.setIdAt(x, y, z, blockEntityWithBlockState.blockState());
-                                        }
+                                        remappedBlockPalette.setIdAt(x, y, z, blockEntityWithBlockState.blockState());
                                     }
                                     if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
                                         remappedChunk.blockEntities().add(javaBlockEntity);

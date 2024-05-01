@@ -24,17 +24,13 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 public class BlockEntityWithBlockState implements BlockEntity {
 
     private BlockEntity blockEntity;
-    private final Integer blockState;
+    private final int blockState;
 
-    public BlockEntityWithBlockState(final BlockEntity blockEntity) {
-        this(blockEntity, null);
-    }
-
-    public BlockEntityWithBlockState(final byte packedXZ, final short y, final Integer blockState) {
+    public BlockEntityWithBlockState(final byte packedXZ, final short y, final int blockState) {
         this(new BlockEntityImpl(packedXZ, y, -1, null), blockState);
     }
 
-    public BlockEntityWithBlockState(final BlockEntity blockEntity, final Integer blockState) {
+    public BlockEntityWithBlockState(final BlockEntity blockEntity, final int blockState) {
         this.blockEntity = blockEntity;
         this.blockState = blockState;
     }
@@ -65,14 +61,7 @@ public class BlockEntityWithBlockState implements BlockEntity {
         return this;
     }
 
-    public boolean hasBlockState() {
-        return this.blockState != null;
-    }
-
     public int blockState() {
-        if (!this.hasBlockState()) {
-            throw new IllegalStateException("BlockState is not set!");
-        }
         return this.blockState;
     }
 

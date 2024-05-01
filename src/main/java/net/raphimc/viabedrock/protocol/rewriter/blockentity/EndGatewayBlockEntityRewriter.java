@@ -20,10 +20,7 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.LongTag;
+import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 
@@ -35,15 +32,11 @@ public class EndGatewayBlockEntityRewriter implements BlockEntityRewriter.Rewrit
         final CompoundTag javaTag = new CompoundTag();
 
         if (bedrockTag.get("Age") instanceof IntTag) {
-            javaTag.put("Age", new LongTag(((IntTag) bedrockTag.get("Age")).asInt()));
+            javaTag.put("Age", new LongTag(bedrockTag.getInt("Age")));
         }
         final ListTag<IntTag> bedrockExitPortal = bedrockTag.getListTag("ExitPortal", IntTag.class);
-        if (bedrockExitPortal != null && bedrockExitPortal.size() == 3) {
-            final CompoundTag javaExitPortal = new CompoundTag();
-            javaExitPortal.put("X", bedrockExitPortal.get(0));
-            javaExitPortal.put("Y", bedrockExitPortal.get(1));
-            javaExitPortal.put("Z", bedrockExitPortal.get(2));
-            javaTag.put("ExitPortal", javaExitPortal);
+        if (bedrockExitPortal != null) {
+            javaTag.put("exit_portal", new IntArrayTag(bedrockExitPortal.stream().mapToInt(IntTag::asInt).toArray()));
         }
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
