@@ -118,7 +118,6 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         providers.register(ResourcePackProvider.class, ViaBedrock.getConfig().getPackCacheMode().createProvider());
         providers.register(BlobCacheProvider.class, ViaBedrock.getConfig().getBlobCacheMode().createProvider());
         providers.register(SkinProvider.class, new SkinProvider());
-        providers.register(TransferProvider.class, new TransferProvider());
         providers.register(FormProvider.class, new InventoryFormProvider());
 
         if (!ViaBedrock.getConfig().getBlobCacheMode().equals(ViaBedrockConfig.BlobCacheMode.DISABLED)) {
