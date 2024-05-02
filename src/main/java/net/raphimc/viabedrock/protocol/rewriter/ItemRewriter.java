@@ -27,7 +27,6 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import com.viaversion.viaversion.libs.opennbt.stringified.SNBT;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -118,13 +117,8 @@ public class ItemRewriter extends StoredObject {
                 }
             } else {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java item mapping for " + identifier);
-
-                final ATextComponent nameComponent = TextUtil.stringToComponent("§cMissing item: " + identifier);
-                nameComponent.getStyle().setItalic(false);
-
                 final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
-                data.set(StructuredDataKey.CUSTOM_NAME, TextUtil.componentToNbt(nameComponent));
-
+                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("§cMissing item: " + identifier));
                 return new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), (byte) MathUtil.clamp(bedrockItem.amount(), 0, 127), data);
             }
         }
@@ -211,10 +205,7 @@ public class ItemRewriter extends StoredObject {
                 // TODO: Update: Fix this
             }
             if (this.displayName != null) {
-                final String newName = "Bedrock " + this.displayName;
-                final ATextComponent nameComponent = TextUtil.stringToComponent(newName);
-                nameComponent.getStyle().setItalic(false);
-                data.set(StructuredDataKey.CUSTOM_NAME, TextUtil.componentToNbt(nameComponent));
+                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("Bedrock " + this.displayName));
             }
 
             return new StructuredItem(javaId, (byte) MathUtil.clamp(bedrockItem.amount(), 0, 127), data);

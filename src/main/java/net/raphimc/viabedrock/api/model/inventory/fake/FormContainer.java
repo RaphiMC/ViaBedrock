@@ -315,7 +315,7 @@ public class FormContainer extends FakeContainer {
         }
 
         final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
-        data.set(StructuredDataKey.CUSTOM_NAME, this.stringToNbt(name.replace("\n", " | ")));
+        data.set(StructuredDataKey.ITEM_NAME, this.stringToNbt(name.replace("\n", " | ")));
         if (description.length > 0) {
             final List<Tag> loreTags = new ArrayList<>();
             for (String desc : description) {
