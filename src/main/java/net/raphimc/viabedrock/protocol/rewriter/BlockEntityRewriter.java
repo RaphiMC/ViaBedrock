@@ -75,7 +75,7 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put("decorated_pot", new DecoratedPotBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("dispenser", new LootableContainerBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("dropper", new LootableContainerBlockEntityRewriter());
-        BLOCK_ENTITY_REWRITERS.put("enchanting_table", new EnchantingTableBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("enchanting_table", new NamedBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("end_gateway", new EndGatewayBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("end_portal", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("ender_chest", NOOP_REWRITER);

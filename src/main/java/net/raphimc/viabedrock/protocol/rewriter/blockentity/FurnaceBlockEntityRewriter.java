@@ -23,7 +23,7 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.ShortTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 
-public class FurnaceBlockEntityRewriter extends ContainerBlockEntityRewriter {
+public class FurnaceBlockEntityRewriter extends NamedBlockEntityRewriter {
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {

@@ -24,7 +24,7 @@ import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
 import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 
-public class LootableContainerBlockEntityRewriter extends ContainerBlockEntityRewriter {
+public class LootableContainerBlockEntityRewriter extends NamedBlockEntityRewriter {
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
