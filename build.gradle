@@ -40,7 +40,7 @@ repositories {
 dependencies {
     compileOnly "com.viaversion:viaversion-common:4.10.1-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.2"
-    compileOnly "com.google.guava:guava:33.1.0-jre"
+    compileOnly "com.google.guava:guava:33.2.0-jre"
     compileOnly "io.netty:netty-handler:4.1.109.Final"
     compileOnly "com.google.code.gson:gson:2.10.1"
 
