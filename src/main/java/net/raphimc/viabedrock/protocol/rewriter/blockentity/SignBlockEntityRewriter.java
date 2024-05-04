@@ -66,14 +66,11 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             textBuilder = new StringBuilder(bedrockText.<StringTag>get("Text").getValue());
         } else {
             for (int i = 1; i <= 4; i++) {
-                final String key = "Text" + i;
-                if (bedrockText.get(key) instanceof StringTag) {
-                    final String text = bedrockText.<StringTag>get(key).getValue();
-                    if (text.isEmpty()) continue;
+                final String text = bedrockText.getString("Text" + i, "");
+                if (text.isEmpty()) continue;
 
-                    if (textBuilder.length() > 0) textBuilder.append('\n');
-                    textBuilder.append(text);
-                }
+                if (textBuilder.length() > 0) textBuilder.append('\n');
+                textBuilder.append(text);
             }
         }
         final String text = textBuilder.toString();
