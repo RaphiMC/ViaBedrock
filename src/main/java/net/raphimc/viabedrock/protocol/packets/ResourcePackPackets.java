@@ -73,6 +73,7 @@ public class ResourcePackPackets {
             }
             final int cdnEntriesCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // cdn entries count
             for (int i = 0; i < cdnEntriesCount; i++) {
+                // TODO: Implement resource pack downloading
                 wrapper.read(BedrockTypes.STRING); // pack id
                 wrapper.read(BedrockTypes.STRING); // remote url
             }
