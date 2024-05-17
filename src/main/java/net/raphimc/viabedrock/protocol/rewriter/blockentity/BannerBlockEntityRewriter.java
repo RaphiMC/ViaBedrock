@@ -54,7 +54,7 @@ public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         if (bedrockTag.get("Type") instanceof IntTag typeTag) {
             final int type = typeTag.asInt();
             if (type == 1) { // ominous banner
-                bedrockTag.put("Base", new IntTag(DyeColor.WHITE.bedrockId()));
+                bedrockTag.putInt("Base", DyeColor.WHITE.bedrockId());
                 final ListTag<CompoundTag> patterns = new ListTag<>(CompoundTag.class);
                 patterns.add(this.createBedrockPattern("mr", DyeColor.CYAN));
                 patterns.add(this.createBedrockPattern("bs", DyeColor.LIGHT_GRAY));
@@ -98,15 +98,15 @@ public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     private CompoundTag createJavaPattern(final String pattern, final DyeColor color) {
         final CompoundTag patternTag = new CompoundTag();
-        patternTag.put("pattern", new StringTag(pattern));
-        patternTag.put("color", new StringTag(color.name().toLowerCase(Locale.ROOT)));
+        patternTag.putString("pattern", pattern);
+        patternTag.putString("color", color.name().toLowerCase(Locale.ROOT));
         return patternTag;
     }
 
     private CompoundTag createBedrockPattern(final String pattern, final DyeColor color) {
         final CompoundTag patternTag = new CompoundTag();
-        patternTag.put("Pattern", new StringTag(pattern));
-        patternTag.put("Color", new IntTag(color.bedrockId()));
+        patternTag.putString("Pattern", pattern);
+        patternTag.putInt("Color", color.bedrockId());
         return patternTag;
     }
 

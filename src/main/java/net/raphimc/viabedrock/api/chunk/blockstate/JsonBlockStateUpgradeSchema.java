@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.api.chunk.blockstate;
 
 import com.viaversion.nbt.tag.CompoundTag;
-import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
@@ -129,7 +128,7 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
                                 final String newName = mapping.nameFunction.apply(states);
                                 if (newName != null) {
-                                    tag.put("name", new StringTag(newName));
+                                    tag.putString("name", newName);
                                 }
                                 tag.put("states", newStates);
 
@@ -246,7 +245,7 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                 final String name = tag.getStringTag("name").getValue();
                 if (!mappings.containsKey(name)) return;
 
-                tag.put("name", new StringTag(mappings.get(name)));
+                tag.putString("name", mappings.get(name));
             });
         }
     }
@@ -263,20 +262,7 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
         }
     }
 
-    private static class RemappedStatesEntry {
-
-        private final CompoundTag oldStateTag;
-        private final CompoundTag newStateTag;
-        private final List<String> copiedStates;
-        private final Function<CompoundTag, String> nameFunction;
-
-        public RemappedStatesEntry(final CompoundTag oldStateTag, final CompoundTag newStateTag, final List<String> copiedStates, final Function<CompoundTag, String> nameFunction) {
-            this.oldStateTag = oldStateTag;
-            this.newStateTag = newStateTag;
-            this.copiedStates = copiedStates;
-            this.nameFunction = nameFunction;
-        }
-
+    private record RemappedStatesEntry(CompoundTag oldStateTag, CompoundTag newStateTag, List<String> copiedStates, Function<CompoundTag, String> nameFunction) {
     }
 
 }

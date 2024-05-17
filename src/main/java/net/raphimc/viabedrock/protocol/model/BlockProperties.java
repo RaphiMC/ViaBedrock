@@ -19,50 +19,10 @@ package net.raphimc.viabedrock.protocol.model;
 
 import com.viaversion.nbt.tag.CompoundTag;
 
-import java.util.Objects;
-
-public class BlockProperties {
-
-    private final String name;
-    private final CompoundTag properties;
-
-    public BlockProperties(final String name, final CompoundTag properties) {
-        this.name = name;
-        this.properties = properties;
-    }
+public record BlockProperties(String name, CompoundTag properties) {
 
     public BlockProperties(final BlockProperties blockProperties) {
-        this.name = blockProperties.name;
-        this.properties = blockProperties.properties.copy();
-    }
-
-    public String name() {
-        return this.name;
-    }
-
-    public CompoundTag properties() {
-        return this.properties;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BlockProperties that = (BlockProperties) o;
-        return Objects.equals(name, that.name) && Objects.equals(properties, that.properties);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, properties);
-    }
-
-    @Override
-    public String toString() {
-        return "BlockProperties{" +
-                "name='" + name + '\'' +
-                ", properties=" + properties +
-                '}';
+        this(blockProperties.name, blockProperties.properties.copy());
     }
 
 }

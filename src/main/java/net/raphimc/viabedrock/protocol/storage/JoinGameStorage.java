@@ -20,34 +20,5 @@ package net.raphimc.viabedrock.protocol.storage;
 import com.viaversion.viaversion.api.connection.StorableObject;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.Difficulty;
 
-public class JoinGameStorage implements StorableObject {
-
-    private final String levelName;
-    private final Difficulty difficulty;
-    private final float rainLevel;
-    private final float lightningLevel;
-
-    public JoinGameStorage(final String levelName, final Difficulty difficulty, final float rainLevel, final float lightningLevel) {
-        this.levelName = levelName;
-        this.difficulty = difficulty;
-        this.rainLevel = rainLevel;
-        this.lightningLevel = lightningLevel;
-    }
-
-    public String getLevelName() {
-        return this.levelName;
-    }
-
-    public Difficulty getDifficulty() {
-        return this.difficulty;
-    }
-
-    public float getRainLevel() {
-        return this.rainLevel;
-    }
-
-    public float getLightningLevel() {
-        return this.lightningLevel;
-    }
-
+public record JoinGameStorage(String levelName, Difficulty difficulty, float rainLevel, float lightningLevel) implements StorableObject {
 }

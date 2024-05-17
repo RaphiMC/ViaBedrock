@@ -84,7 +84,7 @@ public class SkinProvider implements Provider {
         claims.put("PlatformOfflineId", "");
         claims.put("PlatformOnlineId", "");
         claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);
-        claims.put("ServerAddress", handshakeStorage.getHostname() + ":" + handshakeStorage.getPort());
+        claims.put("ServerAddress", handshakeStorage.hostname() + ":" + handshakeStorage.port());
         claims.put("ThirdPartyName", user.getProtocolInfo().getUsername());
         claims.put("ThirdPartyNameOnly", false);
         claims.put("IsEditorMode", false);

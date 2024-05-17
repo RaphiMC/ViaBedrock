@@ -119,7 +119,7 @@ public class SkinType extends Type<SkinData> {
             BedrockTypes.STRING.write(buffer, piece.id());
             BedrockTypes.STRING.write(buffer, piece.type());
             BedrockTypes.STRING.write(buffer, piece.packId());
-            buffer.writeBoolean(piece.isDefault());
+            buffer.writeBoolean(piece.defaultPiece());
             BedrockTypes.STRING.write(buffer, piece.productId());
         }
 

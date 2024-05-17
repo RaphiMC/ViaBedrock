@@ -17,50 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import java.util.Objects;
-
-public class Position2f {
-
-    protected final float x;
-    protected final float y;
-
-    public Position2f(final float x, final float y) {
-        this.x = x;
-        this.y = y;
-    }
+public record Position2f(float x, float y) {
 
     public Position2f(final Position2f position) {
-        this.x = position.x;
-        this.y = position.y;
-    }
-
-    public float x() {
-        return this.x;
-    }
-
-    public float y() {
-        return this.y;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Position2f that = (Position2f) o;
-        return Float.compare(that.x, x) == 0 && Float.compare(that.y, y) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
-    }
-
-    @Override
-    public String toString() {
-        return "Position2f{" +
-                "x=" + x +
-                ", y=" + y +
-                '}';
+        this(position.x(), position.y());
     }
 
 }

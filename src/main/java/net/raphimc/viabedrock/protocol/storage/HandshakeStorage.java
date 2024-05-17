@@ -19,29 +19,5 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StorableObject;
 
-public class HandshakeStorage implements StorableObject {
-
-    private final int protocolVersion;
-    private final String hostname;
-    private final int port;
-
-    public HandshakeStorage(final int protocolVersion, final String hostname, final int port) {
-        this.protocolVersion = protocolVersion;
-        this.hostname = hostname;
-        this.port = port;
-    }
-
-
-    public int getProtocolVersion() {
-        return this.protocolVersion;
-    }
-
-    public String getHostname() {
-        return this.hostname;
-    }
-
-    public int getPort() {
-        return this.port;
-    }
-
+public record HandshakeStorage(int protocolVersion, String hostname, int port) implements StorableObject {
 }

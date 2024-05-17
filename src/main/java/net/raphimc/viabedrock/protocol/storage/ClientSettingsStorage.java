@@ -19,58 +19,5 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StorableObject;
 
-public class ClientSettingsStorage implements StorableObject {
-
-    private final String locale;
-    private final int viewDistance;
-    private final int chatVisibility;
-    private final boolean chatColors;
-    private final short skinParts;
-    private final int mainHand;
-    private final boolean textFiltering;
-    private final boolean serverListing;
-
-    public ClientSettingsStorage(final String locale, final int viewDistance, final int chatVisibility, final boolean chatColors, final short skinParts, final int mainHand, final boolean textFiltering, final boolean serverListing) {
-        this.locale = locale;
-        this.viewDistance = viewDistance;
-        this.chatVisibility = chatVisibility;
-        this.chatColors = chatColors;
-        this.skinParts = skinParts;
-        this.mainHand = mainHand;
-        this.textFiltering = textFiltering;
-        this.serverListing = serverListing;
-    }
-
-    public String getLocale() {
-        return this.locale;
-    }
-
-    public int getViewDistance() {
-        return this.viewDistance;
-    }
-
-    public int getChatVisibility() {
-        return this.chatVisibility;
-    }
-
-    public boolean isChatColors() {
-        return this.chatColors;
-    }
-
-    public short getSkinParts() {
-        return this.skinParts;
-    }
-
-    public int getMainHand() {
-        return this.mainHand;
-    }
-
-    public boolean isTextFiltering() {
-        return this.textFiltering;
-    }
-
-    public boolean isServerListing() {
-        return this.serverListing;
-    }
-
+public record ClientSettingsStorage(String locale, int viewDistance, int chatVisibility, boolean chatColors, short skinParts, int mainHand, boolean textFiltering, boolean serverListing) implements StorableObject {
 }

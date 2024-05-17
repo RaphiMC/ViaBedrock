@@ -197,20 +197,12 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     public static void kickForIllegalState(final UserConnection user, final String reason, final Throwable e) {
         ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Illegal state: " + reason, e);
 
-        final PacketType disconnectPacketType;
-        switch (user.getProtocolInfo().getServerState()) {
-            case LOGIN:
-                disconnectPacketType = ClientboundLoginPackets.LOGIN_DISCONNECT;
-                break;
-            case CONFIGURATION:
-                disconnectPacketType = ClientboundConfigurationPackets1_20_5.DISCONNECT;
-                break;
-            case PLAY:
-                disconnectPacketType = ClientboundPackets1_20_5.DISCONNECT;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected state: " + user.getProtocolInfo().getServerState());
-        }
+        final PacketType disconnectPacketType = switch (user.getProtocolInfo().getServerState()) {
+            case LOGIN -> ClientboundLoginPackets.LOGIN_DISCONNECT;
+            case CONFIGURATION -> ClientboundConfigurationPackets1_20_5.DISCONNECT;
+            case PLAY -> ClientboundPackets1_20_5.DISCONNECT;
+            default -> throw new IllegalStateException("Unexpected state: " + user.getProtocolInfo().getServerState());
+        };
         try {
             final PacketWrapper disconnect = PacketWrapper.create(disconnectPacketType, user);
             PacketFactory.writeDisconnect(disconnect, "§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page.");

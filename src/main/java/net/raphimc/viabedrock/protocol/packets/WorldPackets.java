@@ -425,8 +425,7 @@ public class WorldPackets {
                     chunkTracker.addBlockEntity(bedrockBlockEntity);
 
                     final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(wrapper.user(), chunkTracker.getBlockState(bedrockBlockEntity.position()), bedrockBlockEntity);
-                    if (javaBlockEntity instanceof BlockEntityWithBlockState) {
-                        final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
+                    if (javaBlockEntity instanceof BlockEntityWithBlockState blockEntityWithBlockState) {
                         final PacketWrapper blockChange = PacketWrapper.create(ClientboundPackets1_20_5.BLOCK_UPDATE, wrapper.user());
                         blockChange.write(Types.BLOCK_POSITION1_14, bedrockBlockEntity.position()); // position
                         blockChange.write(Types.VAR_INT, blockEntityWithBlockState.blockState()); // block state

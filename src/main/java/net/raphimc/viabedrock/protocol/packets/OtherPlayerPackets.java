@@ -145,8 +145,7 @@ public class OtherPlayerPackets {
             entity.setRotation(rotation);
             entity.setOnGround(onGround);
 
-            if ((mode == PlayerPositionModeComponent_PositionMode.Teleport || mode == PlayerPositionModeComponent_PositionMode.Respawn) && entity instanceof ClientPlayerEntity) {
-                final ClientPlayerEntity clientPlayer = (ClientPlayerEntity) entity;
+            if ((mode == PlayerPositionModeComponent_PositionMode.Teleport || mode == PlayerPositionModeComponent_PositionMode.Respawn) && entity instanceof ClientPlayerEntity clientPlayer) {
                 wrapper.setPacketType(ClientboundPackets1_20_5.PLAYER_POSITION);
                 clientPlayer.writePlayerPositionPacketToClient(wrapper, false, mode == PlayerPositionModeComponent_PositionMode.Respawn);
                 return;

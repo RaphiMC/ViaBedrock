@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.IntTag;
-import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
@@ -55,7 +54,7 @@ public class BeaconBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown beacon effect: " + bedrockId);
                 return;
             }
-            newTag.put(newName, new StringTag(BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(bedrockIdentifier)));
+            newTag.putString(newName, BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(bedrockIdentifier));
         }
     }
 

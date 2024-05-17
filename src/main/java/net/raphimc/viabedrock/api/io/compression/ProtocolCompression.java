@@ -49,22 +49,22 @@ public class ProtocolCompression {
     }
 
     public CompressionAlgorithm getCompressionAlgorithm(final PacketCompressionAlgorithm algorithm) {
-        switch (algorithm) {
-            case None:
-                return NoopCompression.INSTANCE;
-            case ZLib:
+        return switch (algorithm) {
+            case None -> NoopCompression.INSTANCE;
+            case ZLib -> {
                 if (this.zLibCompression == null) {
                     this.zLibCompression = new ZLibCompression();
                 }
-                return this.zLibCompression;
-            case Snappy:
+                yield this.zLibCompression;
+            }
+            case Snappy -> {
                 if (this.snappyCompression == null) {
                     this.snappyCompression = new SnappyCompression();
                 }
-                return this.snappyCompression;
-            default:
-                throw new IllegalStateException("Unhandled packet compression algorithm " + algorithm);
-        }
+                yield this.snappyCompression;
+            }
+            default -> throw new IllegalStateException("Unhandled packet compression algorithm " + algorithm);
+        };
     }
 
 }

@@ -36,24 +36,13 @@ public class ChunkSectionType extends Type<BedrockChunkSection> {
     public BedrockChunkSection read(ByteBuf buffer) {
         final byte version = buffer.readByte(); // version
 
-        switch (version) {
-            case 0:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-                return V0.read(buffer);
-            case 1:
-                return V1.read(buffer);
-            case 8:
-                return V8.read(buffer);
-            case 9:
-                return V9.read(buffer);
-            default:
-                throw new UnsupportedOperationException("Unknown chunk section version: " + version);
-        }
+        return switch (version) {
+            case 0, 2, 3, 4, 5, 6, 7 -> V0.read(buffer);
+            case 1 -> V1.read(buffer);
+            case 8 -> V8.read(buffer);
+            case 9 -> V9.read(buffer);
+            default -> throw new UnsupportedOperationException("Unknown chunk section version: " + version);
+        };
     }
 
     @Override

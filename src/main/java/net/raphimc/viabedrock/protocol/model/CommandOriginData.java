@@ -19,71 +19,16 @@ package net.raphimc.viabedrock.protocol.model;
 
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginType;
 
-import java.util.Objects;
 import java.util.UUID;
 
-public class CommandOriginData {
-
-    private final CommandOriginType type;
-    private final UUID uuid;
-    private final String requestId;
-    private final long event;
+public record CommandOriginData(CommandOriginType type, UUID uuid, String requestId, long event) {
 
     public CommandOriginData(final CommandOriginType type, final UUID uuid, final String requestId) {
         this(type, uuid, requestId, -1);
     }
 
-    public CommandOriginData(final CommandOriginType type, final UUID uuid, final String requestId, final long event) {
-        this.type = type;
-        this.uuid = uuid;
-        this.requestId = requestId;
-        this.event = event;
-    }
-
     public CommandOriginData(final CommandOriginData type) {
-        this.type = type.type;
-        this.uuid = type.uuid;
-        this.requestId = type.requestId;
-        this.event = type.event;
-    }
-
-    public CommandOriginType type() {
-        return this.type;
-    }
-
-    public UUID uuid() {
-        return this.uuid;
-    }
-
-    public String requestId() {
-        return this.requestId;
-    }
-
-    public long event() {
-        return this.event;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CommandOriginData that = (CommandOriginData) o;
-        return type == that.type && event == that.event && Objects.equals(uuid, that.uuid) && Objects.equals(requestId, that.requestId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, uuid, requestId, event);
-    }
-
-    @Override
-    public String toString() {
-        return "CommandOriginData{" +
-                "type=" + type +
-                ", uuid=" + uuid +
-                ", requestId='" + requestId + '\'' +
-                ", event=" + event +
-                '}';
+        this(type.type, type.uuid, type.requestId, type.event);
     }
 
 }

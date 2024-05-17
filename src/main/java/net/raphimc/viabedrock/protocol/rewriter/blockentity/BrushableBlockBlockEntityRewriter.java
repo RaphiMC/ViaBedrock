@@ -37,7 +37,7 @@ public class BrushableBlockBlockEntityRewriter implements BlockEntityRewriter.Re
         if (bedrockTag.get("brush_direction") instanceof ByteTag brushDirectionTag) {
             final byte brushDirection = brushDirectionTag.asByte();
             if (brushDirection >= 0 && brushDirection <= 5) {
-                javaTag.put("hit_direction", new IntTag(brushDirection));
+                javaTag.putInt("hit_direction", brushDirection);
             }
         }
         this.copyItem(user, bedrockTag, javaTag, "item");

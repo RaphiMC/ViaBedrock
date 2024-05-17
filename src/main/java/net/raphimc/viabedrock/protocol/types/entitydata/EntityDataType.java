@@ -15,20 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.types.metadata;
+package net.raphimc.viabedrock.protocol.types.entitydata;
 
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
-import com.viaversion.viaversion.api.minecraft.entitydata.EntityDataType;
 import com.viaversion.viaversion.api.type.types.entitydata.EntityDataTypeTemplate;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class MetadataType extends EntityDataTypeTemplate {
+public class EntityDataType extends EntityDataTypeTemplate {
 
     @Override
     public EntityData read(ByteBuf buffer) {
         final int index = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-        final EntityDataType type = MetaTypeBedrock.byId(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        final EntityDataTypesBedrock type = EntityDataTypesBedrock.byId(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
         return new EntityData(index, type, type.type().read(buffer));
     }
 

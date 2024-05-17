@@ -44,8 +44,7 @@ public abstract class StatelessTransitionProtocol<CU extends ClientboundPacketTy
             final State currentState = wrapper.user().getProtocolInfo().getServerState();
 
             for (int i = 0; i < handlers.length; i += 2) {
-                if (handlers[i] instanceof State) {
-                    final State state = (State) handlers[i];
+                if (handlers[i] instanceof State state) {
                     if (state != currentState) continue;
                 } else {
                     final ClientboundPacketType mappedPacketType = (ClientboundPacketType) handlers[i];

@@ -19,113 +19,11 @@ package net.raphimc.viabedrock.protocol.model;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 
-import java.util.Objects;
+public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte commandPermission, Int2ObjectMap<Abilities> abilityLayers) {
 
-public class PlayerAbilities {
+    // TODO: Enum: Use SerializedAbilitiesData_SerializedAbilitiesLayer as key for abilityLayers
 
-    private final long uniqueEntityId;
-    private final byte playerPermission;
-    private final byte commandPermission;
-    private final Int2ObjectMap<Abilities> abilityLayers; // TODO: Enum: Use SerializedAbilitiesData_SerializedAbilitiesLayer as key
-
-    public PlayerAbilities(final long uniqueEntityId, final byte playerPermission, final byte commandPermission, final Int2ObjectMap<Abilities> abilityLayers) {
-        this.uniqueEntityId = uniqueEntityId;
-        this.playerPermission = playerPermission;
-        this.commandPermission = commandPermission;
-        this.abilityLayers = abilityLayers;
-    }
-
-    public long uniqueEntityId() {
-        return this.uniqueEntityId;
-    }
-
-    public byte playerPermission() {
-        return this.playerPermission;
-    }
-
-    public byte commandPermission() {
-        return this.commandPermission;
-    }
-
-    public Int2ObjectMap<Abilities> abilityLayers() {
-        return this.abilityLayers;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PlayerAbilities that = (PlayerAbilities) o;
-        return uniqueEntityId == that.uniqueEntityId && playerPermission == that.playerPermission && commandPermission == that.commandPermission && Objects.equals(abilityLayers, that.abilityLayers);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(uniqueEntityId, playerPermission, commandPermission, abilityLayers);
-    }
-
-    @Override
-    public String toString() {
-        return "PlayerAbilities{" +
-                "uniqueEntityId=" + uniqueEntityId +
-                ", playerPermission=" + playerPermission +
-                ", commandPermission=" + commandPermission +
-                ", abilityLayers=" + abilityLayers +
-                '}';
-    }
-
-    public static class Abilities {
-
-        private final int abilitiesSet;
-        private final int abilityValues;
-        private final float walkSpeed;
-        private final float flySpeed;
-
-        public Abilities(final int abilitiesSet, final int abilityValues, final float walkSpeed, final float flySpeed) {
-            this.abilitiesSet = abilitiesSet;
-            this.abilityValues = abilityValues;
-            this.walkSpeed = walkSpeed;
-            this.flySpeed = flySpeed;
-        }
-
-        public int abilitiesSet() {
-            return this.abilitiesSet;
-        }
-
-        public int abilityValues() {
-            return this.abilityValues;
-        }
-
-        public float walkSpeed() {
-            return this.walkSpeed;
-        }
-
-        public float flySpeed() {
-            return this.flySpeed;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Abilities abilities = (Abilities) o;
-            return abilitiesSet == abilities.abilitiesSet && abilityValues == abilities.abilityValues && Float.compare(abilities.walkSpeed, walkSpeed) == 0 && Float.compare(abilities.flySpeed, flySpeed) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(abilitiesSet, abilityValues, walkSpeed, flySpeed);
-        }
-
-        @Override
-        public String toString() {
-            return "Abilities{" +
-                    "abilitiesSet=" + abilitiesSet +
-                    ", abilityValues=" + abilityValues +
-                    ", walkSpeed=" + walkSpeed +
-                    ", flySpeed=" + flySpeed +
-                    '}';
-        }
+    public record Abilities(int abilitiesSet, int abilityValues, float walkSpeed, float flySpeed) {
 
     }
 

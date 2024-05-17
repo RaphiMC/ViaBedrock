@@ -15,14 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.types.metadata;
+package net.raphimc.viabedrock.protocol.types.entitydata;
 
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityDataType;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public enum MetaTypeBedrock implements EntityDataType {
+public enum EntityDataTypesBedrock implements EntityDataType {
 
     BYTE(0, Types.BYTE),
     SHORT(1, BedrockTypes.SHORT_LE),
@@ -34,20 +34,20 @@ public enum MetaTypeBedrock implements EntityDataType {
     LONG(7, BedrockTypes.VAR_LONG),
     POSITION_3F(8, BedrockTypes.POSITION_3F);
 
-    private final int typeID;
+    private final int typeId;
     private final Type<?> type;
 
-    MetaTypeBedrock(final int typeID, final Type<?> type) {
-        this.typeID = typeID;
+    EntityDataTypesBedrock(final int typeId, final Type<?> type) {
+        this.typeId = typeId;
         this.type = type;
     }
 
-    public static MetaTypeBedrock byId(final int id) {
+    public static EntityDataTypesBedrock byId(final int id) {
         return values()[id];
     }
 
     public int typeId() {
-        return this.typeID;
+        return this.typeId;
     }
 
     public Type<?> type() {

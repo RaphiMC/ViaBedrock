@@ -19,24 +19,10 @@ package net.raphimc.viabedrock.protocol.model;
 
 import com.viaversion.viaversion.api.minecraft.BlockFace;
 
-import java.util.Objects;
-
-public class Position3f {
-
-    protected final float x;
-    protected final float y;
-    protected final float z;
-
-    public Position3f(final float x, final float y, final float z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
+public record Position3f(float x, float y, float z) {
 
     public Position3f(final Position3f position) {
-        this.x = position.x;
-        this.y = position.y;
-        this.z = position.z;
+        this(position.x(), position.y(), position.z());
     }
 
     public Position3f getRelative(final BlockFace face) {
@@ -61,40 +47,6 @@ public class Position3f {
 
     public float distanceTo(final Position3f position) {
         return (float) Math.sqrt(Math.pow(this.x - position.x, 2) + Math.pow(this.y - position.y, 2) + Math.pow(this.z - position.z, 2));
-    }
-
-    public float x() {
-        return this.x;
-    }
-
-    public float y() {
-        return this.y;
-    }
-
-    public float z() {
-        return this.z;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Position3f that = (Position3f) o;
-        return Float.compare(that.x, x) == 0 && Float.compare(that.y, y) == 0 && Float.compare(that.z, z) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y, z);
-    }
-
-    @Override
-    public String toString() {
-        return "Position3f{" +
-                "x=" + x +
-                ", y=" + y +
-                ", z=" + z +
-                '}';
     }
 
 }

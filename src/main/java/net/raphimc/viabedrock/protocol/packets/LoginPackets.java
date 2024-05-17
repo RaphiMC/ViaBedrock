@@ -105,7 +105,7 @@ public class LoginPackets {
             final String chainData = rootObj.toString();
 
             final PacketWrapper login = PacketWrapper.create(ServerboundBedrockPackets.LOGIN, wrapper.user());
-            login.write(Types.INT, handshakeStorage.getProtocolVersion()); // protocol version
+            login.write(Types.INT, handshakeStorage.protocolVersion()); // protocol version
             login.write(BedrockTypes.UNSIGNED_VAR_INT, chainData.length() + authChainData.getSkinJwt().length() + 8); // length
             login.write(BedrockTypes.ASCII_STRING, AsciiString.of(chainData)); // chain data
             login.write(BedrockTypes.ASCII_STRING, AsciiString.of(authChainData.getSkinJwt())); // skin data
@@ -145,7 +145,7 @@ public class LoginPackets {
             protocolInfo.setUsername(wrapper.read(Types.STRING));
             protocolInfo.setUuid(wrapper.read(Types.UUID));
 
-            wrapper.write(Types.INT, handshakeStorage.getProtocolVersion()); // protocol version
+            wrapper.write(Types.INT, handshakeStorage.protocolVersion()); // protocol version
 
             try {
                 validateAndFillAuthChainData(wrapper.user());

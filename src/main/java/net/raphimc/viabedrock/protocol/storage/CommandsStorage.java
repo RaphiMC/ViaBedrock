@@ -121,8 +121,7 @@ public class CommandsStorage extends StoredObject {
 
             if (node instanceof LiteralCommandNode) {
                 flags |= TYPE_LITERAL;
-            } else if (node instanceof ArgumentCommandNode) {
-                final ArgumentCommandNode<UserConnection, ?> argumentCommandNode = (ArgumentCommandNode<UserConnection, ?>) node;
+            } else if (node instanceof ArgumentCommandNode<UserConnection, ?> argumentCommandNode) {
                 flags |= TYPE_ARGUMENT;
                 if (argumentCommandNode.getCustomSuggestions() != null) {
                     flags |= FLAG_CUSTOM_SUGGESTIONS;
@@ -137,11 +136,9 @@ public class CommandsStorage extends StoredObject {
                 wrapper.write(Types.VAR_INT, nodeIndices.get(node.getRedirect())); // redirect node index
             }
 
-            if (node instanceof LiteralCommandNode) {
-                final LiteralCommandNode<UserConnection> literalCommandNode = (LiteralCommandNode<UserConnection>) node;
+            if (node instanceof LiteralCommandNode<UserConnection> literalCommandNode) {
                 wrapper.write(Types.STRING, literalCommandNode.getLiteral()); // literal name
-            } else if (node instanceof ArgumentCommandNode) {
-                final ArgumentCommandNode<UserConnection, ?> argumentCommandNode = (ArgumentCommandNode<UserConnection, ?>) node;
+            } else if (node instanceof ArgumentCommandNode<UserConnection, ?> argumentCommandNode) {
                 final ArgumentTypeRegistry.ArgumentTypeMapping mapping = ArgumentTypeRegistry.getArgumentTypeMapping(argumentCommandNode.getType());
                 wrapper.write(Types.STRING, argumentCommandNode.getName()); // argument name
                 wrapper.write(Types.VAR_INT, mapping.id()); // argument type

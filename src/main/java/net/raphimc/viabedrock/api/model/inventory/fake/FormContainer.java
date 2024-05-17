@@ -80,8 +80,7 @@ public class FormContainer extends FakeContainer {
         }
         slot += (short) (this.page * (SIZE - 1));
 
-        if (this.form instanceof ModalForm) {
-            final ModalForm modalForm = (ModalForm) this.form;
+        if (this.form instanceof ModalForm modalForm) {
             if (button != 0) return false;
 
             modalForm.setClickedButton(-1);
@@ -96,8 +95,7 @@ public class FormContainer extends FakeContainer {
                 this.close();
                 return true;
             }
-        } else if (this.form instanceof ActionForm) {
-            final ActionForm actionForm = (ActionForm) this.form;
+        } else if (this.form instanceof ActionForm actionForm) {
             if (button != 0) return false;
 
             actionForm.setClickedButton(-1);
@@ -110,8 +108,7 @@ public class FormContainer extends FakeContainer {
                 this.close();
                 return true;
             }
-        } else if (this.form instanceof CustomForm) {
-            final CustomForm customForm = (CustomForm) this.form;
+        } else if (this.form instanceof CustomForm customForm) {
             if (slot == customForm.getElements().length) {
                 if (button != 0) return false;
 
@@ -123,13 +120,11 @@ public class FormContainer extends FakeContainer {
             if (slot > customForm.getElements().length) return false;
             final AFormElement element = customForm.getElements()[slot];
 
-            if (element instanceof CheckboxFormElement) {
-                final CheckboxFormElement checkbox = (CheckboxFormElement) element;
+            if (element instanceof CheckboxFormElement checkbox) {
                 if (button != 0) return false;
 
                 checkbox.setChecked(!checkbox.isChecked());
-            } else if (element instanceof DropdownFormElement) {
-                final DropdownFormElement dropdown = (DropdownFormElement) element;
+            } else if (element instanceof DropdownFormElement dropdown) {
                 if (button != 0 && button != 1) return false;
 
                 final int selected = MathUtil.clamp(dropdown.getSelected(), -1, dropdown.getOptions().length);
@@ -141,15 +136,13 @@ public class FormContainer extends FakeContainer {
                 } else {
                     dropdown.setSelected(newSelected);
                 }
-            } else if (element instanceof SliderFormElement) {
-                final SliderFormElement slider = (SliderFormElement) element;
+            } else if (element instanceof SliderFormElement slider) {
                 if (button != 0 && button != 1) return false;
 
                 final float value = slider.getCurrent();
                 final float newValue = MathUtil.clamp(value + (button == 0 ? slider.getStep() : -slider.getStep()), slider.getMin(), slider.getMax());
                 slider.setCurrent(Math.round(newValue * 1000000F) / 1000000F);
-            } else if (element instanceof StepSliderFormElement) {
-                final StepSliderFormElement stepSlider = (StepSliderFormElement) element;
+            } else if (element instanceof StepSliderFormElement stepSlider) {
                 if (button != 0 && button != 1) return false;
 
                 final int selected = MathUtil.clamp(stepSlider.getSelected(), -1, stepSlider.getSteps().length);
@@ -161,8 +154,7 @@ public class FormContainer extends FakeContainer {
                 } else {
                     stepSlider.setSelected(newSelected);
                 }
-            } else if (element instanceof TextFieldFormElement) {
-                final TextFieldFormElement textField = (TextFieldFormElement) element;
+            } else if (element instanceof TextFieldFormElement textField) {
                 this.user.get(InventoryTracker.class).openFakeContainer(new AnvilTextInputContainer(this.user, this, TextUtil.stringToComponent("Edit text"), textField::setValue) {
                     @Override
                     public Item[] getJavaItems(UserConnection user) {
@@ -210,25 +202,21 @@ public class FormContainer extends FakeContainer {
     private void updateFormItems() {
         final List<Item> items = new ArrayList<>();
 
-        if (this.form instanceof ModalForm) {
-            final ModalForm modalForm = (ModalForm) this.form;
+        if (this.form instanceof ModalForm modalForm) {
 
             items.add(this.createItem("minecraft:oak_sign", "Text", modalForm.getText()));
             items.add(this.createItem("minecraft:oak_button", modalForm.getButton1()));
             items.add(this.createItem("minecraft:oak_button", modalForm.getButton2()));
-        } else if (this.form instanceof ActionForm) {
-            final ActionForm actionForm = (ActionForm) this.form;
+        } else if (this.form instanceof ActionForm actionForm) {
 
             items.add(this.createItem("minecraft:oak_sign", "Text", actionForm.getText()));
             for (final ActionForm.Button button : actionForm.getButtons()) {
                 items.add(this.createItem("minecraft:oak_button", button.getText()));
             }
-        } else if (this.form instanceof CustomForm) {
-            final CustomForm customForm = (CustomForm) this.form;
+        } else if (this.form instanceof CustomForm customForm) {
 
             for (AFormElement element : customForm.getElements()) {
-                if (element instanceof CheckboxFormElement) {
-                    final CheckboxFormElement checkbox = (CheckboxFormElement) element;
+                if (element instanceof CheckboxFormElement checkbox) {
                     final List<String> description = new ArrayList<>();
                     description.add("§7Element: Checkbox");
                     description.add("§9Left click: §6Toggle");
@@ -239,8 +227,7 @@ public class FormContainer extends FakeContainer {
                         description.add(0, "Checked: §cfalse");
                         items.add(this.createItem("minecraft:gray_dye", checkbox.getText(), description.toArray(new String[0])));
                     }
-                } else if (element instanceof DropdownFormElement) {
-                    final DropdownFormElement dropdown = (DropdownFormElement) element;
+                } else if (element instanceof DropdownFormElement dropdown) {
                     final List<String> description = new ArrayList<>();
                     description.add("§7Options:");
                     for (int i = 0; i < dropdown.getOptions().length; i++) {
@@ -256,11 +243,9 @@ public class FormContainer extends FakeContainer {
                     description.add("§9Right click: §6Go to previous option");
 
                     items.add(this.createItem("minecraft:bookshelf", dropdown.getText(), description.toArray(new String[0])));
-                } else if (element instanceof LabelFormElement) {
-                    final LabelFormElement label = (LabelFormElement) element;
+                } else if (element instanceof LabelFormElement label) {
                     items.add(this.createItem("minecraft:oak_sign", "Text", label.getText()));
-                } else if (element instanceof SliderFormElement) {
-                    final SliderFormElement slider = (SliderFormElement) element;
+                } else if (element instanceof SliderFormElement slider) {
                     final List<String> description = new ArrayList<>();
                     description.add("§7Current value: §a" + slider.getCurrent());
                     description.add("§7Min value: §a" + slider.getMin());
@@ -270,8 +255,7 @@ public class FormContainer extends FakeContainer {
                     description.add("§9Right click: §6Decrease value by " + slider.getStep());
 
                     items.add(this.createItem("minecraft:repeater", slider.getText(), description.toArray(new String[0])));
-                } else if (element instanceof StepSliderFormElement) {
-                    final StepSliderFormElement stepSlider = (StepSliderFormElement) element;
+                } else if (element instanceof StepSliderFormElement stepSlider) {
                     final List<String> description = new ArrayList<>();
                     description.add("§7Options:");
                     for (int i = 0; i < stepSlider.getSteps().length; i++) {
@@ -287,8 +271,7 @@ public class FormContainer extends FakeContainer {
                     description.add("§9Right click: §6Go to previous option");
 
                     items.add(this.createItem("minecraft:bookshelf", stepSlider.getText(), description.toArray(new String[0])));
-                } else if (element instanceof TextFieldFormElement) {
-                    final TextFieldFormElement textField = (TextFieldFormElement) element;
+                } else if (element instanceof TextFieldFormElement textField) {
                     final List<String> description = new ArrayList<>();
                     description.add("§7Current value: §a" + textField.getValue());
                     description.add("§7Element: TextField");

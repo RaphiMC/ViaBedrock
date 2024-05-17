@@ -50,7 +50,7 @@ public abstract class BlockStateUpgradeSchema {
         } catch (JsonBlockStateUpgradeSchema.StopUpgrade ignored) {
         }
 
-        tag.put("version", new IntTag(this.version));
+        tag.putInt("version", this.version);
     }
 
     public int version() {

@@ -19,40 +19,5 @@ package net.raphimc.viabedrock.protocol.model;
 
 import com.viaversion.viaversion.api.minecraft.Position;
 
-public class BlockChangeEntry {
-
-    private final Position position;
-    private final int blockState;
-    private final int flags;
-    private final long messageEntityId;
-    private final int messageType;
-
-    public BlockChangeEntry(final Position position, final int blockState, final int flags, final long messageEntityId, final int messageType) {
-        this.position = position;
-        this.blockState = blockState;
-        this.flags = flags;
-        this.messageEntityId = messageEntityId;
-        this.messageType = messageType;
-    }
-
-    public Position position() {
-        return this.position;
-    }
-
-    public int blockState() {
-        return this.blockState;
-    }
-
-    public int flags() {
-        return this.flags;
-    }
-
-    public long messageEntityId() {
-        return this.messageEntityId;
-    }
-
-    public int messageType() {
-        return this.messageType;
-    }
-
+public record BlockChangeEntry(Position position, int blockState, int flags, long messageEntityId, int messageType) {
 }

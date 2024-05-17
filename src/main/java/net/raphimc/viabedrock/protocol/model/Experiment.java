@@ -17,50 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import java.util.Objects;
-
-public class Experiment {
-
-    private final String name;
-    private final boolean enabled;
-
-    public Experiment(final String name, final boolean enabled) {
-        this.name = name;
-        this.enabled = enabled;
-    }
+public record Experiment(String name, boolean enabled) {
 
     public Experiment(final Experiment experiment) {
-        this.name = experiment.name;
-        this.enabled = experiment.enabled;
-    }
-
-    public String name() {
-        return this.name;
-    }
-
-    public boolean enabled() {
-        return this.enabled;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Experiment that = (Experiment) o;
-        return enabled == that.enabled && Objects.equals(name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, enabled);
-    }
-
-    @Override
-    public String toString() {
-        return "Experiment{" +
-                "name='" + name + '\'' +
-                ", enabled=" + enabled +
-                '}';
+        this(experiment.name(), experiment.enabled());
     }
 
 }

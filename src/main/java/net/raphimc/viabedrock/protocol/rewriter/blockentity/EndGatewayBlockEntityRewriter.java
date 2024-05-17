@@ -17,7 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
-import com.viaversion.nbt.tag.*;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntArrayTag;
+import com.viaversion.nbt.tag.IntTag;
+import com.viaversion.nbt.tag.ListTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
@@ -32,7 +35,7 @@ public class EndGatewayBlockEntityRewriter implements BlockEntityRewriter.Rewrit
         final CompoundTag javaTag = new CompoundTag();
 
         if (bedrockTag.get("Age") instanceof IntTag) {
-            javaTag.put("Age", new LongTag(bedrockTag.getInt("Age")));
+            javaTag.putLong("Age", bedrockTag.getInt("Age"));
         }
         final ListTag<IntTag> bedrockExitPortal = bedrockTag.getListTag("ExitPortal", IntTag.class);
         if (bedrockExitPortal != null) {

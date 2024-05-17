@@ -24,21 +24,14 @@ public class GameTypeRewriter {
 
     public static GameMode gameTypeToGameMode(final int gameTypeId) {
         final GameType gameType = GameType.getByValue(gameTypeId, GameType.Survival);
-        switch (gameType) {
-            case Undefined:
-            case Default:
-                return null;
-            case Survival:
-                return GameMode.SURVIVAL;
-            case Creative:
-                return GameMode.CREATIVE;
-            case Adventure:
-                return GameMode.ADVENTURE;
-            case Spectator:
-                return GameMode.SPECTATOR;
-            default:
-                throw new IllegalStateException("Unhandled game type: " + gameType);
-        }
+        return switch (gameType) {
+            case Undefined, Default -> null;
+            case Survival -> GameMode.SURVIVAL;
+            case Creative -> GameMode.CREATIVE;
+            case Adventure -> GameMode.ADVENTURE;
+            case Spectator -> GameMode.SPECTATOR;
+            default -> throw new IllegalStateException("Unhandled game type: " + gameType);
+        };
     }
 
     public static byte getEffectiveGameMode(final int playerGameTypeId, final int levelGameTypeId) {

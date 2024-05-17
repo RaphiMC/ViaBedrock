@@ -79,17 +79,13 @@ public enum PaintingVariant {
         final float heightOffset = this.height % 32 == 0 ? 0.5F : 0;
 
         final Position3f position = new Position3f(-0.5F, -0.5F, -0.5F);
-        switch (direction) {
-            case NORTH:
-                return position.subtract(-widthOffset, heightOffset, -OFFSET);
-            case EAST:
-                return position.subtract(OFFSET, heightOffset, -widthOffset);
-            case SOUTH:
-                return position.subtract(widthOffset, heightOffset, OFFSET);
-            case WEST:
-                return position.subtract(-OFFSET, heightOffset, widthOffset);
-        }
-        return position;
+        return switch (direction) {
+            case NORTH -> position.subtract(-widthOffset, heightOffset, -OFFSET);
+            case EAST -> position.subtract(OFFSET, heightOffset, -widthOffset);
+            case SOUTH -> position.subtract(widthOffset, heightOffset, OFFSET);
+            case WEST -> position.subtract(-OFFSET, heightOffset, widthOffset);
+            default -> position;
+        };
     }
 
 }

@@ -17,66 +17,8 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import java.util.Objects;
+public record EntityLink(long from, long to, short type, boolean immediate, boolean riderInitiated) {
 
-public class EntityLink {
-
-    private final long from;
-    private final long to;
-    private final short type; // TODO: Enum: Use ActorLinkType
-    private final boolean immediate;
-    private final boolean riderInitiated;
-
-    public EntityLink(final long from, final long to, final short type, final boolean immediate, final boolean riderInitiated) {
-        this.from = from;
-        this.to = to;
-        this.type = type;
-        this.immediate = immediate;
-        this.riderInitiated = riderInitiated;
-    }
-
-    public long from() {
-        return this.from;
-    }
-
-    public long to() {
-        return this.to;
-    }
-
-    public short type() {
-        return this.type;
-    }
-
-    public boolean immediate() {
-        return this.immediate;
-    }
-
-    public boolean riderInitiated() {
-        return this.riderInitiated;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        EntityLink that = (EntityLink) o;
-        return from == that.from && to == that.to && type == that.type && immediate == that.immediate && riderInitiated == that.riderInitiated;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(from, to, type, immediate, riderInitiated);
-    }
-
-    @Override
-    public String toString() {
-        return "EntityLink{" +
-                "from=" + from +
-                ", to=" + to +
-                ", type=" + type +
-                ", immediate=" + immediate +
-                ", riderInitiated=" + riderInitiated +
-                '}';
-    }
+    // TODO: Enum: Use ActorLinkType for type
 
 }

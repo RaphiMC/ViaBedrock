@@ -60,23 +60,23 @@ public class StructureBlockBlockEntityRewriter implements BlockEntityRewriter.Re
         if (bedrockTag.get("rotation") instanceof ByteTag rotationTag) {
             final byte rotation = rotationTag.asByte();
             if (rotation >= 0 && rotation < ROTATION_MODES.size()) {
-                javaTag.put("rotation", new StringTag(ROTATION_MODES.get(rotation)));
+                javaTag.putString("rotation", ROTATION_MODES.get(rotation));
             }
         }
         if (bedrockTag.get("mirror") instanceof ByteTag mirrorTag) {
             final byte mirror = mirrorTag.asByte();
             if (mirror >= 0 && mirror < MIRROR_MODES.size()) {
-                javaTag.put("mirror", new StringTag(MIRROR_MODES.get(mirror)));
+                javaTag.putString("mirror", MIRROR_MODES.get(mirror));
             }
         }
         if (bedrockTag.get("data") instanceof IntTag dataTag) {
             final int data = dataTag.asInt();
             if (data >= 0 && data < DATA_MODES.size()) {
-                javaTag.put("mode", new StringTag(DATA_MODES.get(data)));
+                javaTag.putString("mode", DATA_MODES.get(data));
             }
         }
         if (bedrockTag.get("integrity") instanceof FloatTag integrityTag) {
-            javaTag.put("integrity", new FloatTag(integrityTag.asFloat() / 100F));
+            javaTag.putFloat("integrity", integrityTag.asFloat() / 100F);
         }
 
         this.copy(bedrockTag, javaTag, "structureName", "name", StringTag.class);

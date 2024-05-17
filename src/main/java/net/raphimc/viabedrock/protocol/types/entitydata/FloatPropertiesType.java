@@ -15,38 +15,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.types.metadata;
+package net.raphimc.viabedrock.protocol.types.entitydata;
 
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class IntPropertiesType extends Type<Int2IntMap> {
+import java.util.HashMap;
+import java.util.Map;
 
-    public IntPropertiesType() {
-        super("IntProperties", Int2IntMap.class);
+public class FloatPropertiesType extends Type<Map<Integer, Float>> {
+
+    public FloatPropertiesType() {
+        super("FloatProperties", Map.class);
     }
 
     @Override
-    public Int2IntMap read(ByteBuf buffer) {
+    public Map<Integer, Float> read(ByteBuf buffer) {
         final int length = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
-        final Int2IntMap properties = new Int2IntOpenHashMap(length);
+        final Map<Integer, Float> properties = new HashMap<>(length);
         for (int i = 0; i < length; i++) {
             final int index = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
-            final int value = BedrockTypes.VAR_INT.readPrimitive(buffer);
+            final float value = BedrockTypes.FLOAT_LE.readPrimitive(buffer);
             properties.put(index, value);
         }
         return properties;
     }
 
     @Override
-    public void write(ByteBuf buffer, Int2IntMap value) {
+    public void write(ByteBuf buffer, Map<Integer, Float> value) {
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.size());
         value.forEach((i, v) -> {
             BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, i);
-            BedrockTypes.VAR_INT.writePrimitive(buffer, v);
+            BedrockTypes.FLOAT_LE.writePrimitive(buffer, v);
         });
     }
 

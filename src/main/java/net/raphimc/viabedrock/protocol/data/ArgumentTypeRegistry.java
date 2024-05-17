@@ -115,24 +115,7 @@ public class ArgumentTypeRegistry {
         ARGUMENT_TYPES.put(clazz, new ArgumentTypeMapping(BedrockProtocol.MAPPINGS.getJavaCommandArgumentTypes().get(name), (BiConsumer<PacketWrapper, ArgumentType<?>>) writer));
     }
 
-    public static class ArgumentTypeMapping {
-
-        private final int id;
-        private final BiConsumer<PacketWrapper, ArgumentType<?>> writer;
-
-        public ArgumentTypeMapping(final int id, final BiConsumer<PacketWrapper, ArgumentType<?>> writer) {
-            this.id = id;
-            this.writer = writer;
-        }
-
-        public int id() {
-            return this.id;
-        }
-
-        public BiConsumer<PacketWrapper, ArgumentType<?>> writer() {
-            return this.writer;
-        }
-
+    public record ArgumentTypeMapping(int id, BiConsumer<PacketWrapper, ArgumentType<?>> writer) {
     }
 
 }

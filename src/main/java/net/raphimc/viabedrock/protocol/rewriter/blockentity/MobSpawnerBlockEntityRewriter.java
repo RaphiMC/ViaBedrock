@@ -51,7 +51,7 @@ public class MobSpawnerBlockEntityRewriter implements BlockEntityRewriter.Rewrit
         if (bedrockTag.get("EntityId") instanceof IntTag entityIdTag) {
             final int bedrockEntityId = entityIdTag.asInt();
             final String bedrockEntityIdentifier = BedrockProtocol.MAPPINGS.getBedrockEntities().inverse().getOrDefault(bedrockEntityId, "viabedrock:" + bedrockEntityId);
-            bedrockTag.put("EntityIdentifier", new StringTag(bedrockEntityIdentifier));
+            bedrockTag.putString("EntityIdentifier", bedrockEntityIdentifier);
         }
         if (bedrockTag.get("EntityIdentifier") instanceof StringTag entityIdentifierTag) {
             final String bedrockEntityIdentifier = entityIdentifierTag.getValue();
@@ -59,7 +59,7 @@ public class MobSpawnerBlockEntityRewriter implements BlockEntityRewriter.Rewrit
             if (javaEntityType != null) {
                 final CompoundTag spawnData = new CompoundTag();
                 final CompoundTag entityTag = new CompoundTag();
-                entityTag.put("id", new StringTag(javaEntityType.identifier()));
+                entityTag.putString("id", javaEntityType.identifier());
                 spawnData.put("entity", entityTag);
                 javaTag.put("SpawnData", spawnData);
             } else if (!Key.stripNamespace(bedrockEntityIdentifier).isEmpty()) {

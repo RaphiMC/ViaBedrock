@@ -40,7 +40,7 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
         if (bedrockTag.get("Text") instanceof StringTag) {
             final boolean textIgnoreLegacyBugResolved = bedrockTag.get("TextIgnoreLegacyBugResolved") instanceof ByteTag textIgnoreLegacyBugResolvedTag && textIgnoreLegacyBugResolvedTag.asByte() != 0;
-            bedrockTag.put("HideGlowOutline", new ByteTag(textIgnoreLegacyBugResolved ? (byte) 0 : (byte) 1));
+            bedrockTag.putByte("HideGlowOutline", textIgnoreLegacyBugResolved ? (byte) 0 : (byte) 1);
 
             javaTag.put("front_text", this.translateText(bedrockTag));
 
@@ -89,7 +89,7 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         final boolean ignoreLighting = !(bedrockText.get("IgnoreLighting") instanceof ByteTag ignoreLightingTag) || ignoreLightingTag.asByte() != 0;
         final boolean hideGlowOutline = bedrockText.get("HideGlowOutline") instanceof ByteTag hideGlowOutlineTag && hideGlowOutlineTag.asByte() != 0;
         if (!hideGlowOutline && ignoreLighting) {
-            javaText.put("has_glowing_text", new ByteTag((byte) 1));
+            javaText.putByte("has_glowing_text", (byte) 1);
         }
 
         if (bedrockText.get("SignTextColor") instanceof IntTag signTextColorTag) {
@@ -98,13 +98,13 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
                 components.clear();
             }
             final DyeColor dyeColor = DyeColor.getClosestDyeColor(signTextColor);
-            javaText.put("color", new StringTag(dyeColor.name().toLowerCase()));
+            javaText.putString("color", dyeColor.name().toLowerCase());
 
             for (ATextComponent component : components) {
                 component.forEach(c -> c.getStyle().setColor(signTextColor));
             }
         } else {
-            javaText.put("color", new StringTag(DyeColor.LIGHT_GRAY.name().toLowerCase()));
+            javaText.putString("color", DyeColor.LIGHT_GRAY.name().toLowerCase());
         }
 
         if (!components.isEmpty()) {

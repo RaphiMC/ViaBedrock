@@ -322,7 +322,7 @@ public class ResourcePack {
                 return null;
             }
 
-            return Collections.unmodifiableList(Arrays.asList(string.split("\\n")));
+            return List.of(string.split("\\n"));
         }
 
         public boolean putLines(final String path, final List<String> lines) {

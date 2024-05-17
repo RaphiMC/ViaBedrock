@@ -97,7 +97,7 @@ public class ChunkTracker extends StoredObject {
         this.chunkType = new ChunkType1_20_2(this.worldHeight >> 4, MathUtil.ceilLog2(BedrockProtocol.MAPPINGS.getJavaBlockStates().size()), MathUtil.ceilLog2(biomeRegistry.size()));
 
         final ChunkTracker oldChunkTracker = user.get(ChunkTracker.class);
-        this.radius = oldChunkTracker != null ? oldChunkTracker.radius : user.get(ClientSettingsStorage.class).getViewDistance();
+        this.radius = oldChunkTracker != null ? oldChunkTracker.radius : user.get(ClientSettingsStorage.class).viewDistance();
     }
 
     public void setCenter(final int x, final int z) {
@@ -372,8 +372,7 @@ public class ChunkTracker extends StoredObject {
                 BlockEntity javaBlockEntity = null;
                 if (bedrockBlockEntity != null) {
                     javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), blockState, bedrockBlockEntity);
-                    if (javaBlockEntity instanceof BlockEntityWithBlockState) {
-                        final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
+                    if (javaBlockEntity instanceof BlockEntityWithBlockState blockEntityWithBlockState) {
                         remappedBlockState = blockEntityWithBlockState.blockState();
                     }
                 } else if (BedrockProtocol.MAPPINGS.getJavaBlockEntities().containsKey(tag)) {
@@ -560,8 +559,7 @@ public class ChunkTracker extends StoredObject {
                                 final BedrockBlockEntity bedrockBlockEntity = chunk.getBlockEntityAt(position);
                                 if (bedrockBlockEntity != null) {
                                     final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), layer0.idAt(x, y, z), bedrockBlockEntity);
-                                    if (javaBlockEntity instanceof BlockEntityWithBlockState) {
-                                        final BlockEntityWithBlockState blockEntityWithBlockState = (BlockEntityWithBlockState) javaBlockEntity;
+                                    if (javaBlockEntity instanceof BlockEntityWithBlockState blockEntityWithBlockState) {
                                         remappedBlockPalette.setIdAt(x, y, z, blockEntityWithBlockState.blockState());
                                     }
                                     if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
@@ -711,8 +709,7 @@ public class ChunkTracker extends StoredObject {
 
         final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
         for (DataPalette palette : palettes) {
-            if (palette instanceof BedrockDataPalette) {
-                final BedrockDataPalette bedrockPalette = (BedrockDataPalette) palette;
+            if (palette instanceof BedrockDataPalette bedrockPalette) {
                 if (bedrockPalette.usesPersistentIds()) {
                     bedrockPalette.addId(this.airId());
                     bedrockPalette.resolvePersistentIds(tag -> {
@@ -733,8 +730,7 @@ public class ChunkTracker extends StoredObject {
 
         final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
         for (DataPalette palette : palettes) {
-            if (palette instanceof BedrockBlockArray) {
-                final BedrockBlockArray blockArray = (BedrockBlockArray) palette;
+            if (palette instanceof BedrockBlockArray blockArray) {
                 final BedrockDataPalette dataPalette = new BedrockDataPalette();
                 this.transferPaletteData(blockArray, dataPalette);
                 for (int i = 0; i < dataPalette.size(); i++) {
@@ -767,40 +763,7 @@ public class ChunkTracker extends StoredObject {
         }
     }
 
-    private static class SubChunkPosition {
-
-        private final int chunkX;
-        private final int subChunkY;
-        private final int chunkZ;
-
-        private SubChunkPosition(final int chunkX, final int subChunkY, final int chunkZ) {
-            this.chunkX = chunkX;
-            this.subChunkY = subChunkY;
-            this.chunkZ = chunkZ;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            SubChunkPosition that = (SubChunkPosition) o;
-            return chunkX == that.chunkX && subChunkY == that.subChunkY && chunkZ == that.chunkZ;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(chunkX, subChunkY, chunkZ);
-        }
-
-        @Override
-        public String toString() {
-            return "SubChunkPosition{" +
-                    "chunkX=" + chunkX +
-                    ", subChunkY=" + subChunkY +
-                    ", chunkZ=" + chunkZ +
-                    '}';
-        }
-
+    private record SubChunkPosition(int chunkX, int subChunkY, int chunkZ) {
     }
 
 }

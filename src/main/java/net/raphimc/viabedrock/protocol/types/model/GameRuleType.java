@@ -36,17 +36,15 @@ public class GameRuleType extends Type<GameRule<?>> {
         final String name = BedrockTypes.STRING.read(buffer);
         final boolean editable = buffer.readBoolean();
         final int type = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-        switch (type) {
-            case 1:
-                return new GameRule<>(name, editable, buffer.readBoolean());
-            case 2:
-                return new GameRule<>(name, editable, BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer));
-            case 3:
-                return new GameRule<>(name, editable, BedrockTypes.FLOAT_LE.readPrimitive(buffer));
-            default:
+        return switch (type) {
+            case 1 -> new GameRule<>(name, editable, buffer.readBoolean());
+            case 2 -> new GameRule<>(name, editable, BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer));
+            case 3 -> new GameRule<>(name, editable, BedrockTypes.FLOAT_LE.readPrimitive(buffer));
+            default -> {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown game rule type: " + type);
-                return new GameRule<>(name, editable, null);
-        }
+                yield new GameRule<>(name, editable, null);
+            }
+        };
 
     }
 

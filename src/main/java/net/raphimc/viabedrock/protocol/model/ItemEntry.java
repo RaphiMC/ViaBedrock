@@ -17,58 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import java.util.Objects;
+public record ItemEntry(String identifier, int id, boolean componentBased) {
 
-public class ItemEntry {
-
-    private final String identifier;
-    private final int id;
-    private final boolean componentBased;
-
-    public ItemEntry(String identifier, int id, boolean componentBased) {
-        this.identifier = identifier;
-        this.id = id;
-        this.componentBased = componentBased;
-    }
-
-    public ItemEntry(ItemEntry itemEntry) {
-        this.identifier = itemEntry.identifier;
-        this.id = itemEntry.id;
-        this.componentBased = itemEntry.componentBased;
-    }
-
-    public String identifier() {
-        return this.identifier;
-    }
-
-    public int id() {
-        return this.id;
-    }
-
-    public boolean componentBased() {
-        return this.componentBased;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ItemEntry itemEntry = (ItemEntry) o;
-        return id == itemEntry.id && componentBased == itemEntry.componentBased && Objects.equals(identifier, itemEntry.identifier);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(identifier, id, componentBased);
-    }
-
-    @Override
-    public String toString() {
-        return "ItemEntry{" +
-                "identifier='" + identifier + '\'' +
-                ", id=" + id +
-                ", componentBased=" + componentBased +
-                '}';
+    public ItemEntry(final ItemEntry itemEntry) {
+        this(itemEntry.identifier(), itemEntry.id(), itemEntry.componentBased());
     }
 
 }

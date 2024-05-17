@@ -51,16 +51,15 @@ public class ResourcePackHttpServer {
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .childHandler(new ChannelInitializer<Channel>() {
+                .childHandler(new ChannelInitializer<>() {
                     @Override
                     protected void initChannel(Channel channel) {
                         channel.pipeline().addLast("http_codec", new HttpServerCodec());
                         channel.pipeline().addLast("chunked_writer", new ChunkedWriteHandler());
-                        channel.pipeline().addLast("http_handler", new SimpleChannelInboundHandler<Object>() {
+                        channel.pipeline().addLast("http_handler", new SimpleChannelInboundHandler<>() {
                             @Override
                             protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws InterruptedException {
-                                if (msg instanceof HttpRequest) {
-                                    final HttpRequest request = (HttpRequest) msg;
+                                if (msg instanceof HttpRequest request) {
                                     if (!request.method().equals(HttpMethod.GET)) {
                                         ctx.close();
                                         return;

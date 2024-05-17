@@ -17,7 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.data;
 
-import com.viaversion.nbt.tag.*;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.ListTag;
+import com.viaversion.nbt.tag.StringTag;
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.MathUtil;
@@ -181,19 +184,19 @@ public class JavaRegistries {
 
     private static CompoundTag createParticle(final String name, final float probability) {
         final CompoundTag particle = new CompoundTag();
-        particle.put("probability", new FloatTag(probability));
+        particle.putFloat("probability", probability);
         final CompoundTag options = new CompoundTag();
         particle.put("options", options);
-        options.put("type", new StringTag(name));
+        options.putString("type", name);
         return particle;
     }
 
     private static CompoundTag createMoodSound(final String soundId) {
         final CompoundTag moodSound = new CompoundTag();
-        moodSound.put("tick_delay", new IntTag(6000));
-        moodSound.put("offset", new FloatTag(2F));
-        moodSound.put("sound", new StringTag(soundId));
-        moodSound.put("block_search_extent", new IntTag(8));
+        moodSound.putInt("tick_delay", 6000);
+        moodSound.putFloat("offset", 2F);
+        moodSound.putString("sound", soundId);
+        moodSound.putInt("block_search_extent", 8);
         return moodSound;
     }
 

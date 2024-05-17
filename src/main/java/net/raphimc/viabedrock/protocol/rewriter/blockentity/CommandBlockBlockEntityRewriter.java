@@ -47,7 +47,7 @@ public class CommandBlockBlockEntityRewriter implements BlockEntityRewriter.Rewr
         this.copy(bedrockTag, javaTag, "auto", ByteTag.class);
         this.copyCustomName(user, bedrockTag, javaTag);
 
-        if (bedrockTag.get("LastOutput") instanceof StringTag) {
+        if (bedrockTag.get("LastOutput") instanceof StringTag lastOutputTag) {
             final Function<String, String> translator = user.get(ResourcePacksStorage.class).getTranslationLookup();
 
             final List<String> lastOutputParams = new ArrayList<>();
@@ -58,9 +58,7 @@ public class CommandBlockBlockEntityRewriter implements BlockEntityRewriter.Rewr
                 }
             }
 
-            final String bedrockLastOutput = bedrockTag.getStringTag("LastOutput").getValue();
-            final String javaLastOutput = TextUtil.stringToJson(BedrockTranslator.translate(bedrockLastOutput, translator, lastOutputParams.toArray()));
-            javaTag.put("LastOutput", new StringTag(javaLastOutput));
+            javaTag.putString("LastOutput", TextUtil.stringToJson(BedrockTranslator.translate(lastOutputTag.getValue(), translator, lastOutputParams.toArray())));
         }
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);

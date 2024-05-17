@@ -174,8 +174,7 @@ public class BlockState {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BlockState)) return false;
-        BlockState that = (BlockState) o;
+        if (!(o instanceof BlockState that)) return false;
         return Objects.equals(namespace, that.namespace) && Objects.equals(identifier, that.identifier) && Objects.equals(properties, that.properties);
     }
 

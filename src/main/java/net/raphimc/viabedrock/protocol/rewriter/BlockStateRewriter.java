@@ -150,9 +150,9 @@ public class BlockStateRewriter implements StorableObject {
 
             for (CompoundTag combination : combinations) {
                 final CompoundTag blockStateTag = new CompoundTag();
-                blockStateTag.put("name", new StringTag(blockProperty.getKey()));
+                blockStateTag.putString("name", blockProperty.getKey());
                 blockStateTag.put("states", combination);
-                blockStateTag.put("network_id", new IntTag(BlockStateHasher.hash(blockStateTag)));
+                blockStateTag.putInt("network_id", BlockStateHasher.hash(blockStateTag));
 
                 customBlockStates.add(BedrockBlockState.fromNbt(blockStateTag));
             }
