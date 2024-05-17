@@ -26,7 +26,7 @@ import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 public class InventoryFormProvider extends FormProvider {
 
     @Override
-    public void openModalForm(final UserConnection user, final int id, final AForm form) throws Exception {
+    public void openModalForm(final UserConnection user, final int id, final AForm form) {
         user.get(InventoryTracker.class).openFakeContainer(new FormContainer(user, id, form));
     }
 

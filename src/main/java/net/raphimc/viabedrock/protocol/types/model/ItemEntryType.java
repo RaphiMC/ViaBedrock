@@ -29,12 +29,12 @@ public class ItemEntryType extends Type<ItemEntry> {
     }
 
     @Override
-    public ItemEntry read(ByteBuf buffer) throws Exception {
+    public ItemEntry read(ByteBuf buffer) {
         return new ItemEntry(BedrockTypes.STRING.read(buffer), buffer.readShortLE(), buffer.readBoolean());
     }
 
     @Override
-    public void write(ByteBuf buffer, ItemEntry value) throws Exception {
+    public void write(ByteBuf buffer, ItemEntry value) {
         BedrockTypes.STRING.write(buffer, value.identifier());
         buffer.writeShortLE(value.id());
         buffer.writeBoolean(value.componentBased());

@@ -31,12 +31,12 @@ public class AsciiStringType extends Type<AsciiString> implements TypeConverter<
     }
 
     @Override
-    public AsciiString read(ByteBuf buffer) throws Exception {
+    public AsciiString read(ByteBuf buffer) {
         return AsciiString.of(buffer.readCharSequence(buffer.readIntLE(), StandardCharsets.US_ASCII));
     }
 
     @Override
-    public void write(ByteBuf buffer, AsciiString value) throws Exception {
+    public void write(ByteBuf buffer, AsciiString value) {
         buffer.writeIntLE(value.length());
         buffer.writeCharSequence(value, StandardCharsets.US_ASCII);
     }

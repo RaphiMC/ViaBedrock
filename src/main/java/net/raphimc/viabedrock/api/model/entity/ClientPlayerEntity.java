@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.api.model.entity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -69,7 +69,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     @Override
-    public void tick() throws Exception {
+    public void tick() {
         super.tick();
 
         if (this.gameSession.getMovementMode() != ServerAuthMovementMode.ClientAuthoritative) {
@@ -77,30 +77,30 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
     }
 
-    public void closeDownloadingTerrainScreen() throws Exception {
+    public void closeDownloadingTerrainScreen() {
         final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_20_5.GAME_EVENT, this.user);
-        gameEvent.write(Type.UNSIGNED_BYTE, (short) GameEventType.LEVEL_CHUNKS_LOAD_START.ordinal()); // event id
-        gameEvent.write(Type.FLOAT, 0F); // value
+        gameEvent.write(Types.UNSIGNED_BYTE, (short) GameEventType.LEVEL_CHUNKS_LOAD_START.ordinal()); // event id
+        gameEvent.write(Types.FLOAT, 0F); // value
         gameEvent.send(BedrockProtocol.class);
     }
 
-    public void sendPlayerPositionPacketToClient(final boolean keepRotation) throws Exception {
+    public void sendPlayerPositionPacketToClient(final boolean keepRotation) {
         final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets1_20_5.PLAYER_POSITION, this.user);
         this.writePlayerPositionPacketToClient(playerPosition, keepRotation, true);
         playerPosition.send(BedrockProtocol.class);
     }
 
     public void writePlayerPositionPacketToClient(final PacketWrapper wrapper, final boolean keepRotation, final boolean fakeTeleport) {
-        wrapper.write(Type.DOUBLE, (double) this.position.x()); // x
-        wrapper.write(Type.DOUBLE, (double) this.position.y() - this.eyeOffset()); // y
-        wrapper.write(Type.DOUBLE, (double) this.position.z()); // z
-        wrapper.write(Type.FLOAT, keepRotation ? 0F : this.rotation.y()); // yaw
-        wrapper.write(Type.FLOAT, keepRotation ? 0F : this.rotation.x()); // pitch
-        wrapper.write(Type.BYTE, (byte) (keepRotation ? 0b11000 : 0)); // flags
-        wrapper.write(Type.VAR_INT, this.nextTeleportId() * (fakeTeleport ? -1 : 1)); // teleport id
+        wrapper.write(Types.DOUBLE, (double) this.position.x()); // x
+        wrapper.write(Types.DOUBLE, (double) this.position.y() - this.eyeOffset()); // y
+        wrapper.write(Types.DOUBLE, (double) this.position.z()); // z
+        wrapper.write(Types.FLOAT, keepRotation ? 0F : this.rotation.y()); // yaw
+        wrapper.write(Types.FLOAT, keepRotation ? 0F : this.rotation.x()); // pitch
+        wrapper.write(Types.BYTE, (byte) (keepRotation ? 0b11000 : 0)); // flags
+        wrapper.write(Types.VAR_INT, this.nextTeleportId() * (fakeTeleport ? -1 : 1)); // teleport id
     }
 
-    public void sendMovePlayerPacketToServer(final PlayerPositionModeComponent_PositionMode mode) throws Exception {
+    public void sendMovePlayerPacketToServer(final PlayerPositionModeComponent_PositionMode mode) {
         final PacketWrapper movePlayer = PacketWrapper.create(ServerboundBedrockPackets.MOVE_PLAYER, this.user);
         this.writeMovementPacketToServer(movePlayer, mode);
         movePlayer.sendToServer(BedrockProtocol.class);
@@ -110,13 +110,13 @@ public class ClientPlayerEntity extends PlayerEntity {
         wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
         wrapper.write(BedrockTypes.POSITION_3F, this.position); // position
         wrapper.write(BedrockTypes.POSITION_3F, this.rotation); // rotation
-        wrapper.write(Type.UNSIGNED_BYTE, (short) mode.getValue()); // mode
-        wrapper.write(Type.BOOLEAN, this.onGround); // on ground
+        wrapper.write(Types.UNSIGNED_BYTE, (short) mode.getValue()); // mode
+        wrapper.write(Types.BOOLEAN, this.onGround); // on ground
         wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // riding runtime entity id
         wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // tick
     }
 
-    public void sendAuthInputPacketToServer(final ClientPlayMode playMode) throws Exception {
+    public void sendAuthInputPacketToServer(final ClientPlayMode playMode) {
         if (!this.prevOnGround && this.onGround) {
             this.prevOnGround = true;
             this.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
@@ -147,7 +147,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.authInput = 0;
     }
 
-    public void sendPlayerActionPacketToServer(final PlayerActionType action, final int face) throws Exception {
+    public void sendPlayerActionPacketToServer(final PlayerActionType action, final int face) {
         final PacketWrapper playerAction = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, this.user);
         playerAction.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
         playerAction.write(BedrockTypes.VAR_INT, action.getValue()); // action
@@ -157,7 +157,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         playerAction.sendToServer(BedrockProtocol.class);
     }
 
-    public void updatePlayerPosition(final PacketWrapper wrapper, final boolean onGround) throws Exception {
+    public void updatePlayerPosition(final PacketWrapper wrapper, final boolean onGround) {
         if (!this.preMove(null, false)) {
             wrapper.cancel();
             return;
@@ -172,7 +172,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
     }
 
-    public void updatePlayerPosition(final PacketWrapper wrapper, final double x, final double y, final double z, final boolean onGround) throws Exception {
+    public void updatePlayerPosition(final PacketWrapper wrapper, final double x, final double y, final double z, final boolean onGround) {
         final Position3f newPosition = new Position3f((float) x, (float) y + this.eyeOffset(), (float) z);
 
         if (!this.preMove(newPosition, false)) {
@@ -190,7 +190,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
     }
 
-    public void updatePlayerPosition(final PacketWrapper wrapper, final double x, final double y, final double z, final float yaw, final float pitch, final boolean onGround) throws Exception {
+    public void updatePlayerPosition(final PacketWrapper wrapper, final double x, final double y, final double z, final float yaw, final float pitch, final boolean onGround) {
         final Position3f newPosition = new Position3f((float) x, (float) y + this.eyeOffset(), (float) z);
         final Position3f newRotation = new Position3f(pitch, yaw, yaw);
 
@@ -210,7 +210,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
     }
 
-    public void updatePlayerPosition(final PacketWrapper wrapper, final float yaw, final float pitch, final boolean onGround) throws Exception {
+    public void updatePlayerPosition(final PacketWrapper wrapper, final float yaw, final float pitch, final boolean onGround) {
         final Position3f newRotation = new Position3f(pitch, yaw, yaw);
 
         if (!this.preMove(null, false)) {
@@ -228,7 +228,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
     }
 
-    public void confirmTeleport(final int teleportId) throws Exception {
+    public void confirmTeleport(final int teleportId) {
         if (teleportId < 0) { // Fake teleport
             if (this.pendingTeleportId == -teleportId) {
                 this.pendingTeleportId = 0;
@@ -305,7 +305,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         return this.pendingTeleportId = TELEPORT_ID.getAndIncrement();
     }
 
-    private boolean preMove(final Position3f newPosition, final boolean positionLook) throws Exception {
+    private boolean preMove(final Position3f newPosition, final boolean positionLook) {
         final ChunkTracker chunkTracker = this.user.get(ChunkTracker.class);
 
         // Waiting for position sync

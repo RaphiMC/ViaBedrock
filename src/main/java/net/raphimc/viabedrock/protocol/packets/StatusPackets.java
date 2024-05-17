@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.packets;
 
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.protocols.base.ClientboundStatusPackets;
@@ -35,8 +35,8 @@ public class StatusPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(State.STATUS, 28/*UNCONNECTED_PONG*/, ClientboundStatusPackets.STATUS_RESPONSE.getId(), wrapper -> {
-            final long ping = System.currentTimeMillis() - wrapper.read(Type.LONG); // timestamp
-            final String data = new String(wrapper.read(Type.REMAINING_BYTES), StandardCharsets.UTF_8); // data
+            final long ping = System.currentTimeMillis() - wrapper.read(Types.LONG); // timestamp
+            final String data = new String(wrapper.read(Types.REMAINING_BYTES), StandardCharsets.UTF_8); // data
             final String[] splitData = data.split(";");
 
             final JsonObject statusResponse = new JsonObject();
@@ -118,16 +118,16 @@ public class StatusPackets {
                     break;
             }
 
-            wrapper.write(Type.STRING, statusResponse.toString()); // status json
+            wrapper.write(Types.STRING, statusResponse.toString()); // status json
         });
 
         protocol.registerServerbound(State.STATUS, ServerboundStatusPackets.STATUS_REQUEST.getId(), 1/*UNCONNECTED_PING*/, wrapper -> {
-            wrapper.write(Type.LONG, System.nanoTime() / 1_000_000); // timestamp (system uptime)
+            wrapper.write(Types.LONG, System.nanoTime() / 1_000_000); // timestamp (system uptime)
         });
         protocol.registerServerbound(State.STATUS, ServerboundStatusPackets.PING_REQUEST.getId(), -1, wrapper -> {
             wrapper.cancel(); // Ping is added as a part of the player sample instead
             final PacketWrapper pongResponse = PacketWrapper.create(ClientboundStatusPackets.PONG_RESPONSE, wrapper.user());
-            pongResponse.write(Type.LONG, wrapper.read(Type.LONG)); // timestamp
+            pongResponse.write(Types.LONG, wrapper.read(Types.LONG)); // timestamp
             pongResponse.send(BedrockProtocol.class);
         });
     }

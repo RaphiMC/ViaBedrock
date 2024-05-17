@@ -17,13 +17,13 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.ByteTag;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntTag;
+import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 
@@ -34,8 +34,8 @@ public class BrushableBlockBlockEntityRewriter implements BlockEntityRewriter.Re
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("brush_direction") instanceof ByteTag) {
-            final byte brushDirection = bedrockTag.<ByteTag>get("brush_direction").asByte();
+        if (bedrockTag.get("brush_direction") instanceof ByteTag brushDirectionTag) {
+            final byte brushDirection = brushDirectionTag.asByte();
             if (brushDirection >= 0 && brushDirection <= 5) {
                 javaTag.put("hit_direction", new IntTag(brushDirection));
             }

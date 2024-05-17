@@ -17,12 +17,12 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntTag;
+import com.viaversion.nbt.tag.ShortTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ShortTag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
@@ -47,9 +47,9 @@ public class FlowerPotBlockEntityRewriter implements BlockEntityRewriter.Rewrite
 
         final BlockStateRewriter blockStateRewriter = user.get(BlockStateRewriter.class);
         final int bedrockBlockState;
-        if (bedrockTag.get("item") instanceof ShortTag && bedrockTag.get("mData") instanceof IntTag) {
-            final short id = bedrockTag.<ShortTag>get("item").asShort();
-            final int metadata = bedrockTag.<IntTag>get("mData").asInt();
+        if (bedrockTag.get("item") instanceof ShortTag itemTag && bedrockTag.get("mData") instanceof IntTag dataTag) {
+            final short id = itemTag.asShort();
+            final int metadata = dataTag.asInt();
             if (metadata < 0 || metadata > 15) return defaultJavaBlockEntity;
             final int legacyBlockStateId = (id << 4) | metadata;
 
@@ -58,11 +58,10 @@ public class FlowerPotBlockEntityRewriter implements BlockEntityRewriter.Rewrite
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + legacyBlockStateId);
                 return defaultJavaBlockEntity;
             }
-        } else if (bedrockTag.get("PlantBlock") instanceof CompoundTag) {
-            final CompoundTag blockTag = bedrockTag.get("PlantBlock");
-            bedrockBlockState = blockStateRewriter.bedrockId(blockTag);
+        } else if (bedrockTag.get("PlantBlock") instanceof CompoundTag plantBlockTag) {
+            bedrockBlockState = blockStateRewriter.bedrockId(plantBlockTag);
             if (bedrockBlockState == -1) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + blockTag);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + plantBlockTag);
                 return defaultJavaBlockEntity;
             }
         } else {

@@ -28,7 +28,7 @@ public class Position3fType extends Type<Position3f> {
     }
 
     @Override
-    public Position3f read(ByteBuf buffer) throws Exception {
+    public Position3f read(ByteBuf buffer) {
         final float x = buffer.readFloatLE();
         final float y = buffer.readFloatLE();
         final float z = buffer.readFloatLE();

@@ -22,6 +22,8 @@ import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.api.io.LittleEndianByteBufInputStream;
 import net.raphimc.viabedrock.api.io.LittleEndianByteBufOutputStream;
 
+import java.io.IOException;
+
 public class Utf8StringType extends Type<String> {
 
     public Utf8StringType() {
@@ -29,13 +31,21 @@ public class Utf8StringType extends Type<String> {
     }
 
     @Override
-    public String read(ByteBuf buffer) throws Exception {
-        return new LittleEndianByteBufInputStream(buffer).readUTF();
+    public String read(ByteBuf buffer) {
+        try {
+            return new LittleEndianByteBufInputStream(buffer).readUTF();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void write(ByteBuf buffer, String value) throws Exception {
-        new LittleEndianByteBufOutputStream(buffer).writeUTF(value);
+    public void write(ByteBuf buffer, String value) {
+        try {
+            new LittleEndianByteBufOutputStream(buffer).writeUTF(value);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

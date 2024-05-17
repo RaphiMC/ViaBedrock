@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.types.position;
 
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 
 public class SubChunkOffsetType extends Type<Position> {
@@ -28,19 +29,19 @@ public class SubChunkOffsetType extends Type<Position> {
     }
 
     @Override
-    public Position read(ByteBuf buffer) throws Exception {
-        final int x = Type.BYTE.readPrimitive(buffer);
-        final int y = Type.BYTE.readPrimitive(buffer);
-        final int z = Type.BYTE.readPrimitive(buffer);
+    public Position read(ByteBuf buffer) {
+        final int x = Types.BYTE.readPrimitive(buffer);
+        final int y = Types.BYTE.readPrimitive(buffer);
+        final int z = Types.BYTE.readPrimitive(buffer);
 
         return new Position(x, y, z);
     }
 
     @Override
     public void write(ByteBuf buffer, Position value) {
-        Type.BYTE.writePrimitive(buffer, (byte) value.x());
-        Type.BYTE.writePrimitive(buffer, (byte) value.y());
-        Type.BYTE.writePrimitive(buffer, (byte) value.z());
+        Types.BYTE.writePrimitive(buffer, (byte) value.x());
+        Types.BYTE.writePrimitive(buffer, (byte) value.y());
+        Types.BYTE.writePrimitive(buffer, (byte) value.z());
     }
 
 }

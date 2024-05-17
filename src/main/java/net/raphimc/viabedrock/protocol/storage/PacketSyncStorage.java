@@ -21,28 +21,27 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundConfigurationPackets1_20_5;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundConfigurationPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 public class PacketSyncStorage extends StoredObject {
 
     private final AtomicInteger ID = new AtomicInteger(0);
-    private final Int2ObjectMap<Callable<Void>> pendingActions = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<Runnable> pendingActions = new Int2ObjectOpenHashMap<>();
 
     public PacketSyncStorage(final UserConnection user) {
         super(user);
     }
 
-    public void syncWithClient(final Callable<Void> callable) throws Exception {
+    public void syncWithClient(final Runnable runnable) {
         if (ID.get() >= Short.MAX_VALUE) { // VB compatibility
             ID.set(0);
         }
@@ -50,18 +49,18 @@ public class PacketSyncStorage extends StoredObject {
 
         final State state = this.getUser().getProtocolInfo().getServerState();
         final PacketWrapper pingPacket = PacketWrapper.create(state == State.PLAY ? ClientboundPackets1_20_5.PING : ClientboundConfigurationPackets1_20_5.PING, this.getUser());
-        pingPacket.write(Type.INT, id); // parameter
+        pingPacket.write(Types.INT, id); // parameter
         pingPacket.send(BedrockProtocol.class);
 
-        if (this.pendingActions.put(id, callable) != null) {
+        if (this.pendingActions.put(id, runnable) != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Overwrote pending action with id " + id);
         }
     }
 
-    public void handleResponse(final int id) throws Exception {
-        final Callable<Void> callable = this.pendingActions.remove(id);
-        if (callable != null) {
-            callable.call();
+    public void handleResponse(final int id) {
+        final Runnable runnable = this.pendingActions.remove(id);
+        if (runnable != null) {
+            runnable.run();
         } else {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unexpected packet sync response with id " + id);
         }

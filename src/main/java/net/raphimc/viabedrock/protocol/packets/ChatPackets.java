@@ -24,9 +24,9 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
-import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ServerboundPackets1_20_5;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPackets1_20_5;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
@@ -55,12 +55,12 @@ public class ChatPackets {
     private static final PacketHandler CHAT_COMMAND_HANDLER = new PacketHandlers() {
         @Override
         protected void register() {
-            map(Type.STRING, BedrockTypes.STRING, c -> '/' + c); // command
+            map(Types.STRING, BedrockTypes.STRING, c -> '/' + c); // command
             handler(wrapper -> {
                 final UUID uuid = wrapper.user().getProtocolInfo().getUuid();
                 wrapper.write(BedrockTypes.COMMAND_ORIGIN_DATA, new CommandOriginData(CommandOriginType.Player, uuid, "")); // origin
             });
-            create(Type.BOOLEAN, false); // internal
+            create(Types.BOOLEAN, false); // internal
             create(BedrockTypes.VAR_INT, ProtocolConstants.BEDROCK_COMMAND_VERSION); // version
             handler(PacketWrapper::clearInputBuffer);
             handler(wrapper -> {
@@ -88,14 +88,14 @@ public class ChatPackets {
             @Override
             public void register() {
                 handler(wrapper -> {
-                    final short rawType = wrapper.read(Type.UNSIGNED_BYTE); // type
+                    final short rawType = wrapper.read(Types.UNSIGNED_BYTE); // type
                     final TextPacketType type = TextPacketType.getByValue(rawType);
                     if (type == null) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown text type: " + rawType);
                         wrapper.cancel();
                         return;
                     }
-                    final boolean needsTranslation = wrapper.read(Type.BOOLEAN); // needs translation
+                    final boolean needsTranslation = wrapper.read(Types.BOOLEAN); // needs translation
 
                     final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTranslationLookup();
                     String originalMessage = null;
@@ -116,8 +116,8 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, BedrockTranslator.translate("§7§o%commands.message.display.incoming", translator, new String[]{sourceName, message})}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
                                 }
 
-                                wrapper.write(Type.TAG, TextUtil.stringToNbt(message));
-                                wrapper.write(Type.BOOLEAN, false); // overlay
+                                wrapper.write(Types.TAG, TextUtil.stringToNbt(message));
+                                wrapper.write(Types.BOOLEAN, false); // overlay
                                 break;
                             }
                             case TextObjectWhisper:
@@ -133,8 +133,8 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
-                                wrapper.write(Type.TAG, TextUtil.stringToNbt(message)); // message
-                                wrapper.write(Type.BOOLEAN, false); // overlay
+                                wrapper.write(Types.TAG, TextUtil.stringToNbt(message)); // message
+                                wrapper.write(Types.BOOLEAN, false); // overlay
                                 break;
                             }
                             case Raw:
@@ -145,8 +145,8 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
-                                wrapper.write(Type.TAG, TextUtil.stringToNbt(message)); // message
-                                wrapper.write(Type.BOOLEAN, type == TextPacketType.Tip); // overlay
+                                wrapper.write(Types.TAG, TextUtil.stringToNbt(message)); // message
+                                wrapper.write(Types.BOOLEAN, type == TextPacketType.Tip); // overlay
                                 break;
                             }
                             case Translate:
@@ -158,8 +158,8 @@ public class ChatPackets {
                                     message = BedrockTranslator.translate(message, translator, parameters);
                                 }
 
-                                wrapper.write(Type.TAG, TextUtil.stringToNbt(message)); // message
-                                wrapper.write(Type.BOOLEAN, type == TextPacketType.Popup || type == TextPacketType.JukeboxPopup); // overlay
+                                wrapper.write(Types.TAG, TextUtil.stringToNbt(message)); // message
+                                wrapper.write(Types.BOOLEAN, type == TextPacketType.Popup || type == TextPacketType.JukeboxPopup); // overlay
                                 break;
                             }
                             default:
@@ -176,7 +176,7 @@ public class ChatPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_20_5.SYSTEM_CHAT, wrapper -> {
             final CommandOriginData originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN_DATA); // origin
-            final CommandOutputType type = CommandOutputType.getByValue(wrapper.read(Type.UNSIGNED_BYTE), CommandOutputType.None); // type
+            final CommandOutputType type = CommandOutputType.getByValue(wrapper.read(Types.UNSIGNED_BYTE), CommandOutputType.None); // type
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
 
             if (originData.type() != CommandOriginType.Player) { // Mojang client ignores non player origins
@@ -188,7 +188,7 @@ public class ChatPackets {
             final StringBuilder message = new StringBuilder();
             final int messageCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // message count
             for (int i = 0; i < messageCount; i++) {
-                final boolean internal = wrapper.read(Type.BOOLEAN); // is internal
+                final boolean internal = wrapper.read(Types.BOOLEAN); // is internal
                 final String messageId = wrapper.read(BedrockTypes.STRING); // message id
                 final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
 
@@ -202,15 +202,15 @@ public class ChatPackets {
                 wrapper.read(BedrockTypes.STRING); // data
             }
 
-            wrapper.write(Type.TAG, TextUtil.stringToNbt(message.toString()));
-            wrapper.write(Type.BOOLEAN, false); // overlay
+            wrapper.write(Types.TAG, TextUtil.stringToNbt(message.toString()));
+            wrapper.write(Types.BOOLEAN, false); // overlay
         });
         protocol.registerClientboundTransition(ClientboundBedrockPackets.AVAILABLE_COMMANDS,
                 State.CONFIGURATION, (PacketHandler) wrapper -> {
                     final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
                     wrapper.user().put(new CommandsStorage(wrapper.user(), commands));
                     wrapper.cancel(); // Will be sent in JoinPackets#handleGameJoin
-                }, ClientboundPackets1_20_5.DECLARE_COMMANDS, (PacketHandler) wrapper -> {
+                }, ClientboundPackets1_20_5.COMMANDS, (PacketHandler) wrapper -> {
                     final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
                     final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
                     wrapper.user().put(commandsStorage);
@@ -231,7 +231,7 @@ public class ChatPackets {
                 return;
             }
 
-            final byte rawAction = wrapper.read(Type.BYTE); // action
+            final byte rawAction = wrapper.read(Types.BYTE); // action
             final SoftEnumUpdateType action = SoftEnumUpdateType.getByValue(rawAction);
             if (action == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown dynamic enum action: " + rawAction);
@@ -254,13 +254,13 @@ public class ChatPackets {
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_20_5.CHAT_MESSAGE, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_20_5.CHAT, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
             @Override
             public void register() {
-                create(Type.UNSIGNED_BYTE, (short) TextPacketType.Chat.getValue()); // type
-                create(Type.BOOLEAN, false); // needs translation
+                create(Types.UNSIGNED_BYTE, (short) TextPacketType.Chat.getValue()); // type
+                create(Types.BOOLEAN, false); // needs translation
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(EntityTracker.class).getClientPlayer().name())); // source name
-                map(Type.STRING, BedrockTypes.STRING); // message
+                map(Types.STRING, BedrockTypes.STRING); // message
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(AuthChainData.class).getXuid())); // xuid
                 create(BedrockTypes.STRING, ""); // platform chat id
                 handler(PacketWrapper::clearInputBuffer);
@@ -275,30 +275,30 @@ public class ChatPackets {
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, CHAT_COMMAND_HANDLER);
         protocol.registerServerbound(ServerboundPackets1_20_5.CHAT_COMMAND_SIGNED, ServerboundBedrockPackets.COMMAND_REQUEST, CHAT_COMMAND_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_20_5.TAB_COMPLETE, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_20_5.COMMAND_SUGGESTION, null, wrapper -> {
             wrapper.cancel();
             final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
             if (commandsStorage == null) return;
 
-            final int id = wrapper.read(Type.VAR_INT); // transaction id
-            final String command = wrapper.read(Type.STRING); // command
+            final int id = wrapper.read(Types.VAR_INT); // transaction id
+            final String command = wrapper.read(Types.STRING); // command
             if (!command.startsWith("/")) {
                 return;
             }
 
             final Suggestions suggestions = commandsStorage.complete(command);
 
-            final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets1_20_5.TAB_COMPLETE, wrapper.user());
-            tabComplete.write(Type.VAR_INT, id); // transaction id
-            tabComplete.write(Type.VAR_INT, suggestions.getRange().getStart()); // start index
-            tabComplete.write(Type.VAR_INT, suggestions.getRange().getLength()); // length
-            tabComplete.write(Type.VAR_INT, suggestions.getList().size()); // count
+            final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets1_20_5.COMMAND_SUGGESTIONS, wrapper.user());
+            tabComplete.write(Types.VAR_INT, id); // transaction id
+            tabComplete.write(Types.VAR_INT, suggestions.getRange().getStart()); // start index
+            tabComplete.write(Types.VAR_INT, suggestions.getRange().getLength()); // length
+            tabComplete.write(Types.VAR_INT, suggestions.getList().size()); // count
             for (Suggestion suggestion : suggestions.getList()) {
-                tabComplete.write(Type.STRING, suggestion.getText()); // text
+                tabComplete.write(Types.STRING, suggestion.getText()); // text
                 if (suggestion.getTooltip() != null) {
-                    tabComplete.write(Type.OPTIONAL_TAG, TextUtil.stringToNbt(suggestion.getTooltip().getString())); // tooltip
+                    tabComplete.write(Types.OPTIONAL_TAG, TextUtil.stringToNbt(suggestion.getTooltip().getString())); // tooltip
                 } else {
-                    tabComplete.write(Type.OPTIONAL_TAG, null); // tooltip
+                    tabComplete.write(Types.OPTIONAL_TAG, null); // tooltip
                 }
             }
             tabComplete.send(BedrockProtocol.class);

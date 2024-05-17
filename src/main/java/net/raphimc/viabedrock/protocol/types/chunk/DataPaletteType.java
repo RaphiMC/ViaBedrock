@@ -17,11 +17,11 @@
  */
 package net.raphimc.viabedrock.protocol.types.chunk;
 
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.IntArrayList;
 import com.viaversion.viaversion.libs.fastutil.ints.IntList;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.api.chunk.bitarray.BitArray;
 import net.raphimc.viabedrock.api.chunk.bitarray.BitArrayVersion;
@@ -44,7 +44,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
     }
 
     @Override
-    public BedrockDataPalette read(ByteBuf buffer) throws Exception {
+    public BedrockDataPalette read(ByteBuf buffer) {
         final short header = buffer.readUnsignedByte();
         final int bitArrayVersion = header >> 1;
         final boolean isRuntime = (header & 1) != 0 || !this.allowPersistentIds;
@@ -79,7 +79,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
     }
 
     @Override
-    public void write(ByteBuf buffer, BedrockDataPalette value) throws Exception {
+    public void write(ByteBuf buffer, BedrockDataPalette value) {
         if (value == null) {
             buffer.writeByte(127 << 1);
             return;

@@ -53,7 +53,7 @@ public class Entity {
         this.type = type;
     }
 
-    public void tick() throws Exception {
+    public void tick() {
         this.age++;
     }
 

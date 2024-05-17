@@ -17,12 +17,12 @@
  */
 package net.raphimc.viabedrock.api.chunk.datapalette;
 
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 import com.viaversion.viaversion.libs.fastutil.ints.IntArrayList;
 import com.viaversion.viaversion.libs.fastutil.ints.IntList;
 import com.viaversion.viaversion.libs.fastutil.objects.Object2IntFunction;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.raphimc.viabedrock.api.chunk.bitarray.BitArray;
 import net.raphimc.viabedrock.api.chunk.bitarray.BitArrayVersion;
 

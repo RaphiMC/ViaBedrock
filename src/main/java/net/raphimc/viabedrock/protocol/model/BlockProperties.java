@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
+import com.viaversion.nbt.tag.CompoundTag;
 
 import java.util.Objects;
 

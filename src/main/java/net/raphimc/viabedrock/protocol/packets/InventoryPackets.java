@@ -17,15 +17,15 @@
  */
 package net.raphimc.viabedrock.protocol.packets;
 
+import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.components.TranslationComponent;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ServerboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPackets1_20_5;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
 import net.lenni0451.mcstructs_bedrock.forms.serializer.FormSerializer;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -55,9 +55,9 @@ import java.util.logging.Level;
 public class InventoryPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_20_5.OPEN_WINDOW, wrapper -> {
-            final byte windowId = wrapper.read(Type.BYTE); // window id
-            final byte rawType = wrapper.read(Type.BYTE); // type
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_20_5.OPEN_SCREEN, wrapper -> {
+            final byte windowId = wrapper.read(Types.BYTE); // window id
+            final byte rawType = wrapper.read(Types.BYTE); // type
             final Position position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
             wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
             final ContainerType type = ContainerType.getByValue(rawType);
@@ -83,23 +83,23 @@ public class InventoryPackets {
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final BedrockBlockEntity blockEntity = chunkTracker.getBlockEntity(position);
             ATextComponent title = new TranslationComponent("container." + blockStateRewriter.tag(chunkTracker.getBlockState(position)));
-            if (blockEntity != null && blockEntity.tag().get("CustomName") instanceof StringTag) {
-                title = TextUtil.stringToComponent(wrapper.user().get(ResourcePacksStorage.class).translate(blockEntity.tag().<StringTag>get("CustomName").getValue()));
+            if (blockEntity != null && blockEntity.tag().get("CustomName") instanceof StringTag customNameTag) {
+                title = TextUtil.stringToComponent(wrapper.user().get(ResourcePacksStorage.class).translate(customNameTag.getValue()));
             }
 
             final Container container = menuType.createContainer(windowId);
             inventoryTracker.trackContainer(position, container);
 
-            wrapper.write(Type.VAR_INT, (int) windowId); // window id
-            wrapper.write(Type.VAR_INT, menuType.javaMenuTypeId()); // type
-            wrapper.write(Type.TAG, TextUtil.componentToNbt(title)); // title
+            wrapper.write(Types.VAR_INT, (int) windowId); // window id
+            wrapper.write(Types.VAR_INT, menuType.javaMenuTypeId()); // type
+            wrapper.write(Types.TAG, TextUtil.componentToNbt(title)); // title
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_20_5.CLOSE_WINDOW, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_20_5.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
             protected void register() {
-                map(Type.BYTE, Type.UNSIGNED_BYTE); // window id
+                map(Types.BYTE, Types.UNSIGNED_BYTE); // window id
                 handler(wrapper -> {
-                    final boolean serverInitiated = wrapper.read(Type.BOOLEAN); // server initiated
+                    final boolean serverInitiated = wrapper.read(Types.BOOLEAN); // server initiated
                     final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
                     final Container container = serverInitiated ? inventoryTracker.getCurrentContainer() : inventoryTracker.getPendingCloseContainer();
                     if (container != null) {
@@ -117,7 +117,7 @@ public class InventoryPackets {
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_20_5.WINDOW_ITEMS, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_20_5.CONTAINER_SET_CONTENT, wrapper -> {
             final int windowId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // window id
             final BedrockItem[] items = wrapper.read(wrapper.user().get(ItemRewriter.class).itemArrayType()); // items
 
@@ -159,26 +159,26 @@ public class InventoryPackets {
             Via.getManager().getProviders().get(FormProvider.class).openModalForm(wrapper.user(), id, form);
         });
 
-        protocol.registerServerbound(ServerboundPackets1_20_5.CLICK_WINDOW, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_20_5.CONTAINER_CLICK, null, wrapper -> {
             wrapper.cancel();
-            final byte windowId = wrapper.read(Type.UNSIGNED_BYTE).byteValue(); // window id
-            final int revision = wrapper.read(Type.VAR_INT); // revision
-            final short slot = wrapper.read(Type.SHORT); // slot
-            final byte button = wrapper.read(Type.BYTE); // button
-            final ClickType action = ClickType.values()[wrapper.read(Type.VAR_INT)]; // action
+            final byte windowId = wrapper.read(Types.UNSIGNED_BYTE).byteValue(); // window id
+            final int revision = wrapper.read(Types.VAR_INT); // revision
+            final short slot = wrapper.read(Types.SHORT); // slot
+            final byte button = wrapper.read(Types.BYTE); // button
+            final ClickType action = ClickType.values()[wrapper.read(Types.VAR_INT)]; // action
 
             wrapper.user().get(InventoryTracker.class).handleWindowClick(windowId, revision, slot, button, action);
         });
-        protocol.registerServerbound(ServerboundPackets1_20_5.CLOSE_WINDOW, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_20_5.CONTAINER_CLOSE, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
             protected void register() {
-                map(Type.UNSIGNED_BYTE, Type.BYTE); // window id
-                create(Type.BOOLEAN, false); // server initiated
+                map(Types.UNSIGNED_BYTE, Types.BYTE); // window id
+                create(Types.BOOLEAN, false); // server initiated
                 handler(wrapper -> {
                     final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-                    if (wrapper.get(Type.BYTE, 0) == ContainerID.CONTAINER_ID_INVENTORY.getValue()) {
+                    if (wrapper.get(Types.BYTE, 0) == ContainerID.CONTAINER_ID_INVENTORY.getValue()) {
                         if (inventoryTracker.getCurrentContainer() != null) {
-                            wrapper.set(Type.BYTE, 0, inventoryTracker.getCurrentContainer().windowId());
+                            wrapper.set(Types.BYTE, 0, inventoryTracker.getCurrentContainer().windowId());
                         } else {
                             wrapper.cancel();
                             return;
@@ -193,7 +193,7 @@ public class InventoryPackets {
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.RENAME_ITEM, null, wrapper -> {
             wrapper.cancel();
-            final String name = wrapper.read(Type.STRING); // name
+            final String name = wrapper.read(Types.STRING); // name
             final FakeContainer fakeContainer = wrapper.user().get(InventoryTracker.class).getCurrentFakeContainer();
             if (fakeContainer != null) {
                 fakeContainer.onAnvilRename(name);

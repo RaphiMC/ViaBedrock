@@ -33,7 +33,7 @@ public class ChunkSectionType extends Type<BedrockChunkSection> {
     }
 
     @Override
-    public BedrockChunkSection read(ByteBuf buffer) throws Exception {
+    public BedrockChunkSection read(ByteBuf buffer) {
         final byte version = buffer.readByte(); // version
 
         switch (version) {
@@ -57,7 +57,7 @@ public class ChunkSectionType extends Type<BedrockChunkSection> {
     }
 
     @Override
-    public void write(ByteBuf buffer, BedrockChunkSection value) throws Exception {
+    public void write(ByteBuf buffer, BedrockChunkSection value) {
         throw new UnsupportedOperationException("Cannot serialize ChunkSectionType");
     }
 

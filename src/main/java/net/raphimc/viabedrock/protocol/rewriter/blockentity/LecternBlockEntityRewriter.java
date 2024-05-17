@@ -17,12 +17,12 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.ByteTag;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
@@ -36,7 +36,7 @@ public class LecternBlockEntityRewriter implements BlockEntityRewriter.Rewriter 
         final CompoundTag javaTag = new CompoundTag();
 
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
-        if (bedrockTag.get("hasBook") instanceof ByteTag && bedrockTag.<ByteTag>get("hasBook").asByte() != 0) {
+        if (bedrockTag.get("hasBook") instanceof ByteTag hasBookTag && hasBookTag.asByte() != 0) {
             this.copyItem(user, bedrockTag, javaTag, "book", "Book");
             this.copy(bedrockTag, javaTag, "page", "Page", IntTag.class);
             javaBlockState -= 2;

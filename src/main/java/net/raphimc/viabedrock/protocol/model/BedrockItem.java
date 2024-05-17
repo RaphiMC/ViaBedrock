@@ -17,9 +17,9 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.minecraft.item.Item;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 
 import java.util.Arrays;
 import java.util.Objects;

@@ -18,12 +18,12 @@
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
 import com.google.common.collect.ImmutableMap;
+import com.viaversion.nbt.tag.ByteTag;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.FloatTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.FloatTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
@@ -64,15 +64,15 @@ public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
 
-        byte type = bedrockTag.get("SkullType") instanceof ByteTag ? bedrockTag.<ByteTag>get("SkullType").asByte() : 0;
+        byte type = bedrockTag.get("SkullType") instanceof ByteTag skullTypeTag ? skullTypeTag.asByte() : 0;
         if (type < 0 || type > MAX_TYPE) type = PLAYER_HEAD_TYPE;
 
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
         if (javaBlockState == SKULL_WITH_ROTATION_UPDATE) {
-            if (bedrockTag.get("Rot") instanceof ByteTag) {
-                javaBlockState += this.convertRot(bedrockTag.<ByteTag>get("Rot").asByte());
-            } else if (bedrockTag.get("Rotation") instanceof FloatTag) {
-                javaBlockState += this.convertRotation(bedrockTag.<FloatTag>get("Rotation").asFloat());
+            if (bedrockTag.get("Rot") instanceof ByteTag rotTag) {
+                javaBlockState += this.convertRot(rotTag.asByte());
+            } else if (bedrockTag.get("Rotation") instanceof FloatTag rotationTag) {
+                javaBlockState += this.convertRotation(rotationTag.asFloat());
             }
         }
         javaBlockState += type * SKULL_BLOCK_STATE_COUNT;

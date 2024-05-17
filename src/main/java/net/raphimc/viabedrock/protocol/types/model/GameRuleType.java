@@ -32,7 +32,7 @@ public class GameRuleType extends Type<GameRule<?>> {
     }
 
     @Override
-    public GameRule<?> read(ByteBuf buffer) throws Exception {
+    public GameRule<?> read(ByteBuf buffer) {
         final String name = BedrockTypes.STRING.read(buffer);
         final boolean editable = buffer.readBoolean();
         final int type = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
@@ -51,7 +51,7 @@ public class GameRuleType extends Type<GameRule<?>> {
     }
 
     @Override
-    public void write(ByteBuf buffer, GameRule value) throws Exception {
+    public void write(ByteBuf buffer, GameRule value) {
         BedrockTypes.STRING.write(buffer, value.name());
         buffer.writeBoolean(value.editable());
         final Class<?> type = value.value() == null ? null : value.value().getClass();

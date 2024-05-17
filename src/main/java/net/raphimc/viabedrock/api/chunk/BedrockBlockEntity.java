@@ -17,10 +17,10 @@
  */
 package net.raphimc.viabedrock.api.chunk;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntTag;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
 
 public class BedrockBlockEntity implements BlockEntity {
 

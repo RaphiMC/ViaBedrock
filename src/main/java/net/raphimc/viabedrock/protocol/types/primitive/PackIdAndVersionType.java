@@ -33,7 +33,7 @@ public class PackIdAndVersionType extends Type<Pair<UUID, String>> {
     }
 
     @Override
-    public Pair<UUID, String> read(ByteBuf buffer) throws Exception {
+    public Pair<UUID, String> read(ByteBuf buffer) {
         final String packIdAndVersion = BedrockTypes.STRING.read(buffer); // id and version
         final String[] packIdAndVersionSplit = packIdAndVersion.split("_", 2);
         final String packId = packIdAndVersionSplit[0];
@@ -51,7 +51,7 @@ public class PackIdAndVersionType extends Type<Pair<UUID, String>> {
     }
 
     @Override
-    public void write(ByteBuf buffer, Pair<UUID, String> value) throws Exception {
+    public void write(ByteBuf buffer, Pair<UUID, String> value) {
         BedrockTypes.STRING.write(buffer, value.key().toString() + (value.value() != null ? ("_" + value.value()) : ""));
     }
 

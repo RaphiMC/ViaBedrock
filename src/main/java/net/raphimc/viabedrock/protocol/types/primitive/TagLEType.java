@@ -17,14 +17,16 @@
  */
 package net.raphimc.viabedrock.protocol.types.primitive;
 
+import com.viaversion.nbt.io.TagRegistry;
+import com.viaversion.nbt.limiter.TagLimiter;
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.opennbt.tag.TagRegistry;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
-import com.viaversion.viaversion.libs.opennbt.tag.limiter.TagLimiter;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.api.io.LittleEndianByteBufInputStream;
 import net.raphimc.viabedrock.api.io.LittleEndianByteBufOutputStream;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+
+import java.io.IOException;
 
 public class TagLEType extends Type<Tag> {
 
@@ -33,16 +35,20 @@ public class TagLEType extends Type<Tag> {
     }
 
     @Override
-    public Tag read(ByteBuf buffer) throws Exception {
+    public Tag read(ByteBuf buffer) {
         final short id = buffer.readUnsignedByte();
         BedrockTypes.UTF8_STRING.read(buffer);
         if (id == 0) return null;
 
-        return TagRegistry.read(id, new LittleEndianByteBufInputStream(buffer), TagLimiter.noop(), 0);
+        try {
+            return TagRegistry.read(id, new LittleEndianByteBufInputStream(buffer), TagLimiter.noop(), 0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void write(ByteBuf buffer, Tag value) throws Exception {
+    public void write(ByteBuf buffer, Tag value) {
         if (value == null) {
             buffer.writeByte(0);
             BedrockTypes.UTF8_STRING.write(buffer, "");
@@ -51,7 +57,11 @@ public class TagLEType extends Type<Tag> {
 
         buffer.writeByte(value.getTagId());
         BedrockTypes.UTF8_STRING.write(buffer, "");
-        value.write(new LittleEndianByteBufOutputStream(buffer));
+        try {
+            value.write(new LittleEndianByteBufOutputStream(buffer));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

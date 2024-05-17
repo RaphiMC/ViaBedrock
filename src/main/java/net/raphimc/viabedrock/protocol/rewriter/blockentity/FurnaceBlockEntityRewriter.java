@@ -17,10 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.ShortTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ShortTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 
 public class FurnaceBlockEntityRewriter extends NamedBlockEntityRewriter {

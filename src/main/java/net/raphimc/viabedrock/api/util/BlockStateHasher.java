@@ -17,8 +17,7 @@
  */
 package net.raphimc.viabedrock.api.util;
 
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.util.Key;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -30,14 +29,14 @@ import java.util.TreeMap;
 public class BlockStateHasher {
 
     public static int hash(final CompoundTag blockStateTag) {
-        final String name = Key.namespaced(blockStateTag.<StringTag>get("name").getValue());
+        final String name = Key.namespaced(blockStateTag.getStringTag("name").getValue());
         if (name.equals("minecraft:unknown")) {
             return -2;
         }
 
         final CompoundTag cleanedBlockStateTag = new CompoundTag();
         cleanedBlockStateTag.put("name", blockStateTag.get("name"));
-        cleanedBlockStateTag.put("states", new CompoundTag(new TreeMap<>(blockStateTag.<CompoundTag>get("states").getValue())));
+        cleanedBlockStateTag.put("states", new CompoundTag(new TreeMap<>(blockStateTag.getCompoundTag("states").getValue())));
 
         final ByteBuf byteBuf = Unpooled.buffer();
         try {

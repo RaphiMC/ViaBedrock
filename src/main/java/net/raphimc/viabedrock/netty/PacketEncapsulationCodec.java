@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.netty;
 
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
@@ -29,7 +29,7 @@ public class PacketEncapsulationCodec extends ByteToMessageCodec<ByteBuf> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
-        final int packetId = Type.VAR_INT.readPrimitive(in);
+        final int packetId = Types.VAR_INT.readPrimitive(in);
         final int header = packetId & 1023;
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(out, header);
         out.writeBytes(in);
@@ -47,7 +47,7 @@ public class PacketEncapsulationCodec extends ByteToMessageCodec<ByteBuf> {
         }
 
         final ByteBuf packet = ctx.alloc().buffer();
-        Type.VAR_INT.writePrimitive(packet, packetId);
+        Types.VAR_INT.writePrimitive(packet, packetId);
         packet.writeBytes(in);
         out.add(packet);
     }

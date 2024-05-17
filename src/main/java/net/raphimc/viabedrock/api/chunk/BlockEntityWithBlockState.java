@@ -17,9 +17,9 @@
  */
 package net.raphimc.viabedrock.api.chunk;
 
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 
 public class BlockEntityWithBlockState implements BlockEntity {
 

@@ -17,10 +17,10 @@
  */
 package net.raphimc.viabedrock.api.chunk;
 
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.chunks.Chunk1_18;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 
 import java.util.ArrayList;

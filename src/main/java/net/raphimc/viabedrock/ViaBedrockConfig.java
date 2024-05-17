@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.platform.ViaBedrockConfig {
 
@@ -34,8 +35,8 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
     private String resourcePackUrl;
     private PackCacheMode packCacheMode;
 
-    public ViaBedrockConfig(final File configFile) {
-        super(configFile);
+    public ViaBedrockConfig(final File configFile, final Logger logger) {
+        super(configFile, logger);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class SkinType extends Type<SkinData> {
     }
 
     @Override
-    public SkinData read(ByteBuf buffer) throws Exception {
+    public SkinData read(ByteBuf buffer) {
         final String skinId = BedrockTypes.STRING.read(buffer);
         final String playFabId = BedrockTypes.STRING.read(buffer);
         final String skinResourcePatch = BedrockTypes.STRING.read(buffer);
@@ -91,7 +91,7 @@ public class SkinType extends Type<SkinData> {
     }
 
     @Override
-    public void write(ByteBuf buffer, SkinData value) throws Exception {
+    public void write(ByteBuf buffer, SkinData value) {
         BedrockTypes.STRING.write(buffer, value.skinId());
         BedrockTypes.STRING.write(buffer, value.playFabId());
         BedrockTypes.STRING.write(buffer, value.skinResourcePatch());

@@ -17,11 +17,11 @@
  */
 package net.raphimc.viabedrock.api.util;
 
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.serializer.LegacyStringDeserializer;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 

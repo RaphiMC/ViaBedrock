@@ -94,7 +94,7 @@ public class SkinProvider implements Provider {
         return claims;
     }
 
-    public void setSkin(final UserConnection user, final UUID playerUuid, final SkinData skin) throws Exception {
+    public void setSkin(final UserConnection user, final UUID playerUuid, final SkinData skin) {
         final ChannelStorage channelStorage = user.get(ChannelStorage.class);
         if (channelStorage.hasChannel(BedrockSkinUtilityInterface.CHANNEL)) {
             BedrockSkinUtilityInterface.sendSkin(user, playerUuid, skin);

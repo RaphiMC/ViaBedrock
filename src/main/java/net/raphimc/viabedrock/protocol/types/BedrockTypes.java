@@ -17,11 +17,11 @@
  */
 package net.raphimc.viabedrock.protocol.types;
 
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.minecraft.Position;
-import com.viaversion.viaversion.api.minecraft.metadata.Metadata;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
 import io.netty.util.AsciiString;
@@ -98,8 +98,8 @@ public class BedrockTypes {
     public static final Type<BlockChangeEntry[]> BLOCK_CHANGE_ENTRY_ARRAY = new ArrayType<>(BLOCK_CHANGE_ENTRY, UNSIGNED_VAR_INT);
     public static final Type<BedrockDataPalette> DATA_PALETTE = new DataPaletteType(true);
     public static final Type<BedrockDataPalette> RUNTIME_DATA_PALETTE = new DataPaletteType(false);
-    public static final Type<Metadata> METADATA = new MetadataType();
-    public static final Type<Metadata[]> METADATA_ARRAY = new ArrayType<>(METADATA, UNSIGNED_VAR_INT);
+    public static final Type<EntityData> METADATA = new MetadataType();
+    public static final Type<EntityData[]> METADATA_ARRAY = new ArrayType<>(METADATA, UNSIGNED_VAR_INT);
     public static final Type<SkinData> SKIN = new SkinType();
     public static final Type<Int2IntMap> INT_PROPERTIES = new IntPropertiesType();
     public static final Type<Map<Integer, Float>> FLOAT_PROPERTIES = new FloatPropertiesType();

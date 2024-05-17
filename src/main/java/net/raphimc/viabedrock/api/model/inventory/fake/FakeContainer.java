@@ -19,9 +19,9 @@ package net.raphimc.viabedrock.api.model.inventory.fake;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
@@ -53,12 +53,12 @@ public abstract class FakeContainer extends Container {
     public void onAnvilRename(final String name) {
     }
 
-    public void onClosed() throws Exception {
+    public void onClosed() {
     }
 
-    protected void close() throws Exception {
-        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_20_5.CLOSE_WINDOW, this.user);
-        closeWindow.write(Type.UNSIGNED_BYTE, (short) this.windowId); // window id
+    protected void close() {
+        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_20_5.CONTAINER_CLOSE, this.user);
+        closeWindow.write(Types.UNSIGNED_BYTE, (short) this.windowId); // window id
         closeWindow.send(BedrockProtocol.class);
 
         if (this.user.get(InventoryTracker.class).markPendingClose(false)) {

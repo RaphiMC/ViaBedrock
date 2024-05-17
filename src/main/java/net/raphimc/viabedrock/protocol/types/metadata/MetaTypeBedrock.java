@@ -17,13 +17,14 @@
  */
 package net.raphimc.viabedrock.protocol.types.metadata;
 
-import com.viaversion.viaversion.api.minecraft.metadata.MetaType;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityDataType;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public enum MetaTypeBedrock implements MetaType {
+public enum MetaTypeBedrock implements EntityDataType {
 
-    BYTE(0, Type.BYTE),
+    BYTE(0, Types.BYTE),
     SHORT(1, BedrockTypes.SHORT_LE),
     INT(2, BedrockTypes.VAR_INT),
     FLOAT(3, BedrockTypes.FLOAT_LE),

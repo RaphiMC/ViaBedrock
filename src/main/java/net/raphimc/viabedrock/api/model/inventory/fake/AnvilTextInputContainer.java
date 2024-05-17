@@ -43,7 +43,7 @@ public class AnvilTextInputContainer extends FakeContainer {
     }
 
     @Override
-    public void onClosed() throws Exception {
+    public void onClosed() {
         this.user.get(InventoryTracker.class).openFakeContainer(this.parent);
     }
 

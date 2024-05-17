@@ -17,11 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.protocol.data.enums.DyeColor;
@@ -34,7 +33,7 @@ public class BedBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
 
-        final DyeColor color = DyeColor.getByJavaId(bedrockTag.get("color") instanceof ByteTag ? bedrockTag.<ByteTag>get("color").asByte() : -1, DyeColor.RED);
+        final DyeColor color = DyeColor.getByJavaId(bedrockTag.getByte("color", (byte) -1), DyeColor.RED);
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
         javaBlockState += color.javaId() * 16;
 

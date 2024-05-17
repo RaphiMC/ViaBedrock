@@ -24,13 +24,14 @@ import com.viaversion.viaversion.api.protocol.packet.Direction;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.exception.CancelException;
+import com.viaversion.viaversion.exception.InformativeException;
 import com.viaversion.viaversion.protocol.packet.PacketWrapperImpl;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundConfigurationPackets1_20_5;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ServerboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundConfigurationPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPackets1_20_5;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -153,7 +154,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     }
 
     @Override
-    public void transform(Direction direction, State state, PacketWrapper wrapper) throws Exception {
+    public void transform(Direction direction, State state, PacketWrapper wrapper) throws InformativeException, CancelException {
         if (direction == Direction.CLIENTBOUND && state != State.STATUS) {
             State serverState = wrapper.user().getProtocolInfo().getServerState();
             final ClientboundBedrockPackets packet = ClientboundBedrockPackets.getPacket(wrapper.getId());
@@ -165,7 +166,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
             if (serverState == State.LOGIN && !LOGIN_STATE_WHITELIST.contains(packet)) { // Mojang client can skip the login state
                 ViaBedrock.getPlatform().getLogger().warning("Server skipped LOGIN state");
                 final PacketWrapper playStatus = PacketWrapper.create(ClientboundBedrockPackets.PLAY_STATUS, wrapper.user());
-                playStatus.write(Type.INT, PlayStatus.LoginSuccess.getValue()); // status
+                playStatus.write(Types.INT, PlayStatus.LoginSuccess.getValue()); // status
                 playStatus.send(BedrockProtocol.class, false);
                 wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
                 serverState = State.CONFIGURATION;

@@ -33,7 +33,7 @@ public class PackIdAndVersionAndNameType extends Type<Triple<UUID, String, Strin
     }
 
     @Override
-    public Triple<UUID, String, String> read(ByteBuf buffer) throws Exception {
+    public Triple<UUID, String, String> read(ByteBuf buffer) {
         final String packId = BedrockTypes.STRING.read(buffer); // pack id
         final String packVersion = BedrockTypes.STRING.read(buffer); // pack version
 
@@ -50,7 +50,7 @@ public class PackIdAndVersionAndNameType extends Type<Triple<UUID, String, Strin
     }
 
     @Override
-    public void write(ByteBuf buffer, Triple<UUID, String, String> value) throws Exception {
+    public void write(ByteBuf buffer, Triple<UUID, String, String> value) {
         BedrockTypes.STRING.write(buffer, value.first().toString()); // pack id
         BedrockTypes.STRING.write(buffer, value.second()); // pack version
         BedrockTypes.STRING.write(buffer, value.third()); // pack name

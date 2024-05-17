@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.google.common.collect.Sets;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandRegistry_HardNonTerminal;
 import net.raphimc.viabedrock.protocol.model.CommandData;
@@ -40,14 +41,14 @@ public class CommandDataArrayType extends Type<CommandData[]> {
     }
 
     @Override
-    public CommandData[] read(ByteBuf buffer) throws Exception {
+    public CommandData[] read(ByteBuf buffer) {
         final String[] enumLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // enum literals
         final String[] subCommandLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // sub command literals
         final String[] postFixLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // post fix literals
 
         final Type<? extends Number> indexType;
         if (enumLiterals.length <= 255) {
-            indexType = Type.UNSIGNED_BYTE;
+            indexType = Types.UNSIGNED_BYTE;
         } else if (enumLiterals.length <= 65535) {
             indexType = BedrockTypes.UNSIGNED_SHORT_LE;
         } else {
@@ -221,7 +222,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
     }
 
     @Override
-    public void write(ByteBuf buffer, CommandData[] value) throws Exception {
+    public void write(ByteBuf buffer, CommandData[] value) {
         throw new UnsupportedOperationException("Cannot serialize CommandDataArrayType");
     }
 

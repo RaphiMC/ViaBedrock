@@ -37,8 +37,8 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
@@ -95,10 +95,10 @@ public class CommandsStorage extends StoredObject {
         this.buildCommandTree();
     }
 
-    public void updateCommandTree() throws Exception {
+    public void updateCommandTree() {
         this.buildCommandTree();
 
-        final PacketWrapper declareCommands = PacketWrapper.create(ClientboundPackets1_20_5.DECLARE_COMMANDS, this.getUser());
+        final PacketWrapper declareCommands = PacketWrapper.create(ClientboundPackets1_20_5.COMMANDS, this.getUser());
         this.writeCommandTree(declareCommands);
         declareCommands.send(BedrockProtocol.class);
     }
@@ -109,7 +109,7 @@ public class CommandsStorage extends StoredObject {
         final List<CommandNode<UserConnection>> nodes = new ArrayList<>(nodeIndices.keySet());
         nodes.sort(Comparator.comparingInt(nodeIndices::get));
 
-        wrapper.write(Type.VAR_INT, nodes.size()); // node count
+        wrapper.write(Types.VAR_INT, nodes.size()); // node count
         for (CommandNode<UserConnection> node : nodes) {
             byte flags = 0;
             if (node.getRedirect() != null) {
@@ -131,29 +131,29 @@ public class CommandsStorage extends StoredObject {
                 throw new UnsupportedOperationException("Unsupported node type: " + node.getClass().getName());
             }
 
-            wrapper.write(Type.BYTE, flags); // flags
-            wrapper.write(Type.VAR_INT_ARRAY_PRIMITIVE, node.getChildren().stream().mapToInt(nodeIndices::get).toArray()); // children node indices
+            wrapper.write(Types.BYTE, flags); // flags
+            wrapper.write(Types.VAR_INT_ARRAY_PRIMITIVE, node.getChildren().stream().mapToInt(nodeIndices::get).toArray()); // children node indices
             if (node.getRedirect() != null) {
-                wrapper.write(Type.VAR_INT, nodeIndices.get(node.getRedirect())); // redirect node index
+                wrapper.write(Types.VAR_INT, nodeIndices.get(node.getRedirect())); // redirect node index
             }
 
             if (node instanceof LiteralCommandNode) {
                 final LiteralCommandNode<UserConnection> literalCommandNode = (LiteralCommandNode<UserConnection>) node;
-                wrapper.write(Type.STRING, literalCommandNode.getLiteral()); // literal name
+                wrapper.write(Types.STRING, literalCommandNode.getLiteral()); // literal name
             } else if (node instanceof ArgumentCommandNode) {
                 final ArgumentCommandNode<UserConnection, ?> argumentCommandNode = (ArgumentCommandNode<UserConnection, ?>) node;
                 final ArgumentTypeRegistry.ArgumentTypeMapping mapping = ArgumentTypeRegistry.getArgumentTypeMapping(argumentCommandNode.getType());
-                wrapper.write(Type.STRING, argumentCommandNode.getName()); // argument name
-                wrapper.write(Type.VAR_INT, mapping.id()); // argument type
+                wrapper.write(Types.STRING, argumentCommandNode.getName()); // argument name
+                wrapper.write(Types.VAR_INT, mapping.id()); // argument type
                 if (mapping.writer() != null) {
                     mapping.writer().accept(wrapper, argumentCommandNode.getType()); // argument data
                 }
                 if (argumentCommandNode.getCustomSuggestions() != null) {
-                    wrapper.write(Type.STRING, ASK_SERVER_SUGGESTION_TYPE); // custom suggestions type
+                    wrapper.write(Types.STRING, ASK_SERVER_SUGGESTION_TYPE); // custom suggestions type
                 }
             }
         }
-        wrapper.write(Type.VAR_INT, nodeIndices.get(root)); // root node index
+        wrapper.write(Types.VAR_INT, nodeIndices.get(root)); // root node index
     }
 
     public Suggestions complete(final String message) {

@@ -30,7 +30,7 @@ public class CommandOriginDataType extends Type<CommandOriginData> {
     }
 
     @Override
-    public CommandOriginData read(ByteBuf buffer) throws Exception {
+    public CommandOriginData read(ByteBuf buffer) {
         final CommandOriginType type = CommandOriginType.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer), CommandOriginType.ExecuteContext);
         final java.util.UUID uuid = BedrockTypes.UUID.read(buffer);
         final String requestId = BedrockTypes.STRING.read(buffer);
@@ -44,7 +44,7 @@ public class CommandOriginDataType extends Type<CommandOriginData> {
     }
 
     @Override
-    public void write(ByteBuf buffer, CommandOriginData value) throws Exception {
+    public void write(ByteBuf buffer, CommandOriginData value) {
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.type().getValue());
         BedrockTypes.UUID.write(buffer, value.uuid());
         BedrockTypes.STRING.write(buffer, value.requestId());

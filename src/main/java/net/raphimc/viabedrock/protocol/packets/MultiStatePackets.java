@@ -20,12 +20,12 @@ package net.raphimc.viabedrock.protocol.packets;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundConfigurationPackets1_20_5;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ServerboundConfigurationPackets1_20_5;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ServerboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundConfigurationPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundConfigurationPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPackets1_20_5;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -50,7 +50,7 @@ public class MultiStatePackets {
 
     private static final PacketHandler DISCONNECT_HANDLER = wrapper -> {
         final Connection_DisconnectFailReason disconnectReason = Connection_DisconnectFailReason.getByValue(wrapper.read(BedrockTypes.VAR_INT), Connection_DisconnectFailReason.Unknown); // reason
-        final boolean hasMessage = !wrapper.read(Type.BOOLEAN); // skip message
+        final boolean hasMessage = !wrapper.read(Types.BOOLEAN); // skip message
         if (hasMessage) {
             final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
             final Function<String, String> translator = k -> translations.getOrDefault(k, k);
@@ -82,8 +82,8 @@ public class MultiStatePackets {
     private static final PacketHandlers KEEP_ALIVE_HANDLER = new PacketHandlers() {
         @Override
         public void register() {
-            map(Type.LONG, BedrockTypes.LONG_LE); // id
-            create(Type.BOOLEAN, true); // from server
+            map(Types.LONG, BedrockTypes.LONG_LE); // id
+            create(Types.BOOLEAN, true); // from server
             handler(wrapper -> {
                 if (wrapper.get(BedrockTypes.LONG_LE, 0) == KeepAliveTask.INTERNAL_ID) { // It's a keep alive packet sent from ViaBedrock to prevent the client from disconnecting
                     wrapper.cancel();
@@ -95,9 +95,9 @@ public class MultiStatePackets {
     private static final PacketHandlers NETWORK_STACK_LATENCY_HANDLER = new PacketHandlers() {
         @Override
         protected void register() {
-            map(BedrockTypes.LONG_LE, Type.LONG, t -> t * 1_000_000); // timestamp
+            map(BedrockTypes.LONG_LE, Types.LONG, t -> t * 1_000_000); // timestamp
             handler(wrapper -> {
-                if (!wrapper.read(Type.BOOLEAN)) { // from server
+                if (!wrapper.read(Types.BOOLEAN)) { // from server
                     wrapper.cancel();
                 }
             });
@@ -105,32 +105,32 @@ public class MultiStatePackets {
     };
 
     public static final PacketHandler CLIENT_SETTINGS_HANDLER = wrapper -> {
-        final String locale = wrapper.read(Type.STRING); // locale
-        final byte viewDistance = wrapper.read(Type.BYTE); // view distance
-        final int chatVisibility = wrapper.read(Type.VAR_INT); // chat visibility
-        final boolean chatColors = wrapper.read(Type.BOOLEAN); // chat colors
-        final short skinParts = wrapper.read(Type.UNSIGNED_BYTE); // skin parts
-        final int mainHand = wrapper.read(Type.VAR_INT); // main hand
-        final boolean textFiltering = wrapper.read(Type.BOOLEAN); // text filtering
-        final boolean serverListing = wrapper.read(Type.BOOLEAN); // server listing
+        final String locale = wrapper.read(Types.STRING); // locale
+        final byte viewDistance = wrapper.read(Types.BYTE); // view distance
+        final int chatVisibility = wrapper.read(Types.VAR_INT); // chat visibility
+        final boolean chatColors = wrapper.read(Types.BOOLEAN); // chat colors
+        final short skinParts = wrapper.read(Types.UNSIGNED_BYTE); // skin parts
+        final int mainHand = wrapper.read(Types.VAR_INT); // main hand
+        final boolean textFiltering = wrapper.read(Types.BOOLEAN); // text filtering
+        final boolean serverListing = wrapper.read(Types.BOOLEAN); // server listing
         wrapper.user().put(new ClientSettingsStorage(locale, viewDistance, chatVisibility, chatColors, skinParts, mainHand, textFiltering, serverListing));
 
         wrapper.write(BedrockTypes.VAR_INT, (int) viewDistance); // radius
-        wrapper.write(Type.UNSIGNED_BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
+        wrapper.write(Types.UNSIGNED_BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
     };
 
     public static final PacketHandler CUSTOM_PAYLOAD_HANDLER = wrapper -> {
         wrapper.cancel();
-        final String channel = wrapper.read(Type.STRING); // channel
+        final String channel = wrapper.read(Types.STRING); // channel
         if (channel.equals("minecraft:register")) {
-            final String[] channels = new String(wrapper.read(Type.REMAINING_BYTES), StandardCharsets.UTF_8).split("\0");
+            final String[] channels = new String(wrapper.read(Types.REMAINING_BYTES), StandardCharsets.UTF_8).split("\0");
             wrapper.user().get(ChannelStorage.class).addChannels(channels);
         }
     };
 
     public static final PacketHandler PONG_HANDLER = wrapper -> {
         wrapper.cancel();
-        wrapper.user().get(PacketSyncStorage.class).handleResponse(wrapper.read(Type.INT)); // parameter
+        wrapper.user().get(PacketSyncStorage.class).handleResponse(wrapper.read(Types.INT)); // parameter
     };
 
     public static void register(final BedrockProtocol protocol) {

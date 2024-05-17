@@ -42,7 +42,7 @@ public abstract class Container {
         System.arraycopy(items, 0, this.items, 0, items.length);
     }
 
-    public boolean handleWindowClick(final int revision, final short slot, final byte button, final ClickType action) throws Exception {
+    public boolean handleWindowClick(final int revision, final short slot, final byte button, final ClickType action) {
         return false;
     }
 

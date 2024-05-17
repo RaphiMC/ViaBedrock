@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.api.model.inventory.fake;
 
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
@@ -25,7 +26,6 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
 import net.lenni0451.mcstructs_bedrock.forms.elements.*;
 import net.lenni0451.mcstructs_bedrock.forms.types.ActionForm;
@@ -64,7 +64,7 @@ public class FormContainer extends FakeContainer {
     }
 
     @Override
-    public boolean handleWindowClick(int revision, short slot, byte button, ClickType action) throws Exception {
+    public boolean handleWindowClick(int revision, short slot, byte button, ClickType action) {
         if (action != ClickType.PICKUP) return false;
 
         if (this.formItems.length > SIZE && slot == SIZE - 1) {
@@ -176,7 +176,7 @@ public class FormContainer extends FakeContainer {
                     }
 
                     @Override
-                    public void onClosed() throws Exception {
+                    public void onClosed() {
                         FormContainer.this.updateFormItems();
                         super.onClosed();
                     }
@@ -189,7 +189,7 @@ public class FormContainer extends FakeContainer {
     }
 
     @Override
-    public void onClosed() throws Exception {
+    public void onClosed() {
         Via.getManager().getProviders().get(FormProvider.class).sendModalFormResponse(this.user, this.formId, null);
     }
 

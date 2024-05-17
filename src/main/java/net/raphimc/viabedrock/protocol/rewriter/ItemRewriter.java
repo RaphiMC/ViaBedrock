@@ -19,6 +19,8 @@ package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.viaversion.nbt.stringified.SNBT;
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
@@ -27,8 +29,6 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import com.viaversion.viaversion.libs.opennbt.stringified.SNBT;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.util.MathUtil;

@@ -19,8 +19,8 @@ package net.raphimc.viabedrock.api.modinterface;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
@@ -40,7 +40,7 @@ public class BedrockSkinUtilityInterface {
 
     private static final int MAX_PAYLOAD_SIZE = 1048576;
 
-    public static void sendSkin(final UserConnection user, final UUID uuid, final SkinData skin) throws Exception {
+    public static void sendSkin(final UserConnection user, final UUID uuid, final SkinData skin) {
         if (skin.skinData() == null || skin.persona()) {
             return;
         }
@@ -51,55 +51,55 @@ public class BedrockSkinUtilityInterface {
         final int chunkCount = (int) Math.ceil(skinData.length / (double) maxPayloadSize);
 
         {
-            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_5.PLUGIN_MESSAGE, user);
-            pluginMessage.write(Type.STRING, CHANNEL); // Channel
-            pluginMessage.write(Type.INT, MESSAGE_SKIN_INFORMATION);
-            pluginMessage.write(Type.INT, VERSION);
-            pluginMessage.write(Type.UUID, uuid);
-            pluginMessage.write(Type.INT, skin.skinData().getWidth());
-            pluginMessage.write(Type.INT, skin.skinData().getHeight());
-            pluginMessage.write(Type.BOOLEAN, hasGeometry);
+            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_5.CUSTOM_PAYLOAD, user);
+            pluginMessage.write(Types.STRING, CHANNEL); // Channel
+            pluginMessage.write(Types.INT, MESSAGE_SKIN_INFORMATION);
+            pluginMessage.write(Types.INT, VERSION);
+            pluginMessage.write(Types.UUID, uuid);
+            pluginMessage.write(Types.INT, skin.skinData().getWidth());
+            pluginMessage.write(Types.INT, skin.skinData().getHeight());
+            pluginMessage.write(Types.BOOLEAN, hasGeometry);
             if (hasGeometry) {
                 writeString(pluginMessage, skin.geometryData());
                 writeString(pluginMessage, skin.skinResourcePatch());
             }
 
-            pluginMessage.write(Type.INT, chunkCount);
+            pluginMessage.write(Types.INT, chunkCount);
             pluginMessage.send(BedrockProtocol.class);
         }
         for (int i = 0; i < chunkCount; i++) {
-            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_5.PLUGIN_MESSAGE, user);
-            pluginMessage.write(Type.STRING, CHANNEL); // Channel
-            pluginMessage.write(Type.INT, MESSAGE_SKIN_DATA);
-            pluginMessage.write(Type.UUID, uuid);
-            pluginMessage.write(Type.INT, i);
+            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_5.CUSTOM_PAYLOAD, user);
+            pluginMessage.write(Types.STRING, CHANNEL); // Channel
+            pluginMessage.write(Types.INT, MESSAGE_SKIN_DATA);
+            pluginMessage.write(Types.UUID, uuid);
+            pluginMessage.write(Types.INT, i);
             if (chunkCount == 1) { // Fast path
-                pluginMessage.write(Type.REMAINING_BYTES, skinData);
+                pluginMessage.write(Types.REMAINING_BYTES, skinData);
             } else {
-                pluginMessage.write(Type.REMAINING_BYTES, Arrays.copyOfRange(skinData, i * maxPayloadSize, Math.min((i + 1) * maxPayloadSize, skinData.length)));
+                pluginMessage.write(Types.REMAINING_BYTES, Arrays.copyOfRange(skinData, i * maxPayloadSize, Math.min((i + 1) * maxPayloadSize, skinData.length)));
             }
             pluginMessage.send(BedrockProtocol.class);
         }
         if (skin.capeData() != null) {
             final byte[] capeData = ImageType.getImageData(skin.capeData());
 
-            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_5.PLUGIN_MESSAGE, user);
-            pluginMessage.write(Type.STRING, CHANNEL); // Channel
-            pluginMessage.write(Type.INT, MESSAGE_CAPE);
-            pluginMessage.write(Type.INT, VERSION);
-            pluginMessage.write(Type.UUID, uuid);
-            pluginMessage.write(Type.INT, skin.capeData().getWidth());
-            pluginMessage.write(Type.INT, skin.capeData().getHeight());
+            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_20_5.CUSTOM_PAYLOAD, user);
+            pluginMessage.write(Types.STRING, CHANNEL); // Channel
+            pluginMessage.write(Types.INT, MESSAGE_CAPE);
+            pluginMessage.write(Types.INT, VERSION);
+            pluginMessage.write(Types.UUID, uuid);
+            pluginMessage.write(Types.INT, skin.capeData().getWidth());
+            pluginMessage.write(Types.INT, skin.capeData().getHeight());
             writeString(pluginMessage, skin.capeId());
-            pluginMessage.write(Type.INT, capeData.length);
-            pluginMessage.write(Type.REMAINING_BYTES, capeData);
+            pluginMessage.write(Types.INT, capeData.length);
+            pluginMessage.write(Types.REMAINING_BYTES, capeData);
             pluginMessage.send(BedrockProtocol.class);
         }
     }
 
     private static void writeString(final PacketWrapper wrapper, final String s) {
-        wrapper.write(Type.INT, s.length());
-        wrapper.write(Type.REMAINING_BYTES, s.getBytes(StandardCharsets.UTF_8));
+        wrapper.write(Types.INT, s.length());
+        wrapper.write(Types.REMAINING_BYTES, s.getBytes(StandardCharsets.UTF_8));
     }
 
 }

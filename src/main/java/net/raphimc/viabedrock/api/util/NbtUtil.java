@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.api.util;
 
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
+import com.viaversion.nbt.tag.*;
 
 public class NbtUtil {
 

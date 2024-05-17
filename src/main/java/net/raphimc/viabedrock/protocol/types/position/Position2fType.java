@@ -28,7 +28,7 @@ public class Position2fType extends Type<Position2f> {
     }
 
     @Override
-    public Position2f read(ByteBuf buffer) throws Exception {
+    public Position2f read(ByteBuf buffer) {
         final float x = buffer.readFloatLE();
         final float y = buffer.readFloatLE();
 

@@ -20,9 +20,9 @@ package net.raphimc.viabedrock.api.model.entity;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -36,41 +36,41 @@ public class PlayerEntity extends Entity {
         super(user, uniqueId, runtimeId, javaId, javaUuid, EntityTypes1_20_5.PLAYER);
     }
 
-    public void createTeam() throws Exception {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_5.TEAMS, this.user);
-        teams.write(Type.STRING, "vb_" + this.javaId); // team name
-        teams.write(Type.BYTE, (byte) PlayerTeamAction.ADD.ordinal()); // mode
-        teams.write(Type.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
-        teams.write(Type.BYTE, (byte) 3); // flags
-        teams.write(Type.STRING, "always"); // name tag visibility
-        teams.write(Type.STRING, "never"); // collision rule
-        teams.write(Type.VAR_INT, TextFormatting.RESET.getOrdinal()); // color
-        teams.write(Type.TAG, TextUtil.stringToNbt("")); // prefix
-        teams.write(Type.TAG, TextUtil.stringToNbt("")); // suffix
-        teams.write(Type.STRING_ARRAY, new String[]{StringUtil.encodeUUID(this.javaUuid)}); // players
+    public void createTeam() {
+        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_5.SET_PLAYER_TEAM, this.user);
+        teams.write(Types.STRING, "vb_" + this.javaId); // team name
+        teams.write(Types.BYTE, (byte) PlayerTeamAction.ADD.ordinal()); // mode
+        teams.write(Types.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
+        teams.write(Types.BYTE, (byte) 3); // flags
+        teams.write(Types.STRING, "always"); // name tag visibility
+        teams.write(Types.STRING, "never"); // collision rule
+        teams.write(Types.VAR_INT, TextFormatting.RESET.getOrdinal()); // color
+        teams.write(Types.TAG, TextUtil.stringToNbt("")); // prefix
+        teams.write(Types.TAG, TextUtil.stringToNbt("")); // suffix
+        teams.write(Types.STRING_ARRAY, new String[]{StringUtil.encodeUUID(this.javaUuid)}); // players
         teams.send(BedrockProtocol.class);
     }
 
-    public void updateName(final String name) throws Exception {
+    public void updateName(final String name) {
         this.setName(name);
 
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_5.TEAMS, this.user);
-        teams.write(Type.STRING, "vb_" + this.javaId); // team name
-        teams.write(Type.BYTE, (byte) PlayerTeamAction.CHANGE.ordinal()); // mode
-        teams.write(Type.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
-        teams.write(Type.BYTE, (byte) 3); // flags
-        teams.write(Type.STRING, "always"); // name tag visibility
-        teams.write(Type.STRING, "never"); // collision rule
-        teams.write(Type.VAR_INT, TextFormatting.RESET.getOrdinal()); // color
-        teams.write(Type.TAG, TextUtil.stringToNbt(name)); // prefix
-        teams.write(Type.TAG, TextUtil.stringToNbt("")); // suffix
+        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_5.SET_PLAYER_TEAM, this.user);
+        teams.write(Types.STRING, "vb_" + this.javaId); // team name
+        teams.write(Types.BYTE, (byte) PlayerTeamAction.CHANGE.ordinal()); // mode
+        teams.write(Types.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
+        teams.write(Types.BYTE, (byte) 3); // flags
+        teams.write(Types.STRING, "always"); // name tag visibility
+        teams.write(Types.STRING, "never"); // collision rule
+        teams.write(Types.VAR_INT, TextFormatting.RESET.getOrdinal()); // color
+        teams.write(Types.TAG, TextUtil.stringToNbt(name)); // prefix
+        teams.write(Types.TAG, TextUtil.stringToNbt("")); // suffix
         teams.send(BedrockProtocol.class);
     }
 
-    public void deleteTeam() throws Exception {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_5.TEAMS, this.user);
-        teams.write(Type.STRING, "vb_" + this.javaId); // team name
-        teams.write(Type.BYTE, (byte) PlayerTeamAction.REMOVE.ordinal()); // mode
+    public void deleteTeam() {
+        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_20_5.SET_PLAYER_TEAM, this.user);
+        teams.write(Types.STRING, "vb_" + this.javaId); // team name
+        teams.write(Types.BYTE, (byte) PlayerTeamAction.REMOVE.ordinal()); // mode
         teams.send(BedrockProtocol.class);
     }
 

@@ -30,12 +30,12 @@ public class StringType extends Type<String> {
     }
 
     @Override
-    public String read(ByteBuf buffer) throws Exception {
+    public String read(ByteBuf buffer) {
         return new String(BedrockTypes.BYTE_ARRAY.read(buffer), StandardCharsets.UTF_8);
     }
 
     @Override
-    public void write(ByteBuf buffer, String value) throws Exception {
+    public void write(ByteBuf buffer, String value) {
         BedrockTypes.BYTE_ARRAY.write(buffer, value.getBytes(StandardCharsets.UTF_8));
     }
 

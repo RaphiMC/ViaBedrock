@@ -38,7 +38,7 @@ public class ArrayType<T> extends Type<T[]> {
     }
 
     @Override
-    public T[] read(ByteBuf buffer) throws Exception {
+    public T[] read(ByteBuf buffer) {
         final int length = this.lengthType.read(buffer).intValue();
         final T[] array = (T[]) Array.newInstance(this.elementType.getOutputClass(), length);
 
@@ -49,7 +49,7 @@ public class ArrayType<T> extends Type<T[]> {
     }
 
     @Override
-    public void write(ByteBuf buffer, T[] value) throws Exception {
+    public void write(ByteBuf buffer, T[] value) {
         final Type<Number> lengthType = (Type<Number>) this.lengthType;
         lengthType.write(buffer, ((TypeConverter<Number>) lengthType).from(value.length));
         for (T v : value) {

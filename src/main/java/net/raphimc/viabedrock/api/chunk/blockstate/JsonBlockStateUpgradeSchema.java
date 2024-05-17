@@ -17,11 +17,11 @@
  */
 package net.raphimc.viabedrock.api.chunk.blockstate;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.StringTag;
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.api.util.NbtUtil;
 
@@ -104,12 +104,10 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                 }
 
                 this.actions.add(tag -> {
-                    final String name = tag.<StringTag>get("name").getValue();
+                    final String name = tag.getStringTag("name").getValue();
                     if (!name.equals(identifier)) return;
 
-                    if (tag.get("states") instanceof CompoundTag) {
-                        final CompoundTag states = tag.get("states");
-
+                    if (tag.get("states") instanceof CompoundTag states) {
                         for (RemappedStatesEntry mapping : mappings) {
                             boolean matches = true;
                             if (mapping.oldStateTag != null) {
@@ -152,12 +150,10 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                 }
 
                 this.actions.add(tag -> {
-                    final String name = tag.<StringTag>get("name").getValue();
+                    final String name = tag.getStringTag("name").getValue();
                     if (!name.equals(identifier)) return;
 
-                    if (tag.get("states") instanceof CompoundTag) {
-                        final CompoundTag states = tag.get("states");
-
+                    if (tag.get("states") instanceof CompoundTag states) {
                         for (Map.Entry<String, List<Pair<?, ?>>> mapping : mappings.entrySet()) {
                             final Tag property = states.get(mapping.getKey());
                             if (property == null) continue;
@@ -183,12 +179,10 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                 }
 
                 this.actions.add(tag -> {
-                    final String name = tag.<StringTag>get("name").getValue();
+                    final String name = tag.getStringTag("name").getValue();
                     if (!name.equals(identifier)) return;
 
-                    if (tag.get("states") instanceof CompoundTag) {
-                        final CompoundTag states = tag.get("states");
-
+                    if (tag.get("states") instanceof CompoundTag states) {
                         for (Map.Entry<String, String> mapping : mappings.entrySet()) {
                             final Tag property = states.remove(mapping.getKey());
                             if (property != null) {
@@ -209,12 +203,10 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                 }
 
                 this.actions.add(tag -> {
-                    final String name = tag.<StringTag>get("name").getValue();
+                    final String name = tag.getStringTag("name").getValue();
                     if (!name.equals(identifier)) return;
 
-                    if (tag.get("states") instanceof CompoundTag) {
-                        final CompoundTag states = tag.get("states");
-
+                    if (tag.get("states") instanceof CompoundTag states) {
                         for (String property : toRemove) {
                             states.remove(property);
                         }
@@ -232,12 +224,10 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                 }
 
                 this.actions.add(tag -> {
-                    final String name = tag.<StringTag>get("name").getValue();
+                    final String name = tag.getStringTag("name").getValue();
                     if (!name.equals(identifier)) return;
 
-                    if (tag.get("states") instanceof CompoundTag) {
-                        final CompoundTag states = tag.get("states");
-
+                    if (tag.get("states") instanceof CompoundTag states) {
                         for (Pair<String, ?> property : toAdd) {
                             states.put(property.key(), NbtUtil.createTag(property.value()));
                         }
@@ -253,7 +243,7 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
             }
 
             this.actions.add(tag -> {
-                final String name = tag.<StringTag>get("name").getValue();
+                final String name = tag.getStringTag("name").getValue();
                 if (!mappings.containsKey(name)) return;
 
                 tag.put("name", new StringTag(mappings.get(name)));

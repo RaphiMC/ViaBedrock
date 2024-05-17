@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.api.io.compression;
 
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.compression.Snappy;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
@@ -32,7 +32,7 @@ public class SnappyCompression implements CompressionAlgorithm {
             this.snappy.encode(in, out, in.readableBytes());
             this.snappy.reset();
         } else { // Netty's snappy implementation can't handle more than that (https://github.com/netty/netty/issues/13226)
-            Type.VAR_INT.writePrimitive(out, in.readableBytes());
+            Types.VAR_INT.writePrimitive(out, in.readableBytes());
 
             int value = in.readableBytes() - 1;
             int highestOneBit = Integer.highestOneBit(value);

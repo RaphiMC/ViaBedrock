@@ -21,9 +21,9 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.Types1_20_5;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.api.model.inventory.InventoryContainer;
@@ -72,21 +72,21 @@ public class InventoryTracker extends StoredObject {
         this.currentContainer = container;
     }
 
-    public void openFakeContainer(final FakeContainer container) throws Exception {
+    public void openFakeContainer(final FakeContainer container) {
         this.currentFakeContainer = container;
 
-        final PacketWrapper openWindow = PacketWrapper.create(ClientboundPackets1_20_5.OPEN_WINDOW, this.getUser());
-        openWindow.write(Type.VAR_INT, (int) container.windowId()); // window id
-        openWindow.write(Type.VAR_INT, container.menuType().javaMenuTypeId()); // type
-        openWindow.write(Type.TAG, TextUtil.componentToNbt(container.title())); // title
+        final PacketWrapper openWindow = PacketWrapper.create(ClientboundPackets1_20_5.OPEN_SCREEN, this.getUser());
+        openWindow.write(Types.VAR_INT, (int) container.windowId()); // window id
+        openWindow.write(Types.VAR_INT, container.menuType().javaMenuTypeId()); // type
+        openWindow.write(Types.TAG, TextUtil.componentToNbt(container.title())); // title
         openWindow.send(BedrockProtocol.class);
 
-        final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_5.WINDOW_ITEMS, this.getUser());
+        final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_5.CONTAINER_SET_CONTENT, this.getUser());
         this.writeWindowItems(windowItems, container);
         windowItems.send(BedrockProtocol.class);
     }
 
-    public void setCurrentContainerClosed() throws Exception {
+    public void setCurrentContainerClosed() {
         this.currentContainerPosition = null;
         this.currentContainer = null;
         this.pendingCloseContainer = null;
@@ -96,7 +96,7 @@ public class InventoryTracker extends StoredObject {
         }
     }
 
-    public boolean markPendingClose(final boolean callOnClosed) throws Exception {
+    public boolean markPendingClose(final boolean callOnClosed) {
         if (this.currentContainer != null) {
             this.pendingCloseContainer = this.currentContainer;
             this.currentContainerPosition = null;
@@ -113,18 +113,18 @@ public class InventoryTracker extends StoredObject {
         return true;
     }
 
-    public void closeCurrentContainer() throws Exception {
+    public void closeCurrentContainer() {
         if (!this.markPendingClose(false)) {
             throw new IllegalStateException("There is no container to close");
         }
 
-        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_20_5.CLOSE_WINDOW, this.getUser());
-        closeWindow.write(Type.UNSIGNED_BYTE, (short) this.pendingCloseContainer.windowId()); // window id
+        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_20_5.CONTAINER_CLOSE, this.getUser());
+        closeWindow.write(Types.UNSIGNED_BYTE, (short) this.pendingCloseContainer.windowId()); // window id
         closeWindow.send(BedrockProtocol.class);
         PacketFactory.sendContainerClose(this.getUser(), this.pendingCloseContainer.windowId());
     }
 
-    public void handleWindowClick(final byte windowId, final int revision, final short slot, final byte button, final ClickType action) throws Exception {
+    public void handleWindowClick(final byte windowId, final int revision, final short slot, final byte button, final ClickType action) {
         if (this.pendingCloseContainer != null) return;
         final Container targetContainer = this.currentContainer != null ? this.currentContainer : this.currentFakeContainer;
         if (targetContainer == null) return;
@@ -132,24 +132,24 @@ public class InventoryTracker extends StoredObject {
         if (targetContainer.windowId() != windowId) return;
         if (!targetContainer.handleWindowClick(revision, slot, button, action)) {
             if (targetContainer != this.inventoryContainer) {
-                final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_5.WINDOW_ITEMS, this.getUser());
+                final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_5.CONTAINER_SET_CONTENT, this.getUser());
                 this.writeWindowItems(windowItems, this.inventoryContainer);
                 windowItems.send(BedrockProtocol.class);
             }
-            final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_5.WINDOW_ITEMS, this.getUser());
+            final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_5.CONTAINER_SET_CONTENT, this.getUser());
             this.writeWindowItems(windowItems, targetContainer);
             windowItems.send(BedrockProtocol.class);
         }
     }
 
     public void writeWindowItems(final PacketWrapper wrapper, final Container container) {
-        wrapper.write(Type.UNSIGNED_BYTE, (short) container.windowId()); // window id
-        wrapper.write(Type.VAR_INT, 0); // revision
+        wrapper.write(Types.UNSIGNED_BYTE, (short) container.windowId()); // window id
+        wrapper.write(Types.VAR_INT, 0); // revision
         wrapper.write(Types1_20_5.ITEM_ARRAY, container.getJavaItems(this.getUser())); // items
         wrapper.write(Types1_20_5.ITEM, this.getUser().get(ItemRewriter.class).javaItem(this.currentCursorItem)); // cursor item
     }
 
-    public void tick() throws Exception {
+    public void tick() {
         if (this.currentContainer != null && this.currentContainerPosition != null) {
             final ChunkTracker chunkTracker = this.getUser().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);

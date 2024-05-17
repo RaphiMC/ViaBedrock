@@ -30,7 +30,7 @@ public class IntPropertiesType extends Type<Int2IntMap> {
     }
 
     @Override
-    public Int2IntMap read(ByteBuf buffer) throws Exception {
+    public Int2IntMap read(ByteBuf buffer) {
         final int length = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
         final Int2IntMap properties = new Int2IntOpenHashMap(length);
         for (int i = 0; i < length; i++) {
@@ -42,7 +42,7 @@ public class IntPropertiesType extends Type<Int2IntMap> {
     }
 
     @Override
-    public void write(ByteBuf buffer, Int2IntMap value) throws Exception {
+    public void write(ByteBuf buffer, Int2IntMap value) {
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.size());
         value.forEach((i, v) -> {
             BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, i);

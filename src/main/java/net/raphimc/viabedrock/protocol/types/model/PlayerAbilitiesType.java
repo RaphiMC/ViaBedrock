@@ -31,7 +31,7 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
     }
 
     @Override
-    public PlayerAbilities read(ByteBuf buffer) throws Exception {
+    public PlayerAbilities read(ByteBuf buffer) {
         final long uniqueEntityId = buffer.readLongLE();
         final byte playerPermission = buffer.readByte();
         final byte commandPermission = buffer.readByte();
@@ -51,7 +51,7 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
     }
 
     @Override
-    public void write(ByteBuf buffer, PlayerAbilities value) throws Exception {
+    public void write(ByteBuf buffer, PlayerAbilities value) {
         buffer.writeLongLE(value.uniqueEntityId());
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.playerPermission());
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.commandPermission());

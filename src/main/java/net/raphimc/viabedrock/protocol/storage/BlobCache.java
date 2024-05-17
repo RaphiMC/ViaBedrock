@@ -44,7 +44,7 @@ public class BlobCache extends StoredObject {
         super(user);
     }
 
-    public void tick() throws Exception {
+    public void tick() {
         if (this.missing.isEmpty() && this.acked.isEmpty()) {
             return;
         }

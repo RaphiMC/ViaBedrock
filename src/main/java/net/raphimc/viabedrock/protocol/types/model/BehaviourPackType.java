@@ -34,7 +34,7 @@ public class BehaviourPackType extends Type<ResourcePack> {
     }
 
     @Override
-    public ResourcePack read(ByteBuf buffer) throws Exception {
+    public ResourcePack read(ByteBuf buffer) {
         final String packId = BedrockTypes.STRING.read(buffer);
         final String packVersion = BedrockTypes.STRING.read(buffer);
         final long packSize = buffer.readLongLE();
@@ -55,7 +55,7 @@ public class BehaviourPackType extends Type<ResourcePack> {
     }
 
     @Override
-    public void write(ByteBuf buffer, ResourcePack value) throws Exception {
+    public void write(ByteBuf buffer, ResourcePack value) {
         BedrockTypes.STRING.write(buffer, value.packId().toString());
         BedrockTypes.STRING.write(buffer, value.version());
         buffer.writeLongLE(value.compressedDataLength());

@@ -35,7 +35,7 @@ public class ChunkSectionV8Type extends Type<BedrockChunkSection> {
     }
 
     @Override
-    public BedrockChunkSection read(ByteBuf buffer) throws Exception {
+    public BedrockChunkSection read(ByteBuf buffer) {
         final BedrockChunkSection chunkSection = new BedrockChunkSectionImpl();
         final short layers = buffer.readUnsignedByte(); // layer count
         for (int i = 0; i < layers; i++) {
@@ -45,7 +45,7 @@ public class ChunkSectionV8Type extends Type<BedrockChunkSection> {
     }
 
     @Override
-    public void write(ByteBuf buffer, BedrockChunkSection value) throws Exception {
+    public void write(ByteBuf buffer, BedrockChunkSection value) {
         final List<DataPalette> palettes = value.palettes(PaletteType.BLOCKS);
         buffer.writeByte(palettes.size()); // layer count
         for (DataPalette palette : palettes) {

@@ -18,9 +18,9 @@
 package net.raphimc.viabedrock.api.model;
 
 import com.google.common.collect.Maps;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.StringTag;
+import com.viaversion.nbt.tag.Tag;
 
 import java.util.Collections;
 import java.util.Locale;
@@ -43,10 +43,10 @@ public class BedrockBlockState extends BlockState {
     public static BedrockBlockState fromNbt(final CompoundTag tag) {
         sanitizeName(tag);
 
-        final String[] namespaceAndIdentifier = tag.<StringTag>get("name").getValue().split(":", 2);
+        final String[] namespaceAndIdentifier = tag.getStringTag("name").getValue().split(":", 2);
         final Map<String, String> properties = Maps.newHashMap();
         if (tag.get("states") instanceof CompoundTag) {
-            for (Map.Entry<String, Tag> entry : tag.<CompoundTag>get("states").getValue().entrySet()) {
+            for (Map.Entry<String, Tag> entry : tag.getCompoundTag("states").getValue().entrySet()) {
                 properties.put(entry.getKey(), entry.getValue().getValue().toString());
             }
         }
@@ -55,7 +55,7 @@ public class BedrockBlockState extends BlockState {
     }
 
     public static void sanitizeName(final CompoundTag tag) {
-        final StringTag name = tag.get("name");
+        final StringTag name = tag.getStringTag("name");
         String namespace = "minecraft";
         String identifier = name.getValue();
         if (identifier.contains(":")) {

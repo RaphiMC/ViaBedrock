@@ -17,14 +17,14 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntTag;
+import com.viaversion.nbt.tag.ShortTag;
+import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ShortTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
@@ -48,13 +48,13 @@ public class MobSpawnerBlockEntityRewriter implements BlockEntityRewriter.Rewrit
         this.copy(bedrockTag, javaTag, "RequiredPlayerRange", ShortTag.class);
         this.copy(bedrockTag, javaTag, "SpawnRange", ShortTag.class);
 
-        if (bedrockTag.get("EntityId") instanceof IntTag) {
-            final int bedrockEntityId = bedrockTag.<IntTag>get("EntityId").asInt();
+        if (bedrockTag.get("EntityId") instanceof IntTag entityIdTag) {
+            final int bedrockEntityId = entityIdTag.asInt();
             final String bedrockEntityIdentifier = BedrockProtocol.MAPPINGS.getBedrockEntities().inverse().getOrDefault(bedrockEntityId, "viabedrock:" + bedrockEntityId);
             bedrockTag.put("EntityIdentifier", new StringTag(bedrockEntityIdentifier));
         }
-        if (bedrockTag.get("EntityIdentifier") instanceof StringTag) {
-            final String bedrockEntityIdentifier = bedrockTag.<StringTag>get("EntityIdentifier").getValue();
+        if (bedrockTag.get("EntityIdentifier") instanceof StringTag entityIdentifierTag) {
+            final String bedrockEntityIdentifier = entityIdentifierTag.getValue();
             final EntityTypes1_20_5 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(bedrockEntityIdentifier));
             if (javaEntityType != null) {
                 final CompoundTag spawnData = new CompoundTag();

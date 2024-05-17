@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.types.primitive;
 
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.TypeConverter;
+import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 
 public class UnsignedVarIntType extends Type<Integer> implements TypeConverter<Integer> {
@@ -28,15 +29,15 @@ public class UnsignedVarIntType extends Type<Integer> implements TypeConverter<I
     }
 
     public int readPrimitive(final ByteBuf buffer) {
-        return (int) Type.VAR_LONG.readPrimitive(buffer);
+        return (int) Types.VAR_LONG.readPrimitive(buffer);
     }
 
     public void writePrimitive(final ByteBuf buffer, int value) {
-        Type.VAR_LONG.writePrimitive(buffer, value & 0xFFFFFFFFL);
+        Types.VAR_LONG.writePrimitive(buffer, value & 0xFFFFFFFFL);
     }
 
     @Override
-    public Integer read(ByteBuf buffer) throws Exception {
+    public Integer read(ByteBuf buffer) {
         return this.readPrimitive(buffer);
     }
 

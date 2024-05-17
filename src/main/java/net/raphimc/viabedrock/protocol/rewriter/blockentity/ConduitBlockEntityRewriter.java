@@ -17,12 +17,12 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntArrayTag;
+import com.viaversion.nbt.tag.LongTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntArrayTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.LongTag;
 import com.viaversion.viaversion.util.UUIDUtil;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
@@ -36,8 +36,8 @@ public class ConduitBlockEntityRewriter implements BlockEntityRewriter.Rewriter 
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("Target") instanceof LongTag && bedrockTag.<LongTag>get("Target").asLong() != -1) {
-            final long target = bedrockTag.<LongTag>get("Target").asLong();
+        if (bedrockTag.get("Target") instanceof LongTag targetTag && targetTag.asLong() != -1) {
+            final long target = targetTag.asLong();
 
             final Entity entity = user.get(EntityTracker.class).getEntityByUid(target);
             if (entity != null) {

@@ -18,10 +18,10 @@
 package net.raphimc.viabedrock.protocol.storage;
 
 import com.vdurmont.semver4j.Semver;
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.connection.StorableObject;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;

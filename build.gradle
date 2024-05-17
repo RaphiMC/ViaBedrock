@@ -9,7 +9,7 @@ plugins {
 }
 
 base {
-    java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
     compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
 
     group = project.maven_group ?: rootProject.maven_group
@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:4.10.1-SNAPSHOT"
+    compileOnly "com.viaversion:viaversion-common:5.0.0-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.2"
     compileOnly "com.google.guava:guava:33.2.0-jre"
     compileOnly "io.netty:netty-handler:4.1.109.Final"
@@ -76,7 +76,6 @@ sourceSets {
 
 java {
     withSourcesJar()
-    withJavadocJar()
 }
 
 jar {
@@ -86,7 +85,7 @@ jar {
 }
 
 artifacts {
-    archives javadocJar, sourcesJar
+    archives sourcesJar
 }
 
 publishing {

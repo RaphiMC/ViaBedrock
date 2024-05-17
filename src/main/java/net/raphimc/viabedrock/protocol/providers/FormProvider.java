@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.providers;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -30,18 +30,18 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public abstract class FormProvider implements Provider {
 
-    public abstract void openModalForm(final UserConnection user, final int id, final AForm form) throws Exception;
+    public abstract void openModalForm(final UserConnection user, final int id, final AForm form);
 
-    public void sendModalFormResponse(final UserConnection user, final int id, final AForm form) throws Exception {
+    public void sendModalFormResponse(final UserConnection user, final int id, final AForm form) {
         final PacketWrapper modalFormResponse = PacketWrapper.create(ServerboundBedrockPackets.MODAL_FORM_RESPONSE, user);
         modalFormResponse.write(BedrockTypes.UNSIGNED_VAR_INT, id); // id
-        modalFormResponse.write(Type.BOOLEAN, form != null); // has response
+        modalFormResponse.write(Types.BOOLEAN, form != null); // has response
         if (form != null) {
             modalFormResponse.write(BedrockTypes.STRING, form.serializeResponse() + "\n"); // response
-            modalFormResponse.write(Type.BOOLEAN, false); // has cancel reason
+            modalFormResponse.write(Types.BOOLEAN, false); // has cancel reason
         } else {
-            modalFormResponse.write(Type.BOOLEAN, true); // has cancel reason
-            modalFormResponse.write(Type.BYTE, (byte) (this.isAnyScreenOpen(user) ? ModalFormCancelReason.UserBusy : ModalFormCancelReason.UserClosed).getValue()); // cancel reason
+            modalFormResponse.write(Types.BOOLEAN, true); // has cancel reason
+            modalFormResponse.write(Types.BYTE, (byte) (this.isAnyScreenOpen(user) ? ModalFormCancelReason.UserBusy : ModalFormCancelReason.UserClosed).getValue()); // cancel reason
         }
         modalFormResponse.sendToServer(BedrockProtocol.class);
     }

@@ -17,10 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.*;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 
@@ -57,26 +57,26 @@ public class StructureBlockBlockEntityRewriter implements BlockEntityRewriter.Re
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("rotation") instanceof ByteTag) {
-            final byte rotation = bedrockTag.<ByteTag>get("rotation").asByte();
+        if (bedrockTag.get("rotation") instanceof ByteTag rotationTag) {
+            final byte rotation = rotationTag.asByte();
             if (rotation >= 0 && rotation < ROTATION_MODES.size()) {
                 javaTag.put("rotation", new StringTag(ROTATION_MODES.get(rotation)));
             }
         }
-        if (bedrockTag.get("mirror") instanceof ByteTag) {
-            final byte mirror = bedrockTag.<ByteTag>get("mirror").asByte();
+        if (bedrockTag.get("mirror") instanceof ByteTag mirrorTag) {
+            final byte mirror = mirrorTag.asByte();
             if (mirror >= 0 && mirror < MIRROR_MODES.size()) {
                 javaTag.put("mirror", new StringTag(MIRROR_MODES.get(mirror)));
             }
         }
-        if (bedrockTag.get("data") instanceof IntTag) {
-            final int data = bedrockTag.<IntTag>get("data").asInt();
+        if (bedrockTag.get("data") instanceof IntTag dataTag) {
+            final int data = dataTag.asInt();
             if (data >= 0 && data < DATA_MODES.size()) {
                 javaTag.put("mode", new StringTag(DATA_MODES.get(data)));
             }
         }
-        if (bedrockTag.get("integrity") instanceof FloatTag) {
-            javaTag.put("integrity", new FloatTag(bedrockTag.<FloatTag>get("integrity").asFloat() / 100F));
+        if (bedrockTag.get("integrity") instanceof FloatTag integrityTag) {
+            javaTag.put("integrity", new FloatTag(integrityTag.asFloat() / 100F));
         }
 
         this.copy(bedrockTag, javaTag, "structureName", "name", StringTag.class);

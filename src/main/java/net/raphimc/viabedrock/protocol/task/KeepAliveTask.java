@@ -21,9 +21,9 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
-import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundConfigurationPackets1_20_5;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundConfigurationPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 public class KeepAliveTask implements Runnable {
@@ -40,7 +40,7 @@ public class KeepAliveTask implements Runnable {
 
                     try {
                         final PacketWrapper keepAlive = PacketWrapper.create(info.getProtocolInfo().getServerState() == State.PLAY ? ClientboundPackets1_20_5.KEEP_ALIVE : ClientboundConfigurationPackets1_20_5.KEEP_ALIVE, info);
-                        keepAlive.write(Type.LONG, INTERNAL_ID); // id
+                        keepAlive.write(Types.LONG, INTERNAL_ID); // id
                         keepAlive.send(BedrockProtocol.class);
                     } catch (Throwable e) {
                         BedrockProtocol.kickForIllegalState(info, "Error sending keep alive packet. See console for details.", e);

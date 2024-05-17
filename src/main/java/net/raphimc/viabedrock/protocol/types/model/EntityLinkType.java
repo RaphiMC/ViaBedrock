@@ -29,12 +29,12 @@ public class EntityLinkType extends Type<EntityLink> {
     }
 
     @Override
-    public EntityLink read(ByteBuf buffer) throws Exception {
+    public EntityLink read(ByteBuf buffer) {
         return new EntityLink(BedrockTypes.VAR_LONG.read(buffer), BedrockTypes.VAR_LONG.read(buffer), buffer.readUnsignedByte(), buffer.readBoolean(), buffer.readBoolean());
     }
 
     @Override
-    public void write(ByteBuf buffer, EntityLink value) throws Exception {
+    public void write(ByteBuf buffer, EntityLink value) {
         BedrockTypes.VAR_LONG.write(buffer, value.from());
         BedrockTypes.VAR_LONG.write(buffer, value.to());
         buffer.writeByte(value.type());

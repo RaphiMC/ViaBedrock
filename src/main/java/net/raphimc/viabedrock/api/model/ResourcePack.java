@@ -393,7 +393,7 @@ public class ResourcePack {
         }
 
         public byte[] toZip() throws IOException {
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream(4 * 1024 * 1024);
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024 * 1024 * 4);
             final ZipOutputStream zipOutputStream = new ZipOutputStream(baos);
             for (final Map.Entry<String, byte[]> entry : this.entrySet()) {
                 zipOutputStream.putNextEntry(new ZipEntry(entry.getKey()));

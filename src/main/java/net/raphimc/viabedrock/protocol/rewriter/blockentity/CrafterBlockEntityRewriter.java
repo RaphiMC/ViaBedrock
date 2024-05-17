@@ -17,14 +17,14 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntArrayTag;
+import com.viaversion.nbt.tag.IntTag;
+import com.viaversion.nbt.tag.ShortTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.libs.fastutil.ints.IntArrayList;
 import com.viaversion.viaversion.libs.fastutil.ints.IntList;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntArrayTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ShortTag;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 
 public class CrafterBlockEntityRewriter extends LootableContainerBlockEntityRewriter {
@@ -36,8 +36,8 @@ public class CrafterBlockEntityRewriter extends LootableContainerBlockEntityRewr
         final CompoundTag javaTag = javaBlockEntity.tag();
 
         this.copy(bedrockTag, javaTag, "crafting_ticks_remaining", IntTag.class);
-        if (bedrockTag.get("disabled_slots") instanceof ShortTag) {
-            final short bedrockDisabledSlots = bedrockTag.<ShortTag>get("disabled_slots").asShort();
+        if (bedrockTag.get("disabled_slots") instanceof ShortTag disabledSlotsTag) {
+            final short bedrockDisabledSlots = disabledSlotsTag.asShort();
             final IntList javaDisabledSlots = new IntArrayList();
             for (int i = 0; i < 9; i++) {
                 if ((bedrockDisabledSlots & (1 << i)) != 0) {

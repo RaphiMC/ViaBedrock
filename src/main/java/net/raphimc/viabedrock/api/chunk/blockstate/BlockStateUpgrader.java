@@ -17,8 +17,8 @@
  */
 package net.raphimc.viabedrock.api.chunk.blockstate;
 
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;

@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.data;
 
 import com.mojang.brigadier.arguments.*;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import net.raphimc.viabedrock.api.brigadier.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
@@ -39,62 +39,62 @@ public class ArgumentTypeRegistry {
             final boolean hasMin = argumentType.getMinimum() != -Float.MAX_VALUE;
             final boolean hasMax = argumentType.getMaximum() != Float.MAX_VALUE;
             final byte flags = (byte) ((hasMin ? 1 : 0) | (hasMax ? 2 : 0));
-            wrapper.write(Type.BYTE, flags); // flags
-            if (hasMin) wrapper.write(Type.FLOAT, argumentType.getMinimum()); // min value
-            if (hasMax) wrapper.write(Type.FLOAT, argumentType.getMaximum()); // max value
+            wrapper.write(Types.BYTE, flags); // flags
+            if (hasMin) wrapper.write(Types.FLOAT, argumentType.getMinimum()); // min value
+            if (hasMax) wrapper.write(Types.FLOAT, argumentType.getMaximum()); // max value
         });
         register(DoubleArgumentType.class, "brigadier:double", (wrapper, argumentType) -> {
             final boolean hasMin = argumentType.getMinimum() != -Double.MAX_VALUE;
             final boolean hasMax = argumentType.getMaximum() != Double.MAX_VALUE;
             final byte flags = (byte) ((hasMin ? 1 : 0) | (hasMax ? 2 : 0));
-            wrapper.write(Type.BYTE, flags); // flags
-            if (hasMin) wrapper.write(Type.DOUBLE, argumentType.getMinimum()); // min value
-            if (hasMax) wrapper.write(Type.DOUBLE, argumentType.getMaximum()); // max value
+            wrapper.write(Types.BYTE, flags); // flags
+            if (hasMin) wrapper.write(Types.DOUBLE, argumentType.getMinimum()); // min value
+            if (hasMax) wrapper.write(Types.DOUBLE, argumentType.getMaximum()); // max value
         });
         register(IntegerArgumentType.class, "brigadier:integer", (wrapper, argumentType) -> {
             final boolean hasMin = argumentType.getMinimum() != Integer.MIN_VALUE;
             final boolean hasMax = argumentType.getMaximum() != Integer.MAX_VALUE;
             final byte flags = (byte) ((hasMin ? 1 : 0) | (hasMax ? 2 : 0));
-            wrapper.write(Type.BYTE, flags); // flags
-            if (hasMin) wrapper.write(Type.INT, argumentType.getMinimum()); // min value
-            if (hasMax) wrapper.write(Type.INT, argumentType.getMaximum()); // max value
+            wrapper.write(Types.BYTE, flags); // flags
+            if (hasMin) wrapper.write(Types.INT, argumentType.getMinimum()); // min value
+            if (hasMax) wrapper.write(Types.INT, argumentType.getMaximum()); // max value
         });
         register(LongArgumentType.class, "brigadier:long", (wrapper, argumentType) -> {
             final boolean hasMin = argumentType.getMinimum() != Long.MIN_VALUE;
             final boolean hasMax = argumentType.getMaximum() != Long.MAX_VALUE;
             final byte flags = (byte) ((hasMin ? 1 : 0) | (hasMax ? 2 : 0));
-            wrapper.write(Type.BYTE, flags); // flags
-            if (hasMin) wrapper.write(Type.LONG, argumentType.getMinimum()); // min value
-            if (hasMax) wrapper.write(Type.LONG, argumentType.getMaximum()); // max value
+            wrapper.write(Types.BYTE, flags); // flags
+            if (hasMin) wrapper.write(Types.LONG, argumentType.getMinimum()); // min value
+            if (hasMax) wrapper.write(Types.LONG, argumentType.getMaximum()); // max value
         });
         register(StringArgumentType.class, "brigadier:string", (wrapper, argumentType) -> {
-            wrapper.write(Type.VAR_INT, argumentType.getType().ordinal()); // type
+            wrapper.write(Types.VAR_INT, argumentType.getType().ordinal()); // type
         });
         register(EnumArgumentType.class, "brigadier:string", (wrapper, argumentType) -> {
-            wrapper.write(Type.VAR_INT, StringArgumentType.StringType.SINGLE_WORD.ordinal()); // type
+            wrapper.write(Types.VAR_INT, StringArgumentType.StringType.SINGLE_WORD.ordinal()); // type
         });
         register(ValueArgumentType.class, "minecraft:angle", null);
         register(WildcardIntegerArgumentType.class, "brigadier:integer", (wrapper, argumentType) -> {
-            wrapper.write(Type.BYTE, (byte) 0); // flags
+            wrapper.write(Types.BYTE, (byte) 0); // flags
         });
         register(OperatorArgumentType.class, "minecraft:operation", null);
         register(CompareOperatorArgumentType.class, "brigadier:string", (wrapper, argumentType) -> {
-            wrapper.write(Type.VAR_INT, StringArgumentType.StringType.SINGLE_WORD.ordinal()); // type
+            wrapper.write(Types.VAR_INT, StringArgumentType.StringType.SINGLE_WORD.ordinal()); // type
         });
         register(TargetArgumentType.class, "minecraft:entity", (wrapper, argumentType) -> {
-            wrapper.write(Type.BYTE, (byte) 0); // flags
+            wrapper.write(Types.BYTE, (byte) 0); // flags
         });
         register(IntegerRangeArgumentType.class, "minecraft:int_range", null);
         register(EquipmentSlotArgumentType.class, "brigadier:string", (wrapper, argumentType) -> {
-            wrapper.write(Type.VAR_INT, StringArgumentType.StringType.SINGLE_WORD.ordinal()); // type
+            wrapper.write(Types.VAR_INT, StringArgumentType.StringType.SINGLE_WORD.ordinal()); // type
         });
         register(BlockPositionArgumentType.class, "minecraft:block_pos", null);
         register(PositionArgumentType.class, "minecraft:vec3", null);
         register(JsonArgumentType.class, "brigadier:string", (wrapper, argumentType) -> {
-            wrapper.write(Type.VAR_INT, StringArgumentType.StringType.GREEDY_PHRASE.ordinal()); // type
+            wrapper.write(Types.VAR_INT, StringArgumentType.StringType.GREEDY_PHRASE.ordinal()); // type
         });
         register(BlockStatesArgumentType.class, "brigadier:string", (wrapper, argumentType) -> {
-            wrapper.write(Type.VAR_INT, StringArgumentType.StringType.GREEDY_PHRASE.ordinal()); // type
+            wrapper.write(Types.VAR_INT, StringArgumentType.StringType.GREEDY_PHRASE.ordinal()); // type
         });
     }
 

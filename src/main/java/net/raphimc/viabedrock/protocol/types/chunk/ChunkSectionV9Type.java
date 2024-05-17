@@ -35,7 +35,7 @@ public class ChunkSectionV9Type extends Type<BedrockChunkSection> {
     }
 
     @Override
-    public BedrockChunkSection read(ByteBuf buffer) throws Exception {
+    public BedrockChunkSection read(ByteBuf buffer) {
         final BedrockChunkSection chunkSection = new BedrockChunkSectionImpl();
         final short layers = buffer.readUnsignedByte(); // layer count
         buffer.readUnsignedByte(); // section y // Unused by Mojang client
@@ -46,7 +46,7 @@ public class ChunkSectionV9Type extends Type<BedrockChunkSection> {
     }
 
     @Override
-    public void write(ByteBuf buffer, BedrockChunkSection value) throws Exception {
+    public void write(ByteBuf buffer, BedrockChunkSection value) {
         final List<DataPalette> palettes = value.palettes(PaletteType.BLOCKS);
         buffer.writeByte(palettes.size()); // layer count
         buffer.writeByte(0); // section y // Unused by Mojang client

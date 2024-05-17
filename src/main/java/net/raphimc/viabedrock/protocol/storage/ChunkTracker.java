@@ -17,21 +17,21 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.LongArrayTag;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.ChunkPosition;
 import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.api.minecraft.chunks.*;
-import com.viaversion.viaversion.api.minecraft.metadata.ChunkPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.chunk.ChunkType1_20_2;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.LongArrayTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.NumberTag;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.util.CompactArrayUtil;
 import com.viaversion.viaversion.util.MathUtil;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -89,36 +89,36 @@ public class ChunkTracker extends StoredObject {
         final GameSessionStorage gameSession = user.get(GameSessionStorage.class);
         final CompoundTag registries = gameSession.getJavaRegistries();
         final String dimensionKey = this.dimension.getKey();
-        final CompoundTag dimensionRegistry = registries.get("minecraft:dimension_type");
-        final CompoundTag biomeRegistry = registries.get("minecraft:worldgen/biome");
-        final CompoundTag dimensionTag = dimensionRegistry.get(dimensionKey);
-        this.minY = dimensionTag.<NumberTag>get("min_y").asInt();
-        this.worldHeight = dimensionTag.<NumberTag>get("height").asInt();
+        final CompoundTag dimensionRegistry = registries.getCompoundTag("minecraft:dimension_type");
+        final CompoundTag biomeRegistry = registries.getCompoundTag("minecraft:worldgen/biome");
+        final CompoundTag dimensionTag = dimensionRegistry.getCompoundTag(dimensionKey);
+        this.minY = dimensionTag.getNumberTag("min_y").asInt();
+        this.worldHeight = dimensionTag.getNumberTag("height").asInt();
         this.chunkType = new ChunkType1_20_2(this.worldHeight >> 4, MathUtil.ceilLog2(BedrockProtocol.MAPPINGS.getJavaBlockStates().size()), MathUtil.ceilLog2(biomeRegistry.size()));
 
         final ChunkTracker oldChunkTracker = user.get(ChunkTracker.class);
         this.radius = oldChunkTracker != null ? oldChunkTracker.radius : user.get(ClientSettingsStorage.class).getViewDistance();
     }
 
-    public void setCenter(final int x, final int z) throws Exception {
+    public void setCenter(final int x, final int z) {
         this.centerX = x;
         this.centerZ = z;
         this.removeOutOfLoadDistanceChunks();
     }
 
-    public void setRadius(final int radius) throws Exception {
+    public void setRadius(final int radius) {
         this.radius = radius;
         this.removeOutOfLoadDistanceChunks();
     }
 
-    public BedrockChunk createChunk(final int chunkX, final int chunkZ, final int nonNullSectionCount) throws Exception {
+    public BedrockChunk createChunk(final int chunkX, final int chunkZ, final int nonNullSectionCount) {
         if (!this.isInLoadDistance(chunkX, chunkZ)) return null;
         if (!this.isInRenderDistance(chunkX, chunkZ)) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of render distance, but within load distance: " + chunkX + ", " + chunkZ);
             final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
-            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_20_5.UPDATE_VIEW_POSITION, this.getUser());
-            updateViewPosition.write(Type.VAR_INT, (int) entityTracker.getClientPlayer().position().x() >> 4); // chunk x
-            updateViewPosition.write(Type.VAR_INT, (int) entityTracker.getClientPlayer().position().z() >> 4); // chunk z
+            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_20_5.SET_CHUNK_CACHE_CENTER, this.getUser());
+            updateViewPosition.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().x() >> 4); // chunk x
+            updateViewPosition.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().z() >> 4); // chunk z
             updateViewPosition.send(BedrockProtocol.class);
         }
 
@@ -137,14 +137,14 @@ public class ChunkTracker extends StoredObject {
         return chunk;
     }
 
-    public void unloadChunk(final ChunkPosition chunkPos) throws Exception {
+    public void unloadChunk(final ChunkPosition chunkPos) {
         synchronized (this.chunkLock) {
             this.chunks.remove(chunkPos.chunkKey());
         }
         this.getUser().get(EntityTracker.class).removeItemFrame(chunkPos);
 
-        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_20_5.UNLOAD_CHUNK, this.getUser());
-        unloadChunk.write(Type.CHUNK_POSITION, chunkPos); // chunk position
+        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_20_5.FORGET_LEVEL_CHUNK, this.getUser());
+        unloadChunk.write(Types.CHUNK_POSITION, chunkPos); // chunk position
         unloadChunk.send(BedrockProtocol.class);
     }
 
@@ -276,7 +276,7 @@ public class ChunkTracker extends StoredObject {
         return Math.abs(chunkX - this.centerX) <= this.radius && Math.abs(chunkZ - this.centerZ) <= this.radius;
     }
 
-    public void removeOutOfLoadDistanceChunks() throws Exception {
+    public void removeOutOfLoadDistanceChunks() {
         final Set<ChunkPosition> chunksToRemove = new HashSet<>();
         synchronized (this.chunkLock) {
             for (long chunkKey : this.chunks.keySet()) {
@@ -332,7 +332,7 @@ public class ChunkTracker extends StoredObject {
         return true;
     }
 
-    public IntObjectPair<BlockEntity> handleBlockChange(final Position blockPosition, final int layer, final int blockState) throws Exception {
+    public IntObjectPair<BlockEntity> handleBlockChange(final Position blockPosition, final int layer, final int blockState) {
         final BedrockChunkSection section = this.getChunkSection(blockPosition);
         if (section == null) {
             return null;
@@ -404,26 +404,26 @@ public class ChunkTracker extends StoredObject {
         }
     }
 
-    public void sendChunk(final int chunkX, final int chunkZ) throws Exception {
+    public void sendChunk(final int chunkX, final int chunkZ) {
         final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
         if (chunk == null) {
             return;
         }
         final Chunk remappedChunk = this.remapChunk(chunk);
 
-        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_20_5.CHUNK_DATA, this.getUser());
+        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_20_5.LEVEL_CHUNK_WITH_LIGHT, this.getUser());
         final BitSet lightMask = new BitSet();
         lightMask.set(0, remappedChunk.getSections().length + 2);
         wrapper.write(this.chunkType, remappedChunk); // chunk
-        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // sky light mask
-        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, new long[0]); // block light mask
-        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, new long[0]); // empty sky light mask
-        wrapper.write(Type.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // empty block light mask
-        wrapper.write(Type.VAR_INT, remappedChunk.getSections().length + 2); // sky light length
+        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // sky light mask
+        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, new long[0]); // block light mask
+        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, new long[0]); // empty sky light mask
+        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // empty block light mask
+        wrapper.write(Types.VAR_INT, remappedChunk.getSections().length + 2); // sky light length
         for (int i = 0; i < remappedChunk.getSections().length + 2; i++) {
-            wrapper.write(Type.BYTE_ARRAY_PRIMITIVE, FULL_LIGHT); // sky light
+            wrapper.write(Types.BYTE_ARRAY_PRIMITIVE, FULL_LIGHT); // sky light
         }
-        wrapper.write(Type.VAR_INT, 0); // block light length
+        wrapper.write(Types.VAR_INT, 0); // block light length
         wrapper.send(BedrockProtocol.class);
     }
 
@@ -458,7 +458,7 @@ public class ChunkTracker extends StoredObject {
         return empty;
     }
 
-    public void tick() throws Exception {
+    public void tick() {
         synchronized (this.dirtyChunks) {
             if (!this.dirtyChunks.isEmpty()) {
                 this.getUser().getChannel().eventLoop().submit(() -> {
@@ -506,7 +506,7 @@ public class ChunkTracker extends StoredObject {
         }
     }
 
-    private Chunk remapChunk(final BedrockChunk chunk) throws Exception {
+    private Chunk remapChunk(final BedrockChunk chunk) {
         final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
         final int airId = this.airId();
 

@@ -17,13 +17,13 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter;
 
+import com.viaversion.nbt.tag.ByteTag;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.ListTag;
+import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ByteTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ListTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
@@ -145,14 +145,14 @@ public class BlockEntityRewriter {
         }
 
         default void copyCustomName(final UserConnection user, final CompoundTag fromTag, final CompoundTag toTag) {
-            if (fromTag.get("CustomName") instanceof StringTag) {
-                toTag.put("CustomName", this.rewriteCustomName(user, fromTag.get("CustomName")));
+            if (fromTag.get("CustomName") instanceof StringTag customNameTag) {
+                toTag.put("CustomName", this.rewriteCustomName(user, customNameTag));
             }
         }
 
         default void copyItemList(final UserConnection user, final CompoundTag fromTag, final CompoundTag toTag) {
-            if (fromTag.get("Items") instanceof ListTag) {
-                toTag.put("Items", this.rewriteItemList(user, fromTag.get("Items")));
+            if (fromTag.get("Items") instanceof ListTag<?> itemsTag && CompoundTag.class.equals(itemsTag.getElementType())) {
+                toTag.put("Items", this.rewriteItemList(user, (ListTag<CompoundTag>) itemsTag));
             }
         }
 
@@ -161,8 +161,8 @@ public class BlockEntityRewriter {
         }
 
         default void copyItem(final UserConnection user, final CompoundTag fromTag, final CompoundTag toTag, final String fromKey, final String toKey) {
-            if (fromTag.get(fromKey) instanceof CompoundTag) {
-                toTag.put(toKey, this.rewriteItem(user, fromTag.get(fromKey)));
+            if (fromTag.get(fromKey) instanceof CompoundTag itemTag) {
+                toTag.put(toKey, this.rewriteItem(user, itemTag));
             }
         }
 

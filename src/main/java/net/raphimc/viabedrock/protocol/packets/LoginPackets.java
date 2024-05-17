@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.ProtocolInfo;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.gson.io.GsonDeserializer;
@@ -105,7 +105,7 @@ public class LoginPackets {
             final String chainData = rootObj.toString();
 
             final PacketWrapper login = PacketWrapper.create(ServerboundBedrockPackets.LOGIN, wrapper.user());
-            login.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
+            login.write(Types.INT, handshakeStorage.getProtocolVersion()); // protocol version
             login.write(BedrockTypes.UNSIGNED_VAR_INT, chainData.length() + authChainData.getSkinJwt().length() + 8); // length
             login.write(BedrockTypes.ASCII_STRING, AsciiString.of(chainData)); // chain data
             login.write(BedrockTypes.ASCII_STRING, AsciiString.of(authChainData.getSkinJwt())); // skin data
@@ -117,7 +117,7 @@ public class LoginPackets {
 
             final Jws<Claims> jwt = Jwts.parser()
                     .clockSkewSeconds(CLOCK_SKEW)
-                    .keyLocator(new LocatorAdapter<Key>() {
+                    .keyLocator(new LocatorAdapter<>() {
                         @Override
                         protected Key locate(ProtectedHeader header) {
                             return publicKeyFromBase64((String) header.get("x5u"));
@@ -126,9 +126,13 @@ public class LoginPackets {
                     .build()
                     .parseSignedClaims(wrapper.read(BedrockTypes.STRING)); // jwt
 
-            final byte[] salt = Base64.getDecoder().decode(jwt.getPayload().get("salt", String.class));
-            final SecretKey secretKey = ecdhKeyExchange(authChainData.getPrivateKey(), publicKeyFromBase64((String) jwt.getHeader().get("x5u")), salt);
-            Via.getManager().getProviders().get(NettyPipelineProvider.class).enableEncryption(wrapper.user(), secretKey);
+            try {
+                final byte[] salt = Base64.getDecoder().decode(jwt.getPayload().get("salt", String.class));
+                final SecretKey secretKey = ecdhKeyExchange(authChainData.getPrivateKey(), publicKeyFromBase64((String) jwt.getHeader().get("x5u")), salt);
+                Via.getManager().getProviders().get(NettyPipelineProvider.class).enableEncryption(wrapper.user(), secretKey);
+            } catch (Throwable e) {
+                throw new RuntimeException("Could not enable encryption", e);
+            }
 
             final PacketWrapper clientToServerHandshake = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_TO_SERVER_HANDSHAKE, wrapper.user());
             clientToServerHandshake.sendToServer(BedrockProtocol.class);
@@ -138,12 +142,16 @@ public class LoginPackets {
             final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
 
             final ProtocolInfo protocolInfo = wrapper.user().getProtocolInfo();
-            protocolInfo.setUsername(wrapper.read(Type.STRING));
-            protocolInfo.setUuid(wrapper.read(Type.UUID));
+            protocolInfo.setUsername(wrapper.read(Types.STRING));
+            protocolInfo.setUuid(wrapper.read(Types.UUID));
 
-            wrapper.write(Type.INT, handshakeStorage.getProtocolVersion()); // protocol version
+            wrapper.write(Types.INT, handshakeStorage.getProtocolVersion()); // protocol version
 
-            validateAndFillAuthChainData(wrapper.user());
+            try {
+                validateAndFillAuthChainData(wrapper.user());
+            } catch (Throwable e) {
+                throw new RuntimeException("Could not validate and fill auth chain data", e);
+            }
         });
         protocol.registerServerboundTransition(ServerboundLoginPackets.LOGIN_ACKNOWLEDGED, null, PacketWrapper::cancel);
     }

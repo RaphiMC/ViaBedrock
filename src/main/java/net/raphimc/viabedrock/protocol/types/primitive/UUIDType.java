@@ -29,7 +29,7 @@ public class UUIDType extends Type<UUID> {
     }
 
     @Override
-    public UUID read(ByteBuf buffer) throws Exception {
+    public UUID read(ByteBuf buffer) {
         return new UUID(buffer.readLongLE(), buffer.readLongLE());
     }
 

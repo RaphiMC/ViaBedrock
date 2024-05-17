@@ -17,8 +17,8 @@
  */
 package net.raphimc.viabedrock.api.chunk.blockstate;
 
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntTag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public abstract class BlockStateUpgradeSchema {
     }
 
     public void upgrade(final CompoundTag tag) {
-        final IntTag version = tag.get("version");
+        final IntTag version = tag.getIntTag("version");
         if (version != null && (version.asInt() > this.version || version.asInt() < 0)) {
             return;
         }

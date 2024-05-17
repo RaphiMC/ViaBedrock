@@ -17,11 +17,11 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.*;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTextUtils;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.util.TextUtil;
@@ -39,17 +39,17 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         final CompoundTag javaTag = new CompoundTag();
 
         if (bedrockTag.get("Text") instanceof StringTag) {
-            final boolean textIgnoreLegacyBugResolved = bedrockTag.get("TextIgnoreLegacyBugResolved") instanceof ByteTag && bedrockTag.<ByteTag>get("TextIgnoreLegacyBugResolved").asByte() != 0;
+            final boolean textIgnoreLegacyBugResolved = bedrockTag.get("TextIgnoreLegacyBugResolved") instanceof ByteTag textIgnoreLegacyBugResolvedTag && textIgnoreLegacyBugResolvedTag.asByte() != 0;
             bedrockTag.put("HideGlowOutline", new ByteTag(textIgnoreLegacyBugResolved ? (byte) 0 : (byte) 1));
 
             javaTag.put("front_text", this.translateText(bedrockTag));
 
         } else {
-            if (bedrockTag.get("FrontText") instanceof CompoundTag) {
-                javaTag.put("front_text", this.translateText(bedrockTag.get("FrontText")));
+            if (bedrockTag.get("FrontText") instanceof CompoundTag frontText) {
+                javaTag.put("front_text", this.translateText(frontText));
             }
-            if (bedrockTag.get("BackText") instanceof CompoundTag) {
-                javaTag.put("back_text", this.translateText(bedrockTag.get("BackText")));
+            if (bedrockTag.get("BackText") instanceof CompoundTag backText) {
+                javaTag.put("back_text", this.translateText(backText));
             }
         }
 
@@ -62,21 +62,21 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         final CompoundTag javaText = new CompoundTag();
 
         StringBuilder textBuilder = new StringBuilder();
-        if (bedrockText.get("Text") instanceof StringTag) {
-            textBuilder = new StringBuilder(bedrockText.<StringTag>get("Text").getValue());
+        if (bedrockText.get("Text") instanceof StringTag textTag) {
+            textBuilder = new StringBuilder(textTag.getValue());
         } else {
             for (int i = 1; i <= 4; i++) {
                 final String text = bedrockText.getString("Text" + i, "");
                 if (text.isEmpty()) continue;
 
-                if (textBuilder.length() > 0) textBuilder.append('\n');
+                if (!textBuilder.isEmpty()) textBuilder.append('\n');
                 textBuilder.append(text);
             }
         }
         final String text = textBuilder.toString();
 
         final List<ATextComponent> components = new ArrayList<>();
-        if (bedrockText.get("PersistFormatting") instanceof ByteTag && bedrockText.<ByteTag>get("PersistFormatting").asByte() != 0) {
+        if (bedrockText.get("PersistFormatting") instanceof ByteTag persistFormatting && persistFormatting.asByte() != 0) {
             for (String line : BedrockTextUtils.split(text, "\n")) {
                 components.add(TextUtil.stringToComponent(line));
             }
@@ -86,14 +86,14 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             }
         }
 
-        final boolean ignoreLighting = !(bedrockText.get("IgnoreLighting") instanceof ByteTag) || bedrockText.<ByteTag>get("IgnoreLighting").asByte() != 0;
-        final boolean hideGlowOutline = bedrockText.get("HideGlowOutline") instanceof ByteTag && bedrockText.<ByteTag>get("HideGlowOutline").asByte() != 0;
+        final boolean ignoreLighting = !(bedrockText.get("IgnoreLighting") instanceof ByteTag ignoreLightingTag) || ignoreLightingTag.asByte() != 0;
+        final boolean hideGlowOutline = bedrockText.get("HideGlowOutline") instanceof ByteTag hideGlowOutlineTag && hideGlowOutlineTag.asByte() != 0;
         if (!hideGlowOutline && ignoreLighting) {
             javaText.put("has_glowing_text", new ByteTag((byte) 1));
         }
 
-        if (bedrockText.get("SignTextColor") instanceof IntTag) {
-            final int signTextColor = bedrockText.<IntTag>get("SignTextColor").asInt();
+        if (bedrockText.get("SignTextColor") instanceof IntTag signTextColorTag) {
+            final int signTextColor = signTextColorTag.asInt();
             if (((signTextColor >> 24) & 0xFF) < 100) { // Mojang client can't properly render very transparent text
                 components.clear();
             }

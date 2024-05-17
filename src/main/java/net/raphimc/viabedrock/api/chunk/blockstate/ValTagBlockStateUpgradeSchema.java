@@ -17,8 +17,7 @@
  */
 package net.raphimc.viabedrock.api.chunk.blockstate;
 
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.ShortTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
+import com.viaversion.nbt.tag.ShortTag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -32,14 +31,14 @@ public class ValTagBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
         this.actions.add(tag -> {
             if (tag.get("val") instanceof ShortTag) {
-                final String name = tag.<StringTag>get("name").getValue();
+                final String name = tag.getStringTag("name").getValue();
                 if (!BedrockProtocol.MAPPINGS.getBedrockLegacyBlocks().containsKey(name)) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block " + name + " in val tag block state upgrade schema");
                     return;
                 }
                 final int id = BedrockProtocol.MAPPINGS.getBedrockLegacyBlocks().get(name);
 
-                final short metadata = tag.<ShortTag>remove("val").asShort();
+                final short metadata = tag.<ShortTag>removeUnchecked("val").asShort();
                 if (metadata < 0 || metadata > 63) return;
 
                 BedrockBlockState blockState = BedrockProtocol.MAPPINGS.getBedrockLegacyBlockStates().get(id << 6 | metadata & 63);

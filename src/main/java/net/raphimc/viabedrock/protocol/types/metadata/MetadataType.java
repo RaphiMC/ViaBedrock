@@ -17,26 +17,26 @@
  */
 package net.raphimc.viabedrock.protocol.types.metadata;
 
-import com.viaversion.viaversion.api.minecraft.metadata.MetaType;
-import com.viaversion.viaversion.api.minecraft.metadata.Metadata;
-import com.viaversion.viaversion.api.type.types.metadata.MetaTypeTemplate;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityDataType;
+import com.viaversion.viaversion.api.type.types.entitydata.EntityDataTypeTemplate;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class MetadataType extends MetaTypeTemplate {
+public class MetadataType extends EntityDataTypeTemplate {
 
     @Override
-    public Metadata read(ByteBuf buffer) throws Exception {
+    public EntityData read(ByteBuf buffer) {
         final int index = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-        final MetaType type = MetaTypeBedrock.byId(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
-        return new Metadata(index, type, type.type().read(buffer));
+        final EntityDataType type = MetaTypeBedrock.byId(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        return new EntityData(index, type, type.type().read(buffer));
     }
 
     @Override
-    public void write(ByteBuf buffer, Metadata value) throws Exception {
+    public void write(ByteBuf buffer, EntityData value) {
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.id());
-        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.metaType().typeId());
-        value.metaType().type().write(buffer, value.value());
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.dataType().typeId());
+        value.dataType().type().write(buffer, value.value());
     }
 
 }

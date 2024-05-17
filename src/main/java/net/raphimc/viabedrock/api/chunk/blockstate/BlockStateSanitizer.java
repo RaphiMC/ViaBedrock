@@ -17,9 +17,8 @@
  */
 package net.raphimc.viabedrock.api.chunk.blockstate;
 
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.Tag;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.Tag;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.util.NbtUtil;
 
@@ -31,8 +30,8 @@ public class BlockStateSanitizer {
 
     public BlockStateSanitizer(final List<BedrockBlockState> blockStates) {
         for (BedrockBlockState blockState : blockStates) {
-            final String identifier = blockState.blockStateTag().<StringTag>get("name").getValue();
-            final CompoundTag statesTag = blockState.blockStateTag().get("states");
+            final String identifier = blockState.blockStateTag().getStringTag("name").getValue();
+            final CompoundTag statesTag = blockState.blockStateTag().getCompoundTag("states");
 
             final Map<String, Set<Object>> propertyValues = this.allowedPropertyValues.computeIfAbsent(identifier, k -> new HashMap<>());
             for (Map.Entry<String, Tag> entry : statesTag.entrySet()) {
@@ -44,13 +43,13 @@ public class BlockStateSanitizer {
     public void sanitize(final CompoundTag tag) {
         BedrockBlockState.sanitizeName(tag);
 
-        final String identifier = tag.<StringTag>get("name").getValue();
+        final String identifier = tag.getStringTag("name").getValue();
         final Map<String, Set<Object>> propertyValues = this.allowedPropertyValues.get(identifier);
         if (propertyValues == null) {
             return;
         }
 
-        CompoundTag statesTag = tag.get("states");
+        CompoundTag statesTag = tag.getCompoundTag("states");
         if (statesTag == null) {
             if (propertyValues.isEmpty()) {
                 return;

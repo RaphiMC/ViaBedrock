@@ -17,12 +17,12 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntTag;
+import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.IntTag;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.StringTag;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -44,8 +44,8 @@ public class BeaconBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
     }
 
     private void mapEffect(final CompoundTag oldTag, final CompoundTag newTag, final String oldName, final String newName) {
-        if (oldTag.get(oldName) instanceof IntTag) {
-            final int bedrockId = oldTag.<IntTag>get(oldName).asInt();
+        if (oldTag.get(oldName) instanceof IntTag effectTag) {
+            final int bedrockId = effectTag.asInt();
             if (bedrockId == 0) {
                 return;
             }

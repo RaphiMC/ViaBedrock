@@ -29,12 +29,12 @@ public class EducationUriResourceType extends Type<EducationUriResource> {
     }
 
     @Override
-    public EducationUriResource read(ByteBuf buffer) throws Exception {
+    public EducationUriResource read(ByteBuf buffer) {
         return new EducationUriResource(BedrockTypes.STRING.read(buffer), BedrockTypes.STRING.read(buffer));
     }
 
     @Override
-    public void write(ByteBuf buffer, EducationUriResource value) throws Exception {
+    public void write(ByteBuf buffer, EducationUriResource value) {
         BedrockTypes.STRING.write(buffer, value.buttonName());
         BedrockTypes.STRING.write(buffer, value.linkUri());
     }

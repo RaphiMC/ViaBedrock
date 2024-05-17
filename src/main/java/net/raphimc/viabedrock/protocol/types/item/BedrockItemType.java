@@ -17,8 +17,8 @@
  */
 package net.raphimc.viabedrock.protocol.types.item;
 
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.CompoundTag;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
@@ -37,7 +37,7 @@ public class BedrockItemType extends Type<BedrockItem> {
     }
 
     @Override
-    public BedrockItem read(ByteBuf buffer) throws Exception {
+    public BedrockItem read(ByteBuf buffer) {
         final int id = BedrockTypes.VAR_INT.read(buffer);
         if (id == 0) {
             return null;
@@ -80,7 +80,7 @@ public class BedrockItemType extends Type<BedrockItem> {
     }
 
     @Override
-    public void write(ByteBuf buffer, BedrockItem value) throws Exception {
+    public void write(ByteBuf buffer, BedrockItem value) {
         if (value == null) {
             BedrockTypes.VAR_INT.write(buffer, 0);
             return;

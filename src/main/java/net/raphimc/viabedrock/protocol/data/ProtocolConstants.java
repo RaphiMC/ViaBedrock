@@ -22,12 +22,12 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.mcstructs.text.serializer.TextComponentCodec;
-import com.viaversion.viaversion.protocols.protocol1_20_5to1_20_3.Protocol1_20_5To1_20_3;
+import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.Protocol1_20_3To1_20_5;
 
 public class ProtocolConstants {
 
     public static final ProtocolVersion JAVA_VERSION = ProtocolVersion.v1_20_5;
-    public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol1_20_5To1_20_3.class;
+    public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol1_20_3To1_20_5.class;
     public static final int JAVA_PACK_VERSION = 32;
     public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V1_20_5;
     public static final int JAVA_PAINTING_VARIANT_ID = 8;

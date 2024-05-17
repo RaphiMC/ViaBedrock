@@ -29,12 +29,12 @@ public class ExperimentType extends Type<Experiment> {
     }
 
     @Override
-    public Experiment read(ByteBuf buffer) throws Exception {
+    public Experiment read(ByteBuf buffer) {
         return new Experiment(BedrockTypes.STRING.read(buffer), buffer.readBoolean());
     }
 
     @Override
-    public void write(ByteBuf buffer, Experiment value) throws Exception {
+    public void write(ByteBuf buffer, Experiment value) {
         BedrockTypes.STRING.write(buffer, value.name());
         buffer.writeBoolean(value.enabled());
     }

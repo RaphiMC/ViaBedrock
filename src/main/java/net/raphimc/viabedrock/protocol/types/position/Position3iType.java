@@ -29,7 +29,7 @@ public class Position3iType extends Type<Position> {
     }
 
     @Override
-    public Position read(ByteBuf buffer) throws Exception {
+    public Position read(ByteBuf buffer) {
         final int x = BedrockTypes.VAR_INT.readPrimitive(buffer);
         final int y = BedrockTypes.VAR_INT.readPrimitive(buffer);
         final int z = BedrockTypes.VAR_INT.readPrimitive(buffer);

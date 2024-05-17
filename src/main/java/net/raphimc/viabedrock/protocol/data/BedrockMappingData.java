@@ -20,6 +20,12 @@ package net.raphimc.viabedrock.protocol.data;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.io.ByteStreams;
+import com.viaversion.nbt.io.NBTIO;
+import com.viaversion.nbt.limiter.TagLimiter;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntArrayTag;
+import com.viaversion.nbt.tag.ListTag;
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
@@ -28,9 +34,6 @@ import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.gson.JsonPrimitive;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
-import com.viaversion.viaversion.libs.opennbt.tag.io.NBTIO;
-import com.viaversion.viaversion.libs.opennbt.tag.limiter.TagLimiter;
 import com.viaversion.viaversion.util.GsonUtil;
 import com.viaversion.viaversion.util.Key;
 import io.netty.buffer.ByteBuf;
@@ -150,10 +153,10 @@ public class BedrockMappingData extends MappingDataBase {
                 this.javaBlockStates.put(blockState, i);
             }
 
-            final ListTag<?> bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.nbt").get("blocks");
+            final ListTag<CompoundTag> bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.nbt").getListTag("blocks", CompoundTag.class);
             this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
-            for (Tag tag : bedrockBlockStatesTag) {
-                this.bedrockBlockStates.add(BedrockBlockState.fromNbt((CompoundTag) tag));
+            for (CompoundTag tag : bedrockBlockStatesTag) {
+                this.bedrockBlockStates.add(BedrockBlockState.fromNbt(tag));
             }
 
             final JsonObject bedrockToJavaBlockStateMappingsJson = this.readJson("custom/blockstate_mappings.json");
@@ -457,11 +460,10 @@ public class BedrockMappingData extends MappingDataBase {
 
         { // Entities
             final CompoundTag entityIdentifiersTag = this.readNBT("bedrock/entity_identifiers.nbt");
-            final ListTag<?> entityIdentifiersListTag = entityIdentifiersTag.get("idlist");
+            final ListTag<CompoundTag> entityIdentifiersListTag = entityIdentifiersTag.getListTag("idlist", CompoundTag.class);
             this.bedrockEntities = HashBiMap.create(entityIdentifiersListTag.size());
-            for (Tag tag : entityIdentifiersListTag) {
-                final CompoundTag entry = (CompoundTag) tag;
-                this.bedrockEntities.put(entry.<StringTag>get("id").getValue(), entry.<IntTag>get("rid").asInt());
+            for (CompoundTag entry : entityIdentifiersListTag) {
+                this.bedrockEntities.put(entry.getStringTag("id").getValue(), entry.getIntTag("rid").asInt());
             }
 
             Via.getManager().getProtocolManager().addMappingLoaderFuture(BedrockProtocol.class, ProtocolConstants.JAVA_PROTOCOL_CLASS, () -> {
@@ -554,7 +556,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockToJavaBannerPatterns = HashBiMap.create(bedrockToJavaBannerPatternMappingsJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaBannerPatternMappingsJson.entrySet()) {
                 final String javaIdentifier = entry.getValue().getAsString();
-                if (!this.javaRegistries.<CompoundTag>get("minecraft:banner_pattern").contains(javaIdentifier)) {
+                if (!this.javaRegistries.getCompoundTag("minecraft:banner_pattern").contains(javaIdentifier)) {
                     throw new RuntimeException("Unknown java banner pattern: " + javaIdentifier);
                 }
                 this.bedrockToJavaBannerPatterns.put(entry.getKey(), javaIdentifier);

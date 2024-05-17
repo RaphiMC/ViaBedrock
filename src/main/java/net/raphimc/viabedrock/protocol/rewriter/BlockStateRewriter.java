@@ -19,12 +19,12 @@ package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.viaversion.nbt.tag.*;
 import com.viaversion.viaversion.api.connection.StorableObject;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
-import com.viaversion.viaversion.libs.opennbt.tag.builtin.*;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.blockstate.BlockStateSanitizer;
@@ -86,10 +86,9 @@ public class BlockStateRewriter implements StorableObject {
             final ListTag<CompoundTag> properties = blockProperty.getValue().getListTag("properties", CompoundTag.class);
             if (properties != null) { // https://wiki.bedrock.dev/blocks/block-states.html
                 for (CompoundTag property : properties) {
-                    if (property.get("name") instanceof StringTag) {
-                        final String name = property.<StringTag>get("name").getValue();
-                        if (property.get("enum") instanceof ListTag) {
-                            final ListTag<?> enumTag = property.get("enum");
+                    if (property.get("name") instanceof StringTag nameTag) {
+                        final String name = nameTag.getValue();
+                        if (property.get("enum") instanceof ListTag<?> enumTag) {
                             final Set<Tag> values = new LinkedHashSet<>();
                             for (Tag tag : enumTag) {
                                 values.add(tag);
@@ -102,15 +101,14 @@ public class BlockStateRewriter implements StorableObject {
             final ListTag<CompoundTag> traits = blockProperty.getValue().getListTag("traits", CompoundTag.class);
             if (traits != null) { // https://wiki.bedrock.dev/blocks/block-traits.html
                 for (CompoundTag trait : traits) {
-                    if (trait.get("name") instanceof StringTag) {
-                        final String name = Key.namespaced(trait.<StringTag>get("name").getValue());
+                    if (trait.get("name") instanceof StringTag nameTag) {
+                        final String name = Key.namespaced(nameTag.getValue());
                         final Map<String, Set<String>> traitStates = BedrockProtocol.MAPPINGS.getBedrockBlockTraits().get(name);
                         if (traitStates == null) {
                             throw new RuntimeException("Missing block trait states for " + name);
                         }
 
-                        if (trait.get("enabled_states") instanceof CompoundTag) {
-                            final CompoundTag enabledStatesTag = trait.get("enabled_states");
+                        if (trait.get("enabled_states") instanceof CompoundTag enabledStatesTag) {
                             if (enabledStatesTag.size() != traitStates.size()) {
                                 throw new RuntimeException("Invalid enabled_states tag for trait " + name + " (size mismatch)");
                             }
@@ -165,7 +163,7 @@ public class BlockStateRewriter implements StorableObject {
 
         for (int i = 0; i < bedrockBlockStates.size(); i++) {
             final BedrockBlockState bedrockBlockState = bedrockBlockStates.get(i);
-            final int bedrockId = hashedRuntimeBlockIds ? bedrockBlockState.blockStateTag().<IntTag>get("network_id").asInt() : i;
+            final int bedrockId = hashedRuntimeBlockIds ? bedrockBlockState.blockStateTag().getIntTag("network_id").asInt() : i;
 
             this.blockStateMappings.put(bedrockBlockState, bedrockId);
 

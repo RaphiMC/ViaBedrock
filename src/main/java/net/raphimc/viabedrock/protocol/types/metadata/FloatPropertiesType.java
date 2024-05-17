@@ -31,7 +31,7 @@ public class FloatPropertiesType extends Type<Map<Integer, Float>> {
     }
 
     @Override
-    public Map<Integer, Float> read(ByteBuf buffer) throws Exception {
+    public Map<Integer, Float> read(ByteBuf buffer) {
         final int length = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
         final Map<Integer, Float> properties = new HashMap<>(length);
         for (int i = 0; i < length; i++) {
@@ -43,7 +43,7 @@ public class FloatPropertiesType extends Type<Map<Integer, Float>> {
     }
 
     @Override
-    public void write(ByteBuf buffer, Map<Integer, Float> value) throws Exception {
+    public void write(ByteBuf buffer, Map<Integer, Float> value) {
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.size());
         value.forEach((i, v) -> {
             BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, i);
