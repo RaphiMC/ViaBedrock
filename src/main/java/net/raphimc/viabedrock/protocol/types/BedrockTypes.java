@@ -98,8 +98,8 @@ public class BedrockTypes {
     public static final Type<BlockChangeEntry[]> BLOCK_CHANGE_ENTRY_ARRAY = new ArrayType<>(BLOCK_CHANGE_ENTRY, UNSIGNED_VAR_INT);
     public static final Type<BedrockDataPalette> DATA_PALETTE = new DataPaletteType(true);
     public static final Type<BedrockDataPalette> RUNTIME_DATA_PALETTE = new DataPaletteType(false);
-    public static final Type<EntityData> METADATA = new EntityDataType();
-    public static final Type<EntityData[]> METADATA_ARRAY = new ArrayType<>(METADATA, UNSIGNED_VAR_INT);
+    public static final Type<EntityData> ENTITY_DATA = new EntityDataType();
+    public static final Type<EntityData[]> ENTITY_DATA_ARRAY = new ArrayType<>(ENTITY_DATA, UNSIGNED_VAR_INT);
     public static final Type<SkinData> SKIN = new SkinType();
     public static final Type<Int2IntMap> INT_PROPERTIES = new IntPropertiesType();
     public static final Type<Map<Integer, Float>> FLOAT_PROPERTIES = new FloatPropertiesType();

@@ -40,9 +40,9 @@ import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
-import net.raphimc.viabedrock.protocol.packets.*;
-import net.raphimc.viabedrock.protocol.providers.*;
-import net.raphimc.viabedrock.protocol.providers.impl.InventoryFormProvider;
+import net.raphimc.viabedrock.protocol.packet.*;
+import net.raphimc.viabedrock.protocol.provider.*;
+import net.raphimc.viabedrock.protocol.provider.impl.InventoryFormProvider;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.task.*;
 

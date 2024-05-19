@@ -18,9 +18,9 @@
 package net.raphimc.viabedrock.platform;
 
 import com.viaversion.viaversion.api.configuration.Config;
-import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
-import net.raphimc.viabedrock.protocol.providers.ResourcePackProvider;
-import net.raphimc.viabedrock.protocol.providers.impl.*;
+import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
+import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
+import net.raphimc.viabedrock.protocol.provider.impl.*;
 
 import java.util.function.Supplier;
 

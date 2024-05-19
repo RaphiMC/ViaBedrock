@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.providers.impl;
+package net.raphimc.viabedrock.protocol.provider.impl;
 
 import com.google.common.primitives.Longs;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.LZ4;
-import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
+import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;

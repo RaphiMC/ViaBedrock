@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.packets;
+package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
@@ -36,7 +36,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ResourcePackResponse;
 import net.raphimc.viabedrock.protocol.data.enums.java.ResourcePackAction;
 import net.raphimc.viabedrock.protocol.model.Experiment;
-import net.raphimc.viabedrock.protocol.providers.ResourcePackProvider;
+import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 

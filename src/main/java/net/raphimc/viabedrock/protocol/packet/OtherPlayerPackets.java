@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.packets;
+package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
@@ -65,7 +65,7 @@ public class OtherPlayerPackets {
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
             final BedrockItem item = wrapper.read(itemRewriter.itemType()); // hand item
             final int gameType = wrapper.read(BedrockTypes.VAR_INT); // game type
-            final EntityData[] metadata = wrapper.read(BedrockTypes.METADATA_ARRAY); // metadata
+            final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
             final Int2IntMap intProperties = wrapper.read(BedrockTypes.INT_PROPERTIES); // int properties
             final Map<Integer, Float> floatProperties = wrapper.read(BedrockTypes.FLOAT_PROPERTIES); // float properties
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities

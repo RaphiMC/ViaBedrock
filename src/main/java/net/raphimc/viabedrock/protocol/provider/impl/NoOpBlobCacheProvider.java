@@ -15,19 +15,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.providers.impl;
+package net.raphimc.viabedrock.protocol.provider.impl;
 
-import com.viaversion.viaversion.api.connection.UserConnection;
-import net.lenni0451.mcstructs_bedrock.forms.AForm;
-import net.raphimc.viabedrock.api.model.inventory.fake.FormContainer;
-import net.raphimc.viabedrock.protocol.providers.FormProvider;
-import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
+import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 
-public class InventoryFormProvider extends FormProvider {
+public class NoOpBlobCacheProvider extends BlobCacheProvider {
 
     @Override
-    public void openModalForm(final UserConnection user, final int id, final AForm form) {
-        user.get(InventoryTracker.class).openFakeContainer(new FormContainer(user, id, form));
+    public byte[] addBlob(final long hash, final byte[] blob) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean hasBlob(final long hash) {
+        return false;
+    }
+
+    @Override
+    public byte[] getBlob(final long hash) {
+        throw new UnsupportedOperationException();
     }
 
 }

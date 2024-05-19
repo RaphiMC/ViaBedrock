@@ -15,25 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.providers.impl;
+package net.raphimc.viabedrock.protocol.provider.impl;
 
-import net.raphimc.viabedrock.api.model.ResourcePack;
-import net.raphimc.viabedrock.protocol.providers.ResourcePackProvider;
+import com.viaversion.viaversion.api.connection.UserConnection;
+import net.lenni0451.mcstructs_bedrock.forms.AForm;
+import net.raphimc.viabedrock.api.model.inventory.fake.FormContainer;
+import net.raphimc.viabedrock.protocol.provider.FormProvider;
+import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
-public class NoOpResourcePackProvider extends ResourcePackProvider {
-
-    @Override
-    public boolean hasPack(final ResourcePack pack) {
-        return false;
-    }
+public class InventoryFormProvider extends FormProvider {
 
     @Override
-    public void loadPack(final ResourcePack pack) {
-        throw new UnsupportedOperationException("NoOpResourcePackProvider cannot load packs");
-    }
-
-    @Override
-    public void addPack(final ResourcePack pack) {
+    public void openModalForm(final UserConnection user, final int id, final AForm form) {
+        user.get(InventoryTracker.class).openFakeContainer(new FormContainer(user, id, form));
     }
 
 }

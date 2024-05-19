@@ -38,7 +38,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
-import net.raphimc.viabedrock.protocol.providers.FormProvider;
+import net.raphimc.viabedrock.protocol.provider.FormProvider;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 

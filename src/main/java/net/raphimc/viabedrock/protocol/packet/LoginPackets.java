@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.packets;
+package net.raphimc.viabedrock.protocol.packet;
 
 import com.google.gson.*;
 import com.viaversion.viaversion.api.Via;
@@ -32,8 +32,8 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
-import net.raphimc.viabedrock.protocol.providers.NettyPipelineProvider;
-import net.raphimc.viabedrock.protocol.providers.SkinProvider;
+import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
+import net.raphimc.viabedrock.protocol.provider.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.packets;
+package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
@@ -40,7 +40,7 @@ import net.raphimc.viabedrock.protocol.data.enums.java.ObjectiveCriteriaRenderTy
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.ScoreboardObjectiveAction;
 import net.raphimc.viabedrock.protocol.model.SkinData;
-import net.raphimc.viabedrock.protocol.providers.SkinProvider;
+import net.raphimc.viabedrock.protocol.provider.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.storage.ScoreboardTracker;

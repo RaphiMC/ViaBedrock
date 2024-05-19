@@ -15,30 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.providers;
+package net.raphimc.viabedrock.protocol.provider;
 
-import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
-import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 
-import javax.crypto.SecretKey;
+public abstract class BlobCacheProvider implements Provider {
 
-public abstract class NettyPipelineProvider implements Provider {
+    public abstract byte[] addBlob(final long hash, final byte[] blob);
 
-    /**
-     * Enables compression/decompression for the given user
-     *
-     * @param user The user
-     * @param protocolCompression The protocol compression
-     */
-    public abstract void enableCompression(final UserConnection user, final ProtocolCompression protocolCompression);
+    public abstract boolean hasBlob(final long hash);
 
-    /**
-     * Enables encryption/decryption for the given user
-     *
-     * @param user The user
-     * @param key  The encryption key
-     */
-    public abstract void enableEncryption(final UserConnection user, final SecretKey key);
+    public abstract byte[] getBlob(final long hash);
 
 }

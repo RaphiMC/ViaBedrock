@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.providers.impl;
+package net.raphimc.viabedrock.protocol.provider.impl;
 
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.ResourcePack;
-import net.raphimc.viabedrock.protocol.providers.ResourcePackProvider;
+import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.nio.file.Files;
 
-public class InMemoryResourcePackProvider extends ResourcePackProvider {
-
-    private final Map<String, byte[]> packs = new ConcurrentHashMap<>();
+public class DiskResourcePackProvider extends ResourcePackProvider {
 
     @Override
     public boolean hasPack(final ResourcePack pack) {
-        return this.packs.containsKey(this.getPackKey(pack));
+        return this.getPackFile(pack).isFile();
     }
 
     @Override
@@ -38,7 +37,7 @@ public class InMemoryResourcePackProvider extends ResourcePackProvider {
         if (!this.hasPack(pack)) {
             throw new IOException("Pack not found");
         }
-        final byte[] data = this.packs.get(this.getPackKey(pack));
+        final byte[] data = Files.readAllBytes(this.getPackFile(pack).toPath());
 
         pack.setContentKey("");
         pack.setCompressedDataLength(data.length, data.length);
@@ -47,11 +46,11 @@ public class InMemoryResourcePackProvider extends ResourcePackProvider {
 
     @Override
     public void addPack(final ResourcePack pack) throws IOException {
-        this.packs.put(this.getPackKey(pack), pack.content().toZip());
+        Files.write(this.getPackFile(pack).toPath(), pack.content().toZip());
     }
 
-    private String getPackKey(final ResourcePack pack) {
-        return pack.packId() + "_" + pack.version();
+    private File getPackFile(final ResourcePack pack) {
+        return new File(ViaBedrock.getPlatform().getServerPacksFolder(), pack.packId() + "_" + pack.version() + ".mcpack");
     }
 
 }

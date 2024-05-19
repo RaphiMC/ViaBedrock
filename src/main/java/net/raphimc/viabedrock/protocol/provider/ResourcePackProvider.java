@@ -15,30 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.providers.impl;
+package net.raphimc.viabedrock.protocol.provider;
 
-import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
+import com.viaversion.viaversion.api.platform.providers.Provider;
+import net.raphimc.viabedrock.api.model.ResourcePack;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+public abstract class ResourcePackProvider implements Provider {
 
-public class InMemoryBlobCacheProvider extends BlobCacheProvider {
+    public abstract boolean hasPack(final ResourcePack pack) throws Exception;
 
-    private final Map<Long, byte[]> blobs = new ConcurrentHashMap<>();
+    public abstract void loadPack(final ResourcePack pack) throws Exception;
 
-    @Override
-    public byte[] addBlob(final long hash, final byte[] blob) {
-        return this.blobs.put(hash, blob);
-    }
-
-    @Override
-    public boolean hasBlob(final long hash) {
-        return this.blobs.containsKey(hash);
-    }
-
-    @Override
-    public byte[] getBlob(final long hash) {
-        return this.blobs.get(hash);
-    }
+    public abstract void addPack(final ResourcePack pack) throws Exception;
 
 }

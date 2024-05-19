@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.packets;
+package net.raphimc.viabedrock.protocol.packet;
 
 import com.google.common.collect.Lists;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
@@ -63,7 +63,7 @@ public class EntityPackets {
                 final float max = wrapper.read(BedrockTypes.FLOAT_LE); // max
                 final float value = wrapper.read(BedrockTypes.FLOAT_LE); // value
             }
-            final EntityData[] metadata = wrapper.read(BedrockTypes.METADATA_ARRAY); // metadata
+            final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
             final Int2IntMap intProperties = wrapper.read(BedrockTypes.INT_PROPERTIES); // int properties
             final Map<Integer, Float> floatProperties = wrapper.read(BedrockTypes.FLOAT_PROPERTIES); // float properties
             final EntityLink[] entityLinks = wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
@@ -304,13 +304,13 @@ public class EntityPackets {
             wrapper.write(Types.SHORT, (short) 0); // velocity y
             wrapper.write(Types.SHORT, (short) 0); // velocity z
 
-            final PacketWrapper entityMetadata = PacketWrapper.create(ClientboundPackets1_20_5.SET_ENTITY_DATA, wrapper.user());
-            entityMetadata.write(Types.VAR_INT, entity.javaId()); // entity id
-            entityMetadata.write(Types1_20_5.ENTITY_DATA_LIST, Lists.newArrayList(new EntityData(ProtocolConstants.JAVA_PAINTING_VARIANT_ID, Types1_20_5.ENTITY_DATA_TYPES.paintingVariantType, painting.ordinal()))); // metadata
+            final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_20_5.SET_ENTITY_DATA, wrapper.user());
+            setEntityData.write(Types.VAR_INT, entity.javaId()); // entity id
+            setEntityData.write(Types1_20_5.ENTITY_DATA_LIST, Lists.newArrayList(new EntityData(ProtocolConstants.JAVA_PAINTING_VARIANT_ID, Types1_20_5.ENTITY_DATA_TYPES.paintingVariantType, painting.ordinal()))); // entity data
 
             wrapper.send(BedrockProtocol.class);
             wrapper.cancel();
-            entityMetadata.send(BedrockProtocol.class);
+            setEntityData.send(BedrockProtocol.class);
         });
     }
 

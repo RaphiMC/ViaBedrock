@@ -24,7 +24,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.providers.BlobCacheProvider;
+import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.ByteArrayOutputStream;
