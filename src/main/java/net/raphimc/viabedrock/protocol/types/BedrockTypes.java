@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.types;
 
 import com.viaversion.nbt.tag.Tag;
-import com.viaversion.viaversion.api.minecraft.Position;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
@@ -71,8 +71,8 @@ public class BedrockTypes {
 
     public static final Type<Tag> NETWORK_TAG = new TagType();
     public static final Type<Tag> TAG_LE = new TagLEType();
-    public static final Type<Position> BLOCK_POSITION = new BlockPositionType();
-    public static final Type<Position> POSITION_3I = new Position3iType();
+    public static final Type<BlockPosition> BLOCK_POSITION = new BlockPositionType();
+    public static final Type<BlockPosition> POSITION_3I = new Position3iType();
     public static final Type<Position3f> POSITION_3F = new Position3fType();
     public static final Type<Position2f> POSITION_2F = new Position2fType();
     public static final Type<GameRule<?>> GAME_RULE = new GameRuleType();
@@ -86,7 +86,7 @@ public class BedrockTypes {
     public static final Type<ItemEntry[]> ITEM_ENTRY_ARRAY = new ArrayType<>(ITEM_ENTRY, UNSIGNED_VAR_INT);
     public static final Type<CommandOriginData> COMMAND_ORIGIN_DATA = new CommandOriginDataType();
     public static final Type<BedrockChunkSection> CHUNK_SECTION = new ChunkSectionType();
-    public static final Type<Position> SUB_CHUNK_OFFSET = new SubChunkOffsetType();
+    public static final Type<BlockPosition> SUB_CHUNK_OFFSET = new SubChunkOffsetType();
     public static final Type<ResourcePack> BEHAVIOUR_PACK = new BehaviourPackType();
     public static final Type<ResourcePack[]> BEHAVIOUR_PACK_ARRAY = new ArrayType<>(BEHAVIOUR_PACK, UNSIGNED_SHORT_LE);
     public static final Type<ResourcePack> RESOURCE_PACK = new ResourcePackType();

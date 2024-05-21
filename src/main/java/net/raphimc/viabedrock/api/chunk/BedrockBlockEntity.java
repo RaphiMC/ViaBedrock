@@ -19,12 +19,12 @@ package net.raphimc.viabedrock.api.chunk;
 
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.IntTag;
-import com.viaversion.viaversion.api.minecraft.Position;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 
 public class BedrockBlockEntity implements BlockEntity {
 
-    private final Position position;
+    private final BlockPosition position;
     private final CompoundTag tag;
 
     public BedrockBlockEntity(final CompoundTag tag) {
@@ -42,12 +42,12 @@ public class BedrockBlockEntity implements BlockEntity {
         if (tag.get("z") instanceof IntTag) {
             z = ((IntTag) tag.get("z")).asInt();
         }
-        this.position = new Position(x, y, z);
+        this.position = new BlockPosition(x, y, z);
 
         // id value should be validated, but not strictly required
     }
 
-    public BedrockBlockEntity(final Position position, final CompoundTag tag) {
+    public BedrockBlockEntity(final BlockPosition position, final CompoundTag tag) {
         this.position = position;
         this.tag = tag;
     }
@@ -62,7 +62,7 @@ public class BedrockBlockEntity implements BlockEntity {
         return (short) this.position.y();
     }
 
-    public Position position() {
+    public BlockPosition position() {
         return this.position;
     }
 

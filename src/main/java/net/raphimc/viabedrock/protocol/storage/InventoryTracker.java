@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.Position;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.Types1_20_5;
@@ -49,7 +49,7 @@ public class InventoryTracker extends StoredObject {
 
     private final Container inventoryContainer = new InventoryContainer((byte) ContainerID.CONTAINER_ID_INVENTORY.getValue());
 
-    private Position currentContainerPosition = null;
+    private BlockPosition currentContainerPosition = null;
     private Container currentContainer = null;
     private BedrockItem currentCursorItem = null;
 
@@ -67,7 +67,7 @@ public class InventoryTracker extends StoredObject {
         return null;
     }
 
-    public void trackContainer(final Position position, final Container container) {
+    public void trackContainer(final BlockPosition position, final Container container) {
         this.currentContainerPosition = position;
         this.currentContainer = container;
     }

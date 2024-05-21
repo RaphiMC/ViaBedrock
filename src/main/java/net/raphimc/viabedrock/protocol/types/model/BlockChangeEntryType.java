@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.types.model;
 
-import com.viaversion.viaversion.api.minecraft.Position;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
@@ -31,7 +31,7 @@ public class BlockChangeEntryType extends Type<BlockChangeEntry> {
 
     @Override
     public BlockChangeEntry read(ByteBuf buffer) {
-        final Position position = BedrockTypes.BLOCK_POSITION.read(buffer);
+        final BlockPosition position = BedrockTypes.BLOCK_POSITION.read(buffer);
         final int blockState = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final int flags = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final long messageEntityId = BedrockTypes.UNSIGNED_VAR_LONG.read(buffer);

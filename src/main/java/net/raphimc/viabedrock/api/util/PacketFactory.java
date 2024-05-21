@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.api.util;
 
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.Position;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
@@ -37,7 +37,7 @@ public class PacketFactory {
         return systemChat;
     }
 
-    public static PacketWrapper blockEntityData(final UserConnection user, final Position position, final BlockEntity blockEntity) {
+    public static PacketWrapper blockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) {
         final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_20_5.BLOCK_ENTITY_DATA, user);
         blockEntityData.write(Types.BLOCK_POSITION1_14, position); // position
         blockEntityData.write(Types.VAR_INT, blockEntity.typeId()); // type
@@ -60,7 +60,7 @@ public class PacketFactory {
         }
     }
 
-    public static <T extends Throwable> void sendBlockEntityData(final UserConnection user, final Position position, final BlockEntity blockEntity) throws T {
+    public static <T extends Throwable> void sendBlockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) throws T {
         try {
             blockEntityData(user, position, blockEntity).send(BedrockProtocol.class);
         } catch (Throwable e) {

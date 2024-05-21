@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.Position;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
@@ -151,8 +151,8 @@ public class ClientPlayerEntity extends PlayerEntity {
         final PacketWrapper playerAction = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, this.user);
         playerAction.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
         playerAction.write(BedrockTypes.VAR_INT, action.getValue()); // action
-        playerAction.write(BedrockTypes.BLOCK_POSITION, new Position(0, 0, 0)); // block position
-        playerAction.write(BedrockTypes.BLOCK_POSITION, new Position(0, 0, 0)); // result position
+        playerAction.write(BedrockTypes.BLOCK_POSITION, new BlockPosition(0, 0, 0)); // block position
+        playerAction.write(BedrockTypes.BLOCK_POSITION, new BlockPosition(0, 0, 0)); // result position
         playerAction.write(BedrockTypes.VAR_INT, face); // face
         playerAction.sendToServer(BedrockProtocol.class);
     }

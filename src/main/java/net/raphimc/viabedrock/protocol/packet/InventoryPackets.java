@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.minecraft.Position;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
@@ -58,7 +58,7 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_20_5.OPEN_SCREEN, wrapper -> {
             final byte windowId = wrapper.read(Types.BYTE); // window id
             final byte rawType = wrapper.read(Types.BYTE); // type
-            final Position position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
+            final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
             wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
             final ContainerType type = ContainerType.getByValue(rawType);
             if (type == null) {

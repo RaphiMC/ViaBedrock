@@ -17,28 +17,28 @@
  */
 package net.raphimc.viabedrock.protocol.types.position;
 
-import com.viaversion.viaversion.api.minecraft.Position;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class Position3iType extends Type<Position> {
+public class Position3iType extends Type<BlockPosition> {
 
     public Position3iType() {
-        super("Position3i", Position.class);
+        super("Position3i", BlockPosition.class);
     }
 
     @Override
-    public Position read(ByteBuf buffer) {
+    public BlockPosition read(ByteBuf buffer) {
         final int x = BedrockTypes.VAR_INT.readPrimitive(buffer);
         final int y = BedrockTypes.VAR_INT.readPrimitive(buffer);
         final int z = BedrockTypes.VAR_INT.readPrimitive(buffer);
 
-        return new Position(x, y, z);
+        return new BlockPosition(x, y, z);
     }
 
     @Override
-    public void write(ByteBuf buffer, Position value) {
+    public void write(ByteBuf buffer, BlockPosition value) {
         BedrockTypes.VAR_INT.writePrimitive(buffer, value.x());
         BedrockTypes.VAR_INT.writePrimitive(buffer, value.y());
         BedrockTypes.VAR_INT.writePrimitive(buffer, value.z());

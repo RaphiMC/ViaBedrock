@@ -19,8 +19,8 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.ChunkPosition;
-import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
@@ -43,7 +43,7 @@ public class EntityTracker extends StoredObject {
     private ClientPlayerEntity clientPlayerEntity = null;
     private final Map<Long, Long> runtimeIdToUniqueId = new HashMap<>();
     private final Map<Long, Entity> entities = new HashMap<>();
-    private final Map<Position, Integer> itemFrames = new HashMap<>();
+    private final Map<BlockPosition, Integer> itemFrames = new HashMap<>();
 
     public EntityTracker(final UserConnection user) {
         super(user);
@@ -100,7 +100,7 @@ public class EntityTracker extends StoredObject {
         }
     }
 
-    public void spawnItemFrame(final Position position, final BlockState blockState) {
+    public void spawnItemFrame(final BlockPosition position, final BlockState blockState) {
         this.removeItemFrame(position);
 
         if (!blockState.identifier().equals("frame") && !blockState.identifier().equals("glow_frame")) {
@@ -127,11 +127,11 @@ public class EntityTracker extends StoredObject {
         spawnEntity.send(BedrockProtocol.class);
     }
 
-    public int getItemFrameId(final Position position) {
+    public int getItemFrameId(final BlockPosition position) {
         return this.itemFrames.getOrDefault(position, -1);
     }
 
-    public void removeItemFrame(final Position position) {
+    public void removeItemFrame(final BlockPosition position) {
         final Integer javaId = this.itemFrames.remove(position);
         if (javaId == null) {
             return;
@@ -143,15 +143,15 @@ public class EntityTracker extends StoredObject {
     }
 
     public void removeItemFrame(final ChunkPosition chunkPos) {
-        final List<Position> toRemove = new ArrayList<>();
-        for (final Map.Entry<Position, Integer> entry : this.itemFrames.entrySet()) {
-            final Position position = entry.getKey();
+        final List<BlockPosition> toRemove = new ArrayList<>();
+        for (final Map.Entry<BlockPosition, Integer> entry : this.itemFrames.entrySet()) {
+            final BlockPosition position = entry.getKey();
             if (position.x() >> 4 == chunkPos.chunkX() && position.z() >> 4 == chunkPos.chunkZ()) {
                 toRemove.add(position);
             }
         }
 
-        for (final Position position : toRemove) {
+        for (final BlockPosition position : toRemove) {
             this.removeItemFrame(position);
         }
     }

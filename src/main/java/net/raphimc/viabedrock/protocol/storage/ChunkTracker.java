@@ -21,8 +21,8 @@ import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.LongArrayTag;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.ChunkPosition;
-import com.viaversion.viaversion.api.minecraft.Position;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.api.minecraft.chunks.*;
@@ -166,15 +166,15 @@ public class ChunkTracker extends StoredObject {
         return chunk.getSections()[sectionIndex];
     }
 
-    public BedrockChunkSection getChunkSection(final Position blockPosition) {
+    public BedrockChunkSection getChunkSection(final BlockPosition blockPosition) {
         return this.getChunkSection(blockPosition.x() >> 4, blockPosition.y() >> 4, blockPosition.z() >> 4);
     }
 
-    public int getBlockState(final Position blockPosition) {
+    public int getBlockState(final BlockPosition blockPosition) {
         return this.getBlockState(0, blockPosition);
     }
 
-    public int getBlockState(final int layer, final Position blockPosition) {
+    public int getBlockState(final int layer, final BlockPosition blockPosition) {
         final BedrockChunkSection chunkSection = this.getChunkSection(blockPosition);
         if (chunkSection == null) return this.airId();
         if (chunkSection.palettesCount(PaletteType.BLOCKS) <= layer) return this.airId();
@@ -182,7 +182,7 @@ public class ChunkTracker extends StoredObject {
         return chunkSection.palettes(PaletteType.BLOCKS).get(layer).idAt(blockPosition.x() & 15, blockPosition.y() & 15, blockPosition.z() & 15);
     }
 
-    public int getJavaBlockState(final Position blockPosition) {
+    public int getJavaBlockState(final BlockPosition blockPosition) {
         final BedrockChunkSection chunkSection = this.getChunkSection(blockPosition);
         if (chunkSection == null) return 0;
 
@@ -219,7 +219,7 @@ public class ChunkTracker extends StoredObject {
         return remappedBlockState;
     }
 
-    public BedrockBlockEntity getBlockEntity(final Position blockPosition) {
+    public BedrockBlockEntity getBlockEntity(final BlockPosition blockPosition) {
         final BedrockChunk chunk = this.getChunk(blockPosition.x() >> 4, blockPosition.z() >> 4);
         if (chunk == null) return null;
 
@@ -243,7 +243,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public boolean isInUnloadedChunkSection(final Position3f playerPosition) {
-        final Position chunkSectionPosition = new Position((int) Math.floor(playerPosition.x() / 16), (int) Math.floor((playerPosition.y() - 1.62F) / 16), (int) Math.floor(playerPosition.z() / 16));
+        final BlockPosition chunkSectionPosition = new BlockPosition((int) Math.floor(playerPosition.x() / 16), (int) Math.floor((playerPosition.y() - 1.62F) / 16), (int) Math.floor(playerPosition.z() / 16));
         final ChunkPosition chunkPos = new ChunkPosition(chunkSectionPosition.x(), chunkSectionPosition.z());
         if (!this.isChunkLoaded(chunkPos)) {
             return true;
@@ -332,7 +332,7 @@ public class ChunkTracker extends StoredObject {
         return true;
     }
 
-    public IntObjectPair<BlockEntity> handleBlockChange(final Position blockPosition, final int layer, final int blockState) {
+    public IntObjectPair<BlockEntity> handleBlockChange(final BlockPosition blockPosition, final int layer, final int blockState) {
         final BedrockChunkSection section = this.getChunkSection(blockPosition);
         if (section == null) {
             return null;
@@ -486,7 +486,7 @@ public class ChunkTracker extends StoredObject {
         synchronized (this.subChunkLock) {
             this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
 
-            final Position basePosition = new Position(this.centerX, 0, this.centerZ);
+            final BlockPosition basePosition = new BlockPosition(this.centerX, 0, this.centerZ);
             while (!this.subChunkRequests.isEmpty()) {
                 final Set<SubChunkPosition> group = this.subChunkRequests.stream().limit(256).collect(Collectors.toSet());
                 this.subChunkRequests.removeAll(group);
@@ -497,7 +497,7 @@ public class ChunkTracker extends StoredObject {
                 subChunkRequest.write(BedrockTypes.INT_LE, group.size()); // sub chunk offset count
                 for (SubChunkPosition subChunkPosition : group) {
                     this.pendingSubChunks.add(subChunkPosition);
-                    final Position offset = new Position(subChunkPosition.chunkX - basePosition.x(), subChunkPosition.subChunkY, subChunkPosition.chunkZ - basePosition.z());
+                    final BlockPosition offset = new BlockPosition(subChunkPosition.chunkX - basePosition.x(), subChunkPosition.subChunkY, subChunkPosition.chunkZ - basePosition.z());
                     subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
                 }
                 subChunkRequest.sendToServer(BedrockProtocol.class);
@@ -554,7 +554,7 @@ public class ChunkTracker extends StoredObject {
                             if (tag == null) continue;
 
                             final int absY = this.minY + idx * 16 + y;
-                            final Position position = new Position(chunk.getX() * 16 + x, absY, chunk.getZ() * 16 + z);
+                            final BlockPosition position = new BlockPosition(chunk.getX() * 16 + x, absY, chunk.getZ() * 16 + z);
                             if (BlockEntityRewriter.isJavaBlockEntity(tag)) {
                                 final BedrockBlockEntity bedrockBlockEntity = chunk.getBlockEntityAt(position);
                                 if (bedrockBlockEntity != null) {
