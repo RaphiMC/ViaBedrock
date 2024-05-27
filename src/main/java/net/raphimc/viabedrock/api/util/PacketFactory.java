@@ -52,28 +52,16 @@ public class PacketFactory {
         return containerClose;
     }
 
-    public static <T extends Throwable> void sendSystemChat(final UserConnection user, final Tag message) throws T {
-        try {
-            systemChat(user, message).send(BedrockProtocol.class);
-        } catch (Throwable e) {
-            throw (T) e;
-        }
+    public static <T extends Throwable> void sendSystemChat(final UserConnection user, final Tag message) {
+        systemChat(user, message).send(BedrockProtocol.class);
     }
 
-    public static <T extends Throwable> void sendBlockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) throws T {
-        try {
-            blockEntityData(user, position, blockEntity).send(BedrockProtocol.class);
-        } catch (Throwable e) {
-            throw (T) e;
-        }
+    public static <T extends Throwable> void sendBlockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) {
+        blockEntityData(user, position, blockEntity).send(BedrockProtocol.class);
     }
 
-    public static <T extends Throwable> void sendContainerClose(final UserConnection user, final byte windowId) throws T {
-        try {
-            containerClose(user, windowId).sendToServer(BedrockProtocol.class);
-        } catch (Throwable e) {
-            throw (T) e;
-        }
+    public static <T extends Throwable> void sendContainerClose(final UserConnection user, final byte windowId) {
+        containerClose(user, windowId).sendToServer(BedrockProtocol.class);
     }
 
     public static void writeDisconnect(final PacketWrapper wrapper, final String reason) {
