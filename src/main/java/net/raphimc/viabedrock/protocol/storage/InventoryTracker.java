@@ -51,7 +51,7 @@ public class InventoryTracker extends StoredObject {
 
     private BlockPosition currentContainerPosition = null;
     private Container currentContainer = null;
-    private BedrockItem currentCursorItem = null;
+    private BedrockItem currentCursorItem = BedrockItem.empty();
 
     private Container pendingCloseContainer = null;
     private FakeContainer currentFakeContainer = null;

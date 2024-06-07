@@ -40,7 +40,7 @@ public class BedrockItemType extends Type<BedrockItem> {
     public BedrockItem read(ByteBuf buffer) {
         final int id = BedrockTypes.VAR_INT.read(buffer);
         if (id == 0) {
-            return null;
+            return BedrockItem.empty();
         }
 
         final BedrockItem item = new BedrockItem(id);
@@ -81,7 +81,7 @@ public class BedrockItemType extends Type<BedrockItem> {
 
     @Override
     public void write(ByteBuf buffer, BedrockItem value) {
-        if (value == null) {
+        if (value.isEmpty()) {
             BedrockTypes.VAR_INT.write(buffer, 0);
             return;
         }

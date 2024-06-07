@@ -33,7 +33,7 @@ public abstract class Container {
     public Container(final byte windowId, final MenuType menuType, final int size) {
         this.windowId = windowId;
         this.menuType = menuType;
-        this.items = new BedrockItem[size];
+        this.items = BedrockItem.emptyArray(size);
     }
 
     public void setItems(final BedrockItem[] items) {

@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.api.model.inventory;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
@@ -35,7 +36,7 @@ public class InventoryContainer extends Container {
 
     @Override
     public Item[] getJavaItems(UserConnection user) {
-        final Item[] combinedItems = new Item[45];
+        final Item[] combinedItems = StructuredItem.emptyArray(45);
         final Item[] inventoryItems = super.getJavaItems(user);
 
         System.arraycopy(inventoryItems, 9, combinedItems, 9, 27);

@@ -82,12 +82,12 @@ public class ItemRewriter extends StoredObject {
     }
 
     public Item javaItem(final BedrockItem bedrockItem) {
-        if (bedrockItem == null) return null;
+        if (bedrockItem.isEmpty()) return StructuredItem.empty();
 
         String identifier = this.items.inverse().get(bedrockItem.identifier());
         if (identifier == null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing item identifier for id: " + bedrockItem.identifier());
-            return null;
+            return StructuredItem.empty();
         }
 
         final Rewriter rewriter;

@@ -62,6 +62,18 @@ public class BedrockItem implements Item {
         this.netId = netId;
     }
 
+    public static BedrockItem empty() {
+        return new BedrockItem(0, (short) 0, (byte) 0);
+    }
+
+    public static BedrockItem[] emptyArray(final int size) {
+        final BedrockItem[] items = new BedrockItem[size];
+        for (int i = 0; i < items.length; i++) {
+            items[i] = empty();
+        }
+        return items;
+    }
+
     @Override
     public int identifier() {
         return this.id;
@@ -97,11 +109,7 @@ public class BedrockItem implements Item {
 
     @Override
     public void setAmount(final int amount) {
-        if (amount < 0 || amount > 255) {
-            this.amount = 0;
-        } else {
-            this.amount = (byte) amount;
-        }
+        this.amount = (byte) amount;
     }
 
     @Override
@@ -115,7 +123,7 @@ public class BedrockItem implements Item {
     }
 
     @Override
-    public StructuredDataContainer structuredData() {
+    public StructuredDataContainer dataContainer() {
         throw new UnsupportedOperationException();
     }
 
