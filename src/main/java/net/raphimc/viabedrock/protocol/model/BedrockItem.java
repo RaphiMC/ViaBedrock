@@ -50,8 +50,8 @@ public class BedrockItem implements Item {
     }
 
     public BedrockItem(final int id, final short data, final byte amount, final CompoundTag tag, final String[] canPlace, final String[] canBreak, final long blockingTicks, final int blockRuntimeId, final boolean usingNetId, final int netId) {
-        this.id = id;
-        this.data = data;
+        this.setIdentifier(id);
+        this.setData(data);
         this.amount = amount;
         this.tag = tag;
         this.canPlace = canPlace;
@@ -99,7 +99,7 @@ public class BedrockItem implements Item {
     }
 
     public void setData(final int data) {
-        this.setData((short) (data % 65536));
+        this.setData((short) data);
     }
 
     @Override
@@ -201,7 +201,7 @@ public class BedrockItem implements Item {
         return "BedrockItem{" +
                 "id=" + id +
                 ", data=" + data +
-                ", amount=" + amount +
+                ", amount=" + this.amount() +
                 ", tag=" + tag +
                 ", canPlace=" + Arrays.toString(canPlace) +
                 ", canBreak=" + Arrays.toString(canBreak) +
