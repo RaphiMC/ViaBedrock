@@ -204,6 +204,8 @@ public class JoinPackets {
                         clientPlayer.setInitiallySpawned();
                         if (gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
                             clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
+                        } else {
+                            clientPlayer.sendAuthInputPacketToServer(ClientPlayMode.Normal);
                         }
 
                         final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());
@@ -612,11 +614,6 @@ public class JoinPackets {
         requestChunkRadius.write(BedrockTypes.VAR_INT, user.get(ClientSettingsStorage.class).viewDistance()); // radius
         requestChunkRadius.write(Types.UNSIGNED_BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
         requestChunkRadius.sendToServer(BedrockProtocol.class);
-
-        final PacketWrapper tickSync = PacketWrapper.create(ServerboundBedrockPackets.TICK_SYNC, user);
-        tickSync.write(BedrockTypes.LONG_LE, 0L); // request timestamp
-        tickSync.write(BedrockTypes.LONG_LE, 0L); // response timestamp
-        tickSync.sendToServer(BedrockProtocol.class);
     }
 
 }

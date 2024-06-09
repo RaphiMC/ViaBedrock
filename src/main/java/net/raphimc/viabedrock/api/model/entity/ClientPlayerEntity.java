@@ -56,7 +56,6 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     // Server Authoritative Movement
     private Position3f prevPosition;
-    private boolean prevOnGround;
     private long authInput;
 
     // Misc data
@@ -72,8 +71,8 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void tick() {
         super.tick();
 
-        if (this.gameSession.getMovementMode() != ServerAuthMovementMode.ClientAuthoritative) {
-            this.sendAuthInputPacketToServer(this.initiallySpawned ? ClientPlayMode.Screen : ClientPlayMode.Normal);
+        if (this.gameSession.getMovementMode() != ServerAuthMovementMode.ClientAuthoritative && this.initiallySpawned) {
+            this.sendAuthInputPacketToServer(ClientPlayMode.Screen);
         }
     }
 
@@ -117,10 +116,6 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void sendAuthInputPacketToServer(final ClientPlayMode playMode) {
-        if (!this.prevOnGround && this.onGround) {
-            this.prevOnGround = true;
-            this.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
-        }
         if (this.prevPosition == null) {
             this.prevPosition = this.position;
         }
@@ -249,12 +244,6 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void setPosition(final Position3f position) {
         this.prevPosition = position;
         super.setPosition(position);
-    }
-
-    @Override
-    public void setOnGround(final boolean onGround) {
-        this.prevOnGround = onGround;
-        super.setOnGround(onGround);
     }
 
     @Override
