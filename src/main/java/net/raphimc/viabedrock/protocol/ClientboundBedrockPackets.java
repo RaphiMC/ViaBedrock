@@ -39,7 +39,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     MOVE_PLAYER(MinecraftPacketIds.MovePlayer.getValue()),
     UPDATE_BLOCK(MinecraftPacketIds.UpdateBlock.getValue()),
     ADD_PAINTING(MinecraftPacketIds.AddPainting.getValue()),
-    TICK_SYNC(MinecraftPacketIds.TickSync.getValue()),
     LEVEL_SOUND_EVENT_V1(MinecraftPacketIds.LevelSoundEventV1.getValue()),
     LEVEL_EVENT(MinecraftPacketIds.LevelEvent.getValue()),
     BLOCK_EVENT(MinecraftPacketIds.TileEvent.getValue()),
@@ -175,6 +174,7 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     OPEN_SIGN(MinecraftPacketIds.OpenSign.getValue()),
     AGENT_ANIMATION(MinecraftPacketIds.AgentAnimation.getValue()),
     SET_PLAYER_INVENTORY_OPTIONS(MinecraftPacketIds.SetPlayerInventoryOptions.getValue()),
+    AWARD_ACHIEVEMENT(MinecraftPacketIds.AwardAchievementPacket.getValue()),
     SET_HUD(MinecraftPacketIds.SetHudPacket.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];

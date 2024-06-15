@@ -31,7 +31,7 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.chunk.ChunkType1_20_2;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import com.viaversion.viaversion.util.CompactArrayUtil;
 import com.viaversion.viaversion.util.MathUtil;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -116,7 +116,7 @@ public class ChunkTracker extends StoredObject {
         if (!this.isInRenderDistance(chunkX, chunkZ)) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of render distance, but within load distance: " + chunkX + ", " + chunkZ);
             final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
-            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_20_5.SET_CHUNK_CACHE_CENTER, this.getUser());
+            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_21.SET_CHUNK_CACHE_CENTER, this.getUser());
             updateViewPosition.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().x() >> 4); // chunk x
             updateViewPosition.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().z() >> 4); // chunk z
             updateViewPosition.send(BedrockProtocol.class);
@@ -143,7 +143,7 @@ public class ChunkTracker extends StoredObject {
         }
         this.getUser().get(EntityTracker.class).removeItemFrame(chunkPos);
 
-        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_20_5.FORGET_LEVEL_CHUNK, this.getUser());
+        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_21.FORGET_LEVEL_CHUNK, this.getUser());
         unloadChunk.write(Types.CHUNK_POSITION, chunkPos); // chunk position
         unloadChunk.send(BedrockProtocol.class);
     }
@@ -410,7 +410,7 @@ public class ChunkTracker extends StoredObject {
         }
         final Chunk remappedChunk = this.remapChunk(chunk);
 
-        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_20_5.LEVEL_CHUNK_WITH_LIGHT, this.getUser());
+        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_21.LEVEL_CHUNK_WITH_LIGHT, this.getUser());
         final BitSet lightMask = new BitSet();
         lightMask.set(0, remappedChunk.getSections().length + 2);
         wrapper.write(this.chunkType, remappedChunk); // chunk

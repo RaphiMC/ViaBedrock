@@ -1,0 +1,44 @@
+{
+    "remappedMetas": {
+        "minecraft:coral_block": {
+            "0": "minecraft:tube_coral_block",
+            "1": "minecraft:brain_coral_block",
+            "10": "minecraft:dead_bubble_coral_block",
+            "11": "minecraft:dead_fire_coral_block",
+            "12": "minecraft:dead_horn_coral_block",
+            "2": "minecraft:bubble_coral_block",
+            "3": "minecraft:fire_coral_block",
+            "4": "minecraft:horn_coral_block",
+            "8": "minecraft:dead_tube_coral_block",
+            "9": "minecraft:dead_brain_coral_block"
+        },
+        "minecraft:double_plant": {
+            "0": "minecraft:sunflower",
+            "1": "minecraft:lilac",
+            "2": "minecraft:tall_grass",
+            "3": "minecraft:large_fern",
+            "4": "minecraft:rose_bush",
+            "5": "minecraft:peony"
+        },
+        "minecraft:stone_block_slab": {
+            "0": "minecraft:smooth_stone_slab",
+            "1": "minecraft:sandstone_slab",
+            "2": "minecraft:petrified_oak_slab",
+            "3": "minecraft:cobblestone_slab",
+            "4": "minecraft:brick_slab",
+            "5": "minecraft:stone_brick_slab",
+            "6": "minecraft:quartz_slab",
+            "7": "minecraft:nether_brick_slab"
+        },
+        "minecraft:tallgrass": {
+            "0": "minecraft:short_grass",
+            "2": "minecraft:fern",
+            "3": "minecraft:fern"
+        }
+    },
+    "renamedIds": {
+        "minecraft:record_creator": "minecraft:music_disc_creator",
+        "minecraft:record_creator_music_box": "minecraft:music_disc_creator_music_box",
+        "minecraft:record_precipice": "minecraft:music_disc_precipice"
+    }
+}

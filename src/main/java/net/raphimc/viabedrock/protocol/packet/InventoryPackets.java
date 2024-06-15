@@ -24,8 +24,8 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.components.TranslationComponent;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
 import net.lenni0451.mcstructs_bedrock.forms.serializer.FormSerializer;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -55,7 +55,7 @@ import java.util.logging.Level;
 public class InventoryPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_20_5.OPEN_SCREEN, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_21.OPEN_SCREEN, wrapper -> {
             final byte windowId = wrapper.read(Types.BYTE); // window id
             final byte rawType = wrapper.read(Types.BYTE); // type
             final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
@@ -69,7 +69,7 @@ public class InventoryPackets {
             if (menuType == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to open unimplemented container: " + type);
                 wrapper.cancel();
-                PacketFactory.sendContainerClose(wrapper.user(), windowId);
+                PacketFactory.sendContainerClose(wrapper.user(), windowId, ContainerType.NONE);
                 return;
             }
             if (menuType.equals(MenuType.INVENTORY)) {
@@ -94,21 +94,29 @@ public class InventoryPackets {
             wrapper.write(Types.VAR_INT, menuType.javaMenuTypeId()); // type
             wrapper.write(Types.TAG, TextUtil.componentToNbt(title)); // title
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_20_5.CONTAINER_CLOSE, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_21.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(Types.BYTE, Types.UNSIGNED_BYTE); // window id
                 handler(wrapper -> {
+                    final ContainerType containerType = ContainerType.getByValue(wrapper.read(Types.BYTE)); // type
                     final boolean serverInitiated = wrapper.read(Types.BOOLEAN); // server initiated
+
                     final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
                     final Container container = serverInitiated ? inventoryTracker.getCurrentContainer() : inventoryTracker.getPendingCloseContainer();
                     if (container != null) {
+                        if (containerType != ContainerType.NONE && containerType != container.menuType().bedrockContainerType()) {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Server tried to close container, but container type was not correct");
+                            wrapper.cancel();
+                            return;
+                        }
+
                         wrapper.send(BedrockProtocol.class);
                         wrapper.cancel();
                         inventoryTracker.setCurrentContainerClosed();
 
                         if (serverInitiated) {
-                            PacketFactory.sendContainerClose(wrapper.user(), container.windowId());
+                            PacketFactory.sendContainerClose(wrapper.user(), container.windowId(), ContainerType.NONE);
                         }
                     } else if (inventoryTracker.getCurrentFakeContainer() != null) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Server tried to close container, but no container was open");
@@ -117,7 +125,7 @@ public class InventoryPackets {
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_20_5.CONTAINER_SET_CONTENT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_21.CONTAINER_SET_CONTENT, wrapper -> {
             final int windowId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // window id
             final BedrockItem[] items = wrapper.read(wrapper.user().get(ItemRewriter.class).itemArrayType()); // items
 
@@ -173,6 +181,7 @@ public class InventoryPackets {
             @Override
             protected void register() {
                 map(Types.UNSIGNED_BYTE, Types.BYTE); // window id
+                create(Types.BYTE, (byte) ContainerType.NONE.getValue()); // type
                 create(Types.BOOLEAN, false); // server initiated
                 handler(wrapper -> {
                     final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);

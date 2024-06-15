@@ -1,0 +1,138 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 21,
+    "maxVersionPatch": 0,
+    "maxVersionRevision": 3,
+    "addedProperties": {
+        "minecraft:trial_spawner": {
+            "ominous": {
+                "byte": 0
+            }
+        },
+        "minecraft:vault": {
+            "ominous": {
+                "byte": 0
+            }
+        }
+    },
+    "remappedStates": {
+        "minecraft:coral_block": [
+            {
+                "oldState": {
+                    "dead_bit": {
+                        "byte": 0
+                    }
+                },
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "coral_color",
+                    "suffix": "_coral_block",
+                    "flattenedValueRemaps": {
+                        "blue": "tube",
+                        "pink": "brain",
+                        "purple": "bubble",
+                        "red": "fire",
+                        "yellow": "horn"
+                    }
+                },
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "dead_bit": {
+                        "byte": 1
+                    }
+                },
+                "newFlattenedName": {
+                    "prefix": "minecraft:dead_",
+                    "flattenedProperty": "coral_color",
+                    "suffix": "_coral_block",
+                    "flattenedValueRemaps": {
+                        "blue": "tube",
+                        "pink": "brain",
+                        "purple": "bubble",
+                        "red": "fire",
+                        "yellow": "horn"
+                    }
+                },
+                "newState": null
+            }
+        ],
+        "minecraft:double_plant": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "double_plant_type",
+                    "suffix": "",
+                    "flattenedValueRemaps": {
+                        "fern": "large_fern",
+                        "grass": "tall_grass",
+                        "paeonia": "peony",
+                        "rose": "rose_bush",
+                        "syringa": "lilac"
+                    }
+                },
+                "newState": null,
+                "copiedState": [
+                    "upper_block_bit"
+                ]
+            }
+        ],
+        "minecraft:stone_block_slab": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "stone_slab_type",
+                    "suffix": "_slab",
+                    "flattenedValueRemaps": {
+                        "wood": "petrified_oak"
+                    }
+                },
+                "newState": null,
+                "copiedState": [
+                    "minecraft:vertical_half"
+                ]
+            }
+        ],
+        "minecraft:tallgrass": [
+            {
+                "oldState": {
+                    "tall_grass_type": {
+                        "string": "default"
+                    }
+                },
+                "newName": "minecraft:short_grass",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "tall_grass_type": {
+                        "string": "fern"
+                    }
+                },
+                "newName": "minecraft:fern",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "tall_grass_type": {
+                        "string": "snow"
+                    }
+                },
+                "newName": "minecraft:fern",
+                "newState": null
+            },
+            {
+                "oldState": {
+                    "tall_grass_type": {
+                        "string": "tall"
+                    }
+                },
+                "newName": "minecraft:short_grass",
+                "newState": null
+            }
+        ]
+    }
+}

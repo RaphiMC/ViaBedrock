@@ -21,8 +21,8 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundConfigurationPackets1_20_5;
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundConfigurationPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
 import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -48,7 +48,7 @@ import java.util.logging.Level;
 public class ResourcePackPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientboundTransition(ClientboundBedrockPackets.RESOURCE_PACKS_INFO, ClientboundConfigurationPackets1_20_5.RESOURCE_PACK_PUSH, (PacketHandler) wrapper -> {
+        protocol.registerClientboundTransition(ClientboundBedrockPackets.RESOURCE_PACKS_INFO, ClientboundConfigurationPackets1_21.RESOURCE_PACK_PUSH, (PacketHandler) wrapper -> {
             if (wrapper.user().has(ResourcePacksStorage.class)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACKS_INFO twice");
                 wrapper.cancel();

@@ -24,44 +24,46 @@ import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.gson.JsonNull;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 
 public class PacketFactory {
 
     public static PacketWrapper systemChat(final UserConnection user, final Tag message) {
-        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_20_5.SYSTEM_CHAT, user);
+        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_21.SYSTEM_CHAT, user);
         systemChat.write(Types.TAG, message); // message
         systemChat.write(Types.BOOLEAN, false); // overlay
         return systemChat;
     }
 
     public static PacketWrapper blockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) {
-        final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_20_5.BLOCK_ENTITY_DATA, user);
+        final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_21.BLOCK_ENTITY_DATA, user);
         blockEntityData.write(Types.BLOCK_POSITION1_14, position); // position
         blockEntityData.write(Types.VAR_INT, blockEntity.typeId()); // type
         blockEntityData.write(Types.COMPOUND_TAG, blockEntity.tag()); // block entity tag
         return blockEntityData;
     }
 
-    public static PacketWrapper containerClose(final UserConnection user, final byte windowId) {
+    public static PacketWrapper containerClose(final UserConnection user, final byte windowId, final ContainerType containerType) {
         final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, user);
         containerClose.write(Types.BYTE, windowId); // window id
+        containerClose.write(Types.BYTE, (byte) containerType.getValue()); // type
         containerClose.write(Types.BOOLEAN, false); // server initiated
         return containerClose;
     }
 
-    public static <T extends Throwable> void sendSystemChat(final UserConnection user, final Tag message) {
+    public static void sendSystemChat(final UserConnection user, final Tag message) {
         systemChat(user, message).send(BedrockProtocol.class);
     }
 
-    public static <T extends Throwable> void sendBlockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) {
+    public static void sendBlockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) {
         blockEntityData(user, position, blockEntity).send(BedrockProtocol.class);
     }
 
-    public static <T extends Throwable> void sendContainerClose(final UserConnection user, final byte windowId) {
-        containerClose(user, windowId).sendToServer(BedrockProtocol.class);
+    public static void sendContainerClose(final UserConnection user, final byte windowId, final ContainerType containerType) {
+        containerClose(user, windowId, containerType).sendToServer(BedrockProtocol.class);
     }
 
     public static void writeDisconnect(final PacketWrapper wrapper, final String reason) {

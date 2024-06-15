@@ -45,7 +45,6 @@ import net.raphimc.viabedrock.api.item.ItemUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.ResourcePack;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -112,6 +111,7 @@ public class BedrockMappingData extends MappingDataBase {
     // Other stuff
     private BiMap<String, String> bedrockToJavaExperimentalFeatures;
     private BiMap<String, String> bedrockToJavaBannerPatterns;
+    private BiMap<String, String> bedrockToJavaPaintings;
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolConstants.JAVA_VERSION.getName());
@@ -466,41 +466,39 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockEntities.put(entry.getStringTag("id").getValue(), entry.getIntTag("rid").asInt());
             }
 
-            Via.getManager().getProtocolManager().addMappingLoaderFuture(BedrockProtocol.class, ProtocolConstants.JAVA_PROTOCOL_CLASS, () -> {
-                final JsonObject bedrockToJavaEntityMappingsJson = this.readJson("custom/entity_mappings.json");
-                this.bedrockToJavaEntities = new HashMap<>(bedrockToJavaEntityMappingsJson.size());
-                final Set<String> unmappedIdentifiers = new HashSet<>();
-                for (Map.Entry<String, JsonElement> entry : bedrockToJavaEntityMappingsJson.entrySet()) {
-                    final String bedrockIdentifier = entry.getKey();
-                    if (!this.bedrockEntities.containsKey(bedrockIdentifier)) {
-                        throw new RuntimeException("Unknown bedrock entity identifier: " + bedrockIdentifier);
-                    }
-
-                    final String javaIdentifier = entry.getValue().getAsString();
-                    if (javaIdentifier.isEmpty()) {
-                        unmappedIdentifiers.add(bedrockIdentifier);
-                        continue;
-                    }
-                    EntityTypes1_20_5 javaEntityType = null;
-                    for (EntityTypes1_20_5 type : EntityTypes1_20_5.values()) {
-                        if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
-                            javaEntityType = type;
-                            break;
-                        }
-                    }
-                    if (javaEntityType == null) {
-                        throw new RuntimeException("Unknown java entity identifier: " + javaIdentifier);
-                    }
-
-                    this.bedrockToJavaEntities.put(bedrockIdentifier, javaEntityType);
+            final JsonObject bedrockToJavaEntityMappingsJson = this.readJson("custom/entity_mappings.json");
+            this.bedrockToJavaEntities = new HashMap<>(bedrockToJavaEntityMappingsJson.size());
+            final Set<String> unmappedIdentifiers = new HashSet<>();
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaEntityMappingsJson.entrySet()) {
+                final String bedrockIdentifier = entry.getKey();
+                if (!this.bedrockEntities.containsKey(bedrockIdentifier)) {
+                    throw new RuntimeException("Unknown bedrock entity identifier: " + bedrockIdentifier);
                 }
 
-                for (String bedrockIdentifier : this.bedrockEntities.keySet()) {
-                    if (!this.bedrockToJavaEntities.containsKey(bedrockIdentifier) && !unmappedIdentifiers.contains(bedrockIdentifier)) {
-                        throw new RuntimeException("Missing bedrock -> java entity mapping for " + bedrockIdentifier);
+                final String javaIdentifier = entry.getValue().getAsString();
+                if (javaIdentifier.isEmpty()) {
+                    unmappedIdentifiers.add(bedrockIdentifier);
+                    continue;
+                }
+                EntityTypes1_20_5 javaEntityType = null;
+                for (EntityTypes1_20_5 type : EntityTypes1_20_5.values()) {
+                    if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
+                        javaEntityType = type;
+                        break;
                     }
                 }
-            });
+                if (javaEntityType == null) {
+                    throw new RuntimeException("Unknown java entity identifier: " + javaIdentifier);
+                }
+
+                this.bedrockToJavaEntities.put(bedrockIdentifier, javaEntityType);
+            }
+
+            for (String bedrockIdentifier : this.bedrockEntities.keySet()) {
+                if (!this.bedrockToJavaEntities.containsKey(bedrockIdentifier) && !unmappedIdentifiers.contains(bedrockIdentifier)) {
+                    throw new RuntimeException("Missing bedrock -> java entity mapping for " + bedrockIdentifier);
+                }
+            }
 
             final JsonArray javaBlockEntitiesJson = javaViaMappingJson.get("blockentities").getAsJsonArray();
             this.javaBlockEntities = HashBiMap.create(javaBlockEntitiesJson.size());
@@ -522,25 +520,23 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockEffects.put(bedrockEffectsJson.get(i).getAsString(), i + 1);
             }
 
-            this.bedrockToJavaEffects = new HashMap<>(this.bedrockEffects.size());
-            for (String bedrockIdentifier : this.bedrockEffects.keySet()) {
-                if (this.javaEffects.containsKey(bedrockIdentifier)) {
-                    this.bedrockToJavaEffects.put(bedrockIdentifier, bedrockIdentifier);
+            final JsonObject bedrockToJavaEffectMappingsJson = this.readJson("custom/effect_mappings.json");
+            this.bedrockToJavaEffects = new HashMap<>(bedrockToJavaEffectMappingsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaEffectMappingsJson.entrySet()) {
+                final String bedrockIdentifier = entry.getKey();
+                if (!this.bedrockEffects.containsKey(bedrockIdentifier)) {
+                    throw new IllegalStateException("Unknown bedrock effect: " + bedrockIdentifier);
                 }
-            }
-
-            final JsonObject effectMappingsJson = this.readJson("custom/effect_mappings.json");
-            for (Map.Entry<String, JsonElement> entry : effectMappingsJson.entrySet()) {
-                this.bedrockToJavaEffects.put(entry.getKey(), entry.getValue().getAsString());
+                final String javaIdentifier = entry.getValue().getAsString();
+                if (!this.javaEffects.containsKey(javaIdentifier)) {
+                    throw new IllegalStateException("Unknown java effect: " + javaIdentifier);
+                }
+                this.bedrockToJavaEffects.put(bedrockIdentifier, javaIdentifier);
             }
 
             for (String bedrockIdentifier : this.bedrockEffects.keySet()) {
                 if (!this.bedrockToJavaEffects.containsKey(bedrockIdentifier)) {
                     throw new IllegalStateException("Missing bedrock -> java effect mapping for " + bedrockIdentifier);
-                }
-                final String javaIdentifier = this.bedrockToJavaEffects.get(bedrockIdentifier);
-                if (!this.javaEffects.containsKey(javaIdentifier)) {
-                    throw new IllegalStateException("Missing java effect mapping for: " + javaIdentifier);
                 }
             }
         }
@@ -560,6 +556,16 @@ public class BedrockMappingData extends MappingDataBase {
                     throw new RuntimeException("Unknown java banner pattern: " + javaIdentifier);
                 }
                 this.bedrockToJavaBannerPatterns.put(entry.getKey(), javaIdentifier);
+            }
+
+            final JsonObject bedrockToJavaPaintingMappingsJson = this.readJson("custom/painting_mappings.json");
+            this.bedrockToJavaPaintings = HashBiMap.create(bedrockToJavaPaintingMappingsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaPaintingMappingsJson.entrySet()) {
+                final String javaIdentifier = entry.getValue().getAsString();
+                if (!this.javaRegistries.getCompoundTag("minecraft:painting_variant").contains(javaIdentifier)) {
+                    throw new RuntimeException("Unknown java painting: " + javaIdentifier);
+                }
+                this.bedrockToJavaPaintings.put(entry.getKey(), javaIdentifier);
             }
         }
     }
@@ -702,6 +708,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public BiMap<String, String> getBedrockToJavaBannerPatterns() {
         return this.bedrockToJavaBannerPatterns;
+    }
+
+    public BiMap<String, String> getBedrockToJavaPaintings() {
+        return this.bedrockToJavaPaintings;
     }
 
     @Override

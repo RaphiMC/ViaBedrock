@@ -30,7 +30,6 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     MOVE_ENTITY_ABSOLUTE(MinecraftPacketIds.MoveAbsoluteActor.getValue()),
     MOVE_PLAYER(MinecraftPacketIds.MovePlayer.getValue()),
     PASSENGER_JUMP(MinecraftPacketIds.PassengerJump.getValue()),
-    TICK_SYNC(MinecraftPacketIds.TickSync.getValue()),
     LEVEL_SOUND_EVENT_V1(MinecraftPacketIds.LevelSoundEventV1.getValue()),
     ENTITY_EVENT(MinecraftPacketIds.ActorEvent.getValue()),
     INVENTORY_TRANSACTION(MinecraftPacketIds.InventoryTransaction.getValue()),

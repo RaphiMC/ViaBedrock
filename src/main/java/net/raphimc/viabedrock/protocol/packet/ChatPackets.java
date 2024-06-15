@@ -25,8 +25,8 @@ import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
@@ -84,7 +84,7 @@ public class ChatPackets {
     };
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_20_5.SYSTEM_CHAT, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_21.SYSTEM_CHAT, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
@@ -172,9 +172,10 @@ public class ChatPackets {
                 });
                 read(BedrockTypes.STRING); // xuid
                 read(BedrockTypes.STRING); // platform chat id
+                read(BedrockTypes.STRING); // filtered message
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_20_5.SYSTEM_CHAT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_21.SYSTEM_CHAT, wrapper -> {
             final CommandOriginData originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN_DATA); // origin
             final CommandOutputType type = CommandOutputType.getByValue(wrapper.read(Types.UNSIGNED_BYTE), CommandOutputType.None); // type
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
@@ -210,7 +211,7 @@ public class ChatPackets {
                     final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
                     wrapper.user().put(new CommandsStorage(wrapper.user(), commands));
                     wrapper.cancel(); // Will be sent in JoinPackets#handleGameJoin
-                }, ClientboundPackets1_20_5.COMMANDS, (PacketHandler) wrapper -> {
+                }, ClientboundPackets1_21.COMMANDS, (PacketHandler) wrapper -> {
                     final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
                     final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
                     wrapper.user().put(commandsStorage);
@@ -263,6 +264,7 @@ public class ChatPackets {
                 map(Types.STRING, BedrockTypes.STRING); // message
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(AuthChainData.class).getXuid())); // xuid
                 create(BedrockTypes.STRING, ""); // platform chat id
+                create(BedrockTypes.STRING, ""); // filtered message
                 handler(PacketWrapper::clearInputBuffer);
                 handler(wrapper -> {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
@@ -288,7 +290,7 @@ public class ChatPackets {
 
             final Suggestions suggestions = commandsStorage.complete(command);
 
-            final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets1_20_5.COMMAND_SUGGESTIONS, wrapper.user());
+            final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets1_21.COMMAND_SUGGESTIONS, wrapper.user());
             tabComplete.write(Types.VAR_INT, id); // transaction id
             tabComplete.write(Types.VAR_INT, suggestions.getRange().getStart()); // start index
             tabComplete.write(Types.VAR_INT, suggestions.getRange().getLength()); // length

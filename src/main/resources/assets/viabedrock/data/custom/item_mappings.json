@@ -949,27 +949,9 @@
     }
   },
   "minecraft:stone_block_slab": {
-    "block": {
-      "minecraft:stone_block_slab[stone_slab_type=smooth_stone,minecraft:vertical_half=bottom]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:smooth_stone_slab"
-      },
-      "minecraft:stone_block_slab[stone_slab_type=cobblestone,minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:cobblestone_slab"
-      },
-      "minecraft:stone_block_slab[stone_slab_type=stone_brick,minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:stone_brick_slab"
-      },
-      "minecraft:stone_block_slab[stone_slab_type=sandstone,minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:sandstone_slab"
-      },
-      "minecraft:stone_block_slab[stone_slab_type=brick,minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:brick_slab"
-      },
-      "minecraft:stone_block_slab[stone_slab_type=nether_brick,minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:nether_brick_slab"
-      },
-      "minecraft:stone_block_slab[stone_slab_type=quartz,minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:quartz_slab"
       }
     }
   },
@@ -3287,34 +3269,16 @@
     }
   },
   "minecraft:tallgrass": {
-    "block": {
-      "minecraft:tallgrass[tall_grass_type=fern]": {
-        "java_id": "minecraft:fern"
-      },
-      "minecraft:tallgrass[tall_grass_type=tall]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:short_grass"
       }
     }
   },
   "minecraft:double_plant": {
-    "block": {
-      "minecraft:double_plant[double_plant_type=fern]": {
-        "java_id": "minecraft:large_fern"
-      },
-      "minecraft:double_plant[double_plant_type=grass]": {
-        "java_id": "minecraft:tall_grass"
-      },
-      "minecraft:double_plant[double_plant_type=sunflower]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:sunflower"
-      },
-      "minecraft:double_plant[double_plant_type=syringa]": {
-        "java_id": "minecraft:lilac"
-      },
-      "minecraft:double_plant[double_plant_type=rose]": {
-        "java_id": "minecraft:rose_bush"
-      },
-      "minecraft:double_plant[double_plant_type=paeonia]": {
-        "java_id": "minecraft:peony"
       }
     }
   },
@@ -4876,36 +4840,9 @@
     }
   },
   "minecraft:coral_block": {
-    "block": {
-      "minecraft:coral_block[coral_color=blue,dead_bit=0]": {
+    "meta": {
+      "": {
         "java_id": "minecraft:tube_coral_block"
-      },
-      "minecraft:coral_block[coral_color=pink,dead_bit=0]": {
-        "java_id": "minecraft:brain_coral_block"
-      },
-      "minecraft:coral_block[coral_color=purple,dead_bit=0]": {
-        "java_id": "minecraft:bubble_coral_block"
-      },
-      "minecraft:coral_block[coral_color=red,dead_bit=0]": {
-        "java_id": "minecraft:fire_coral_block"
-      },
-      "minecraft:coral_block[coral_color=yellow,dead_bit=0]": {
-        "java_id": "minecraft:horn_coral_block"
-      },
-      "minecraft:coral_block[coral_color=blue,dead_bit=1]": {
-        "java_id": "minecraft:dead_tube_coral_block"
-      },
-      "minecraft:coral_block[coral_color=pink,dead_bit=1]": {
-        "java_id": "minecraft:dead_brain_coral_block"
-      },
-      "minecraft:coral_block[coral_color=purple,dead_bit=1]": {
-        "java_id": "minecraft:dead_bubble_coral_block"
-      },
-      "minecraft:coral_block[coral_color=red,dead_bit=1]": {
-        "java_id": "minecraft:dead_fire_coral_block"
-      },
-      "minecraft:coral_block[coral_color=yellow,dead_bit=1]": {
-        "java_id": "minecraft:dead_horn_coral_block"
       }
     }
   },
@@ -4913,6 +4850,223 @@
     "block": {
       "minecraft:sculk": {
         "java_id": "minecraft:sculk"
+      }
+    }
+  },
+  "minecraft:brain_coral_block": {
+    "block": {
+      "minecraft:brain_coral_block": {
+        "java_id": "minecraft:brain_coral_block"
+      }
+    }
+  },
+  "minecraft:bubble_coral_block": {
+    "block": {
+      "minecraft:bubble_coral_block": {
+        "java_id": "minecraft:bubble_coral_block"
+      }
+    }
+  },
+  "minecraft:fire_coral_block": {
+    "block": {
+      "minecraft:fire_coral_block": {
+        "java_id": "minecraft:fire_coral_block"
+      }
+    }
+  },
+  "minecraft:horn_coral_block": {
+    "block": {
+      "minecraft:horn_coral_block": {
+        "java_id": "minecraft:horn_coral_block"
+      }
+    }
+  },
+  "minecraft:tube_coral_block": {
+    "block": {
+      "minecraft:tube_coral_block": {
+        "java_id": "minecraft:tube_coral_block"
+      }
+    }
+  },
+  "minecraft:dead_brain_coral_block": {
+    "block": {
+      "minecraft:dead_brain_coral_block": {
+        "java_id": "minecraft:dead_brain_coral_block"
+      }
+    }
+  },
+  "minecraft:dead_bubble_coral_block": {
+    "block": {
+      "minecraft:dead_bubble_coral_block": {
+        "java_id": "minecraft:dead_bubble_coral_block"
+      }
+    }
+  },
+  "minecraft:dead_fire_coral_block": {
+    "block": {
+      "minecraft:dead_fire_coral_block": {
+        "java_id": "minecraft:dead_fire_coral_block"
+      }
+    }
+  },
+  "minecraft:dead_horn_coral_block": {
+    "block": {
+      "minecraft:dead_horn_coral_block": {
+        "java_id": "minecraft:dead_horn_coral_block"
+      }
+    }
+  },
+  "minecraft:dead_tube_coral_block": {
+    "block": {
+      "minecraft:dead_tube_coral_block": {
+        "java_id": "minecraft:dead_tube_coral_block"
+      }
+    }
+  },
+  "minecraft:brick_slab": {
+    "block": {
+      "minecraft:brick_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:brick_slab"
+      }
+    }
+  },
+  "minecraft:cobblestone_slab": {
+    "block": {
+      "minecraft:cobblestone_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:cobblestone_slab"
+      }
+    }
+  },
+  "minecraft:petrified_oak_slab": {
+    "block": {
+      "minecraft:petrified_oak_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:petrified_oak_slab"
+      }
+    }
+  },
+  "minecraft:quartz_slab": {
+    "block": {
+      "minecraft:quartz_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:quartz_slab"
+      }
+    }
+  },
+  "minecraft:sandstone_slab": {
+    "block": {
+      "minecraft:sandstone_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:sandstone_slab"
+      }
+    }
+  },
+  "minecraft:smooth_stone_slab": {
+    "block": {
+      "minecraft:smooth_stone_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:smooth_stone_slab"
+      }
+    }
+  },
+  "minecraft:stone_brick_slab": {
+    "block": {
+      "minecraft:stone_brick_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:stone_brick_slab"
+      }
+    }
+  },
+  "minecraft:nether_brick_slab": {
+    "block": {
+      "minecraft:nether_brick_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:nether_brick_slab"
+      }
+    }
+  },
+  "minecraft:short_grass": {
+    "block": {
+      "minecraft:short_grass": {
+        "java_id": "minecraft:short_grass"
+      }
+    }
+  },
+  "minecraft:tall_grass": {
+    "block": {
+      "minecraft:tall_grass": {
+        "java_id": "minecraft:tall_grass"
+      }
+    }
+  },
+  "minecraft:sunflower": {
+    "block": {
+      "minecraft:sunflower": {
+        "java_id": "minecraft:sunflower"
+      }
+    }
+  },
+  "minecraft:peony": {
+    "block": {
+      "minecraft:peony": {
+        "java_id": "minecraft:peony"
+      }
+    }
+  },
+  "minecraft:fern": {
+    "block": {
+      "minecraft:fern": {
+        "java_id": "minecraft:fern"
+      }
+    }
+  },
+  "minecraft:large_fern": {
+    "block": {
+      "minecraft:large_fern": {
+        "java_id": "minecraft:large_fern"
+      }
+    }
+  },
+  "minecraft:lilac": {
+    "block": {
+      "minecraft:lilac": {
+        "java_id": "minecraft:lilac"
+      }
+    }
+  },
+  "minecraft:rose_bush": {
+    "block": {
+      "minecraft:rose_bush": {
+        "java_id": "minecraft:rose_bush"
+      }
+    }
+  },
+  "minecraft:music_disc_creator": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:music_disc_creator"
+      }
+    }
+  },
+  "minecraft:music_disc_creator_music_box": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:music_disc_creator_music_box"
+      }
+    }
+  },
+  "minecraft:music_disc_precipice": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:music_disc_precipice"
+      }
+    }
+  },
+  "minecraft:ominous_bottle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:ominous_bottle"
+      }
+    }
+  },
+  "minecraft:ominous_trial_key": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:ominous_trial_key"
       }
     }
   },

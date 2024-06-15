@@ -74,6 +74,7 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                 if (fieldName.equalsIgnoreCase("NumTagTypes")) continue;
                 if (fieldName.equalsIgnoreCase("AbilityCount")) continue;
                 if (fieldName.equalsIgnoreCase("NumModes")) continue;
+                if (fieldName.equalsIgnoreCase("9800")) continue;
 
                 String fieldValue = value.split(" = ")[1];
                 switch (fieldValue) {

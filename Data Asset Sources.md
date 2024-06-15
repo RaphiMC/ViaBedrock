@@ -13,10 +13,13 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/9cb9a1450e6740df5abef30ff4261a0f75b8c32d/core/src/main/resources/bedrock/block_palette.1_20_80.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/4a334a2c8d7068c84fc9d41ada97a86f77c85c1f/core/src/main/resources/bedrock/block_palette.1_21_0.nbt)
 
 ### data/bedrock/block_traits.json
 [wiki.bedrock.dev](https://wiki.bedrock.dev/blocks/block-traits.html)
+
+### data/bedrock/effects.json
+[minecraft.wiki](https://minecraft.wiki/w/Effect)
 
 ### data/bedrock/entity_identifiers.nbt
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
@@ -33,7 +36,10 @@ These files have been copied from the official bedrock client's assets folder:
 `%MC-Root%/data/skin_packs/vanilla/`
 
 ### data/java/via_mappings.json
-[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.20.5.json)
+[ViaVersion Mappings](https://github.com/ViaVersion/Mappi[via_mappings.json](src%2Fmain%2Fresources%2Fassets%2Fviabedrock%2Fdata%2Fjava%2Fvia_mappings.json)ngs/blob/main/mappings/mapping-1.21.json)
+
+### data/java/effects.json
+[minecraft.wiki](https://minecraft.wiki/w/Effect)
 
 ### data/java/heightmap_blockstates.nbt
 This file has been dumped using a fabric mod.

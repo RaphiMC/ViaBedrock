@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.protocol.packet;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -31,7 +31,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 public class PlayPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_20_5.CHANGE_DIFFICULTY, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_21.CHANGE_DIFFICULTY, new PacketHandlers() {
             @Override
             public void register() {
                 map(BedrockTypes.UNSIGNED_VAR_INT, Types.UNSIGNED_BYTE); // difficulty
@@ -47,7 +47,7 @@ public class PlayPackets {
                 wrapper.user().get(BlobCache.class).addBlob(hash, blob);
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.TRANSFER, ClientboundPackets1_20_5.TRANSFER, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.TRANSFER, ClientboundPackets1_21.TRANSFER, new PacketHandlers() {
             @Override
             protected void register() {
                 map(BedrockTypes.STRING, Types.STRING); // address
@@ -60,7 +60,7 @@ public class PlayPackets {
         protocol.registerServerbound(ServerboundPackets1_20_5.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
         protocol.registerServerbound(ServerboundPackets1_20_5.PING_REQUEST, null, wrapper -> {
             wrapper.cancel();
-            final PacketWrapper pongResponse = wrapper.create(ClientboundPackets1_20_5.PONG_RESPONSE);
+            final PacketWrapper pongResponse = wrapper.create(ClientboundPackets1_21.PONG_RESPONSE);
             pongResponse.write(Types.LONG, wrapper.read(Types.LONG)); // time
             pongResponse.send(BedrockProtocol.class);
         });

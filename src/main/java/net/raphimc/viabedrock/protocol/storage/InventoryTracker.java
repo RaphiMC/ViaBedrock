@@ -22,8 +22,8 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_20_5;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
+import com.viaversion.viaversion.api.type.types.version.Types1_21;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.api.model.inventory.InventoryContainer;
@@ -32,6 +32,7 @@ import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -75,13 +76,13 @@ public class InventoryTracker extends StoredObject {
     public void openFakeContainer(final FakeContainer container) {
         this.currentFakeContainer = container;
 
-        final PacketWrapper openWindow = PacketWrapper.create(ClientboundPackets1_20_5.OPEN_SCREEN, this.getUser());
+        final PacketWrapper openWindow = PacketWrapper.create(ClientboundPackets1_21.OPEN_SCREEN, this.getUser());
         openWindow.write(Types.VAR_INT, (int) container.windowId()); // window id
         openWindow.write(Types.VAR_INT, container.menuType().javaMenuTypeId()); // type
         openWindow.write(Types.TAG, TextUtil.componentToNbt(container.title())); // title
         openWindow.send(BedrockProtocol.class);
 
-        final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_5.CONTAINER_SET_CONTENT, this.getUser());
+        final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_SET_CONTENT, this.getUser());
         this.writeWindowItems(windowItems, container);
         windowItems.send(BedrockProtocol.class);
     }
@@ -118,10 +119,10 @@ public class InventoryTracker extends StoredObject {
             throw new IllegalStateException("There is no container to close");
         }
 
-        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_20_5.CONTAINER_CLOSE, this.getUser());
+        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_CLOSE, this.getUser());
         closeWindow.write(Types.UNSIGNED_BYTE, (short) this.pendingCloseContainer.windowId()); // window id
         closeWindow.send(BedrockProtocol.class);
-        PacketFactory.sendContainerClose(this.getUser(), this.pendingCloseContainer.windowId());
+        PacketFactory.sendContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
     }
 
     public void handleWindowClick(final byte windowId, final int revision, final short slot, final byte button, final ClickType action) {
@@ -132,11 +133,11 @@ public class InventoryTracker extends StoredObject {
         if (targetContainer.windowId() != windowId) return;
         if (!targetContainer.handleWindowClick(revision, slot, button, action)) {
             if (targetContainer != this.inventoryContainer) {
-                final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_5.CONTAINER_SET_CONTENT, this.getUser());
+                final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_SET_CONTENT, this.getUser());
                 this.writeWindowItems(windowItems, this.inventoryContainer);
                 windowItems.send(BedrockProtocol.class);
             }
-            final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_20_5.CONTAINER_SET_CONTENT, this.getUser());
+            final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_SET_CONTENT, this.getUser());
             this.writeWindowItems(windowItems, targetContainer);
             windowItems.send(BedrockProtocol.class);
         }
@@ -145,8 +146,8 @@ public class InventoryTracker extends StoredObject {
     public void writeWindowItems(final PacketWrapper wrapper, final Container container) {
         wrapper.write(Types.UNSIGNED_BYTE, (short) container.windowId()); // window id
         wrapper.write(Types.VAR_INT, 0); // revision
-        wrapper.write(Types1_20_5.ITEM_ARRAY, container.getJavaItems(this.getUser())); // items
-        wrapper.write(Types1_20_5.ITEM, this.getUser().get(ItemRewriter.class).javaItem(this.currentCursorItem)); // cursor item
+        wrapper.write(Types1_21.ITEM_ARRAY, container.getJavaItems(this.getUser())); // items
+        wrapper.write(Types1_21.ITEM, this.getUser().get(ItemRewriter.class).javaItem(this.currentCursorItem)); // cursor item
     }
 
     public void tick() {

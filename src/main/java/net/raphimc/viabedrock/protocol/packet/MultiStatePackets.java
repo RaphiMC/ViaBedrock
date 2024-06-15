@@ -22,10 +22,10 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundConfigurationPackets1_20_5;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ClientboundPackets1_20_5;
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundConfigurationPackets1_20_5;
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPackets1_20_5;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -135,17 +135,17 @@ public class MultiStatePackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.DISCONNECT,
-                ClientboundPackets1_20_5.DISCONNECT, DISCONNECT_HANDLER,
+                ClientboundPackets1_21.DISCONNECT, DISCONNECT_HANDLER,
                 ClientboundLoginPackets.LOGIN_DISCONNECT, DISCONNECT_HANDLER,
-                ClientboundConfigurationPackets1_20_5.DISCONNECT, DISCONNECT_HANDLER
+                ClientboundConfigurationPackets1_21.DISCONNECT, DISCONNECT_HANDLER
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING,
-                ClientboundPackets1_20_5.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
+                ClientboundPackets1_21.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
                 ClientboundLoginPackets.LOGIN_DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
-                ClientboundConfigurationPackets1_20_5.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER
+                ClientboundConfigurationPackets1_21.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
-                ClientboundPackets1_20_5.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER,
+                ClientboundPackets1_21.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER,
                 State.LOGIN, (PacketHandler) wrapper -> {
                     NETWORK_STACK_LATENCY_HANDLER.handle(wrapper);
                     if (!wrapper.isCancelled()) {
@@ -158,7 +158,7 @@ public class MultiStatePackets {
                         }
                     }
                 },
-                ClientboundConfigurationPackets1_20_5.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER
+                ClientboundConfigurationPackets1_21.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER
         );
 
         protocol.registerServerbound(ServerboundPackets1_20_5.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, KEEP_ALIVE_HANDLER);

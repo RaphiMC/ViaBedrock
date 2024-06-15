@@ -28,5 +28,11 @@
   "minecraft:conduit_power",
   "minecraft:bad_omen",
   "minecraft:village_hero",
-  "minecraft:darkness"
+  "minecraft:darkness",
+  "minecraft:trial_omen",
+  "minecraft:raid_omen",
+  "minecraft:wind_charged",
+  "minecraft:weaving",
+  "minecraft:oozing",
+  "minecraft:infested"
 ]

@@ -39,5 +39,7 @@
   "flo": "minecraft:flower",
   "moj": "minecraft:mojang",
   "glb": "minecraft:globe",
-  "pig": "minecraft:piglin"
+  "pig": "minecraft:piglin",
+  "flw": "minecraft:flow",
+  "gus": "minecraft:guster"
 }
