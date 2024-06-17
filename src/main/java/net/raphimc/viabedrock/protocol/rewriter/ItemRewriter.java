@@ -31,7 +31,6 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
-import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
@@ -119,7 +118,7 @@ public class ItemRewriter extends StoredObject {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java item mapping for " + identifier);
                 final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
                 data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("§cMissing item: " + identifier));
-                return new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), (byte) MathUtil.clamp(bedrockItem.amount(), 0, 127), data);
+                return new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), bedrockItem.amount(), data);
             }
         }
 
@@ -208,7 +207,7 @@ public class ItemRewriter extends StoredObject {
                 data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("Bedrock " + this.displayName));
             }
 
-            return new StructuredItem(javaId, (byte) MathUtil.clamp(bedrockItem.amount(), 0, 127), data);
+            return new StructuredItem(javaId, bedrockItem.amount(), data);
         }
 
         public String identifier() {

@@ -309,7 +309,7 @@ public class FormContainer extends FakeContainer {
             data.set(StructuredDataKey.LORE, loreTags.toArray(new Tag[0]));
         }
 
-        return new StructuredItem(id, (byte) 1, data);
+        return new StructuredItem(id, 1, data);
     }
 
     private Tag stringToNbt(final String text) {
