@@ -47,7 +47,7 @@ dependencies {
     api("io.netty:netty-codec-http:4.1.111.Final") {
         transitive = false
     }
-    api "io.jsonwebtoken:jjwt-impl:0.12.5"
+    api "io.jsonwebtoken:jjwt-impl:0.12.6"
     api("io.jsonwebtoken:jjwt-gson:0.12.6") {
         exclude group: "com.google.code.gson", module: "gson"
     }
