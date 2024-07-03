@@ -19,8 +19,8 @@ package net.raphimc.viabedrock.protocol.types.primitive;
 
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.TypeConverter;
-import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class UnsignedVarIntType extends Type<Integer> implements TypeConverter<Integer> {
 
@@ -29,11 +29,11 @@ public class UnsignedVarIntType extends Type<Integer> implements TypeConverter<I
     }
 
     public int readPrimitive(final ByteBuf buffer) {
-        return (int) Types.VAR_LONG.readPrimitive(buffer);
+        return (int) BedrockTypes.UNSIGNED_VAR_LONG.readPrimitive(buffer);
     }
 
     public void writePrimitive(final ByteBuf buffer, int value) {
-        Types.VAR_LONG.writePrimitive(buffer, value & 0xFFFFFFFFL);
+        BedrockTypes.UNSIGNED_VAR_LONG.writePrimitive(buffer, value & 0xFFFFFFFFL);
     }
 
     @Override

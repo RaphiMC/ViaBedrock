@@ -29,7 +29,15 @@ public class UnsignedVarLongType extends Type<Long> implements TypeConverter<Lon
     }
 
     public long readPrimitive(final ByteBuf buffer) {
-        return Types.VAR_LONG.readPrimitive(buffer);
+        long val = 0;
+        int shift = 0;
+        byte in;
+        do {
+            in = buffer.readByte();
+            val |= (long) (in & 0x7F) << shift;
+            shift += 7;
+        } while ((in & 0x80) != 0);
+        return val;
     }
 
     public void writePrimitive(final ByteBuf buffer, long value) {
