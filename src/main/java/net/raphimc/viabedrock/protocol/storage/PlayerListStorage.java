@@ -28,8 +28,8 @@ public class PlayerListStorage implements StorableObject {
 
     private final Map<UUID, Pair<Long, String>> playerList = new HashMap<>();
 
-    public Pair<Long, String> addPlayer(final UUID uuid, final long playerListId, final String name) {
-        return this.playerList.put(uuid, new Pair<>(playerListId, name));
+    public Pair<Long, String> addPlayer(final UUID uuid, final long uniqueEntityId, final String name) {
+        return this.playerList.put(uuid, new Pair<>(uniqueEntityId, name));
     }
 
     public Pair<Long, String> removePlayer(final UUID uuid) {
@@ -44,9 +44,9 @@ public class PlayerListStorage implements StorableObject {
         return this.playerList.get(uuid);
     }
 
-    public Pair<UUID, String> getPlayer(final long playerListId) {
+    public Pair<UUID, String> getPlayer(final long uniqueEntityId) {
         for (final Map.Entry<UUID, Pair<Long, String>> entry : this.playerList.entrySet()) {
-            if (entry.getValue().key() == playerListId) {
+            if (entry.getValue().key() == uniqueEntityId) {
                 return new Pair<>(entry.getKey(), entry.getValue().value());
             }
         }

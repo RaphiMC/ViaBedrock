@@ -44,9 +44,9 @@ public class ResourcePackType extends Type<ResourcePack> {
         final boolean scripting = buffer.readBoolean();
         final boolean raytracingCapable = buffer.readBoolean();
 
-        java.util.UUID packUUID;
+        UUID packUUID;
         try {
-            packUUID = java.util.UUID.fromString(packId);
+            packUUID = UUID.fromString(packId);
         } catch (IllegalArgumentException e) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid resource pack UUID: " + packId, e);
             packUUID = new UUID(0L, 0L);
@@ -63,7 +63,7 @@ public class ResourcePackType extends Type<ResourcePack> {
         BedrockTypes.STRING.write(buffer, value.contentKey());
         BedrockTypes.STRING.write(buffer, value.subPackName());
         BedrockTypes.STRING.write(buffer, value.contentId());
-        buffer.writeBoolean(value.scripting());
+        buffer.writeBoolean(value.hasScripts());
         buffer.writeBoolean(value.raytracingCapable());
     }
 

@@ -18,9 +18,4 @@
 package net.raphimc.viabedrock.protocol.model;
 
 public record GameRule<T>(String name, boolean editable, T value) {
-
-    public GameRule(final GameRule<T> gameRule) {
-        this(gameRule.name(), gameRule.editable(), gameRule.value());
-    }
-
 }

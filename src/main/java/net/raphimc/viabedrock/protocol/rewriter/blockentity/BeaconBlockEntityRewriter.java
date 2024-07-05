@@ -51,7 +51,7 @@ public class BeaconBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
             final String bedrockIdentifier = BedrockProtocol.MAPPINGS.getBedrockEffects().inverse().get(bedrockId);
             if (bedrockIdentifier == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown beacon effect: " + bedrockId);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock beacon effect: " + bedrockId);
                 return;
             }
             newTag.putString(newName, BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(bedrockIdentifier));

@@ -21,28 +21,28 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandRegistry_HardNo
 
 import java.util.*;
 
-public record CommandData(String name, String description, int flags, short permission, EnumData alias, OverloadData[] overloads) {
+public record CommandData(String name, String description, int flags, byte permission, EnumData alias, OverloadData[] overloads) {
 
     public static class EnumData {
 
         private final String name;
-        private final Map<String, Set<Short>> values;
-        private final boolean dynamic;
+        private final Map<String, Set<Byte>> values;
+        private final boolean soft;
 
-        public EnumData(final String name, final Set<String> values, final boolean dynamic) {
+        public EnumData(final String name, final Set<String> values, final boolean soft) {
             this.name = name;
             this.values = new HashMap<>();
             for (final String value : values) {
                 this.values.put(value, new HashSet<>());
             }
-            this.dynamic = dynamic;
+            this.soft = soft;
         }
 
         public String name() {
             return this.name;
         }
 
-        public Map<String, Set<Short>> values() {
+        public Map<String, Set<Byte>> values() {
             return this.values;
         }
 
@@ -58,8 +58,8 @@ public record CommandData(String name, String description, int flags, short perm
             }
         }
 
-        public boolean dynamic() {
-            return this.dynamic;
+        public boolean soft() {
+            return this.soft;
         }
 
         @Override
@@ -67,12 +67,12 @@ public record CommandData(String name, String description, int flags, short perm
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             EnumData enumData = (EnumData) o;
-            return dynamic == enumData.dynamic && Objects.equals(name, enumData.name) && Objects.equals(values, enumData.values);
+            return soft == enumData.soft && Objects.equals(name, enumData.name) && Objects.equals(values, enumData.values);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(name, values, dynamic);
+            return Objects.hash(name, values, soft);
         }
 
         @Override
@@ -80,7 +80,7 @@ public record CommandData(String name, String description, int flags, short perm
             return "EnumData{" +
                     "name='" + name + '\'' +
                     ", values=" + values +
-                    ", dynamic=" + dynamic +
+                    ", soft=" + soft +
                     '}';
         }
 
@@ -96,8 +96,7 @@ public record CommandData(String name, String description, int flags, short perm
 
     public record OverloadData(boolean chaining, CommandData.OverloadData.ParamData[] parameters) {
 
-        public record ParamData(String name, boolean optional, short flags, CommandRegistry_HardNonTerminal type, EnumData enumData, SubCommandData subCommandData,
-                                String postfix) {
+        public record ParamData(String name, boolean optional, short flags, CommandRegistry_HardNonTerminal type, EnumData enumData, SubCommandData subCommandData, String postfix) {
         }
 
     }

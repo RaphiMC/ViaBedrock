@@ -18,9 +18,4 @@
 package net.raphimc.viabedrock.protocol.model;
 
 public record EducationUriResource(String buttonName, String linkUri) {
-
-    public EducationUriResource(final EducationUriResource resource) {
-        this(resource.buttonName(), resource.linkUri());
-    }
-
 }

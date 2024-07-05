@@ -109,7 +109,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
         wrapper.write(BedrockTypes.POSITION_3F, this.position); // position
         wrapper.write(BedrockTypes.POSITION_3F, this.rotation); // rotation
-        wrapper.write(Types.UNSIGNED_BYTE, (short) mode.getValue()); // mode
+        wrapper.write(Types.BYTE, (byte) mode.getValue()); // mode
         wrapper.write(Types.BOOLEAN, this.onGround); // on ground
         wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // riding runtime entity id
         wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // tick

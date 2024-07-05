@@ -20,9 +20,4 @@ package net.raphimc.viabedrock.protocol.model;
 import com.viaversion.nbt.tag.CompoundTag;
 
 public record BlockProperties(String name, CompoundTag properties) {
-
-    public BlockProperties(final BlockProperties blockProperties) {
-        this(blockProperties.name, blockProperties.properties.copy());
-    }
-
 }

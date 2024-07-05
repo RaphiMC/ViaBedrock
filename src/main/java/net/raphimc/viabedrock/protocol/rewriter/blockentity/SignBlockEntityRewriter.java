@@ -78,11 +78,11 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         final List<ATextComponent> components = new ArrayList<>();
         if (bedrockText.get("PersistFormatting") instanceof ByteTag persistFormatting && persistFormatting.asByte() != 0) {
             for (String line : BedrockTextUtils.split(text, "\n")) {
-                components.add(TextUtil.stringToComponent(line));
+                components.add(TextUtil.stringToTextComponent(line));
             }
         } else {
             for (String line : text.split("\n")) {
-                components.add(TextUtil.stringToComponent(line));
+                components.add(TextUtil.stringToTextComponent(line));
             }
         }
 
@@ -110,7 +110,7 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         if (!components.isEmpty()) {
             final ListTag<StringTag> messages = new ListTag<>(StringTag.class);
             for (int i = 0; i < 4; i++) {
-                messages.add(new StringTag(components.size() > i ? TextUtil.componentToJson(components.get(i)) : TextUtil.stringToJson("")));
+                messages.add(new StringTag(components.size() > i ? TextUtil.textComponentToJson(components.get(i)) : TextUtil.stringToJson("")));
             }
             javaText.put("messages", messages);
         }

@@ -18,9 +18,4 @@
 package net.raphimc.viabedrock.protocol.model;
 
 public record ItemEntry(String identifier, int id, boolean componentBased) {
-
-    public ItemEntry(final ItemEntry itemEntry) {
-        this(itemEntry.identifier(), itemEntry.id(), itemEntry.componentBased());
-    }
-
 }

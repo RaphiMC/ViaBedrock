@@ -61,7 +61,7 @@ public class ResourcePackPackets {
             wrapper.read(Types.BOOLEAN); // must accept
             wrapper.read(Types.BOOLEAN); // has addons
             wrapper.read(Types.BOOLEAN); // has scripts
-            wrapper.read(Types.BOOLEAN); // server packs force enabled
+            wrapper.read(Types.BOOLEAN); // force server packs enabled
 
             final ResourcePack[] behaviorPacks = wrapper.read(BedrockTypes.BEHAVIOUR_PACK_ARRAY);
             for (ResourcePack behaviorPack : behaviorPacks) {
@@ -113,7 +113,7 @@ public class ResourcePackPackets {
             final long compressedPackSize = wrapper.read(BedrockTypes.LONG_LE); // compressed pack size
             final byte[] hash = wrapper.read(BedrockTypes.BYTE_ARRAY); // hash
             final boolean premium = wrapper.read(Types.BOOLEAN); // premium
-            final PackType type = PackType.getByValue(wrapper.read(Types.UNSIGNED_BYTE), PackType.Invalid); // type
+            final PackType type = PackType.getByValue(wrapper.read(Types.BYTE), PackType.Invalid); // type
             final int actualChunkCount = (int) Math.ceil((double) compressedPackSize / maxChunkSize);
 
             if (resourcePacksStorage.hasPack(idAndVersion.key())) {
@@ -163,7 +163,7 @@ public class ResourcePackPackets {
                 resourcePacksStorage.setCompletedTransfer();
                 ViaBedrock.getPlatform().getLogger().log(Level.INFO, "All packs have been decompressed and decrypted");
                 final PacketWrapper resourcePackClientResponse = wrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
-                resourcePackClientResponse.write(Types.UNSIGNED_BYTE, (short) ResourcePackResponse.DownloadingFinished.getValue()); // status
+                resourcePackClientResponse.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
                 resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
                 resourcePackClientResponse.sendToServer(BedrockProtocol.class);
             }
@@ -204,7 +204,7 @@ public class ResourcePackPackets {
 
             if (!resourcePacksStorage.isJavaClientWaitingForPack()) {
                 final PacketWrapper resourcePackClientResponse = wrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
-                resourcePackClientResponse.write(Types.UNSIGNED_BYTE, (short) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
+                resourcePackClientResponse.write(Types.BYTE, (byte) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
                 resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                 resourcePackClientResponse.sendToServer(BedrockProtocol.class);
             }
@@ -222,7 +222,7 @@ public class ResourcePackPackets {
                     }
 
                     resourcePacksStorage.setLoadedOnJavaClient();
-                    wrapper.write(Types.UNSIGNED_BYTE, (short) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
+                    wrapper.write(Types.BYTE, (byte) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     break;
                 case FAILED_DOWNLOAD:
@@ -235,7 +235,7 @@ public class ResourcePackPackets {
 
                     resourcePacksStorage.setJavaClientWaitingForPack(false);
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Client resource pack download/loading failed");
-                    wrapper.write(Types.UNSIGNED_BYTE, (short) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
+                    wrapper.write(Types.BYTE, (byte) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     break;
                 case DECLINED:
@@ -243,7 +243,7 @@ public class ResourcePackPackets {
                     emptyResourcePackStorage.setCompletedTransfer();
                     wrapper.user().put(emptyResourcePackStorage);
 
-                    wrapper.write(Types.UNSIGNED_BYTE, (short) ResourcePackResponse.DownloadingFinished.getValue()); // status
+                    wrapper.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     break;
                 case ACCEPTED:
@@ -265,11 +265,11 @@ public class ResourcePackPackets {
 
                     if (!missingPacks.isEmpty()) {
                         ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Downloading " + missingPacks.size() + " packs");
-                        wrapper.write(Types.UNSIGNED_BYTE, (short) ResourcePackResponse.Downloading.getValue()); // status
+                        wrapper.write(Types.BYTE, (byte) ResourcePackResponse.Downloading.getValue()); // status
                         wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, missingPacks.toArray(new String[0])); // pack ids
                     } else {
                         resourcePacksStorage.setCompletedTransfer();
-                        wrapper.write(Types.UNSIGNED_BYTE, (short) ResourcePackResponse.DownloadingFinished.getValue()); // status
+                        wrapper.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
                         wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     }
                     break;
@@ -277,7 +277,7 @@ public class ResourcePackPackets {
                     wrapper.cancel();
                     break;
                 default:
-                    throw new IllegalStateException("Unhandled resource pack status: " + status);
+                    throw new IllegalStateException("Unhandled ResourcePackAction: " + status);
             }
         });
     }

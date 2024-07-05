@@ -58,13 +58,15 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_21.OPEN_SCREEN, wrapper -> {
             final byte windowId = wrapper.read(Types.BYTE); // window id
             final byte rawType = wrapper.read(Types.BYTE); // type
-            final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
-            wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
             final ContainerType type = ContainerType.getByValue(rawType);
             if (type == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown container type: " + rawType);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ContainerType: " + rawType);
+                wrapper.cancel();
                 return;
             }
+            final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
+            wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
+
             final MenuType menuType = MenuType.getByBedrockContainerType(type);
             if (menuType == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to open unimplemented container: " + type);
@@ -75,6 +77,7 @@ public class InventoryPackets {
             if (menuType.equals(MenuType.INVENTORY)) {
                 // TODO: Implement
                 wrapper.cancel();
+                PacketFactory.sendContainerClose(wrapper.user(), windowId, ContainerType.NONE);
                 return;
             }
 
@@ -84,7 +87,7 @@ public class InventoryPackets {
             final BedrockBlockEntity blockEntity = chunkTracker.getBlockEntity(position);
             ATextComponent title = new TranslationComponent("container." + blockStateRewriter.tag(chunkTracker.getBlockState(position)));
             if (blockEntity != null && blockEntity.tag().get("CustomName") instanceof StringTag customNameTag) {
-                title = TextUtil.stringToComponent(wrapper.user().get(ResourcePacksStorage.class).translate(customNameTag.getValue()));
+                title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePacksStorage.class).translate(customNameTag.getValue()));
             }
 
             final Container container = menuType.createContainer(windowId);
@@ -92,7 +95,7 @@ public class InventoryPackets {
 
             wrapper.write(Types.VAR_INT, (int) windowId); // window id
             wrapper.write(Types.VAR_INT, menuType.javaMenuTypeId()); // type
-            wrapper.write(Types.TAG, TextUtil.componentToNbt(title)); // title
+            wrapper.write(Types.TAG, TextUtil.textComponentToNbt(title)); // title
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_21.CONTAINER_CLOSE, new PacketHandlers() {
             @Override

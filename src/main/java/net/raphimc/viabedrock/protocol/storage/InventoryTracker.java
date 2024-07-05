@@ -79,7 +79,7 @@ public class InventoryTracker extends StoredObject {
         final PacketWrapper openWindow = PacketWrapper.create(ClientboundPackets1_21.OPEN_SCREEN, this.getUser());
         openWindow.write(Types.VAR_INT, (int) container.windowId()); // window id
         openWindow.write(Types.VAR_INT, container.menuType().javaMenuTypeId()); // type
-        openWindow.write(Types.TAG, TextUtil.componentToNbt(container.title())); // title
+        openWindow.write(Types.TAG, TextUtil.textComponentToNbt(container.title())); // title
         openWindow.send(BedrockProtocol.class);
 
         final PacketWrapper windowItems = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_SET_CONTENT, this.getUser());

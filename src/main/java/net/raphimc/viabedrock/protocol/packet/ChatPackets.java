@@ -60,7 +60,7 @@ public class ChatPackets {
                 final UUID uuid = wrapper.user().getProtocolInfo().getUuid();
                 wrapper.write(BedrockTypes.COMMAND_ORIGIN_DATA, new CommandOriginData(CommandOriginType.Player, uuid, "")); // origin
             });
-            create(Types.BOOLEAN, false); // internal
+            create(Types.BOOLEAN, false); // is internal
             create(BedrockTypes.VAR_INT, ProtocolConstants.BEDROCK_COMMAND_VERSION); // version
             handler(PacketWrapper::clearInputBuffer);
             handler(wrapper -> {
@@ -88,10 +88,10 @@ public class ChatPackets {
             @Override
             public void register() {
                 handler(wrapper -> {
-                    final short rawType = wrapper.read(Types.UNSIGNED_BYTE); // type
+                    final byte rawType = wrapper.read(Types.BYTE); // type
                     final TextPacketType type = TextPacketType.getByValue(rawType);
                     if (type == null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown text type: " + rawType);
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown TextPacketType: " + rawType);
                         wrapper.cancel();
                         return;
                     }
@@ -163,10 +163,10 @@ public class ChatPackets {
                                 break;
                             }
                             default:
-                                throw new IllegalStateException("Unhandled text type: " + type);
+                                throw new IllegalStateException("Unhandled TextPacketType: " + type);
                         }
                     } catch (Throwable e) { // Mojang client silently ignores errors
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalMessage + "' (" + type + ")", e);
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalMessage + "'", e);
                         wrapper.cancel();
                     }
                 });
@@ -177,7 +177,7 @@ public class ChatPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_21.SYSTEM_CHAT, wrapper -> {
             final CommandOriginData originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN_DATA); // origin
-            final CommandOutputType type = CommandOutputType.getByValue(wrapper.read(Types.UNSIGNED_BYTE), CommandOutputType.None); // type
+            final CommandOutputType type = CommandOutputType.getByValue(wrapper.read(Types.BYTE), CommandOutputType.None); // type
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
 
             if (originData.type() != CommandOriginType.Player) { // Mojang client ignores non player origins
@@ -189,11 +189,11 @@ public class ChatPackets {
             final StringBuilder message = new StringBuilder();
             final int messageCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // message count
             for (int i = 0; i < messageCount; i++) {
-                final boolean internal = wrapper.read(Types.BOOLEAN); // is internal
+                final boolean successful = wrapper.read(Types.BOOLEAN); // is successful
                 final String messageId = wrapper.read(BedrockTypes.STRING); // message id
                 final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
 
-                message.append(internal ? "§r" : "§c");
+                message.append(successful ? "§r" : "§c");
                 message.append(BedrockTranslator.translate(messageId, translator, parameters));
                 if (i != messageCount - 1) {
                     message.append("\n");
@@ -226,39 +226,39 @@ public class ChatPackets {
             final String name = wrapper.read(BedrockTypes.STRING); // name
             final Set<String> values = Sets.newHashSet(wrapper.read(BedrockTypes.STRING_ARRAY)); // values
 
-            final CommandData.EnumData dynamicEnum = commandsStorage.getDynamicEnum(name);
-            if (dynamicEnum == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received update for unknown dynamic enum: " + name);
+            final CommandData.EnumData softEnum = commandsStorage.getSoftEnum(name);
+            if (softEnum == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received update for unknown soft enum: " + name);
                 return;
             }
 
             final byte rawAction = wrapper.read(Types.BYTE); // action
             final SoftEnumUpdateType action = SoftEnumUpdateType.getByValue(rawAction);
             if (action == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown dynamic enum action: " + rawAction);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown SoftEnumUpdateType: " + rawAction);
                 return;
             }
 
             switch (action) {
                 case Add:
-                    dynamicEnum.addValues(values);
+                    softEnum.addValues(values);
                     break;
                 case Remove:
-                    dynamicEnum.removeValues(values);
+                    softEnum.removeValues(values);
                     break;
                 case Replace:
-                    dynamicEnum.values().clear();
-                    dynamicEnum.addValues(values);
+                    softEnum.values().clear();
+                    softEnum.addValues(values);
                     break;
                 default:
-                    throw new IllegalStateException("Unhandled dynamic enum action: " + action);
+                    throw new IllegalStateException("Unhandled SoftEnumUpdateType: " + action);
             }
         });
 
         protocol.registerServerbound(ServerboundPackets1_20_5.CHAT, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
             @Override
             public void register() {
-                create(Types.UNSIGNED_BYTE, (short) TextPacketType.Chat.getValue()); // type
+                create(Types.BYTE, (byte) TextPacketType.Chat.getValue()); // type
                 create(Types.BOOLEAN, false); // needs translation
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(EntityTracker.class).getClientPlayer().name())); // source name
                 map(Types.STRING, BedrockTypes.STRING); // message

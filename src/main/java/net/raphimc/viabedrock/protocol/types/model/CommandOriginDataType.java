@@ -23,6 +23,8 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginType;
 import net.raphimc.viabedrock.protocol.model.CommandOriginData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.UUID;
+
 public class CommandOriginDataType extends Type<CommandOriginData> {
 
     public CommandOriginDataType() {
@@ -32,7 +34,7 @@ public class CommandOriginDataType extends Type<CommandOriginData> {
     @Override
     public CommandOriginData read(ByteBuf buffer) {
         final CommandOriginType type = CommandOriginType.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer), CommandOriginType.ExecuteContext);
-        final java.util.UUID uuid = BedrockTypes.UUID.read(buffer);
+        final UUID uuid = BedrockTypes.UUID.read(buffer);
         final String requestId = BedrockTypes.STRING.read(buffer);
 
         long event = -1;

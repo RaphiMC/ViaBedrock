@@ -21,7 +21,6 @@ import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
 import io.netty.util.AsciiString;
@@ -34,14 +33,12 @@ import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;
 import net.raphimc.viabedrock.protocol.types.chunk.ChunkSectionType;
 import net.raphimc.viabedrock.protocol.types.chunk.DataPaletteType;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataType;
-import net.raphimc.viabedrock.protocol.types.entitydata.FloatPropertiesType;
-import net.raphimc.viabedrock.protocol.types.entitydata.IntPropertiesType;
+import net.raphimc.viabedrock.protocol.types.entitydata.EntityPropertiesType;
 import net.raphimc.viabedrock.protocol.types.model.*;
 import net.raphimc.viabedrock.protocol.types.position.*;
 import net.raphimc.viabedrock.protocol.types.primitive.*;
 
 import java.awt.image.BufferedImage;
-import java.util.Map;
 import java.util.UUID;
 
 public class BedrockTypes {
@@ -64,7 +61,7 @@ public class BedrockTypes {
     public static final Type<String[]> SHORT_LE_STRING_ARRAY = new ArrayType<>(STRING, SHORT_LE);
     public static final Type<String[]> STRING_ARRAY = new ArrayType<>(STRING, UNSIGNED_VAR_INT);
     public static final Type<String> UTF8_STRING = new Utf8StringType();
-    public static final Type<String[]> UTF8_STRING_ARRAY = new ArrayType<>(UTF8_STRING, INT_LE);
+    public static final Type<String[]> UTF8_STRING_ARRAY = new ArrayType<>(UTF8_STRING, UNSIGNED_INT_LE);
     public static final Type<UUID> UUID = new UUIDType();
     public static final Type<UUID[]> UUID_ARRAY = new ArrayType<>(UUID, UNSIGNED_VAR_INT);
     public static final Type<BufferedImage> IMAGE = new ImageType();
@@ -78,7 +75,7 @@ public class BedrockTypes {
     public static final Type<GameRule<?>> GAME_RULE = new GameRuleType();
     public static final Type<GameRule<?>[]> GAME_RULE_ARRAY = new ArrayType<>(GAME_RULE, UNSIGNED_VAR_INT);
     public static final Type<Experiment> EXPERIMENT = new ExperimentType();
-    public static final Type<Experiment[]> EXPERIMENT_ARRAY = new ArrayType<>(EXPERIMENT, INT_LE);
+    public static final Type<Experiment[]> EXPERIMENT_ARRAY = new ArrayType<>(EXPERIMENT, UNSIGNED_INT_LE);
     public static final Type<EducationUriResource> EDUCATION_URI_RESOURCE = new EducationUriResourceType();
     public static final Type<BlockProperties> BLOCK_PROPERTIES = new BlockPropertiesType();
     public static final Type<BlockProperties[]> BLOCK_PROPERTIES_ARRAY = new ArrayType<>(BLOCK_PROPERTIES, UNSIGNED_VAR_INT);
@@ -100,12 +97,11 @@ public class BedrockTypes {
     public static final Type<BedrockDataPalette> RUNTIME_DATA_PALETTE = new DataPaletteType(false);
     public static final Type<EntityData> ENTITY_DATA = new EntityDataType();
     public static final Type<EntityData[]> ENTITY_DATA_ARRAY = new ArrayType<>(ENTITY_DATA, UNSIGNED_VAR_INT);
-    public static final Type<SkinData> SKIN = new SkinType();
-    public static final Type<Int2IntMap> INT_PROPERTIES = new IntPropertiesType();
-    public static final Type<Map<Integer, Float>> FLOAT_PROPERTIES = new FloatPropertiesType();
-    public static final Type<PlayerAbilities> PLAYER_ABILITIES = new PlayerAbilitiesType();
+    public static final Type<EntityProperties> ENTITY_PROPERTIES = new EntityPropertiesType();
     public static final Type<EntityLink> ENTITY_LINK = new EntityLinkType();
     public static final Type<EntityLink[]> ENTITY_LINK_ARRAY = new ArrayType<>(ENTITY_LINK, UNSIGNED_VAR_INT);
+    public static final Type<SkinData> SKIN = new SkinType();
+    public static final Type<PlayerAbilities> PLAYER_ABILITIES = new PlayerAbilitiesType();
     public static final Type<CommandData[]> COMMAND_DATA_ARRAY = new CommandDataArrayType();
 
 }

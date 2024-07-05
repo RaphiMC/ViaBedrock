@@ -23,8 +23,7 @@ public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte c
 
     // TODO: Enum: Use SerializedAbilitiesData_SerializedAbilitiesLayer as key for abilityLayers
 
-    public record Abilities(int abilitiesSet, int abilityValues, float walkSpeed, float flySpeed) {
-
+    public record Abilities(long abilitiesSet, long abilityValues, float walkSpeed, float flySpeed) {
     }
 
 }

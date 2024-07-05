@@ -41,17 +41,17 @@ public class BehaviourPackType extends Type<ResourcePack> {
         final String contentKey = BedrockTypes.STRING.read(buffer);
         final String subPackName = BedrockTypes.STRING.read(buffer);
         final String contentId = BedrockTypes.STRING.read(buffer);
-        final boolean scripting = buffer.readBoolean();
+        final boolean hasScripts = buffer.readBoolean();
 
         UUID packUUID;
         try {
-            packUUID = java.util.UUID.fromString(packId);
+            packUUID = UUID.fromString(packId);
         } catch (IllegalArgumentException e) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid behaviour pack UUID: " + packId, e);
             packUUID = new UUID(0L, 0L);
         }
 
-        return new ResourcePack(packUUID, packVersion, contentKey, subPackName, contentId, scripting, false, packSize, PackType.Behavior);
+        return new ResourcePack(packUUID, packVersion, contentKey, subPackName, contentId, hasScripts, false, packSize, PackType.Behavior);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class BehaviourPackType extends Type<ResourcePack> {
         BedrockTypes.STRING.write(buffer, value.contentKey());
         BedrockTypes.STRING.write(buffer, value.subPackName());
         BedrockTypes.STRING.write(buffer, value.contentId());
-        buffer.writeBoolean(value.scripting());
+        buffer.writeBoolean(value.hasScripts());
     }
 
 }

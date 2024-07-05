@@ -17,11 +17,11 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class CommandEnumFlags {
+public class CommandEnumConstraints {
 
-    public static final short CHEATS_ENABLED = 0;
-    public static final short OPERATOR_PERMISSIONS = 1;
-    public static final short HOST_PERMISSIONS = 2;
-    public static final short HIDE_FROM_COMPLETIONS = 3;
+    public static final byte CHEATS_ENABLED = 0;
+    public static final byte OPERATOR_PERMISSIONS = 1;
+    public static final byte HOST_PERMISSIONS = 2;
+    public static final byte HIDE_FROM_COMPLETIONS = 3;
 
 }

@@ -56,7 +56,7 @@ public class FormContainer extends FakeContainer {
     private int page = 0;
 
     public FormContainer(UserConnection user, int formId, AForm form) {
-        super(user, MenuType.CONTAINER, TextUtil.stringToComponent("Form: " + form.getTitle()));
+        super(user, MenuType.CONTAINER, TextUtil.stringToTextComponent("Form: " + form.getTitle()));
 
         this.formId = formId;
         this.form = form;
@@ -155,7 +155,7 @@ public class FormContainer extends FakeContainer {
                     stepSlider.setSelected(newSelected);
                 }
             } else if (element instanceof TextFieldFormElement textField) {
-                this.user.get(InventoryTracker.class).openFakeContainer(new AnvilTextInputContainer(this.user, this, TextUtil.stringToComponent("Edit text"), textField::setValue) {
+                this.user.get(InventoryTracker.class).openFakeContainer(new AnvilTextInputContainer(this.user, this, TextUtil.stringToTextComponent("Edit text"), textField::setValue) {
                     @Override
                     public Item[] getJavaItems(UserConnection user) {
                         final List<Item> items = new ArrayList<>();
@@ -203,18 +203,15 @@ public class FormContainer extends FakeContainer {
         final List<Item> items = new ArrayList<>();
 
         if (this.form instanceof ModalForm modalForm) {
-
             items.add(this.createItem("minecraft:oak_sign", "Text", modalForm.getText()));
             items.add(this.createItem("minecraft:oak_button", modalForm.getButton1()));
             items.add(this.createItem("minecraft:oak_button", modalForm.getButton2()));
         } else if (this.form instanceof ActionForm actionForm) {
-
             items.add(this.createItem("minecraft:oak_sign", "Text", actionForm.getText()));
             for (final ActionForm.Button button : actionForm.getButtons()) {
                 items.add(this.createItem("minecraft:oak_button", button.getText()));
             }
         } else if (this.form instanceof CustomForm customForm) {
-
             for (AFormElement element : customForm.getElements()) {
                 if (element instanceof CheckboxFormElement checkbox) {
                     final List<String> description = new ArrayList<>();
@@ -313,12 +310,12 @@ public class FormContainer extends FakeContainer {
     }
 
     private Tag stringToNbt(final String text) {
-        final ATextComponent component = TextUtil.stringToComponent(text);
+        final ATextComponent component = TextUtil.stringToTextComponent(text);
         if (component.getStyle().getColor() == null) {
             component.getStyle().setFormatting(TextFormatting.WHITE);
         }
         component.getStyle().setItalic(false);
-        return TextUtil.componentToNbt(component);
+        return TextUtil.textComponentToNbt(component);
     }
 
 }

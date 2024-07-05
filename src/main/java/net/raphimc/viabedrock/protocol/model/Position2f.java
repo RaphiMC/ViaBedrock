@@ -18,9 +18,4 @@
 package net.raphimc.viabedrock.protocol.model;
 
 public record Position2f(float x, float y) {
-
-    public Position2f(final Position2f position) {
-        this(position.x(), position.y());
-    }
-
 }

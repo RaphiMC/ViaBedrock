@@ -26,7 +26,6 @@ import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.Types1_21;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -39,12 +38,12 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.model.EntityLink;
+import net.raphimc.viabedrock.protocol.model.EntityProperties;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.Map;
 import java.util.logging.Level;
 
 public class EntityPackets {
@@ -57,7 +56,7 @@ public class EntityPackets {
 
             final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
-            final String identifier = wrapper.read(BedrockTypes.STRING); // identifier
+            final String type = wrapper.read(BedrockTypes.STRING); // type
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
@@ -66,19 +65,18 @@ public class EntityPackets {
             for (int i = 0; i < attributeCount; i++) {
                 final String attributeIdentifier = wrapper.read(BedrockTypes.STRING); // attribute identifier
                 final float min = wrapper.read(BedrockTypes.FLOAT_LE); // min
-                final float max = wrapper.read(BedrockTypes.FLOAT_LE); // max
                 final float value = wrapper.read(BedrockTypes.FLOAT_LE); // value
+                final float max = wrapper.read(BedrockTypes.FLOAT_LE); // max
             }
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
-            final Int2IntMap intProperties = wrapper.read(BedrockTypes.INT_PROPERTIES); // int properties
-            final Map<Integer, Float> floatProperties = wrapper.read(BedrockTypes.FLOAT_PROPERTIES); // float properties
+            final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
             final EntityLink[] entityLinks = wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
 
             // TODO: Handle remaining fields
 
-            final EntityTypes1_20_5 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(identifier));
+            final EntityTypes1_20_5 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(type));
             if (javaEntityType == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity identifier: " + identifier);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity type: " + type);
                 wrapper.cancel();
                 return;
             }
@@ -296,7 +294,7 @@ public class EntityPackets {
 
             String javaIdentifier = BedrockProtocol.MAPPINGS.getBedrockToJavaPaintings().get(motive);
             if (javaIdentifier == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown painting motive: " + motive);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock painting motive: " + motive);
                 javaIdentifier = "minecraft:kebab";
             }
             final CompoundTag paintingEntry = paintingRegistry.getCompoundTag(javaIdentifier);

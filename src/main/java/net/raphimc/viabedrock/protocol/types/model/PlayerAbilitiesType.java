@@ -39,9 +39,9 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
         final int layerCount = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
         final Int2ObjectMap<PlayerAbilities.Abilities> abilityLayers = new Int2ObjectOpenHashMap<>(layerCount);
         for (int i = 0; i < layerCount; i++) {
-            final short type = buffer.readShortLE();
-            final int abilitiesSet = buffer.readIntLE();
-            final int abilityValues = buffer.readIntLE();
+            final int type = buffer.readUnsignedShortLE();
+            final long abilitiesSet = buffer.readUnsignedIntLE();
+            final long abilityValues = buffer.readUnsignedIntLE();
             final float flySpeed = buffer.readFloatLE();
             final float walkSpeed = buffer.readFloatLE();
             abilityLayers.put(type, new PlayerAbilities.Abilities(abilitiesSet, abilityValues, walkSpeed, flySpeed));
@@ -53,14 +53,14 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
     @Override
     public void write(ByteBuf buffer, PlayerAbilities value) {
         buffer.writeLongLE(value.uniqueEntityId());
-        BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.playerPermission());
-        BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.commandPermission());
+        buffer.writeByte(value.playerPermission());
+        buffer.writeByte(value.commandPermission());
 
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.abilityLayers().size());
         for (final Int2ObjectMap.Entry<PlayerAbilities.Abilities> entry : value.abilityLayers().int2ObjectEntrySet()) {
             buffer.writeShortLE(entry.getIntKey());
-            buffer.writeIntLE(entry.getValue().abilitiesSet());
-            buffer.writeIntLE(entry.getValue().abilityValues());
+            buffer.writeIntLE((int) entry.getValue().abilitiesSet());
+            buffer.writeIntLE((int) entry.getValue().abilityValues());
             buffer.writeFloatLE(entry.getValue().flySpeed());
             buffer.writeFloatLE(entry.getValue().walkSpeed());
         }

@@ -54,9 +54,9 @@ public class ScoreboardObjective {
         return null;
     }
 
-    public ScoreboardEntry getEntryForPlayer(final long playerListId) {
+    public ScoreboardEntry getEntryForPlayer(final long uniqueEntityId) {
         for (ScoreboardEntry value : this.entries.values()) {
-            if (value.entityId() != null && value.type() == IdentityDefinition_Type.Player && playerListId == value.entityId()) {
+            if (value.uniqueEntityId() != null && value.type() == IdentityDefinition_Type.Player && uniqueEntityId == value.uniqueEntityId()) {
                 return value;
             }
         }

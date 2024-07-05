@@ -113,7 +113,7 @@ public class BlockEntityRewriter {
 
             if (javaBlockEntity.tag() != null) {
                 final int typeId = BedrockProtocol.MAPPINGS.getJavaBlockEntities().getOrDefault(tag, -1);
-                if (typeId == -1) throw new IllegalStateException("Unknown block entity type: " + tag);
+                if (typeId == -1) throw new IllegalStateException("Unknown java block entity type: " + tag);
 
                 return javaBlockEntity.withTypeId(typeId);
             }

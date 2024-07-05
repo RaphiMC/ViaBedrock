@@ -20,11 +20,8 @@ package net.raphimc.viabedrock.protocol.types.item;
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
-
-import java.util.logging.Level;
 
 public class BedrockItemType extends Type<BedrockItem> {
 
@@ -51,29 +48,28 @@ public class BedrockItemType extends Type<BedrockItem> {
             item.setNetId(BedrockTypes.VAR_INT.read(buffer));
         }
         item.setBlockRuntimeId(BedrockTypes.VAR_INT.read(buffer));
+        item.setCanPlace(new String[0]);
+        item.setCanBreak(new String[0]);
 
-        final ByteBuf extraData = buffer.readSlice(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
-
-        final int tagLength = extraData.readShortLE();
-        if (tagLength > 0) {
-            item.setTag((CompoundTag) BedrockTypes.TAG_LE.read(extraData));
-        } else if (tagLength == -1) {
-            final int tagCount = extraData.readUnsignedByte();
-            if (tagCount != 1) {
-                throw new IllegalArgumentException("Expected 1 tag but got " + tagCount);
+        final ByteBuf userData = buffer.readSlice(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        try {
+            final short marker = userData.readShortLE();
+            if (marker == 0) {
+                return item;
+            } else if (marker != -1) { // Mojang client crashes if marker isn't -1
+                throw new IllegalStateException("Expected -1 marker but got " + marker);
             }
-            item.setTag((CompoundTag) BedrockTypes.TAG_LE.read(extraData));
-        }
-
-        item.setCanPlace(BedrockTypes.UTF8_STRING_ARRAY.read(extraData));
-        item.setCanBreak(BedrockTypes.UTF8_STRING_ARRAY.read(extraData));
-
-        if (item.identifier() == this.blockingId) {
-            item.setBlockingTicks(extraData.readLongLE());
-        }
-
-        if (extraData.isReadable()) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Item had too much data: " + extraData.readableBytes() + " extra bytes");
+            final byte version = userData.readByte();
+            if (version == 1) {
+                item.setTag((CompoundTag) BedrockTypes.TAG_LE.read(userData));
+                item.setCanPlace(BedrockTypes.UTF8_STRING_ARRAY.read(userData));
+                item.setCanBreak(BedrockTypes.UTF8_STRING_ARRAY.read(userData));
+                if (item.identifier() == this.blockingId) {
+                    item.setBlockingTicks(userData.readLongLE());
+                }
+            }
+        } catch (IndexOutOfBoundsException ignored) {
+            // Mojang client stops reading at whatever point and loads whatever it has read successfully
         }
 
         return item;
@@ -95,26 +91,23 @@ public class BedrockItemType extends Type<BedrockItem> {
         }
         BedrockTypes.VAR_INT.write(buffer, value.blockRuntimeId());
 
-        final ByteBuf extraData = buffer.alloc().buffer();
-
+        final ByteBuf userData = buffer.alloc().buffer();
         if (value.tag() != null) {
-            extraData.writeShortLE(-1);
-            extraData.writeByte(1);
-            BedrockTypes.TAG_LE.write(extraData, value.tag());
+            userData.writeShortLE(-1);
+            userData.writeByte(1);
+            BedrockTypes.TAG_LE.write(userData, value.tag());
         } else {
-            extraData.writeShortLE(0);
+            userData.writeShortLE(0);
         }
-
-        BedrockTypes.UTF8_STRING_ARRAY.write(extraData, value.canPlace());
-        BedrockTypes.UTF8_STRING_ARRAY.write(extraData, value.canBreak());
-
+        BedrockTypes.UTF8_STRING_ARRAY.write(userData, value.canPlace());
+        BedrockTypes.UTF8_STRING_ARRAY.write(userData, value.canBreak());
         if (value.identifier() == this.blockingId) {
-            extraData.writeLongLE(value.blockingTicks());
+            userData.writeLongLE(value.blockingTicks());
         }
 
-        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, extraData.readableBytes());
-        buffer.writeBytes(extraData);
-        extraData.release();
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, userData.readableBytes());
+        buffer.writeBytes(userData);
+        userData.release();
     }
 
 }

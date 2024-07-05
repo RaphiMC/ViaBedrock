@@ -21,7 +21,6 @@ import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
@@ -34,17 +33,13 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerPositionModeComponent_PositionMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
-import net.raphimc.viabedrock.protocol.model.BedrockItem;
-import net.raphimc.viabedrock.protocol.model.EntityLink;
-import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
-import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -66,8 +61,7 @@ public class OtherPlayerPackets {
             final BedrockItem item = wrapper.read(itemRewriter.itemType()); // hand item
             final int gameType = wrapper.read(BedrockTypes.VAR_INT); // game type
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
-            final Int2IntMap intProperties = wrapper.read(BedrockTypes.INT_PROPERTIES); // int properties
-            final Map<Integer, Float> floatProperties = wrapper.read(BedrockTypes.FLOAT_PROPERTIES); // float properties
+            final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
             final EntityLink[] entityLinks = wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
 
@@ -116,7 +110,7 @@ public class OtherPlayerPackets {
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
-            final PlayerPositionModeComponent_PositionMode mode = PlayerPositionModeComponent_PositionMode.getByValue(wrapper.read(Types.UNSIGNED_BYTE), PlayerPositionModeComponent_PositionMode.OnlyHeadRot); // mode
+            final PlayerPositionModeComponent_PositionMode mode = PlayerPositionModeComponent_PositionMode.getByValue(wrapper.read(Types.BYTE), PlayerPositionModeComponent_PositionMode.OnlyHeadRot); // mode
             final boolean onGround = wrapper.read(Types.BOOLEAN); // on ground
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // riding runtime entity id
             if (mode == PlayerPositionModeComponent_PositionMode.Teleport) {

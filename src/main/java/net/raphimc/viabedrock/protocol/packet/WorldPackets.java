@@ -455,7 +455,7 @@ public class WorldPackets {
             updateViewPosition.write(Types.VAR_INT, position.z() >> 4); // chunk z
             updateViewPosition.send(BedrockProtocol.class);
 
-            final int count = wrapper.read(BedrockTypes.INT_LE); // saved chunks count
+            final int count = wrapper.read(BedrockTypes.INT_LE); // server built chunks count
             for (int i = 0; i < count; i++) {
                 wrapper.read(BedrockTypes.VAR_INT); // chunk x
                 wrapper.read(BedrockTypes.VAR_INT); // chunk z
@@ -471,7 +471,7 @@ public class WorldPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.SET_TIME, ClientboundPackets1_21.SET_TIME, new PacketHandlers() {
             @Override
             public void register() {
-                map(BedrockTypes.VAR_INT, Types.LONG); // game time
+                map(BedrockTypes.VAR_INT, Types.LONG); // level time
                 handler(wrapper -> wrapper.write(Types.LONG, wrapper.get(Types.LONG, 0) % 24000L)); // time of day
             }
         });

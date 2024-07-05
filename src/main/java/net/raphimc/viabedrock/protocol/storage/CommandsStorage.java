@@ -48,7 +48,7 @@ import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ArgumentTypeRegistry;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandEnumFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandEnumConstraints;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandParameterOption;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandPermissionLevel;
@@ -75,7 +75,7 @@ public class CommandsStorage extends StoredObject {
     private static final Command<UserConnection> NOOP = cmd -> RESULT_NO_OP;
 
     private final CommandData[] commands;
-    private final Map<String, CommandData.EnumData> dynamicEnumMap = new HashMap<>();
+    private final Map<String, CommandData.EnumData> softEnumMap = new HashMap<>();
     private CommandDispatcher<UserConnection> dispatcher;
 
     public CommandsStorage(final UserConnection user, final CommandData[] commands) {
@@ -85,8 +85,8 @@ public class CommandsStorage extends StoredObject {
         for (CommandData command : this.commands) {
             for (CommandData.OverloadData overload : command.overloads()) {
                 for (CommandData.OverloadData.ParamData parameter : overload.parameters()) {
-                    if (parameter.enumData() != null && parameter.enumData().dynamic()) {
-                        this.dynamicEnumMap.put(parameter.enumData().name(), parameter.enumData());
+                    if (parameter.enumData() != null && parameter.enumData().soft()) {
+                        this.softEnumMap.put(parameter.enumData().name(), parameter.enumData());
                     }
                 }
             }
@@ -179,8 +179,8 @@ public class CommandsStorage extends StoredObject {
         return RESULT_NO_OP;
     }
 
-    public CommandData.EnumData getDynamicEnum(final String name) {
-        return this.dynamicEnumMap.get(name);
+    public CommandData.EnumData getSoftEnum(final String name) {
+        return this.softEnumMap.get(name);
     }
 
     private void buildCommandTree() {
@@ -217,18 +217,18 @@ public class CommandsStorage extends StoredObject {
 
                         final ArgumentType<?> argumentType;
                         if ((parameter.flags() & CommandParameterOption.HasSemanticConstraint.getValue()) != 0) {
-                            final Map<String, Set<Short>> enumDataValues = new HashMap<>(parameter.enumData().values());
+                            final Map<String, Set<Byte>> enumDataValues = new HashMap<>(parameter.enumData().values());
                             enumDataValues.entrySet().removeIf(entry -> {
-                                if (!gameSession.areCommandsEnabled() && entry.getValue().contains(CommandEnumFlags.CHEATS_ENABLED)) {
+                                if (!gameSession.areCommandsEnabled() && entry.getValue().contains(CommandEnumConstraints.CHEATS_ENABLED)) {
                                     return true;
                                 }
-                                if (entry.getValue().contains(CommandEnumFlags.OPERATOR_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissionLevel.GameDirectors.getValue()) {
+                                if (entry.getValue().contains(CommandEnumConstraints.OPERATOR_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissionLevel.GameDirectors.getValue()) {
                                     return true;
                                 }
-                                return entry.getValue().contains(CommandEnumFlags.HOST_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissionLevel.Host.getValue();
+                                return entry.getValue().contains(CommandEnumConstraints.HOST_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissionLevel.Host.getValue();
                             });
                             final Set<String> values = new HashSet<>(enumDataValues.keySet());
-                            enumDataValues.entrySet().removeIf(entry -> entry.getValue().contains(CommandEnumFlags.HIDE_FROM_COMPLETIONS));
+                            enumDataValues.entrySet().removeIf(entry -> entry.getValue().contains(CommandEnumConstraints.HIDE_FROM_COMPLETIONS));
                             argumentType = EnumArgumentType.valuesAndCompletions(values, enumDataValues.keySet());
                         } else if ((parameter.flags() & CommandParameterOption.EnumAutocompleteExpansion.getValue()) != 0) {
                             // Only changes the visual representation of the enum: <paramName: enumName> -> <value1|value2|value3>

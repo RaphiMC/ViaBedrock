@@ -77,14 +77,13 @@ public class ClientPlayerPackets {
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.RESPAWN, ClientboundPackets1_21.PLAYER_POSITION, wrapper -> {
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
-            final short rawState = wrapper.read(Types.UNSIGNED_BYTE); // state
-            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
-
+            final byte rawState = wrapper.read(Types.BYTE); // state
             final PlayerRespawnState state = PlayerRespawnState.getByValue(rawState);
             if (state != PlayerRespawnState.ReadyToSpawn) {
                 wrapper.cancel();
                 return;
             }
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
 
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             clientPlayer.setPosition(position);
@@ -104,7 +103,7 @@ public class ClientPlayerPackets {
             final int rawAction = wrapper.read(BedrockTypes.VAR_INT); // action
             final PlayerActionType action = PlayerActionType.getByValue(rawAction);
             if (action == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown player action type: " + rawAction);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown PlayerActionType: " + rawAction);
                 wrapper.cancel();
                 return;
             }
@@ -157,10 +156,10 @@ public class ClientPlayerPackets {
             final PlayerListStorage playerList = wrapper.user().get(PlayerListStorage.class);
 
             final int gameType = wrapper.read(BedrockTypes.VAR_INT); // game type
-            final long playerListId = wrapper.read(BedrockTypes.VAR_LONG); // player list id
+            final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // tick
 
-            final Pair<UUID, String> playerListEntry = playerList.getPlayer(playerListId);
+            final Pair<UUID, String> playerListEntry = playerList.getPlayer(uniqueEntityId);
             if (playerListEntry == null) {
                 wrapper.cancel();
                 return;
@@ -200,7 +199,7 @@ public class ClientPlayerPackets {
             }
 
             wrapper.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // position
-            wrapper.write(Types.UNSIGNED_BYTE, (short) PlayerRespawnState.ClientReadyToSpawn.getValue()); // state
+            wrapper.write(Types.BYTE, (byte) PlayerRespawnState.ClientReadyToSpawn.getValue()); // state
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entityTracker.getClientPlayer().runtimeId()); // runtime entity id
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.MOVE_PLAYER_STATUS_ONLY, ServerboundBedrockPackets.MOVE_PLAYER, wrapper -> {

@@ -80,7 +80,7 @@ public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
                 if (javaPattern != null) {
                     javaPatterns.add(this.createJavaPattern(javaPattern, color));
                 } else {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown banner pattern: " + pattern);
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock banner pattern: " + pattern);
                 }
             }
             javaTag.put("patterns", javaPatterns);

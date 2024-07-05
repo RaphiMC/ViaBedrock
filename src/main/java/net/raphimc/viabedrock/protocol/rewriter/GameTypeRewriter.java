@@ -30,7 +30,7 @@ public class GameTypeRewriter {
             case Creative -> GameMode.CREATIVE;
             case Adventure -> GameMode.ADVENTURE;
             case Spectator -> GameMode.SPECTATOR;
-            default -> throw new IllegalStateException("Unhandled game type: " + gameType);
+            default -> throw new IllegalStateException("Unhandled GameType: " + gameType);
         };
     }
 

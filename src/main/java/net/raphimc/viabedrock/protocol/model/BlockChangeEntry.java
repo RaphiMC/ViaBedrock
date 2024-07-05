@@ -19,5 +19,5 @@ package net.raphimc.viabedrock.protocol.model;
 
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 
-public record BlockChangeEntry(BlockPosition position, int blockState, int flags, long messageEntityId, int messageType) {
+public record BlockChangeEntry(BlockPosition position, int blockState, int flags, long messageUniqueEntityId, int messageType) {
 }

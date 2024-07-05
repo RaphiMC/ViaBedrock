@@ -17,14 +17,9 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginType;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 
-import java.util.UUID;
+import java.util.Map;
 
-public record CommandOriginData(CommandOriginType type, UUID uuid, String requestId, long event) {
-
-    public CommandOriginData(final CommandOriginType type, final UUID uuid, final String requestId) {
-        this(type, uuid, requestId, -1);
-    }
-
+public record EntityProperties(Int2IntMap intProperties, Map<Integer, Float> floatProperties) {
 }

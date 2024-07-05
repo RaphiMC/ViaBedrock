@@ -18,9 +18,4 @@
 package net.raphimc.viabedrock.protocol.model;
 
 public record Experiment(String name, boolean enabled) {
-
-    public Experiment(final Experiment experiment) {
-        this(experiment.name(), experiment.enabled());
-    }
-
 }

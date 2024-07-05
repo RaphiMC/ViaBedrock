@@ -63,7 +63,7 @@ public class ResourcePack {
     private String contentKey;
     private final String subPackName;
     private final String contentId;
-    private final boolean scripting;
+    private final boolean hasScripts;
     private final boolean raytracingCapable;
 
     private byte[] hash;
@@ -75,13 +75,13 @@ public class ResourcePack {
     private boolean[] receivedChunks;
     private Content content;
 
-    public ResourcePack(final UUID packId, final String version, final String contentKey, final String subPackName, final String contentId, final boolean scripting, final boolean raytracingCapable, final long compressedSize, final PackType type) {
+    public ResourcePack(final UUID packId, final String version, final String contentKey, final String subPackName, final String contentId, final boolean hasScripts, final boolean raytracingCapable, final long compressedSize, final PackType type) {
         this.packId = packId;
         this.version = version;
         this.contentKey = contentKey;
         this.subPackName = subPackName;
         this.contentId = contentId;
-        this.scripting = scripting;
+        this.hasScripts = hasScripts;
         this.raytracingCapable = raytracingCapable;
         this.compressedData = new byte[(int) compressedSize];
         this.type = type;
@@ -137,8 +137,8 @@ public class ResourcePack {
         return this.contentId;
     }
 
-    public boolean scripting() {
-        return this.scripting;
+    public boolean hasScripts() {
+        return this.hasScripts;
     }
 
     public boolean raytracingCapable() {

@@ -19,11 +19,9 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameRule_Type;
 import net.raphimc.viabedrock.protocol.model.GameRule;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
-
-import java.util.logging.Level;
 
 public class GameRuleType extends Type<GameRule<?>> {
 
@@ -35,34 +33,31 @@ public class GameRuleType extends Type<GameRule<?>> {
     public GameRule<?> read(ByteBuf buffer) {
         final String name = BedrockTypes.STRING.read(buffer);
         final boolean editable = buffer.readBoolean();
-        final int type = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
+        final GameRule_Type type = GameRule_Type.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer), GameRule_Type.Invalid);
         return switch (type) {
-            case 1 -> new GameRule<>(name, editable, buffer.readBoolean());
-            case 2 -> new GameRule<>(name, editable, BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer));
-            case 3 -> new GameRule<>(name, editable, BedrockTypes.FLOAT_LE.readPrimitive(buffer));
-            default -> {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown game rule type: " + type);
-                yield new GameRule<>(name, editable, null);
-            }
+            case Bool -> new GameRule<>(name, editable, buffer.readBoolean());
+            case Int -> new GameRule<>(name, editable, BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer));
+            case Float -> new GameRule<>(name, editable, BedrockTypes.FLOAT_LE.readPrimitive(buffer));
+            case Invalid -> new GameRule<>(name, editable, null);
+            default -> throw new IllegalStateException("Unhandled GameRule_Type: " + type);
         };
-
     }
 
     @Override
     public void write(ByteBuf buffer, GameRule value) {
         BedrockTypes.STRING.write(buffer, value.name());
         buffer.writeBoolean(value.editable());
-        final Class<?> type = value.value() == null ? null : value.value().getClass();
-        final int typeId = type == Boolean.class ? 1 : type == Integer.class ? 2 : type == Float.class ? 3 : -1;
-        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, typeId);
-        switch (typeId) {
-            case 1:
+        final Class<?> valueClass = value.value() == null ? null : value.value().getClass();
+        final GameRule_Type type = valueClass == Boolean.class ? GameRule_Type.Bool : valueClass == Integer.class ? GameRule_Type.Int : valueClass == Float.class ? GameRule_Type.Float : GameRule_Type.Invalid;
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, type.getValue());
+        switch (type) {
+            case Bool:
                 buffer.writeBoolean((Boolean) value.value());
                 break;
-            case 2:
+            case Int:
                 BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, (Integer) value.value());
                 break;
-            case 3:
+            case Float:
                 BedrockTypes.FLOAT_LE.writePrimitive(buffer, (Float) value.value());
                 break;
         }

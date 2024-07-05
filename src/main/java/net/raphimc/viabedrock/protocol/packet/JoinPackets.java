@@ -131,7 +131,7 @@ public class JoinPackets {
                     final int rawStatus = wrapper.read(Types.INT); // status
                     final PlayStatus status = PlayStatus.getByValue(rawStatus);
                     if (status == null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown play status: " + rawStatus);
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown PlayStatus: " + rawStatus);
                         wrapper.cancel();
                         return;
                     }
@@ -166,7 +166,7 @@ public class JoinPackets {
                     final int rawStatus = wrapper.read(Types.INT); // status
                     final PlayStatus status = PlayStatus.getByValue(rawStatus);
                     if (status == null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown play status: " + rawStatus);
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown PlayStatus: " + rawStatus);
                         wrapper.cancel();
                         return;
                     }
@@ -221,7 +221,7 @@ public class JoinPackets {
                     final int rawStatus = wrapper.read(Types.INT); // status
                     final PlayStatus status = PlayStatus.getByValue(rawStatus);
                     if (status == null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown play status: " + rawStatus);
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown PlayStatus: " + rawStatus);
                         wrapper.cancel();
                         return;
                     }
@@ -237,7 +237,7 @@ public class JoinPackets {
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.START_GAME,
                 State.CONFIGURATION, (PacketHandler) wrapper -> {
-                    wrapper.cancel(); // We need to fix the order of the packets
+                    wrapper.cancel();
                     ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
@@ -319,7 +319,7 @@ public class JoinPackets {
                     final ServerAuthMovementMode movementMode = ServerAuthMovementMode.getByValue(wrapper.read(BedrockTypes.VAR_INT) & 255, ServerAuthMovementMode.ServerAuthoritativeWithRewind); // movement mode
                     wrapper.read(BedrockTypes.VAR_INT); // rewind history size
                     wrapper.read(Types.BOOLEAN); // server authoritative block breaking
-                    wrapper.read(BedrockTypes.LONG_LE); // current tick
+                    final long levelTime = wrapper.read(BedrockTypes.LONG_LE); // current level time
                     wrapper.read(BedrockTypes.VAR_INT); // enchantment seed
                     final BlockProperties[] blockProperties = wrapper.read(BedrockTypes.BLOCK_PROPERTIES_ARRAY); // block properties
                     final ItemEntry[] itemEntries = wrapper.read(BedrockTypes.ITEM_ENTRY_ARRAY); // item entries
@@ -386,7 +386,7 @@ public class JoinPackets {
                     clientPlayer.setGameType(playerGameType);
                     clientPlayer.setName(wrapper.user().getProtocolInfo().getUsername());
 
-                    wrapper.user().put(new JoinGameStorage(levelName, difficulty, rainLevel, lightningLevel));
+                    wrapper.user().put(new JoinGameStorage(levelName, difficulty, rainLevel, lightningLevel, levelTime));
                     wrapper.user().put(new BlockStateRewriter(blockProperties, hashedRuntimeBlockIds));
                     wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimension));
@@ -493,7 +493,7 @@ public class JoinPackets {
                 PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.editor.mismatchEditorToVanilla"));
                 break;
             default:
-                throw new IllegalStateException("Unhandled play status: " + status);
+                throw new IllegalStateException("Unhandled PlayStatus: " + status);
             case PlayerSpawn:
             case LoginSuccess:
                 wrapper.cancel();
@@ -602,6 +602,11 @@ public class JoinPackets {
                 thunderStrengthGameEvent.send(BedrockProtocol.class);
             }
         }
+
+        final PacketWrapper setTime = PacketWrapper.create(ClientboundPackets1_21.SET_TIME, user);
+        setTime.write(Types.LONG, joinGameStorage.levelTime()); // level time
+        setTime.write(Types.LONG, joinGameStorage.levelTime() % 24000L); // time of day
+        setTime.send(BedrockProtocol.class);
     }
 
     private static void sendStartGameResponsePackets(final UserConnection user) {

@@ -34,7 +34,7 @@ public class StatusPackets {
     private static final String NULL_UUID = new UUID(0, 0).toString();
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(State.STATUS, 28/*UNCONNECTED_PONG*/, ClientboundStatusPackets.STATUS_RESPONSE.getId(), wrapper -> {
+        protocol.registerClientbound(State.STATUS, 28 /* UNCONNECTED_PONG */, ClientboundStatusPackets.STATUS_RESPONSE.getId(), wrapper -> {
             final long ping = System.currentTimeMillis() - wrapper.read(Types.LONG); // timestamp
             final String data = new String(wrapper.read(Types.REMAINING_BYTES), StandardCharsets.UTF_8); // data
             final String[] splitData = data.split(";");
@@ -121,7 +121,7 @@ public class StatusPackets {
             wrapper.write(Types.STRING, statusResponse.toString()); // status json
         });
 
-        protocol.registerServerbound(State.STATUS, ServerboundStatusPackets.STATUS_REQUEST.getId(), 1/*UNCONNECTED_PING*/, wrapper -> {
+        protocol.registerServerbound(State.STATUS, ServerboundStatusPackets.STATUS_REQUEST.getId(), 1 /* UNCONNECTED_PING */, wrapper -> {
             wrapper.write(Types.LONG, System.nanoTime() / 1_000_000); // timestamp (system uptime)
         });
         protocol.registerServerbound(State.STATUS, ServerboundStatusPackets.PING_REQUEST.getId(), -1, wrapper -> {

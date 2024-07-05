@@ -28,6 +28,7 @@ import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPacke
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.java.CustomChatCompletionsAction;
 
 public class PacketFactory {
 
@@ -54,6 +55,13 @@ public class PacketFactory {
         return containerClose;
     }
 
+    public static PacketWrapper customChatCompletions(final UserConnection user, final CustomChatCompletionsAction action, final String[] entries) {
+        final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_21.CUSTOM_CHAT_COMPLETIONS, user);
+        customChatCompletions.write(Types.VAR_INT, action.ordinal()); // action
+        customChatCompletions.write(Types.STRING_ARRAY, entries); // entries
+        return customChatCompletions;
+    }
+
     public static void sendSystemChat(final UserConnection user, final Tag message) {
         systemChat(user, message).send(BedrockProtocol.class);
     }
@@ -64,6 +72,10 @@ public class PacketFactory {
 
     public static void sendContainerClose(final UserConnection user, final byte windowId, final ContainerType containerType) {
         containerClose(user, windowId, containerType).sendToServer(BedrockProtocol.class);
+    }
+
+    public static void sendCustomChatCompletions(final UserConnection user, final CustomChatCompletionsAction action, final String[] entries) {
+        customChatCompletions(user, action, entries).send(BedrockProtocol.class);
     }
 
     public static void writeDisconnect(final PacketWrapper wrapper, final String reason) {

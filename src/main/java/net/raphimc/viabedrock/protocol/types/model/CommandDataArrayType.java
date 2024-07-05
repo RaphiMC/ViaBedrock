@@ -33,7 +33,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
     private static final int FLAG_VALID = 1 << 20;
     private static final int FLAG_ENUM = 1 << 21;
     private static final int FLAG_POSTFIX = 1 << 24;
-    private static final int FLAG_DYNAMIC_ENUM = 1 << 26;
+    private static final int FLAG_SOFT_ENUM = 1 << 26;
     private static final int FLAG_SUB_COMMAND = 1 << 27;
 
     public CommandDataArrayType() {
@@ -47,9 +47,9 @@ public class CommandDataArrayType extends Type<CommandData[]> {
         final String[] postFixLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // post fix literals
 
         final Type<? extends Number> indexType;
-        if (enumLiterals.length <= 255) {
+        if (enumLiterals.length <= 256) {
             indexType = Types.UNSIGNED_BYTE;
-        } else if (enumLiterals.length <= 65535) {
+        } else if (enumLiterals.length <= 65536) {
             indexType = BedrockTypes.UNSIGNED_SHORT_LE;
         } else {
             indexType = BedrockTypes.UNSIGNED_INT_LE;
@@ -84,9 +84,9 @@ public class CommandDataArrayType extends Type<CommandData[]> {
         final Map<String, CommandData.SubCommandData> subCommandMap = new HashMap<>(subCommands.length);
         for (int i = 0; i < subCommands.length; i++) {
             final String name = BedrockTypes.STRING.read(buffer); // name
-            final int valueCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-            final Map<String, Integer> values = new HashMap<>(valueCount);
-            for (int j = 0; j < valueCount; j++) {
+            final int count = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // values count
+            final Map<String, Integer> values = new HashMap<>(count);
+            for (int j = 0; j < count; j++) {
                 final int index = buffer.readUnsignedShortLE(); // value
                 final int type = buffer.readUnsignedShortLE(); // type
                 if (index >= 0 && index < subCommandLiterals.length) {
@@ -104,14 +104,14 @@ public class CommandDataArrayType extends Type<CommandData[]> {
             subCommands[i] = subCommandData;
         }
 
-        final List<Consumer<CommandData.EnumData[]>> dynamicEnumResolvers = new ArrayList<>();
+        final List<Consumer<CommandData.EnumData[]>> softEnumResolvers = new ArrayList<>();
         final CommandData[] commands = new CommandData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];
         final Map<String, CommandData> commandMap = new HashMap<>(commands.length);
         for (int i = 0; i < commands.length; i++) {
             final String name = BedrockTypes.STRING.read(buffer); // name
             final String description = BedrockTypes.STRING.read(buffer); // description
             final int flags = buffer.readUnsignedShortLE(); // flags
-            final short permission = buffer.readUnsignedByte(); // permission
+            final byte permission = buffer.readByte(); // permission
             final int aliasIndex = buffer.readIntLE(); // alias
             final boolean validAliasPointer = aliasIndex >= 0 && aliasIndex < enumPalette.length;
             final CommandData.EnumData alias;
@@ -123,7 +123,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
 
             final int subCommandCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
             for (int j = 0; j < subCommandCount; j++) {
-                buffer.readUnsignedShortLE(); // idk
+                buffer.readUnsignedShortLE(); // subcommand index?
             }
 
             final CommandData.OverloadData[] overloads = new CommandData.OverloadData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];
@@ -140,12 +140,12 @@ public class CommandDataArrayType extends Type<CommandData[]> {
                     CommandData.SubCommandData subCommandData = null;
                     String postfix = null;
 
-                    if ((param & FLAG_DYNAMIC_ENUM) != 0) {
-                        final int index = param & ~FLAG_DYNAMIC_ENUM & ~FLAG_VALID;
+                    if ((param & FLAG_SOFT_ENUM) != 0) {
+                        final int index = param & ~FLAG_SOFT_ENUM & ~FLAG_VALID;
                         final int finalK = k;
-                        dynamicEnumResolvers.add(dynamicEnumPalette -> {
-                            if (index >= 0 && index < dynamicEnumPalette.length) {
-                                params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, null, dynamicEnumPalette[index], null, null);
+                        softEnumResolvers.add(softEnumPalette -> {
+                            if (index >= 0 && index < softEnumPalette.length) {
+                                params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, null, softEnumPalette[index], null, null);
                             } else {
                                 params[finalK] = new CommandData.OverloadData.ParamData(paramName, optional, paramFlags, CommandRegistry_HardNonTerminal.Id, null, null, null);
                             }
@@ -183,38 +183,36 @@ public class CommandDataArrayType extends Type<CommandData[]> {
             commands[i] = commandData;
         }
 
-        final CommandData.EnumData[] dynamicEnumPalette = new CommandData.EnumData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];
-        final Map<String, CommandData.EnumData> dynamicEnumPaletteMap = new HashMap<>(dynamicEnumPalette.length);
-        for (int i = 0; i < dynamicEnumPalette.length; i++) {
+        final CommandData.EnumData[] softEnumPalette = new CommandData.EnumData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];
+        final Map<String, CommandData.EnumData> softEnumPaletteMap = new HashMap<>(softEnumPalette.length);
+        for (int i = 0; i < softEnumPalette.length; i++) {
             final String name = BedrockTypes.STRING.read(buffer); // name
             final Set<String> values = Sets.newHashSet(BedrockTypes.STRING_ARRAY.read(buffer)); // values
 
             final CommandData.EnumData enumData;
-            if (dynamicEnumPaletteMap.containsKey(name)) {
-                enumData = dynamicEnumPaletteMap.get(name);
+            if (softEnumPaletteMap.containsKey(name)) {
+                enumData = softEnumPaletteMap.get(name);
                 enumData.addValues(values);
             } else {
                 enumData = new CommandData.EnumData(name, values, true);
-                dynamicEnumPaletteMap.put(name, enumData);
+                softEnumPaletteMap.put(name, enumData);
             }
-            dynamicEnumPalette[i] = enumData;
+            softEnumPalette[i] = enumData;
         }
-        dynamicEnumResolvers.forEach(c -> c.accept(dynamicEnumPalette));
+        softEnumResolvers.forEach(c -> c.accept(softEnumPalette));
 
         final int enumFlagsCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // enum flags count
         for (int i = 0; i < enumFlagsCount; i++) {
             final int valueIndex = buffer.readIntLE(); // value index
             final int enumIndex = buffer.readIntLE(); // enum index
-            final byte[] flagsBytes = BedrockTypes.BYTE_ARRAY.read(buffer); // flags
+            final byte[] constraints = BedrockTypes.BYTE_ARRAY.read(buffer); // constraints
             final String valueKey = enumLiterals[valueIndex];
             final CommandData.EnumData enumData = enumPalette[enumIndex];
-            final Set<Short> flags = enumData.values().get(valueKey);
-            if (flags == null) {
-                continue;
-            }
-
-            for (byte flag : flagsBytes) {
-                flags.add((short) (flag & 0xFF));
+            final Set<Byte> constraintsSet = enumData.values().get(valueKey);
+            if (constraintsSet != null) {
+                for (byte constraint : constraints) {
+                    constraintsSet.add(constraint);
+                }
             }
         }
 

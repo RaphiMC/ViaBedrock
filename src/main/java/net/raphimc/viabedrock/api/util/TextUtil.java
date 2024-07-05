@@ -44,35 +44,35 @@ public class TextUtil {
         } else if (f.equals(BedrockTextFormatting.RESET)) {
             return TextFormatting.RESET;
         } else {
-            throw new IllegalArgumentException("Unhandled formatting: " + f);
+            throw new IllegalArgumentException("Unhandled BedrockTextFormatting: " + f);
         }
     }).orElse(null);
 
     public static String stringToJson(final String text) {
-        return componentToJson(stringToComponent(text));
+        return textComponentToJson(stringToTextComponent(text));
     }
 
-    public static String componentToJson(final ATextComponent textComponent) {
+    public static String textComponentToJson(final ATextComponent textComponent) {
         return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeJsonString(textComponent);
     }
 
     public static JsonElement stringToGson(final String text) {
-        return componentToGson(stringToComponent(text));
+        return textComponentToGson(stringToTextComponent(text));
     }
 
-    public static JsonElement componentToGson(final ATextComponent textComponent) {
+    public static JsonElement textComponentToGson(final ATextComponent textComponent) {
         return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeJsonTree(textComponent);
     }
 
     public static Tag stringToNbt(final String text) {
-        return componentToNbt(stringToComponent(text));
+        return textComponentToNbt(stringToTextComponent(text));
     }
 
-    public static Tag componentToNbt(final ATextComponent textComponent) {
+    public static Tag textComponentToNbt(final ATextComponent textComponent) {
         return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeNbt(textComponent);
     }
 
-    public static ATextComponent stringToComponent(final String text) {
+    public static ATextComponent stringToTextComponent(final String text) {
         return LegacyStringDeserializer.parse(appendFormattingCodesAfterColorCode(text), TextFormatting.COLOR_CHAR, BEDROCK_FORMATTING_RESOLVER);
     }
 

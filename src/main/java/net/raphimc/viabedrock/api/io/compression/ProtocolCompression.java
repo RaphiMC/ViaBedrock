@@ -63,7 +63,7 @@ public class ProtocolCompression {
                 }
                 yield this.snappyCompression;
             }
-            default -> throw new IllegalStateException("Unhandled packet compression algorithm " + algorithm);
+            default -> throw new IllegalStateException("Unhandled PacketCompressionAlgorithm " + algorithm);
         };
     }
 

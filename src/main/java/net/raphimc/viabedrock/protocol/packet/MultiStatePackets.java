@@ -26,6 +26,7 @@ import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundCon
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPackets1_20_5;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import com.viaversion.viaversion.util.Key;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -121,7 +122,7 @@ public class MultiStatePackets {
 
     public static final PacketHandler CUSTOM_PAYLOAD_HANDLER = wrapper -> {
         wrapper.cancel();
-        final String channel = wrapper.read(Types.STRING); // channel
+        final String channel = Key.namespaced(wrapper.read(Types.STRING)); // channel
         if (channel.equals("minecraft:register")) {
             final String[] channels = new String(wrapper.read(Types.REMAINING_BYTES), StandardCharsets.UTF_8).split("\0");
             wrapper.user().get(ChannelStorage.class).addChannels(channels);
