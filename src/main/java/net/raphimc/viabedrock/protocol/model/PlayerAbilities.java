@@ -17,13 +17,15 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.SerializedAbilitiesData_SerializedAbilitiesLayer;
 
-public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte commandPermission, Int2ObjectMap<Abilities> abilityLayers) {
+import java.util.Map;
+import java.util.Set;
 
-    // TODO: Enum: Use SerializedAbilitiesData_SerializedAbilitiesLayer as key for abilityLayers
+public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte commandPermission, Map<SerializedAbilitiesData_SerializedAbilitiesLayer, AbilitiesLayer> abilityLayers) {
 
-    public record Abilities(long abilitiesSet, long abilityValues, float walkSpeed, float flySpeed) {
+    public record AbilitiesLayer(Set<AbilitiesIndex> abilitiesSet, Set<AbilitiesIndex> abilityValues, float walkSpeed, float flySpeed) {
     }
 
 }

@@ -26,11 +26,13 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 public class BedrockItemType extends Type<BedrockItem> {
 
     private final int blockingId;
+    private final boolean hasNetId;
 
-    public BedrockItemType(final int blockingId) {
+    public BedrockItemType(final int blockingId, final boolean hasNetId) {
         super(BedrockItem.class);
 
         this.blockingId = blockingId;
+        this.hasNetId = hasNetId;
     }
 
     @Override
@@ -43,9 +45,11 @@ public class BedrockItemType extends Type<BedrockItem> {
         final BedrockItem item = new BedrockItem(id);
         item.setAmount(buffer.readUnsignedShortLE());
         item.setData(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
-        item.setUsingNetId(buffer.readBoolean());
-        if (item.usingNetId()) {
-            item.setNetId(BedrockTypes.VAR_INT.read(buffer));
+        if (this.hasNetId) {
+            item.setUsingNetId(buffer.readBoolean());
+            if (item.usingNetId()) {
+                item.setNetId(BedrockTypes.VAR_INT.read(buffer));
+            }
         }
         item.setBlockRuntimeId(BedrockTypes.VAR_INT.read(buffer));
         item.setCanPlace(new String[0]);
@@ -85,9 +89,11 @@ public class BedrockItemType extends Type<BedrockItem> {
         BedrockTypes.VAR_INT.write(buffer, value.identifier());
         buffer.writeShortLE(value.amount());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, (int) value.data());
-        buffer.writeBoolean(value.usingNetId());
-        if (value.usingNetId()) {
-            BedrockTypes.VAR_INT.write(buffer, value.netId());
+        if (this.hasNetId) {
+            buffer.writeBoolean(value.usingNetId());
+            if (value.usingNetId()) {
+                BedrockTypes.VAR_INT.write(buffer, value.netId());
+            }
         }
         BedrockTypes.VAR_INT.write(buffer, value.blockRuntimeId());
 

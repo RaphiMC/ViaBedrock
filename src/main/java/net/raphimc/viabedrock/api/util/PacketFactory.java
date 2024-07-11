@@ -23,8 +23,10 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.Types1_21;
 import com.viaversion.viaversion.libs.gson.JsonNull;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
@@ -78,6 +80,12 @@ public class PacketFactory {
         customChatCompletions(user, action, entries).send(BedrockProtocol.class);
     }
 
+    public static void sendContainerSetContent(final UserConnection user, final Container container) {
+        final PacketWrapper containerSetContent = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_SET_CONTENT, user);
+        writeContainerSetContent(containerSetContent, container);
+        containerSetContent.send(BedrockProtocol.class);
+    }
+
     public static void writeDisconnect(final PacketWrapper wrapper, final String reason) {
         switch (wrapper.getPacketType().state()) {
             case LOGIN:
@@ -90,6 +98,13 @@ public class PacketFactory {
             default:
                 throw new IllegalStateException("Unexpected state: " + wrapper.getPacketType().state());
         }
+    }
+
+    public static void writeContainerSetContent(final PacketWrapper wrapper, final Container container) {
+        wrapper.write(Types.UNSIGNED_BYTE, (short) container.windowId()); // window id
+        wrapper.write(Types.VAR_INT, 0); // revision
+        wrapper.write(Types1_21.ITEM_ARRAY, container.getJavaItems(wrapper.user())); // items
+        wrapper.write(Types1_21.ITEM, container.getJavaCursorItem(wrapper.user())); // cursor item
     }
 
 }

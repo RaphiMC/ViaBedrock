@@ -64,7 +64,7 @@ public class FormContainer extends FakeContainer {
     }
 
     @Override
-    public boolean handleWindowClick(int revision, short slot, byte button, ClickType action) {
+    public boolean handleContainerClick(int revision, short slot, byte button, ClickType action) {
         if (action != ClickType.PICKUP) return false;
 
         if (this.formItems.length > SIZE && slot == SIZE - 1) {

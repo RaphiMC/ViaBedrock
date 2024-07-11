@@ -38,6 +38,7 @@ import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
+import net.raphimc.viabedrock.protocol.types.item.BedrockCreativeItemType;
 import net.raphimc.viabedrock.protocol.types.item.BedrockItemType;
 
 import java.util.HashMap;
@@ -52,6 +53,8 @@ public class ItemRewriter extends StoredObject {
     private final BiMap<String, Integer> items;
     private final Type<BedrockItem> itemType;
     private final Type<BedrockItem[]> itemArrayType;
+    private final Type<BedrockItem> creativeItemType;
+    private final Type<BedrockItem[]> creativeItemArrayType;
 
     static {
         // TODO: Add missing item rewriters
@@ -76,8 +79,10 @@ public class ItemRewriter extends StoredObject {
             this.items.inverse().remove(itemEntry.id());
             this.items.put(namespace + ":" + identifier, itemEntry.id());
         }
-        this.itemType = new BedrockItemType(this.items.getOrDefault("minecraft:shield", -1));
+        this.itemType = new BedrockItemType(this.items.get("minecraft:shield"), true);
         this.itemArrayType = new ArrayType<>(this.itemType, BedrockTypes.UNSIGNED_VAR_INT);
+        this.creativeItemType = new BedrockCreativeItemType(this.items.get("minecraft:shield"));
+        this.creativeItemArrayType = new ArrayType<>(this.creativeItemType, BedrockTypes.UNSIGNED_VAR_INT);
     }
 
     public Item javaItem(final BedrockItem bedrockItem) {
@@ -161,6 +166,14 @@ public class ItemRewriter extends StoredObject {
 
     public Type<BedrockItem[]> itemArrayType() {
         return this.itemArrayType;
+    }
+
+    public Type<BedrockItem> creativeItemType() {
+        return this.creativeItemType;
+    }
+
+    public Type<BedrockItem[]> creativeItemArrayType() {
+        return this.creativeItemArrayType;
     }
 
     public static class Rewriter {

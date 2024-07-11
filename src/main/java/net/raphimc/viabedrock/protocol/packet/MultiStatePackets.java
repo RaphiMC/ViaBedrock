@@ -117,7 +117,7 @@ public class MultiStatePackets {
         wrapper.user().put(new ClientSettingsStorage(locale, viewDistance, chatVisibility, chatColors, skinParts, mainHand, textFiltering, serverListing));
 
         wrapper.write(BedrockTypes.VAR_INT, (int) viewDistance); // radius
-        wrapper.write(Types.UNSIGNED_BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
+        wrapper.write(Types.BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
     };
 
     public static final PacketHandler CUSTOM_PAYLOAD_HANDLER = wrapper -> {

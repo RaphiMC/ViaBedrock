@@ -18,11 +18,16 @@
 package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.SerializedAbilitiesData_SerializedAbilitiesLayer;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class PlayerAbilitiesType extends Type<PlayerAbilities> {
 
@@ -37,14 +42,14 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
         final byte commandPermission = buffer.readByte();
 
         final int layerCount = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
-        final Int2ObjectMap<PlayerAbilities.Abilities> abilityLayers = new Int2ObjectOpenHashMap<>(layerCount);
+        final Map<SerializedAbilitiesData_SerializedAbilitiesLayer, PlayerAbilities.AbilitiesLayer> abilityLayers = new HashMap<>(layerCount);
         for (int i = 0; i < layerCount; i++) {
-            final int type = buffer.readUnsignedShortLE();
-            final long abilitiesSet = buffer.readUnsignedIntLE();
-            final long abilityValues = buffer.readUnsignedIntLE();
+            final SerializedAbilitiesData_SerializedAbilitiesLayer type = SerializedAbilitiesData_SerializedAbilitiesLayer.getByValue(buffer.readUnsignedShortLE(), SerializedAbilitiesData_SerializedAbilitiesLayer.CustomCache);
+            final Set<AbilitiesIndex> abilitiesSet = this.getAbilities(buffer.readUnsignedIntLE());
+            final Set<AbilitiesIndex> abilityValues = this.getAbilities(buffer.readUnsignedIntLE());
             final float flySpeed = buffer.readFloatLE();
             final float walkSpeed = buffer.readFloatLE();
-            abilityLayers.put(type, new PlayerAbilities.Abilities(abilitiesSet, abilityValues, walkSpeed, flySpeed));
+            abilityLayers.put(type, new PlayerAbilities.AbilitiesLayer(abilitiesSet, abilityValues, walkSpeed, flySpeed));
         }
 
         return new PlayerAbilities(uniqueEntityId, playerPermission, commandPermission, abilityLayers);
@@ -57,13 +62,31 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
         buffer.writeByte(value.commandPermission());
 
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.abilityLayers().size());
-        for (final Int2ObjectMap.Entry<PlayerAbilities.Abilities> entry : value.abilityLayers().int2ObjectEntrySet()) {
-            buffer.writeShortLE(entry.getIntKey());
-            buffer.writeIntLE((int) entry.getValue().abilitiesSet());
-            buffer.writeIntLE((int) entry.getValue().abilityValues());
+        for (final Map.Entry<SerializedAbilitiesData_SerializedAbilitiesLayer, PlayerAbilities.AbilitiesLayer> entry : value.abilityLayers().entrySet()) {
+            buffer.writeShortLE(entry.getKey().getValue());
+            buffer.writeIntLE((int) this.getBits(entry.getValue().abilitiesSet()));
+            buffer.writeIntLE((int) this.getBits(entry.getValue().abilityValues()));
             buffer.writeFloatLE(entry.getValue().flySpeed());
             buffer.writeFloatLE(entry.getValue().walkSpeed());
         }
+    }
+
+    private Set<AbilitiesIndex> getAbilities(final long bits) {
+        final Set<AbilitiesIndex> abilities = new HashSet<>();
+        for (AbilitiesIndex index : AbilitiesIndex.values()) {
+            if (index.getValue() >= 0 && (bits & (1L << index.getValue())) != 0) {
+                abilities.add(index);
+            }
+        }
+        return abilities;
+    }
+
+    private long getBits(final Set<AbilitiesIndex> abilities) {
+        long bits = 0;
+        for (AbilitiesIndex index : abilities) {
+            bits |= 1L << index.getValue();
+        }
+        return bits;
     }
 
 }

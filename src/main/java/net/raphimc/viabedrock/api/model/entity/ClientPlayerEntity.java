@@ -153,7 +153,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void updatePlayerPosition(final PacketWrapper wrapper, final boolean onGround) {
-        if (!this.preMove(null, false)) {
+        if (!this.preMove(null, null, onGround)) {
             wrapper.cancel();
             return;
         }
@@ -170,7 +170,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void updatePlayerPosition(final PacketWrapper wrapper, final double x, final double y, final double z, final boolean onGround) {
         final Position3f newPosition = new Position3f((float) x, (float) y + this.eyeOffset(), (float) z);
 
-        if (!this.preMove(newPosition, false)) {
+        if (!this.preMove(newPosition, null, onGround)) {
             wrapper.cancel();
             return;
         }
@@ -189,7 +189,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         final Position3f newPosition = new Position3f((float) x, (float) y + this.eyeOffset(), (float) z);
         final Position3f newRotation = new Position3f(pitch, yaw, yaw);
 
-        if (!this.preMove(newPosition, true)) {
+        if (!this.preMove(newPosition, newRotation, onGround)) {
             wrapper.cancel();
             return;
         }
@@ -208,7 +208,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void updatePlayerPosition(final PacketWrapper wrapper, final float yaw, final float pitch, final boolean onGround) {
         final Position3f newRotation = new Position3f(pitch, yaw, yaw);
 
-        if (!this.preMove(null, false)) {
+        if (!this.preMove(null, newRotation, onGround)) {
             wrapper.cancel();
             return;
         }
@@ -294,7 +294,8 @@ public class ClientPlayerEntity extends PlayerEntity {
         return this.pendingTeleportId = TELEPORT_ID.getAndIncrement();
     }
 
-    private boolean preMove(final Position3f newPosition, final boolean positionLook) {
+    private boolean preMove(final Position3f newPosition, final Position3f newRotation, final boolean newOnGround) {
+        final boolean positionLook = newPosition != null && newRotation != null;
         final ChunkTracker chunkTracker = this.user.get(ChunkTracker.class);
 
         // Waiting for position sync
@@ -336,7 +337,15 @@ public class ClientPlayerEntity extends PlayerEntity {
             return false;
         }
 
-        return true;
+        if (newPosition != null && !this.position.equals(newPosition)) {
+            return true;
+        } else if (newRotation != null && !this.rotation.equals(newRotation)) {
+            return true;
+        } else if (this.onGround != newOnGround) {
+            return true;
+        }
+
+        return false;
     }
 
     private float[] calculateDirectionVector(final float x, final float z, final float prevX, final float prevZ, final float yaw) {

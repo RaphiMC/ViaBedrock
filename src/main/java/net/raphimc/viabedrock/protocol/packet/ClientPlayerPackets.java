@@ -183,7 +183,6 @@ public class ClientPlayerPackets {
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
             if (abilities.uniqueEntityId() == entityTracker.getClientPlayer().uniqueId()) {
                 if (!abilities.equals(gameSession.getAbilities())) {
-                    // TODO: Handle remaining fields
                     gameSession.setAbilities(abilities);
                     handleAbilitiesUpdate(wrapper.user());
                 }

@@ -254,6 +254,18 @@ public class ChatPackets {
                     throw new IllegalStateException("Unhandled SoftEnumUpdateType: " + action);
             }
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_COMMANDS_ENABLED, null, wrapper -> {
+            wrapper.cancel();
+            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+            final boolean commandsEnabled = wrapper.read(Types.BOOLEAN); // commands enabled
+            if (commandsEnabled != gameSession.areCommandsEnabled()) {
+                gameSession.setCommandsEnabled(commandsEnabled);
+                final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
+                if (commandsStorage != null) {
+                    commandsStorage.updateCommandTree();
+                }
+            }
+        });
 
         protocol.registerServerbound(ServerboundPackets1_20_5.CHAT, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
             @Override

@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.data.enums;
 
 import net.raphimc.viabedrock.api.model.inventory.ChestContainer;
 import net.raphimc.viabedrock.api.model.inventory.Container;
-import net.raphimc.viabedrock.api.model.inventory.InventoryContainer;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 
@@ -30,7 +29,9 @@ import java.util.function.Function;
 
 public enum MenuType {
 
-    INVENTORY(ContainerType.INVENTORY, null, InventoryContainer::new),
+    INVENTORY(ContainerType.INVENTORY, null, windowId -> {
+        throw new UnsupportedOperationException("Cannot create inventory container");
+    }),
     CONTAINER(ContainerType.CONTAINER, "minecraft:generic_9x3", windowId -> new ChestContainer(windowId, 27), "chest", "trapped_chest"),
     DO_NOT_USE_ANVIL(ContainerType.ANVIL, "minecraft:anvil", windowId -> null, "anvil");
 

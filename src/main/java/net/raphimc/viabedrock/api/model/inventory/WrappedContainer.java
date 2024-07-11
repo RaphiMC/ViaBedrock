@@ -19,60 +19,55 @@ package net.raphimc.viabedrock.api.model.inventory;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
-import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
-import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
-public abstract class Container {
+public class WrappedContainer extends Container {
 
-    protected final byte windowId;
-    protected final MenuType menuType;
-    protected final BedrockItem[] items;
-    protected BedrockItem cursorItem = BedrockItem.empty();
+    private final Container delegate;
 
-    public Container(final byte windowId, final MenuType menuType, final int size) {
-        this.windowId = windowId;
-        this.menuType = menuType;
-        this.items = BedrockItem.emptyArray(size);
+    public WrappedContainer(final byte windowId, final Container delegate) {
+        super(windowId, delegate.menuType, 0);
+        this.delegate = delegate;
     }
 
+    @Override
     public void setItems(final BedrockItem[] items) {
-        if (this.items.length != items.length) throw new IllegalArgumentException("Items length must be equal to container size");
-
-        System.arraycopy(items, 0, this.items, 0, items.length);
+        this.delegate.setItems(items);
     }
 
+    @Override
     public void setCursorItem(final BedrockItem cursorItem) {
-        this.cursorItem = cursorItem;
+        this.delegate.setCursorItem(cursorItem);
     }
 
+    @Override
     public boolean handleContainerClick(final int revision, final short slot, final byte button, final ClickType action) {
-        return false;
+        return this.delegate.handleContainerClick(revision, slot, button, action);
     }
 
+    @Override
     public Item[] getJavaItems(final UserConnection user) {
-        return user.get(ItemRewriter.class).javaItems(this.items);
+        return this.delegate.getJavaItems(user);
     }
 
+    @Override
     public Item getJavaCursorItem(final UserConnection user) {
-        return user.get(ItemRewriter.class).javaItem(this.cursorItem);
+        return this.delegate.getJavaCursorItem(user);
     }
 
-    public byte windowId() {
-        return this.windowId;
-    }
-
-    public MenuType menuType() {
-        return this.menuType;
-    }
-
+    @Override
     public BedrockItem[] items() {
-        return this.items;
+        return this.delegate.items();
     }
 
+    @Override
     public BedrockItem cursorItem() {
-        return this.cursorItem;
+        return this.delegate.cursorItem();
+    }
+
+    public Container delegate() {
+        return this.delegate;
     }
 
 }

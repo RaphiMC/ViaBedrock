@@ -20,8 +20,11 @@ package net.raphimc.viabedrock.protocol.packet;
 import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.Types1_21;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.components.TranslationComponent;
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPackets1_20_5;
@@ -31,6 +34,7 @@ import net.lenni0451.mcstructs_bedrock.forms.serializer.FormSerializer;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.inventory.Container;
+import net.raphimc.viabedrock.api.model.inventory.WrappedContainer;
 import net.raphimc.viabedrock.api.model.inventory.fake.FakeContainer;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
@@ -40,12 +44,14 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.provider.FormProvider;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
+import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -74,25 +80,28 @@ public class InventoryPackets {
                 PacketFactory.sendContainerClose(wrapper.user(), windowId, ContainerType.NONE);
                 return;
             }
-            if (menuType.equals(MenuType.INVENTORY)) {
-                // TODO: Implement
-                wrapper.cancel();
-                PacketFactory.sendContainerClose(wrapper.user(), windowId, ContainerType.NONE);
-                return;
-            }
-
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = wrapper.user().get(BlockStateRewriter.class);
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            if (inventoryTracker.getPendingCloseContainer() != null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Server tried to open container while another container is pending close");
+                wrapper.cancel();
+                return;
+            }
+
+            if (menuType.equals(MenuType.INVENTORY)) {
+                inventoryTracker.setCurrentContainer(position, new WrappedContainer(windowId, inventoryTracker.getInventoryContainer()));
+                wrapper.cancel();
+                return;
+            }
+            final Container container = menuType.createContainer(windowId);
+            inventoryTracker.setCurrentContainer(position, container);
+
             final BedrockBlockEntity blockEntity = chunkTracker.getBlockEntity(position);
             ATextComponent title = new TranslationComponent("container." + blockStateRewriter.tag(chunkTracker.getBlockState(position)));
             if (blockEntity != null && blockEntity.tag().get("CustomName") instanceof StringTag customNameTag) {
                 title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePacksStorage.class).translate(customNameTag.getValue()));
             }
-
-            final Container container = menuType.createContainer(windowId);
-            inventoryTracker.trackContainer(position, container);
-
             wrapper.write(Types.VAR_INT, (int) windowId); // window id
             wrapper.write(Types.VAR_INT, menuType.javaMenuTypeId()); // type
             wrapper.write(Types.TAG, TextUtil.textComponentToNbt(title)); // title
@@ -133,7 +142,7 @@ public class InventoryPackets {
             final BedrockItem[] items = wrapper.read(wrapper.user().get(ItemRewriter.class).itemArrayType()); // items
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            final Container container = inventoryTracker.getContainer((byte) windowId);
+            final Container container = inventoryTracker.getContainerClientbound((byte) windowId);
             if (container == null) {
                 wrapper.cancel();
                 return;
@@ -142,12 +151,12 @@ public class InventoryPackets {
             try {
                 container.setItems(items);
             } catch (IllegalArgumentException e) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + container + ", but items array length was not correct");
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + container.menuType().bedrockContainerType() + ", but items array length was not correct");
                 wrapper.cancel();
                 return;
             }
 
-            inventoryTracker.writeWindowItems(wrapper, container);
+            PacketFactory.writeContainerSetContent(wrapper, container);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MODAL_FORM_REQUEST, null, wrapper -> {
             wrapper.cancel();
@@ -164,10 +173,16 @@ public class InventoryPackets {
             try {
                 form = FormSerializer.deserialize(data);
             } catch (Throwable e) { // Mojang client shows error modal form
-                throw new IllegalArgumentException("Error while deserializing form data: " + data, e);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while deserializing form data: " + data, e);
+                wrapper.cancel();
+                return;
             }
             form.setTranslator(wrapper.user().get(ResourcePacksStorage.class)::translate);
             Via.getManager().getProviders().get(FormProvider.class).openModalForm(wrapper.user(), id, form);
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.CREATIVE_CONTENT, null, wrapper -> {
+            wrapper.cancel();
+            final BedrockItem[] items = wrapper.read(wrapper.user().get(ItemRewriter.class).creativeItemArrayType()); // items
         });
 
         protocol.registerServerbound(ServerboundPackets1_20_5.CONTAINER_CLICK, null, wrapper -> {
@@ -178,7 +193,46 @@ public class InventoryPackets {
             final byte button = wrapper.read(Types.BYTE); // button
             final ClickType action = ClickType.values()[wrapper.read(Types.VAR_INT)]; // action
 
-            wrapper.user().get(InventoryTracker.class).handleWindowClick(windowId, revision, slot, button, action);
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            if (inventoryTracker.getPendingCloseContainer() != null) {
+                wrapper.cancel();
+                return;
+            }
+            final Container container = inventoryTracker.getContainerServerbound(windowId);
+            if (container == null) {
+                if (windowId == ContainerID.CONTAINER_ID_INVENTORY.getValue()) {
+                    // Mojang client can send multiple OpenInventory requests if the server doesn't respond, so this is fine here
+                    final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
+                    interact.write(Types.BYTE, (byte) InteractPacket_Action.OpenInventory.getValue()); // action
+                    interact.write(BedrockTypes.UNSIGNED_VAR_LONG, wrapper.user().get(EntityTracker.class).getClientPlayer().runtimeId()); // runtime entity id
+                    interact.sendToServer(BedrockProtocol.class);
+                    PacketFactory.sendContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
+                }
+
+                wrapper.cancel();
+                return;
+            }
+            if (!container.handleContainerClick(revision, slot, button, action)) {
+                if (container != inventoryTracker.getInventoryContainer()) {
+                    PacketFactory.sendContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
+                }
+                PacketFactory.sendContainerSetContent(wrapper.user(), container);
+            }
+        });
+        protocol.registerServerbound(ServerboundPackets1_20_5.SET_CREATIVE_MODE_SLOT, null, wrapper -> {
+            wrapper.cancel();
+            final short slot = wrapper.read(Types.SHORT); // slot
+            final Item item = wrapper.read(Types1_21.ITEM); // item
+
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            if (inventoryTracker.getPendingCloseContainer() != null) {
+                wrapper.cancel();
+                return;
+            }
+            PacketFactory.sendContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
+            if (inventoryTracker.getCurrentContainer() != null && inventoryTracker.getCurrentContainer() != inventoryTracker.getInventoryContainer()) {
+                PacketFactory.sendContainerSetContent(wrapper.user(), inventoryTracker.getCurrentContainer());
+            }
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.CONTAINER_CLOSE, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
