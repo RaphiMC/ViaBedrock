@@ -33,8 +33,8 @@ public class ProtocolConstants {
     public static final int JAVA_PAINTING_VARIANT_ID = 8;
     public static final int LIVING_ENTITY_HEALTH_ID = 9;
 
-    public static final String BEDROCK_VERSION_NAME = "1.21.0";
-    public static final int BEDROCK_PROTOCOL_VERSION = 685;
+    public static final String BEDROCK_VERSION_NAME = "1.21.2";
+    public static final int BEDROCK_PROTOCOL_VERSION = 686;
     public static final int BEDROCK_RAKNET_PROTOCOL_VERSION = 11;
     public static final int BEDROCK_DEFAULT_PORT = 19132;
     public static final int BEDROCK_COMMAND_VERSION = 39;

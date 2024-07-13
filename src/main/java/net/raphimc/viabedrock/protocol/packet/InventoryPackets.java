@@ -178,7 +178,7 @@ public class InventoryPackets {
                 return;
             }
             form.setTranslator(wrapper.user().get(ResourcePacksStorage.class)::translate);
-            Via.getManager().getProviders().get(FormProvider.class).openModalForm(wrapper.user(), id, form);
+            formProvider.openModalForm(wrapper.user(), id, form);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CREATIVE_CONTENT, null, wrapper -> {
             wrapper.cancel();
