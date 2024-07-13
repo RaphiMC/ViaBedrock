@@ -99,12 +99,13 @@ public class WorldPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.SET_SPAWN_POSITION, ClientboundPackets1_21.SET_DEFAULT_SPAWN_POSITION, wrapper -> {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
 
-            final SpawnPositionType type = SpawnPositionType.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // type
-            if (type != SpawnPositionType.WorldSpawn) {
+            final int rawType = wrapper.read(BedrockTypes.VAR_INT); // type
+            final SpawnPositionType type = SpawnPositionType.getByValue(rawType);
+            if (type == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown SpawnPositionType: " + rawType);
                 wrapper.cancel();
                 return;
             }
-
             final BlockPosition compassPosition = wrapper.read(BedrockTypes.BLOCK_POSITION); // compass position
             final Dimension dimension = Dimension.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // dimension
             wrapper.read(BedrockTypes.BLOCK_POSITION); // spawn position
@@ -113,23 +114,26 @@ public class WorldPackets {
                 wrapper.cancel();
                 return;
             }
-
-            wrapper.write(Types.BLOCK_POSITION1_14, compassPosition); // position
-            wrapper.write(Types.FLOAT, 0F); // angle
+            switch (type) {
+                case WorldSpawn -> {
+                    wrapper.write(Types.BLOCK_POSITION1_14, compassPosition); // position
+                    wrapper.write(Types.FLOAT, 0F); // angle
+                }
+                case PlayerRespawn -> wrapper.cancel();
+                default -> throw new IllegalStateException("Unhandled SpawnPositionType: " + type);
+            }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CHANGE_DIMENSION, ClientboundPackets1_21.RESPAWN, wrapper -> {
+            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+
             final Dimension dimension = Dimension.values()[wrapper.read(BedrockTypes.VAR_INT)]; // dimension
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
-            final boolean respawn = wrapper.read(Types.BOOLEAN); // respawn
+            wrapper.read(Types.BOOLEAN); // respawn
 
-            // TODO: Handle respawn boolean and handle keep data mask
-            // TODO: Is this allowed? HiveMC does that
             if (dimension == wrapper.user().get(ChunkTracker.class).getDimension()) {
-                BedrockProtocol.kickForIllegalState(wrapper.user(), "Changing dimension to the same dimension is not supported");
-                return;
+                // Mojang client gets stuck in loading terrain until a proper CHANGE_DIMENSION packet is received
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received CHANGE_DIMENSION packet for the same dimension");
             }
-
-            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
             wrapper.user().put(new ChunkTracker(wrapper.user(), dimension));
             final EntityTracker oldEntityTracker = wrapper.user().get(EntityTracker.class);
@@ -144,7 +148,6 @@ public class WorldPackets {
                 clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
             }
             clientPlayer.setChangingDimension(true);
-            clientPlayer.sendPlayerPositionPacketToClient(true);
 
             wrapper.write(Types.VAR_INT, dimension.ordinal()); // dimension id
             wrapper.write(Types.STRING, dimension.getKey()); // dimension name
@@ -156,6 +159,10 @@ public class WorldPackets {
             wrapper.write(Types.OPTIONAL_GLOBAL_POSITION, null); // last death position
             wrapper.write(Types.VAR_INT, 0); // portal cooldown
             wrapper.write(Types.BYTE, (byte) 0x03); // keep data mask
+            wrapper.send(BedrockProtocol.class);
+            wrapper.cancel();
+            clientPlayer.sendPlayerPositionPacketToClient(false);
+            // TODO: Respawn: If player is dead, set health to zero again
         });
         protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_CHUNK, null, wrapper -> {
             wrapper.cancel();

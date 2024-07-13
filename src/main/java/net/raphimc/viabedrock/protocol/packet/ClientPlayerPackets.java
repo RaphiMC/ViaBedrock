@@ -41,10 +41,7 @@ import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
-import net.raphimc.viabedrock.protocol.storage.CommandsStorage;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
-import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.UUID;
@@ -75,27 +72,49 @@ public class ClientPlayerPackets {
     };
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.RESPAWN, ClientboundPackets1_21.PLAYER_POSITION, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.RESPAWN, ClientboundPackets1_21.RESPAWN, wrapper -> {
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final byte rawState = wrapper.read(Types.BYTE); // state
             final PlayerRespawnState state = PlayerRespawnState.getByValue(rawState);
-            if (state != PlayerRespawnState.ReadyToSpawn) {
+            if (state == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown PlayerRespawnState: " + rawState);
                 wrapper.cancel();
                 return;
             }
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
 
-            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
-            clientPlayer.setPosition(position);
+            switch (state) {
+                case ReadyToSpawn -> {
+                    final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+                    clientPlayer.setPosition(position);
 
-            if (!clientPlayer.isInitiallySpawned()) {
-                clientPlayer.setRespawning(true);
-            } else {
-                clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.Respawn, -1);
-                clientPlayer.closeDownloadingTerrainScreen();
+                    if (clientPlayer.isInitiallySpawned()) {
+                        final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+                        final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+
+                        // TODO: Respawn: Set player health to 20
+
+                        clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.Respawn, -1);
+                        wrapper.write(Types.VAR_INT, chunkTracker.getDimension().ordinal()); // dimension id
+                        wrapper.write(Types.STRING, chunkTracker.getDimension().getKey()); // dimension name
+                        wrapper.write(Types.LONG, 0L); // hashed seed
+                        wrapper.write(Types.BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.getGameType(), gameSession.getLevelGameType())); // game mode
+                        wrapper.write(Types.BYTE, (byte) -1); // previous game mode
+                        wrapper.write(Types.BOOLEAN, false); // is debug
+                        wrapper.write(Types.BOOLEAN, gameSession.isFlatGenerator()); // is flat
+                        wrapper.write(Types.OPTIONAL_GLOBAL_POSITION, null); // last death position
+                        wrapper.write(Types.VAR_INT, 0); // portal cooldown
+                        wrapper.write(Types.BYTE, (byte) 0x03); // keep data mask
+                        wrapper.send(BedrockProtocol.class);
+                        clientPlayer.closeDownloadingTerrainScreen();
+                    }
+                    wrapper.cancel();
+
+                    clientPlayer.sendPlayerPositionPacketToClient(false);
+                }
+                case SearchingForSpawn, ClientReadyToSpawn -> wrapper.cancel();
+                default -> throw new IllegalStateException("Unhandled PlayerRespawnState: " + state);
             }
-
-            clientPlayer.writePlayerPositionPacketToClient(wrapper, true, true);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_ACTION, null, wrapper -> {
             wrapper.cancel();
@@ -104,24 +123,30 @@ public class ClientPlayerPackets {
             final PlayerActionType action = PlayerActionType.getByValue(rawAction);
             if (action == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown PlayerActionType: " + rawAction);
-                wrapper.cancel();
                 return;
             }
             wrapper.read(BedrockTypes.BLOCK_POSITION); // block position
             wrapper.read(BedrockTypes.BLOCK_POSITION); // result position
             wrapper.read(BedrockTypes.VAR_INT); // face
 
-            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
-            if (action == PlayerActionType.ChangeDimensionAck && clientPlayer.isChangingDimension()) {
-                if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
-                    clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
+            switch (action) {
+                case ChangeDimensionAck -> {
+                    final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+                    if (clientPlayer.isChangingDimension()) {
+                        if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
+                            clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
+                        }
+                        clientPlayer.sendPlayerPositionPacketToClient(false);
+                        clientPlayer.closeDownloadingTerrainScreen();
+                        clientPlayer.setChangingDimension(false);
+                        clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.ChangeDimensionAck, 0);
+                    }
                 }
-                clientPlayer.sendPlayerPositionPacketToClient(false);
-                clientPlayer.closeDownloadingTerrainScreen();
-                clientPlayer.setChangingDimension(false);
-                clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.ChangeDimensionAck, 0);
+                default -> {
+                    // TODO: Handle remaining actions
+                    // throw new IllegalStateException("Unhandled PlayerActionType: " + action);
+                }
             }
-            // TODO: Handle remaining actions
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CORRECT_PLAYER_MOVE_PREDICTION, null, wrapper -> {
             throw new UnsupportedOperationException("Received CorrectPlayerMovePrediction packet, but the client does not support movement corrections.");
@@ -192,14 +217,16 @@ public class ClientPlayerPackets {
         protocol.registerServerbound(ServerboundPackets1_20_5.CLIENT_COMMAND, ServerboundBedrockPackets.RESPAWN, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final ClientCommandAction action = ClientCommandAction.values()[wrapper.read(Types.VAR_INT)]; // action
-            if (action != ClientCommandAction.PERFORM_RESPAWN) {
-                wrapper.cancel();
-                return;
-            }
 
-            wrapper.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // position
-            wrapper.write(Types.BYTE, (byte) PlayerRespawnState.ClientReadyToSpawn.getValue()); // state
-            wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entityTracker.getClientPlayer().runtimeId()); // runtime entity id
+            switch (action) {
+                case PERFORM_RESPAWN -> {
+                    wrapper.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // position
+                    wrapper.write(Types.BYTE, (byte) PlayerRespawnState.ClientReadyToSpawn.getValue()); // state
+                    wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entityTracker.getClientPlayer().runtimeId()); // runtime entity id
+                }
+                case REQUEST_STATS -> wrapper.cancel();
+                default -> throw new IllegalStateException("Unhandled ClientCommandAction: " + action);
+            }
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.MOVE_PLAYER_STATUS_ONLY, ServerboundBedrockPackets.MOVE_PLAYER, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);

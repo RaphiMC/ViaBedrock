@@ -46,7 +46,6 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     // Initial spawn and respawning
     private boolean initiallySpawned;
-    private boolean respawning;
     private boolean changingDimension;
     private boolean wasInsideUnloadedChunk;
 
@@ -229,7 +228,7 @@ public class ClientPlayerEntity extends PlayerEntity {
                 this.pendingTeleportId = 0;
             }
         } else {
-            if (!this.initiallySpawned || this.respawning) {
+            if (!this.initiallySpawned) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received teleport confirm for teleport id " + teleportId + " but player is not spawned yet");
             }
             if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
@@ -263,15 +262,6 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     public void setInitiallySpawned() {
         this.initiallySpawned = true;
-        this.respawning = false;
-    }
-
-    public boolean isRespawning() {
-        return this.respawning;
-    }
-
-    public void setRespawning(final boolean respawning) {
-        this.respawning = respawning;
     }
 
     public boolean isChangingDimension() {
@@ -309,7 +299,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         if (chunkTracker.isInUnloadedChunkSection(this.position)) {
             this.wasInsideUnloadedChunk = true;
             if (!this.position.equals(newPosition)) {
-                if (!this.initiallySpawned || this.respawning || this.changingDimension) {
+                if (!this.initiallySpawned || this.changingDimension) {
                     this.sendPlayerPositionPacketToClient(false);
                 } else {
                     this.waitingForPositionSync = true;
@@ -330,7 +320,7 @@ public class ClientPlayerEntity extends PlayerEntity {
             return false;
         }
         // Not spawned yet or respawning
-        if (!this.initiallySpawned || this.respawning || this.changingDimension) {
+        if (!this.initiallySpawned || this.changingDimension) {
             if (!this.position.equals(newPosition)) {
                 this.sendPlayerPositionPacketToClient(false);
             }

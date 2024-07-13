@@ -33,10 +33,12 @@ import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.RegistryUtil;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorEvent;
 import net.raphimc.viabedrock.protocol.model.EntityLink;
 import net.raphimc.viabedrock.protocol.model.EntityProperties;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -336,6 +338,42 @@ public class EntityPackets {
             wrapper.send(BedrockProtocol.class);
             wrapper.cancel();
             setEntityData.send(BedrockProtocol.class);
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.ENTITY_EVENT, null, wrapper -> {
+            wrapper.cancel();
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+
+            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final byte rawEvent = wrapper.read(Types.BYTE); // event
+            final ActorEvent event = ActorEvent.getByValue(rawEvent); // event
+            if (event == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ActorEvent: " + rawEvent);
+                return;
+            }
+            final int data = wrapper.read(BedrockTypes.VAR_INT); // data
+
+            switch (event) {
+                case DEATH -> {
+                    if (runtimeEntityId == entityTracker.getClientPlayer().runtimeId()) {
+                        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21.SET_ENTITY_DATA, wrapper.user());
+                        setEntityData.write(Types.VAR_INT, entityTracker.getClientPlayer().javaId()); // entity id
+                        setEntityData.write(Types1_21.ENTITY_DATA_LIST, Lists.newArrayList(new EntityData(ProtocolConstants.LIVING_ENTITY_HEALTH_ID, Types1_21.ENTITY_DATA_TYPES.floatType, 0F))); // entity data
+                        setEntityData.send(BedrockProtocol.class);
+
+                        if (gameSession.getDeathMessage() != null) {
+                            final PacketWrapper playerCombatKill = PacketWrapper.create(ClientboundPackets1_21.PLAYER_COMBAT_KILL, wrapper.user());
+                            playerCombatKill.write(Types.VAR_INT, entityTracker.getClientPlayer().javaId()); // entity id
+                            playerCombatKill.write(Types.TAG, TextUtil.textComponentToNbt(gameSession.getDeathMessage())); // message
+                            playerCombatKill.send(BedrockProtocol.class);
+                        }
+                    }
+                }
+                default -> {
+                    // TODO: Handle remaining events
+                    // throw new IllegalStateException("Unhandled ActorEvent: " + event);
+                }
+            }
         });
     }
 

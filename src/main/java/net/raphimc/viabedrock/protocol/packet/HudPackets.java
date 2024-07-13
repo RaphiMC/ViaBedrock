@@ -26,6 +26,7 @@ import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
+import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardEntry;
 import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardObjective;
@@ -42,6 +43,7 @@ import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.ScoreboardObjectiveAction;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
+import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.storage.ScoreboardTracker;
@@ -373,6 +375,16 @@ public class HudPackets {
                 create(Types.BYTE, (byte) ScoreboardObjectiveAction.REMOVE.ordinal()); // mode
                 handler(wrapper -> wrapper.user().get(ScoreboardTracker.class).removeObjective(wrapper.get(Types.STRING, 0)));
             }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.DEATH_INFO, null, wrapper -> {
+            wrapper.cancel();
+            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+            final String message = wrapper.read(BedrockTypes.STRING); // death cause message
+            final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
+
+            final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTranslationLookup();
+            gameSession.setDeathMessage(TextUtil.stringToTextComponent(BedrockTranslator.translate(message, translator, parameters)));
+            // TODO: Respawn: If player is dead, reopen death screen to show the message
         });
     }
 

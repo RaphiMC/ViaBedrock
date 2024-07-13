@@ -36,8 +36,7 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 - [ ] Item data
 - [ ] Block breaking
 - [ ] Block placing
-- [ ] Respawning
-- [x] Dimension switching
+- [x] Respawning and dimension switching
 - [x] Form GUIs
 - [x] Scoreboard
 - [x] Titles

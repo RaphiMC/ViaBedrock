@@ -22,6 +22,7 @@ import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.connection.StorableObject;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
+import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
@@ -47,9 +48,9 @@ public class GameSessionStorage implements StorableObject {
     private boolean sentStartGameResponsePackets;
 
     private PlayerAbilities abilities;
-
     private ChatRestrictionLevel chatRestrictionLevel;
     private boolean commandsEnabled;
+    private ATextComponent deathMessage;
 
     public GameSessionStorage() {
         this.bedrockDimensionDefinitions.put("minecraft:the_nether", new IntIntImmutablePair(0, 128));
@@ -158,6 +159,14 @@ public class GameSessionStorage implements StorableObject {
 
     public void setCommandsEnabled(final boolean commandsEnabled) {
         this.commandsEnabled = commandsEnabled;
+    }
+
+    public ATextComponent getDeathMessage() {
+        return this.deathMessage;
+    }
+
+    public void setDeathMessage(final ATextComponent deathMessage) {
+        this.deathMessage = deathMessage;
     }
 
 }
