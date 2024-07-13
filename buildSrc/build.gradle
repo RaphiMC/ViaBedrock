@@ -3,6 +3,7 @@ repositories {
 }
 
 dependencies {
+    implementation "org.trimou:trimou-core:2.5.1.Final"
     implementation "org.jsoup:jsoup:1.18.1"
     implementation "commons-io:commons-io:2.16.1"
 }

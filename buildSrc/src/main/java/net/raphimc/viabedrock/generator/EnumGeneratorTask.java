@@ -29,9 +29,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.trimou.Mustache;
+import org.trimou.engine.MustacheEngine;
+import org.trimou.engine.MustacheEngineBuilder;
+import org.trimou.engine.config.EngineConfigurationKey;
+import org.trimou.engine.locator.ClassPathTemplateLocator;
+import org.trimou.engine.resolver.MapResolver;
 
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.FileWriter;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -40,7 +46,6 @@ public abstract class EnumGeneratorTask extends DefaultTask {
 
     private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/%s/html/enums.html";
     private static final String ENUMS_PACKAGE = "net.raphimc.viabedrock.protocol.data.enums.bedrock";
-    private static final String FILE_HEADER = "// THIS FILE IS AUTO-GENERATED. DO NOT EDIT!\n";
 
     @Input
     public abstract Property<String> getCommitHash();
@@ -125,6 +130,13 @@ public abstract class EnumGeneratorTask extends DefaultTask {
             enums.put(enumName, values);
         }
 
+        final MustacheEngine mustacheEngine = MustacheEngineBuilder.newBuilder()
+                .addTemplateLocator(ClassPathTemplateLocator.builder().setSuffix("mustache").build())
+                .setProperty(EngineConfigurationKey.SKIP_VALUE_ESCAPING, true)
+                .addResolver(new MapResolver())
+                .build();
+        final Mustache enumTemplate = mustacheEngine.getMustache("enum");
+
         for (Map.Entry<String, List<Pair<String, String>>> entry : enums.entrySet()) {
             final String enumPackage;
             final String enumName;
@@ -135,57 +147,16 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                 enumPackage = ENUMS_PACKAGE;
                 enumName = entry.getKey().replace("::", "_");
             }
-            final List<Pair<String, String>> values = entry.getValue();
             final File enumDir = new File(outputDir, enumPackage.replace(".", "/"));
             enumDir.mkdirs();
             final File enumFile = new File(enumDir, enumName + ".java");
-            try (final PrintWriter writer = new PrintWriter(enumFile)) {
-                writer.println(FILE_HEADER);
-                writer.println("package " + enumPackage + ";");
-                writer.println();
-                writer.println("import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;");
-                writer.println("import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;");
-                writer.println();
-                writer.println("public enum " + enumName + " {");
-                writer.println();
-                for (int i = 0; i < values.size(); i++) {
-                    final Pair<String, String> value = values.get(i);
-                    writer.print("    " + value.getKey());
-                    writer.print("(" + value.getValue() + ")");
-                    if (i != values.size() - 1) {
-                        writer.println(",");
-                    } else {
-                        writer.println(";");
-                    }
-                }
-                writer.println();
-                writer.println("    private static final Int2ObjectMap<" + enumName + "> BY_VALUE = new Int2ObjectOpenHashMap<>();");
-                writer.println();
-                writer.println("    static {");
-                writer.println("        for (" + enumName + " value : values()) {");
-                writer.println("            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);");
-                writer.println("        }");
-                writer.println("    }");
-                writer.println();
-                writer.println("    public static " + enumName + " getByValue(final int value) {");
-                writer.println("        return BY_VALUE.get(value);");
-                writer.println("    }");
-                writer.println();
-                writer.println("    public static " + enumName + " getByValue(final int value, final " + enumName + " fallback) {");
-                writer.println("        return BY_VALUE.getOrDefault(value, fallback);");
-                writer.println("    }");
-                writer.println();
-                writer.println("    private final int value;");
-                writer.println();
-                writer.println("    " + enumName + "(final int value) {");
-                writer.println("        this.value = value;");
-                writer.println("    }");
-                writer.println();
-                writer.println("    public int getValue() {");
-                writer.println("        return this.value;");
-                writer.println("    }");
-                writer.println();
-                writer.println("}");
+
+            final Map<String, Object> variables = new HashMap<>();
+            variables.put("packageName", enumPackage);
+            variables.put("enumName", enumName);
+            variables.put("values", entry.getValue());
+            try (final FileWriter writer = new FileWriter(enumFile)) {
+                enumTemplate.render(writer, variables);
             }
         }
     }
