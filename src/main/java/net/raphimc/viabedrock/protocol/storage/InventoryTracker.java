@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
@@ -36,6 +35,9 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -46,12 +48,10 @@ public class InventoryTracker extends StoredObject {
     private final AtomicInteger FAKE_ID_COUNTER = new AtomicInteger(MIN_FAKE_ID);
 
     private final InventoryContainer inventoryContainer = new InventoryContainer((byte) ContainerID.CONTAINER_ID_INVENTORY.getValue());
-
-    private BlockPosition currentContainerPosition = null;
-    private Container currentContainer = null;
+    private final Stack<Container> containerStack = new Stack<>();
+    private final List<Container> closeWhenTickedContainers = new ArrayList<>();
 
     private Container pendingCloseContainer = null;
-    private FakeContainer currentFakeContainer = null;
 
     public InventoryTracker(final UserConnection user) {
         super(user);
@@ -59,26 +59,38 @@ public class InventoryTracker extends StoredObject {
 
     public Container getContainerClientbound(final byte windowId) {
         if (windowId == this.inventoryContainer.windowId()) return this.inventoryContainer;
-        if (this.currentContainer != null && this.currentContainer.windowId() == windowId) return this.currentContainer;
+        for (int i = this.containerStack.size() - 1; i >= 0; i--) {
+            final Container container = this.containerStack.get(i);
+            if (container instanceof FakeContainer) continue;
+            if (container.windowId() == windowId) return container;
+        }
         return null;
     }
 
     public Container getContainerServerbound(final byte windowId) {
-        if (this.currentContainer != null && this.currentContainer.windowId() == windowId) return this.currentContainer;
-        if (windowId == ContainerID.CONTAINER_ID_INVENTORY.getValue() && this.currentContainer instanceof WrappedContainer wrappedContainer && wrappedContainer.delegate() == this.inventoryContainer) {
-            return this.currentContainer;
+        if (windowId == ContainerID.CONTAINER_ID_INVENTORY.getValue() && this.isInventoryOpen()) {
+            return this.getCurrentContainer();
         }
-        if (this.currentFakeContainer != null && this.currentFakeContainer.windowId() == windowId) return this.currentFakeContainer;
+        for (int i = this.containerStack.size() - 1; i >= 0; i--) {
+            final Container container = this.containerStack.get(i);
+            if (container instanceof FakeContainer) continue;
+            if (container.windowId() == windowId) return container;
+        }
+        for (int i = this.containerStack.size() - 1; i >= 0; i--) {
+            final Container container = this.containerStack.get(i);
+            if (container instanceof FakeContainer && container.windowId() == windowId) {
+                return container;
+            }
+        }
         return null;
     }
 
-    public void setCurrentContainer(final BlockPosition position, final Container container) {
-        this.currentContainerPosition = position;
-        this.currentContainer = container;
+    public void setCurrentContainer(final Container container) {
+        this.containerStack.push(container);
     }
 
-    public void openFakeContainer(final FakeContainer container) {
-        this.currentFakeContainer = container;
+    public void openContainer(final Container container) {
+        this.containerStack.push(container);
 
         final PacketWrapper openScreen = PacketWrapper.create(ClientboundPackets1_21.OPEN_SCREEN, this.getUser());
         openScreen.write(Types.VAR_INT, (int) container.windowId()); // window id
@@ -88,74 +100,77 @@ public class InventoryTracker extends StoredObject {
         PacketFactory.sendContainerSetContent(this.getUser(), container);
     }
 
-    public void setCurrentContainerClosed() {
-        this.currentContainerPosition = null;
-        this.currentContainer = null;
+    public void markPendingClose(final Container container) {
+        if (container instanceof FakeContainer fakeContainer) {
+            this.containerStack.remove(fakeContainer);
+            fakeContainer.onClosed();
+            if (!this.containerStack.isEmpty()) {
+                this.openContainer(this.containerStack.pop());
+            }
+            return;
+        }
+
+        if (this.pendingCloseContainer != null) {
+            throw new IllegalStateException("There is already a container pending close");
+        }
+        this.pendingCloseContainer = container;
+    }
+
+    public void setCurrentContainerClosed(final boolean serverInitiated) {
+        if (serverInitiated) {
+            this.pendingCloseContainer = this.getCurrentContainer();
+            PacketFactory.sendContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
+        } else if (this.pendingCloseContainer != this.getCurrentContainer()) {
+            throw new IllegalStateException("Current container is not the pending close container");
+        }
+        this.containerStack.remove(this.pendingCloseContainer);
         this.pendingCloseContainer = null;
 
-        if (this.currentFakeContainer != null) {
-            this.openFakeContainer(this.currentFakeContainer);
+        if (!this.containerStack.isEmpty()) {
+            this.openContainer(this.containerStack.pop());
         }
     }
 
-    public boolean markPendingClose(final boolean callOnClosed) {
-        if (this.currentContainer != null) {
-            this.pendingCloseContainer = this.currentContainer;
-            this.currentContainerPosition = null;
-            this.currentContainer = null;
-        } else if (this.currentFakeContainer != null) {
-            final FakeContainer container = this.currentFakeContainer;
-            this.currentFakeContainer = null;
-            if (callOnClosed) {
-                container.onClosed();
-            }
-            return false;
-        }
-
-        return true;
-    }
-
-    public void closeCurrentContainer() {
-        if (!this.markPendingClose(false)) {
-            throw new IllegalStateException("There is no container to close");
-        }
-
-        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_CLOSE, this.getUser());
-        closeWindow.write(Types.UNSIGNED_BYTE, (short) this.pendingCloseContainer.windowId()); // window id
-        closeWindow.send(BedrockProtocol.class);
-        PacketFactory.sendContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
+    public void closeWhenTicked(final Container container) {
+        this.closeWhenTickedContainers.add(container);
     }
 
     public void tick() {
-        if (this.currentContainer != null && this.currentContainerPosition != null) {
-            if (this.currentContainer.menuType().bedrockContainerType().equals(ContainerType.INVENTORY)) return;
+        final Container currentContainer = this.getOpenContainer();
+        if (this.closeWhenTickedContainers.remove(currentContainer)) {
+            this.forceCloseContainer(currentContainer);
+            return;
+        }
+
+        if (currentContainer != null && currentContainer.position() != null) {
+            if (currentContainer.menuType().bedrockContainerType().equals(ContainerType.INVENTORY)) return;
 
             final ChunkTracker chunkTracker = this.getUser().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
-            final int blockState = chunkTracker.getBlockState(this.currentContainerPosition);
+            final int blockState = chunkTracker.getBlockState(currentContainer.position());
             final String tag = blockStateRewriter.tag(blockState);
-            if (!this.currentContainer.menuType().isAcceptedTag(tag)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + this.currentContainer.menuType().bedrockContainerType() + " because block state is not valid for container type: " + blockState);
-                this.closeCurrentContainer();
+            if (!currentContainer.menuType().isAcceptedTag(tag)) {
+                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + currentContainer.menuType().bedrockContainerType() + " because block state is not valid for container type: " + blockState);
+                this.forceCloseContainer(currentContainer);
                 return;
             }
 
             final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
-            final Position3f containerPosition = new Position3f(this.currentContainerPosition.x() + 0.5F, this.currentContainerPosition.y() + 0.5F, this.currentContainerPosition.z() + 0.5F);
+            final Position3f containerPosition = new Position3f(currentContainer.position().x() + 0.5F, currentContainer.position().y() + 0.5F, currentContainer.position().z() + 0.5F);
             final Position3f playerPosition = entityTracker.getClientPlayer().position();
             if (playerPosition.distanceTo(containerPosition) > 6) {
-                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + this.currentContainer.menuType().bedrockContainerType() + " because player is too far away (" + playerPosition.distanceTo(containerPosition) + " > 6)");
-                this.closeCurrentContainer();
+                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + currentContainer.menuType().bedrockContainerType() + " because player is too far away (" + playerPosition.distanceTo(containerPosition) + " > 6)");
+                this.forceCloseContainer(currentContainer);
             }
         }
     }
 
     public boolean isContainerOpen() {
-        return this.currentContainer != null || this.pendingCloseContainer != null;
+        return this.getCurrentContainer() != null || this.pendingCloseContainer != null;
     }
 
-    public boolean isAnyContainerOpen() {
-        return this.currentContainer != null || this.pendingCloseContainer != null || this.currentFakeContainer != null;
+    public boolean isInventoryOpen() {
+        return this.getCurrentContainer() instanceof WrappedContainer wrappedContainer && wrappedContainer.delegate() == this.inventoryContainer;
     }
 
     public InventoryContainer getInventoryContainer() {
@@ -163,15 +178,28 @@ public class InventoryTracker extends StoredObject {
     }
 
     public Container getCurrentContainer() {
-        return this.currentContainer;
+        for (int i = this.containerStack.size() - 1; i >= 0; i--) {
+            final Container container = this.containerStack.get(i);
+            if (container instanceof FakeContainer) continue;
+            return container;
+        }
+        return null;
+    }
+
+    public FakeContainer getCurrentFakeContainer() {
+        for (int i = this.containerStack.size() - 1; i >= 0; i--) {
+            final Container container = this.containerStack.get(i);
+            if (container instanceof FakeContainer fakeContainer) return fakeContainer;
+        }
+        return null;
+    }
+
+    public Container getOpenContainer() {
+        return this.containerStack.isEmpty() ? null : this.containerStack.peek();
     }
 
     public Container getPendingCloseContainer() {
         return this.pendingCloseContainer;
-    }
-
-    public FakeContainer getCurrentFakeContainer() {
-        return this.currentFakeContainer;
     }
 
     public byte getNextFakeWindowId() {
@@ -181,6 +209,14 @@ public class InventoryTracker extends StoredObject {
             return (byte) MIN_FAKE_ID;
         }
         return (byte) id;
+    }
+
+    private void forceCloseContainer(final Container container) {
+        this.markPendingClose(container);
+        final PacketWrapper containerClose = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_CLOSE, this.getUser());
+        containerClose.write(Types.UNSIGNED_BYTE, (short) this.pendingCloseContainer.windowId()); // window id
+        containerClose.send(BedrockProtocol.class);
+        PacketFactory.sendContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
     }
 
 }

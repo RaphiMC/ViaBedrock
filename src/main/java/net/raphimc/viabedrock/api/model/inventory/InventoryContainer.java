@@ -25,17 +25,17 @@ import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 public class InventoryContainer extends Container {
 
-    public InventoryContainer(byte windowId) {
-        super(windowId, MenuType.INVENTORY, 36);
+    public InventoryContainer(final byte windowId) {
+        super(windowId, MenuType.INVENTORY, null, null, 36);
     }
 
     @Override
-    public void setItems(BedrockItem[] items) {
+    public void setItems(final BedrockItem[] items) {
         System.arraycopy(items, 0, this.items, 0, Math.min(items.length, this.items.length));
     }
 
     @Override
-    public Item[] getJavaItems(UserConnection user) {
+    public Item[] getJavaItems(final UserConnection user) {
         final Item[] combinedItems = StructuredItem.emptyArray(45);
         final Item[] inventoryItems = super.getJavaItems(user);
 

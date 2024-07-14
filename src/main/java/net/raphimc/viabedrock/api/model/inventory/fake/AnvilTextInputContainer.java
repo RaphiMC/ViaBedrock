@@ -21,34 +21,26 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
-import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 import java.util.function.Consumer;
 
 public class AnvilTextInputContainer extends FakeContainer {
 
-    private final FakeContainer parent;
     private final Consumer<String> onRename;
 
-    public AnvilTextInputContainer(UserConnection user, FakeContainer parent, ATextComponent title, Consumer<String> onRename) {
+    public AnvilTextInputContainer(final UserConnection user, final ATextComponent title, final Consumer<String> onRename) {
         super(user, MenuType.DO_NOT_USE_ANVIL, title);
 
-        this.parent = parent;
         this.onRename = onRename;
     }
 
     @Override
-    public void onAnvilRename(String name) {
+    public void onAnvilRename(final String name) {
         this.onRename.accept(name);
     }
 
     @Override
-    public void onClosed() {
-        this.user.get(InventoryTracker.class).openFakeContainer(this.parent);
-    }
-
-    @Override
-    public Item[] getJavaItems(UserConnection user) {
+    public Item[] getJavaItems(final UserConnection user) {
         throw new UnsupportedOperationException();
     }
 

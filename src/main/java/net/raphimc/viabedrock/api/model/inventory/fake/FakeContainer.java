@@ -31,13 +31,11 @@ import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 public abstract class FakeContainer extends Container {
 
     protected final UserConnection user;
-    protected final ATextComponent title;
 
     public FakeContainer(final UserConnection user, final MenuType menuType, final ATextComponent title) {
-        super(user.get(InventoryTracker.class).getNextFakeWindowId(), menuType, 0);
+        super(user.get(InventoryTracker.class).getNextFakeWindowId(), menuType, title, null, 0);
 
         this.user = user;
-        this.title = title;
     }
 
     @Override
@@ -56,18 +54,11 @@ public abstract class FakeContainer extends Container {
     public void onClosed() {
     }
 
-    protected void close() {
-        final PacketWrapper closeWindow = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_CLOSE, this.user);
-        closeWindow.write(Types.UNSIGNED_BYTE, (short) this.windowId); // window id
-        closeWindow.send(BedrockProtocol.class);
-
-        if (this.user.get(InventoryTracker.class).markPendingClose(false)) {
-            throw new IllegalStateException("Couldn't close fake container, because a real one was open");
-        }
-    }
-
-    public ATextComponent title() {
-        return this.title;
+    public void close() {
+        final PacketWrapper containerClose = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_CLOSE, this.user);
+        containerClose.write(Types.UNSIGNED_BYTE, (short) this.windowId); // window id
+        containerClose.send(BedrockProtocol.class);
+        this.user.get(InventoryTracker.class).markPendingClose(this);
     }
 
 }

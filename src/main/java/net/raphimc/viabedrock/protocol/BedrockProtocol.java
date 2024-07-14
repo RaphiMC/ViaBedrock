@@ -41,8 +41,10 @@ import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.packet.*;
-import net.raphimc.viabedrock.protocol.provider.*;
-import net.raphimc.viabedrock.protocol.provider.impl.InventoryFormProvider;
+import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
+import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
+import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
+import net.raphimc.viabedrock.protocol.provider.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.task.*;
 
@@ -119,7 +121,6 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         providers.register(ResourcePackProvider.class, ViaBedrock.getConfig().getPackCacheMode().createProvider());
         providers.register(BlobCacheProvider.class, ViaBedrock.getConfig().getBlobCacheMode().createProvider());
         providers.register(SkinProvider.class, new SkinProvider());
-        providers.register(FormProvider.class, new InventoryFormProvider());
 
         if (!ViaBedrock.getConfig().getBlobCacheMode().equals(ViaBedrockConfig.BlobCacheMode.DISABLED)) {
             providers.get(BlobCacheProvider.class).addBlob(0L, new byte[0]);

@@ -18,12 +18,13 @@
 package net.raphimc.viabedrock.api.model.inventory.fake;
 
 import com.viaversion.nbt.tag.Tag;
-import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
@@ -35,12 +36,14 @@ import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTextUtils;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
-import net.raphimc.viabedrock.protocol.provider.FormProvider;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +57,9 @@ public class FormContainer extends FakeContainer {
 
     private Item[] formItems;
     private int page = 0;
+    private boolean sentResponse = false;
 
-    public FormContainer(UserConnection user, int formId, AForm form) {
+    public FormContainer(final UserConnection user, final int formId, final AForm form) {
         super(user, MenuType.CONTAINER, TextUtil.stringToTextComponent("Form: " + form.getTitle()));
 
         this.formId = formId;
@@ -64,7 +68,7 @@ public class FormContainer extends FakeContainer {
     }
 
     @Override
-    public boolean handleContainerClick(int revision, short slot, byte button, ClickType action) {
+    public boolean handleContainerClick(final int revision, short slot, final byte button, final ClickType action) {
         if (action != ClickType.PICKUP) return false;
 
         if (this.formItems.length > SIZE && slot == SIZE - 1) {
@@ -91,7 +95,6 @@ public class FormContainer extends FakeContainer {
             }
 
             if (modalForm.getClickedButton() != -1) {
-                Via.getManager().getProviders().get(FormProvider.class).sendModalFormResponse(this.user, this.formId, this.form);
                 this.close();
                 return true;
             }
@@ -104,7 +107,6 @@ public class FormContainer extends FakeContainer {
             }
 
             if (actionForm.getClickedButton() != -1) {
-                Via.getManager().getProviders().get(FormProvider.class).sendModalFormResponse(this.user, this.formId, this.form);
                 this.close();
                 return true;
             }
@@ -112,7 +114,6 @@ public class FormContainer extends FakeContainer {
             if (slot == customForm.getElements().length) {
                 if (button != 0) return false;
 
-                Via.getManager().getProviders().get(FormProvider.class).sendModalFormResponse(this.user, this.formId, this.form);
                 this.close();
                 return true;
             }
@@ -155,7 +156,7 @@ public class FormContainer extends FakeContainer {
                     stepSlider.setSelected(newSelected);
                 }
             } else if (element instanceof TextFieldFormElement textField) {
-                this.user.get(InventoryTracker.class).openFakeContainer(new AnvilTextInputContainer(this.user, this, TextUtil.stringToTextComponent("Edit text"), textField::setValue) {
+                this.user.get(InventoryTracker.class).openContainer(new AnvilTextInputContainer(this.user, TextUtil.stringToTextComponent("Edit text"), textField::setValue) {
                     @Override
                     public Item[] getJavaItems(UserConnection user) {
                         final List<Item> items = new ArrayList<>();
@@ -182,11 +183,17 @@ public class FormContainer extends FakeContainer {
 
     @Override
     public void onClosed() {
-        Via.getManager().getProviders().get(FormProvider.class).sendModalFormResponse(this.user, this.formId, null);
+        this.sendModalFormResponse(true);
     }
 
     @Override
-    public Item[] getJavaItems(UserConnection user) {
+    public void close() {
+        this.sendModalFormResponse(false);
+        super.close();
+    }
+
+    @Override
+    public Item[] getJavaItems(final UserConnection user) {
         if (this.formItems.length > SIZE) {
             final Item[] items = new Item[SIZE];
             final int begin = this.page * (SIZE - 1);
@@ -316,6 +323,23 @@ public class FormContainer extends FakeContainer {
         }
         component.getStyle().setItalic(false);
         return TextUtil.textComponentToNbt(component);
+    }
+
+    private void sendModalFormResponse(final boolean userClosed) {
+        if (this.sentResponse) return;
+        this.sentResponse = true;
+
+        final PacketWrapper modalFormResponse = PacketWrapper.create(ServerboundBedrockPackets.MODAL_FORM_RESPONSE, this.user);
+        modalFormResponse.write(BedrockTypes.UNSIGNED_VAR_INT, this.formId); // id
+        modalFormResponse.write(Types.BOOLEAN, !userClosed); // has response
+        if (!userClosed) {
+            modalFormResponse.write(BedrockTypes.STRING, this.form.serializeResponse() + "\n"); // response
+            modalFormResponse.write(Types.BOOLEAN, false); // has cancel reason
+        } else {
+            modalFormResponse.write(Types.BOOLEAN, true); // has cancel reason
+            modalFormResponse.write(Types.BYTE, (byte) ModalFormCancelReason.UserClosed.getValue()); // cancel reason
+        }
+        modalFormResponse.sendToServer(BedrockProtocol.class);
     }
 
 }

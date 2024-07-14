@@ -18,7 +18,9 @@
 package net.raphimc.viabedrock.api.model.inventory;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
@@ -26,8 +28,8 @@ public class WrappedContainer extends Container {
 
     private final Container delegate;
 
-    public WrappedContainer(final byte windowId, final Container delegate) {
-        super(windowId, delegate.menuType, 0);
+    public WrappedContainer(final byte windowId, final BlockPosition position, final ATextComponent title, final Container delegate) {
+        super(windowId, delegate.menuType, title, position, 0);
         this.delegate = delegate;
     }
 

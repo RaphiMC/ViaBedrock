@@ -18,7 +18,9 @@
 package net.raphimc.viabedrock.api.model.inventory;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
@@ -28,12 +30,16 @@ public abstract class Container {
 
     protected final byte windowId;
     protected final MenuType menuType;
+    protected final ATextComponent title;
+    protected final BlockPosition position;
     protected final BedrockItem[] items;
     protected BedrockItem cursorItem = BedrockItem.empty();
 
-    public Container(final byte windowId, final MenuType menuType, final int size) {
+    public Container(final byte windowId, final MenuType menuType, final ATextComponent title, final BlockPosition position, final int size) {
         this.windowId = windowId;
         this.menuType = menuType;
+        this.title = title;
+        this.position = position;
         this.items = BedrockItem.emptyArray(size);
     }
 
@@ -65,6 +71,14 @@ public abstract class Container {
 
     public MenuType menuType() {
         return this.menuType;
+    }
+
+    public ATextComponent title() {
+        return this.title;
+    }
+
+    public BlockPosition position() {
+        return this.position;
     }
 
     public BedrockItem[] items() {

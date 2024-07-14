@@ -17,12 +17,14 @@
  */
 package net.raphimc.viabedrock.api.model.inventory;
 
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 
 public class ChestContainer extends Container {
 
-    public ChestContainer(byte windowId, int size) {
-        super(windowId, MenuType.CONTAINER, size);
+    public ChestContainer(final byte windowId, final ATextComponent title, final BlockPosition position, final int size) {
+        super(windowId, MenuType.CONTAINER, title, position, size);
     }
 
 }

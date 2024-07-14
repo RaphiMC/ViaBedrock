@@ -17,6 +17,8 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums;
 
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.api.model.inventory.ChestContainer;
 import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -25,24 +27,23 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
 public enum MenuType {
 
-    INVENTORY(ContainerType.INVENTORY, null, windowId -> {
+    INVENTORY(ContainerType.INVENTORY, null, (windowId, title, position) -> {
         throw new UnsupportedOperationException("Cannot create inventory container");
     }),
-    CONTAINER(ContainerType.CONTAINER, "minecraft:generic_9x3", windowId -> new ChestContainer(windowId, 27), "chest", "trapped_chest"),
-    DO_NOT_USE_ANVIL(ContainerType.ANVIL, "minecraft:anvil", windowId -> null, "anvil");
+    CONTAINER(ContainerType.CONTAINER, "minecraft:generic_9x3", (windowId, title, position) -> new ChestContainer(windowId, title, position, 27), "chest", "trapped_chest"),
+    DO_NOT_USE_ANVIL(ContainerType.ANVIL, "minecraft:anvil", (windowId, title, position) -> null, "anvil");
 
     // TODO: Add remaining menu types
 
     private final ContainerType bedrockContainerType;
     private final int javaMenuTypeId;
-    private final Function<Byte, Container> containerSupplier;
+    private final ContainerSupplier containerSupplier;
     private final Set<String> acceptedTags;
 
-    MenuType(final ContainerType bedrockContainerType, final String javaMenuType, final Function<Byte, Container> containerSupplier, final String... acceptedTags) {
+    MenuType(final ContainerType bedrockContainerType, final String javaMenuType, final ContainerSupplier containerSupplier, final String... acceptedTags) {
         this.bedrockContainerType = bedrockContainerType;
         this.containerSupplier = containerSupplier;
         this.acceptedTags = new HashSet<>(Arrays.asList(acceptedTags));
@@ -75,12 +76,18 @@ public enum MenuType {
         return this.javaMenuTypeId;
     }
 
-    public Container createContainer(final byte windowId) {
-        return this.containerSupplier.apply(windowId);
+    public Container createContainer(final byte windowId, final ATextComponent title, final BlockPosition position) {
+        return this.containerSupplier.createContainer(windowId, title, position);
     }
 
     public boolean isAcceptedTag(final String tag) {
         return this.acceptedTags.contains(tag);
+    }
+
+    private interface ContainerSupplier {
+
+        Container createContainer(final byte windowId, final ATextComponent title, final BlockPosition position);
+
     }
 
 }
