@@ -115,7 +115,7 @@ public class InventoryPackets {
                     final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
                     final Container container = serverInitiated ? inventoryTracker.getCurrentContainer() : inventoryTracker.getPendingCloseContainer();
                     if (container != null) {
-                        if (containerType != ContainerType.NONE && containerType != container.menuType().bedrockContainerType()) {
+                        if ((serverInitiated || containerType != ContainerType.NONE) && containerType != container.menuType().bedrockContainerType()) {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Server tried to close container, but container type was not correct");
                             wrapper.cancel();
                             return;

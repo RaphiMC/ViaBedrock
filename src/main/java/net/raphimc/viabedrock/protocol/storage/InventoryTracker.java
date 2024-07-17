@@ -120,7 +120,8 @@ public class InventoryTracker extends StoredObject {
         if (serverInitiated) {
             this.pendingCloseContainer = this.getCurrentContainer();
             PacketFactory.sendContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
-        } else if (this.pendingCloseContainer != this.getCurrentContainer()) {
+        }
+        if (this.pendingCloseContainer != this.getCurrentContainer()) {
             throw new IllegalStateException("Current container is not the pending close container");
         }
         this.containerStack.remove(this.pendingCloseContainer);
