@@ -35,7 +35,7 @@ public class StatusPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(State.STATUS, 28 /* UNCONNECTED_PONG */, ClientboundStatusPackets.STATUS_RESPONSE.getId(), wrapper -> {
-            final long ping = System.currentTimeMillis() - wrapper.read(Types.LONG); // timestamp
+            final long ping = (System.nanoTime() / 1_000_000) - wrapper.read(Types.LONG); // timestamp
             final String data = new String(wrapper.read(Types.REMAINING_BYTES), StandardCharsets.UTF_8); // data
             final String[] splitData = data.split(";");
 
