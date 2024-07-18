@@ -201,7 +201,7 @@ public class JoinPackets {
                         setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
                         setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
 
-                        PacketFactory.sendGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
+                        PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
                     } else {
                         wrapper.setPacketType(ClientboundPackets1_21.DISCONNECT);
                         writePlayStatusKickMessage(wrapper, status);
@@ -324,7 +324,7 @@ public class JoinPackets {
 
                     if (editorWorldType == Editor_WorldType.EditorProject) {
                         final PacketWrapper disconnect = PacketWrapper.create(ClientboundConfigurationPackets1_21.DISCONNECT, wrapper.user());
-                        PacketFactory.writeDisconnect(wrapper, resourcePacksStorage.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"));
+                        PacketFactory.writeJavaDisconnect(wrapper, resourcePacksStorage.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"));
                         disconnect.send(BedrockProtocol.class);
                         return;
                     }
@@ -462,26 +462,26 @@ public class JoinPackets {
 
         switch (status) {
             case LoginFailed_ClientOld:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.outdatedClient"));
+                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.outdatedClient"));
                 break;
             case LoginFailed_ServerOld:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.outdatedServer"));
+                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.outdatedServer"));
                 break;
             case LoginFailed_InvalidTenant:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.invalidTenant"));
+                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.invalidTenant"));
                 break;
             case LoginFailed_EditionMismatchEduToVanilla:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchEduToVanilla"));
+                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchEduToVanilla"));
                 break;
             case LoginFailed_EditionMismatchVanillaToEdu:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchVanillaToEdu"));
+                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchVanillaToEdu"));
                 break;
             case LoginFailed_ServerFullSubClient:
             case LoginFailed_EditorMismatchVanillaToEditor:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title"));
+                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title"));
                 break;
             case LoginFailed_EditorMismatchEditorToVanilla:
-                PacketFactory.writeDisconnect(wrapper, translations.get("disconnectionScreen.editor.mismatchEditorToVanilla"));
+                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.editor.mismatchEditorToVanilla"));
                 break;
             default:
                 throw new IllegalStateException("Unhandled PlayStatus: " + status);

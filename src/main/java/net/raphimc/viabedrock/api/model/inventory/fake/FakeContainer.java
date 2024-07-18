@@ -18,12 +18,9 @@
 package net.raphimc.viabedrock.api.model.inventory.fake;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
-import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.api.model.inventory.Container;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
@@ -55,9 +52,7 @@ public abstract class FakeContainer extends Container {
     }
 
     public void close() {
-        final PacketWrapper containerClose = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_CLOSE, this.user);
-        containerClose.write(Types.UNSIGNED_BYTE, (short) this.windowId); // window id
-        containerClose.send(BedrockProtocol.class);
+        PacketFactory.sendJavaContainerClose(this.user, this.windowId);
         this.user.get(InventoryTracker.class).markPendingClose(this);
     }
 

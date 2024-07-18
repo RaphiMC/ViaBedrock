@@ -77,7 +77,7 @@ public class InventoryPackets {
             if (menuType == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to open unimplemented container: " + type);
                 wrapper.cancel();
-                PacketFactory.sendContainerClose(wrapper.user(), windowId, ContainerType.NONE);
+                PacketFactory.sendBedrockContainerClose(wrapper.user(), windowId, ContainerType.NONE);
                 return;
             }
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
@@ -153,7 +153,7 @@ public class InventoryPackets {
                 return;
             }
 
-            PacketFactory.writeContainerSetContent(wrapper, container);
+            PacketFactory.writeJavaContainerSetContent(wrapper, container);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MODAL_FORM_REQUEST, null, wrapper -> {
             wrapper.cancel();
@@ -226,7 +226,7 @@ public class InventoryPackets {
                     interact.write(Types.BYTE, (byte) InteractPacket_Action.OpenInventory.getValue()); // action
                     interact.write(BedrockTypes.UNSIGNED_VAR_LONG, wrapper.user().get(EntityTracker.class).getClientPlayer().runtimeId()); // runtime entity id
                     interact.sendToServer(BedrockProtocol.class);
-                    PacketFactory.sendContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
+                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
                 }
 
                 wrapper.cancel();
@@ -234,9 +234,9 @@ public class InventoryPackets {
             }
             if (!container.handleContainerClick(revision, slot, button, action)) {
                 if (container != inventoryTracker.getInventoryContainer()) {
-                    PacketFactory.sendContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
+                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
                 }
-                PacketFactory.sendContainerSetContent(wrapper.user(), container);
+                PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);
             }
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.SET_CREATIVE_MODE_SLOT, null, wrapper -> {
@@ -249,9 +249,9 @@ public class InventoryPackets {
                 wrapper.cancel();
                 return;
             }
-            PacketFactory.sendContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
+            PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
             if (!inventoryTracker.isInventoryOpen()) {
-                PacketFactory.sendContainerSetContent(wrapper.user(), inventoryTracker.getCurrentContainer());
+                PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getCurrentContainer());
             }
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.CONTAINER_CLOSE, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {

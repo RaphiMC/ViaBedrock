@@ -78,7 +78,7 @@ public class ChatPackets {
                     final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                     if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() == ChatRestrictionLevel.Disabled && clientPlayer.abilities().playerPermission() <= PlayerPermissionLevel.Operator.getValue())) {
                         wrapper.cancel();
-                        PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
+                        PacketFactory.sendJavaSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
                     }
                 }
             });
@@ -284,7 +284,7 @@ public class ChatPackets {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     if (gameSession.getChatRestrictionLevel() != ChatRestrictionLevel.None) {
                         wrapper.cancel();
-                        PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute")));
+                        PacketFactory.sendJavaSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("permissions.chatmute")));
                     }
                 });
             }

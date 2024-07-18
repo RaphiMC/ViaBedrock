@@ -51,9 +51,9 @@ public class GameRulesStorage extends StoredObject {
                 final Object previousValue = this.gameRules.put(gameRule.name().toLowerCase(Locale.ROOT), gameRule.value());
                 if (previousValue != gameRule.value()) {
                     if (gameRule.name().equalsIgnoreCase("doImmediateRespawn")) {
-                        PacketFactory.sendGameEvent(this.getUser(), GameEventType.IMMEDIATE_RESPAWN, (Boolean) gameRule.value() ? 1F : 0F);
+                        PacketFactory.sendJavaGameEvent(this.getUser(), GameEventType.IMMEDIATE_RESPAWN, (Boolean) gameRule.value() ? 1F : 0F);
                     } else if (gameRule.name().equalsIgnoreCase("doLimitedCrafting")) {
-                        PacketFactory.sendGameEvent(this.getUser(), GameEventType.LIMITED_CRAFTING, (Boolean) gameRule.value() ? 1F : 0F);
+                        PacketFactory.sendJavaGameEvent(this.getUser(), GameEventType.LIMITED_CRAFTING, (Boolean) gameRule.value() ? 1F : 0F);
                     }
                 }
             }

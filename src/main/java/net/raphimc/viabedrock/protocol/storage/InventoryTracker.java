@@ -97,7 +97,7 @@ public class InventoryTracker extends StoredObject {
         openScreen.write(Types.VAR_INT, container.menuType().javaMenuTypeId()); // type
         openScreen.write(Types.TAG, TextUtil.textComponentToNbt(container.title())); // title
         openScreen.send(BedrockProtocol.class);
-        PacketFactory.sendContainerSetContent(this.getUser(), container);
+        PacketFactory.sendJavaContainerSetContent(this.getUser(), container);
     }
 
     public void markPendingClose(final Container container) {
@@ -119,7 +119,7 @@ public class InventoryTracker extends StoredObject {
     public void setCurrentContainerClosed(final boolean serverInitiated) {
         if (serverInitiated) {
             this.pendingCloseContainer = this.getCurrentContainer();
-            PacketFactory.sendContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
+            PacketFactory.sendBedrockContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
         }
         if (this.pendingCloseContainer != this.getCurrentContainer()) {
             throw new IllegalStateException("Current container is not the pending close container");
@@ -214,10 +214,8 @@ public class InventoryTracker extends StoredObject {
 
     private void forceCloseContainer(final Container container) {
         this.markPendingClose(container);
-        final PacketWrapper containerClose = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_CLOSE, this.getUser());
-        containerClose.write(Types.UNSIGNED_BYTE, (short) this.pendingCloseContainer.windowId()); // window id
-        containerClose.send(BedrockProtocol.class);
-        PacketFactory.sendContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
+        PacketFactory.sendJavaContainerClose(this.getUser(), this.pendingCloseContainer.windowId());
+        PacketFactory.sendBedrockContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
     }
 
 }

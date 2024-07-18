@@ -206,7 +206,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         };
         try {
             final PacketWrapper disconnect = PacketWrapper.create(disconnectPacketType, user);
-            PacketFactory.writeDisconnect(disconnect, "§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page.");
+            PacketFactory.writeJavaDisconnect(disconnect, "§4ViaBedrock encountered an error:\n§c" + reason + "\n\n§rPlease report this issue on the ViaBedrock GitHub page.");
             disconnect.send(BedrockProtocol.class);
         } catch (Throwable ignored) {
         }

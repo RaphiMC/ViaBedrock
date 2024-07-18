@@ -57,9 +57,9 @@ public class MultiStatePackets {
             final Function<String, String> translator = k -> translations.getOrDefault(k, k);
             final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
             final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
-            PacketFactory.writeDisconnect(wrapper, translatedMessage + " §r(Reason: " + disconnectReason + ")");
+            PacketFactory.writeJavaDisconnect(wrapper, translatedMessage + " §r(Reason: " + disconnectReason + ")");
         } else {
-            PacketFactory.writeDisconnect(wrapper, null);
+            PacketFactory.writeJavaDisconnect(wrapper, null);
         }
     };
 
@@ -77,7 +77,7 @@ public class MultiStatePackets {
                 + "Violating Packet: " + (packet != null ? packet.name() : packetIdCause) + "\n"
                 + (context.isEmpty() ? "No context provided" : (" Context: '" + context + "'"))
                 + "\n\nPlease report this issue on the ViaBedrock GitHub page!";
-        PacketFactory.writeDisconnect(wrapper, reason);
+        PacketFactory.writeJavaDisconnect(wrapper, reason);
     };
 
     private static final PacketHandlers KEEP_ALIVE_HANDLER = new PacketHandlers() {

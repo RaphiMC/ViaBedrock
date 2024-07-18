@@ -88,7 +88,7 @@ public class WorldPackets {
         if (remappedBlock.value() != null) {
             wrapper.send(BedrockProtocol.class);
             wrapper.cancel();
-            PacketFactory.sendBlockEntityData(wrapper.user(), position, remappedBlock.value());
+            PacketFactory.sendJavaBlockEntityData(wrapper.user(), position, remappedBlock.value());
         }
     };
 
@@ -410,7 +410,7 @@ public class WorldPackets {
                 multiBlockChange.send(BedrockProtocol.class);
             }
             for (Map.Entry<BlockPosition, BlockEntity> entry : blockEntities.entrySet()) {
-                PacketFactory.sendBlockEntityData(wrapper.user(), entry.getKey(), entry.getValue());
+                PacketFactory.sendJavaBlockEntityData(wrapper.user(), entry.getKey(), entry.getValue());
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.BLOCK_ENTITY_DATA, ClientboundPackets1_21.BLOCK_ENTITY_DATA, new PacketHandlers() {

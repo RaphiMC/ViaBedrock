@@ -35,66 +35,56 @@ import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 
 public class PacketFactory {
 
-    public static PacketWrapper systemChat(final UserConnection user, final Tag message) {
+    public static void sendJavaSystemChat(final UserConnection user, final Tag message) {
         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_21.SYSTEM_CHAT, user);
         systemChat.write(Types.TAG, message); // message
         systemChat.write(Types.BOOLEAN, false); // overlay
-        return systemChat;
+        systemChat.send(BedrockProtocol.class);
     }
 
-    public static PacketWrapper blockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) {
+    public static void sendJavaBlockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) {
         final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_21.BLOCK_ENTITY_DATA, user);
         blockEntityData.write(Types.BLOCK_POSITION1_14, position); // position
         blockEntityData.write(Types.VAR_INT, blockEntity.typeId()); // type
         blockEntityData.write(Types.COMPOUND_TAG, blockEntity.tag()); // block entity tag
-        return blockEntityData;
+        blockEntityData.send(BedrockProtocol.class);
     }
 
-    public static PacketWrapper containerClose(final UserConnection user, final byte windowId, final ContainerType containerType) {
-        final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, user);
-        containerClose.write(Types.BYTE, windowId); // window id
-        containerClose.write(Types.BYTE, (byte) containerType.getValue()); // type
-        containerClose.write(Types.BOOLEAN, false); // server initiated
-        return containerClose;
-    }
-
-    public static PacketWrapper customChatCompletions(final UserConnection user, final CustomChatCompletionsAction action, final String[] entries) {
+    public static void sendJavaCustomChatCompletions(final UserConnection user, final CustomChatCompletionsAction action, final String[] entries) {
         final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_21.CUSTOM_CHAT_COMPLETIONS, user);
         customChatCompletions.write(Types.VAR_INT, action.ordinal()); // action
         customChatCompletions.write(Types.STRING_ARRAY, entries); // entries
-        return customChatCompletions;
+        customChatCompletions.send(BedrockProtocol.class);
     }
 
-    public static void sendSystemChat(final UserConnection user, final Tag message) {
-        systemChat(user, message).send(BedrockProtocol.class);
-    }
-
-    public static void sendBlockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) {
-        blockEntityData(user, position, blockEntity).send(BedrockProtocol.class);
-    }
-
-    public static void sendContainerClose(final UserConnection user, final byte windowId, final ContainerType containerType) {
-        containerClose(user, windowId, containerType).sendToServer(BedrockProtocol.class);
-    }
-
-    public static void sendCustomChatCompletions(final UserConnection user, final CustomChatCompletionsAction action, final String[] entries) {
-        customChatCompletions(user, action, entries).send(BedrockProtocol.class);
-    }
-
-    public static void sendContainerSetContent(final UserConnection user, final Container container) {
+    public static void sendJavaContainerSetContent(final UserConnection user, final Container container) {
         final PacketWrapper containerSetContent = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_SET_CONTENT, user);
-        writeContainerSetContent(containerSetContent, container);
+        writeJavaContainerSetContent(containerSetContent, container);
         containerSetContent.send(BedrockProtocol.class);
     }
 
-    public static void sendGameEvent(final UserConnection user, final GameEventType event, final float value) {
+    public static void sendJavaGameEvent(final UserConnection user, final GameEventType event, final float value) {
         final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_21.GAME_EVENT, user);
         gameEvent.write(Types.UNSIGNED_BYTE, (short) event.ordinal()); // event id
         gameEvent.write(Types.FLOAT, value); // value
         gameEvent.send(BedrockProtocol.class);
     }
 
-    public static void writeDisconnect(final PacketWrapper wrapper, final String reason) {
+    public static void sendJavaContainerClose(final UserConnection user, final byte windowId) {
+        final PacketWrapper containerClose = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_CLOSE, user);
+        containerClose.write(Types.UNSIGNED_BYTE, (short) windowId); // window id
+        containerClose.send(BedrockProtocol.class);
+    }
+
+    public static void sendBedrockContainerClose(final UserConnection user, final byte windowId, final ContainerType containerType) {
+        final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, user);
+        containerClose.write(Types.BYTE, windowId); // window id
+        containerClose.write(Types.BYTE, (byte) containerType.getValue()); // type
+        containerClose.write(Types.BOOLEAN, false); // server initiated
+        containerClose.sendToServer(BedrockProtocol.class);
+    }
+
+    public static void writeJavaDisconnect(final PacketWrapper wrapper, final String reason) {
         switch (wrapper.getPacketType().state()) {
             case LOGIN:
                 wrapper.write(Types.COMPONENT, reason != null ? TextUtil.stringToGson(reason) : JsonNull.INSTANCE);
@@ -108,7 +98,7 @@ public class PacketFactory {
         }
     }
 
-    public static void writeContainerSetContent(final PacketWrapper wrapper, final Container container) {
+    public static void writeJavaContainerSetContent(final PacketWrapper wrapper, final Container container) {
         wrapper.write(Types.UNSIGNED_BYTE, (short) container.windowId()); // window id
         wrapper.write(Types.VAR_INT, 0); // revision
         wrapper.write(Types1_21.ITEM_ARRAY, container.getJavaItems(wrapper.user())); // items

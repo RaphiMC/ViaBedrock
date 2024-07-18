@@ -132,10 +132,10 @@ public class HudPackets {
                         playerInfoRemove.write(Types.UUID_ARRAY, toRemoveUUIDs.toArray(new UUID[0])); // uuids
                         playerInfoRemove.send(BedrockProtocol.class);
 
-                        PacketFactory.sendCustomChatCompletions(wrapper.user(), CustomChatCompletionsAction.REMOVE, toRemoveNames.toArray(new String[0]));
+                        PacketFactory.sendJavaCustomChatCompletions(wrapper.user(), CustomChatCompletionsAction.REMOVE, toRemoveNames.toArray(new String[0]));
                     }
 
-                    PacketFactory.sendCustomChatCompletions(wrapper.user(), CustomChatCompletionsAction.ADD, names);
+                    PacketFactory.sendJavaCustomChatCompletions(wrapper.user(), CustomChatCompletionsAction.ADD, names);
                     break;
                 }
                 case Remove: {
@@ -155,7 +155,7 @@ public class HudPackets {
                         }
                     }
 
-                    PacketFactory.sendCustomChatCompletions(wrapper.user(), CustomChatCompletionsAction.REMOVE, names.toArray(new String[0]));
+                    PacketFactory.sendJavaCustomChatCompletions(wrapper.user(), CustomChatCompletionsAction.REMOVE, names.toArray(new String[0]));
                     break;
                 }
                 default:

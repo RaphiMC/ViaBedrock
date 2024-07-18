@@ -365,7 +365,7 @@ public class CommandsStorage extends StoredObject {
             final Function<String, String> translator = resourcePacksStorage.getTranslationLookup();
             final LiteralArgumentBuilder<UserConnection> cmdBuilder = literal("help");
             cmdBuilder.executes(cmd -> {
-                PacketFactory.sendSystemChat(cmd.getSource(), TextUtil.stringToNbt("§c" + BedrockTranslator.translate("%commands.generic.usage", translator, new Object[]{"/help <command>"})));
+                PacketFactory.sendJavaSystemChat(cmd.getSource(), TextUtil.stringToNbt("§c" + BedrockTranslator.translate("%commands.generic.usage", translator, new Object[]{"/help <command>"})));
                 return RESULT_CANCEL;
             });
             cmdBuilder.then(argument("command", StringArgumentType.greedyString()).suggests((context, builder) -> SuggestionsUtil.suggestMatching(this.dispatcher.getRoot().getChildren().stream().map(c -> {
@@ -401,7 +401,7 @@ public class CommandsStorage extends StoredObject {
                 }
 
                 for (String line : lines) {
-                    PacketFactory.sendSystemChat(cmd.getSource(), TextUtil.stringToNbt(line));
+                    PacketFactory.sendJavaSystemChat(cmd.getSource(), TextUtil.stringToNbt(line));
                 }
                 return RESULT_CANCEL;
             }));
