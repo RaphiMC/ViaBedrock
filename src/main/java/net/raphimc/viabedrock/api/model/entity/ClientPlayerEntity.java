@@ -28,9 +28,11 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
+import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
+import net.raphimc.viabedrock.protocol.storage.CommandsStorage;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -60,8 +62,8 @@ public class ClientPlayerEntity extends PlayerEntity {
     // Misc data
     private int gameType;
 
-    public ClientPlayerEntity(final UserConnection user, final long uniqueId, final long runtimeId, final UUID javaUuid) {
-        super(user, uniqueId, runtimeId, 0, javaUuid);
+    public ClientPlayerEntity(final UserConnection user, final long runtimeId, final UUID javaUuid, final PlayerAbilities abilities) {
+        super(user, runtimeId, 0, javaUuid, abilities);
 
         this.gameSession = user.get(GameSessionStorage.class);
     }
@@ -239,6 +241,13 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
     }
 
+    public void onAbilitiesChanged() {
+        final CommandsStorage commandsStorage = this.user.get(CommandsStorage.class);
+        if (commandsStorage != null) {
+            commandsStorage.updateCommandTree();
+        }
+    }
+
     @Override
     public void setPosition(final Position3f position) {
         this.prevPosition = position;
@@ -254,6 +263,15 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
 
         return this.name;
+    }
+
+    @Override
+    public void setAbilities(final PlayerAbilities abilities) {
+        final PlayerAbilities prevAbilities = this.abilities;
+        super.setAbilities(abilities);
+        if (!abilities.equals(prevAbilities)) {
+            this.onAbilitiesChanged();
+        }
     }
 
     public boolean isInitiallySpawned() {
@@ -272,7 +290,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.changingDimension = changingDimension;
     }
 
-    public int getGameType() {
+    public int gameType() {
         return this.gameType;
     }
 

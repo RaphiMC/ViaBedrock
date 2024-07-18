@@ -152,7 +152,7 @@ public class WorldPackets {
             wrapper.write(Types.VAR_INT, dimension.ordinal()); // dimension id
             wrapper.write(Types.STRING, dimension.getKey()); // dimension name
             wrapper.write(Types.LONG, 0L); // hashed seed
-            wrapper.write(Types.BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.getGameType(), gameSession.getLevelGameType())); // game mode
+            wrapper.write(Types.BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.gameType(), gameSession.getLevelGameType())); // game mode
             wrapper.write(Types.BYTE, (byte) -1); // previous game mode
             wrapper.write(Types.BOOLEAN, false); // is debug
             wrapper.write(Types.BOOLEAN, gameSession.isFlatGenerator()); // is flat

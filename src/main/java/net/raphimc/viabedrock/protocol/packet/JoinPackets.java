@@ -371,11 +371,11 @@ public class JoinPackets {
                     gameSession.setMovementMode(movementMode);
                     gameSession.setLevelGameType(levelGameType);
                     gameSession.setHardcoreMode(hardcore);
-                    gameSession.setAbilities(new PlayerAbilities(uniqueEntityId, (byte) playerPermission, (byte) CommandPermissionLevel.Any.getValue(), new HashMap<>()));
                     gameSession.setChatRestrictionLevel(chatRestrictionLevel);
                     gameSession.setCommandsEnabled(commandsEnabled);
 
-                    final ClientPlayerEntity clientPlayer = new ClientPlayerEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, wrapper.user().getProtocolInfo().getUuid());
+                    final PlayerAbilities playerAbilities = new PlayerAbilities(uniqueEntityId, (byte) playerPermission, (byte) CommandPermissionLevel.Any.getValue(), new HashMap<>());
+                    final ClientPlayerEntity clientPlayer = new ClientPlayerEntity(wrapper.user(), runtimeEntityId, wrapper.user().getProtocolInfo().getUuid(), playerAbilities);
                     clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + clientPlayer.eyeOffset(), playerPosition.z()));
                     clientPlayer.setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
                     clientPlayer.setOnGround(false);
@@ -546,7 +546,7 @@ public class JoinPackets {
         joinGame.write(Types.VAR_INT, chunkTracker.getDimension().ordinal()); // dimension id
         joinGame.write(Types.STRING, chunkTracker.getDimension().getKey()); // dimension name
         joinGame.write(Types.LONG, 0L); // hashed seed
-        joinGame.write(Types.BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.getGameType(), gameSession.getLevelGameType())); // game mode
+        joinGame.write(Types.BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.gameType(), gameSession.getLevelGameType())); // game mode
         joinGame.write(Types.BYTE, (byte) -1); // previous game mode
         joinGame.write(Types.BOOLEAN, false); // is debug
         joinGame.write(Types.BOOLEAN, gameSession.isFlatGenerator()); // is flat
@@ -556,6 +556,7 @@ public class JoinPackets {
         joinGame.send(BedrockProtocol.class);
 
         clientPlayer.createTeam();
+        clientPlayer.onAbilitiesChanged();
         clientPlayer.sendPlayerPositionPacketToClient(false);
 
         final PacketWrapper serverDifficulty = PacketWrapper.create(ClientboundPackets1_21.CHANGE_DIFFICULTY, user);
@@ -574,10 +575,8 @@ public class JoinPackets {
         playerInfoUpdate.write(Types.UUID, clientPlayer.javaUuid()); // uuid
         playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(clientPlayer.javaUuid())); // username
         playerInfoUpdate.write(Types.VAR_INT, 0); // property count
-        playerInfoUpdate.write(Types.VAR_INT, (int) GameTypeRewriter.getEffectiveGameMode(clientPlayer.getGameType(), gameSession.getLevelGameType())); // game mode
+        playerInfoUpdate.write(Types.VAR_INT, (int) GameTypeRewriter.getEffectiveGameMode(clientPlayer.gameType(), gameSession.getLevelGameType())); // game mode
         playerInfoUpdate.send(BedrockProtocol.class);
-
-        ClientPlayerPackets.handleAbilitiesUpdate(user);
 
         if (joinGameStorage.rainLevel() > 0F || joinGameStorage.lightningLevel() > 0F) {
             final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_21.GAME_EVENT, user);

@@ -28,7 +28,6 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ChatRestrictionLevel;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerAuthMovementMode;
-import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +46,6 @@ public class GameSessionStorage implements StorableObject {
     private boolean hardcoreMode;
     private boolean sentStartGameResponsePackets;
 
-    private PlayerAbilities abilities;
     private ChatRestrictionLevel chatRestrictionLevel;
     private boolean commandsEnabled;
     private ATextComponent deathMessage;
@@ -135,14 +133,6 @@ public class GameSessionStorage implements StorableObject {
 
     public void setSentStartGameResponsePackets(final boolean sentStartGameResponsePackets) {
         this.sentStartGameResponsePackets = sentStartGameResponsePackets;
-    }
-
-    public PlayerAbilities getAbilities() {
-        return this.abilities;
-    }
-
-    public void setAbilities(final PlayerAbilities abilities) {
-        this.abilities = abilities;
     }
 
     public ChatRestrictionLevel getChatRestrictionLevel() {

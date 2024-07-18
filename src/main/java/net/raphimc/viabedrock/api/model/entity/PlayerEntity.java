@@ -27,13 +27,18 @@ import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerTeamAction;
+import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 
 import java.util.UUID;
 
 public class PlayerEntity extends Entity {
 
-    public PlayerEntity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid) {
-        super(user, uniqueId, runtimeId, javaId, javaUuid, EntityTypes1_20_5.PLAYER);
+    protected PlayerAbilities abilities;
+
+    public PlayerEntity(final UserConnection user, final long runtimeId, final int javaId, final UUID javaUuid, final PlayerAbilities abilities) {
+        super(user, abilities.uniqueEntityId(), runtimeId, javaId, javaUuid, EntityTypes1_20_5.PLAYER);
+
+        this.abilities = abilities;
     }
 
     public void createTeam() {
@@ -77,6 +82,14 @@ public class PlayerEntity extends Entity {
     @Override
     public float eyeOffset() {
         return 1.62F;
+    }
+
+    public PlayerAbilities abilities() {
+        return this.abilities;
+    }
+
+    public void setAbilities(final PlayerAbilities abilities) {
+        this.abilities = abilities;
     }
 
 }

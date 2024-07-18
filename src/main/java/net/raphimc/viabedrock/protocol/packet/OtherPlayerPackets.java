@@ -67,7 +67,7 @@ public class OtherPlayerPackets {
 
             // TODO: Handle remaining fields
 
-            final PlayerEntity entity = (PlayerEntity) entityTracker.addEntity(abilities.uniqueEntityId(), runtimeEntityId, uuid, EntityTypes1_20_5.PLAYER);
+            final PlayerEntity entity = new PlayerEntity(wrapper.user(), runtimeEntityId, entityTracker.getNextJavaEntityId(), uuid, abilities);
             entity.setPosition(position);
             entity.setRotation(rotation);
             entity.updateName(username);
@@ -157,6 +157,15 @@ public class OtherPlayerPackets {
             entityHeadLook.write(Types.VAR_INT, entity.javaId()); // entity id
             entityHeadLook.write(Types.BYTE, MathUtil.float2Byte(rotation.z())); // head yaw
             entityHeadLook.send(BedrockProtocol.class);
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, null, wrapper -> {
+            wrapper.cancel();
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
+            final Entity entity = entityTracker.getEntityByUid(abilities.uniqueEntityId());
+            if (entity instanceof PlayerEntity player) {
+                player.setAbilities(abilities);
+            }
         });
     }
 

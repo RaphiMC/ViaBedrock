@@ -51,7 +51,6 @@ public class EntityTracker extends StoredObject {
 
     public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final EntityTypes1_20_5 type) {
         return switch (type) {
-            case PLAYER -> this.addEntity(new PlayerEntity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), uuid != null ? uuid : UUID.randomUUID()));
             default -> this.addEntity(new Entity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), uuid != null ? uuid : UUID.randomUUID(), type));
         };
     }
@@ -164,8 +163,8 @@ public class EntityTracker extends StoredObject {
 
     public void prepareForRespawn() {
         for (Entity entity : this.entities.values()) {
-            if (entity instanceof PlayerEntity) {
-                ((PlayerEntity) entity).deleteTeam();
+            if (entity instanceof PlayerEntity player) {
+                player.deleteTeam();
             }
         }
     }
@@ -184,6 +183,10 @@ public class EntityTracker extends StoredObject {
 
     public boolean isEmpty() {
         return this.entities.isEmpty() || (this.entities.size() == 1 && this.entities.containsKey(this.clientPlayerEntity.uniqueId()));
+    }
+
+    public int getNextJavaEntityId() {
+        return ID_COUNTER.getAndIncrement();
     }
 
 }

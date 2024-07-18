@@ -210,7 +210,7 @@ public class ChatPackets {
                 State.CONFIGURATION, (PacketHandler) wrapper -> {
                     final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
                     wrapper.user().put(new CommandsStorage(wrapper.user(), commands));
-                    wrapper.cancel(); // Will be sent in JoinPackets#handleGameJoin
+                    wrapper.cancel(); // Will be sent when the java player is ready
                 }, ClientboundPackets1_21.COMMANDS, (PacketHandler) wrapper -> {
                     final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
                     final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
