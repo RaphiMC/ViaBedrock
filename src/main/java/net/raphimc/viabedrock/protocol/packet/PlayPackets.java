@@ -26,6 +26,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.storage.BlobCache;
+import net.raphimc.viabedrock.protocol.storage.GameRulesStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class PlayPackets {
@@ -53,6 +54,10 @@ public class PlayPackets {
                 map(BedrockTypes.STRING, Types.STRING); // address
                 map(BedrockTypes.UNSIGNED_SHORT_LE, Types.VAR_INT); // port
             }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.GAME_RULES_CHANGED, null, wrapper -> {
+            wrapper.cancel();
+            wrapper.user().get(GameRulesStorage.class).updateGameRules(wrapper.read(BedrockTypes.GAME_RULE_ARRAY)); // game rules
         });
 
         protocol.registerServerbound(ServerboundPackets1_20_5.CLIENT_INFORMATION, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, MultiStatePackets.CLIENT_SETTINGS_HANDLER);

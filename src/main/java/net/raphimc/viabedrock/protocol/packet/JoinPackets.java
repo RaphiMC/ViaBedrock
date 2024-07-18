@@ -271,7 +271,7 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.VAR_INT); // platform broadcast mode
                     final boolean commandsEnabled = wrapper.read(Types.BOOLEAN); // commands enabled
                     wrapper.read(Types.BOOLEAN); // texture packs required
-                    wrapper.read(BedrockTypes.GAME_RULE_ARRAY); // game rules
+                    final GameRule<?>[] gameRules = wrapper.read(BedrockTypes.GAME_RULE_ARRAY); // game rules
                     final Experiment[] experiments = wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
                     wrapper.read(Types.BOOLEAN); // experiments previously toggled
                     wrapper.read(Types.BOOLEAN); // bonus chest enabled
@@ -376,6 +376,7 @@ public class JoinPackets {
                     clientPlayer.setName(wrapper.user().getProtocolInfo().getUsername());
 
                     wrapper.user().put(new JoinGameStorage(levelName, difficulty, rainLevel, lightningLevel, levelTime));
+                    wrapper.user().put(new GameRulesStorage(wrapper.user(), gameRules));
                     wrapper.user().put(new BlockStateRewriter(blockProperties, hashedRuntimeBlockIds));
                     wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimension));
