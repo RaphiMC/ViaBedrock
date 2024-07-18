@@ -174,14 +174,7 @@ public class JoinPackets {
                         wrapper.cancel();
                         final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                         final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
-
-                        if (clientPlayer.isInitiallySpawned()) {
-                            if (clientPlayer.isChangingDimension()) {
-                                clientPlayer.closeDownloadingTerrainScreen();
-                            }
-
-                            return;
-                        }
+                        if (clientPlayer.isInitiallySpawned()) return;
 
                         final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
                         interact.write(Types.BYTE, (byte) InteractPacket_Action.InteractUpdate.getValue()); // action
