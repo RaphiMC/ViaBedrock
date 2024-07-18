@@ -31,6 +31,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.java.CustomChatCompletionsAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 
 public class PacketFactory {
 
@@ -84,6 +85,13 @@ public class PacketFactory {
         final PacketWrapper containerSetContent = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_SET_CONTENT, user);
         writeContainerSetContent(containerSetContent, container);
         containerSetContent.send(BedrockProtocol.class);
+    }
+
+    public static void sendGameEvent(final UserConnection user, final GameEventType event, final float value) {
+        final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_21.GAME_EVENT, user);
+        gameEvent.write(Types.UNSIGNED_BYTE, (short) event.ordinal()); // event id
+        gameEvent.write(Types.FLOAT, value); // value
+        gameEvent.send(BedrockProtocol.class);
     }
 
     public static void writeDisconnect(final PacketWrapper wrapper, final String reason) {

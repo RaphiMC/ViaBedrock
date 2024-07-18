@@ -201,7 +201,7 @@ public class JoinPackets {
                         setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
                         setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
 
-                        clientPlayer.closeDownloadingTerrainScreen();
+                        PacketFactory.sendGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
                     } else {
                         wrapper.setPacketType(ClientboundPackets1_21.DISCONNECT);
                         writePlayStatusKickMessage(wrapper, status);
@@ -271,7 +271,7 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.VAR_INT); // platform broadcast mode
                     final boolean commandsEnabled = wrapper.read(Types.BOOLEAN); // commands enabled
                     wrapper.read(Types.BOOLEAN); // texture packs required
-                    final GameRule<?>[] gameRules = wrapper.read(BedrockTypes.GAME_RULE_ARRAY); // game rules
+                    final GameRule[] gameRules = wrapper.read(BedrockTypes.GAME_RULE_ARRAY); // game rules
                     final Experiment[] experiments = wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
                     wrapper.read(Types.BOOLEAN); // experiments previously toggled
                     wrapper.read(Types.BOOLEAN); // bonus chest enabled
@@ -496,6 +496,7 @@ public class JoinPackets {
         final JoinGameStorage joinGameStorage = user.get(JoinGameStorage.class);
         final GameSessionStorage gameSession = user.get(GameSessionStorage.class);
         final ClientSettingsStorage clientSettingsStorage = user.get(ClientSettingsStorage.class);
+        final GameRulesStorage gameRulesStorage = user.get(GameRulesStorage.class);
         final ChunkTracker chunkTracker = user.get(ChunkTracker.class);
         final ClientPlayerEntity clientPlayer = user.get(EntityTracker.class).getClientPlayer();
 
@@ -536,8 +537,8 @@ public class JoinPackets {
         joinGame.write(Types.VAR_INT, clientSettingsStorage.viewDistance()); // view distance
         joinGame.write(Types.VAR_INT, clientSettingsStorage.viewDistance()); // simulation distance
         joinGame.write(Types.BOOLEAN, false); // reduced debug info
-        joinGame.write(Types.BOOLEAN, true); // show death screen
-        joinGame.write(Types.BOOLEAN, false); // limited crafting
+        joinGame.write(Types.BOOLEAN, !gameRulesStorage.<Boolean>getGameRule("doImmediateRespawn")); // show death screen
+        joinGame.write(Types.BOOLEAN, gameRulesStorage.getGameRule("doLimitedCrafting")); // limited crafting
         joinGame.write(Types.VAR_INT, chunkTracker.getDimension().ordinal()); // dimension id
         joinGame.write(Types.STRING, chunkTracker.getDimension().getKey()); // dimension name
         joinGame.write(Types.LONG, 0L); // hashed seed

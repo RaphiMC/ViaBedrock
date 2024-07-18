@@ -19,6 +19,8 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.model.GameRule;
 
 import java.util.HashMap;
@@ -27,22 +29,33 @@ import java.util.Map;
 
 public class GameRulesStorage extends StoredObject {
 
+    // Maybe important: recipesUnlock, showRecipeMessages, pvp, naturalRegeneration, showBorderEffect, keepInventory
+
     private static final Map<String, Object> DEFAULT_GAME_RULES = Map.of(
-            "doDayLightCycle".toLowerCase(Locale.ROOT), true
+            "doDayLightCycle".toLowerCase(Locale.ROOT), true,
+            "doImmediateRespawn".toLowerCase(Locale.ROOT), false,
+            "doLimitedCrafting".toLowerCase(Locale.ROOT), false
     );
 
     private final Map<String, Object> gameRules = new HashMap<>(DEFAULT_GAME_RULES);
 
-    public GameRulesStorage(final UserConnection user, final GameRule<?>[] gameRules) {
+    public GameRulesStorage(final UserConnection user, final GameRule[] gameRules) {
         super(user);
 
         this.updateGameRules(gameRules);
     }
 
-    public void updateGameRules(final GameRule<?>[] gameRules) {
-        for (GameRule<?> gameRule : gameRules) {
+    public void updateGameRules(final GameRule[] gameRules) {
+        for (GameRule gameRule : gameRules) {
             if (gameRule.value() != null) {
-                this.gameRules.put(gameRule.name().toLowerCase(Locale.ROOT), gameRule.value());
+                final Object previousValue = this.gameRules.put(gameRule.name().toLowerCase(Locale.ROOT), gameRule.value());
+                if (previousValue != gameRule.value()) {
+                    if (gameRule.name().equalsIgnoreCase("doImmediateRespawn")) {
+                        PacketFactory.sendGameEvent(this.getUser(), GameEventType.IMMEDIATE_RESPAWN, (Boolean) gameRule.value() ? 1F : 0F);
+                    } else if (gameRule.name().equalsIgnoreCase("doLimitedCrafting")) {
+                        PacketFactory.sendGameEvent(this.getUser(), GameEventType.LIMITED_CRAFTING, (Boolean) gameRule.value() ? 1F : 0F);
+                    }
+                }
             }
         }
     }

@@ -17,5 +17,5 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-public record GameRule<T>(String name, boolean editable, T value) {
+public record GameRule(String name, boolean editable, Object value) {
 }

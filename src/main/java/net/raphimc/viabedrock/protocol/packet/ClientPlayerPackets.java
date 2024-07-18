@@ -27,6 +27,7 @@ import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.BitSets;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -107,7 +108,7 @@ public class ClientPlayerPackets {
                         wrapper.write(Types.VAR_INT, 0); // portal cooldown
                         wrapper.write(Types.BYTE, (byte) 0x03); // keep data mask
                         wrapper.send(BedrockProtocol.class);
-                        clientPlayer.closeDownloadingTerrainScreen();
+                        PacketFactory.sendGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
                     }
                     wrapper.cancel();
 
@@ -138,7 +139,7 @@ public class ClientPlayerPackets {
                             clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
                         }
                         clientPlayer.sendPlayerPositionPacketToClient(false);
-                        clientPlayer.closeDownloadingTerrainScreen();
+                        PacketFactory.sendGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
                         clientPlayer.setChangingDimension(false);
                         clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.ChangeDimensionAck, 0);
                     }

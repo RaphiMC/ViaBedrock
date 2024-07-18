@@ -23,22 +23,22 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameRule_Type;
 import net.raphimc.viabedrock.protocol.model.GameRule;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class GameRuleType extends Type<GameRule<?>> {
+public class GameRuleType extends Type<GameRule> {
 
     public GameRuleType() {
         super(GameRule.class);
     }
 
     @Override
-    public GameRule<?> read(ByteBuf buffer) {
+    public GameRule read(ByteBuf buffer) {
         final String name = BedrockTypes.STRING.read(buffer);
         final boolean editable = buffer.readBoolean();
         final GameRule_Type type = GameRule_Type.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer), GameRule_Type.Invalid);
         return switch (type) {
-            case Bool -> new GameRule<>(name, editable, buffer.readBoolean());
-            case Int -> new GameRule<>(name, editable, BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer));
-            case Float -> new GameRule<>(name, editable, BedrockTypes.FLOAT_LE.readPrimitive(buffer));
-            case Invalid -> new GameRule<>(name, editable, null);
+            case Bool -> new GameRule(name, editable, buffer.readBoolean());
+            case Int -> new GameRule(name, editable, BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer));
+            case Float -> new GameRule(name, editable, BedrockTypes.FLOAT_LE.readPrimitive(buffer));
+            case Invalid -> new GameRule(name, editable, null);
             default -> throw new IllegalStateException("Unhandled GameRule_Type: " + type);
         };
     }
