@@ -28,6 +28,7 @@ import java.util.Map;
 public class GameRulesStorage extends StoredObject {
 
     private static final Map<String, Object> DEFAULT_GAME_RULES = Map.of(
+            "doDayLightCycle".toLowerCase(Locale.ROOT), true
     );
 
     private final Map<String, Object> gameRules = new HashMap<>(DEFAULT_GAME_RULES);
@@ -46,8 +47,8 @@ public class GameRulesStorage extends StoredObject {
         }
     }
 
-    public Object getGameRule(final String name) {
-        return this.gameRules.get(name.toLowerCase(Locale.ROOT));
+    public <T> T getGameRule(final String name) {
+        return (T) this.gameRules.get(name.toLowerCase(Locale.ROOT));
     }
 
 }

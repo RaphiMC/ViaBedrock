@@ -53,6 +53,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandParameterOption;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandPermissionLevel;
 import net.raphimc.viabedrock.protocol.model.CommandData;
+import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 
 import java.util.*;
 import java.util.function.Function;
@@ -91,19 +92,17 @@ public class CommandsStorage extends StoredObject {
                 }
             }
         }
-
-        this.buildCommandTree();
     }
 
     public void updateCommandTree() {
-        this.buildCommandTree();
-
-        final PacketWrapper declareCommands = PacketWrapper.create(ClientboundPackets1_21.COMMANDS, this.getUser());
-        this.writeCommandTree(declareCommands);
-        declareCommands.send(BedrockProtocol.class);
+        final PacketWrapper commands = PacketWrapper.create(ClientboundPackets1_21.COMMANDS, this.getUser());
+        this.writeCommandTree(commands);
+        commands.send(BedrockProtocol.class);
     }
 
     public void writeCommandTree(final PacketWrapper wrapper) {
+        this.buildCommandTree();
+
         final RootCommandNode<UserConnection> root = this.dispatcher.getRoot();
         final Map<CommandNode<UserConnection>, Integer> nodeIndices = this.getNodeIndices(root);
         final List<CommandNode<UserConnection>> nodes = new ArrayList<>(nodeIndices.keySet());
@@ -186,13 +185,15 @@ public class CommandsStorage extends StoredObject {
     private void buildCommandTree() {
         this.dispatcher = new CommandDispatcher<>();
         final GameSessionStorage gameSession = this.getUser().get(GameSessionStorage.class);
+        final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
+        final PlayerAbilities playerAbilities = entityTracker.getClientPlayer().abilities();
         final Command<UserConnection> action = gameSession.areCommandsEnabled() ? NOOP : ALLOW_SEND;
 
         for (CommandData command : this.commands) {
             final String name = command.alias() != null ? Iterables.getFirst(command.alias().values().keySet(), null) : command.name();
             if (name == null) continue;
 
-            if (gameSession.getAbilities().commandPermission() < command.permission()) {
+            if (playerAbilities.commandPermission() < command.permission()) {
                 continue;
             }
             if ((command.flags() & CommandFlags.HIDDEN_FROM_COMMAND_BLOCK) != 0 && (command.flags() & CommandFlags.HIDDEN_FROM_PLAYER) != 0 && (command.flags() & CommandFlags.HIDDEN_FROM_AUTOMATION) != 0) {
@@ -222,10 +223,10 @@ public class CommandsStorage extends StoredObject {
                                 if (!gameSession.areCommandsEnabled() && entry.getValue().contains(CommandEnumConstraints.CHEATS_ENABLED)) {
                                     return true;
                                 }
-                                if (entry.getValue().contains(CommandEnumConstraints.OPERATOR_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissionLevel.GameDirectors.getValue()) {
+                                if (entry.getValue().contains(CommandEnumConstraints.OPERATOR_PERMISSIONS) && playerAbilities.commandPermission() < CommandPermissionLevel.GameDirectors.getValue()) {
                                     return true;
                                 }
-                                return entry.getValue().contains(CommandEnumConstraints.HOST_PERMISSIONS) && gameSession.getAbilities().commandPermission() < CommandPermissionLevel.Host.getValue();
+                                return entry.getValue().contains(CommandEnumConstraints.HOST_PERMISSIONS) && playerAbilities.commandPermission() < CommandPermissionLevel.Host.getValue();
                             });
                             final Set<String> values = new HashSet<>(enumDataValues.keySet());
                             enumDataValues.entrySet().removeIf(entry -> entry.getValue().contains(CommandEnumConstraints.HIDE_FROM_COMPLETIONS));

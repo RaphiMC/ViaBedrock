@@ -33,6 +33,7 @@ import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerialize
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -74,7 +75,8 @@ public class ChatPackets {
                     wrapper.cancel();
                 } else if (execResult != CommandsStorage.RESULT_ALLOW_SEND) {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-                    if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() == ChatRestrictionLevel.Disabled && gameSession.getAbilities().playerPermission() <= PlayerPermissionLevel.Operator.getValue())) {
+                    final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+                    if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() == ChatRestrictionLevel.Disabled && clientPlayer.abilities().playerPermission() <= PlayerPermissionLevel.Operator.getValue())) {
                         wrapper.cancel();
                         PacketFactory.sendSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTranslations().get("commands.generic.disabled")));
                     }

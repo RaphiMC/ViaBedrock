@@ -258,7 +258,7 @@ public class JoinPackets {
                     final Editor_WorldType editorWorldType = Editor_WorldType.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // world editor type
                     wrapper.read(Types.BOOLEAN); // created in world editor
                     wrapper.read(Types.BOOLEAN); // exported from world editor
-                    wrapper.read(BedrockTypes.VAR_INT); // day cycle stop time
+                    final int currentTime = wrapper.read(BedrockTypes.VAR_INT); // day cycle stop time
                     wrapper.read(BedrockTypes.VAR_INT); // education edition offers
                     wrapper.read(Types.BOOLEAN); // education features enabled
                     wrapper.read(BedrockTypes.STRING); // education product id
@@ -363,6 +363,7 @@ public class JoinPackets {
                     gameSession.setFlatGenerator(generatorType == GeneratorType.Flat);
                     gameSession.setMovementMode(movementMode);
                     gameSession.setLevelGameType(levelGameType);
+                    gameSession.setLevelTime(levelTime);
                     gameSession.setHardcoreMode(hardcore);
                     gameSession.setChatRestrictionLevel(chatRestrictionLevel);
                     gameSession.setCommandsEnabled(commandsEnabled);
@@ -375,7 +376,7 @@ public class JoinPackets {
                     clientPlayer.setGameType(playerGameType);
                     clientPlayer.setName(wrapper.user().getProtocolInfo().getUsername());
 
-                    wrapper.user().put(new JoinGameStorage(levelName, difficulty, rainLevel, lightningLevel, levelTime));
+                    wrapper.user().put(new JoinGameStorage(levelName, difficulty, rainLevel, lightningLevel, currentTime));
                     wrapper.user().put(new GameRulesStorage(wrapper.user(), gameRules));
                     wrapper.user().put(new BlockStateRewriter(blockProperties, hashedRuntimeBlockIds));
                     wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
@@ -592,10 +593,9 @@ public class JoinPackets {
             }
         }
 
-        final PacketWrapper setTime = PacketWrapper.create(ClientboundPackets1_21.SET_TIME, user);
-        setTime.write(Types.LONG, joinGameStorage.levelTime()); // level time
-        setTime.write(Types.LONG, joinGameStorage.levelTime() % 24000L); // time of day
-        setTime.send(BedrockProtocol.class);
+        final PacketWrapper setTime = PacketWrapper.create(ClientboundBedrockPackets.SET_TIME, user);
+        setTime.write(BedrockTypes.VAR_INT, joinGameStorage.currentTime()); // time of day
+        setTime.send(BedrockProtocol.class, false);
     }
 
     private static void sendStartGameResponsePackets(final UserConnection user) {

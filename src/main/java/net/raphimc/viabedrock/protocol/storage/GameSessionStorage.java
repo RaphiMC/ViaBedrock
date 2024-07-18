@@ -43,6 +43,7 @@ public class GameSessionStorage implements StorableObject {
     private boolean flatGenerator;
     private ServerAuthMovementMode movementMode;
     private int levelGameType;
+    private long levelTime;
     private boolean hardcoreMode;
     private boolean sentStartGameResponsePackets;
 
@@ -117,6 +118,14 @@ public class GameSessionStorage implements StorableObject {
 
     public void setLevelGameType(final int levelGameType) {
         this.levelGameType = levelGameType;
+    }
+
+    public long getLevelTime() {
+        return this.levelTime;
+    }
+
+    public void setLevelTime(final long levelTime) {
+        this.levelTime = levelTime;
     }
 
     public boolean isHardcoreMode() {

@@ -53,10 +53,7 @@ import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
-import net.raphimc.viabedrock.protocol.storage.BlobCache;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;
 
@@ -475,12 +472,17 @@ public class WorldPackets {
                 handler(wrapper -> wrapper.user().get(ChunkTracker.class).setRadius(wrapper.get(Types.VAR_INT, 0)));
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_TIME, ClientboundPackets1_21.SET_TIME, new PacketHandlers() {
-            @Override
-            public void register() {
-                map(BedrockTypes.VAR_INT, Types.LONG); // level time
-                handler(wrapper -> wrapper.write(Types.LONG, wrapper.get(Types.LONG, 0) % 24000L)); // time of day
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_TIME, ClientboundPackets1_21.SET_TIME, wrapper -> {
+            wrapper.write(Types.LONG, wrapper.user().get(GameSessionStorage.class).getLevelTime()); // level time
+            final long bedrockTime = wrapper.read(BedrockTypes.VAR_INT); // time of day
+            long javaTime = bedrockTime >= 0 ? bedrockTime % 24000L : 24000 + (bedrockTime % 24000L);
+            if (!wrapper.user().get(GameRulesStorage.class).<Boolean>getGameRule("doDayLightCycle")) {
+                javaTime = -javaTime;
+                if (javaTime == 0L) {
+                    javaTime = -1L;
+                }
             }
+            wrapper.write(Types.LONG, javaTime); // time of day
         });
     }
 
