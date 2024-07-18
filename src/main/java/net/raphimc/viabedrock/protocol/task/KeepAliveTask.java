@@ -34,7 +34,7 @@ public class KeepAliveTask implements Runnable {
     public void run() {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
             final State state = info.getProtocolInfo().getServerState();
-            if ((state.equals(State.PLAY) || state.equals(State.CONFIGURATION)) && info.getProtocolInfo().getPipeline().contains(BedrockProtocol.class)) {
+            if ((state == State.PLAY || state == State.CONFIGURATION) && info.getProtocolInfo().getPipeline().contains(BedrockProtocol.class)) {
                 info.getChannel().eventLoop().submit(() -> {
                     if (!info.getChannel().isActive()) return;
 

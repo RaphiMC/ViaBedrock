@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.State;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.model.GameRule;
@@ -46,10 +47,11 @@ public class GameRulesStorage extends StoredObject {
     }
 
     public void updateGameRules(final GameRule[] gameRules) {
+        final State state = this.getUser().getProtocolInfo().getServerState();
         for (GameRule gameRule : gameRules) {
             if (gameRule.value() != null) {
                 final Object previousValue = this.gameRules.put(gameRule.name().toLowerCase(Locale.ROOT), gameRule.value());
-                if (previousValue != gameRule.value()) {
+                if (previousValue != gameRule.value() && state == State.PLAY) {
                     if (gameRule.name().equalsIgnoreCase("doImmediateRespawn")) {
                         PacketFactory.sendJavaGameEvent(this.getUser(), GameEventType.IMMEDIATE_RESPAWN, (Boolean) gameRule.value() ? 1F : 0F);
                     } else if (gameRule.name().equalsIgnoreCase("doLimitedCrafting")) {
