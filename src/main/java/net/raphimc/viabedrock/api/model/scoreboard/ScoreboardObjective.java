@@ -66,7 +66,6 @@ public class ScoreboardObjective {
 
     public void addEntry(final UserConnection user, final long scoreboardId, final ScoreboardEntry entry) {
         this.entries.put(scoreboardId, entry);
-
         entry.updateJavaName(user);
         this.updateEntry0(user, entry);
     }
@@ -77,27 +76,29 @@ public class ScoreboardObjective {
         this.updateEntry0(user, entry);
     }
 
+    public void updateEntryInPlace(final UserConnection user, final ScoreboardEntry entry) {
+        this.updateEntry0(user, entry);
+    }
+
     public void removeEntry(final UserConnection user, final long scoreboardId) {
-        final ScoreboardEntry entry = this.entries.remove(scoreboardId);
-
-        this.removeEntry0(user, entry);
+        this.removeEntry0(user, this.entries.remove(scoreboardId));
     }
 
-    public void updateEntry0(final UserConnection user, final ScoreboardEntry entry) {
-        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_21.SET_SCORE, user);
-        updateScore.write(Types.STRING, entry.javaName()); // player name
-        updateScore.write(Types.STRING, this.name); // objective name
-        updateScore.write(Types.VAR_INT, this.sortOrder == ObjectiveSortOrder.Ascending ? -entry.score() : entry.score()); // score
-        updateScore.write(Types.OPTIONAL_TAG, null); // display name
-        updateScore.write(Types.BOOLEAN, false); // has number format
-        updateScore.send(BedrockProtocol.class);
+    private void updateEntry0(final UserConnection user, final ScoreboardEntry entry) {
+        final PacketWrapper setScore = PacketWrapper.create(ClientboundPackets1_21.SET_SCORE, user);
+        setScore.write(Types.STRING, entry.javaName()); // player name
+        setScore.write(Types.STRING, this.name); // objective name
+        setScore.write(Types.VAR_INT, this.sortOrder == ObjectiveSortOrder.Ascending ? -entry.score() : entry.score()); // score
+        setScore.write(Types.OPTIONAL_TAG, null); // display name
+        setScore.write(Types.BOOLEAN, false); // has number format
+        setScore.send(BedrockProtocol.class);
     }
 
-    public void removeEntry0(final UserConnection user, final ScoreboardEntry entry) {
-        final PacketWrapper updateScore = PacketWrapper.create(ClientboundPackets1_21.RESET_SCORE, user);
-        updateScore.write(Types.STRING, entry.javaName()); // player name
-        updateScore.write(Types.OPTIONAL_STRING, this.name); // objective name
-        updateScore.send(BedrockProtocol.class);
+    private void removeEntry0(final UserConnection user, final ScoreboardEntry entry) {
+        final PacketWrapper resetScore = PacketWrapper.create(ClientboundPackets1_21.RESET_SCORE, user);
+        resetScore.write(Types.STRING, entry.javaName()); // player name
+        resetScore.write(Types.OPTIONAL_STRING, this.name); // objective name
+        resetScore.send(BedrockProtocol.class);
     }
 
 }

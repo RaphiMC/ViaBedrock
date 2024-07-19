@@ -84,8 +84,8 @@ public enum EntityEvent {
     private static final Int2ObjectMap<EntityEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
-        for (var value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+        for (EntityEvent value : values()) {
+            BY_VALUE.put(value.value, value);
         }
     }
 

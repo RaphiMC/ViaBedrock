@@ -31,7 +31,7 @@ import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 
 import java.util.UUID;
 
-public class PlayerEntity extends Entity {
+public class PlayerEntity extends LivingEntity {
 
     protected PlayerAbilities abilities;
 
@@ -42,41 +42,41 @@ public class PlayerEntity extends Entity {
     }
 
     public void createTeam() {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_21.SET_PLAYER_TEAM, this.user);
-        teams.write(Types.STRING, "vb_" + this.javaId); // team name
-        teams.write(Types.BYTE, (byte) PlayerTeamAction.ADD.ordinal()); // mode
-        teams.write(Types.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
-        teams.write(Types.BYTE, (byte) 3); // flags
-        teams.write(Types.STRING, "always"); // name tag visibility
-        teams.write(Types.STRING, "never"); // collision rule
-        teams.write(Types.VAR_INT, TextFormatting.RESET.getOrdinal()); // color
-        teams.write(Types.TAG, TextUtil.stringToNbt("")); // prefix
-        teams.write(Types.TAG, TextUtil.stringToNbt("")); // suffix
-        teams.write(Types.STRING_ARRAY, new String[]{StringUtil.encodeUUID(this.javaUuid)}); // players
-        teams.send(BedrockProtocol.class);
+        final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21.SET_PLAYER_TEAM, this.user);
+        setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
+        setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.ADD.ordinal()); // mode
+        setPlayerTeam.write(Types.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
+        setPlayerTeam.write(Types.BYTE, (byte) 3); // flags
+        setPlayerTeam.write(Types.STRING, "always"); // name tag visibility
+        setPlayerTeam.write(Types.STRING, "never"); // collision rule
+        setPlayerTeam.write(Types.VAR_INT, TextFormatting.RESET.getOrdinal()); // color
+        setPlayerTeam.write(Types.TAG, TextUtil.stringToNbt("")); // prefix
+        setPlayerTeam.write(Types.TAG, TextUtil.stringToNbt("")); // suffix
+        setPlayerTeam.write(Types.STRING_ARRAY, new String[]{StringUtil.encodeUUID(this.javaUuid)}); // players
+        setPlayerTeam.send(BedrockProtocol.class);
     }
 
     public void updateName(final String name) {
         this.setName(name);
 
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_21.SET_PLAYER_TEAM, this.user);
-        teams.write(Types.STRING, "vb_" + this.javaId); // team name
-        teams.write(Types.BYTE, (byte) PlayerTeamAction.CHANGE.ordinal()); // mode
-        teams.write(Types.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
-        teams.write(Types.BYTE, (byte) 3); // flags
-        teams.write(Types.STRING, "always"); // name tag visibility
-        teams.write(Types.STRING, "never"); // collision rule
-        teams.write(Types.VAR_INT, TextFormatting.RESET.getOrdinal()); // color
-        teams.write(Types.TAG, TextUtil.stringToNbt(name)); // prefix
-        teams.write(Types.TAG, TextUtil.stringToNbt("")); // suffix
-        teams.send(BedrockProtocol.class);
+        final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21.SET_PLAYER_TEAM, this.user);
+        setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
+        setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.CHANGE.ordinal()); // mode
+        setPlayerTeam.write(Types.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
+        setPlayerTeam.write(Types.BYTE, (byte) 3); // flags
+        setPlayerTeam.write(Types.STRING, "always"); // name tag visibility
+        setPlayerTeam.write(Types.STRING, "never"); // collision rule
+        setPlayerTeam.write(Types.VAR_INT, TextFormatting.RESET.getOrdinal()); // color
+        setPlayerTeam.write(Types.TAG, TextUtil.stringToNbt(name)); // prefix
+        setPlayerTeam.write(Types.TAG, TextUtil.stringToNbt("")); // suffix
+        setPlayerTeam.send(BedrockProtocol.class);
     }
 
     public void deleteTeam() {
-        final PacketWrapper teams = PacketWrapper.create(ClientboundPackets1_21.SET_PLAYER_TEAM, this.user);
-        teams.write(Types.STRING, "vb_" + this.javaId); // team name
-        teams.write(Types.BYTE, (byte) PlayerTeamAction.REMOVE.ordinal()); // mode
-        teams.send(BedrockProtocol.class);
+        final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21.SET_PLAYER_TEAM, this.user);
+        setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
+        setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.REMOVE.ordinal()); // mode
+        setPlayerTeam.send(BedrockProtocol.class);
     }
 
     @Override

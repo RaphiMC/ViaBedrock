@@ -29,6 +29,7 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
+import net.raphimc.viabedrock.api.model.entity.LivingEntity;
 import net.raphimc.viabedrock.api.model.entity.PlayerEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
@@ -50,8 +51,15 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final EntityTypes1_20_5 type) {
+        final UUID javaUuid = uuid != null ? uuid : UUID.randomUUID();
         return switch (type) {
-            default -> this.addEntity(new Entity(this.getUser(), uniqueId, runtimeId, ID_COUNTER.getAndIncrement(), uuid != null ? uuid : UUID.randomUUID(), type));
+            default -> {
+                if (type.isOrHasParent(EntityTypes1_20_5.LIVING_ENTITY)) {
+                    yield this.addEntity(new LivingEntity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+                } else {
+                    yield this.addEntity(new Entity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+                }
+            }
         };
     }
 
@@ -74,13 +82,13 @@ public class EntityTracker extends StoredObject {
             removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
 
-            if (updateTeam && prevEntity instanceof PlayerEntity) {
-                ((PlayerEntity) prevEntity).deleteTeam();
+            if (updateTeam && prevEntity instanceof PlayerEntity player) {
+                player.deleteTeam();
             }
         }
 
-        if (updateTeam && entity instanceof PlayerEntity) {
-            ((PlayerEntity) entity).createTeam();
+        if (updateTeam && entity instanceof PlayerEntity player) {
+            player.createTeam();
         }
 
         return entity;
@@ -94,8 +102,8 @@ public class EntityTracker extends StoredObject {
         this.runtimeIdToUniqueId.remove(entity.runtimeId());
         this.entities.remove(entity.uniqueId());
 
-        if (entity instanceof PlayerEntity) {
-            ((PlayerEntity) entity).deleteTeam();
+        if (entity instanceof PlayerEntity player) {
+            player.deleteTeam();
         }
     }
 
@@ -106,7 +114,7 @@ public class EntityTracker extends StoredObject {
             throw new IllegalArgumentException("Block state must be a frame or glow_frame");
         }
 
-        final int javaId = ID_COUNTER.getAndIncrement();
+        final int javaId = this.getNextJavaEntityId();
         this.itemFrames.put(position, javaId);
 
         final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets1_21.ADD_ENTITY, this.getUser());

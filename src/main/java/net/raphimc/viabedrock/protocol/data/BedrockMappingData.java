@@ -102,6 +102,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> bedrockEntities;
     private Map<String, EntityTypes1_20_5> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
+    private BiMap<String, Integer> javaAttributes;
 
     // Effects
     private BiMap<String, Integer> javaEffects;
@@ -505,6 +506,12 @@ public class BedrockMappingData extends MappingDataBase {
             for (int i = 0; i < javaBlockEntitiesJson.size(); i++) {
                 this.javaBlockEntities.put(javaBlockEntitiesJson.get(i).getAsString(), i);
             }
+
+            final JsonArray javaAttributesJson = javaViaMappingJson.get("attributes").getAsJsonArray();
+            this.javaAttributes = HashBiMap.create(javaAttributesJson.size());
+            for (int i = 0; i < javaAttributesJson.size(); i++) {
+                this.javaAttributes.put(Key.namespaced(javaAttributesJson.get(i).getAsString()), i);
+            }
         }
 
         { // Effects
@@ -688,6 +695,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public BiMap<String, Integer> getJavaBlockEntities() {
         return this.javaBlockEntities;
+    }
+
+    public BiMap<String, Integer> getJavaAttributes() {
+        return this.javaAttributes;
     }
 
     public BiMap<String, Integer> getJavaEffects() {

@@ -233,13 +233,6 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
     }
 
-    public void onAbilitiesChanged() {
-        final CommandsStorage commandsStorage = this.user.get(CommandsStorage.class);
-        if (commandsStorage != null) {
-            commandsStorage.updateCommandTree();
-        }
-    }
-
     @Override
     public void setPosition(final Position3f position) {
         this.prevPosition = position;
@@ -261,8 +254,11 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void setAbilities(final PlayerAbilities abilities) {
         final PlayerAbilities prevAbilities = this.abilities;
         super.setAbilities(abilities);
-        if (!abilities.equals(prevAbilities)) {
-            this.onAbilitiesChanged();
+        if (abilities.commandPermission() != prevAbilities.commandPermission()) {
+            final CommandsStorage commandsStorage = this.user.get(CommandsStorage.class);
+            if (commandsStorage != null) {
+                commandsStorage.updateCommandTree();
+            }
         }
     }
 

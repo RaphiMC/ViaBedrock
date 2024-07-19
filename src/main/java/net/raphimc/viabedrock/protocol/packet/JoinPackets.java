@@ -498,6 +498,7 @@ public class JoinPackets {
         final ClientSettingsStorage clientSettingsStorage = user.get(ClientSettingsStorage.class);
         final GameRulesStorage gameRulesStorage = user.get(GameRulesStorage.class);
         final ChunkTracker chunkTracker = user.get(ChunkTracker.class);
+        final CommandsStorage commandsStorage = user.get(CommandsStorage.class);
         final ClientPlayerEntity clientPlayer = user.get(EntityTracker.class).getClientPlayer();
 
         for (Map.Entry<String, Tag> registry : gameSession.getJavaRegistries().entrySet()) {
@@ -552,8 +553,11 @@ public class JoinPackets {
         joinGame.send(BedrockProtocol.class);
 
         clientPlayer.createTeam();
-        clientPlayer.onAbilitiesChanged();
         clientPlayer.sendPlayerPositionPacketToClient(false);
+
+        if (commandsStorage != null) {
+            commandsStorage.updateCommandTree();
+        }
 
         final PacketWrapper serverDifficulty = PacketWrapper.create(ClientboundPackets1_21.CHANGE_DIFFICULTY, user);
         serverDifficulty.write(Types.UNSIGNED_BYTE, (short) joinGameStorage.difficulty().getValue()); // difficulty

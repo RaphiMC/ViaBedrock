@@ -31,6 +31,7 @@ import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
+import net.raphimc.viabedrock.api.model.entity.LivingEntity;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.RegistryUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
@@ -39,6 +40,9 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorEvent;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeModifierOperation;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeOperands;
+import net.raphimc.viabedrock.protocol.model.AttributeInstance;
 import net.raphimc.viabedrock.protocol.model.EntityLink;
 import net.raphimc.viabedrock.protocol.model.EntityProperties;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -63,12 +67,13 @@ public class EntityPackets {
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
             final float bodyRotation = wrapper.read(BedrockTypes.FLOAT_LE); // body rotation
-            final int attributeCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // attribute count
-            for (int i = 0; i < attributeCount; i++) {
-                final String attributeIdentifier = wrapper.read(BedrockTypes.STRING); // attribute identifier
-                final float min = wrapper.read(BedrockTypes.FLOAT_LE); // min
-                final float value = wrapper.read(BedrockTypes.FLOAT_LE); // value
-                final float max = wrapper.read(BedrockTypes.FLOAT_LE); // max
+            final AttributeInstance[] attributes = new AttributeInstance[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // attribute count
+            for (int i = 0; i < attributes.length; i++) {
+                final String name = wrapper.read(BedrockTypes.STRING); // name
+                final float minValue = wrapper.read(BedrockTypes.FLOAT_LE); // min
+                final float currentValue = wrapper.read(BedrockTypes.FLOAT_LE); // current
+                final float maxValue = wrapper.read(BedrockTypes.FLOAT_LE); // max
+                attributes[i] = new AttributeInstance(name, currentValue, minValue, maxValue);
             }
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
             final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
@@ -100,6 +105,12 @@ public class EntityPackets {
             wrapper.write(Types.SHORT, (short) (motion.x() * 8000F)); // velocity x
             wrapper.write(Types.SHORT, (short) (motion.y() * 8000F)); // velocity y
             wrapper.write(Types.SHORT, (short) (motion.z() * 8000F)); // velocity z
+            wrapper.send(BedrockProtocol.class);
+            wrapper.cancel();
+
+            if (entity instanceof LivingEntity livingEntity) {
+                livingEntity.updateAttributes(attributes);
+            }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOVE_ENTITY_ABSOLUTE, ClientboundPackets1_21.TELEPORT_ENTITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
@@ -330,13 +341,12 @@ public class EntityPackets {
             wrapper.write(Types.SHORT, (short) 0); // velocity x
             wrapper.write(Types.SHORT, (short) 0); // velocity y
             wrapper.write(Types.SHORT, (short) 0); // velocity z
+            wrapper.send(BedrockProtocol.class);
+            wrapper.cancel();
 
             final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21.SET_ENTITY_DATA, wrapper.user());
             setEntityData.write(Types.VAR_INT, entity.javaId()); // entity id
             setEntityData.write(Types1_21.ENTITY_DATA_LIST, Lists.newArrayList(new EntityData(ProtocolConstants.JAVA_PAINTING_VARIANT_ID, Types1_21.ENTITY_DATA_TYPES.paintingVariantType, paintingHolder))); // entity data
-
-            wrapper.send(BedrockProtocol.class);
-            wrapper.cancel();
             setEntityData.send(BedrockProtocol.class);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.ENTITY_EVENT, null, wrapper -> {
@@ -373,6 +383,38 @@ public class EntityPackets {
                     // TODO: Handle remaining events
                     // throw new IllegalStateException("Unhandled ActorEvent: " + event);
                 }
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ATTRIBUTES, ClientboundPackets1_21.UPDATE_ATTRIBUTES, wrapper -> {
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+
+            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final AttributeInstance[] attributes = new AttributeInstance[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // attribute count
+            for (int i = 0; i < attributes.length; i++) {
+                final float minValue = wrapper.read(BedrockTypes.FLOAT_LE); // min
+                final float maxValue = wrapper.read(BedrockTypes.FLOAT_LE); // max
+                final float currentValue = wrapper.read(BedrockTypes.FLOAT_LE); // current
+                final float defaultValue = wrapper.read(BedrockTypes.FLOAT_LE); // default
+                final String name = wrapper.read(BedrockTypes.STRING); // name
+                final AttributeInstance.Modifier[] modifiers = new AttributeInstance.Modifier[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // modifier count
+                for (int j = 0; j < modifiers.length; j++) {
+                    final String id = wrapper.read(BedrockTypes.STRING); // id
+                    final String modifierName = wrapper.read(BedrockTypes.STRING); // name
+                    final float amount = wrapper.read(BedrockTypes.FLOAT_LE); // amount
+                    final AttributeModifierOperation operation = AttributeModifierOperation.getByValue(wrapper.read(BedrockTypes.VAR_INT), AttributeModifierOperation.OPERATION_INVALID); // operation
+                    final AttributeOperands operand = AttributeOperands.getByValue(wrapper.read(BedrockTypes.VAR_INT), AttributeOperands.OPERAND_INVALID); // operand
+                    final boolean isSerializable = wrapper.read(Types.BOOLEAN); // is serializable
+                    modifiers[j] = new AttributeInstance.Modifier(id, modifierName, amount, operation, operand, isSerializable);
+                }
+                attributes[i] = new AttributeInstance(name, currentValue, minValue, maxValue, defaultValue, modifiers);
+            }
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // tick
+
+            final Entity entity = entityTracker.getEntityByRid(runtimeEntityId);
+            if (entity instanceof LivingEntity livingEntity) {
+                livingEntity.updateAttributes(attributes, wrapper);
+            } else {
+                wrapper.cancel();
             }
         });
     }

@@ -320,7 +320,7 @@ public class HudPackets {
                     final ScoreboardEntry sameTargetEntry = objective.getEntryWithSameTarget(entry);
                     if (sameTargetEntry != null) {
                         sameTargetEntry.setScore(entry.score());
-                        objective.updateEntry0(wrapper.user(), sameTargetEntry);
+                        objective.updateEntryInPlace(wrapper.user(), sameTargetEntry);
                     } else if (entry.isValid()) {
                         objective.addEntry(wrapper.user(), scoreboardId, entry);
                     }

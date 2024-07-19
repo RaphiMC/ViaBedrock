@@ -69,8 +69,12 @@ public abstract class EnumGeneratorTask extends DefaultTask {
             final String valuesString = tds.get(1).wholeText();
             final List<Pair<String, String>> values = new ArrayList<>();
             final Set<String> usedNames = new HashSet<>();
+            final Map<String, String> valuesMap = new HashMap<>();
             for (String value : valuesString.split("\n")) {
                 String fieldName = value.split(" = ")[0];
+                String fieldValue = value.split(" = ")[1];
+                valuesMap.put(fieldName, fieldValue);
+
                 if (fieldName.equalsIgnoreCase("Count")) continue;
                 if (fieldName.equalsIgnoreCase("_count")) continue;
                 if (fieldName.equalsIgnoreCase("total")) continue;
@@ -80,8 +84,9 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                 if (fieldName.equalsIgnoreCase("AbilityCount")) continue;
                 if (fieldName.equalsIgnoreCase("NumModes")) continue;
                 if (fieldName.equalsIgnoreCase("9800")) continue;
+                if (fieldName.equalsIgnoreCase("TOTAL_OPERATIONS")) continue;
+                if (fieldName.equalsIgnoreCase("TOTAL_OPERANDS")) continue;
 
-                String fieldValue = value.split(" = ")[1];
                 switch (fieldValue) {
                     case "std::numeric_limits::max()":
                     case "std::numeric_limits<uint32_t>::max()":
@@ -106,10 +111,11 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                         final String[] split = fieldValue.split(Pattern.quote(splitChar));
                         for (int i = 0; i < split.length; i++) {
                             String part = split[i].trim();
-                            for (String usedName : usedNames) {
-                                if (part.equals(usedName)) {
-                                    part = usedName + ".getValue()";
-                                    break;
+                            if (valuesMap.containsKey(part)) {
+                                if (usedNames.contains(part)) {
+                                    part += ".getValue()";
+                                } else {
+                                    part = valuesMap.get(part);
                                 }
                             }
                             split[i] = part;
@@ -117,10 +123,11 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                         fieldValue = String.join(" " + splitChar + " ", split);
                     }
                 }
-                for (String usedName : usedNames) {
-                    if (fieldValue.equals(usedName)) {
-                        fieldValue = usedName + ".getValue()";
-                        break;
+                if (valuesMap.containsKey(fieldValue)) {
+                    if (usedNames.contains(fieldValue)) {
+                        fieldValue += ".getValue()";
+                    } else {
+                        fieldValue = valuesMap.get(fieldValue);
                     }
                 }
 
