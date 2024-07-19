@@ -10,3 +10,5 @@ resource-pack-port: 0
 resource-pack-url: ""
 # Controls resource pack caching (Reduces network usage and loading time), Valid options: "disabled", "memory", "disk"
 pack-cache: "disk"
+# If true, translates bedrock's showCoordinates game rule to java's reduced debug info flag
+translate-show-coordinates-game-rule: false

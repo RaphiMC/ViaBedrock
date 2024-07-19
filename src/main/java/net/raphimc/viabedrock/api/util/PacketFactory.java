@@ -26,11 +26,13 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.Types1_21;
 import com.viaversion.viaversion.libs.gson.JsonNull;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.java.CustomChatCompletionsAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 
 public class PacketFactory {
@@ -68,6 +70,13 @@ public class PacketFactory {
         gameEvent.write(Types.UNSIGNED_BYTE, (short) event.ordinal()); // event id
         gameEvent.write(Types.FLOAT, value); // value
         gameEvent.send(BedrockProtocol.class);
+    }
+
+    public static void sendJavaEntityEvent(final UserConnection user, final Entity entity, final EntityEvent event) {
+        final PacketWrapper entityEvent = PacketWrapper.create(ClientboundPackets1_21.ENTITY_EVENT, user);
+        entityEvent.write(Types.INT, entity.javaId()); // entity id
+        entityEvent.write(Types.BYTE, event.getValue()); // event
+        entityEvent.send(BedrockProtocol.class);
     }
 
     public static void sendJavaContainerClose(final UserConnection user, final byte windowId) {

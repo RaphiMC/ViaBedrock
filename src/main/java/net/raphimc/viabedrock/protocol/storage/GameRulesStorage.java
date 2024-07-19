@@ -20,7 +20,10 @@ package net.raphimc.viabedrock.protocol.storage;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.State;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.model.GameRule;
 
@@ -33,6 +36,7 @@ public class GameRulesStorage extends StoredObject {
     // Maybe important: recipesUnlock, showRecipeMessages, pvp, naturalRegeneration, showBorderEffect, keepInventory
 
     private static final Map<String, Object> DEFAULT_GAME_RULES = Map.of(
+            "showCoordinates".toLowerCase(Locale.ROOT), false,
             "doDayLightCycle".toLowerCase(Locale.ROOT), true,
             "doImmediateRespawn".toLowerCase(Locale.ROOT), false,
             "doLimitedCrafting".toLowerCase(Locale.ROOT), false
@@ -52,10 +56,13 @@ public class GameRulesStorage extends StoredObject {
             if (gameRule.value() != null) {
                 final Object previousValue = this.gameRules.put(gameRule.name().toLowerCase(Locale.ROOT), gameRule.value());
                 if (previousValue != gameRule.value() && state == State.PLAY) {
-                    if (gameRule.name().equalsIgnoreCase("doImmediateRespawn")) {
-                        PacketFactory.sendJavaGameEvent(this.getUser(), GameEventType.IMMEDIATE_RESPAWN, (Boolean) gameRule.value() ? 1F : 0F);
+                    if (gameRule.name().equalsIgnoreCase("showCoordinates") && ViaBedrock.getConfig().shouldTranslateShowCoordinatesGameRule()) {
+                        final ClientPlayerEntity clientPlayer = this.getUser().get(EntityTracker.class).getClientPlayer();
+                        PacketFactory.sendJavaEntityEvent(this.getUser(), clientPlayer, (boolean) gameRule.value() ? EntityEvent.FULL_DEBUG_INFO : EntityEvent.REDUCED_DEBUG_INFO);
+                    } else if (gameRule.name().equalsIgnoreCase("doImmediateRespawn")) {
+                        PacketFactory.sendJavaGameEvent(this.getUser(), GameEventType.IMMEDIATE_RESPAWN, (boolean) gameRule.value() ? 1F : 0F);
                     } else if (gameRule.name().equalsIgnoreCase("doLimitedCrafting")) {
-                        PacketFactory.sendJavaGameEvent(this.getUser(), GameEventType.LIMITED_CRAFTING, (Boolean) gameRule.value() ? 1F : 0F);
+                        PacketFactory.sendJavaGameEvent(this.getUser(), GameEventType.LIMITED_CRAFTING, (boolean) gameRule.value() ? 1F : 0F);
                     }
                 }
             }

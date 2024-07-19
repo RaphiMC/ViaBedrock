@@ -56,6 +56,11 @@ public interface ViaBedrockConfig extends Config {
      */
     PackCacheMode getPackCacheMode();
 
+    /**
+     * @return If true, translates bedrock's showCoordinates game rule to java's reduced debug info flag
+     */
+    boolean shouldTranslateShowCoordinatesGameRule();
+
     enum BlobCacheMode {
 
         /**

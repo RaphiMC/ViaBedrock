@@ -536,7 +536,7 @@ public class JoinPackets {
         joinGame.write(Types.VAR_INT, 100); // max players
         joinGame.write(Types.VAR_INT, clientSettingsStorage.viewDistance()); // view distance
         joinGame.write(Types.VAR_INT, clientSettingsStorage.viewDistance()); // simulation distance
-        joinGame.write(Types.BOOLEAN, false); // reduced debug info
+        joinGame.write(Types.BOOLEAN, ViaBedrock.getConfig().shouldTranslateShowCoordinatesGameRule() && !gameRulesStorage.<Boolean>getGameRule("showCoordinates")); // reduced debug info
         joinGame.write(Types.BOOLEAN, !gameRulesStorage.<Boolean>getGameRule("doImmediateRespawn")); // show death screen
         joinGame.write(Types.BOOLEAN, gameRulesStorage.getGameRule("doLimitedCrafting")); // limited crafting
         joinGame.write(Types.VAR_INT, chunkTracker.getDimension().ordinal()); // dimension id

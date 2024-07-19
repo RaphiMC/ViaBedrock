@@ -34,6 +34,7 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
     private int resourcePackPort;
     private String resourcePackUrl;
     private PackCacheMode packCacheMode;
+    private boolean translateShowCoordinatesGameRule;
 
     public ViaBedrockConfig(final File configFile, final Logger logger) {
         super(configFile, logger);
@@ -52,6 +53,7 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
         this.resourcePackPort = this.getInt("resource-pack-port", 0);
         this.resourcePackUrl = this.getString("resource-pack-url", "");
         this.packCacheMode = PackCacheMode.byName(this.getString("pack-cache", "disk"));
+        this.translateShowCoordinatesGameRule = this.getBoolean("translate-show-coordinates-game-rule", false);
     }
 
     @Override
@@ -96,6 +98,11 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
     @Override
     public PackCacheMode getPackCacheMode() {
         return this.packCacheMode;
+    }
+
+    @Override
+    public boolean shouldTranslateShowCoordinatesGameRule() {
+        return this.translateShowCoordinatesGameRule;
     }
 
 }
