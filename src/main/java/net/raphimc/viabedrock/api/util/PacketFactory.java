@@ -85,6 +85,13 @@ public class PacketFactory {
         containerClose.send(BedrockProtocol.class);
     }
 
+    public static void sendJavaRotateHead(final UserConnection user, final Entity entity) {
+        final PacketWrapper rotateHead = PacketWrapper.create(ClientboundPackets1_21.ROTATE_HEAD, user);
+        rotateHead.write(Types.VAR_INT, entity.javaId()); // entity id
+        rotateHead.write(Types.BYTE, MathUtil.float2Byte(entity.rotation().z())); // head yaw
+        rotateHead.send(BedrockProtocol.class);
+    }
+
     public static void sendBedrockContainerClose(final UserConnection user, final byte windowId, final ContainerType containerType) {
         final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, user);
         containerClose.write(Types.BYTE, windowId); // window id

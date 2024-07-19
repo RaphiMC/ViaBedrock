@@ -28,6 +28,7 @@ import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.entity.PlayerEntity;
 import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.MathUtil;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
@@ -153,10 +154,7 @@ public class OtherPlayerPackets {
             wrapper.write(Types.BYTE, MathUtil.float2Byte(rotation.x())); // pitch
             wrapper.write(Types.BOOLEAN, onGround); // on ground
 
-            final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_21.ROTATE_HEAD, wrapper.user());
-            entityHeadLook.write(Types.VAR_INT, entity.javaId()); // entity id
-            entityHeadLook.write(Types.BYTE, MathUtil.float2Byte(rotation.z())); // head yaw
-            entityHeadLook.send(BedrockProtocol.class);
+            PacketFactory.sendJavaRotateHead(wrapper.user(), entity);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, null, wrapper -> {
             wrapper.cancel();

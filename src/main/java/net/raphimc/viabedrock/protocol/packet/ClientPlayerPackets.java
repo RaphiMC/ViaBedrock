@@ -66,11 +66,7 @@ public class ClientPlayerPackets {
     private static final PacketHandler CLIENT_PLAYER_GAME_MODE_UPDATE = wrapper -> {
         final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
         final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
-
-        final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_21.GAME_EVENT, wrapper.user());
-        gameEvent.write(Types.UNSIGNED_BYTE, (short) GameEventType.CHANGE_GAME_MODE.ordinal()); // event id
-        gameEvent.write(Types.FLOAT, (float) GameTypeRewriter.getEffectiveGameMode(entityTracker.getClientPlayer().gameType(), gameSession.getLevelGameType())); // value
-        gameEvent.send(BedrockProtocol.class);
+        PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.CHANGE_GAME_MODE, GameTypeRewriter.getEffectiveGameMode(entityTracker.getClientPlayer().gameType(), gameSession.getLevelGameType()));
     };
 
     public static void register(final BedrockProtocol protocol) {

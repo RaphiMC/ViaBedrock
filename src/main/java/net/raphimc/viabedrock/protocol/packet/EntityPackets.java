@@ -33,6 +33,7 @@ import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.entity.LivingEntity;
 import net.raphimc.viabedrock.api.util.MathUtil;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.RegistryUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -158,11 +159,6 @@ public class EntityPackets {
             entity.setRotation(new Position3f(pitch, yaw, headYaw));
             entity.setOnGround(onGround);
 
-            final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_21.ROTATE_HEAD, wrapper.user());
-            entityHeadLook.write(Types.VAR_INT, entity.javaId()); // entity id
-            entityHeadLook.write(Types.BYTE, MathUtil.float2Byte(headYaw)); // head yaw
-            entityHeadLook.send(BedrockProtocol.class);
-
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y() - entity.eyeOffset()); // y
@@ -170,6 +166,8 @@ public class EntityPackets {
             wrapper.write(Types.BYTE, MathUtil.float2Byte(yaw)); // yaw
             wrapper.write(Types.BYTE, MathUtil.float2Byte(pitch)); // pitch
             wrapper.write(Types.BOOLEAN, onGround); // on ground
+
+            PacketFactory.sendJavaRotateHead(wrapper.user(), entity);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOVE_ENTITY_DELTA, ClientboundPackets1_21.TELEPORT_ENTITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
@@ -246,11 +244,7 @@ public class EntityPackets {
             }
             if (hasHeadYaw) {
                 entity.setRotation(new Position3f(entity.rotation().x(), entity.rotation().y(), MathUtil.byte2Float(wrapper.read(Types.BYTE))));
-
-                final PacketWrapper entityHeadLook = PacketWrapper.create(ClientboundPackets1_21.ROTATE_HEAD, wrapper.user());
-                entityHeadLook.write(Types.VAR_INT, entity.javaId()); // entity id
-                entityHeadLook.write(Types.BYTE, MathUtil.float2Byte(entity.rotation().z())); // head yaw
-                entityHeadLook.send(BedrockProtocol.class);
+                PacketFactory.sendJavaRotateHead(wrapper.user(), entity);
             }
             entity.setOnGround(onGround);
 
@@ -282,7 +276,6 @@ public class EntityPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.REMOVE_ENTITY, ClientboundPackets1_21.REMOVE_ENTITIES, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
-
             final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
 
             final Entity entity = entityTracker.getEntityByUid(uniqueEntityId);

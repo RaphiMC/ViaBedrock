@@ -579,22 +579,12 @@ public class JoinPackets {
         playerInfoUpdate.send(BedrockProtocol.class);
 
         if (joinGameStorage.rainLevel() > 0F || joinGameStorage.lightningLevel() > 0F) {
-            final PacketWrapper rainStartGameEvent = PacketWrapper.create(ClientboundPackets1_21.GAME_EVENT, user);
-            rainStartGameEvent.write(Types.UNSIGNED_BYTE, (short) GameEventType.START_RAINING.ordinal()); // event id
-            rainStartGameEvent.write(Types.FLOAT, 0F); // value
-            rainStartGameEvent.send(BedrockProtocol.class);
-
+            PacketFactory.sendJavaGameEvent(user, GameEventType.START_RAINING, 0F);
             if (joinGameStorage.rainLevel() > 0F) {
-                final PacketWrapper rainStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_21.GAME_EVENT, user);
-                rainStrengthGameEvent.write(Types.UNSIGNED_BYTE, (short) GameEventType.RAIN_LEVEL_CHANGE.ordinal()); // event id
-                rainStrengthGameEvent.write(Types.FLOAT, joinGameStorage.rainLevel()); // value
-                rainStrengthGameEvent.send(BedrockProtocol.class);
+                PacketFactory.sendJavaGameEvent(user, GameEventType.RAIN_LEVEL_CHANGE, joinGameStorage.rainLevel());
             }
             if (joinGameStorage.lightningLevel() > 0F) {
-                final PacketWrapper thunderStrengthGameEvent = PacketWrapper.create(ClientboundPackets1_21.GAME_EVENT, user);
-                thunderStrengthGameEvent.write(Types.UNSIGNED_BYTE, (short) GameEventType.THUNDER_LEVEL_CHANGE.ordinal()); // event id
-                thunderStrengthGameEvent.write(Types.FLOAT, joinGameStorage.lightningLevel()); // value
-                thunderStrengthGameEvent.send(BedrockProtocol.class);
+                PacketFactory.sendJavaGameEvent(user, GameEventType.THUNDER_LEVEL_CHANGE, joinGameStorage.lightningLevel());
             }
         }
 
