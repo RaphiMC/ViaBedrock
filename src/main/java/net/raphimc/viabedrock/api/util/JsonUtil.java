@@ -20,10 +20,9 @@ package net.raphimc.viabedrock.api.util;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
+import com.viaversion.viaversion.libs.gson.JsonPrimitive;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class JsonUtil {
 
@@ -43,6 +42,31 @@ public class JsonUtil {
             return (T) sorted;
         } else {
             return element;
+        }
+    }
+
+    public static Object getValue(final JsonElement element) {
+        if (element.isJsonPrimitive()) {
+            final JsonPrimitive primitive = element.getAsJsonPrimitive();
+            if (primitive.isBoolean()) {
+                return primitive.getAsBoolean();
+            } else if (primitive.isNumber()) {
+                return primitive.getAsNumber();
+            } else {
+                return primitive.getAsString();
+            }
+        } else if (element.isJsonArray()) {
+            final JsonArray array = element.getAsJsonArray();
+            final List<Object> list = new ArrayList<>();
+            for (int i = 0; i < array.size(); i++) list.add(getValue(array.get(i)));
+            return list;
+        } else if (element.isJsonObject()) {
+            final JsonObject object = element.getAsJsonObject();
+            final Map<String, Object> map = new HashMap<>();
+            for (Map.Entry<String, JsonElement> entry : object.entrySet()) map.put(entry.getKey(), getValue(entry.getValue()));
+            return map;
+        } else {
+            return null;
         }
     }
 

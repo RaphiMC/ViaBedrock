@@ -45,6 +45,7 @@ import net.raphimc.viabedrock.api.item.ItemUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -64,6 +65,7 @@ public class BedrockMappingData extends MappingDataBase {
     // Bedrock misc
     private ResourcePack bedrockVanillaResourcePack;
     private ResourcePack bedrockVanillaSkinPack;
+    private Map<String, Object> bedrockGameRules;
 
     // Java misc
     private CompoundTag javaRegistries;
@@ -130,6 +132,12 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockVanillaResourcePack = this.readResourcePack("bedrock/vanilla_resource_pack.mcpack", UUID.fromString("0575c61f-a5da-4b7f-9961-ffda2908861e"), "0.0.1");
             this.bedrockVanillaSkinPack = this.readResourcePack("bedrock/vanilla_skin_pack.mcpack", UUID.fromString("c18e65aa-7b21-4637-9b63-8ad63622ef01"), "1.0.0");
             this.bedrockVanillaSkinPack.setType(PackType.Skins);
+
+            final JsonObject bedrockGameRulesJson = this.readJson("bedrock/game_rules.json");
+            this.bedrockGameRules = new HashMap<>(bedrockGameRulesJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockGameRulesJson.entrySet()) {
+                this.bedrockGameRules.put(entry.getKey().toLowerCase(Locale.ROOT), JsonUtil.getValue(entry.getValue()));
+            }
         }
 
         { // Java misc
@@ -583,6 +591,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public ResourcePack getBedrockVanillaSkinPack() {
         return this.bedrockVanillaSkinPack;
+    }
+
+    public Map<String, Object> getBedrockGameRules() {
+        return this.bedrockGameRules;
     }
 
     public CompoundTag getJavaRegistries() {

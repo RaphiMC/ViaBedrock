@@ -24,6 +24,9 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 ### data/bedrock/entity_identifiers.nbt
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
+### data/bedrock/game_rules.json
+This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
+
 ### data/bedrock/runtime_item_states.json
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 

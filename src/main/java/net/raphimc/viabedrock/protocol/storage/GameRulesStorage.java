@@ -23,6 +23,7 @@ import com.viaversion.viaversion.api.protocol.packet.State;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.model.GameRule;
@@ -30,19 +31,13 @@ import net.raphimc.viabedrock.protocol.model.GameRule;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class GameRulesStorage extends StoredObject {
 
     // Maybe important: recipesUnlock, showRecipeMessages, pvp, naturalRegeneration, showBorderEffect, keepInventory
 
-    private static final Map<String, Object> DEFAULT_GAME_RULES = Map.of(
-            "showCoordinates".toLowerCase(Locale.ROOT), false,
-            "doDayLightCycle".toLowerCase(Locale.ROOT), true,
-            "doImmediateRespawn".toLowerCase(Locale.ROOT), false,
-            "doLimitedCrafting".toLowerCase(Locale.ROOT), false
-    );
-
-    private final Map<String, Object> gameRules = new HashMap<>(DEFAULT_GAME_RULES);
+    private final Map<String, Object> gameRules = new HashMap<>(BedrockProtocol.MAPPINGS.getBedrockGameRules());
 
     public GameRulesStorage(final UserConnection user, final GameRule[] gameRules) {
         super(user);
@@ -55,6 +50,11 @@ public class GameRulesStorage extends StoredObject {
         for (GameRule gameRule : gameRules) {
             if (gameRule.value() != null) {
                 final Object previousValue = this.gameRules.put(gameRule.name().toLowerCase(Locale.ROOT), gameRule.value());
+                if (previousValue == null) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown game rule: " + gameRule.name());
+                    continue;
+                }
+
                 if (previousValue != gameRule.value() && state == State.PLAY) {
                     if (gameRule.name().equalsIgnoreCase("showCoordinates") && ViaBedrock.getConfig().shouldTranslateShowCoordinatesGameRule()) {
                         final ClientPlayerEntity clientPlayer = this.getUser().get(EntityTracker.class).getClientPlayer();
