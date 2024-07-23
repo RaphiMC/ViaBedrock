@@ -26,7 +26,7 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 - [x] Entity spawning
 - [ ] Entity interactions
 - [ ] Entity metadata
-- [ ] Entity attributes
+- [x] Entity attributes
 - [ ] Entity mounting
 - [ ] Player abilities
 - [x] Client-Authoritative Movement

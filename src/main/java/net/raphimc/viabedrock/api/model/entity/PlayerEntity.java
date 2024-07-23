@@ -19,17 +19,22 @@ package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.Types1_21;
 import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerTeamAction;
+import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PlayerEntity extends LivingEntity {
 
@@ -41,7 +46,7 @@ public class PlayerEntity extends LivingEntity {
         this.abilities = abilities;
     }
 
-    public void createTeam() {
+    public final void createTeam() {
         final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21.SET_PLAYER_TEAM, this.user);
         setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
         setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.ADD.ordinal()); // mode
@@ -56,7 +61,7 @@ public class PlayerEntity extends LivingEntity {
         setPlayerTeam.send(BedrockProtocol.class);
     }
 
-    public void updateName(final String name) {
+    public final void updateName(final String name) {
         this.setName(name);
 
         final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21.SET_PLAYER_TEAM, this.user);
@@ -72,7 +77,7 @@ public class PlayerEntity extends LivingEntity {
         setPlayerTeam.send(BedrockProtocol.class);
     }
 
-    public void deleteTeam() {
+    public final void deleteTeam() {
         final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21.SET_PLAYER_TEAM, this.user);
         setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
         setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.REMOVE.ordinal()); // mode
@@ -90,6 +95,28 @@ public class PlayerEntity extends LivingEntity {
 
     public void setAbilities(final PlayerAbilities abilities) {
         this.abilities = abilities;
+    }
+
+    @Override
+    protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
+        return switch (attribute.name()) {
+            case "minecraft:absorption" -> {
+                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("PLAYER_ABSORPTION"), Types1_21.ENTITY_DATA_TYPES.floatType, attribute.computeValue(false)));
+                javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:generic.max_absorption")); // attribute id
+                javaAttributes.write(Types.DOUBLE, (double) attribute.maxValue()); // base value
+                javaAttributes.write(Types.VAR_INT, 0); // modifier count
+                attributeCount.incrementAndGet();
+                yield true;
+            }
+            case "minecraft:luck" -> {
+                javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:generic.luck")); // attribute id
+                javaAttributes.write(Types.DOUBLE, (double) attribute.computeValue(true)); // base value
+                javaAttributes.write(Types.VAR_INT, 0); // modifier count
+                attributeCount.incrementAndGet();
+                yield true;
+            }
+            default -> super.translateAttribute(attribute, javaAttributes, attributeCount, javaEntityData);
+        };
     }
 
 }

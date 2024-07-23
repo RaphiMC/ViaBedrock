@@ -553,8 +553,8 @@ public class JoinPackets {
         joinGame.send(BedrockProtocol.class);
 
         clientPlayer.createTeam();
+        clientPlayer.updateAttributes(clientPlayer.attributes().values().toArray(new EntityAttribute[0]));
         clientPlayer.sendPlayerPositionPacketToClient(false);
-
         if (commandsStorage != null) {
             commandsStorage.updateCommandTree();
         }

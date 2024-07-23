@@ -43,7 +43,7 @@ import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorEvent;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeModifierOperation;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeOperands;
-import net.raphimc.viabedrock.protocol.model.AttributeInstance;
+import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.EntityLink;
 import net.raphimc.viabedrock.protocol.model.EntityProperties;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -68,13 +68,13 @@ public class EntityPackets {
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
             final float bodyRotation = wrapper.read(BedrockTypes.FLOAT_LE); // body rotation
-            final AttributeInstance[] attributes = new AttributeInstance[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // attribute count
+            final EntityAttribute[] attributes = new EntityAttribute[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // attribute count
             for (int i = 0; i < attributes.length; i++) {
                 final String name = wrapper.read(BedrockTypes.STRING); // name
                 final float minValue = wrapper.read(BedrockTypes.FLOAT_LE); // min
                 final float currentValue = wrapper.read(BedrockTypes.FLOAT_LE); // current
                 final float maxValue = wrapper.read(BedrockTypes.FLOAT_LE); // max
-                attributes[i] = new AttributeInstance(name, currentValue, minValue, maxValue);
+                attributes[i] = new EntityAttribute(name, currentValue, minValue, maxValue);
             }
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
             final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
@@ -359,10 +359,8 @@ public class EntityPackets {
             switch (event) {
                 case DEATH -> {
                     if (runtimeEntityId == entityTracker.getClientPlayer().runtimeId()) {
-                        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21.SET_ENTITY_DATA, wrapper.user());
-                        setEntityData.write(Types.VAR_INT, entityTracker.getClientPlayer().javaId()); // entity id
-                        setEntityData.write(Types1_21.ENTITY_DATA_LIST, Lists.newArrayList(new EntityData(ProtocolConstants.LIVING_ENTITY_HEALTH_ID, Types1_21.ENTITY_DATA_TYPES.floatType, 0F))); // entity data
-                        setEntityData.send(BedrockProtocol.class);
+                        entityTracker.getClientPlayer().setHealth(0F);
+                        entityTracker.getClientPlayer().sendAttribute("minecraft:health");
 
                         if (gameSession.getDeathMessage() != null) {
                             final PacketWrapper playerCombatKill = PacketWrapper.create(ClientboundPackets1_21.PLAYER_COMBAT_KILL, wrapper.user());
@@ -382,24 +380,24 @@ public class EntityPackets {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
-            final AttributeInstance[] attributes = new AttributeInstance[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // attribute count
+            final EntityAttribute[] attributes = new EntityAttribute[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // attribute count
             for (int i = 0; i < attributes.length; i++) {
                 final float minValue = wrapper.read(BedrockTypes.FLOAT_LE); // min
                 final float maxValue = wrapper.read(BedrockTypes.FLOAT_LE); // max
                 final float currentValue = wrapper.read(BedrockTypes.FLOAT_LE); // current
                 final float defaultValue = wrapper.read(BedrockTypes.FLOAT_LE); // default
                 final String name = wrapper.read(BedrockTypes.STRING); // name
-                final AttributeInstance.Modifier[] modifiers = new AttributeInstance.Modifier[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // modifier count
+                final EntityAttribute.Modifier[] modifiers = new EntityAttribute.Modifier[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // modifier count
                 for (int j = 0; j < modifiers.length; j++) {
                     final String id = wrapper.read(BedrockTypes.STRING); // id
                     final String modifierName = wrapper.read(BedrockTypes.STRING); // name
                     final float amount = wrapper.read(BedrockTypes.FLOAT_LE); // amount
-                    final AttributeModifierOperation operation = AttributeModifierOperation.getByValue(wrapper.read(BedrockTypes.VAR_INT), AttributeModifierOperation.OPERATION_INVALID); // operation
-                    final AttributeOperands operand = AttributeOperands.getByValue(wrapper.read(BedrockTypes.VAR_INT), AttributeOperands.OPERAND_INVALID); // operand
+                    final AttributeModifierOperation operation = AttributeModifierOperation.getByValue(wrapper.read(BedrockTypes.INT_LE), AttributeModifierOperation.OPERATION_INVALID); // operation
+                    final AttributeOperands operand = AttributeOperands.getByValue(wrapper.read(BedrockTypes.INT_LE), AttributeOperands.OPERAND_INVALID); // operand
                     final boolean isSerializable = wrapper.read(Types.BOOLEAN); // is serializable
-                    modifiers[j] = new AttributeInstance.Modifier(id, modifierName, amount, operation, operand, isSerializable);
+                    modifiers[j] = new EntityAttribute.Modifier(id, modifierName, amount, operation, operand, isSerializable);
                 }
-                attributes[i] = new AttributeInstance(name, currentValue, minValue, maxValue, defaultValue, modifiers);
+                attributes[i] = new EntityAttribute(name, currentValue, minValue, maxValue, defaultValue, modifiers);
             }
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // tick
 

@@ -68,7 +68,7 @@ public class OtherPlayerPackets {
 
             // TODO: Handle remaining fields
 
-            final PlayerEntity entity = new PlayerEntity(wrapper.user(), runtimeEntityId, entityTracker.getNextJavaEntityId(), uuid, abilities);
+            final PlayerEntity entity = entityTracker.addEntity(new PlayerEntity(wrapper.user(), runtimeEntityId, entityTracker.getNextJavaEntityId(), uuid, abilities));
             entity.setPosition(position);
             entity.setRotation(rotation);
             entity.updateName(username);

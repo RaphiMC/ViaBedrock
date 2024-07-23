@@ -15,18 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.model;
+package net.raphimc.viabedrock.api.util;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeModifierOperation;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeOperands;
+public class EnumUtil {
 
-public record AttributeInstance(String name, float currentValue, float minValue, float maxValue, float defaultValue, Modifier[] modifiers) {
-
-    public AttributeInstance(final String name, final float currentValue, final float minValue, final float maxValue) {
-        this(name, currentValue, minValue, maxValue, currentValue, new Modifier[0]);
-    }
-
-    public record Modifier(String id, String name, float amount, AttributeModifierOperation operation, AttributeOperands operand, boolean isSerializable) {
+    public static <T extends Enum<T>> T getEnumConstantOrNull(final Class<T> enumClass, final String name) {
+        try {
+            return Enum.valueOf(enumClass, name);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
 }

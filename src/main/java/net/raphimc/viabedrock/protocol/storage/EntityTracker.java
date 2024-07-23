@@ -27,10 +27,7 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
-import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
-import net.raphimc.viabedrock.api.model.entity.Entity;
-import net.raphimc.viabedrock.api.model.entity.LivingEntity;
-import net.raphimc.viabedrock.api.model.entity.PlayerEntity;
+import net.raphimc.viabedrock.api.model.entity.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.*;
@@ -52,22 +49,22 @@ public class EntityTracker extends StoredObject {
 
     public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final EntityTypes1_20_5 type) {
         final UUID javaUuid = uuid != null ? uuid : UUID.randomUUID();
-        return switch (type) {
-            default -> {
-                if (type.isOrHasParent(EntityTypes1_20_5.LIVING_ENTITY)) {
-                    yield this.addEntity(new LivingEntity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
-                } else {
-                    yield this.addEntity(new Entity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
-                }
-            }
-        };
+        if (type.isOrHasParent(EntityTypes1_20_5.ABSTRACT_HORSE)) {
+            return this.addEntity(new AbstractHorseEntity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+        } else if (type.isOrHasParent(EntityTypes1_20_5.MOB)) {
+            return this.addEntity(new MobEntity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+        } else if (type.isOrHasParent(EntityTypes1_20_5.LIVING_ENTITY)) {
+            return this.addEntity(new LivingEntity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+        } else {
+            return this.addEntity(new Entity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+        }
     }
 
-    public Entity addEntity(final Entity entity) {
+    public <T extends Entity> T addEntity(final T entity) {
         return this.addEntity(entity, true);
     }
 
-    public Entity addEntity(final Entity entity, final boolean updateTeam) {
+    public <T extends Entity> T addEntity(final T entity, final boolean updateTeam) {
         if (entity instanceof ClientPlayerEntity) {
             this.clientPlayerEntity = (ClientPlayerEntity) entity;
         }

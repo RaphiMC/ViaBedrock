@@ -1,0 +1,397 @@
+{
+  "ALLAY": [
+    "DANCING",
+    "CAN_DUPLICATE"
+  ],
+  "MOB": [
+    "MOB_FLAGS"
+  ],
+  "LIVING_ENTITY": [
+    "LIVING_ENTITY_FLAGS",
+    "HEALTH",
+    "EFFECT_PARTICLES",
+    "EFFECT_AMBIENCE",
+    "ARROW_COUNT",
+    "STINGER_COUNT",
+    "SLEEPING_POS"
+  ],
+  "ENTITY": [
+    "SHARED_FLAGS",
+    "AIR_SUPPLY",
+    "CUSTOM_NAME",
+    "CUSTOM_NAME_VISIBLE",
+    "SILENT",
+    "NO_GRAVITY",
+    "POSE",
+    "TICKS_FROZEN"
+  ],
+  "AREA_EFFECT_CLOUD": [
+    "RADIUS",
+    "WAITING",
+    "PARTICLE"
+  ],
+  "ARMADILLO": [
+    "ARMADILLO_STATE"
+  ],
+  "ABSTRACT_AGEABLE": [
+    "BABY"
+  ],
+  "ARMOR_STAND": [
+    "CLIENT_FLAGS",
+    "HEAD_POSE",
+    "BODY_POSE",
+    "LEFT_ARM_POSE",
+    "RIGHT_ARM_POSE",
+    "LEFT_LEG_POSE",
+    "RIGHT_LEG_POSE"
+  ],
+  "ARROW": [
+    "EFFECT_COLOR"
+  ],
+  "ABSTRACT_ARROW": [
+    "FLAGS",
+    "PIERCE_LEVEL"
+  ],
+  "AXOLOTL": [
+    "VARIANT",
+    "PLAYING_DEAD",
+    "FROM_BUCKET"
+  ],
+  "BAT": [
+    "FLAGS"
+  ],
+  "BEE": [
+    "FLAGS",
+    "REMAINING_ANGER_TIME"
+  ],
+  "BLAZE": [
+    "FLAGS"
+  ],
+  "BLOCK_DISPLAY": [
+    "BLOCK_STATE"
+  ],
+  "DISPLAY": [
+    "TRANSFORMATION_INTERPOLATION_START_DELTA_TICKS",
+    "TRANSFORMATION_INTERPOLATION_DURATION",
+    "POS_ROT_INTERPOLATION_DURATION",
+    "TRANSLATION",
+    "SCALE",
+    "LEFT_ROTATION",
+    "RIGHT_ROTATION",
+    "BILLBOARD_RENDER_CONSTRAINTS",
+    "BRIGHTNESS_OVERRIDE",
+    "VIEW_RANGE",
+    "SHADOW_RADIUS",
+    "SHADOW_STRENGTH",
+    "WIDTH",
+    "HEIGHT",
+    "GLOW_COLOR_OVERRIDE"
+  ],
+  "BOAT": [
+    "TYPE",
+    "PADDLE_LEFT",
+    "PADDLE_RIGHT",
+    "BUBBLE_TIME"
+  ],
+  "VEHICLE": [
+    "HURT",
+    "HURTDIR",
+    "DAMAGE"
+  ],
+  "BOGGED": [
+    "SHEARED"
+  ],
+  "CAMEL": [
+    "DASH",
+    "LAST_POSE_CHANGE_TICK"
+  ],
+  "ABSTRACT_HORSE": [
+    "FLAGS"
+  ],
+  "CAT": [
+    "VARIANT",
+    "IS_LYING",
+    "RELAX_STATE_ONE",
+    "COLLAR_COLOR"
+  ],
+  "TAMABLE_ANIMAL": [
+    "FLAGS",
+    "OWNERUUID"
+  ],
+  "SPIDER": [
+    "FLAGS"
+  ],
+  "ABSTRACT_MINECART": [
+    "DISPLAY_BLOCK",
+    "DISPLAY_OFFSET",
+    "CUSTOM_DISPLAY"
+  ],
+  "ABSTRACT_FISH": [
+    "FROM_BUCKET"
+  ],
+  "COMMAND_BLOCK_MINECART": [
+    "COMMAND_NAME",
+    "LAST_OUTPUT"
+  ],
+  "CREEPER": [
+    "SWELL_DIR",
+    "IS_POWERED",
+    "IS_IGNITED"
+  ],
+  "DOLPHIN": [
+    "TREASURE_POS",
+    "GOT_FISH",
+    "MOISTNESS_LEVEL"
+  ],
+  "ABSTRACT_CHESTED_HORSE": [
+    "CHEST"
+  ],
+  "ZOMBIE": [
+    "BABY",
+    "SPECIAL_TYPE",
+    "DROWNED_CONVERSION"
+  ],
+  "ITEM_PROJECTILE": [
+    "ITEM_STACK"
+  ],
+  "GUARDIAN": [
+    "MOVING",
+    "ATTACK_TARGET"
+  ],
+  "END_CRYSTAL": [
+    "BEAM_TARGET",
+    "SHOW_BOTTOM"
+  ],
+  "ENDER_DRAGON": [
+    "PHASE"
+  ],
+  "ENDERMAN": [
+    "CARRY_STATE",
+    "CREEPY",
+    "STARED_AT"
+  ],
+  "SPELLCASTER_ILLAGER": [
+    "SPELL_CASTING"
+  ],
+  "ABSTRACT_RAIDER": [
+    "IS_CELEBRATING"
+  ],
+  "EYE_OF_ENDER": [
+    "ITEM_STACK"
+  ],
+  "FALLING_BLOCK": [
+    "START_POS"
+  ],
+  "FIREWORK_ROCKET": [
+    "FIREWORKS_ITEM",
+    "ATTACHED_TO_TARGET",
+    "SHOT_AT_ANGLE"
+  ],
+  "FOX": [
+    "TYPE",
+    "FLAGS",
+    "TRUSTED_0",
+    "TRUSTED_1"
+  ],
+  "FROG": [
+    "VARIANT",
+    "TONGUE_TARGET"
+  ],
+  "FURNACE_MINECART": [
+    "FUEL"
+  ],
+  "GHAST": [
+    "IS_CHARGING"
+  ],
+  "ITEM_FRAME": [
+    "ITEM",
+    "ROTATION"
+  ],
+  "GLOW_SQUID": [
+    "DARK_TICKS_REMAINING"
+  ],
+  "GOAT": [
+    "IS_SCREAMING_GOAT",
+    "HAS_LEFT_HORN",
+    "HAS_RIGHT_HORN"
+  ],
+  "HOGLIN": [
+    "IMMUNE_TO_ZOMBIFICATION"
+  ],
+  "HORSE": [
+    "TYPE_VARIANT"
+  ],
+  "INTERACTION": [
+    "WIDTH",
+    "HEIGHT",
+    "RESPONSE"
+  ],
+  "IRON_GOLEM": [
+    "FLAGS"
+  ],
+  "ITEM": [
+    "ITEM"
+  ],
+  "ITEM_DISPLAY": [
+    "ITEM_STACK",
+    "ITEM_DISPLAY"
+  ],
+  "OMINOUS_ITEM_SPAWNER": [
+    "ITEM"
+  ],
+  "FIREBALL": [
+    "ITEM_STACK"
+  ],
+  "LLAMA": [
+    "STRENGTH",
+    "VARIANT"
+  ],
+  "SLIME": [
+    "SIZE"
+  ],
+  "MOOSHROOM": [
+    "TYPE"
+  ],
+  "OCELOT": [
+    "TRUSTING"
+  ],
+  "PAINTING": [
+    "PAINTING_VARIANT"
+  ],
+  "PANDA": [
+    "UNHAPPY_COUNTER",
+    "SNEEZE_COUNTER",
+    "EAT_COUNTER",
+    "MAIN_GENE",
+    "HIDDEN_GENE",
+    "FLAGS"
+  ],
+  "PARROT": [
+    "VARIANT"
+  ],
+  "PHANTOM": [
+    "SIZE"
+  ],
+  "PIG": [
+    "SADDLE",
+    "BOOST_TIME"
+  ],
+  "PIGLIN": [
+    "BABY",
+    "IS_CHARGING_CROSSBOW",
+    "IS_DANCING"
+  ],
+  "ABSTRACT_PIGLIN": [
+    "IMMUNE_TO_ZOMBIFICATION"
+  ],
+  "PILLAGER": [
+    "IS_CHARGING_CROSSBOW"
+  ],
+  "POLAR_BEAR": [
+    "STANDING"
+  ],
+  "PUFFERFISH": [
+    "PUFF_STATE"
+  ],
+  "RABBIT": [
+    "TYPE"
+  ],
+  "SHEEP": [
+    "WOOL"
+  ],
+  "SHULKER": [
+    "ATTACH_FACE",
+    "PEEK",
+    "COLOR"
+  ],
+  "SKELETON": [
+    "STRAY_CONVERSION"
+  ],
+  "SNIFFER": [
+    "STATE",
+    "DROP_SEED_AT_TICK"
+  ],
+  "SNOW_GOLEM": [
+    "PUMPKIN"
+  ],
+  "STRIDER": [
+    "BOOST_TIME",
+    "SUFFOCATING",
+    "SADDLE"
+  ],
+  "TEXT_DISPLAY": [
+    "TEXT",
+    "LINE_WIDTH",
+    "BACKGROUND_COLOR",
+    "TEXT_OPACITY",
+    "STYLE_FLAGS"
+  ],
+  "TNT": [
+    "FUSE",
+    "BLOCK_STATE"
+  ],
+  "TRIDENT": [
+    "LOYALTY",
+    "FOIL"
+  ],
+  "TROPICAL_FISH": [
+    "TYPE_VARIANT"
+  ],
+  "TURTLE": [
+    "HOME_POS",
+    "HAS_EGG",
+    "LAYING_EGG",
+    "TRAVEL_POS",
+    "GOING_HOME",
+    "TRAVELLING"
+  ],
+  "VEX": [
+    "FLAGS"
+  ],
+  "VILLAGER": [
+    "VILLAGER_DATA"
+  ],
+  "ABSTRACT_VILLAGER": [
+    "UNHAPPY_COUNTER"
+  ],
+  "WARDEN": [
+    "CLIENT_ANGER_LEVEL"
+  ],
+  "WITCH": [
+    "USING_ITEM"
+  ],
+  "WITHER": [
+    "TARGET_A",
+    "TARGET_B",
+    "TARGET_C",
+    "INV"
+  ],
+  "WITHER_SKULL": [
+    "DANGEROUS"
+  ],
+  "WOLF": [
+    "INTERESTED",
+    "COLLAR_COLOR",
+    "REMAINING_ANGER_TIME",
+    "VARIANT"
+  ],
+  "ZOGLIN": [
+    "BABY"
+  ],
+  "ZOMBIE_VILLAGER": [
+    "CONVERTING",
+    "VILLAGER_DATA"
+  ],
+  "PLAYER": [
+    "PLAYER_ABSORPTION",
+    "SCORE",
+    "PLAYER_MODE_CUSTOMISATION",
+    "PLAYER_MAIN_HAND",
+    "SHOULDER_LEFT",
+    "SHOULDER_RIGHT"
+  ],
+  "FISHING_BOBBER": [
+    "HOOKED_ENTITY",
+    "BITING"
+  ]
+}

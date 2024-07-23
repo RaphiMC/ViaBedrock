@@ -159,7 +159,7 @@ public class WorldPackets {
             wrapper.send(BedrockProtocol.class);
             wrapper.cancel();
             clientPlayer.sendPlayerPositionPacketToClient(false);
-            // TODO: Respawn: If player is dead, set health to zero again
+            clientPlayer.sendAttribute("minecraft:health"); // Java client always resets health on respawn, but Bedrock client keeps health when switching dimensions
         });
         protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_CHUNK, null, wrapper -> {
             wrapper.cancel();

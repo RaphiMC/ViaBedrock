@@ -43,10 +43,7 @@ import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.ScoreboardObjectiveAction;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
-import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
-import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-import net.raphimc.viabedrock.protocol.storage.ScoreboardTracker;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.ArrayList;
@@ -379,12 +376,18 @@ public class HudPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.DEATH_INFO, null, wrapper -> {
             wrapper.cancel();
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final String message = wrapper.read(BedrockTypes.STRING); // death cause message
             final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
 
             final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTranslationLookup();
             gameSession.setDeathMessage(TextUtil.stringToTextComponent(BedrockTranslator.translate(message, translator, parameters)));
-            // TODO: Respawn: If player is dead, reopen death screen to show the message
+            if (entityTracker.getClientPlayer().isDead()) {
+                final PacketWrapper playerCombatKill = PacketWrapper.create(ClientboundPackets1_21.PLAYER_COMBAT_KILL, wrapper.user());
+                playerCombatKill.write(Types.VAR_INT, entityTracker.getClientPlayer().javaId()); // entity id
+                playerCombatKill.write(Types.TAG, TextUtil.textComponentToNbt(gameSession.getDeathMessage())); // message
+                playerCombatKill.send(BedrockProtocol.class);
+            }
         });
     }
 

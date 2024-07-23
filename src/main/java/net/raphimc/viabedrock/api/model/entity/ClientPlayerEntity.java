@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
@@ -27,6 +28,7 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -36,6 +38,7 @@ import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -63,6 +66,11 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     public ClientPlayerEntity(final UserConnection user, final long runtimeId, final UUID javaUuid, final PlayerAbilities abilities) {
         super(user, runtimeId, 0, javaUuid, abilities);
+        this.attributes.put("minecraft:movement", new EntityAttribute("minecraft:movement", 0.7F, 0F, Float.MAX_VALUE));
+        this.attributes.put("minecraft:player.hunger", new EntityAttribute("minecraft:player.hunger", 20F, 0F, 20F));
+        this.attributes.put("minecraft:player.saturation", new EntityAttribute("minecraft:player.saturation", 5F, 0F, 20F));
+        this.attributes.put("minecraft:player.experience", new EntityAttribute("minecraft:player.experience", 0F, 0F, 1F));
+        this.attributes.put("minecraft:player.level", new EntityAttribute("minecraft:player.level", 0F, 0F, 24791F));
 
         this.gameSession = user.get(GameSessionStorage.class);
     }
@@ -284,6 +292,35 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     public void setGameType(final int gameType) {
         this.gameType = gameType;
+    }
+
+    @Override
+    protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
+        return switch (attribute.name()) {
+            case "minecraft:player.hunger", "minecraft:player.saturation" -> {
+                final EntityAttribute health = this.attributes.get("minecraft:health");
+                final EntityAttribute hunger = attribute.name().equals("minecraft:player.hunger") ? attribute : this.attributes.get("minecraft:player.hunger");
+                final EntityAttribute saturation = attribute.name().equals("minecraft:player.saturation") ? attribute : this.attributes.get("minecraft:player.saturation");
+                final PacketWrapper setHealth = PacketWrapper.create(ClientboundPackets1_21.SET_HEALTH, this.user);
+                setHealth.write(Types.FLOAT, health.computeValue(false)); // health
+                setHealth.write(Types.VAR_INT, (int) hunger.computeValue(false)); // food
+                setHealth.write(Types.FLOAT, saturation.computeValue(false)); // saturation
+                setHealth.send(BedrockProtocol.class);
+                yield true;
+            }
+            case "minecraft:player.experience", "minecraft:player.level" -> {
+                final EntityAttribute experience = attribute.name().equals("minecraft:player.experience") ? attribute : this.attributes.get("minecraft:player.experience");
+                final EntityAttribute level = attribute.name().equals("minecraft:player.level") ? attribute : this.attributes.get("minecraft:player.level");
+                final PacketWrapper setExperience = PacketWrapper.create(ClientboundPackets1_21.SET_EXPERIENCE, this.user);
+                setExperience.write(Types.FLOAT, experience.computeValue(false)); // bar progress
+                setExperience.write(Types.VAR_INT, (int) level.computeValue(false)); // experience level
+                setExperience.write(Types.VAR_INT, 0); // total experience
+                setExperience.send(BedrockProtocol.class);
+                yield true;
+            }
+            case "minecraft:player.exhaustion" -> true; // Ignore exhaustion
+            default -> super.translateAttribute(attribute, javaAttributes, attributeCount, javaEntityData);
+        };
     }
 
     private int nextTeleportId() {

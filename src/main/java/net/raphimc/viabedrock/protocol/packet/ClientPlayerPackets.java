@@ -90,8 +90,7 @@ public class ClientPlayerPackets {
                         final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                         final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
 
-                        // TODO: Respawn: Set player health to 20
-
+                        clientPlayer.setHealth(clientPlayer.attributes().get("minecraft:health").maxValue());
                         clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.Respawn, -1);
                         wrapper.write(Types.VAR_INT, chunkTracker.getDimension().ordinal()); // dimension id
                         wrapper.write(Types.STRING, chunkTracker.getDimension().getKey()); // dimension name
@@ -104,6 +103,7 @@ public class ClientPlayerPackets {
                         wrapper.write(Types.VAR_INT, 0); // portal cooldown
                         wrapper.write(Types.BYTE, (byte) 0x03); // keep data mask
                         wrapper.send(BedrockProtocol.class);
+                        clientPlayer.sendAttribute("minecraft:health"); // Ensure health is synced
                         PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
                     }
                     wrapper.cancel();

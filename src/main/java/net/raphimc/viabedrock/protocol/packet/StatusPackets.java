@@ -84,7 +84,7 @@ public class StatusPackets {
                     sample.addProperty("id", NULL_UUID);
                     samples.add(sample);
                 }
-                case 8: // Sub MotD
+                case 8: // Sub MOTD
                 case 7: // Server id
                 case 6: // Max players
                     try {
@@ -103,7 +103,7 @@ public class StatusPackets {
                     sample.addProperty("id", NULL_UUID);
                     samples.add(sample);
                 }
-                case 2: // MotD
+                case 2: // MOTD
                     statusResponse.addProperty("description", splitData[1] + (splitData.length >= 8 ? ("\n§r" + splitData[7]) : ""));
                 case 1: { // Edition
                     final String versionName = splitData[0] + (splitData.length >= 4 ? (" " + splitData[3]) : "");

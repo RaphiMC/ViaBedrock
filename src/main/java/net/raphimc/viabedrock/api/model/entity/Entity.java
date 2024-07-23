@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
 import java.util.UUID;
@@ -115,6 +116,14 @@ public class Entity {
 
     public int age() {
         return this.age;
+    }
+
+    protected final int getJavaEntityDataIndex(final String fieldName) {
+        final int index = BedrockProtocol.MAPPINGS.getJavaEntityData().get(this.type).indexOf(fieldName);
+        if (index == -1) {
+            throw new IllegalStateException("Unknown java entity data field: " + fieldName + " for entity type: " + this.type);
+        }
+        return index;
     }
 
 }

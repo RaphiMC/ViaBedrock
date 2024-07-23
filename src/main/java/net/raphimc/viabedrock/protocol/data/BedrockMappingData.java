@@ -45,6 +45,7 @@ import net.raphimc.viabedrock.api.item.ItemUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
@@ -104,7 +105,8 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> bedrockEntities;
     private Map<String, EntityTypes1_20_5> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
-    private BiMap<String, Integer> javaAttributes;
+    private BiMap<String, Integer> javaEntityAttributes;
+    private Map<EntityTypes1_20_5, List<String>> javaEntityData;
 
     // Effects
     private BiMap<String, Integer> javaEffects;
@@ -515,10 +517,39 @@ public class BedrockMappingData extends MappingDataBase {
                 this.javaBlockEntities.put(javaBlockEntitiesJson.get(i).getAsString(), i);
             }
 
-            final JsonArray javaAttributesJson = javaViaMappingJson.get("attributes").getAsJsonArray();
-            this.javaAttributes = HashBiMap.create(javaAttributesJson.size());
-            for (int i = 0; i < javaAttributesJson.size(); i++) {
-                this.javaAttributes.put(Key.namespaced(javaAttributesJson.get(i).getAsString()), i);
+            final JsonArray javaEntityAttributesJson = javaViaMappingJson.get("attributes").getAsJsonArray();
+            this.javaEntityAttributes = HashBiMap.create(javaEntityAttributesJson.size());
+            for (int i = 0; i < javaEntityAttributesJson.size(); i++) {
+                this.javaEntityAttributes.put(Key.namespaced(javaEntityAttributesJson.get(i).getAsString()), i);
+            }
+
+            final JsonObject javaEntityDataJson = this.readJson("java/entity_data.json");
+            this.javaEntityData = new HashMap<>(EntityTypes1_20_5.values().length);
+            for (Map.Entry<String, JsonElement> entry : javaEntityDataJson.entrySet()) {
+                if (EnumUtil.getEnumConstantOrNull(EntityTypes1_20_5.class, entry.getKey()) == null) {
+                    throw new RuntimeException("Unknown java entity type: " + entry.getKey());
+                }
+            }
+            for (EntityTypes1_20_5 type : EntityTypes1_20_5.values()) {
+                if (type.isAbstractType()) continue;
+
+                final EntityTypes1_20_5 realType = type;
+                final List<String> entityData = new ArrayList<>();
+                do {
+                    final JsonArray entityDataArray = javaEntityDataJson.getAsJsonArray(type.name());
+                    if (entityDataArray != null) {
+                        final List<String> entityTypeData = new ArrayList<>(entityDataArray.size());
+                        for (JsonElement element : entityDataArray) {
+                            if (entityData.contains(element.getAsString()) || entityTypeData.contains(element.getAsString())) {
+                                throw new IllegalStateException("Duplicate entity data for " + realType.name() + ": " + element.getAsString());
+                            } else {
+                                entityTypeData.add(element.getAsString());
+                            }
+                        }
+                        entityData.addAll(0, entityTypeData);
+                    }
+                } while ((type = (EntityTypes1_20_5) type.getParent()) != null);
+                this.javaEntityData.put(realType, entityData);
             }
         }
 
@@ -709,8 +740,12 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaBlockEntities;
     }
 
-    public BiMap<String, Integer> getJavaAttributes() {
-        return this.javaAttributes;
+    public BiMap<String, Integer> getJavaEntityAttributes() {
+        return this.javaEntityAttributes;
+    }
+
+    public Map<EntityTypes1_20_5, List<String>> getJavaEntityData() {
+        return this.javaEntityData;
     }
 
     public BiMap<String, Integer> getJavaEffects() {
