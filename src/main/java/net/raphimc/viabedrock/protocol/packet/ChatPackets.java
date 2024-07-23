@@ -103,9 +103,7 @@ public class ChatPackets {
                     String originalMessage = null;
                     try {
                         switch (type) {
-                            case Chat:
-                            case Whisper:
-                            case Announcement: {
+                            case Chat, Whisper, Announcement -> {
                                 final String sourceName = wrapper.read(BedrockTypes.STRING); // source name
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 if (needsTranslation) {
@@ -120,11 +118,8 @@ public class ChatPackets {
 
                                 wrapper.write(Types.TAG, TextUtil.stringToNbt(message));
                                 wrapper.write(Types.BOOLEAN, false); // overlay
-                                break;
                             }
-                            case TextObjectWhisper:
-                            case TextObject:
-                            case TextObjectAnnouncement: {
+                            case TextObjectWhisper, TextObject, TextObjectAnnouncement -> {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
                                 rootComponent.forEach(c -> {
@@ -137,11 +132,8 @@ public class ChatPackets {
 
                                 wrapper.write(Types.TAG, TextUtil.stringToNbt(message)); // message
                                 wrapper.write(Types.BOOLEAN, false); // overlay
-                                break;
                             }
-                            case Raw:
-                            case SystemMessage:
-                            case Tip: {
+                            case Raw, SystemMessage, Tip -> {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 if (needsTranslation) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
@@ -149,11 +141,8 @@ public class ChatPackets {
 
                                 wrapper.write(Types.TAG, TextUtil.stringToNbt(message)); // message
                                 wrapper.write(Types.BOOLEAN, type == TextPacketType.Tip); // overlay
-                                break;
                             }
-                            case Translate:
-                            case Popup:
-                            case JukeboxPopup: {
+                            case Translate, Popup, JukeboxPopup -> {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
                                 if (needsTranslation) {
@@ -162,10 +151,8 @@ public class ChatPackets {
 
                                 wrapper.write(Types.TAG, TextUtil.stringToNbt(message)); // message
                                 wrapper.write(Types.BOOLEAN, type == TextPacketType.Popup || type == TextPacketType.JukeboxPopup); // overlay
-                                break;
                             }
-                            default:
-                                throw new IllegalStateException("Unhandled TextPacketType: " + type);
+                            default -> throw new IllegalStateException("Unhandled TextPacketType: " + type);
                         }
                     } catch (Throwable e) { // Mojang client silently ignores errors
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalMessage + "'", e);
@@ -242,18 +229,13 @@ public class ChatPackets {
             }
 
             switch (action) {
-                case Add:
-                    softEnum.addValues(values);
-                    break;
-                case Remove:
-                    softEnum.removeValues(values);
-                    break;
-                case Replace:
+                case Add -> softEnum.addValues(values);
+                case Remove -> softEnum.removeValues(values);
+                case Replace -> {
                     softEnum.values().clear();
                     softEnum.addValues(values);
-                    break;
-                default:
-                    throw new IllegalStateException("Unhandled SoftEnumUpdateType: " + action);
+                }
+                default -> throw new IllegalStateException("Unhandled SoftEnumUpdateType: " + action);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SET_COMMANDS_ENABLED, null, wrapper -> {

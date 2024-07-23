@@ -81,7 +81,7 @@ public class ScoreboardEntry {
 
     public void updateJavaName(final UserConnection user) {
         switch (this.type) {
-            case Player:
+            case Player -> {
                 final PlayerListStorage playerList = user.get(PlayerListStorage.class);
                 final Pair<UUID, String> player = playerList.getPlayer(this.uniqueEntityId);
                 if (player != null) {
@@ -89,13 +89,9 @@ public class ScoreboardEntry {
                 } else {
                     this.javaName = StringUtil.encodeLong(this.uniqueEntityId) + user.get(ResourcePacksStorage.class).getTranslations().get("commands.scoreboard.players.offlinePlayerName");
                 }
-                break;
-            case Entity:
-                this.javaName = String.valueOf(this.uniqueEntityId);
-                break;
-            case FakePlayer:
-                this.javaName = this.fakePlayerName;
-                break;
+            }
+            case Entity -> this.javaName = String.valueOf(this.uniqueEntityId);
+            case FakePlayer -> this.javaName = this.fakePlayerName;
         }
     }
 

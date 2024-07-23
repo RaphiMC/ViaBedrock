@@ -216,7 +216,7 @@ public class ResourcePackPackets {
             wrapper.read(Types.UUID); // pack id
             final ResourcePackAction status = ResourcePackAction.values()[wrapper.read(Types.VAR_INT)]; // status
             switch (status) {
-                case SUCCESSFULLY_LOADED:
+                case SUCCESSFULLY_LOADED -> {
                     if (!resourcePacksStorage.hasFinishedLoading()) {
                         wrapper.cancel();
                     }
@@ -224,11 +224,8 @@ public class ResourcePackPackets {
                     resourcePacksStorage.setLoadedOnJavaClient();
                     wrapper.write(Types.BYTE, (byte) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
-                    break;
-                case FAILED_DOWNLOAD:
-                case INVALID_URL:
-                case FAILED_RELOAD:
-                case DISCARDED:
+                }
+                case FAILED_DOWNLOAD, INVALID_URL, FAILED_RELOAD, DISCARDED -> {
                     if (!resourcePacksStorage.hasFinishedLoading()) {
                         wrapper.cancel();
                     }
@@ -237,16 +234,16 @@ public class ResourcePackPackets {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Client resource pack download/loading failed");
                     wrapper.write(Types.BYTE, (byte) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
-                    break;
-                case DECLINED:
+                }
+                case DECLINED -> {
                     final ResourcePacksStorage emptyResourcePackStorage = new ResourcePacksStorage();
                     emptyResourcePackStorage.setCompletedTransfer();
                     wrapper.user().put(emptyResourcePackStorage);
 
                     wrapper.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
-                    break;
-                case ACCEPTED:
+                }
+                case ACCEPTED -> {
                     resourcePacksStorage.setJavaClientWaitingForPack(true);
                     final Set<String> missingPacks = new HashSet<>();
                     for (ResourcePack pack : resourcePacksStorage.getPacks()) {
@@ -272,12 +269,9 @@ public class ResourcePackPackets {
                         wrapper.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
                         wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                     }
-                    break;
-                case DOWNLOADED:
-                    wrapper.cancel();
-                    break;
-                default:
-                    throw new IllegalStateException("Unhandled ResourcePackAction: " + status);
+                }
+                case DOWNLOADED -> wrapper.cancel();
+                default -> throw new IllegalStateException("Unhandled ResourcePackAction: " + status);
             }
         });
     }

@@ -247,76 +247,57 @@ public class CommandsStorage extends StoredObject {
                     } else if (parameter.type() != null) {
                         ArgumentType<?> argumentType = null;
                         switch (parameter.type()) {
-                            case Int:
-                                argument = argument(parameter.name() + ": int", IntegerArgumentType.integer());
-                                break;
-                            case Float:
-                            case Val:
-                                argument = argument(parameter.name() + ": float", FloatArgumentType.floatArg());
-                                break;
-                            case RVal:
+                            case Int -> argument = argument(parameter.name() + ": int", IntegerArgumentType.integer());
+                            case Float, Val -> argument = argument(parameter.name() + ": float", FloatArgumentType.floatArg());
+                            case RVal -> {
                                 argumentType = ValueArgumentType.value();
                                 argument = argument(parameter.name() + ": value", argumentType);
-                                break;
-                            case WildcardInt:
+                            }
+                            case WildcardInt -> {
                                 argumentType = WildcardIntegerArgumentType.wildcardInteger();
                                 argument = argument(parameter.name() + ": wildcard int", argumentType);
-                                break;
-                            case Operator:
-                                argument = argument(parameter.name() + ": operator", OperatorArgumentType.operator());
-                                break;
-                            case CompareOperator:
+                            }
+                            case Operator -> argument = argument(parameter.name() + ": operator", OperatorArgumentType.operator());
+                            case CompareOperator -> {
                                 argumentType = CompareOperatorArgumentType.compareOperator();
                                 argument = argument(parameter.name() + ": compare operator", argumentType);
-                                break;
-                            case Selection:
-                            case WildcardSelection:
+                            }
+                            case Selection, WildcardSelection -> {
                                 // TODO: Enhancement: Implement target argument type
                                 argumentType = TargetArgumentType.target();
                                 argument = argument(parameter.name() + ": target", argumentType);
-                                break;
-                            case FilePath:
-                                argument = argument(parameter.name() + ": filepath", StringArgumentType.string());
-                                break;
-                            case FullIntegerRange:
+                            }
+                            case FilePath -> argument = argument(parameter.name() + ": filepath", StringArgumentType.string());
+                            case FullIntegerRange -> {
                                 argumentType = IntegerRangeArgumentType.integerRange();
                                 argument = argument(parameter.name() + ": integer range", argumentType);
-                                break;
-                            case EquipmentSlotEnum:
+                            }
+                            case EquipmentSlotEnum -> {
                                 argumentType = EquipmentSlotArgumentType.equipmentSlot();
                                 argument = argument(parameter.name() + ": equipment slots", argumentType);
-                                break;
-                            case Id:
-                                argument = argument(parameter.name() + ": string", StringArgumentType.string());
-                                break;
-                            case Position:
-                                argument = argument(parameter.name() + ": x y z", BlockPositionArgumentType.blockPosition());
-                                break;
-                            case PositionFloat:
-                                argument = argument(parameter.name() + ": x y z", PositionArgumentType.position());
-                                break;
-                            case MessageRoot:
-                                argument = argument(parameter.name() + ": message", StringArgumentType.greedyString());
-                                break;
-                            case RawText:
-                                argument = argument(parameter.name() + ": text", StringArgumentType.greedyString());
-                                break;
-                            case JsonObject:
+                            }
+                            case Id -> argument = argument(parameter.name() + ": string", StringArgumentType.string());
+                            case Position -> argument = argument(parameter.name() + ": x y z", BlockPositionArgumentType.blockPosition());
+                            case PositionFloat -> argument = argument(parameter.name() + ": x y z", PositionArgumentType.position());
+                            case MessageRoot -> argument = argument(parameter.name() + ": message", StringArgumentType.greedyString());
+                            case RawText -> argument = argument(parameter.name() + ": text", StringArgumentType.greedyString());
+                            case JsonObject -> {
                                 argumentType = JsonArgumentType.json();
                                 argument = argument(parameter.name() + ": json", argumentType);
-                                break;
-                            case BlockStateArray:
+                            }
+                            case BlockStateArray -> {
                                 argumentType = BlockStatesArgumentType.blockStates();
                                 argument = argument(parameter.name() + ": block states", argumentType);
-                                break;
-                            case SlashCommand:
+                            }
+                            case SlashCommand -> {
                                 hasRedirect = true;
                                 last = null;
                                 continue;
-                            default: // Mojang client crashes if the type isn't valid
+                            }
+                            default -> {
                                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled command parameter type: " + parameter.type());
-                                argument = argument(parameter.name() + ": unknown", StringArgumentType.greedyString());
-                                break;
+                                argument = argument(parameter.name() + ": unknown", StringArgumentType.greedyString()); // Mojang client crashes if the type isn't valid
+                            }
                         }
                         if (argumentType != null) {
                             ((RequiredArgumentBuilder<UserConnection, ?>) argument).suggests(argumentType::listSuggestions);

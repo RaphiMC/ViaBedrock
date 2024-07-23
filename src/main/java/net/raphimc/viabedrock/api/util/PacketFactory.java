@@ -102,15 +102,9 @@ public class PacketFactory {
 
     public static void writeJavaDisconnect(final PacketWrapper wrapper, final String reason) {
         switch (wrapper.getPacketType().state()) {
-            case LOGIN:
-                wrapper.write(Types.COMPONENT, reason != null ? TextUtil.stringToGson(reason) : JsonNull.INSTANCE);
-                break;
-            case CONFIGURATION:
-            case PLAY:
-                wrapper.write(Types.TAG, reason != null ? TextUtil.stringToNbt(reason) : null);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected state: " + wrapper.getPacketType().state());
+            case LOGIN -> wrapper.write(Types.COMPONENT, reason != null ? TextUtil.stringToGson(reason) : JsonNull.INSTANCE);
+            case CONFIGURATION, PLAY -> wrapper.write(Types.TAG, reason != null ? TextUtil.stringToNbt(reason) : null);
+            default -> throw new IllegalStateException("Unexpected state: " + wrapper.getPacketType().state());
         }
     }
 

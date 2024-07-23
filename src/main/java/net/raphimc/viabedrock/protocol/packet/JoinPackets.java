@@ -461,34 +461,16 @@ public class JoinPackets {
         final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
 
         switch (status) {
-            case LoginFailed_ClientOld:
-                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.outdatedClient"));
-                break;
-            case LoginFailed_ServerOld:
-                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.outdatedServer"));
-                break;
-            case LoginFailed_InvalidTenant:
-                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.invalidTenant"));
-                break;
-            case LoginFailed_EditionMismatchEduToVanilla:
-                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchEduToVanilla"));
-                break;
-            case LoginFailed_EditionMismatchVanillaToEdu:
-                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchVanillaToEdu"));
-                break;
-            case LoginFailed_ServerFullSubClient:
-            case LoginFailed_EditorMismatchVanillaToEditor:
-                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title"));
-                break;
-            case LoginFailed_EditorMismatchEditorToVanilla:
-                PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.editor.mismatchEditorToVanilla"));
-                break;
-            default:
-                throw new IllegalStateException("Unhandled PlayStatus: " + status);
-            case PlayerSpawn:
-            case LoginSuccess:
-                wrapper.cancel();
-                break;
+            case LoginFailed_ClientOld -> PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.outdatedClient"));
+            case LoginFailed_ServerOld -> PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.outdatedServer"));
+            case LoginFailed_InvalidTenant -> PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.invalidTenant"));
+            case LoginFailed_EditionMismatchEduToVanilla -> PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchEduToVanilla"));
+            case LoginFailed_EditionMismatchVanillaToEdu -> PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.editionMismatchVanillaToEdu"));
+            case LoginFailed_ServerFullSubClient, LoginFailed_EditorMismatchVanillaToEditor ->
+                    PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title"));
+            case LoginFailed_EditorMismatchEditorToVanilla -> PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.editor.mismatchEditorToVanilla"));
+            default -> throw new IllegalStateException("Unhandled PlayStatus: " + status);
+            case PlayerSpawn, LoginSuccess -> wrapper.cancel();
         }
     }
 

@@ -51,15 +51,10 @@ public class GameRuleType extends Type<GameRule> {
         final GameRule_Type type = valueClass == Boolean.class ? GameRule_Type.Bool : valueClass == Integer.class ? GameRule_Type.Int : valueClass == Float.class ? GameRule_Type.Float : GameRule_Type.Invalid;
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, type.getValue());
         switch (type) {
-            case Bool:
-                buffer.writeBoolean((Boolean) value.value());
-                break;
-            case Int:
-                BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, (Integer) value.value());
-                break;
-            case Float:
-                BedrockTypes.FLOAT_LE.writePrimitive(buffer, (Float) value.value());
-                break;
+            case Bool -> buffer.writeBoolean((Boolean) value.value());
+            case Int -> BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, (Integer) value.value());
+            case Float -> BedrockTypes.FLOAT_LE.writePrimitive(buffer, (Float) value.value());
+            default -> throw new IllegalStateException("Unhandled GameRule_Type: " + type);
         }
     }
 

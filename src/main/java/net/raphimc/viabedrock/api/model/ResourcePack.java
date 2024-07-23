@@ -254,10 +254,9 @@ public class ResourcePack {
                     continue;
                 }
                 switch (path) {
-                    case "manifest.json":
-                    case "pack_icon.png":
-                    case "README.txt":
+                    case "manifest.json", "pack_icon.png", "README.txt" -> {
                         continue;
+                    }
                 }
 
                 final byte[] encryptedData = this.content.get(path);
