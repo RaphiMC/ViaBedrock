@@ -38,7 +38,6 @@ import net.raphimc.viabedrock.api.util.RegistryUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorEvent;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeModifierOperation;
@@ -339,7 +338,7 @@ public class EntityPackets {
 
             final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21.SET_ENTITY_DATA, wrapper.user());
             setEntityData.write(Types.VAR_INT, entity.javaId()); // entity id
-            setEntityData.write(Types1_21.ENTITY_DATA_LIST, Lists.newArrayList(new EntityData(ProtocolConstants.JAVA_PAINTING_VARIANT_ID, Types1_21.ENTITY_DATA_TYPES.paintingVariantType, paintingHolder))); // entity data
+            setEntityData.write(Types1_21.ENTITY_DATA_LIST, Lists.newArrayList(new EntityData(entity.getJavaEntityDataIndex("PAINTING_VARIANT"), Types1_21.ENTITY_DATA_TYPES.paintingVariantType, paintingHolder))); // entity data
             setEntityData.send(BedrockProtocol.class);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.ENTITY_EVENT, null, wrapper -> {

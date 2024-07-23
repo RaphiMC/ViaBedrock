@@ -118,7 +118,7 @@ public class Entity {
         return this.age;
     }
 
-    protected final int getJavaEntityDataIndex(final String fieldName) {
+    public final int getJavaEntityDataIndex(final String fieldName) {
         final int index = BedrockProtocol.MAPPINGS.getJavaEntityData().get(this.type).indexOf(fieldName);
         if (index == -1) {
             throw new IllegalStateException("Unknown java entity data field: " + fieldName + " for entity type: " + this.type);
