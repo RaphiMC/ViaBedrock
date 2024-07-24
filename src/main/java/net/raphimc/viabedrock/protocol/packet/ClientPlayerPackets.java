@@ -198,6 +198,7 @@ public class ClientPlayerPackets {
                 CLIENT_PLAYER_GAME_MODE_UPDATE.handle(wrapper);
             }
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_HEALTH, null, PacketWrapper::cancel); // Seems to do nothing meaningful
 
         protocol.registerServerbound(ServerboundPackets1_20_5.CLIENT_COMMAND, ServerboundBedrockPackets.RESPAWN, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);

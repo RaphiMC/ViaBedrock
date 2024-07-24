@@ -297,8 +297,8 @@ public class ClientPlayerEntity extends PlayerEntity {
     @Override
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         return switch (attribute.name()) {
-            case "minecraft:player.hunger", "minecraft:player.saturation" -> {
-                final EntityAttribute health = this.attributes.get("minecraft:health");
+            case "minecraft:health", "minecraft:player.hunger", "minecraft:player.saturation" -> {
+                final EntityAttribute health = attribute.name().equals("minecraft:health") ? attribute : this.attributes.get("minecraft:health");
                 final EntityAttribute hunger = attribute.name().equals("minecraft:player.hunger") ? attribute : this.attributes.get("minecraft:player.hunger");
                 final EntityAttribute saturation = attribute.name().equals("minecraft:player.saturation") ? attribute : this.attributes.get("minecraft:player.saturation");
                 final PacketWrapper setHealth = PacketWrapper.create(ClientboundPackets1_21.SET_HEALTH, this.user);
@@ -306,7 +306,12 @@ public class ClientPlayerEntity extends PlayerEntity {
                 setHealth.write(Types.VAR_INT, (int) hunger.computeValue(false)); // food
                 setHealth.write(Types.FLOAT, saturation.computeValue(false)); // saturation
                 setHealth.send(BedrockProtocol.class);
-                yield true;
+
+                if (attribute.name().equals("minecraft:health")) { // Call super to translate max health
+                    yield super.translateAttribute(attribute, javaAttributes, attributeCount, javaEntityData);
+                } else {
+                    yield true;
+                }
             }
             case "minecraft:player.experience", "minecraft:player.level" -> {
                 final EntityAttribute experience = attribute.name().equals("minecraft:player.experience") ? attribute : this.attributes.get("minecraft:player.experience");
