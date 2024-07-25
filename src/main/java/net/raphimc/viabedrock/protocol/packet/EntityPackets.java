@@ -361,7 +361,7 @@ public class EntityPackets {
                         entityTracker.getClientPlayer().setHealth(0F);
                         entityTracker.getClientPlayer().sendAttribute("minecraft:health");
 
-                        if (gameSession.getDeathMessage() != null) {
+                        if (gameSession.getDeathMessage() != null && entityTracker.getClientPlayer().isDead()) {
                             final PacketWrapper playerCombatKill = PacketWrapper.create(ClientboundPackets1_21.PLAYER_COMBAT_KILL, wrapper.user());
                             playerCombatKill.write(Types.VAR_INT, entityTracker.getClientPlayer().javaId()); // entity id
                             playerCombatKill.write(Types.TAG, TextUtil.textComponentToNbt(gameSession.getDeathMessage())); // message
