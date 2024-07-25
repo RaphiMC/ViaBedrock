@@ -36,11 +36,11 @@ public class TagLEType extends Type<Tag> {
 
     @Override
     public Tag read(ByteBuf buffer) {
-        final short id = buffer.readUnsignedByte();
-        BedrockTypes.UTF8_STRING.read(buffer);
+        final byte id = buffer.readByte();
         if (id == 0) return null;
 
         try {
+            BedrockTypes.UTF8_STRING.read(buffer);
             return TagRegistry.read(id, new LittleEndianByteBufInputStream(buffer), TagLimiter.noop(), 0);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -51,7 +51,6 @@ public class TagLEType extends Type<Tag> {
     public void write(ByteBuf buffer, Tag value) {
         if (value == null) {
             buffer.writeByte(0);
-            BedrockTypes.UTF8_STRING.write(buffer, "");
             return;
         }
 

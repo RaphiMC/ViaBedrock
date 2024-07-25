@@ -115,6 +115,7 @@ public class PlayerEntity extends LivingEntity {
                 attributeCount.incrementAndGet();
                 yield true;
             }
+            case "minecraft:player.hunger", "minecraft:player.saturation", "minecraft:player.experience", "minecraft:player.level", "minecraft:player.exhaustion" -> true; // Ignore for non client player entities
             default -> super.translateAttribute(attribute, javaAttributes, attributeCount, javaEntityData);
         };
     }

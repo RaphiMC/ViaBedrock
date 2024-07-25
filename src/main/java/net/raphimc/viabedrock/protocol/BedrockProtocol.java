@@ -126,10 +126,10 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
             providers.get(BlobCacheProvider.class).addBlob(0L, new byte[0]);
         }
 
-        Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 2L);
-        Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
-        Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 2L);
         Via.getPlatform().runRepeatingSync(new KeepAliveTask(), 20L);
+        Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 2L);
+        Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 2L);
+        Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
         Via.getPlatform().runRepeatingSync(new InventoryTrackerTickTask(), 1L);
     }
 
