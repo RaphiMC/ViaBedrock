@@ -31,10 +31,7 @@ import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerActionType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerPositionModeComponent_PositionMode;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerRespawnState;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerAuthMovementMode;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClientCommandAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
@@ -52,21 +49,19 @@ import java.util.logging.Level;
 public class ClientPlayerPackets {
 
     private static final PacketHandler CLIENT_PLAYER_GAME_MODE_INFO_UPDATE = wrapper -> {
-        final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-        final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+        final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
 
         final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21.PLAYER_INFO_UPDATE, wrapper.user());
         playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM, BitSets.create(6, PlayerInfoUpdateAction.UPDATE_GAME_MODE.ordinal())); // actions
         playerInfoUpdate.write(Types.VAR_INT, 1); // length
-        playerInfoUpdate.write(Types.UUID, entityTracker.getClientPlayer().javaUuid()); // uuid
-        playerInfoUpdate.write(Types.VAR_INT, (int) GameTypeRewriter.getEffectiveGameMode(entityTracker.getClientPlayer().gameType(), gameSession.getLevelGameType())); // game mode
+        playerInfoUpdate.write(Types.UUID, clientPlayer.javaUuid()); // uuid
+        playerInfoUpdate.write(Types.VAR_INT, clientPlayer.javaGameMode().ordinal()); // game mode
         playerInfoUpdate.send(BedrockProtocol.class);
     };
 
     private static final PacketHandler CLIENT_PLAYER_GAME_MODE_UPDATE = wrapper -> {
-        final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-        final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
-        PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.CHANGE_GAME_MODE, GameTypeRewriter.getEffectiveGameMode(entityTracker.getClientPlayer().gameType(), gameSession.getLevelGameType()));
+        final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+        PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.CHANGE_GAME_MODE, clientPlayer.javaGameMode().ordinal());
     };
 
     public static void register(final BedrockProtocol protocol) {
@@ -95,7 +90,7 @@ public class ClientPlayerPackets {
                         wrapper.write(Types.VAR_INT, chunkTracker.getDimension().ordinal()); // dimension id
                         wrapper.write(Types.STRING, chunkTracker.getDimension().getKey()); // dimension name
                         wrapper.write(Types.LONG, 0L); // hashed seed
-                        wrapper.write(Types.BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.gameType(), gameSession.getLevelGameType())); // game mode
+                        wrapper.write(Types.BYTE, (byte) clientPlayer.javaGameMode().ordinal()); // game mode
                         wrapper.write(Types.BYTE, (byte) -1); // previous game mode
                         wrapper.write(Types.BOOLEAN, false); // is debug
                         wrapper.write(Types.BOOLEAN, gameSession.isFlatGenerator()); // is flat
@@ -104,6 +99,7 @@ public class ClientPlayerPackets {
                         wrapper.write(Types.BYTE, (byte) 0x03); // keep data mask
                         wrapper.send(BedrockProtocol.class);
                         clientPlayer.sendAttribute("minecraft:health"); // Ensure health is synced
+                        clientPlayer.setAbilities(clientPlayer.abilities()); // Java client always resets abilities on respawn. Resend them
                         PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
                     }
                     wrapper.cancel();
@@ -154,8 +150,7 @@ public class ClientPlayerPackets {
             protected void register() {
                 handler(wrapper -> {
                     wrapper.cancel();
-                    final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
-                    entityTracker.getClientPlayer().setGameType(wrapper.read(BedrockTypes.VAR_INT)); // game type
+                    wrapper.user().get(EntityTracker.class).getClientPlayer().setGameType(GameType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GameType.Undefined)); // game type
                 });
                 handler(CLIENT_PLAYER_GAME_MODE_INFO_UPDATE);
                 handler(CLIENT_PLAYER_GAME_MODE_UPDATE);
@@ -166,8 +161,8 @@ public class ClientPlayerPackets {
             protected void register() {
                 handler(wrapper -> {
                     wrapper.cancel();
-                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-                    gameSession.setLevelGameType(wrapper.read(BedrockTypes.VAR_INT)); // game type
+                    wrapper.user().get(GameSessionStorage.class).setLevelGameType(GameType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GameType.Undefined)); // game type
+                    wrapper.user().get(EntityTracker.class).getClientPlayer().updateJavaGameMode();
                 });
                 handler(CLIENT_PLAYER_GAME_MODE_INFO_UPDATE);
                 handler(CLIENT_PLAYER_GAME_MODE_UPDATE);
@@ -175,10 +170,10 @@ public class ClientPlayerPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_PLAYER_GAME_TYPE, ClientboundPackets1_21.PLAYER_INFO_UPDATE, wrapper -> {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             final PlayerListStorage playerList = wrapper.user().get(PlayerListStorage.class);
 
-            final int gameType = wrapper.read(BedrockTypes.VAR_INT); // game type
+            final GameType gameType = GameType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GameType.Undefined); // game type
             final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // tick
 
@@ -191,14 +186,22 @@ public class ClientPlayerPackets {
             wrapper.write(Types.PROFILE_ACTIONS_ENUM, BitSets.create(6, PlayerInfoUpdateAction.UPDATE_GAME_MODE.ordinal())); // actions
             wrapper.write(Types.VAR_INT, 1); // length
             wrapper.write(Types.UUID, playerListEntry.key()); // uuid
-            wrapper.write(Types.VAR_INT, (int) GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType())); // game mode
+            wrapper.write(Types.VAR_INT, GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType()).ordinal()); // game mode
 
-            if (playerListEntry.key().equals(entityTracker.getClientPlayer().javaUuid())) {
-                entityTracker.getClientPlayer().setGameType(gameType);
+            if (playerListEntry.key().equals(clientPlayer.javaUuid())) {
+                clientPlayer.setGameType(gameType);
                 CLIENT_PLAYER_GAME_MODE_UPDATE.handle(wrapper);
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_HEALTH, null, PacketWrapper::cancel); // Seems to do nothing meaningful
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ADVENTURE_SETTINGS, null, wrapper -> {
+            wrapper.cancel();
+            wrapper.read(Types.BOOLEAN); // no player vs mobs
+            wrapper.read(Types.BOOLEAN); // no mobs vs player
+            wrapper.user().get(GameSessionStorage.class).setImmutableWorld(wrapper.read(Types.BOOLEAN)); // immutable world
+            wrapper.read(Types.BOOLEAN); // show name tags
+            wrapper.read(Types.BOOLEAN); // auto jump
+        });
+        protocol.cancelClientbound(ClientboundBedrockPackets.SET_HEALTH); // Seems to do nothing meaningful
 
         protocol.registerServerbound(ServerboundPackets1_20_5.CLIENT_COMMAND, ServerboundBedrockPackets.RESPAWN, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);

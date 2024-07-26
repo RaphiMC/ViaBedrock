@@ -53,12 +53,14 @@ import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
-import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class JoinPackets {
@@ -240,7 +242,7 @@ public class JoinPackets {
 
                     final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
                     final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
-                    final int playerGameType = wrapper.read(BedrockTypes.VAR_INT); // player game type
+                    final GameType playerGameType = GameType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GameType.Undefined); // player game type
                     final Position3f playerPosition = wrapper.read(BedrockTypes.POSITION_3F); // player position
                     final Position2f playerRotation = wrapper.read(BedrockTypes.POSITION_2F); // player rotation
 
@@ -250,7 +252,7 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.STRING); // custom biome name
                     final Dimension dimension = Dimension.values()[wrapper.read(BedrockTypes.VAR_INT)]; // dimension
                     final GeneratorType generatorType = GeneratorType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GeneratorType.Undefined); // generator id
-                    final int levelGameType = wrapper.read(BedrockTypes.VAR_INT); // level game type
+                    final GameType levelGameType = GameType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GameType.Undefined); // level game type
                     final boolean hardcore = wrapper.read(Types.BOOLEAN); // hardcore
                     final Difficulty difficulty = Difficulty.getByValue(wrapper.read(BedrockTypes.VAR_INT), Difficulty.Unknown); // difficulty
                     wrapper.read(BedrockTypes.BLOCK_POSITION); // default spawn position
@@ -368,7 +370,7 @@ public class JoinPackets {
                     gameSession.setChatRestrictionLevel(chatRestrictionLevel);
                     gameSession.setCommandsEnabled(commandsEnabled);
 
-                    final PlayerAbilities playerAbilities = new PlayerAbilities(uniqueEntityId, (byte) playerPermission, (byte) CommandPermissionLevel.Any.getValue(), new HashMap<>());
+                    final PlayerAbilities playerAbilities = new PlayerAbilities(uniqueEntityId, (byte) playerPermission, (byte) CommandPermissionLevel.Any.getValue());
                     final ClientPlayerEntity clientPlayer = new ClientPlayerEntity(wrapper.user(), runtimeEntityId, wrapper.user().getProtocolInfo().getUuid(), playerAbilities);
                     clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + clientPlayer.eyeOffset(), playerPosition.z()));
                     clientPlayer.setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
@@ -525,7 +527,7 @@ public class JoinPackets {
         joinGame.write(Types.VAR_INT, chunkTracker.getDimension().ordinal()); // dimension id
         joinGame.write(Types.STRING, chunkTracker.getDimension().getKey()); // dimension name
         joinGame.write(Types.LONG, 0L); // hashed seed
-        joinGame.write(Types.BYTE, GameTypeRewriter.getEffectiveGameMode(clientPlayer.gameType(), gameSession.getLevelGameType())); // game mode
+        joinGame.write(Types.BYTE, (byte) clientPlayer.javaGameMode().ordinal()); // game mode
         joinGame.write(Types.BYTE, (byte) -1); // previous game mode
         joinGame.write(Types.BOOLEAN, false); // is debug
         joinGame.write(Types.BOOLEAN, gameSession.isFlatGenerator()); // is flat
@@ -536,6 +538,7 @@ public class JoinPackets {
 
         clientPlayer.createTeam();
         clientPlayer.updateAttributes(clientPlayer.attributes().values().toArray(new EntityAttribute[0]));
+        clientPlayer.setAbilities(clientPlayer.abilities());
         clientPlayer.sendPlayerPositionPacketToClient(false);
         if (commandsStorage != null) {
             commandsStorage.updateCommandTree();
@@ -557,7 +560,7 @@ public class JoinPackets {
         playerInfoUpdate.write(Types.UUID, clientPlayer.javaUuid()); // uuid
         playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(clientPlayer.javaUuid())); // username
         playerInfoUpdate.write(Types.VAR_INT, 0); // property count
-        playerInfoUpdate.write(Types.VAR_INT, (int) GameTypeRewriter.getEffectiveGameMode(clientPlayer.gameType(), gameSession.getLevelGameType())); // game mode
+        playerInfoUpdate.write(Types.VAR_INT, clientPlayer.javaGameMode().ordinal()); // game mode
         playerInfoUpdate.send(BedrockProtocol.class);
 
         if (joinGameStorage.rainLevel() > 0F || joinGameStorage.lightningLevel() > 0F) {

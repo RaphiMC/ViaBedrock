@@ -524,7 +524,7 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             final JsonObject javaEntityDataJson = this.readJson("java/entity_data.json");
-            this.javaEntityData = new HashMap<>(EntityTypes1_20_5.values().length);
+            this.javaEntityData = new EnumMap<>(EntityTypes1_20_5.class);
             for (Map.Entry<String, JsonElement> entry : javaEntityDataJson.entrySet()) {
                 if (EnumUtil.getEnumConstantOrNull(EntityTypes1_20_5.class, entry.getKey()) == null) {
                     throw new RuntimeException("Unknown java entity type: " + entry.getKey());

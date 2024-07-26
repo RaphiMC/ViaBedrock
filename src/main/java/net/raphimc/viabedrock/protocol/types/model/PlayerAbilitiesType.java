@@ -24,8 +24,8 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.SerializedAbilitiesDat
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,14 +42,16 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
         final byte commandPermission = buffer.readByte();
 
         final int layerCount = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
-        final Map<SerializedAbilitiesData_SerializedAbilitiesLayer, PlayerAbilities.AbilitiesLayer> abilityLayers = new HashMap<>(layerCount);
+        final Map<SerializedAbilitiesData_SerializedAbilitiesLayer, PlayerAbilities.AbilitiesLayer> abilityLayers = new EnumMap<>(SerializedAbilitiesData_SerializedAbilitiesLayer.class);
         for (int i = 0; i < layerCount; i++) {
-            final SerializedAbilitiesData_SerializedAbilitiesLayer type = SerializedAbilitiesData_SerializedAbilitiesLayer.getByValue(buffer.readUnsignedShortLE(), SerializedAbilitiesData_SerializedAbilitiesLayer.CustomCache);
+            final SerializedAbilitiesData_SerializedAbilitiesLayer layer = SerializedAbilitiesData_SerializedAbilitiesLayer.getByValue(buffer.readUnsignedShortLE(), SerializedAbilitiesData_SerializedAbilitiesLayer.CustomCache);
             final Set<AbilitiesIndex> abilitiesSet = this.getAbilities(buffer.readUnsignedIntLE());
             final Set<AbilitiesIndex> abilityValues = this.getAbilities(buffer.readUnsignedIntLE());
             final float flySpeed = buffer.readFloatLE();
             final float walkSpeed = buffer.readFloatLE();
-            abilityLayers.put(type, new PlayerAbilities.AbilitiesLayer(abilitiesSet, abilityValues, walkSpeed, flySpeed));
+            if (!abilityLayers.containsKey(layer)) {
+                abilityLayers.put(layer, new PlayerAbilities.AbilitiesLayer(abilitiesSet, abilityValues, walkSpeed, flySpeed));
+            }
         }
 
         return new PlayerAbilities(uniqueEntityId, playerPermission, commandPermission, abilityLayers);
@@ -72,7 +74,7 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
     }
 
     private Set<AbilitiesIndex> getAbilities(final long bits) {
-        final Set<AbilitiesIndex> abilities = new HashSet<>();
+        final Set<AbilitiesIndex> abilities = EnumSet.noneOf(AbilitiesIndex.class);
         for (AbilitiesIndex index : AbilitiesIndex.values()) {
             if (index.getValue() >= 0 && (bits & (1L << index.getValue())) != 0) {
                 abilities.add(index);

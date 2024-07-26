@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ChatRestrictionLevel;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerAuthMovementMode;
 
 import java.util.HashMap;
@@ -42,14 +43,16 @@ public class GameSessionStorage implements StorableObject {
     private Semver bedrockVanillaVersion;
     private boolean flatGenerator;
     private ServerAuthMovementMode movementMode;
-    private int levelGameType;
+    private GameType levelGameType;
     private long levelTime;
     private boolean hardcoreMode;
-    private boolean sentStartGameResponsePackets;
-
     private ChatRestrictionLevel chatRestrictionLevel;
     private boolean commandsEnabled;
+
+    private boolean immutableWorld;
     private ATextComponent deathMessage;
+
+    private boolean sentStartGameResponsePackets;
 
     public GameSessionStorage() {
         this.bedrockDimensionDefinitions.put("minecraft:the_nether", new IntIntImmutablePair(0, 128));
@@ -112,11 +115,11 @@ public class GameSessionStorage implements StorableObject {
         this.movementMode = movementMode;
     }
 
-    public int getLevelGameType() {
+    public GameType getLevelGameType() {
         return this.levelGameType;
     }
 
-    public void setLevelGameType(final int levelGameType) {
+    public void setLevelGameType(final GameType levelGameType) {
         this.levelGameType = levelGameType;
     }
 
@@ -136,14 +139,6 @@ public class GameSessionStorage implements StorableObject {
         this.hardcoreMode = hardcoreMode;
     }
 
-    public boolean hasSentStartGameResponsePackets() {
-        return this.sentStartGameResponsePackets;
-    }
-
-    public void setSentStartGameResponsePackets(final boolean sentStartGameResponsePackets) {
-        this.sentStartGameResponsePackets = sentStartGameResponsePackets;
-    }
-
     public ChatRestrictionLevel getChatRestrictionLevel() {
         return this.chatRestrictionLevel;
     }
@@ -160,12 +155,28 @@ public class GameSessionStorage implements StorableObject {
         this.commandsEnabled = commandsEnabled;
     }
 
+    public boolean isImmutableWorld() {
+        return this.immutableWorld;
+    }
+
+    public void setImmutableWorld(final boolean immutableWorld) {
+        this.immutableWorld = immutableWorld;
+    }
+
     public ATextComponent getDeathMessage() {
         return this.deathMessage;
     }
 
     public void setDeathMessage(final ATextComponent deathMessage) {
         this.deathMessage = deathMessage;
+    }
+
+    public boolean hasSentStartGameResponsePackets() {
+        return this.sentStartGameResponsePackets;
+    }
+
+    public void setSentStartGameResponsePackets(final boolean sentStartGameResponsePackets) {
+        this.sentStartGameResponsePackets = sentStartGameResponsePackets;
     }
 
 }

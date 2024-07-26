@@ -26,6 +26,7 @@ import com.viaversion.viaversion.api.type.types.version.Types1_21;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 
 import java.util.*;
@@ -60,6 +61,10 @@ public class LivingEntity extends Entity {
         final AtomicInteger attributeCount = new AtomicInteger(0);
         final List<EntityData> javaEntityData = new ArrayList<>();
         for (EntityAttribute attribute : attributes) {
+            if (attribute.name().equals("minecraft:health") && this instanceof PlayerEntity player && player.abilities().getBooleanValue(AbilitiesIndex.Invulnerable)) {
+                final EntityAttribute oldAttribute = this.attributes.get(attribute.name());
+                if (attribute.computeValue(false) <= oldAttribute.computeValue(false)) continue;
+            }
             this.attributes.put(attribute.name(), attribute);
             if (!this.translateAttribute(attribute, javaAttributes, attributeCount, javaEntityData)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown entity attribute: " + attribute.name() + " for entity type: " + this.type());

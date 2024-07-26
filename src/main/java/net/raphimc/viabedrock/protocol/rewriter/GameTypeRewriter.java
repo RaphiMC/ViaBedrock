@@ -22,27 +22,21 @@ import net.raphimc.viabedrock.protocol.data.enums.java.GameMode;
 
 public class GameTypeRewriter {
 
-    public static GameMode gameTypeToGameMode(final int gameTypeId) {
-        final GameType gameType = GameType.getByValue(gameTypeId, GameType.Survival);
-        return switch (gameType) {
-            case Undefined, Default -> null;
+    public static GameMode getEffectiveGameMode(final GameType playerGameType, final GameType levelGameType) {
+        GameType effectiveGameType = playerGameType;
+        if (effectiveGameType == GameType.Undefined || effectiveGameType == GameType.Default) {
+            effectiveGameType = levelGameType;
+        }
+        if (effectiveGameType == GameType.Undefined || effectiveGameType == GameType.Default) {
+            effectiveGameType = GameType.Survival; // Mojang client defaults to survival in case of out of bounds values
+        }
+        return (switch (effectiveGameType) {
             case Survival -> GameMode.SURVIVAL;
             case Creative -> GameMode.CREATIVE;
             case Adventure -> GameMode.ADVENTURE;
             case Spectator -> GameMode.SPECTATOR;
-            default -> throw new IllegalStateException("Unhandled GameType: " + gameType);
-        };
-    }
-
-    public static byte getEffectiveGameMode(final int playerGameTypeId, final int levelGameTypeId) {
-        GameMode effectiveGameMode = gameTypeToGameMode(playerGameTypeId);
-        if (effectiveGameMode == null) {
-            effectiveGameMode = gameTypeToGameMode(levelGameTypeId);
-        }
-        if (effectiveGameMode == null) {
-            effectiveGameMode = GameMode.SURVIVAL; // Mojang client defaults to survival in case of out of bounds values
-        }
-        return (byte) effectiveGameMode.ordinal();
+            default -> throw new IllegalStateException("Unhandled GameType: " + effectiveGameType);
+        });
     }
 
 }

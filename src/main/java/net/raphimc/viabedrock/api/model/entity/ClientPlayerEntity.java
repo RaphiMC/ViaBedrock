@@ -28,16 +28,20 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.data.enums.java.AbilitiesFlag;
+import net.raphimc.viabedrock.protocol.data.enums.java.GameMode;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.CommandsStorage;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -62,7 +66,8 @@ public class ClientPlayerEntity extends PlayerEntity {
     private long authInput;
 
     // Misc data
-    private int gameType;
+    private GameType gameType;
+    private GameMode javaGameMode;
 
     public ClientPlayerEntity(final UserConnection user, final long runtimeId, final UUID javaUuid, final PlayerAbilities abilities) {
         super(user, runtimeId, 0, javaUuid, abilities);
@@ -260,6 +265,12 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     @Override
     public void setAbilities(final PlayerAbilities abilities) {
+        final PacketWrapper playerAbilities = PacketWrapper.create(ClientboundPackets1_21.PLAYER_ABILITIES, this.user);
+        this.setAbilities(abilities, playerAbilities);
+        playerAbilities.send(BedrockProtocol.class);
+    }
+
+    public void setAbilities(final PlayerAbilities abilities, final PacketWrapper javaAbilities) {
         final PlayerAbilities prevAbilities = this.abilities;
         super.setAbilities(abilities);
         if (abilities.commandPermission() != prevAbilities.commandPermission()) {
@@ -268,6 +279,15 @@ public class ClientPlayerEntity extends PlayerEntity {
                 commandsStorage.updateCommandTree();
             }
         }
+
+        byte flags = 0;
+        if (abilities.getBooleanValue(AbilitiesIndex.Invulnerable)) flags |= AbilitiesFlag.INVULNERABLE.getBit();
+        if (abilities.getBooleanValue(AbilitiesIndex.Flying)) flags |= AbilitiesFlag.FLYING.getBit();
+        if (abilities.getBooleanValue(AbilitiesIndex.MayFly)) flags |= AbilitiesFlag.CAN_FLY.getBit();
+        if (abilities.getBooleanValue(AbilitiesIndex.Instabuild)) flags |= AbilitiesFlag.INSTABUILD.getBit();
+        javaAbilities.write(Types.BYTE, flags); // flags
+        javaAbilities.write(Types.FLOAT, abilities.getFloatValue(AbilitiesIndex.FlySpeed)); // fly speed
+        javaAbilities.write(Types.FLOAT, abilities.getFloatValue(AbilitiesIndex.WalkSpeed)); // walk speed
     }
 
     public boolean isInitiallySpawned() {
@@ -286,12 +306,45 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.changingDimension = changingDimension;
     }
 
-    public int gameType() {
+    public GameType gameType() {
         return this.gameType;
     }
 
-    public void setGameType(final int gameType) {
+    public void setGameType(final GameType gameType) {
         this.gameType = gameType;
+        this.updateJavaGameMode();
+    }
+
+    public GameMode javaGameMode() {
+        return this.javaGameMode;
+    }
+
+    public void updateJavaGameMode() {
+        this.javaGameMode = GameTypeRewriter.getEffectiveGameMode(this.gameType, this.gameSession.getLevelGameType());
+
+        final PlayerAbilities.AbilitiesLayer abilitiesLayer = this.abilities.abilityLayers().computeIfAbsent(SerializedAbilitiesData_SerializedAbilitiesLayer.CustomCache, layer -> new PlayerAbilities.AbilitiesLayer(EnumSet.noneOf(AbilitiesIndex.class), EnumSet.noneOf(AbilitiesIndex.class), 0F, 0F));
+        switch (this.javaGameMode) {
+            case CREATIVE -> {
+                abilitiesLayer.setAbility(AbilitiesIndex.Invulnerable, true);
+                abilitiesLayer.setAbility(AbilitiesIndex.MayFly, true);
+                abilitiesLayer.setAbility(AbilitiesIndex.Instabuild, true);
+                abilitiesLayer.setAbility(AbilitiesIndex.NoClip, false);
+            }
+            case SPECTATOR -> {
+                abilitiesLayer.setAbility(AbilitiesIndex.Invulnerable, true);
+                abilitiesLayer.setAbility(AbilitiesIndex.Flying, true);
+                abilitiesLayer.setAbility(AbilitiesIndex.MayFly, true);
+                abilitiesLayer.setAbility(AbilitiesIndex.Instabuild, false);
+                abilitiesLayer.setAbility(AbilitiesIndex.NoClip, true);
+            }
+            default -> {
+                abilitiesLayer.setAbility(AbilitiesIndex.Invulnerable, false);
+                abilitiesLayer.setAbility(AbilitiesIndex.Flying, false);
+                abilitiesLayer.setAbility(AbilitiesIndex.MayFly, false);
+                abilitiesLayer.setAbility(AbilitiesIndex.Instabuild, false);
+                abilitiesLayer.setAbility(AbilitiesIndex.NoClip, false);
+            }
+        }
     }
 
     @Override

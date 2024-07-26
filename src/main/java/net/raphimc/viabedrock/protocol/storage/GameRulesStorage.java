@@ -35,7 +35,7 @@ import java.util.logging.Level;
 
 public class GameRulesStorage extends StoredObject {
 
-    // Maybe important: recipesUnlock, showRecipeMessages, pvp, showBorderEffect, keepInventory
+    // Maybe important: recipesUnlock, showRecipeMessages, showBorderEffect, keepInventory
 
     private final Map<String, Object> gameRules = new HashMap<>(BedrockProtocol.MAPPINGS.getBedrockGameRules());
 

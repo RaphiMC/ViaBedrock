@@ -32,6 +32,7 @@ import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerPositionModeComponent_PositionMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.model.*;
@@ -60,7 +61,7 @@ public class OtherPlayerPackets {
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
             final BedrockItem item = wrapper.read(itemRewriter.itemType()); // hand item
-            final int gameType = wrapper.read(BedrockTypes.VAR_INT); // game type
+            final GameType gameType = GameType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GameType.Undefined); // game type
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
             final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
@@ -88,7 +89,7 @@ public class OtherPlayerPackets {
             playerInfoUpdate.write(Types.STRING, "device_os"); // property name
             playerInfoUpdate.write(Types.STRING, wrapper.read(BedrockTypes.INT_LE).toString()); // device os
             playerInfoUpdate.write(Types.OPTIONAL_STRING, null); // signature
-            playerInfoUpdate.write(Types.VAR_INT, (int) GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType())); // game mode
+            playerInfoUpdate.write(Types.VAR_INT, GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType()).ordinal()); // game mode
             playerInfoUpdate.send(BedrockProtocol.class);
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
@@ -156,13 +157,17 @@ public class OtherPlayerPackets {
 
             PacketFactory.sendJavaRotateHead(wrapper.user(), entity);
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, null, wrapper -> {
-            wrapper.cancel();
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, ClientboundPackets1_21.PLAYER_ABILITIES, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
             final Entity entity = entityTracker.getEntityByUid(abilities.uniqueEntityId());
-            if (entity instanceof PlayerEntity player) {
+            if (entity instanceof ClientPlayerEntity clientPlayer) {
+                clientPlayer.setAbilities(abilities, wrapper);
+            } else if (entity instanceof PlayerEntity player) {
                 player.setAbilities(abilities);
+                wrapper.cancel();
+            } else {
+                wrapper.cancel();
             }
         });
     }
