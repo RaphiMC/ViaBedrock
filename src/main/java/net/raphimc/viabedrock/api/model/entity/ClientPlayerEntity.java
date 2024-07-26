@@ -41,7 +41,6 @@ import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -322,7 +321,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void updateJavaGameMode() {
         this.javaGameMode = GameTypeRewriter.getEffectiveGameMode(this.gameType, this.gameSession.getLevelGameType());
 
-        final PlayerAbilities.AbilitiesLayer abilitiesLayer = this.abilities.abilityLayers().computeIfAbsent(SerializedAbilitiesData_SerializedAbilitiesLayer.CustomCache, layer -> new PlayerAbilities.AbilitiesLayer(EnumSet.noneOf(AbilitiesIndex.class), EnumSet.noneOf(AbilitiesIndex.class), 0F, 0F));
+        final PlayerAbilities.AbilitiesLayer abilitiesLayer = this.abilities.getOrCreateCacheLayer();
         switch (this.javaGameMode) {
             case CREATIVE -> {
                 abilitiesLayer.setAbility(AbilitiesIndex.Invulnerable, true);

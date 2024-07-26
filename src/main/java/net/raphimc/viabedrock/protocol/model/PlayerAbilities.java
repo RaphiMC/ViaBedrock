@@ -25,7 +25,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte commandPermission, Map<SerializedAbilitiesData_SerializedAbilitiesLayer, AbilitiesLayer> abilityLayers) {
+public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte commandPermission,
+                              Map<SerializedAbilitiesData_SerializedAbilitiesLayer, AbilitiesLayer> abilityLayers) {
 
     public PlayerAbilities(final long uniqueEntityId, final byte playerPermission, final byte commandPermission) {
         this(uniqueEntityId, playerPermission, commandPermission, new EnumMap<>(SerializedAbilitiesData_SerializedAbilitiesLayer.class));
@@ -61,6 +62,10 @@ public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte c
             }
         }
         return 0F;
+    }
+
+    public AbilitiesLayer getOrCreateCacheLayer() {
+        return this.abilityLayers.computeIfAbsent(SerializedAbilitiesData_SerializedAbilitiesLayer.CustomCache, layer -> new PlayerAbilities.AbilitiesLayer(EnumSet.noneOf(AbilitiesIndex.class), EnumSet.noneOf(AbilitiesIndex.class), 0F, 0F));
     }
 
     public record AbilitiesLayer(Set<AbilitiesIndex> abilitiesSet, Set<AbilitiesIndex> abilityValues, float walkSpeed, float flySpeed) {
