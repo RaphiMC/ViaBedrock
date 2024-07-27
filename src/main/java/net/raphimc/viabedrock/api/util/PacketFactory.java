@@ -111,8 +111,8 @@ public class PacketFactory {
     public static void writeJavaContainerSetContent(final PacketWrapper wrapper, final Container container) {
         wrapper.write(Types.UNSIGNED_BYTE, (short) container.windowId()); // window id
         wrapper.write(Types.VAR_INT, 0); // revision
-        wrapper.write(Types1_21.ITEM_ARRAY, container.getJavaItems(wrapper.user())); // items
-        wrapper.write(Types1_21.ITEM, container.getJavaCursorItem(wrapper.user())); // cursor item
+        wrapper.write(Types1_21.ITEM_ARRAY, container.getJavaItems()); // items
+        wrapper.write(Types1_21.ITEM, container.getJavaCursorItem()); // cursor item
     }
 
 }

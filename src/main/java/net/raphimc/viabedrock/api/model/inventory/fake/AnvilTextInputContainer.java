@@ -40,7 +40,7 @@ public class AnvilTextInputContainer extends FakeContainer {
     }
 
     @Override
-    public Item[] getJavaItems(final UserConnection user) {
+    public Item[] getJavaItems() {
         throw new UnsupportedOperationException();
     }
 

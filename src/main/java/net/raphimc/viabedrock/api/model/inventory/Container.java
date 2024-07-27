@@ -28,14 +28,16 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
 public abstract class Container {
 
+    protected final UserConnection user;
     protected final byte windowId;
     protected final MenuType menuType;
     protected final ATextComponent title;
     protected final BlockPosition position;
-    protected final BedrockItem[] items;
+    private final BedrockItem[] items;
     protected BedrockItem cursorItem = BedrockItem.empty();
 
-    public Container(final byte windowId, final MenuType menuType, final ATextComponent title, final BlockPosition position, final int size) {
+    public Container(final UserConnection user, final byte windowId, final MenuType menuType, final ATextComponent title, final BlockPosition position, final int size) {
+        this.user = user;
         this.windowId = windowId;
         this.menuType = menuType;
         this.title = title;
@@ -43,26 +45,38 @@ public abstract class Container {
         this.items = BedrockItem.emptyArray(size);
     }
 
-    public void setItems(final BedrockItem[] items) {
-        if (this.items.length != items.length) throw new IllegalArgumentException("Items length must be equal to container size");
-
-        System.arraycopy(items, 0, this.items, 0, items.length);
-    }
-
-    public void setCursorItem(final BedrockItem cursorItem) {
-        this.cursorItem = cursorItem;
-    }
-
     public boolean handleContainerClick(final int revision, final short slot, final byte button, final ClickType action) {
         return false;
     }
 
-    public Item[] getJavaItems(final UserConnection user) {
-        return user.get(ItemRewriter.class).javaItems(this.items);
+    public Item[] getJavaItems() {
+        return this.user.get(ItemRewriter.class).javaItems(this.items);
     }
 
-    public Item getJavaCursorItem(final UserConnection user) {
-        return user.get(ItemRewriter.class).javaItem(this.cursorItem);
+    public Item getJavaCursorItem() {
+        return this.user.get(ItemRewriter.class).javaItem(this.cursorItem);
+    }
+
+    public BedrockItem getItem(final int slot) {
+        return this.items[slot];
+    }
+
+    public void setItems(final BedrockItem[] items) {
+        if (items.length != this.items.length) throw new IllegalArgumentException("Items length must be equal to container size");
+
+        for (int i = 0; i < items.length; i++) {
+            this.setItem(i, items[i]);
+        }
+    }
+
+    public void setItem(final int slot, final BedrockItem item) {
+        final BedrockItem oldItem = this.items[slot];
+        this.items[slot] = item;
+        this.onSlotChanged(slot, oldItem, item);
+    }
+
+    public int size() {
+        return this.items.length;
     }
 
     public byte windowId() {
@@ -81,12 +95,11 @@ public abstract class Container {
         return this.position;
     }
 
-    public BedrockItem[] items() {
-        return this.items;
-    }
-
     public BedrockItem cursorItem() {
         return this.cursorItem;
+    }
+
+    protected void onSlotChanged(final int slot, final BedrockItem oldItem, final BedrockItem newItem) {
     }
 
 }

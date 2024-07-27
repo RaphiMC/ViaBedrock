@@ -158,7 +158,7 @@ public class FormContainer extends FakeContainer {
             } else if (element instanceof TextFieldFormElement textField) {
                 this.user.get(InventoryTracker.class).openContainer(new AnvilTextInputContainer(this.user, TextUtil.stringToTextComponent("Edit text"), textField::setValue) {
                     @Override
-                    public Item[] getJavaItems(UserConnection user) {
+                    public Item[] getJavaItems() {
                         final List<Item> items = new ArrayList<>();
                         final List<String> description = new ArrayList<>();
                         description.add("§7Description: " + textField.getText());
@@ -193,7 +193,7 @@ public class FormContainer extends FakeContainer {
     }
 
     @Override
-    public Item[] getJavaItems(final UserConnection user) {
+    public Item[] getJavaItems() {
         if (this.formItems.length > SIZE) {
             final Item[] items = new Item[SIZE];
             final int begin = this.page * (SIZE - 1);

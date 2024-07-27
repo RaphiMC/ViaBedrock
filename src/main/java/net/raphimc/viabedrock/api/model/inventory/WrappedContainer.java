@@ -28,19 +28,9 @@ public class WrappedContainer extends Container {
 
     private final Container delegate;
 
-    public WrappedContainer(final byte windowId, final BlockPosition position, final ATextComponent title, final Container delegate) {
-        super(windowId, delegate.menuType, title, position, 0);
+    public WrappedContainer(final UserConnection user, final byte windowId, final BlockPosition position, final ATextComponent title, final Container delegate) {
+        super(user, windowId, delegate.menuType, title, position, 0);
         this.delegate = delegate;
-    }
-
-    @Override
-    public void setItems(final BedrockItem[] items) {
-        this.delegate.setItems(items);
-    }
-
-    @Override
-    public void setCursorItem(final BedrockItem cursorItem) {
-        this.delegate.setCursorItem(cursorItem);
     }
 
     @Override
@@ -49,18 +39,33 @@ public class WrappedContainer extends Container {
     }
 
     @Override
-    public Item[] getJavaItems(final UserConnection user) {
-        return this.delegate.getJavaItems(user);
+    public Item[] getJavaItems() {
+        return this.delegate.getJavaItems();
     }
 
     @Override
-    public Item getJavaCursorItem(final UserConnection user) {
-        return this.delegate.getJavaCursorItem(user);
+    public Item getJavaCursorItem() {
+        return this.delegate.getJavaCursorItem();
     }
 
     @Override
-    public BedrockItem[] items() {
-        return this.delegate.items();
+    public BedrockItem getItem(final int slot) {
+        return this.delegate.getItem(slot);
+    }
+
+    @Override
+    public void setItems(final BedrockItem[] items) {
+        this.delegate.setItems(items);
+    }
+
+    @Override
+    public void setItem(final int slot, final BedrockItem item) {
+        this.delegate.setItem(slot, item);
+    }
+
+    @Override
+    public int size() {
+        return this.delegate.size();
     }
 
     @Override
@@ -70,6 +75,11 @@ public class WrappedContainer extends Container {
 
     public Container delegate() {
         return this.delegate;
+    }
+
+    @Override
+    protected void onSlotChanged(final int slot, final BedrockItem oldItem, final BedrockItem newItem) {
+        this.delegate.onSlotChanged(slot, oldItem, newItem);
     }
 
 }

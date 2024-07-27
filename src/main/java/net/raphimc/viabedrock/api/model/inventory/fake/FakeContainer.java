@@ -27,21 +27,17 @@ import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 public abstract class FakeContainer extends Container {
 
-    protected final UserConnection user;
-
     public FakeContainer(final UserConnection user, final MenuType menuType, final ATextComponent title) {
-        super(user.get(InventoryTracker.class).getNextFakeWindowId(), menuType, title, null, 0);
-
-        this.user = user;
+        super(user, user.get(InventoryTracker.class).getNextFakeWindowId(), menuType, title, null, 0);
     }
 
     @Override
-    public void setItems(final BedrockItem[] items) {
+    public BedrockItem getItem(final int slot) {
         throw new UnsupportedOperationException("Fake containers cannot have bedrock items");
     }
 
     @Override
-    public BedrockItem[] items() {
+    public void setItem(final int slot, final BedrockItem item) {
         throw new UnsupportedOperationException("Fake containers cannot have bedrock items");
     }
 

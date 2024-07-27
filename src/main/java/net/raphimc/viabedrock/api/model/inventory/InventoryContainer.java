@@ -20,29 +20,86 @@ package net.raphimc.viabedrock.api.model.inventory;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
+import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class InventoryContainer extends Container {
 
-    public InventoryContainer(final byte windowId) {
-        super(windowId, MenuType.INVENTORY, null, null, 36);
+    private byte selectedHotbarSlot = 0;
+
+    public InventoryContainer(final UserConnection user, final byte windowId) {
+        super(user, windowId, MenuType.INVENTORY, null, null, 36);
     }
 
     @Override
-    public void setItems(final BedrockItem[] items) {
-        System.arraycopy(items, 0, this.items, 0, Math.min(items.length, this.items.length));
-    }
-
-    @Override
-    public Item[] getJavaItems(final UserConnection user) {
+    public Item[] getJavaItems() {
         final Item[] combinedItems = StructuredItem.emptyArray(45);
-        final Item[] inventoryItems = super.getJavaItems(user);
+        final Item[] inventoryItems = super.getJavaItems();
 
         System.arraycopy(inventoryItems, 9, combinedItems, 9, 27);
         System.arraycopy(inventoryItems, 0, combinedItems, 36, 9);
 
         return combinedItems;
+    }
+
+    @Override
+    public void setItems(final BedrockItem[] items) {
+        if (items.length != this.size()) {
+            final BedrockItem[] newItems = BedrockItem.emptyArray(this.size());
+            System.arraycopy(items, 0, newItems, 0, Math.min(items.length, newItems.length));
+            super.setItems(newItems);
+        } else {
+            super.setItems(items);
+        }
+    }
+
+    public void sendSelectedHotbarSlotToClient() {
+        final PacketWrapper setCarriedItem = PacketWrapper.create(ClientboundPackets1_21.SET_CARRIED_ITEM, this.user);
+        setCarriedItem.write(Types.BYTE, this.selectedHotbarSlot);
+        setCarriedItem.send(BedrockProtocol.class);
+    }
+
+    public void setSelectedHotbarSlot(final byte slot, final PacketWrapper mobEquipment) {
+        final BedrockItem oldItem = this.getItem(this.selectedHotbarSlot);
+        final BedrockItem newItem = this.getItem(slot);
+        this.selectedHotbarSlot = slot;
+        this.onSelectedHotbarSlotChanged(oldItem, newItem, mobEquipment);
+    }
+
+    @Override
+    protected void onSlotChanged(final int slot, final BedrockItem oldItem, final BedrockItem newItem) {
+        super.onSlotChanged(slot, oldItem, newItem);
+        if (slot == this.selectedHotbarSlot) {
+            final PacketWrapper mobEquipment = PacketWrapper.create(ServerboundBedrockPackets.MOB_EQUIPMENT, this.user);
+            this.onSelectedHotbarSlotChanged(oldItem, newItem, mobEquipment);
+            mobEquipment.sendToServer(BedrockProtocol.class);
+        }
+    }
+
+    private void onSelectedHotbarSlotChanged(final BedrockItem oldItem, final BedrockItem newItem, final PacketWrapper mobEquipment) {
+        if (!oldItem.equals(newItem)) {
+            final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, this.user);
+            interact.write(Types.BYTE, (byte) InteractPacket_Action.InteractUpdate.getValue()); // action
+            interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target runtime entity id
+            interact.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // mouse position
+            interact.sendToServer(BedrockProtocol.class);
+        }
+
+        mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // runtime entity id
+        mobEquipment.write(this.user.get(ItemRewriter.class).itemType(), newItem); // item
+        mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // slot
+        mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // selected slot
+        mobEquipment.write(Types.BYTE, this.windowId); // window id
     }
 
 }

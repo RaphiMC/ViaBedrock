@@ -36,12 +36,10 @@ import net.raphimc.viabedrock.protocol.data.enums.java.AbilitiesFlag;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClientCommandAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
-import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.UUID;
@@ -84,7 +82,14 @@ public class ClientPlayerPackets {
 
                     if (clientPlayer.isInitiallySpawned()) {
                         final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+                        final GameRulesStorage gameRulesStorage = wrapper.user().get(GameRulesStorage.class);
                         final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+                        final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+
+                        if (clientPlayer.isDead() && !gameRulesStorage.<Boolean>getGameRule("keepInventory")) {
+                            inventoryTracker.getInventoryContainer().setItems(BedrockItem.emptyArray(inventoryTracker.getInventoryContainer().size()));
+                            // TODO: InventoryTransactionPacket(legacyRequestId=0, legacySlots=[], actions=[], transactionType=INVENTORY_MISMATCH, actionType=0, runtimeEntityId=0, blockPosition=null, blockFace=0, hotbarSlot=0, itemInHand=null, playerPosition=null, clickPosition=null, headPosition=null, usingNetIds=false, blockDefinition=null)
+                        }
 
                         clientPlayer.setHealth(clientPlayer.attributes().get("minecraft:health").maxValue());
                         clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.Respawn, -1);
@@ -102,6 +107,10 @@ public class ClientPlayerPackets {
                         clientPlayer.sendAttribute("minecraft:health"); // Ensure health is synced
                         clientPlayer.setAbilities(clientPlayer.abilities()); // Java client always resets abilities on respawn. Resend them
                         PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
+                        if (gameRulesStorage.getGameRule("keepInventory")) {
+                            PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer()); // Java client always resets inventory on respawn. Resend it
+                        }
+                        inventoryTracker.getInventoryContainer().sendSelectedHotbarSlotToClient(); // Java client always resets selected hotbar slot on respawn. Resend it
                     }
                     wrapper.cancel();
 

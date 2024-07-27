@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.api.model.inventory.Container;
 import net.raphimc.viabedrock.api.model.inventory.InventoryContainer;
 import net.raphimc.viabedrock.api.model.inventory.WrappedContainer;
 import net.raphimc.viabedrock.api.model.inventory.fake.FakeContainer;
+import net.raphimc.viabedrock.api.model.inventory.fake.FormContainer;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -47,7 +48,7 @@ public class InventoryTracker extends StoredObject {
     private static final int MAX_FAKE_ID = ContainerID.CONTAINER_ID_OFFHAND.getValue() - 1;
     private final AtomicInteger FAKE_ID_COUNTER = new AtomicInteger(MIN_FAKE_ID);
 
-    private final InventoryContainer inventoryContainer = new InventoryContainer((byte) ContainerID.CONTAINER_ID_INVENTORY.getValue());
+    private final InventoryContainer inventoryContainer = new InventoryContainer(this.getUser(), (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue());
     private final Stack<Container> containerStack = new Stack<>();
     private final List<Container> closeWhenTickedContainers = new ArrayList<>();
 
@@ -130,6 +131,20 @@ public class InventoryTracker extends StoredObject {
         if (!this.containerStack.isEmpty()) {
             this.openContainer(this.containerStack.pop());
         }
+    }
+
+    public void closeAllContainers() {
+        while (!this.containerStack.isEmpty()) {
+            final Container container = this.containerStack.pop();
+            if (container instanceof FakeContainer fakeContainer) {
+                if (fakeContainer instanceof FormContainer) {
+                    fakeContainer.onClosed(); // Send user closed response
+                }
+            } else {
+                PacketFactory.sendBedrockContainerClose(this.getUser(), container.windowId(), ContainerType.NONE);
+            }
+        }
+        this.pendingCloseContainer = null;
     }
 
     public void closeWhenTicked(final Container container) {

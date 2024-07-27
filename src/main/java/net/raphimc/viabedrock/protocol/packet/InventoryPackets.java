@@ -33,6 +33,7 @@ import net.lenni0451.mcstructs_bedrock.forms.serializer.FormSerializer;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.inventory.Container;
+import net.raphimc.viabedrock.api.model.inventory.InventoryContainer;
 import net.raphimc.viabedrock.api.model.inventory.WrappedContainer;
 import net.raphimc.viabedrock.api.model.inventory.fake.FakeContainer;
 import net.raphimc.viabedrock.api.model.inventory.fake.FormContainer;
@@ -94,11 +95,11 @@ public class InventoryPackets {
                 title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePacksStorage.class).translate(customNameTag.getValue()));
             }
             if (menuType.equals(MenuType.INVENTORY)) {
-                inventoryTracker.setCurrentContainer(new WrappedContainer(windowId, position, title, inventoryTracker.getInventoryContainer()));
+                inventoryTracker.setCurrentContainer(new WrappedContainer(wrapper.user(), windowId, position, title, inventoryTracker.getInventoryContainer()));
                 wrapper.cancel();
                 return;
             }
-            inventoryTracker.setCurrentContainer(menuType.createContainer(windowId, title, position));
+            inventoryTracker.setCurrentContainer(menuType.createContainer(wrapper.user(), windowId, title, position));
 
             wrapper.write(Types.VAR_INT, (int) windowId); // window id
             wrapper.write(Types.VAR_INT, menuType.javaMenuTypeId()); // type
@@ -186,23 +187,27 @@ public class InventoryPackets {
             wrapper.cancel();
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             if (inventoryTracker.getCurrentFakeContainer() != null) {
-                // Bedrock closes all inventories/forms on the stack if the stack has a form open
-                while (inventoryTracker.getOpenContainer() != null) {
-                    final Container container = inventoryTracker.getOpenContainer();
-                    if (container instanceof FakeContainer fakeContainer) {
-                        if (fakeContainer instanceof FormContainer) {
-                            fakeContainer.onClosed(); // Send user closed response
-                        }
-                        fakeContainer.close();
-                    } else {
-                        inventoryTracker.setCurrentContainerClosed(true);
-                    }
-                }
+                // Bedrock closes all inventories/forms on the stack if the stack contains a form
+                inventoryTracker.closeAllContainers();
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CREATIVE_CONTENT, null, wrapper -> {
             wrapper.cancel();
             final BedrockItem[] items = wrapper.read(wrapper.user().get(ItemRewriter.class).creativeItemArrayType()); // items
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_HOTBAR, ClientboundPackets1_21.SET_CARRIED_ITEM, wrapper -> {
+            final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
+            final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // selected slot
+            final byte windowId = wrapper.read(Types.BYTE); // window id
+            final boolean shouldSelectSlot = wrapper.read(Types.BOOLEAN); // should select slot
+            if (slot >= 0 && slot < 9 && windowId == inventoryContainer.windowId() && shouldSelectSlot) {
+                wrapper.write(Types.BYTE, (byte) slot); // slot
+            } else {
+                wrapper.cancel();
+                if (windowId != inventoryContainer.windowId()) { // Bedrock client doesn't render hotbar selection and held item anymore
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set hotbar slot with wrong window id: " + windowId);
+                }
+            }
         });
 
         protocol.registerServerbound(ServerboundPackets1_20_5.CONTAINER_CLICK, null, wrapper -> {
@@ -224,7 +229,7 @@ public class InventoryPackets {
                     // Mojang client can send multiple OpenInventory requests if the server doesn't respond, so this is fine here
                     final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
                     interact.write(Types.BYTE, (byte) InteractPacket_Action.OpenInventory.getValue()); // action
-                    interact.write(BedrockTypes.UNSIGNED_VAR_LONG, wrapper.user().get(EntityTracker.class).getClientPlayer().runtimeId()); // runtime entity id
+                    interact.write(BedrockTypes.UNSIGNED_VAR_LONG, wrapper.user().get(EntityTracker.class).getClientPlayer().runtimeId()); // target runtime entity id
                     interact.sendToServer(BedrockProtocol.class);
                     PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
                 }
@@ -277,6 +282,10 @@ public class InventoryPackets {
                     inventoryTracker.markPendingClose(container);
                 });
             }
+        });
+        protocol.registerServerbound(ServerboundPackets1_20_5.SET_CARRIED_ITEM, ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper -> {
+            final short slot = wrapper.read(Types.SHORT); // slot
+            wrapper.user().get(InventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.RENAME_ITEM, null, wrapper -> {
             wrapper.cancel();

@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums;
 
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.api.model.inventory.ChestContainer;
@@ -30,11 +31,11 @@ import java.util.Set;
 
 public enum MenuType {
 
-    INVENTORY(ContainerType.INVENTORY, null, (windowId, title, position) -> {
+    INVENTORY(ContainerType.INVENTORY, null, (user, windowId, title, position) -> {
         throw new UnsupportedOperationException("Cannot create inventory container");
     }),
-    CONTAINER(ContainerType.CONTAINER, "minecraft:generic_9x3", (windowId, title, position) -> new ChestContainer(windowId, title, position, 27), "chest", "trapped_chest"),
-    DO_NOT_USE_ANVIL(ContainerType.ANVIL, "minecraft:anvil", (windowId, title, position) -> null, "anvil");
+    CONTAINER(ContainerType.CONTAINER, "minecraft:generic_9x3", (user, windowId, title, position) -> new ChestContainer(user, windowId, title, position, 27), "chest", "trapped_chest"),
+    DO_NOT_USE_ANVIL(ContainerType.ANVIL, "minecraft:anvil", (user, windowId, title, position) -> null, "anvil");
 
     // TODO: Add remaining menu types
 
@@ -76,8 +77,8 @@ public enum MenuType {
         return this.javaMenuTypeId;
     }
 
-    public Container createContainer(final byte windowId, final ATextComponent title, final BlockPosition position) {
-        return this.containerSupplier.createContainer(windowId, title, position);
+    public Container createContainer(final UserConnection user, final byte windowId, final ATextComponent title, final BlockPosition position) {
+        return this.containerSupplier.createContainer(user, windowId, title, position);
     }
 
     public boolean isAcceptedTag(final String tag) {
@@ -86,7 +87,7 @@ public enum MenuType {
 
     private interface ContainerSupplier {
 
-        Container createContainer(final byte windowId, final ATextComponent title, final BlockPosition position);
+        Container createContainer(final UserConnection user, final byte windowId, final ATextComponent title, final BlockPosition position);
 
     }
 
