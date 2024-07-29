@@ -83,6 +83,7 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                 if (fieldName.equalsIgnoreCase("NumTagTypes")) continue;
                 if (fieldName.equalsIgnoreCase("AbilityCount")) continue;
                 if (fieldName.equalsIgnoreCase("NumModes")) continue;
+                if (fieldName.equalsIgnoreCase("INPUT_NUM")) continue;
                 if (fieldName.equalsIgnoreCase("9800")) continue;
                 if (fieldName.equalsIgnoreCase("TOTAL_OPERATIONS")) continue;
                 if (fieldName.equalsIgnoreCase("TOTAL_OPERANDS")) continue;

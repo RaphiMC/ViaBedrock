@@ -217,7 +217,7 @@ public class LoginPackets {
             extraData.put("XUID", Long.toString(offlineUUID.getLeastSignificantBits()));
             extraData.put("identity", offlineUUID.toString());
             extraData.put("displayName", displayName);
-            extraData.put("titleId", "896928775");
+            extraData.put("titleId", "1739947436"); // Android title id
             extraData.put("sandboxId", "RETAIL");
 
             final String identityJwt = Jwts.builder()

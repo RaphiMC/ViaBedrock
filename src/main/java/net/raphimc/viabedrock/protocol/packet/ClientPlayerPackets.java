@@ -32,10 +32,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
-import net.raphimc.viabedrock.protocol.data.enums.java.AbilitiesFlag;
-import net.raphimc.viabedrock.protocol.data.enums.java.ClientCommandAction;
-import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
-import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.*;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
@@ -227,6 +224,49 @@ public class ClientPlayerPackets {
                 default -> throw new IllegalStateException("Unhandled ClientCommandAction: " + action);
             }
         });
+        protocol.registerServerbound(ServerboundPackets1_20_5.PLAYER_COMMAND, null, wrapper -> {
+            wrapper.cancel();
+            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+            wrapper.read(Types.VAR_INT); // entity id
+            final PlayerCommandAction action = PlayerCommandAction.values()[wrapper.read(Types.VAR_INT)]; // action
+            final int data = wrapper.read(Types.VAR_INT); // data
+
+            switch (action) {
+                case PRESS_SHIFT_KEY -> {
+                    clientPlayer.setSneaking(true);
+                    if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
+                        clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StartSneaking, 0);
+                    } else {
+                        clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StartSneaking);
+                    }
+                }
+                case RELEASE_SHIFT_KEY -> {
+                    clientPlayer.setSneaking(false);
+                    if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
+                        clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StopSneaking, 0);
+                    } else {
+                        clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StopSneaking);
+                    }
+                }
+                case START_SPRINTING -> {
+                    clientPlayer.setSprinting(true);
+                    if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
+                        clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StartSprinting, 0);
+                    } else {
+                        clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StartSprinting);
+                    }
+                }
+                case STOP_SPRINTING -> {
+                    clientPlayer.setSprinting(false);
+                    if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
+                        clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StopSprinting, 0);
+                    } else {
+                        clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StopSprinting);
+                    }
+                }
+                default -> throw new IllegalStateException("Unhandled PlayerCommandAction: " + action);
+            }
+        });
         protocol.registerServerbound(ServerboundPackets1_20_5.MOVE_PLAYER_STATUS_ONLY, ServerboundBedrockPackets.MOVE_PLAYER, wrapper -> {
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             clientPlayer.updatePlayerPosition(wrapper, wrapper.read(Types.BOOLEAN));
@@ -246,15 +286,22 @@ public class ClientPlayerPackets {
         protocol.registerServerbound(ServerboundPackets1_20_5.ACCEPT_TELEPORTATION, null, wrapper -> {
             wrapper.cancel();
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
-            clientPlayer.confirmTeleport(wrapper.read(Types.VAR_INT));
+            clientPlayer.confirmTeleport(wrapper.read(Types.VAR_INT)); // teleport id
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.PLAYER_ABILITIES, null, wrapper -> {
             wrapper.cancel();
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             final byte flags = wrapper.read(Types.BYTE); // flags
             final boolean flying = (flags & AbilitiesFlag.FLYING.getBit()) != 0;
-            clientPlayer.abilities().getOrCreateCacheLayer().setAbility(AbilitiesIndex.Flying, flying);
-            clientPlayer.sendPlayerActionPacketToServer(flying ? PlayerActionType.StartFlying : PlayerActionType.StopFlying, 0);
+            if (flying != clientPlayer.abilities().getBooleanValue(AbilitiesIndex.Flying)) {
+                clientPlayer.abilities().getOrCreateCacheLayer().setAbility(AbilitiesIndex.Flying, flying);
+                if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
+                    clientPlayer.sendPlayerActionPacketToServer(flying ? PlayerActionType.StartFlying : PlayerActionType.StopFlying, 0);
+                } else {
+                    clientPlayer.addAuthInputData(flying ? PlayerAuthInputPacket_InputData.StartFlying : PlayerAuthInputPacket_InputData.StopFlying);
+                    clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.JumpDown, PlayerAuthInputPacket_InputData.Jumping, PlayerAuthInputPacket_InputData.WantUp);
+                }
+            }
         });
     }
 

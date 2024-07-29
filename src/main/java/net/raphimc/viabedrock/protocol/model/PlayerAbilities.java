@@ -25,8 +25,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte commandPermission,
-                              Map<SerializedAbilitiesData_SerializedAbilitiesLayer, AbilitiesLayer> abilityLayers) {
+public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte commandPermission, Map<SerializedAbilitiesData_SerializedAbilitiesLayer, AbilitiesLayer> abilityLayers) {
 
     public PlayerAbilities(final long uniqueEntityId, final byte playerPermission, final byte commandPermission) {
         this(uniqueEntityId, playerPermission, commandPermission, new EnumMap<>(SerializedAbilitiesData_SerializedAbilitiesLayer.class));

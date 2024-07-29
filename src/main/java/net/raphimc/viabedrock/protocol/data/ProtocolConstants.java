@@ -38,6 +38,9 @@ public class ProtocolConstants {
     public static final int BEDROCK_COMMAND_VERSION = 39;
     public static final byte BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS = 28;
 
+    public static final float PLAYER_GRAVITY = 0.0784F;
+    public static final float PLAYER_JUMP_HEIGHT = 0.42F;
+
     public static StructuredDataContainer createStructuredDataContainer() {
         final StructuredDataContainer data = new StructuredDataContainer();
         data.setIdLookup(Via.getManager().getProtocolManager().getProtocol(JAVA_PROTOCOL_CLASS), true);

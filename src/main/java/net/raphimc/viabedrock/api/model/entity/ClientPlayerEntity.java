@@ -25,8 +25,10 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AbilitiesFlag;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameMode;
@@ -41,6 +43,8 @@ import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,12 +61,14 @@ public class ClientPlayerEntity extends PlayerEntity {
     private boolean wasInsideUnloadedChunk;
 
     // Position syncing
-    private int pendingTeleportId = 0;
-    private boolean waitingForPositionSync = false;
+    private int pendingTeleportId;
+    private boolean waitingForPositionSync;
 
     // Server Authoritative Movement
     private Position3f prevPosition;
-    private long authInput;
+    private final EnumSet<PlayerAuthInputPacket_InputData> authInputData = EnumSet.noneOf(PlayerAuthInputPacket_InputData.class);
+    private boolean sneaking;
+    private boolean sprinting;
 
     // Misc data
     private GameType gameType;
@@ -83,8 +89,8 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void tick() {
         super.tick();
 
-        if (this.gameSession.getMovementMode() != ServerAuthMovementMode.ClientAuthoritative && this.initiallySpawned) {
-            this.sendAuthInputPacketToServer(ClientPlayMode.Screen);
+        if (this.gameSession.getMovementMode() != ServerAuthMovementMode.ClientAuthoritative && this.initiallySpawned && !this.isDead()) {
+            this.sendPlayerAuthInputPacketToServer(ClientPlayMode.Screen);
         }
     }
 
@@ -95,22 +101,24 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void writePlayerPositionPacketToClient(final PacketWrapper wrapper, final boolean keepRotation, final boolean fakeTeleport) {
+        this.pendingTeleportId = TELEPORT_ID.getAndIncrement();
+
         wrapper.write(Types.DOUBLE, (double) this.position.x()); // x
         wrapper.write(Types.DOUBLE, (double) this.position.y() - this.eyeOffset()); // y
         wrapper.write(Types.DOUBLE, (double) this.position.z()); // z
         wrapper.write(Types.FLOAT, keepRotation ? 0F : this.rotation.y()); // yaw
         wrapper.write(Types.FLOAT, keepRotation ? 0F : this.rotation.x()); // pitch
         wrapper.write(Types.BYTE, (byte) (keepRotation ? 0b11000 : 0)); // flags
-        wrapper.write(Types.VAR_INT, this.nextTeleportId() * (fakeTeleport ? -1 : 1)); // teleport id
+        wrapper.write(Types.VAR_INT, this.pendingTeleportId * (fakeTeleport ? -1 : 1)); // teleport id
     }
 
     public void sendMovePlayerPacketToServer(final PlayerPositionModeComponent_PositionMode mode) {
         final PacketWrapper movePlayer = PacketWrapper.create(ServerboundBedrockPackets.MOVE_PLAYER, this.user);
-        this.writeMovementPacketToServer(movePlayer, mode);
+        this.writeMovePlayerPacketToServer(movePlayer, mode);
         movePlayer.sendToServer(BedrockProtocol.class);
     }
 
-    public void writeMovementPacketToServer(final PacketWrapper wrapper, final PlayerPositionModeComponent_PositionMode mode) {
+    public void writeMovePlayerPacketToServer(final PacketWrapper wrapper, final PlayerPositionModeComponent_PositionMode mode) {
         wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
         wrapper.write(BedrockTypes.POSITION_3F, this.position); // position
         wrapper.write(BedrockTypes.POSITION_3F, this.rotation); // rotation
@@ -120,31 +128,50 @@ public class ClientPlayerEntity extends PlayerEntity {
         wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // tick
     }
 
-    public void sendAuthInputPacketToServer(final ClientPlayMode playMode) {
-        if (this.prevPosition == null) {
-            this.prevPosition = this.position;
+    public void sendPlayerAuthInputPacketToServer(final ClientPlayMode playMode) {
+        if (this.prevPosition == null) this.prevPosition = this.position;
+        final Position3f positionDelta = this.position.subtract(this.prevPosition);
+        final Position3f gravityAffectedPositionDelta;
+        if (this.abilities.getBooleanValue(AbilitiesIndex.Flying)) {
+            gravityAffectedPositionDelta = positionDelta;
+        } else {
+            gravityAffectedPositionDelta = positionDelta.subtract(0F, ProtocolConstants.PLAYER_GRAVITY, 0F);
         }
 
-        final float[] motion = this.calculateDirectionVector(this.position.x(), this.position.z(), this.prevPosition.x(), this.prevPosition.z(), this.rotation.y());
-        this.fixDirectionVector(motion);
-        this.prevPosition = this.position;
+        this.authInputData.add(PlayerAuthInputPacket_InputData.BlockBreakingDelayEnabled);
+        if (this.sneaking) {
+            this.addAuthInputData(PlayerAuthInputPacket_InputData.SneakDown, PlayerAuthInputPacket_InputData.Sneaking, PlayerAuthInputPacket_InputData.WantDown);
+        }
+        if (this.sprinting) {
+            this.addAuthInputData(PlayerAuthInputPacket_InputData.SprintDown, PlayerAuthInputPacket_InputData.Sprinting);
+        }
+        if (MathUtil.roughlyEquals(positionDelta.y(), ProtocolConstants.PLAYER_JUMP_HEIGHT)) {
+            this.authInputData.add(PlayerAuthInputPacket_InputData.StartJumping);
+        }
+        if (positionDelta.y() > 0F) {
+            this.addAuthInputData(PlayerAuthInputPacket_InputData.JumpDown, PlayerAuthInputPacket_InputData.Jumping, PlayerAuthInputPacket_InputData.WantUp);
+        }
+        this.authInputData.addAll(MathUtil.calculatePressedDirectionKeys(positionDelta, this.rotation.y()));
+
+        final float[] movementDirections = MathUtil.calculateMovementDirections(this.authInputData, this.sneaking);
 
         final PacketWrapper playerAuthInput = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_AUTH_INPUT, this.user);
         playerAuthInput.write(BedrockTypes.FLOAT_LE, this.rotation.x()); // pitch
         playerAuthInput.write(BedrockTypes.FLOAT_LE, this.rotation.y()); // yaw
         playerAuthInput.write(BedrockTypes.POSITION_3F, this.position); // position
-        playerAuthInput.write(BedrockTypes.POSITION_2F, new Position2f(motion[0], motion[1])); // motion
+        playerAuthInput.write(BedrockTypes.POSITION_2F, new Position2f(movementDirections[0], movementDirections[1])); // motion
         playerAuthInput.write(BedrockTypes.FLOAT_LE, this.rotation.z()); // head yaw
-        playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_LONG, this.authInput); // input flags
+        playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_LONG, this.authInputData.stream().mapToLong(d -> 1L << d.getValue()).reduce(0L, (l1, l2) -> l1 | l2)); // input flags
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_INT, InputMode.Mouse.getValue()); // input mode
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_INT, playMode.getValue()); // play mode
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_INT, NewInteractionModel.Touch.getValue()); // interaction mode
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_LONG, (long) this.age); // tick
-        playerAuthInput.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // position delta
+        playerAuthInput.write(BedrockTypes.POSITION_3F, gravityAffectedPositionDelta); // position delta
         playerAuthInput.write(BedrockTypes.POSITION_2F, new Position2f(0F, 0F)); // analog move vector
-        //playerAuthInput.sendToServer(BedrockProtocol.class);
+        playerAuthInput.sendToServer(BedrockProtocol.class);
 
-        this.authInput = 0;
+        this.prevPosition = this.position;
+        this.authInputData.clear();
     }
 
     public void sendPlayerActionPacketToServer(final PlayerActionType action, final int face) {
@@ -166,7 +193,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.onGround = onGround;
 
         if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
-            this.writeMovementPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
+            this.writeMovePlayerPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
         } else {
             wrapper.cancel();
         }
@@ -184,7 +211,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.onGround = onGround;
 
         if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
-            this.writeMovementPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
+            this.writeMovePlayerPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
         } else {
             wrapper.cancel();
         }
@@ -204,7 +231,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.onGround = onGround;
 
         if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
-            this.writeMovementPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
+            this.writeMovePlayerPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
         } else {
             wrapper.cancel();
         }
@@ -222,7 +249,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.onGround = onGround;
 
         if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
-            this.writeMovementPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
+            this.writeMovePlayerPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
         } else {
             wrapper.cancel();
         }
@@ -240,14 +267,22 @@ public class ClientPlayerEntity extends PlayerEntity {
             if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
                 this.sendPlayerActionPacketToServer(PlayerActionType.HandledTeleport, 0);
             } else {
-                this.authInput |= PlayerAuthInputPacket_InputData.HandledTeleport.getValue();
+                this.authInputData.add(PlayerAuthInputPacket_InputData.HandledTeleport);
             }
         }
     }
 
+    public void addAuthInputData(final PlayerAuthInputPacket_InputData data) {
+        this.authInputData.add(data);
+    }
+
+    public void addAuthInputData(final PlayerAuthInputPacket_InputData... data) {
+        this.authInputData.addAll(Arrays.asList(data));
+    }
+
     @Override
     public void setPosition(final Position3f position) {
-        this.prevPosition = position;
+        this.prevPosition = null;
         super.setPosition(position);
     }
 
@@ -303,6 +338,22 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     public void setChangingDimension(final boolean changingDimension) {
         this.changingDimension = changingDimension;
+    }
+
+    public boolean isSneaking() {
+        return this.sneaking;
+    }
+
+    public void setSneaking(final boolean sneaking) {
+        this.sneaking = sneaking;
+    }
+
+    public boolean isSprinting() {
+        return this.sprinting;
+    }
+
+    public void setSprinting(final boolean sprinting) {
+        this.sprinting = sprinting;
     }
 
     public GameType gameType() {
@@ -380,10 +431,6 @@ public class ClientPlayerEntity extends PlayerEntity {
         };
     }
 
-    private int nextTeleportId() {
-        return this.pendingTeleportId = TELEPORT_ID.getAndIncrement();
-    }
-
     private boolean preMove(final Position3f newPosition, final Position3f newRotation, final boolean newOnGround) {
         final boolean positionLook = newPosition != null && newRotation != null;
         final ChunkTracker chunkTracker = this.user.get(ChunkTracker.class);
@@ -436,49 +483,6 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
 
         return false;
-    }
-
-    private float[] calculateDirectionVector(final float x, final float z, final float prevX, final float prevZ, final float yaw) {
-        final float dx = x - prevX;
-        final float dz = z - prevZ;
-
-        final double magnitude = Math.sqrt(dx * dx + dz * dz);
-        double directionX = magnitude > 0 ? dx / magnitude : 0;
-        double directionZ = magnitude > 0 ? dz / magnitude : 0;
-
-        directionX = Math.max(-1, Math.min(1, directionX));
-        directionZ = Math.max(-1, Math.min(1, directionZ));
-
-        final double angle = Math.toRadians(-yaw);
-        final double newDirectionX = directionX * Math.cos(angle) - directionZ * Math.sin(angle);
-        final double newDirectionZ = directionX * Math.sin(angle) + directionZ * Math.cos(angle);
-        directionX = newDirectionX;
-        directionZ = newDirectionZ;
-
-        return new float[]{(float) directionX, (float) directionZ};
-    }
-
-    private void fixDirectionVector(final float[] vector) {
-        if (Math.abs(vector[0]) <= 0.5F) {
-            vector[0] = 0;
-        }
-        if (Math.abs(vector[1]) <= 0.5F) {
-            vector[1] = 0;
-        }
-
-        if (Math.abs(vector[0]) <= 0.8F) {
-            vector[0] = Math.signum(vector[0]) * 0.70710677F;
-        }
-        if (Math.abs(vector[1]) <= 0.8F) {
-            vector[1] = Math.signum(vector[1]) * 0.70710677F;
-        }
-
-        if (Math.abs(vector[0]) > 0.8F) {
-            vector[0] = Math.signum(vector[0]);
-        }
-        if (Math.abs(vector[1]) > 0.8F) {
-            vector[1] = Math.signum(vector[1]);
-        }
     }
 
 }
