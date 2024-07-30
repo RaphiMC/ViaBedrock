@@ -255,7 +255,7 @@ public class InventoryPackets {
                 return;
             }
             PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
-            if (!inventoryTracker.isInventoryOpen()) {
+            if (!inventoryTracker.isInventoryOpen() && inventoryTracker.getCurrentContainer() != null) {
                 PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getCurrentContainer());
             }
         });
