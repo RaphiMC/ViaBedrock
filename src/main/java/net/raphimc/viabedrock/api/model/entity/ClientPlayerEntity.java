@@ -207,6 +207,10 @@ public class ClientPlayerEntity extends PlayerEntity {
             return;
         }
 
+        if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative && MathUtil.roughlyEquals(newPosition.y() - this.position.y(), ProtocolConstants.PLAYER_JUMP_HEIGHT)) {
+            this.sendPlayerActionPacketToServer(PlayerActionType.StartJump, 0);
+        }
+
         this.position = newPosition;
         this.onGround = onGround;
 
@@ -224,6 +228,10 @@ public class ClientPlayerEntity extends PlayerEntity {
         if (!this.preMove(newPosition, newRotation, onGround)) {
             wrapper.cancel();
             return;
+        }
+
+        if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative && MathUtil.roughlyEquals(newPosition.y() - this.position.y(), ProtocolConstants.PLAYER_JUMP_HEIGHT)) {
+            this.sendPlayerActionPacketToServer(PlayerActionType.StartJump, 0);
         }
 
         this.position = newPosition;
