@@ -39,9 +39,8 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorEvent;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeModifierOperation;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeOperands;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.data.enums.java.AnimateAction;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.EntityLink;
 import net.raphimc.viabedrock.protocol.model.EntityProperties;
@@ -131,7 +130,7 @@ public class EntityPackets {
                 return;
             }
 
-            if (entity instanceof ClientPlayerEntity) {
+            if (entity == entityTracker.getClientPlayer()) {
                 if (!teleported && !forceMoveLocalEntity) {
                     wrapper.cancel();
                     return;
@@ -189,7 +188,7 @@ public class EntityPackets {
                 return;
             }
 
-            if (entity instanceof ClientPlayerEntity) {
+            if (entity == entityTracker.getClientPlayer()) {
                 if (!teleported && !forceMoveLocalEntity) {
                     wrapper.cancel();
                     return;
@@ -406,6 +405,34 @@ public class EntityPackets {
             } else {
                 wrapper.cancel();
             }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.ANIMATE, ClientboundPackets1_21.ANIMATE, wrapper -> {
+            final AnimatePacket_Action action = AnimatePacket_Action.getByValue(wrapper.read(BedrockTypes.VAR_INT), AnimatePacket_Action.NoAction); // action
+            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+
+            final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(runtimeEntityId);
+            if (entity == null) {
+                wrapper.cancel();
+                return;
+            }
+
+            wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+            wrapper.write(Types.UNSIGNED_BYTE, (short) (switch (action) {
+                case NoAction, RowRight, RowLeft -> {
+                    wrapper.cancel();
+                    yield AnimateAction.SWING_MAIN_HAND; // any action
+                }
+                case Swing -> AnimateAction.SWING_MAIN_HAND;
+                case WakeUp -> {
+                    if (entity instanceof ClientPlayerEntity clientPlayer) {
+                        clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StopSleeping, 0);
+                    }
+                    yield AnimateAction.WAKE_UP;
+                }
+                case CriticalHit -> AnimateAction.CRITICAL_HIT;
+                case MagicCriticalHit -> AnimateAction.MAGIC_CRITICAL_HIT;
+                default -> throw new IllegalStateException("Unhandled AnimatePacket_Action: " + action);
+            }).ordinal()); // action
         });
     }
 

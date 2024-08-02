@@ -303,6 +303,25 @@ public class ClientPlayerPackets {
                 }
             }
         });
+        protocol.registerServerbound(ServerboundPackets1_20_5.SWING, ServerboundBedrockPackets.ANIMATE, wrapper -> {
+            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+            final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)]; // hand
+            if (hand != InteractionHand.MAIN_HAND) {
+                wrapper.cancel();
+                return;
+            }
+
+            wrapper.write(BedrockTypes.VAR_INT, AnimatePacket_Action.Swing.getValue()); // action
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+
+            if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
+                wrapper.sendToServer(BedrockProtocol.class);
+                wrapper.cancel();
+                clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.MissedSwing, 0);
+            } else {
+                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.MissedSwing);
+            }
+        });
     }
 
 }
