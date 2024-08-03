@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.inventory.fake;
+package net.raphimc.viabedrock.api.model.container.fake;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
-import net.raphimc.viabedrock.api.model.inventory.Container;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.data.enums.MenuType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;

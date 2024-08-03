@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.protocol.data.enums;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
-import net.raphimc.viabedrock.api.model.inventory.ChestContainer;
-import net.raphimc.viabedrock.api.model.inventory.Container;
+import net.raphimc.viabedrock.api.model.container.ChestContainer;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 
