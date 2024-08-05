@@ -41,11 +41,12 @@ public class PlayPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CLIENT_CACHE_MISS_RESPONSE, null, wrapper -> {
             wrapper.cancel();
+            final BlobCache blobCache = wrapper.user().get(BlobCache.class);
             final int length = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // blob count
             for (int i = 0; i < length; i++) {
                 final long hash = wrapper.read(BedrockTypes.LONG_LE); // blob hash
                 final byte[] blob = wrapper.read(BedrockTypes.BYTE_ARRAY); // blob data
-                wrapper.user().get(BlobCache.class).addBlob(hash, blob);
+                blobCache.addBlob(hash, blob);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.TRANSFER, ClientboundPackets1_21.TRANSFER, new PacketHandlers() {

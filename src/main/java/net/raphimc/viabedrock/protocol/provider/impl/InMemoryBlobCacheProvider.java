@@ -27,8 +27,8 @@ public class InMemoryBlobCacheProvider extends BlobCacheProvider {
     private final Map<Long, byte[]> blobs = new ConcurrentHashMap<>();
 
     @Override
-    public byte[] addBlob(final long hash, final byte[] blob) {
-        return this.blobs.put(hash, blob);
+    public void addBlob(final long hash, final byte[] blob) {
+        this.blobs.put(hash, blob);
     }
 
     @Override

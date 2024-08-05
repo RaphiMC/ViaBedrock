@@ -23,21 +23,14 @@ import net.raphimc.viabedrock.api.util.LZ4;
 import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class DiskBlobCacheProvider extends BlobCacheProvider {
 
     private static final byte[] BLOB_KEY_PREFIX = "blob_".getBytes(StandardCharsets.US_ASCII);
 
     @Override
-    public byte[] addBlob(final long hash, final byte[] blob) {
-        final byte[] oldBlob = this.getBlob(hash);
-        if (Arrays.equals(blob, oldBlob)) {
-            return oldBlob;
-        }
-
+    public void addBlob(final long hash, final byte[] blob) {
         ViaBedrock.getBlobCache().put(this.createBlobKey(hash), LZ4.compress(blob));
-        return oldBlob;
     }
 
     @Override

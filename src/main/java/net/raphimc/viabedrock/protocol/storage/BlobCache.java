@@ -21,7 +21,9 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import net.raphimc.viabedrock.ViaBedrock;
+import io.netty.buffer.ByteBufUtil;
+import net.jpountz.xxhash.XXHash64;
+import net.jpountz.xxhash.XXHashFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
@@ -29,14 +31,17 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 
 public class BlobCache extends StoredObject {
 
-    private final Map<Long, CompletableFuture<byte[]>> pending = new HashMap<>();
+    private static final XXHash64 XXHASH64 = XXHashFactory.fastestInstance().hash64();
 
+    private final Map<Long, CompletableFuture<byte[]>> pending = new HashMap<>();
     private final List<Long> missing = new ArrayList<>();
     private final List<Long> acked = new ArrayList<>();
 
@@ -68,16 +73,18 @@ public class BlobCache extends StoredObject {
     }
 
     public void addBlob(final long hash, final byte[] blob) {
+        // Blob validation: https://github.com/Mojang/bedrock-protocol-docs/blob/e8b16c2ada3de6946c2d09f76a477d37aa1c074b/additional_docs/ClientCacheMissResponsePacketValidation.md
+        if (!this.pending.containsKey(hash)) {
+            throw new IllegalStateException("Received unexpected blob: " + hash + " (" + ByteBufUtil.hexDump(blob) + ")");
+        }
+        final long expectedHash = XXHASH64.hash(blob, 0, blob.length, 0);
+        if (hash != expectedHash) {
+            throw new IllegalStateException("Received blob with unexpected hash: " + hash + " != " + expectedHash + " (" + ByteBufUtil.hexDump(blob) + ")");
+        }
+
+        Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(hash, blob);
         this.acked.add(hash);
-
-        final byte[] previousBlob = Via.getManager().getProviders().get(BlobCacheProvider.class).addBlob(hash, blob);
-        if (this.pending.containsKey(hash)) {
-            this.pending.remove(hash).complete(blob);
-        }
-
-        if (previousBlob != null && !Arrays.equals(previousBlob, blob)) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Overwriting blob with hash " + hash + "!");
-        }
+        this.pending.remove(hash).complete(blob);
     }
 
     public boolean hasBlob(final long... hashes) {

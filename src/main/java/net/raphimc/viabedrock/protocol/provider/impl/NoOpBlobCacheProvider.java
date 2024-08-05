@@ -22,7 +22,7 @@ import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 public class NoOpBlobCacheProvider extends BlobCacheProvider {
 
     @Override
-    public byte[] addBlob(final long hash, final byte[] blob) {
+    public void addBlob(final long hash, final byte[] blob) {
         throw new UnsupportedOperationException();
     }
 

@@ -21,7 +21,7 @@ import com.viaversion.viaversion.api.platform.providers.Provider;
 
 public abstract class BlobCacheProvider implements Provider {
 
-    public abstract byte[] addBlob(final long hash, final byte[] blob);
+    public abstract void addBlob(final long hash, final byte[] blob);
 
     public abstract boolean hasBlob(final long hash);
 
