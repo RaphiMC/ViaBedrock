@@ -33,7 +33,6 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
-import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
@@ -84,7 +83,10 @@ public class ClientPlayerPackets {
                         final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
 
                         if (clientPlayer.isDead() && !gameRulesStorage.<Boolean>getGameRule("keepInventory")) {
-                            inventoryTracker.getInventoryContainer().setItems(BedrockItem.emptyArray(inventoryTracker.getInventoryContainer().size()));
+                            inventoryTracker.getInventoryContainer().clearItems();
+                            inventoryTracker.getOffhandContainer().clearItems();
+                            inventoryTracker.getArmorContainer().clearItems();
+                            inventoryTracker.getHudContainer().clearItems();
                             // TODO: InventoryTransactionPacket(legacyRequestId=0, legacySlots=[], actions=[], transactionType=INVENTORY_MISMATCH, actionType=0, runtimeEntityId=0, blockPosition=null, blockFace=0, hotbarSlot=0, itemInHand=null, playerPosition=null, clickPosition=null, headPosition=null, usingNetIds=false, blockDefinition=null)
                         }
 

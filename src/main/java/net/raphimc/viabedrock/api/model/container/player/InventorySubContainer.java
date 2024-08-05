@@ -15,33 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.fake;
+package net.raphimc.viabedrock.api.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.item.Item;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
-import java.util.function.Consumer;
+public abstract class InventorySubContainer extends InventoryRedirectContainer {
 
-public class AnvilTextInputContainer extends FakeContainer {
-
-    private final Consumer<String> onRename;
-
-    public AnvilTextInputContainer(final UserConnection user, final ATextComponent title, final Consumer<String> onRename) {
-        super(user, ContainerType.ANVIL, title);
-
-        this.onRename = onRename;
+    public InventorySubContainer(final UserConnection user, final byte windowId, final ContainerType type, final int size) {
+        super(user, windowId, type, size);
     }
 
     @Override
-    public void onAnvilRename(final String name) {
-        this.onRename.accept(name);
-    }
-
-    @Override
-    public Item[] getJavaItems() {
-        throw new UnsupportedOperationException();
+    public void setItems(final BedrockItem[] items, final PacketWrapper javaItems) {
+        if (items.length != this.size()) {
+            final BedrockItem[] newItems = BedrockItem.emptyArray(this.size());
+            System.arraycopy(items, 0, newItems, 0, Math.min(items.length, newItems.length));
+            super.setItems(newItems, javaItems);
+        } else {
+            super.setItems(items, javaItems);
+        }
     }
 
 }

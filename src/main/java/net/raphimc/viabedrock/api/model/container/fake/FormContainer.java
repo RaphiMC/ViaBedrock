@@ -38,7 +38,7 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.MenuType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
@@ -60,7 +60,7 @@ public class FormContainer extends FakeContainer {
     private boolean sentResponse = false;
 
     public FormContainer(final UserConnection user, final int formId, final AForm form) {
-        super(user, MenuType.CONTAINER, TextUtil.stringToTextComponent("Form: " + form.getTitle()));
+        super(user, ContainerType.CONTAINER, TextUtil.stringToTextComponent("Form: " + form.getTitle()));
 
         this.formId = formId;
         this.form = form;
@@ -68,7 +68,7 @@ public class FormContainer extends FakeContainer {
     }
 
     @Override
-    public boolean handleContainerClick(final int revision, short slot, final byte button, final ClickType action) {
+    public boolean handleClick(final int revision, short slot, final byte button, final ClickType action) {
         if (action != ClickType.PICKUP) return false;
 
         if (this.formItems.length > SIZE && slot == SIZE - 1) {
@@ -194,16 +194,22 @@ public class FormContainer extends FakeContainer {
 
     @Override
     public Item[] getJavaItems() {
+        final Item[] items;
         if (this.formItems.length > SIZE) {
-            final Item[] items = new Item[SIZE];
+            items = new Item[SIZE];
             final int begin = this.page * (SIZE - 1);
             final int end = Math.min((this.page + 1) * (SIZE - 1), this.formItems.length);
-            System.arraycopy(this.formItems, begin, items, 0, end - begin);
+            for (int i = 0; i < end - begin; i++) {
+                items[i] = this.formItems[begin + i].copy();
+            }
             items[SIZE - 1] = this.createItem("minecraft:arrow", "Page navigation", "§9Left click: §6Go to next page", "§9Right click: §6Go to previous page");
-            return items;
         } else {
-            return this.formItems;
+            items = new Item[this.formItems.length];
+            for (int i = 0; i < this.formItems.length; i++) {
+                items[i] = this.formItems[i].copy();
+            }
         }
+        return items;
     }
 
     private void updateFormItems() {

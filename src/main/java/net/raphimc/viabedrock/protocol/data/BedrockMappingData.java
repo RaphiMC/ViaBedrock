@@ -47,7 +47,7 @@ import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
-import net.raphimc.viabedrock.protocol.data.enums.MenuType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -99,7 +99,7 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, String> bedrockItemTags;
     private Map<String, Map<BlockState, ItemRewriter.Rewriter>> bedrockToJavaBlockItems;
     private Map<String, Map<Integer, ItemRewriter.Rewriter>> bedrockToJavaMetaItems;
-    private BiMap<String, Integer> javaMenus;
+    private Map<ContainerType, Integer> bedrockToJavaContainers;
 
     // Entities
     private BiMap<String, Integer> bedrockEntities;
@@ -356,10 +356,10 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            final JsonObject bedrockItemMappingsJson = this.readJson("custom/item_mappings.json");
-            this.bedrockToJavaBlockItems = new HashMap<>(bedrockItemMappingsJson.size());
-            this.bedrockToJavaMetaItems = new HashMap<>(bedrockItemMappingsJson.size());
-            for (Map.Entry<String, JsonElement> entry : bedrockItemMappingsJson.entrySet()) {
+            final JsonObject bedrockToJavaItemMappingsJson = this.readJson("custom/item_mappings.json");
+            this.bedrockToJavaBlockItems = new HashMap<>(bedrockToJavaItemMappingsJson.size());
+            this.bedrockToJavaMetaItems = new HashMap<>(bedrockToJavaItemMappingsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaItemMappingsJson.entrySet()) {
                 final String bedrockIdentifier = entry.getKey();
                 if (!this.bedrockItems.containsKey(bedrockIdentifier)) {
                     throw new RuntimeException("Unknown bedrock item: " + bedrockIdentifier);
@@ -461,12 +461,35 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             final JsonArray javaMenusJson = javaViaMappingJson.get("menus").getAsJsonArray();
-            this.javaMenus = HashBiMap.create(javaMenusJson.size());
+            final List<String> javaMenus = new ArrayList<>(javaMenusJson.size());
             for (int i = 0; i < javaMenusJson.size(); i++) {
-                this.javaMenus.put(Key.namespaced(javaMenusJson.get(i).getAsString()), i);
+                javaMenus.add(Key.namespaced(javaMenusJson.get(i).getAsString()));
             }
-            // noinspection ResultOfMethodCallIgnored
-            MenuType.values(); // Initialize the enum
+
+            final JsonObject bedrockToJavaContainersJson = this.readJson("custom/container_mappings.json");
+            this.bedrockToJavaContainers = new EnumMap<>(ContainerType.class);
+            final Set<ContainerType> unmappedContainerTypes = new HashSet<>();
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaContainersJson.entrySet()) {
+                final ContainerType bedrockContainerType = EnumUtil.getEnumConstantOrNull(ContainerType.class, entry.getKey());
+                if (bedrockContainerType == null) {
+                    throw new IllegalStateException("Unknown bedrock container type: " + entry.getKey());
+                }
+                if (entry.getValue().isJsonNull()) {
+                    unmappedContainerTypes.add(bedrockContainerType);
+                    continue;
+                }
+
+                final String javaIdentifier = entry.getValue().getAsString();
+                if (!javaMenus.contains(javaIdentifier)) {
+                    throw new IllegalStateException("Unknown java menu: " + javaIdentifier);
+                }
+                this.bedrockToJavaContainers.put(bedrockContainerType, javaMenus.indexOf(javaIdentifier));
+            }
+            for (ContainerType containerType : ContainerType.values()) {
+                if (!this.bedrockToJavaContainers.containsKey(containerType) && !unmappedContainerTypes.contains(containerType)) {
+                    throw new RuntimeException("Missing bedrock -> java container mapping for " + containerType.name());
+                }
+            }
         }
 
         { // Entities
@@ -485,12 +508,12 @@ public class BedrockMappingData extends MappingDataBase {
                 if (!this.bedrockEntities.containsKey(bedrockIdentifier)) {
                     throw new RuntimeException("Unknown bedrock entity identifier: " + bedrockIdentifier);
                 }
-
-                final String javaIdentifier = entry.getValue().getAsString();
-                if (javaIdentifier.isEmpty()) {
+                if (entry.getValue().isJsonNull()) {
                     unmappedIdentifiers.add(bedrockIdentifier);
                     continue;
                 }
+
+                final String javaIdentifier = entry.getValue().getAsString();
                 EntityTypes1_20_5 javaEntityType = null;
                 for (EntityTypes1_20_5 type : EntityTypes1_20_5.values()) {
                     if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
@@ -504,7 +527,6 @@ public class BedrockMappingData extends MappingDataBase {
 
                 this.bedrockToJavaEntities.put(bedrockIdentifier, javaEntityType);
             }
-
             for (String bedrockIdentifier : this.bedrockEntities.keySet()) {
                 if (!this.bedrockToJavaEntities.containsKey(bedrockIdentifier) && !unmappedIdentifiers.contains(bedrockIdentifier)) {
                     throw new RuntimeException("Missing bedrock -> java entity mapping for " + bedrockIdentifier);
@@ -579,7 +601,6 @@ public class BedrockMappingData extends MappingDataBase {
                 }
                 this.bedrockToJavaEffects.put(bedrockIdentifier, javaIdentifier);
             }
-
             for (String bedrockIdentifier : this.bedrockEffects.keySet()) {
                 if (!this.bedrockToJavaEffects.containsKey(bedrockIdentifier)) {
                     throw new IllegalStateException("Missing bedrock -> java effect mapping for " + bedrockIdentifier);
@@ -724,8 +745,8 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaMetaItems;
     }
 
-    public BiMap<String, Integer> getJavaMenus() {
-        return this.javaMenus;
+    public Map<ContainerType, Integer> getBedrockToJavaContainers() {
+        return this.bedrockToJavaContainers;
     }
 
     public BiMap<String, Integer> getBedrockEntities() {

@@ -18,17 +18,18 @@
 package net.raphimc.viabedrock.api.model.container.fake;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.protocol.data.enums.MenuType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 public abstract class FakeContainer extends Container {
 
-    public FakeContainer(final UserConnection user, final MenuType menuType, final ATextComponent title) {
-        super(user, user.get(InventoryTracker.class).getNextFakeWindowId(), menuType, title, null, 0);
+    public FakeContainer(final UserConnection user, final ContainerType type, final ATextComponent title) {
+        super(user, user.get(InventoryTracker.class).getNextFakeWindowId(), type, title, null, 0);
     }
 
     @Override
@@ -41,6 +42,11 @@ public abstract class FakeContainer extends Container {
         throw new UnsupportedOperationException("Fake containers cannot have bedrock items");
     }
 
+    @Override
+    public void setItems(final BedrockItem[] items, final PacketWrapper javaItems) {
+        throw new UnsupportedOperationException("Fake containers cannot have bedrock items");
+    }
+
     public void onAnvilRename(final String name) {
     }
 
@@ -48,7 +54,7 @@ public abstract class FakeContainer extends Container {
     }
 
     public void close() {
-        PacketFactory.sendJavaContainerClose(this.user, this.windowId);
+        PacketFactory.sendJavaContainerClose(this.user, this.javaWindowId());
         this.user.get(InventoryTracker.class).markPendingClose(this);
     }
 

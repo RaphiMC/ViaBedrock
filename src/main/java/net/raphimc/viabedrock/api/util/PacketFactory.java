@@ -34,6 +34,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.java.CustomChatCompletionsAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
+import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 public class PacketFactory {
 
@@ -109,10 +110,10 @@ public class PacketFactory {
     }
 
     public static void writeJavaContainerSetContent(final PacketWrapper wrapper, final Container container) {
-        wrapper.write(Types.UNSIGNED_BYTE, (short) container.windowId()); // window id
+        wrapper.write(Types.UNSIGNED_BYTE, (short) container.javaWindowId()); // window id
         wrapper.write(Types.VAR_INT, 0); // revision
         wrapper.write(Types1_21.ITEM_ARRAY, container.getJavaItems()); // items
-        wrapper.write(Types1_21.ITEM, container.getJavaCursorItem()); // cursor item
+        wrapper.write(Types1_21.ITEM, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
     }
 
 }

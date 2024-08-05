@@ -15,52 +15,74 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container;
+package net.raphimc.viabedrock.api.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.MenuType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class InventoryContainer extends Container {
 
     private byte selectedHotbarSlot = 0;
 
-    public InventoryContainer(final UserConnection user, final byte windowId) {
-        super(user, windowId, MenuType.INVENTORY, null, null, 36);
+    public InventoryContainer(final UserConnection user) {
+        super(user, (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue(), ContainerType.INVENTORY, null, null, 36);
+    }
+
+    public InventoryContainer(final UserConnection user, final byte windowId, final BlockPosition position, final InventoryContainer inventoryContainer) {
+        super(user, windowId, inventoryContainer.type, inventoryContainer.title, position, inventoryContainer.items, inventoryContainer.validBlockTags);
+        this.selectedHotbarSlot = inventoryContainer.selectedHotbarSlot;
     }
 
     @Override
     public Item[] getJavaItems() {
-        final Item[] combinedItems = StructuredItem.emptyArray(45);
+        final InventoryTracker inventoryTracker = this.user.get(InventoryTracker.class);
         final Item[] inventoryItems = super.getJavaItems();
+        final Item[] armorItems = inventoryTracker.getArmorContainer().getActualJavaItems();
+        final Item[] offhandItems = inventoryTracker.getOffhandContainer().getActualJavaItems();
+        final HudContainer hudContainer = inventoryTracker.getHudContainer();
 
+        final Item[] combinedItems = StructuredItem.emptyArray(46);
+        System.arraycopy(armorItems, 0, combinedItems, 5, armorItems.length);
         System.arraycopy(inventoryItems, 9, combinedItems, 9, 27);
         System.arraycopy(inventoryItems, 0, combinedItems, 36, 9);
-
+        System.arraycopy(offhandItems, 0, combinedItems, 45, offhandItems.length);
+        for (int i = 0; i < 4; i++) {
+            combinedItems[1 + i] = hudContainer.getJavaItem(28 + i);
+        }
         return combinedItems;
     }
 
     @Override
-    public void setItems(final BedrockItem[] items) {
+    public void setItems(final BedrockItem[] items, final PacketWrapper javaItems) {
         if (items.length != this.size()) {
             final BedrockItem[] newItems = BedrockItem.emptyArray(this.size());
             System.arraycopy(items, 0, newItems, 0, Math.min(items.length, newItems.length));
-            super.setItems(newItems);
+            super.setItems(newItems, javaItems);
         } else {
-            super.setItems(items);
+            super.setItems(items, javaItems);
         }
+    }
+
+    @Override
+    public byte javaWindowId() {
+        return (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue();
     }
 
     public void sendSelectedHotbarSlotToClient() {

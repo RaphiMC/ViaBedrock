@@ -15,33 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.fake;
+package net.raphimc.viabedrock.api.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.item.Item;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 
-import java.util.function.Consumer;
+public class HudContainer extends InventoryRedirectContainer {
 
-public class AnvilTextInputContainer extends FakeContainer {
-
-    private final Consumer<String> onRename;
-
-    public AnvilTextInputContainer(final UserConnection user, final ATextComponent title, final Consumer<String> onRename) {
-        super(user, ContainerType.ANVIL, title);
-
-        this.onRename = onRename;
-    }
-
-    @Override
-    public void onAnvilRename(final String name) {
-        this.onRename.accept(name);
-    }
-
-    @Override
-    public Item[] getJavaItems() {
-        throw new UnsupportedOperationException();
+    public HudContainer(final UserConnection user) {
+        super(user, (byte) ContainerID.CONTAINER_ID_PLAYER_ONLY_UI.getValue(), ContainerType.HUD, 54);
     }
 
 }

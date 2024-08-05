@@ -15,33 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.fake;
+package net.raphimc.viabedrock.api.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
-import java.util.function.Consumer;
+public abstract class InventoryRedirectContainer extends Container {
 
-public class AnvilTextInputContainer extends FakeContainer {
-
-    private final Consumer<String> onRename;
-
-    public AnvilTextInputContainer(final UserConnection user, final ATextComponent title, final Consumer<String> onRename) {
-        super(user, ContainerType.ANVIL, title);
-
-        this.onRename = onRename;
-    }
-
-    @Override
-    public void onAnvilRename(final String name) {
-        this.onRename.accept(name);
+    public InventoryRedirectContainer(final UserConnection user, final byte windowId, final ContainerType type, final int size) {
+        super(user, windowId, type, null, null, size);
     }
 
     @Override
     public Item[] getJavaItems() {
-        throw new UnsupportedOperationException();
+        return this.user.get(InventoryTracker.class).getInventoryContainer().getJavaItems();
+    }
+
+    @Override
+    public byte javaWindowId() {
+        return this.user.get(InventoryTracker.class).getInventoryContainer().javaWindowId();
+    }
+
+    protected Item[] getActualJavaItems() {
+        return super.getJavaItems();
     }
 
 }
