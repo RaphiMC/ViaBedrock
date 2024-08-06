@@ -56,7 +56,7 @@ public class InventoryContainer extends Container {
         final Item[] inventoryItems = super.getJavaItems();
         final Item[] armorItems = inventoryTracker.getArmorContainer().getActualJavaItems();
         final Item[] offhandItems = inventoryTracker.getOffhandContainer().getActualJavaItems();
-        final HudContainer hudContainer = inventoryTracker.getHudContainer();
+        final Container hudContainer = inventoryTracker.getHudContainer();
 
         final Item[] combinedItems = StructuredItem.emptyArray(46);
         System.arraycopy(armorItems, 0, combinedItems, 5, armorItems.length);

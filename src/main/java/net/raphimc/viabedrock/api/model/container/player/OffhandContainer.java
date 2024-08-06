@@ -18,13 +18,35 @@
 package net.raphimc.viabedrock.api.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
+import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class OffhandContainer extends InventorySubContainer {
 
     public OffhandContainer(final UserConnection user) {
         super(user, (byte) ContainerID.CONTAINER_ID_OFFHAND.getValue(), ContainerType.HAND, 1);
+    }
+
+    @Override
+    protected void onSlotChanged(final int slot, final BedrockItem oldItem, final BedrockItem newItem) {
+        super.onSlotChanged(slot, oldItem, newItem);
+        if (slot == 0) {
+            final PacketWrapper mobEquipment = PacketWrapper.create(ServerboundBedrockPackets.MOB_EQUIPMENT, this.user);
+            mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // runtime entity id
+            mobEquipment.write(this.user.get(ItemRewriter.class).itemType(), newItem); // item
+            mobEquipment.write(Types.BYTE, (byte) 1); // slot
+            mobEquipment.write(Types.BYTE, (byte) 0); // selected slot
+            mobEquipment.write(Types.BYTE, this.windowId); // window id
+            mobEquipment.sendToServer(BedrockProtocol.class);
+        }
     }
 
 }
