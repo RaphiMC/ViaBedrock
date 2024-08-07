@@ -27,4 +27,9 @@ public class ArmorContainer extends InventorySubContainer {
         super(user, (byte) ContainerID.CONTAINER_ID_ARMOR.getValue(), ContainerType.ARMOR, 4);
     }
 
+    @Override
+    public int javaSlot(final int slot) {
+        return 5 + slot;
+    }
+
 }

@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.api.model.container.fake;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.util.PacketFactory;
@@ -38,12 +37,12 @@ public abstract class FakeContainer extends Container {
     }
 
     @Override
-    public void setItem(final int slot, final BedrockItem item) {
+    public boolean setItem(final int slot, final BedrockItem item) {
         throw new UnsupportedOperationException("Fake containers cannot have bedrock items");
     }
 
     @Override
-    public void setItems(final BedrockItem[] items, final PacketWrapper javaItems) {
+    public boolean setItems(final BedrockItem[] items) {
         throw new UnsupportedOperationException("Fake containers cannot have bedrock items");
     }
 

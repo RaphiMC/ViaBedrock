@@ -20,11 +20,30 @@ package net.raphimc.viabedrock.api.model.container.player;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 public class HudContainer extends InventoryRedirectContainer {
 
     public HudContainer(final UserConnection user) {
         super(user, (byte) ContainerID.CONTAINER_ID_PLAYER_ONLY_UI.getValue(), ContainerType.HUD, 54);
+    }
+
+    @Override
+    public boolean setItem(final int slot, final BedrockItem item) {
+        if (super.setItem(slot, item)) {
+            return slot == 0 || (slot >= 28 && slot <= 31);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int javaSlot(final int slot) {
+        if (slot >= 28 && slot <= 31) {
+            return slot - 27;
+        } else {
+            return super.javaSlot(slot);
+        }
     }
 
 }

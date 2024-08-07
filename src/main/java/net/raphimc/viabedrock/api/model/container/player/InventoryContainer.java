@@ -70,13 +70,22 @@ public class InventoryContainer extends Container {
     }
 
     @Override
-    public void setItems(final BedrockItem[] items, final PacketWrapper javaItems) {
+    public boolean setItems(final BedrockItem[] items) {
         if (items.length != this.size()) {
             final BedrockItem[] newItems = BedrockItem.emptyArray(this.size());
             System.arraycopy(items, 0, newItems, 0, Math.min(items.length, newItems.length));
-            super.setItems(newItems, javaItems);
+            return super.setItems(newItems);
         } else {
-            super.setItems(items, javaItems);
+            return super.setItems(items);
+        }
+    }
+
+    @Override
+    public int javaSlot(final int slot) {
+        if (slot < 9) {
+            return 36 + slot;
+        } else {
+            return super.javaSlot(slot);
         }
     }
 

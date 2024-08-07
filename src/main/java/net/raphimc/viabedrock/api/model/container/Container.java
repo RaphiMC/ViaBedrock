@@ -20,10 +20,8 @@ package net.raphimc.viabedrock.api.model.container;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.item.Item;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
@@ -84,23 +82,32 @@ public abstract class Container {
         return this.items[slot];
     }
 
-    public void setItem(final int slot, final BedrockItem item) {
+    public boolean setItem(final int slot, final BedrockItem item) {
+        if (slot < 0 || slot >= this.items.length) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set item for " + this.type + ", but slot was out of bounds (" + slot + ")");
+            return false;
+        }
+
         final BedrockItem oldItem = this.items[slot];
         this.items[slot] = item;
         this.onSlotChanged(slot, oldItem, item);
+        return true;
     }
 
-    public void setItems(final BedrockItem[] items, final PacketWrapper javaItems) {
+    public boolean setItems(final BedrockItem[] items) {
         if (items.length != this.items.length) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct");
-            javaItems.cancel();
-            return;
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
+            return false;
         }
 
         for (int i = 0; i < items.length; i++) {
             this.setItem(i, items[i]);
         }
-        PacketFactory.writeJavaContainerSetContent(javaItems, this);
+        return true;
+    }
+
+    public int javaSlot(final int slot) {
+        return slot;
     }
 
     public byte javaWindowId() {

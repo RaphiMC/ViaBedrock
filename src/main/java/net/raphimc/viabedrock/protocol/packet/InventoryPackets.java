@@ -149,8 +149,28 @@ public class InventoryPackets {
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final Container container = inventoryTracker.getContainerClientbound((byte) windowId);
-            if (container != null) {
-                container.setItems(items, wrapper);
+            if (container != null && container.setItems(items)) {
+                PacketFactory.writeJavaContainerSetContent(wrapper, container);
+            } else {
+                wrapper.cancel();
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_SLOT, ClientboundPackets1_21.CONTAINER_SET_SLOT, wrapper -> {
+            final int windowId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // window id
+            final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // slot
+            final BedrockItem item = wrapper.read(wrapper.user().get(ItemRewriter.class).itemType()); // item
+
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            final Container container = inventoryTracker.getContainerClientbound((byte) windowId);
+            if (container != null && container.setItem(slot, item)) {
+                if (container.type() == ContainerType.HUD && slot == 0) { // cursor item
+                    wrapper.write(Types.UNSIGNED_BYTE, (short) -1); // window id
+                } else {
+                    wrapper.write(Types.UNSIGNED_BYTE, (short) container.javaWindowId()); // window id
+                }
+                wrapper.write(Types.VAR_INT, 0); // revision
+                wrapper.write(Types.SHORT, (short) container.javaSlot(slot)); // slot
+                wrapper.write(Types1_21.ITEM, container.getJavaItem(slot)); // item
             } else {
                 wrapper.cancel();
             }
