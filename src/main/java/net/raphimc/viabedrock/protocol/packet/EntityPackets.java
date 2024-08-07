@@ -41,10 +41,9 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AnimateAction;
-import net.raphimc.viabedrock.protocol.model.EntityAttribute;
-import net.raphimc.viabedrock.protocol.model.EntityLink;
-import net.raphimc.viabedrock.protocol.model.EntityProperties;
-import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.data.enums.java.EquipmentSlot;
+import net.raphimc.viabedrock.protocol.model.*;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -65,7 +64,7 @@ public class EntityPackets {
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
-            final float bodyRotation = wrapper.read(BedrockTypes.FLOAT_LE); // body rotation
+            wrapper.read(BedrockTypes.FLOAT_LE); // body rotation
             final EntityAttribute[] attributes = new EntityAttribute[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // attribute count
             for (int i = 0; i < attributes.length; i++) {
                 final String name = wrapper.read(BedrockTypes.STRING); // name
@@ -433,6 +432,55 @@ public class EntityPackets {
                 case MagicCriticalHit -> AnimateAction.MAGIC_CRITICAL_HIT;
                 default -> throw new IllegalStateException("Unhandled AnimatePacket_Action: " + action);
             }).ordinal()); // action
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.MOB_ARMOR_EQUIPMENT, ClientboundPackets1_21.SET_EQUIPMENT, wrapper -> {
+            final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
+            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final BedrockItem head = wrapper.read(itemRewriter.itemType()); // head
+            final BedrockItem chest = wrapper.read(itemRewriter.itemType()); // chest
+            final BedrockItem legs = wrapper.read(itemRewriter.itemType()); // legs
+            final BedrockItem feet = wrapper.read(itemRewriter.itemType()); // feet
+
+            final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(runtimeEntityId);
+            if (entity == null || entity instanceof ClientPlayerEntity) {
+                wrapper.cancel();
+                return;
+            }
+
+            wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+            wrapper.write(Types.BYTE, (byte) (EquipmentSlot.FEET.ordinal() | Byte.MIN_VALUE)); // slot
+            wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(feet)); // item
+            wrapper.write(Types.BYTE, (byte) (EquipmentSlot.LEGS.ordinal() | Byte.MIN_VALUE)); // slot
+            wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(legs)); // item
+            wrapper.write(Types.BYTE, (byte) (EquipmentSlot.CHEST.ordinal() | Byte.MIN_VALUE)); // slot
+            wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(chest)); // item
+            wrapper.write(Types.BYTE, (byte) EquipmentSlot.HEAD.ordinal()); // slot
+            wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(head)); // item
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.MOB_EQUIPMENT, ClientboundPackets1_21.SET_EQUIPMENT, wrapper -> {
+            final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
+            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // item
+            final byte slot = wrapper.read(Types.BYTE); // slot
+            final byte selectedSlot = wrapper.read(Types.BYTE); // selected slot
+            final byte windowId = wrapper.read(Types.BYTE); // window id
+
+            final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(runtimeEntityId);
+            if (entity == null || entity instanceof ClientPlayerEntity) {
+                wrapper.cancel();
+                return;
+            }
+
+            wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+            if (windowId == ContainerID.CONTAINER_ID_INVENTORY.getValue() && slot >= 0 && slot < 9 && slot == selectedSlot) {
+                wrapper.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
+                wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(item)); // item
+            } else if (windowId == ContainerID.CONTAINER_ID_OFFHAND.getValue()) {
+                wrapper.write(Types.BYTE, (byte) EquipmentSlot.OFFHAND.ordinal()); // slot
+                wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(item)); // item
+            } else {
+                wrapper.cancel();
+            }
         });
     }
 

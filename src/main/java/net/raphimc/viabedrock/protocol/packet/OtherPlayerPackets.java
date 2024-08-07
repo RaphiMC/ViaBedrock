@@ -21,6 +21,7 @@ import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.Types1_21;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
@@ -34,6 +35,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerPositionModeComponent_PositionMode;
+import net.raphimc.viabedrock.protocol.data.enums.java.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
@@ -105,6 +107,14 @@ public class OtherPlayerPackets {
             wrapper.write(Types.SHORT, (short) (motion.x() * 8000F)); // velocity x
             wrapper.write(Types.SHORT, (short) (motion.y() * 8000F)); // velocity y
             wrapper.write(Types.SHORT, (short) (motion.z() * 8000F)); // velocity z
+            wrapper.send(BedrockProtocol.class);
+            wrapper.cancel();
+
+            final PacketWrapper setEquipment = PacketWrapper.create(ClientboundPackets1_21.SET_EQUIPMENT, wrapper.user());
+            setEquipment.write(Types.VAR_INT, entity.javaId()); // entity id
+            setEquipment.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
+            setEquipment.write(Types1_21.ITEM, itemRewriter.javaItem(item)); // item
+            setEquipment.send(BedrockProtocol.class);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOVE_PLAYER, ClientboundPackets1_21.TELEPORT_ENTITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
