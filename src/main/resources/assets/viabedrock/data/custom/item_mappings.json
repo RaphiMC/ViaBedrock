@@ -7555,31 +7555,28 @@
   },
   "minecraft:skull": {
     "meta": {
-      "3": {
-        "java_id": "minecraft:zombie_head"
-      },
-      "2": {
-        "java_id": "minecraft:zombie_head"
-      },
-      "4": {
-        "java_id": "minecraft:player_head"
-      },
-      "5": {
-        "java_id": "minecraft:creeper_head"
-      },
       "": {
         "java_id": "minecraft:player_head"
-      },
-      "1": {
-        "java_id": "minecraft:wither_skeleton_skull"
       },
       "0": {
         "java_id": "minecraft:skeleton_skull"
       },
-      "6": {
+      "1": {
+        "java_id": "minecraft:wither_skeleton_skull"
+      },
+      "2": {
+        "java_id": "minecraft:zombie_head"
+      },
+      "3": {
+        "java_id": "minecraft:player_head"
+      },
+      "4": {
+        "java_id": "minecraft:creeper_head"
+      },
+      "5": {
         "java_id": "minecraft:dragon_head"
       },
-      "7": {
+      "6": {
         "java_id": "minecraft:piglin_head"
       }
     }
