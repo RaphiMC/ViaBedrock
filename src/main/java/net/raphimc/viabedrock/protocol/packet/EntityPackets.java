@@ -472,7 +472,7 @@ public class EntityPackets {
             }
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
-            if (windowId == ContainerID.CONTAINER_ID_INVENTORY.getValue() && slot >= 0 && slot < 9 && slot == selectedSlot) {
+            if (windowId == ContainerID.CONTAINER_ID_INVENTORY.getValue() && slot >= 0 && slot < 9 && (slot == selectedSlot || selectedSlot < 0)) {
                 wrapper.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
                 wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(item)); // item
             } else if (windowId == ContainerID.CONTAINER_ID_OFFHAND.getValue()) {
