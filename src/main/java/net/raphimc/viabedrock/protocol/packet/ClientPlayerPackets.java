@@ -133,22 +133,16 @@ public class ClientPlayerPackets {
             wrapper.read(BedrockTypes.BLOCK_POSITION); // result position
             wrapper.read(BedrockTypes.VAR_INT); // face
 
-            switch (action) {
-                case ChangeDimensionAck -> {
-                    final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
-                    if (clientPlayer.isChangingDimension()) {
-                        if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
-                            clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
-                        }
-                        clientPlayer.sendPlayerPositionPacketToClient(false);
-                        PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
-                        clientPlayer.setChangingDimension(false);
-                        clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.ChangeDimensionAck, 0);
+            if (action == PlayerActionType.ChangeDimensionAck) {
+                final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+                if (clientPlayer.isChangingDimension()) {
+                    if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
+                        clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
                     }
-                }
-                default -> {
-                    // TODO: Handle remaining actions
-                    // throw new IllegalStateException("Unhandled PlayerActionType: " + action);
+                    clientPlayer.sendPlayerPositionPacketToClient(false);
+                    PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
+                    clientPlayer.setChangingDimension(false);
+                    clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.ChangeDimensionAck, 0);
                 }
             }
         });

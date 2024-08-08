@@ -124,7 +124,7 @@ public class InventoryPackets {
                     final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
                     final Container container = serverInitiated ? inventoryTracker.getCurrentContainer() : inventoryTracker.getPendingCloseContainer();
                     if (container != null) {
-                        if ((serverInitiated || containerType != ContainerType.NONE) && containerType != container.type()) {
+                        if (serverInitiated && containerType != container.type()) {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Server tried to close container, but container type was not correct");
                             wrapper.cancel();
                             return;
@@ -288,14 +288,14 @@ public class InventoryPackets {
                     if (container == null) {
                         wrapper.cancel();
                         return;
-                    } else if (container instanceof FakeContainer) {
-                        wrapper.cancel();
                     }
 
                     if (container.javaWindowId() != container.windowId()) {
                         wrapper.set(Types.BYTE, 0, container.windowId());
                     }
-                    inventoryTracker.markPendingClose(container);
+                    if (!inventoryTracker.markPendingClose(container)) {
+                        wrapper.cancel();
+                    }
                 });
             }
         });

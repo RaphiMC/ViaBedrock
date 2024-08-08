@@ -108,20 +108,23 @@ public class InventoryTracker extends StoredObject {
         PacketFactory.sendJavaContainerSetContent(this.getUser(), container);
     }
 
-    public void markPendingClose(final Container container) {
+    public boolean markPendingClose(final Container container) {
         if (container instanceof FakeContainer fakeContainer) {
             this.containerStack.remove(fakeContainer);
             fakeContainer.onClosed();
             if (!this.containerStack.isEmpty()) {
                 this.openContainer(this.containerStack.pop());
             }
-            return;
+            return false;
+        } else if (this.pendingCloseContainer == container) {
+            return false;
         }
 
         if (this.pendingCloseContainer != null) {
-            throw new IllegalStateException("There is already a container pending close");
+            throw new IllegalStateException("There is already another container pending close");
         }
         this.pendingCloseContainer = container;
+        return true;
     }
 
     public void setCurrentContainerClosed(final boolean serverInitiated) {
