@@ -205,7 +205,6 @@ public class ClientPlayerPackets {
             wrapper.read(Types.BOOLEAN); // show name tags
             wrapper.read(Types.BOOLEAN); // auto jump
         });
-        protocol.cancelClientbound(ClientboundBedrockPackets.SET_HEALTH); // Seems to do nothing meaningful
 
         protocol.registerServerbound(ServerboundPackets1_20_5.CLIENT_COMMAND, ServerboundBedrockPackets.RESPAWN, wrapper -> {
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();

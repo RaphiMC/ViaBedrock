@@ -100,9 +100,9 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         EntityPackets.register(this);
         HudPackets.register(this);
         InventoryPackets.register(this);
+        UnhandledPackets.register(this);
 
         // Fallback for unhandled packets (Temporary)
-
         for (ClientboundBedrockPackets packet : this.unmappedClientboundPacketType.getEnumConstants()) {
             if (!this.hasRegisteredClientbound(packet)) {
                 this.cancelClientbound(packet);
