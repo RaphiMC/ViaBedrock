@@ -35,7 +35,7 @@ public class ImageType extends Type<BufferedImage> {
         final int height = buffer.readIntLE();
         final byte[] data = BedrockTypes.BYTE_ARRAY.read(buffer);
 
-        if (width <= 0 || height <= 0 || data.length == 0) {
+        if (width <= 0 || height <= 0 || data.length == 0 || data.length != width * height * 4) {
             return null;
         }
 
