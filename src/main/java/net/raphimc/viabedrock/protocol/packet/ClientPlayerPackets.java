@@ -89,6 +89,7 @@ public class ClientPlayerPackets {
                             inventoryTracker.getHudContainer().clearItems();
                             // TODO: InventoryTransactionPacket(legacyRequestId=0, legacySlots=[], actions=[], transactionType=INVENTORY_MISMATCH, actionType=0, runtimeEntityId=0, blockPosition=null, blockFace=0, hotbarSlot=0, itemInHand=null, playerPosition=null, clickPosition=null, headPosition=null, usingNetIds=false, blockDefinition=null)
                         }
+                        clientPlayer.clearEffects();
 
                         clientPlayer.setHealth(clientPlayer.attributes().get("minecraft:health").maxValue());
                         clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.Respawn, -1);

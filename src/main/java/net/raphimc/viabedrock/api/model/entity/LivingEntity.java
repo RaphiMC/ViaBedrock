@@ -28,6 +28,7 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
+import net.raphimc.viabedrock.protocol.model.EntityEffect;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,10 +37,29 @@ import java.util.logging.Level;
 public class LivingEntity extends Entity {
 
     protected Map<String, EntityAttribute> attributes = new HashMap<>();
+    protected Map<String, EntityEffect> effects = new HashMap<>();
 
     public LivingEntity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid, final EntityTypes1_20_5 type) {
         super(user, uniqueId, runtimeId, javaId, javaUuid, type);
         this.attributes.put("minecraft:health", new EntityAttribute("minecraft:health", 20F, 0, 20F));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        final Set<String> effectsToRemove = new HashSet<>();
+        for (EntityEffect effect : this.effects.values()) {
+            if (effect.duration().decrementAndGet() <= 0) {
+                effectsToRemove.add(effect.identifier());
+            }
+        }
+        // Bedrock client removes effects clientside, but Java Edition doesn't, so we need to send a remove packet for each effect
+        for (String identifier : effectsToRemove) {
+            final PacketWrapper removeMobEffect = PacketWrapper.create(ClientboundPackets1_21.REMOVE_MOB_EFFECT, this.user);
+            this.removeEffect(identifier, removeMobEffect);
+            removeMobEffect.send(BedrockProtocol.class);
+        }
     }
 
     public final void sendAttribute(final String name) {
@@ -79,6 +99,33 @@ public class LivingEntity extends Entity {
             setEntityData.write(Types1_21.ENTITY_DATA_LIST, javaEntityData); // entity data
             setEntityData.send(BedrockProtocol.class);
         }
+    }
+
+    public final void sendEffects() {
+        for (EntityEffect effect : this.effects.values()) {
+            final PacketWrapper updateMobEffect = PacketWrapper.create(ClientboundPackets1_21.UPDATE_MOB_EFFECT, this.user);
+            this.updateEffect(effect, updateMobEffect);
+            updateMobEffect.send(BedrockProtocol.class);
+        }
+    }
+
+    public final void updateEffect(final EntityEffect effect, final PacketWrapper javaEffect) {
+        this.effects.put(effect.identifier(), effect);
+        javaEffect.write(Types.VAR_INT, this.javaId); // entity id
+        javaEffect.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEffects().get(BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(effect.identifier()))); // effect id
+        javaEffect.write(Types.VAR_INT, effect.amplifier()); // amplifier
+        javaEffect.write(Types.VAR_INT, Math.max(effect.duration().get(), 0)); // duration
+        javaEffect.write(Types.BYTE, (byte) (effect.showParticles() ? 2 : 0)); // flags
+    }
+
+    public final void removeEffect(final String identifier, final PacketWrapper javaEffect) {
+        this.effects.remove(identifier);
+        javaEffect.write(Types.VAR_INT, this.javaId); // entity id
+        javaEffect.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEffects().get(BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(identifier))); // effect id
+    }
+
+    public final void clearEffects() {
+        this.effects.clear();
     }
 
     public boolean isDead() {

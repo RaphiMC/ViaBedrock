@@ -579,7 +579,7 @@ public class BedrockMappingData extends MappingDataBase {
             final JsonArray javaEffectsJson = this.readJson("java/effects.json", JsonArray.class);
             this.javaEffects = HashBiMap.create(javaEffectsJson.size());
             for (int i = 0; i < javaEffectsJson.size(); i++) {
-                this.javaEffects.put(javaEffectsJson.get(i).getAsString(), i + 1);
+                this.javaEffects.put(javaEffectsJson.get(i).getAsString(), i);
             }
 
             final JsonArray bedrockEffectsJson = this.readJson("bedrock/effects.json", JsonArray.class);

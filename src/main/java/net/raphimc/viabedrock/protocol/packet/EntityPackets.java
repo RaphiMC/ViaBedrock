@@ -405,6 +405,36 @@ public class EntityPackets {
                 wrapper.cancel();
             }
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.MOB_EFFECT, ClientboundPackets1_21.UPDATE_MOB_EFFECT, wrapper -> {
+            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final MobEffectPacket_Event event = MobEffectPacket_Event.getByValue(wrapper.read(Types.BYTE), MobEffectPacket_Event.Invalid); // event id
+            final int effectId = wrapper.read(BedrockTypes.VAR_INT); // effect id
+            final int amplifier = wrapper.read(BedrockTypes.VAR_INT); // amplifier
+            final boolean showParticles = wrapper.read(Types.BOOLEAN); // show particles
+            final int duration = wrapper.read(BedrockTypes.VAR_INT); // duration
+            wrapper.read(BedrockTypes.LONG_LE); // tick
+
+            final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(runtimeEntityId);
+            if (!(entity instanceof LivingEntity livingEntity) || effectId == 0) {
+                wrapper.cancel();
+                return;
+            }
+
+            final String bedrockIdentifier = BedrockProtocol.MAPPINGS.getBedrockEffects().inverse().get(effectId);
+            if (bedrockIdentifier == null) { // Mojang client crashes
+                throw new IllegalStateException("Unknown bedrock effect: " + effectId);
+            }
+            final EntityEffect effect = new EntityEffect(bedrockIdentifier, amplifier, duration, showParticles);
+            switch (event) {
+                case Invalid -> wrapper.cancel();
+                case Add, Update -> livingEntity.updateEffect(effect, wrapper);
+                case Remove -> {
+                    wrapper.setPacketType(ClientboundPackets1_21.REMOVE_MOB_EFFECT);
+                    livingEntity.removeEffect(bedrockIdentifier, wrapper);
+                }
+                default -> throw new IllegalStateException("Unhandled MobEffectPacket_Event: " + event);
+            }
+        });
         protocol.registerClientbound(ClientboundBedrockPackets.ANIMATE, ClientboundPackets1_21.ANIMATE, wrapper -> {
             final AnimatePacket_Action action = AnimatePacket_Action.getByValue(wrapper.read(BedrockTypes.VAR_INT), AnimatePacket_Action.NoAction); // action
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
