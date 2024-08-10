@@ -25,7 +25,7 @@ import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.awt.image.BufferedImage;
-import java.util.Locale;
+import java.util.*;
 
 public class ResourcePackRewriter {
 
@@ -35,7 +35,12 @@ public class ResourcePackRewriter {
         final ResourcePack.Content javaContent = new ResourcePack.Content();
 
         resourcePacksStorage.iterateResourcePacksBottomToTop(pack -> {
-            convertGlyphSheets(pack.content(), javaContent);
+            try {
+                convertGlyphSheets(pack.content(), javaContent);
+                convertCustomItemTextures(pack.content(), javaContent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return true;
         });
 
@@ -51,6 +56,105 @@ public class ResourcePackRewriter {
         pack.addProperty("pack_format", ProtocolConstants.JAVA_PACK_VERSION);
         pack.addProperty("description", "ViaBedrock Resource Pack");
         return root;
+    }
+
+    private static void convertCustomItemTextures(final ResourcePack.Content bedrockContent, final ResourcePack.Content javaContent) {
+        final String jsonPath = "textures/item_texture.json";
+        if (!bedrockContent.containsKey(jsonPath)) {
+            return;
+        }
+
+        JsonObject itemTextureObject = bedrockContent.getJson(jsonPath);
+        if (!itemTextureObject.has("texture_data"))
+            return;
+        JsonObject textureDataObject = itemTextureObject.getAsJsonObject("texture_data");
+        if (textureDataObject == null)
+            return;
+
+        Map<Integer, String> map = new HashMap<>();
+        List<Integer> keys = new ArrayList<>();
+        for (Map.Entry<String, JsonElement> object : textureDataObject.asMap().entrySet()) {
+            if (!object.getValue().isJsonObject())
+                continue;
+
+            JsonElement texturePath = object.getValue().getAsJsonObject().get("textures");
+            if (texturePath == null || !texturePath.isJsonPrimitive())
+                continue;
+
+            String path = texturePath.getAsString();
+            BufferedImage image = bedrockContent.getImage(path + ".png");
+            if (image == null) {
+                image = bedrockContent.getImage(path + ".jpg");
+
+                if (image == null)
+                    continue;
+            }
+
+            int modelData = object.getKey().hashCode();
+            System.out.println(object.getKey() + "," + modelData);
+            final String[] splitName = path.split("/");
+            String simpleName = splitName[splitName.length - 1];
+            String nameWithModelData = simpleName + Math.abs(modelData);
+
+            putImageToPath(javaContent, image, nameWithModelData);
+            putModelItemToPath(javaContent, nameWithModelData);
+
+            map.put(modelData, nameWithModelData);
+            keys.add(modelData);
+        }
+
+        Collections.sort(keys);
+        if (!map.isEmpty()) {
+            putItemToPath(javaContent, keys, map);
+        }
+    }
+
+    private static void putItemToPath(ResourcePack.Content javaContent, List<Integer> sortedKeys, Map<Integer, String> map) {
+        JsonObject itemJson = new JsonObject();
+        itemJson.addProperty("parent", "minecraft:item/generated");
+        JsonObject o1 = new JsonObject();
+        o1.addProperty("layer0", "minecraft:item/paper");
+        itemJson.add("textures", o1);
+
+        JsonElement overridesElement = itemJson.get("overrides");
+        JsonArray overrides;
+        boolean notInit = false;
+        if (overridesElement == null || !overridesElement.isJsonArray()) {
+            overrides = new JsonArray();
+            notInit = true;
+        } else {
+            overrides = overridesElement.getAsJsonArray();
+        }
+
+        for (Integer i : sortedKeys) {
+            JsonObject overrideObject = new JsonObject();
+            overrideObject.addProperty("model", "viabedrock/" + map.get(i));
+            JsonObject predicate = new JsonObject();
+            predicate.addProperty("custom_model_data",i);
+            overrideObject.add("predicate", predicate);
+            overrides.add(overrideObject);
+        }
+
+        if (notInit) {
+            itemJson.add("overrides", overrides);
+        }
+
+        javaContent.putJson("assets/minecraft/models/item/paper.json", itemJson);
+    }
+
+    private static void putModelItemToPath(ResourcePack.Content javaContent, String name) {
+        JsonObject itemModelJson = new JsonObject();
+        itemModelJson.addProperty("parent", "minecraft:item/generated");
+        JsonObject o = new JsonObject();
+        o.addProperty("layer0", "minecraft:item/" + name);
+        itemModelJson.add("textures", o);
+        String jsonJavaPath = "assets/minecraft/models/viabedrock/" + name + ".json";
+        javaContent.putJson(jsonJavaPath, itemModelJson);
+    }
+
+    private static void putImageToPath(ResourcePack.Content javaContent, BufferedImage image, String simpleName) {
+        final String javaPath = "assets/minecraft/textures/item/" + simpleName + ".png";
+        javaContent.putImage(javaPath, image);
     }
 
     // TODO: Maybe the new Unihex provider is better
