@@ -41,7 +41,7 @@ public class PackIdAndVersionType extends Type<Pair<UUID, String>> {
 
         UUID packUUID;
         try {
-            packUUID = java.util.UUID.fromString(packId);
+            packUUID = UUID.fromString(packId);
         } catch (IllegalArgumentException e) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid pack UUID: " + packId, e);
             packUUID = new UUID(0L, 0L);

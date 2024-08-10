@@ -40,7 +40,7 @@ public class ResourcePackConverterTest {
         resourcePack.setCompressedDataLength(bytes.length, bytes.length);
         resourcePack.processDataChunk(0, bytes);
 
-        final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage();
+        final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage(null);
         resourcePacksStorage.addPack(resourcePack);
         resourcePacksStorage.setPackStack(new UUID[]{resourcePack.packId()}, new UUID[0]);
         System.out.println("Preparation took " + (System.currentTimeMillis() - start) + "ms");

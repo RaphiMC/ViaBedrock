@@ -39,6 +39,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -66,13 +67,17 @@ public class ResourcePack {
     private final boolean hasScripts;
     private final boolean raytracingCapable;
 
+    // Non HTTP resource pack downloading
     private byte[] hash;
     private boolean premium;
     private PackType type;
 
-    private byte[] compressedData;
+    // HTTP resource pack downloading
+    private URL url;
+
     private int maxChunkSize;
     private boolean[] receivedChunks;
+    private byte[] compressedData;
     private Content content;
 
     public ResourcePack(final UUID packId, final String version, final String contentKey, final String subPackName, final String contentId, final boolean hasScripts, final boolean raytracingCapable, final long compressedSize, final PackType type) {
@@ -165,6 +170,14 @@ public class ResourcePack {
         this.type = type;
     }
 
+    public URL url() {
+        return this.url;
+    }
+
+    public void setUrl(final URL url) {
+        this.url = url;
+    }
+
     public int compressedDataLength() {
         if (this.compressedData == null) {
             return 0;
@@ -174,9 +187,9 @@ public class ResourcePack {
     }
 
     public void setCompressedDataLength(final int length, final int maxChunkSize) {
-        this.compressedData = new byte[length];
         this.maxChunkSize = maxChunkSize;
-        this.receivedChunks = new boolean[MathUtil.ceil((float) this.compressedData.length / maxChunkSize)];
+        this.receivedChunks = new boolean[MathUtil.ceil((float) length / maxChunkSize)];
+        this.compressedData = new byte[length];
     }
 
     public Content content() {
@@ -196,29 +209,32 @@ public class ResourcePack {
             }
         }
 
-        this.content = new Content();
-        final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(this.compressedData));
-        ZipEntry zipEntry;
-        int len;
-        final byte[] buf = new byte[4096];
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            while ((len = zipInputStream.read(buf)) > 0) {
-                baos.write(buf, 0, len);
-            }
-            this.content.put(zipEntry.getName(), baos.toByteArray());
-            baos.reset();
-        }
+        this.content = new Content(this.compressedData);
         this.compressedData = null;
 
-        if (!this.content.containsKey("manifest.json")) {
-            for (String path : new HashSet<>(this.content.keySet())) {
-                final String newPath = path.substring(path.indexOf('/') + 1);
-                this.content.put(newPath, this.content.remove(path));
+        if (!this.content.containsKey("manifest.json") && this.url != null && this.content.size() == 1) {
+            // CDN packs are allowed to contain a single .zip file at the root
+            final String key = this.content.keySet().iterator().next();
+            if (key.endsWith(".zip")) {
+                this.content = new Content(this.content.get(key));
             }
+        }
+        if (!this.content.containsKey("manifest.json")) {
+            // Bedrock allows resource packs to contain a single subfolder at the root
+            for (String path : new HashSet<>(this.content.keySet())) {
+                if (path.contains("/")) {
+                    this.content.put(path.substring(path.indexOf('/') + 1), this.content.remove(path));
+                }
+            }
+        }
+        if (!this.content.containsKey("manifest.json")) {
+            throw new IllegalStateException("Missing manifest.json in resource pack: " + this.packId);
         }
 
         if (!this.contentKey.isEmpty()) {
+            if (!this.content.containsKey("contents.json")) {
+                throw new IllegalStateException("Missing contents.json in resource pack: " + this.packId);
+            }
             final Cipher aesCfb8 = Cipher.getInstance("AES/CFB8/NoPadding");
             final byte[] contentKeyBytes = this.contentKey.getBytes(StandardCharsets.ISO_8859_1);
             aesCfb8.init(Cipher.DECRYPT_MODE, new SecretKeySpec(contentKeyBytes, "AES"), new IvParameterSpec(Arrays.copyOfRange(contentKeyBytes, 0, 16)));
@@ -301,6 +317,25 @@ public class ResourcePack {
     public static class Content extends HashMap<String, byte[]> {
 
         private final Map<String, Map<String, String>> langCache = new HashMap<>();
+
+        public Content() {
+        }
+
+        public Content(final byte[] zipData) throws IOException {
+            final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(zipData));
+            ZipEntry zipEntry;
+            int len;
+            final byte[] buf = new byte[4096];
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                if (zipEntry.isDirectory()) continue;
+                while ((len = zipInputStream.read(buf)) > 0) {
+                    baos.write(buf, 0, len);
+                }
+                this.put(zipEntry.getName(), baos.toByteArray());
+                baos.reset();
+            }
+        }
 
         public String getString(final String path) {
             final byte[] bytes = this.get(path);

@@ -17,8 +17,6 @@
  */
 package net.raphimc.viabedrock.api.http;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -34,6 +32,8 @@ import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.io.ByteArrayInputStream;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -41,7 +41,7 @@ public class ResourcePackHttpServer {
 
     private final InetSocketAddress bindAddress;
     private final ChannelFuture channelFuture;
-    private final BiMap<UUID, UserConnection> connections = HashBiMap.create();
+    private final Map<UUID, UserConnection> connections = new HashMap<>();
 
     public ResourcePackHttpServer(final InetSocketAddress bindAddress) {
         this.bindAddress = bindAddress;

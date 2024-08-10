@@ -17,29 +17,91 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
-import com.viaversion.viaversion.api.connection.StorableObject;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.viaversion.viaversion.api.connection.StoredObject;
+import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ResourcePackResponse;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
 
-public class ResourcePacksStorage implements StorableObject {
+public class ResourcePacksStorage extends StoredObject {
 
     private final Map<UUID, ResourcePack> packs = new HashMap<>();
     private final Set<UUID> preloadedPacks = new HashSet<>();
     private final List<UUID> resourcePackStack = new ArrayList<>();
     private final List<UUID> behaviourPackStack = new ArrayList<>();
 
-    private boolean completedTransfer;
     private boolean javaClientWaitingForPack;
     private boolean loadedOnJavaClient;
 
     private Map<String, String> translations;
 
-    public ResourcePacksStorage() {
+    public ResourcePacksStorage(final UserConnection user) {
+        super(user);
+
         this.addPreloadedPack(BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack());
+    }
+
+    public void sendResponseIfAllDownloadsCompleted() {
+        if (this.packs.values().stream().allMatch(ResourcePack::isDecompressed)) {
+            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "All packs have been downloaded and decompressed");
+            final PacketWrapper resourcePackClientResponse = PacketWrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, this.getUser());
+            resourcePackClientResponse.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
+            resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
+            resourcePackClientResponse.sendToServer(BedrockProtocol.class);
+        }
+    }
+
+    public CompletableFuture<Void> runHttpTask(final Collection<ResourcePack> packs, final Consumer<ResourcePack> task, final BiConsumer<ResourcePack, Throwable> errorHandler) {
+        final List<Runnable> tasks = new ArrayList<>();
+        for (ResourcePack pack : packs) {
+            if (pack.url() == null) continue;
+            tasks.add(() -> {
+                try {
+                    task.accept(pack);
+                } catch (Throwable e) {
+                    if (e.getCause() instanceof InterruptedException) return;
+                    errorHandler.accept(pack, e);
+                }
+            });
+        }
+        if (tasks.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        final ExecutorService httpExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ViaBedrock-Pack-Downloader-%d").build());
+        this.getUser().getChannel().closeFuture().addListener(future -> httpExecutor.shutdownNow());
+
+        for (Runnable runnable : tasks) {
+            httpExecutor.execute(runnable);
+        }
+        httpExecutor.shutdown();
+
+        return CompletableFuture.runAsync(() -> {
+            try {
+                if (!httpExecutor.awaitTermination(5, TimeUnit.MINUTES)) {
+                    httpExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                httpExecutor.shutdownNow();
+            }
+        });
     }
 
     public boolean hasPack(final UUID packId) {
@@ -52,10 +114,6 @@ public class ResourcePacksStorage implements StorableObject {
 
     public Collection<ResourcePack> getPacks() {
         return this.packs.values();
-    }
-
-    public boolean areAllPacksDecompressed() {
-        return this.packs.values().stream().allMatch(ResourcePack::isDecompressed);
     }
 
     public void addPack(final ResourcePack pack) {
@@ -110,14 +168,6 @@ public class ResourcePacksStorage implements StorableObject {
 
     public String translate(final String text) {
         return BedrockTranslator.translate(text, this.getTranslationLookup(), new Object[0]);
-    }
-
-    public boolean hasCompletedTransfer() {
-        return this.completedTransfer;
-    }
-
-    public void setCompletedTransfer() {
-        this.completedTransfer = true;
     }
 
     public boolean isJavaClientWaitingForPack() {

@@ -232,8 +232,7 @@ public class JoinPackets {
 
                     if (resourcePacksStorage == null || !resourcePacksStorage.hasFinishedLoading()) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Pack negotiation not completed before joining game. Skipping resource pack loading");
-                        resourcePacksStorage = new ResourcePacksStorage();
-                        resourcePacksStorage.setCompletedTransfer();
+                        resourcePacksStorage = new ResourcePacksStorage(wrapper.user());
                         resourcePacksStorage.setPackStack(new UUID[0], new UUID[0]);
                         wrapper.user().put(resourcePacksStorage);
                     }

@@ -26,6 +26,7 @@ import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfi
 import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.http.BedrockPackDownloader;
 import net.raphimc.viabedrock.api.model.ResourcePack;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -40,22 +41,25 @@ import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 public class ResourcePackPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.RESOURCE_PACKS_INFO, ClientboundConfigurationPackets1_21.RESOURCE_PACK_PUSH, (PacketHandler) wrapper -> {
+            wrapper.cancel();
             if (wrapper.user().has(ResourcePacksStorage.class)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACKS_INFO twice");
-                wrapper.cancel();
-                return;
+                if (wrapper.user().get(ResourcePacksStorage.class).hasFinishedLoading()) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACKS_INFO after loading completion");
+                    return;
+                }
             }
 
-            final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage();
+            final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage(wrapper.user());
             wrapper.user().put(resourcePacksStorage);
 
             wrapper.read(Types.BOOLEAN); // must accept
@@ -73,26 +77,43 @@ public class ResourcePackPackets {
             }
             final int cdnEntriesCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // cdn entries count
             for (int i = 0; i < cdnEntriesCount; i++) {
-                // TODO: Implement resource pack downloading
-                wrapper.read(BedrockTypes.STRING); // pack id
-                wrapper.read(BedrockTypes.STRING); // remote url
+                final Pair<UUID, String> idAndVersion = wrapper.read(BedrockTypes.PACK_ID_AND_VERSION); // pack id
+                final String url = wrapper.read(BedrockTypes.STRING); // remote url
+                try {
+                    if (resourcePacksStorage.hasPack(idAndVersion.key())) {
+                        resourcePacksStorage.getPack(idAndVersion.key()).setUrl(new URL(url));
+                    } else {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown CDN entry: " + idAndVersion.key() + " (" + url + ")");
+                    }
+                } catch (MalformedURLException ignored) {
+                }
             }
 
             if (ViaBedrock.getConfig().shouldTranslateResourcePacks() && wrapper.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolConstants.JAVA_VERSION)) {
+                final CompletableFuture<Void> httpFuture = resourcePacksStorage.runHttpTask(resourcePacksStorage.getPacks(), pack -> {
+                    final BedrockPackDownloader downloader = new BedrockPackDownloader(pack.url());
+                    final int contentLength = downloader.getContentLength();
+                    pack.setCompressedDataLength(contentLength, contentLength);
+                }, (pack, e) -> {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to get content length for pack: " + pack.packId() + " (" + pack.url() + ")", e);
+                    pack.setUrl(null); // Use the old resource pack downloading method
+                });
+
                 final UUID httpToken = UUID.randomUUID();
                 ViaBedrock.getResourcePackServer().addConnection(httpToken, wrapper.user());
 
-                wrapper.write(Types.UUID, UUID.randomUUID()); // pack id
-                wrapper.write(Types.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + httpToken); // url
-                wrapper.write(Types.STRING, ""); // hash
-                wrapper.write(Types.BOOLEAN, false); // requires accept
-                wrapper.write(Types.OPTIONAL_TAG, TextUtil.stringToNbt(
+                final PacketWrapper resourcePackPush = PacketWrapper.create(wrapper.getPacketType(), wrapper.user());
+                resourcePackPush.write(Types.UUID, UUID.randomUUID()); // pack id
+                resourcePackPush.write(Types.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + httpToken); // url
+                resourcePackPush.write(Types.STRING, ""); // hash
+                resourcePackPush.write(Types.BOOLEAN, false); // requires accept
+                resourcePackPush.write(Types.OPTIONAL_TAG, TextUtil.stringToNbt(
                         "\n§aIf you press 'Yes', the resource packs will be downloaded and converted to the Java Edition format. " +
                                 "This may take a while, depending on your internet connection and the size of the packs. " +
                                 "If you press 'No', you can join without loading the resource packs but you will have a worse gameplay experience.")
                 ); // prompt message
+                httpFuture.thenRun(() -> resourcePackPush.scheduleSend(BedrockProtocol.class));
             } else {
-                wrapper.cancel();
                 final PacketWrapper resourcePack = PacketWrapper.create(ServerboundConfigurationPackets1_20_5.RESOURCE_PACK, wrapper.user());
                 resourcePack.write(Types.UUID, UUID.randomUUID()); // pack id
                 resourcePack.write(Types.VAR_INT, ResourcePackAction.DECLINED.ordinal()); // status
@@ -102,8 +123,8 @@ public class ResourcePackPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_DATA_INFO, null, wrapper -> {
             wrapper.cancel();
             final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
-            if (resourcePacksStorage.hasCompletedTransfer()) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACK_DATA_INFO after transfer completion");
+            if (resourcePacksStorage.hasFinishedLoading()) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACK_DATA_INFO after loading completion");
                 return;
             }
 
@@ -136,8 +157,8 @@ public class ResourcePackPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_CHUNK_DATA, null, wrapper -> {
             wrapper.cancel();
             final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
-            if (resourcePacksStorage.hasCompletedTransfer()) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACK_CHUNK_DATA after transfer completion");
+            if (resourcePacksStorage.hasFinishedLoading()) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACK_CHUNK_DATA after loading completion");
                 return;
             }
 
@@ -147,25 +168,17 @@ public class ResourcePackPackets {
             final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
 
             if (resourcePacksStorage.hasPack(idAndVersion.key()) && !resourcePacksStorage.getPack(idAndVersion.key()).isDecompressed()) {
+                final ResourcePack resourcePack = resourcePacksStorage.getPack(idAndVersion.key());
                 try {
-                    final ResourcePack resourcePack = resourcePacksStorage.getPack(idAndVersion.key());
                     if (resourcePack.processDataChunk(chunkIndex, data)) {
                         Via.getManager().getProviders().get(ResourcePackProvider.class).addPack(resourcePack);
+                        resourcePacksStorage.sendResponseIfAllDownloadsCompleted();
                     }
                 } catch (Throwable e) {
                     throw new RuntimeException("Failed to process RESOURCE_PACK_CHUNK_DATA for pack: " + idAndVersion.key(), e);
                 }
             } else {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACK_CHUNK_DATA for unknown pack: " + idAndVersion.key());
-            }
-
-            if (resourcePacksStorage.areAllPacksDecompressed()) {
-                resourcePacksStorage.setCompletedTransfer();
-                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "All packs have been decompressed and decrypted");
-                final PacketWrapper resourcePackClientResponse = wrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
-                resourcePackClientResponse.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
-                resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
-                resourcePackClientResponse.sendToServer(BedrockProtocol.class);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_STACK, null, wrapper -> {
@@ -198,8 +211,6 @@ public class ResourcePackPackets {
             for (int i = 0; i < resourcePacks.length; i++) {
                 resourcePackIds[i] = resourcePacks[i].first();
             }
-
-            resourcePacksStorage.setCompletedTransfer();
             resourcePacksStorage.setPackStack(resourcePackIds, behaviourPackIds);
 
             if (!resourcePacksStorage.isJavaClientWaitingForPack()) {
@@ -236,38 +247,62 @@ public class ResourcePackPackets {
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                 }
                 case DECLINED -> {
-                    final ResourcePacksStorage emptyResourcePackStorage = new ResourcePacksStorage();
-                    emptyResourcePackStorage.setCompletedTransfer();
-                    wrapper.user().put(emptyResourcePackStorage);
+                    wrapper.user().put(new ResourcePacksStorage(wrapper.user()));
 
                     wrapper.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
                     wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
                 }
                 case ACCEPTED -> {
                     resourcePacksStorage.setJavaClientWaitingForPack(true);
-                    final Set<String> missingPacks = new HashSet<>();
+                    final Set<String> missingNonHttpPacks = new HashSet<>();
+                    final List<ResourcePack> missingHttpPacks = new ArrayList<>();
                     for (ResourcePack pack : resourcePacksStorage.getPacks()) {
                         if (resourcePacksStorage.isPreloaded(pack.packId())) continue;
 
                         try {
                             if (Via.getManager().getProviders().get(ResourcePackProvider.class).hasPack(pack)) {
                                 Via.getManager().getProviders().get(ResourcePackProvider.class).loadPack(pack);
+                            } else if (pack.url() != null) {
+                                missingHttpPacks.add(pack);
                             } else {
-                                missingPacks.add(pack.packId() + "_" + pack.version());
+                                missingNonHttpPacks.add(pack.packId() + "_" + pack.version());
                             }
                         } catch (Throwable e) {
                             throw new RuntimeException("Failed to load resource pack: " + pack.packId(), e);
                         }
                     }
 
-                    if (!missingPacks.isEmpty()) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Downloading " + missingPacks.size() + " packs");
-                        wrapper.write(Types.BYTE, (byte) ResourcePackResponse.Downloading.getValue()); // status
-                        wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, missingPacks.toArray(new String[0])); // pack ids
-                    } else {
-                        resourcePacksStorage.setCompletedTransfer();
+                    if (missingNonHttpPacks.isEmpty() && missingHttpPacks.isEmpty()) {
                         wrapper.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
                         wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // pack ids
+                    } else {
+                        if (!missingHttpPacks.isEmpty()) {
+                            if (missingNonHttpPacks.isEmpty()) {
+                                wrapper.cancel();
+                            }
+                            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Downloading " + missingHttpPacks.size() + " HTTP packs");
+                            resourcePacksStorage.runHttpTask(missingHttpPacks, pack -> {
+                                final BedrockPackDownloader downloader = new BedrockPackDownloader(pack.url());
+                                final byte[] data = downloader.download();
+                                pack.setCompressedDataLength(data.length, data.length);
+                                wrapper.user().getChannel().eventLoop().submit(() -> {
+                                    try {
+                                        if (pack.processDataChunk(0, data)) {
+                                            Via.getManager().getProviders().get(ResourcePackProvider.class).addPack(pack);
+                                            resourcePacksStorage.sendResponseIfAllDownloadsCompleted();
+                                        }
+                                    } catch (Throwable e) {
+                                        BedrockProtocol.kickForIllegalState(wrapper.user(), "One of the server resource packs failed to process. Please try again later or decline the packs.", e);
+                                    }
+                                });
+                            }, (pack, e) -> BedrockProtocol.kickForIllegalState(wrapper.user(), "One of the server resource packs failed to download. Please try again later or decline the packs.", e));
+                        }
+
+                        if (!missingNonHttpPacks.isEmpty()) {
+                            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Downloading " + missingNonHttpPacks.size() + " non HTTP packs");
+                            wrapper.write(Types.BYTE, (byte) ResourcePackResponse.Downloading.getValue()); // status
+                            wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, missingNonHttpPacks.toArray(new String[0])); // pack ids
+                        }
                     }
                 }
                 case DOWNLOADED -> wrapper.cancel();
