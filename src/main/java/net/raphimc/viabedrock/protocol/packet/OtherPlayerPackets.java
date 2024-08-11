@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.packet;
 
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
@@ -38,6 +39,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerPositionModeComp
 import net.raphimc.viabedrock.protocol.data.enums.java.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.model.*;
+import net.raphimc.viabedrock.protocol.provider.SkinProvider;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
@@ -166,6 +168,16 @@ public class OtherPlayerPackets {
             wrapper.write(Types.BOOLEAN, onGround); // on ground
 
             PacketFactory.sendJavaRotateHead(wrapper.user(), entity);
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_SKIN, null, wrapper -> {
+            wrapper.cancel();
+            final UUID uuid = wrapper.read(BedrockTypes.UUID); // uuid
+            final SkinData skin = wrapper.read(BedrockTypes.SKIN); // skin
+            wrapper.read(BedrockTypes.STRING); // new skin name
+            wrapper.read(BedrockTypes.STRING); // old skin name
+            wrapper.read(Types.BOOLEAN); // trusted skin
+
+            Via.getManager().getProviders().get(SkinProvider.class).setSkin(wrapper.user(), uuid, skin);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, ClientboundPackets1_21.PLAYER_ABILITIES, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
