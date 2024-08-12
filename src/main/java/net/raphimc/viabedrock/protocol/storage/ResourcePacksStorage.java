@@ -22,9 +22,9 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.model.resourcepack.TextDefinitions;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ResourcePackResponse;
@@ -37,20 +37,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 
 public class ResourcePacksStorage extends StoredObject {
 
     private final Map<UUID, ResourcePack> packs = new HashMap<>();
-    private final Set<UUID> preloadedPacks = new HashSet<>();
-    private final List<UUID> resourcePackStack = new ArrayList<>();
-    private final List<UUID> behaviourPackStack = new ArrayList<>();
+    private final Set<UUID> preloadedPacks = new LinkedHashSet<>();
+    private final List<ResourcePack> packStackTopToBottom = new ArrayList<>();
+    private final List<ResourcePack> packStackBottomToTop = new ArrayList<>();
 
     private boolean javaClientWaitingForPack;
     private boolean loadedOnJavaClient;
 
-    private Map<String, String> translations;
+    private TextDefinitions texts;
 
     public ResourcePacksStorage(final UserConnection user) {
         super(user);
@@ -127,47 +126,26 @@ public class ResourcePacksStorage extends StoredObject {
     public void addPreloadedPack(final ResourcePack pack) {
         this.packs.put(pack.packId(), pack);
         this.preloadedPacks.add(pack.packId());
-        this.resourcePackStack.add(pack.packId());
-    }
-
-    public void iterateResourcePacksTopToBottom(final Function<ResourcePack, Boolean> function) {
-        for (UUID packId : this.resourcePackStack) {
-            final ResourcePack pack = this.packs.get(packId);
-            if (pack == null) continue;
-
-            if (!function.apply(pack)) break;
-        }
-    }
-
-    public void iterateResourcePacksBottomToTop(final Function<ResourcePack, Boolean> function) {
-        for (int i = this.resourcePackStack.size() - 1; i >= 0; i--) {
-            final ResourcePack pack = this.packs.get(this.resourcePackStack.get(i));
-            if (pack == null) continue;
-
-            if (!function.apply(pack)) break;
-        }
     }
 
     public void setPackStack(final UUID[] resourcePackStack, final UUID[] behaviourPackStack) {
-        this.resourcePackStack.addAll(0, Arrays.asList(resourcePackStack));
-        this.behaviourPackStack.addAll(0, Arrays.asList(behaviourPackStack));
+        this.packStackTopToBottom.clear();
+        Arrays.stream(behaviourPackStack).map(this.packs::get).filter(Objects::nonNull).forEach(this.packStackTopToBottom::add);
+        Arrays.stream(resourcePackStack).map(this.packs::get).filter(Objects::nonNull).forEach(this.packStackTopToBottom::add);
+        this.preloadedPacks.stream().map(this.packs::get).forEach(this.packStackTopToBottom::add);
+        this.packStackBottomToTop.clear();
+        this.packStackBottomToTop.addAll(this.packStackTopToBottom);
+        Collections.reverse(this.packStackBottomToTop);
 
-        this.translations = new HashMap<>();
-        this.iterateResourcePacksBottomToTop(pack -> {
-            if (pack.content().containsKey("texts/en_US.lang")) {
-                this.translations.putAll(pack.content().getLang("texts/en_US.lang"));
-            }
-            return true;
-        });
-        this.translations = Collections.unmodifiableMap(this.translations);
+        this.texts = new TextDefinitions(this);
     }
 
-    public Function<String, String> getTranslationLookup() {
-        return k -> this.translations.getOrDefault(k, k);
+    public List<ResourcePack> getPackStackTopToBottom() {
+        return this.packStackTopToBottom;
     }
 
-    public String translate(final String text) {
-        return BedrockTranslator.translate(text, this.getTranslationLookup(), new Object[0]);
+    public List<ResourcePack> getPackStackBottomToTop() {
+        return this.packStackBottomToTop;
     }
 
     public boolean isJavaClientWaitingForPack() {
@@ -188,11 +166,11 @@ public class ResourcePacksStorage extends StoredObject {
     }
 
     public boolean hasFinishedLoading() {
-        return this.translations != null;
+        return this.texts != null;
     }
 
-    public Map<String, String> getTranslations() {
-        return this.translations;
+    public TextDefinitions getTexts() {
+        return this.texts;
     }
 
 }

@@ -323,7 +323,7 @@ public class JoinPackets {
 
                     if (editorWorldType == Editor_WorldType.EditorProject) {
                         final PacketWrapper disconnect = PacketWrapper.create(ClientboundConfigurationPackets1_21.DISCONNECT, wrapper.user());
-                        PacketFactory.writeJavaDisconnect(wrapper, resourcePacksStorage.getTranslations().get("disconnectionScreen.editor.mismatchEditorWorld"));
+                        PacketFactory.writeJavaDisconnect(wrapper, resourcePacksStorage.getTexts().get("disconnectionScreen.editor.mismatchEditorWorld"));
                         disconnect.send(BedrockProtocol.class);
                         return;
                     }

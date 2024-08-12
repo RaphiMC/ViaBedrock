@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.provider.impl;
 
-import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 
 import java.io.IOException;

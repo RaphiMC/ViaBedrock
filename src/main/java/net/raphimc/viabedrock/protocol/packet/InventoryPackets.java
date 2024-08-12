@@ -84,7 +84,7 @@ public class InventoryPackets {
             final BedrockBlockEntity blockEntity = chunkTracker.getBlockEntity(position);
             ATextComponent title = new TranslationComponent("container." + blockStateRewriter.tag(chunkTracker.getBlockState(position)));
             if (blockEntity != null && blockEntity.tag().get("CustomName") instanceof StringTag customNameTag) {
-                title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePacksStorage.class).translate(customNameTag.getValue()));
+                title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(customNameTag.getValue()));
             }
 
             final Container container;
@@ -199,7 +199,7 @@ public class InventoryPackets {
                 wrapper.cancel();
                 return;
             }
-            form.setTranslator(wrapper.user().get(ResourcePacksStorage.class)::translate);
+            form.setTranslator(wrapper.user().get(ResourcePacksStorage.class).getTexts()::translate);
             inventoryTracker.openContainer(new FormContainer(wrapper.user(), id, form));
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CLOSE_FORM, null, wrapper -> {

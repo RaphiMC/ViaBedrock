@@ -87,7 +87,7 @@ public class ScoreboardEntry {
                 if (player != null) {
                     this.javaName = player.value();
                 } else {
-                    this.javaName = StringUtil.encodeLong(this.uniqueEntityId) + user.get(ResourcePacksStorage.class).getTranslations().get("commands.scoreboard.players.offlinePlayerName");
+                    this.javaName = StringUtil.encodeLong(this.uniqueEntityId) + user.get(ResourcePacksStorage.class).getTexts().get("commands.scoreboard.players.offlinePlayerName");
                 }
             }
             case Entity -> this.javaName = String.valueOf(this.uniqueEntityId);

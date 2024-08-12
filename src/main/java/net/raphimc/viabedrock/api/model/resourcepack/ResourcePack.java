@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model;
+package net.raphimc.viabedrock.api.model.resourcepack;
 
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
@@ -46,6 +46,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -212,27 +213,27 @@ public class ResourcePack {
         this.content = new Content(this.compressedData);
         this.compressedData = null;
 
-        if (!this.content.containsKey("manifest.json") && this.url != null && this.content.size() == 1) {
+        if (!this.content.contains("manifest.json") && this.url != null && this.content.size() == 1) {
             // CDN packs are allowed to contain a single .zip file at the root
-            final String key = this.content.keySet().iterator().next();
+            final String key = this.content.content.keySet().iterator().next();
             if (key.endsWith(".zip")) {
                 this.content = new Content(this.content.get(key));
             }
         }
-        if (!this.content.containsKey("manifest.json")) {
+        if (!this.content.contains("manifest.json")) {
             // Bedrock allows resource packs to contain a single subfolder at the root
-            for (String path : new HashSet<>(this.content.keySet())) {
+            for (String path : new HashSet<>(this.content.content.keySet())) {
                 if (path.contains("/")) {
-                    this.content.put(path.substring(path.indexOf('/') + 1), this.content.remove(path));
+                    this.content.put(path.substring(path.indexOf('/') + 1), this.content.content.remove(path));
                 }
             }
         }
-        if (!this.content.containsKey("manifest.json")) {
+        if (!this.content.contains("manifest.json")) {
             throw new IllegalStateException("Missing manifest.json in resource pack: " + this.packId);
         }
 
         if (!this.contentKey.isEmpty()) {
-            if (!this.content.containsKey("contents.json")) {
+            if (!this.content.contains("contents.json")) {
                 throw new IllegalStateException("Missing contents.json in resource pack: " + this.packId);
             }
             final Cipher aesCfb8 = Cipher.getInstance("AES/CFB8/NoPadding");
@@ -265,7 +266,7 @@ public class ResourcePack {
                 if (!contentItem.has("key") || contentItem.get("key").isJsonNull()) continue;
                 final String key = contentItem.get("key").getAsString();
                 final String path = contentItem.get("path").getAsString();
-                if (!this.content.containsKey(path)) {
+                if (!this.content.contains(path)) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing resource pack file: " + path);
                     continue;
                 }
@@ -314,14 +315,28 @@ public class ResourcePack {
         return true;
     }
 
-    public static class Content extends HashMap<String, byte[]> {
+    public static class Content {
 
-        private final Map<String, Map<String, String>> langCache = new HashMap<>();
+        private final Map<String, byte[]> content;
+        private final Map<String, Map<String, String>> langCache;
 
         public Content() {
+            this(false);
+        }
+
+        public Content(final boolean concurrent) {
+            if (concurrent) {
+                this.content = new ConcurrentHashMap<>();
+                this.langCache = new ConcurrentHashMap<>();
+            } else {
+                this.content = new HashMap<>();
+                this.langCache = new HashMap<>();
+            }
         }
 
         public Content(final byte[] zipData) throws IOException {
+            this(false);
+
             final ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(zipData));
             ZipEntry zipEntry;
             int len;
@@ -332,9 +347,31 @@ public class ResourcePack {
                 while ((len = zipInputStream.read(buf)) > 0) {
                     baos.write(buf, 0, len);
                 }
-                this.put(zipEntry.getName(), baos.toByteArray());
+                this.content.put(zipEntry.getName(), baos.toByteArray());
                 baos.reset();
             }
+        }
+
+        public List<String> getFiles(final String path) {
+            return this.getFiles(path, "");
+        }
+
+        public List<String> getFiles(final String path, final String extension) {
+            return this.content.keySet().stream()
+                    .filter(file -> file.startsWith(path) && !file.substring(path.length()).contains("/") && file.endsWith(extension))
+                    .collect(Collectors.toList());
+        }
+
+        public boolean contains(final String path) {
+            return this.content.containsKey(path);
+        }
+
+        public byte[] get(final String path) {
+            return this.content.get(path);
+        }
+
+        public boolean put(final String path, final byte[] data) {
+            return this.content.put(path, data) != null;
         }
 
         public String getString(final String path) {
@@ -347,7 +384,7 @@ public class ResourcePack {
         }
 
         public boolean putString(final String path, final String string) {
-            return this.put(path, string.getBytes(StandardCharsets.UTF_8)) != null;
+            return this.put(path, string.getBytes(StandardCharsets.UTF_8));
         }
 
         public List<String> getLines(final String path) {
@@ -376,16 +413,6 @@ public class ResourcePack {
             });
         }
 
-        public boolean putLang(final String path, final Map<String, String> lang) {
-            this.langCache.put(path, lang);
-
-            final List<String> lines = new ArrayList<>();
-            for (Entry<String, String> entry : lang.entrySet()) {
-                lines.add(entry.getKey() + "=" + entry.getValue());
-            }
-            return this.putLines(path, lines);
-        }
-
         public JsonObject getJson(final String path) {
             final String string = this.getString(path);
             if (string == null) {
@@ -401,6 +428,16 @@ public class ResourcePack {
 
         public boolean putJson(final String path, final JsonObject json) {
             return this.putString(path, GsonUtil.getGson().toJson(json));
+        }
+
+        public BufferedImage getImageWithoutFileExtension(final String name) {
+            if (this.contains(name + ".png")) {
+                return this.getImage(name + ".png");
+            } else if (this.contains(name + ".jpg")) {
+                return this.getImage(name + ".jpg");
+            } else {
+                return null;
+            }
         }
 
         public BufferedImage getImage(final String path) {
@@ -423,19 +460,27 @@ public class ResourcePack {
             } catch (final IOException e) {
                 throw new RuntimeException(e);
             }
-            return this.put(path, baos.toByteArray()) != null;
+            return this.put(path, baos.toByteArray());
+        }
+
+        public void copyFrom(final Content content, final String sourcePath, final String targetPath) {
+            this.put(targetPath, content.get(sourcePath));
         }
 
         public byte[] toZip() throws IOException {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024 * 1024 * 4);
             final ZipOutputStream zipOutputStream = new ZipOutputStream(baos);
-            for (final Map.Entry<String, byte[]> entry : this.entrySet()) {
+            for (final Map.Entry<String, byte[]> entry : this.content.entrySet()) {
                 zipOutputStream.putNextEntry(new ZipEntry(entry.getKey()));
                 zipOutputStream.write(entry.getValue());
                 zipOutputStream.closeEntry();
             }
             zipOutputStream.close();
             return baos.toByteArray();
+        }
+
+        public int size() {
+            return this.content.size();
         }
 
     }

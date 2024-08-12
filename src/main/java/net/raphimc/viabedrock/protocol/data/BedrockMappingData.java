@@ -44,7 +44,7 @@ import net.raphimc.viabedrock.api.chunk.blockstate.BlockStateUpgrader;
 import net.raphimc.viabedrock.api.item.ItemUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
-import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;

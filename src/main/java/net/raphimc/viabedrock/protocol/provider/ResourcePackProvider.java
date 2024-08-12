@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.provider;
 
 import com.viaversion.viaversion.api.platform.providers.Provider;
-import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 
 public abstract class ResourcePackProvider implements Provider {
 

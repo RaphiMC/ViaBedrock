@@ -26,7 +26,7 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.stream.ChunkedStream;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 

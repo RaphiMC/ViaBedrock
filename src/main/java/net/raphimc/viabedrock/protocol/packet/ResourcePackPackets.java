@@ -27,7 +27,7 @@ import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.http.BedrockPackDownloader;
-import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;

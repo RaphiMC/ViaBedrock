@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.provider;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;

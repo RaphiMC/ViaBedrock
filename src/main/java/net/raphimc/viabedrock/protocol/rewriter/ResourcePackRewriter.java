@@ -17,27 +17,18 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter;
 
-import com.viaversion.viaversion.libs.gson.JsonArray;
-import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import net.raphimc.viabedrock.api.model.ResourcePack;
+import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
+import net.raphimc.viabedrock.protocol.rewriter.resourcepack.GlyphSheetResourceRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-
-import java.awt.image.BufferedImage;
-import java.util.Locale;
 
 public class ResourcePackRewriter {
 
-    // TODO: 1.20.2 added overlay packs. Maybe that's useful?
-    // TODO: 1.20.3 added the ability to load multiple separate packs
     public static ResourcePack.Content bedrockToJava(final ResourcePacksStorage resourcePacksStorage) {
         final ResourcePack.Content javaContent = new ResourcePack.Content();
 
-        resourcePacksStorage.iterateResourcePacksBottomToTop(pack -> {
-            convertGlyphSheets(pack.content(), javaContent);
-            return true;
-        });
+        GlyphSheetResourceRewriter.apply(resourcePacksStorage, javaContent);
 
         javaContent.putJson("pack.mcmeta", createPackManifest());
 
@@ -51,67 +42,6 @@ public class ResourcePackRewriter {
         pack.addProperty("pack_format", ProtocolConstants.JAVA_PACK_VERSION);
         pack.addProperty("description", "ViaBedrock Resource Pack");
         return root;
-    }
-
-    // TODO: Maybe the new Unihex provider is better
-    private static void convertGlyphSheets(final ResourcePack.Content bedrockContent, final ResourcePack.Content javaContent) {
-        final int glyphsPerRow = 16;
-        final int glyphsPerColumn = 16;
-
-        final String javaDefaultsPath = "assets/minecraft/font/default.json";
-        final JsonObject root;
-        JsonArray providers;
-        if (javaContent.containsKey(javaDefaultsPath)) {
-            root = javaContent.getJson(javaDefaultsPath);
-            providers = root.getAsJsonArray("providers");
-        } else {
-            root = new JsonObject();
-            providers = new JsonArray();
-            root.add("providers", providers);
-        }
-
-        for (int i = 0; i < 0xFF; i++) {
-            final String pageName = "glyph_" + String.format("%1$02X", i) + ".png";
-            final String bedrockPath = "font/" + pageName;
-            if (!bedrockContent.containsKey(bedrockPath)) {
-                continue;
-            }
-
-            final String javaPath = "assets/viabedrock/textures/font/" + pageName.toLowerCase(Locale.ROOT);
-            final BufferedImage image = bedrockContent.getImage(bedrockPath);
-            javaContent.putImage(javaPath, image);
-
-            final int glyphHeight = image.getHeight() / glyphsPerColumn;
-
-            for (JsonElement provider : providers) {
-                if (provider.getAsJsonObject().get("file").getAsString().equals("viabedrock:font/" + pageName.toLowerCase(Locale.ROOT))) {
-                    providers.remove(provider);
-                    break;
-                }
-            }
-
-            final JsonObject glyphPage = new JsonObject();
-            providers.add(glyphPage);
-            glyphPage.addProperty("type", "bitmap");
-            glyphPage.addProperty("file", "viabedrock:font/" + pageName.toLowerCase(Locale.ROOT));
-            glyphPage.addProperty("ascent", glyphHeight / 2 + 5);
-            glyphPage.addProperty("height", glyphHeight);
-            final JsonArray chars = new JsonArray();
-            glyphPage.add("chars", chars);
-            for (int c = 0; c < glyphsPerColumn; c++) {
-                final StringBuilder row = new StringBuilder();
-                for (int r = 0; r < glyphsPerRow; r++) {
-                    final int idx = c * glyphsPerColumn + r;
-                    row.append((char) (i << 8 | idx));
-                }
-                chars.add(row.toString());
-            }
-        }
-        if (providers.isEmpty()) {
-            return;
-        }
-
-        javaContent.putJson(javaDefaultsPath, root);
     }
 
 }

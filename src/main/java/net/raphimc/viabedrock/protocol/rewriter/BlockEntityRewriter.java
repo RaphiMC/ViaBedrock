@@ -182,7 +182,7 @@ public class BlockEntityRewriter {
         }
 
         default StringTag rewriteCustomName(final UserConnection user, final StringTag textTag) {
-            return new StringTag(TextUtil.stringToJson(user.get(ResourcePacksStorage.class).translate(textTag.getValue())));
+            return new StringTag(TextUtil.stringToJson(user.get(ResourcePacksStorage.class).getTexts().translate(textTag.getValue())));
         }
 
     }

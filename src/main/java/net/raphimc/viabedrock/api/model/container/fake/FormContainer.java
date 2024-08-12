@@ -293,7 +293,7 @@ public class FormContainer extends FakeContainer {
                 }
             }
 
-            items.add(this.createItem("minecraft:oak_button", this.user.get(ResourcePacksStorage.class).getTranslations().get("gui.submit")));
+            items.add(this.createItem("minecraft:oak_button", this.user.get(ResourcePacksStorage.class).getTexts().get("gui.submit")));
         } else {
             throw new IllegalArgumentException("Unknown form type: " + this.form.getClass().getSimpleName());
         }
