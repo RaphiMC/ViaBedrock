@@ -21,6 +21,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.viaversion.nbt.stringified.SNBT;
 import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
@@ -29,13 +30,17 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.gson.JsonObject;
+import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
+import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
+import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
+import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 import net.raphimc.viabedrock.protocol.types.item.BedrockCreativeItemType;
@@ -120,9 +125,22 @@ public class ItemRewriter extends StoredObject {
                     rewriter = metaItemRewriter.get(meta);
                 }
             } else {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java item mapping for " + identifier);
+                final ResourcePacksStorage resourcePacksStorage = this.getUser().get(ResourcePacksStorage.class);
+                final ItemDefinitions.ItemDefinition itemDefinition = resourcePacksStorage.getItems().get(identifier);
                 final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
-                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("§cMissing item: " + identifier));
+
+                if (itemDefinition != null) {
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier) + ".name")));
+                    if (itemDefinition.iconComponent() != null && resourcePacksStorage.isLoadedOnJavaClient()) {
+                        data.set(StructuredDataKey.CUSTOM_MODEL_DATA, CustomItemTextureResourceRewriter.getCustomModelData(itemDefinition.iconComponent()));
+                    } else {
+                        data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Custom item: " + identifier)});
+                    }
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java item mapping for " + identifier);
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("§cMissing item: " + identifier));
+                }
+
                 return new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), bedrockItem.amount(), data);
             }
         }

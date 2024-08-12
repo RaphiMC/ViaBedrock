@@ -352,14 +352,12 @@ public class ResourcePack {
             }
         }
 
-        public List<String> getFiles(final String path) {
-            return this.getFiles(path, "");
+        public List<String> getFilesShallow(final String path, final String extension) {
+            return this.content.keySet().stream().filter(file -> file.startsWith(path) && !file.substring(path.length()).contains("/") && file.endsWith(extension)).collect(Collectors.toList());
         }
 
-        public List<String> getFiles(final String path, final String extension) {
-            return this.content.keySet().stream()
-                    .filter(file -> file.startsWith(path) && !file.substring(path.length()).contains("/") && file.endsWith(extension))
-                    .collect(Collectors.toList());
+        public List<String> getFilesDeep(final String path, final String extension) {
+            return this.content.keySet().stream().filter(file -> file.startsWith(path) && file.endsWith(extension)).collect(Collectors.toList());
         }
 
         public boolean contains(final String path) {
@@ -430,11 +428,13 @@ public class ResourcePack {
             return this.putString(path, GsonUtil.getGson().toJson(json));
         }
 
-        public BufferedImage getImageWithoutFileExtension(final String name) {
-            if (this.contains(name + ".png")) {
-                return this.getImage(name + ".png");
-            } else if (this.contains(name + ".jpg")) {
-                return this.getImage(name + ".jpg");
+        public BufferedImage getImageLenient(final String path) {
+            if (this.contains(path)) {
+                return this.getImage(path);
+            } else if (this.contains(path + ".png")) {
+                return this.getImage(path + ".png");
+            } else if (this.contains(path + ".jpg")) {
+                return this.getImage(path + ".jpg");
             } else {
                 return null;
             }

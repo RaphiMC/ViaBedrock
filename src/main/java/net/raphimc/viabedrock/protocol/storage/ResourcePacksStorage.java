@@ -23,8 +23,10 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.model.resourcepack.TextDefinitions;
+import net.raphimc.viabedrock.api.model.resourcepack.TextureDefinitions;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ResourcePackResponse;
@@ -50,6 +52,8 @@ public class ResourcePacksStorage extends StoredObject {
     private boolean loadedOnJavaClient;
 
     private TextDefinitions texts;
+    private ItemDefinitions items;
+    private TextureDefinitions textures;
 
     public ResourcePacksStorage(final UserConnection user) {
         super(user);
@@ -138,6 +142,8 @@ public class ResourcePacksStorage extends StoredObject {
         Collections.reverse(this.packStackBottomToTop);
 
         this.texts = new TextDefinitions(this);
+        this.items = new ItemDefinitions(this);
+        this.textures = new TextureDefinitions(this);
     }
 
     public List<ResourcePack> getPackStackTopToBottom() {
@@ -171,6 +177,14 @@ public class ResourcePacksStorage extends StoredObject {
 
     public TextDefinitions getTexts() {
         return this.texts;
+    }
+
+    public ItemDefinitions getItems() {
+        return this.items;
+    }
+
+    public TextureDefinitions getTextures() {
+        return this.textures;
     }
 
 }

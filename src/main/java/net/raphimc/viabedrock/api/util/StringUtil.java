@@ -17,6 +17,8 @@
  */
 package net.raphimc.viabedrock.api.util;
 
+import com.viaversion.viaversion.libs.mcstructs.core.Identifier;
+
 import java.util.UUID;
 
 public class StringUtil {
@@ -48,6 +50,11 @@ public class StringUtil {
             builder.append('§').append(c);
         }
         return builder.toString();
+    }
+
+    public static String makeIdentifierValueSafe(final String s) {
+        final String invalidCharsRegex = Identifier.VALID_VALUE_CHARS.replace("[", "[^").replace("]*", "]");
+        return s.replace(":", "/").replaceAll(invalidCharsRegex, "_");
     }
 
 }
