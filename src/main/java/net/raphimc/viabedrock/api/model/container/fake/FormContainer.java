@@ -70,6 +70,7 @@ public class FormContainer extends FakeContainer {
     @Override
     public boolean handleClick(final int revision, short slot, final byte button, final ClickType action) {
         if (action != ClickType.PICKUP) return false;
+        if (slot >= SIZE) return false;
 
         if (this.formItems.length > SIZE && slot == SIZE - 1) {
             final int pages = MathUtil.ceil(this.formItems.length / (SIZE - 1F));
@@ -196,7 +197,7 @@ public class FormContainer extends FakeContainer {
     public Item[] getJavaItems() {
         final Item[] items;
         if (this.formItems.length > SIZE) {
-            items = new Item[SIZE];
+            items = StructuredItem.emptyArray(SIZE);
             final int begin = this.page * (SIZE - 1);
             final int end = Math.min((this.page + 1) * (SIZE - 1), this.formItems.length);
             for (int i = 0; i < end - begin; i++) {
