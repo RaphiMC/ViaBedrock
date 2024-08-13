@@ -454,7 +454,7 @@ public class EntityPackets {
                 case Swing -> AnimateAction.SWING_MAIN_HAND;
                 case WakeUp -> {
                     if (entity instanceof ClientPlayerEntity clientPlayer) {
-                        clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StopSleeping, 0);
+                        clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StopSleeping);
                     }
                     yield AnimateAction.WAKE_UP;
                 }

@@ -29,6 +29,7 @@ import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
+import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AbilitiesFlag;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameMode;
@@ -43,10 +44,7 @@ import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -68,12 +66,15 @@ public class ClientPlayerEntity extends PlayerEntity {
     // Server Authoritative Movement
     private Position3f prevPosition;
     private final EnumSet<PlayerAuthInputPacket_InputData> authInputData = EnumSet.noneOf(PlayerAuthInputPacket_InputData.class);
+    private final List<AuthInputBlockAction> authInputBlockActions = new ArrayList<>();
     private boolean sneaking;
     private boolean sprinting;
 
     // Misc data
     private GameType gameType;
     private GameMode javaGameMode;
+    private boolean cancelNextSwingPacket;
+    private BlockBreakingInfo blockBreakingInfo;
 
     public ClientPlayerEntity(final UserConnection user, final long runtimeId, final UUID javaUuid, final PlayerAbilities abilities) {
         super(user, runtimeId, 0, javaUuid, abilities);
@@ -168,21 +169,49 @@ public class ClientPlayerEntity extends PlayerEntity {
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_INT, NewInteractionModel.Touch.getValue()); // interaction mode
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_LONG, (long) this.age); // tick
         playerAuthInput.write(BedrockTypes.POSITION_3F, gravityAffectedPositionDelta); // position delta
+        if (this.authInputData.contains(PlayerAuthInputPacket_InputData.PerformBlockActions)) {
+            playerAuthInput.write(BedrockTypes.VAR_INT, this.authInputBlockActions.size()); // player block actions count
+            for (AuthInputBlockAction blockAction : this.authInputBlockActions) {
+                playerAuthInput.write(BedrockTypes.VAR_INT, blockAction.action.getValue()); // action
+                switch (blockAction.action) {
+                    case StartDestroyBlock, AbortDestroyBlock, StopDestroyBlock, CrackBlock, PredictDestroyBlock, ContinueDestroyBlock -> {
+                        playerAuthInput.write(BedrockTypes.POSITION_3I, blockAction.position); // position
+                        playerAuthInput.write(BedrockTypes.VAR_INT, blockAction.direction); // facing
+                    }
+                }
+            }
+        }
         playerAuthInput.write(BedrockTypes.POSITION_2F, new Position2f(0F, 0F)); // analog move vector
         playerAuthInput.sendToServer(BedrockProtocol.class);
 
         this.prevPosition = this.position;
         this.authInputData.clear();
+        this.authInputBlockActions.clear();
     }
 
-    public void sendPlayerActionPacketToServer(final PlayerActionType action, final int face) {
+    public void sendPlayerActionPacketToServer(final PlayerActionType action) {
+        this.sendPlayerActionPacketToServer(action, 0);
+    }
+
+    public void sendPlayerActionPacketToServer(final PlayerActionType action, final int direction) {
+        this.sendPlayerActionPacketToServer(action, new BlockPosition(0, 0, 0), direction);
+    }
+
+    public void sendPlayerActionPacketToServer(final PlayerActionType action, final BlockPosition blockPosition, final int direction) {
         final PacketWrapper playerAction = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, this.user);
         playerAction.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
         playerAction.write(BedrockTypes.VAR_INT, action.getValue()); // action
-        playerAction.write(BedrockTypes.BLOCK_POSITION, new BlockPosition(0, 0, 0)); // block position
+        playerAction.write(BedrockTypes.BLOCK_POSITION, blockPosition); // block position
         playerAction.write(BedrockTypes.BLOCK_POSITION, new BlockPosition(0, 0, 0)); // result position
-        playerAction.write(BedrockTypes.VAR_INT, face); // face
+        playerAction.write(BedrockTypes.VAR_INT, direction); // facing
         playerAction.sendToServer(BedrockProtocol.class);
+    }
+
+    public void sendSwingPacketToServer() {
+        final PacketWrapper animate = PacketWrapper.create(ServerboundBedrockPackets.ANIMATE, this.user);
+        animate.write(BedrockTypes.VAR_INT, AnimatePacket_Action.Swing.getValue()); // action
+        animate.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
+        animate.sendToServer(BedrockProtocol.class);
     }
 
     public void updatePlayerPosition(final PacketWrapper wrapper, final boolean onGround) {
@@ -209,7 +238,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
 
         if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative && MathUtil.roughlyEquals(newPosition.y() - this.position.y(), ProtocolConstants.PLAYER_JUMP_HEIGHT)) {
-            this.sendPlayerActionPacketToServer(PlayerActionType.StartJump, 0);
+            this.sendPlayerActionPacketToServer(PlayerActionType.StartJump);
         }
 
         this.position = newPosition;
@@ -232,7 +261,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
 
         if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative && MathUtil.roughlyEquals(newPosition.y() - this.position.y(), ProtocolConstants.PLAYER_JUMP_HEIGHT)) {
-            this.sendPlayerActionPacketToServer(PlayerActionType.StartJump, 0);
+            this.sendPlayerActionPacketToServer(PlayerActionType.StartJump);
         }
 
         this.position = newPosition;
@@ -275,7 +304,7 @@ public class ClientPlayerEntity extends PlayerEntity {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received teleport confirm for teleport id " + teleportId + " but player is not spawned yet");
             }
             if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
-                this.sendPlayerActionPacketToServer(PlayerActionType.HandledTeleport, 0);
+                this.sendPlayerActionPacketToServer(PlayerActionType.HandledTeleport);
             } else {
                 this.authInputData.add(PlayerAuthInputPacket_InputData.HandledTeleport);
             }
@@ -288,6 +317,11 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     public void addAuthInputData(final PlayerAuthInputPacket_InputData... data) {
         this.authInputData.addAll(Arrays.asList(data));
+    }
+
+    public void addAuthInputBlockAction(final AuthInputBlockAction blockAction) {
+        this.authInputData.add(PlayerAuthInputPacket_InputData.PerformBlockActions);
+        this.authInputBlockActions.add(blockAction);
     }
 
     @Override
@@ -407,6 +441,24 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
     }
 
+    public boolean checkCancelSwingPacket() {
+        final boolean cancel = this.cancelNextSwingPacket;
+        this.cancelNextSwingPacket = false;
+        return cancel;
+    }
+
+    public void cancelNextSwingPacket() {
+        this.cancelNextSwingPacket = true;
+    }
+
+    public BlockBreakingInfo blockBreakingInfo() {
+        return this.blockBreakingInfo;
+    }
+
+    public void setBlockBreakingInfo(final BlockBreakingInfo blockBreakingInfo) {
+        this.blockBreakingInfo = blockBreakingInfo;
+    }
+
     @Override
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         return switch (attribute.name()) {
@@ -499,6 +551,12 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
 
         return false;
+    }
+
+    public record BlockBreakingInfo(BlockPosition position, Direction direction) {
+    }
+
+    public record AuthInputBlockAction(PlayerActionType action, BlockPosition position, int direction) {
     }
 
 }

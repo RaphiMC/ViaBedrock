@@ -306,13 +306,13 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // is trial
                     final ServerAuthMovementMode movementMode = ServerAuthMovementMode.getByValue(wrapper.read(BedrockTypes.VAR_INT) & 255, ServerAuthMovementMode.ServerAuthoritativeWithRewind); // movement mode
                     wrapper.read(BedrockTypes.VAR_INT); // rewind history size
-                    wrapper.read(Types.BOOLEAN); // server authoritative block breaking
+                    final boolean blockBreakingServerAuthoritative = wrapper.read(Types.BOOLEAN); // server authoritative block breaking
                     final long levelTime = wrapper.read(BedrockTypes.LONG_LE); // current level time
                     wrapper.read(BedrockTypes.VAR_INT); // enchantment seed
                     final BlockProperties[] blockProperties = wrapper.read(BedrockTypes.BLOCK_PROPERTIES_ARRAY); // block properties
                     final ItemEntry[] itemEntries = wrapper.read(BedrockTypes.ITEM_ENTRY_ARRAY); // item entries
                     wrapper.read(BedrockTypes.STRING); // multiplayer correlation id
-                    wrapper.read(Types.BOOLEAN); // server authoritative inventories
+                    final boolean inventoryServerAuthoritative = wrapper.read(Types.BOOLEAN); // server authoritative inventories
                     final String serverEngine = wrapper.read(BedrockTypes.STRING); // server engine
                     wrapper.read(BedrockTypes.NETWORK_TAG); // player property data
                     wrapper.read(BedrockTypes.LONG_LE); // block registry checksum
@@ -355,7 +355,7 @@ public class JoinPackets {
                     if (movementMode == ServerAuthMovementMode.ServerAuthoritativeWithRewind) {
                         ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "This server uses server authoritative movement with rewind. This is not supported.");
                     } else if (movementMode == ServerAuthMovementMode.ServerAuthoritative) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses server authoritative movement. This is not stable yet.");
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses server authoritative movement. This is not stable.");
                     }
 
                     gameSession.setBedrockVanillaVersion(version);
@@ -366,6 +366,8 @@ public class JoinPackets {
                     gameSession.setHardcoreMode(hardcore);
                     gameSession.setChatRestrictionLevel(chatRestrictionLevel);
                     gameSession.setCommandsEnabled(commandsEnabled);
+                    gameSession.setInventoryServerAuthoritative(inventoryServerAuthoritative);
+                    gameSession.setBlockBreakingServerAuthoritative(blockBreakingServerAuthoritative);
 
                     final PlayerAbilities playerAbilities = new PlayerAbilities(uniqueEntityId, (byte) playerPermission, (byte) CommandPermissionLevel.Any.getValue());
                     final ClientPlayerEntity clientPlayer = new ClientPlayerEntity(wrapper.user(), runtimeEntityId, wrapper.user().getProtocolInfo().getUuid(), playerAbilities);

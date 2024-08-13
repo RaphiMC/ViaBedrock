@@ -48,6 +48,8 @@ public class GameSessionStorage implements StorableObject {
     private boolean hardcoreMode;
     private ChatRestrictionLevel chatRestrictionLevel;
     private boolean commandsEnabled;
+    private boolean inventoryServerAuthoritative;
+    private boolean blockBreakingServerAuthoritative;
 
     private boolean immutableWorld;
     private ATextComponent deathMessage;
@@ -153,6 +155,22 @@ public class GameSessionStorage implements StorableObject {
 
     public void setCommandsEnabled(final boolean commandsEnabled) {
         this.commandsEnabled = commandsEnabled;
+    }
+
+    public boolean isInventoryServerAuthoritative() {
+        return this.inventoryServerAuthoritative;
+    }
+
+    public void setInventoryServerAuthoritative(final boolean inventoryServerAuthoritative) {
+        this.inventoryServerAuthoritative = inventoryServerAuthoritative;
+    }
+
+    public boolean isBlockBreakingServerAuthoritative() {
+        return this.blockBreakingServerAuthoritative;
+    }
+
+    public void setBlockBreakingServerAuthoritative(final boolean blockBreakingServerAuthoritative) {
+        this.blockBreakingServerAuthoritative = blockBreakingServerAuthoritative;
     }
 
     public boolean isImmutableWorld() {
