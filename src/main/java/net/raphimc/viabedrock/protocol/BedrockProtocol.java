@@ -24,7 +24,6 @@ import com.viaversion.viaversion.api.protocol.packet.Direction;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
-import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.exception.CancelException;
 import com.viaversion.viaversion.exception.InformativeException;
 import com.viaversion.viaversion.protocol.packet.PacketWrapperImpl;
@@ -39,7 +38,6 @@ import net.raphimc.viabedrock.api.protocol.StatelessTransitionProtocol;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
 import net.raphimc.viabedrock.protocol.packet.*;
 import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
@@ -55,17 +53,13 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
 
     public static final BedrockMappingData MAPPINGS = new BedrockMappingData();
 
-    private static final EnumSet<ClientboundBedrockPackets> LOGIN_STATE_WHITELIST = EnumSet.of(
+    private static final EnumSet<ClientboundBedrockPackets> BEFORE_PLAY_STATE_WHITELIST = EnumSet.of(
             ClientboundBedrockPackets.NETWORK_SETTINGS,
             ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE,
             ClientboundBedrockPackets.PLAY_STATUS,
             ClientboundBedrockPackets.DISCONNECT,
             ClientboundBedrockPackets.PACKET_VIOLATION_WARNING,
             ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
-            ClientboundBedrockPackets.START_GAME
-    );
-
-    private static final EnumSet<ClientboundBedrockPackets> BEFORE_PLAY_STATE_WHITELIST = EnumSet.of(
             ClientboundBedrockPackets.RESOURCE_PACKS_INFO,
             ClientboundBedrockPackets.RESOURCE_PACK_DATA_INFO,
             ClientboundBedrockPackets.RESOURCE_PACK_CHUNK_DATA,
@@ -73,12 +67,9 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
             ClientboundBedrockPackets.BIOME_DEFINITION_LIST,
             ClientboundBedrockPackets.COMPRESSED_BIOME_DEFINITION_LIST,
             ClientboundBedrockPackets.DIMENSION_DATA,
-            ClientboundBedrockPackets.AVAILABLE_COMMANDS
+            ClientboundBedrockPackets.AVAILABLE_COMMANDS,
+            ClientboundBedrockPackets.START_GAME
     );
-
-    static {
-        BEFORE_PLAY_STATE_WHITELIST.addAll(LOGIN_STATE_WHITELIST);
-    }
 
     public BedrockProtocol() {
         super(ClientboundBedrockPackets.class, ClientboundPackets1_21.class, ServerboundBedrockPackets.class, ServerboundPackets1_20_5.class);
@@ -163,14 +154,6 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
                 final ByteBuf content = ((PacketWrapperImpl) wrapper).getInputBuffer();
                 ViaBedrock.getPlatform().getLogger().warning("Received unknown packet " + wrapper.getId() + " in state " + serverState + " with content: " + ByteBufUtil.hexDump(content));
                 throw CancelException.generate();
-            }
-            if (serverState == State.LOGIN && !LOGIN_STATE_WHITELIST.contains(packet)) { // Mojang client can skip the login state
-                ViaBedrock.getPlatform().getLogger().warning("Server skipped LOGIN state");
-                final PacketWrapper playStatus = PacketWrapper.create(ClientboundBedrockPackets.PLAY_STATUS, wrapper.user());
-                playStatus.write(Types.INT, PlayStatus.LoginSuccess.getValue()); // status
-                playStatus.send(BedrockProtocol.class, false);
-                wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
-                serverState = State.CONFIGURATION;
             }
             if (serverState != State.PLAY && !BEFORE_PLAY_STATE_WHITELIST.contains(packet)) { // Mojang client ignores most packets before receiving the START_GAME packet
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received packet " + packet + " outside PLAY state. Ignoring it.");
