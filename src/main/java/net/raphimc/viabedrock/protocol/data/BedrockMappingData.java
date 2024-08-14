@@ -113,6 +113,9 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> bedrockEffects;
     private Map<String, String> bedrockToJavaEffects;
 
+    // Sounds
+    private Map<String, Integer> bedrockToJavaSounds;
+
     // Other stuff
     private BiMap<String, String> bedrockToJavaExperimentalFeatures;
     private BiMap<String, String> bedrockToJavaBannerPatterns;
@@ -244,7 +247,6 @@ public class BedrockMappingData extends MappingDataBase {
                 if (!this.javaBlockStates.containsKey(javaBlockState)) {
                     throw new RuntimeException("Unknown java block state: " + javaBlockState.toBlockStateString());
                 }
-
                 this.javaPreWaterloggedBlockStates.add(this.javaBlockStates.get(javaBlockState).intValue());
             }
 
@@ -259,7 +261,6 @@ public class BedrockMappingData extends MappingDataBase {
                 if (!this.javaBlockStates.containsKey(javaPottedBlockState)) {
                     throw new RuntimeException("Unknown java block state: " + javaPottedBlockState.toBlockStateString());
                 }
-
                 this.javaPottedBlockStates.put(this.javaBlockStates.get(javaBlockState).intValue(), this.javaBlockStates.get(javaPottedBlockState).intValue());
             }
 
@@ -285,7 +286,6 @@ public class BedrockMappingData extends MappingDataBase {
                 if (!this.bedrockBiomeDefinitions.contains(bedrockBiomeName)) {
                     throw new RuntimeException("Unknown bedrock biome: " + bedrockBiomeName);
                 }
-
                 this.bedrockBiomes.put(bedrockBiomeName, entry.getValue().getAsInt());
             }
 
@@ -369,7 +369,6 @@ public class BedrockMappingData extends MappingDataBase {
                     if (this.bedrockItems.get(bedrockIdentifier) > 255) {
                         throw new RuntimeException("Tried to register meta item as block item: " + bedrockIdentifier);
                     }
-
                     final JsonObject blockDefinition = definition.get("block").getAsJsonObject();
                     final Map<BlockState, ItemRewriter.Rewriter> blockItems = new LinkedHashMap<>(blockDefinition.size());
                     this.bedrockToJavaBlockItems.put(bedrockIdentifier, blockItems);
@@ -392,7 +391,6 @@ public class BedrockMappingData extends MappingDataBase {
                         if (blockStates.isEmpty()) {
                             throw new RuntimeException("Unknown bedrock block state: " + blockState.toBlockStateString());
                         }
-
                         for (BlockState state : blockStates) {
                             if (blockItems.put(state, ItemRewriter.Rewriter.fromJson(bedrockIdentifier, blockMapping.getValue().getAsJsonObject())) != null) {
                                 throw new RuntimeException("Duplicate bedrock -> java item mapping for " + bedrockIdentifier);
@@ -409,7 +407,6 @@ public class BedrockMappingData extends MappingDataBase {
                     if (this.bedrockItems.get(bedrockIdentifier) < 256) {
                         throw new RuntimeException("Tried to register block item as meta item: " + bedrockIdentifier);
                     }
-
                     final JsonObject metaDefinition = definition.get("meta").getAsJsonObject();
                     final Map<Integer, ItemRewriter.Rewriter> metaItems = new HashMap<>(metaDefinition.size());
                     this.bedrockToJavaMetaItems.put(bedrockIdentifier, metaItems);
@@ -420,12 +417,10 @@ public class BedrockMappingData extends MappingDataBase {
                         } catch (NumberFormatException e) {
                             meta = null;
                         }
-
                         if (metaItems.put(meta, ItemRewriter.Rewriter.fromJson(bedrockIdentifier, metaMapping.getValue().getAsJsonObject())) != null) {
                             throw new RuntimeException("Duplicate bedrock -> java item mapping for " + bedrockIdentifier + ":" + meta);
                         }
                     }
-
                     if (!metaItems.containsKey(null)) {
                         throw new RuntimeException("Missing bedrock -> java item mapping for " + bedrockIdentifier + ":null");
                     }
@@ -478,7 +473,6 @@ public class BedrockMappingData extends MappingDataBase {
                     unmappedContainerTypes.add(bedrockContainerType);
                     continue;
                 }
-
                 final String javaIdentifier = entry.getValue().getAsString();
                 if (!javaMenus.contains(javaIdentifier)) {
                     throw new IllegalStateException("Unknown java menu: " + javaIdentifier);
@@ -512,7 +506,6 @@ public class BedrockMappingData extends MappingDataBase {
                     unmappedIdentifiers.add(bedrockIdentifier);
                     continue;
                 }
-
                 final String javaIdentifier = entry.getValue().getAsString();
                 EntityTypes1_20_5 javaEntityType = null;
                 for (EntityTypes1_20_5 type : EntityTypes1_20_5.values()) {
@@ -524,7 +517,6 @@ public class BedrockMappingData extends MappingDataBase {
                 if (javaEntityType == null) {
                     throw new RuntimeException("Unknown java entity identifier: " + javaIdentifier);
                 }
-
                 this.bedrockToJavaEntities.put(bedrockIdentifier, javaEntityType);
             }
             for (String bedrockIdentifier : this.bedrockEntities.keySet()) {
@@ -554,7 +546,6 @@ public class BedrockMappingData extends MappingDataBase {
             }
             for (EntityTypes1_20_5 type : EntityTypes1_20_5.values()) {
                 if (type.isAbstractType()) continue;
-
                 final EntityTypes1_20_5 realType = type;
                 final List<String> entityData = new ArrayList<>();
                 do {
@@ -604,6 +595,44 @@ public class BedrockMappingData extends MappingDataBase {
             for (String bedrockIdentifier : this.bedrockEffects.keySet()) {
                 if (!this.bedrockToJavaEffects.containsKey(bedrockIdentifier)) {
                     throw new IllegalStateException("Missing bedrock -> java effect mapping for " + bedrockIdentifier);
+                }
+            }
+        }
+
+        { // Sounds
+            final JsonArray javaSoundsJson = javaViaMappingJson.get("sounds").getAsJsonArray();
+            final List<String> javaSounds = new ArrayList<>(javaSoundsJson.size());
+            for (int i = 0; i < javaSoundsJson.size(); i++) {
+                javaSounds.add(javaSoundsJson.get(i).getAsString());
+            }
+
+            final JsonArray bedrockSoundsJson = this.readJson("bedrock/sounds.json", JsonArray.class);
+            final List<String> bedrockSounds = new ArrayList<>(bedrockSoundsJson.size());
+            for (int i = 0; i < bedrockSoundsJson.size(); i++) {
+                bedrockSounds.add(bedrockSoundsJson.get(i).getAsString());
+            }
+
+            final JsonObject bedrockToJavaSoundMappingsJson = this.readJson("custom/sound_mappings.json");
+            this.bedrockToJavaSounds = new HashMap<>(bedrockToJavaSoundMappingsJson.size());
+            final Set<String> unmappedIdentifiers = new HashSet<>();
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaSoundMappingsJson.entrySet()) {
+                final String bedrockIdentifier = entry.getKey();
+                if (!bedrockSounds.contains(bedrockIdentifier)) {
+                    throw new IllegalStateException("Unknown bedrock sound: " + bedrockIdentifier);
+                }
+                if (entry.getValue().isJsonNull()) {
+                    unmappedIdentifiers.add(bedrockIdentifier);
+                    continue;
+                }
+                final String javaIdentifier = entry.getValue().getAsString();
+                if (!javaSounds.contains(javaIdentifier)) {
+                    throw new IllegalStateException("Unknown java sound: " + javaIdentifier);
+                }
+                this.bedrockToJavaSounds.put(bedrockIdentifier, javaSounds.indexOf(javaIdentifier));
+            }
+            for (String bedrockIdentifier : bedrockSounds) {
+                if (!this.bedrockToJavaSounds.containsKey(bedrockIdentifier) && !unmappedIdentifiers.contains(bedrockIdentifier)) {
+                    throw new IllegalStateException("Missing bedrock -> java sound mapping for " + bedrockIdentifier);
                 }
             }
         }
@@ -779,6 +808,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<String, String> getBedrockToJavaEffects() {
         return this.bedrockToJavaEffects;
+    }
+
+    public Map<String, Integer> getBedrockToJavaSounds() {
+        return this.bedrockToJavaSounds;
     }
 
     public BiMap<String, String> getBedrockToJavaExperimentalFeatures() {

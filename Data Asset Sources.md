@@ -30,6 +30,9 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 ### data/bedrock/runtime_item_states.json
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
+### data/bedrock/sounds.json
+This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
+
 ### data/bedrock/vanilla_resource_pack.mcpack
 These files have been copied from the official bedrock client's assets folder:  
 `%MC-Root%/data/resource_packs/vanilla/`
