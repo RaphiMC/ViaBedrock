@@ -82,8 +82,8 @@ public class HudPackets {
                         wrapper.write(Types.STRING, "xuid"); // property name
                         wrapper.write(Types.STRING, wrapper.read(BedrockTypes.STRING)); // xuid
                         wrapper.write(Types.OPTIONAL_STRING, null); // signature
-                        wrapper.write(Types.STRING, "platform_chat_id"); // property name
-                        wrapper.write(Types.STRING, wrapper.read(BedrockTypes.STRING)); // platform chat id
+                        wrapper.write(Types.STRING, "platform_online_id"); // property name
+                        wrapper.write(Types.STRING, wrapper.read(BedrockTypes.STRING)); // platform online id
                         wrapper.write(Types.OPTIONAL_STRING, null); // signature
                         wrapper.write(Types.STRING, "device_os"); // property name
                         wrapper.write(Types.STRING, wrapper.read(BedrockTypes.INT_LE).toString()); // device os
@@ -169,7 +169,8 @@ public class HudPackets {
             final int stayTicks = wrapper.read(BedrockTypes.VAR_INT); // stay ticks
             final int fadeOutTicks = wrapper.read(BedrockTypes.VAR_INT); // fade out ticks
             wrapper.read(BedrockTypes.STRING); // xuid
-            wrapper.read(BedrockTypes.STRING); // platform chat id
+            wrapper.read(BedrockTypes.STRING); // platform online id
+            wrapper.read(BedrockTypes.STRING); // filtered text
 
             final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTexts().lookup();
             final String originalText = text;

@@ -145,7 +145,7 @@ project.tasks.withType(PublishToMavenRepository).forEach {
 
 def enumSourceDir = layout.buildDirectory.dir("generated/enums/main/java")
 def enumGeneratorTask = tasks.register("enumGeneratorTask", EnumGeneratorTask) {
-    commitHash = "e8b16c2ada3de6946c2d09f76a477d37aa1c074b" // https://github.com/Mojang/bedrock-protocol-docs
+    commitHash = "4204a7c22291126198afb116f9df4ec7caf3efe6" // https://github.com/Mojang/bedrock-protocol-docs
     outputDirectory = enumSourceDir
 }
 tasks.compileJava.dependsOn(enumGeneratorTask)

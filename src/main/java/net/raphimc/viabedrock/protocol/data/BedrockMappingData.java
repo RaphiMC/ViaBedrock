@@ -835,7 +835,7 @@ public class BedrockMappingData extends MappingDataBase {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
             final byte[] bytes = ByteStreams.toByteArray(inputStream);
-            final ResourcePack resourcePack = new ResourcePack(uuid, version, "", "", "", false, false, 0, PackType.Resources);
+            final ResourcePack resourcePack = new ResourcePack(uuid, version, "", "", "", false, false, false, 0, PackType.Resources);
             resourcePack.setCompressedDataLength(bytes.length, bytes.length);
             resourcePack.processDataChunk(0, bytes);
             return resourcePack;

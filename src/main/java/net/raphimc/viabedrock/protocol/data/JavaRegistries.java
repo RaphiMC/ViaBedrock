@@ -31,7 +31,6 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class JavaRegistries {
 
@@ -87,7 +86,7 @@ public class JavaRegistries {
             javaBiome.put("downfall", bedrockBiome.get("downfall"));
             javaBiome.put("has_precipitation", bedrockBiome.get("rain"));
 
-            final List<String> tags = bedrockBiome.getListTag("tags").stream().map(StringTag.class::cast).map(StringTag::getValue).collect(Collectors.toList());
+            final List<String> tags = bedrockBiome.getListTag("tags").stream().map(StringTag.class::cast).map(StringTag::getValue).toList();
 
             final CompoundTag effects = new CompoundTag();
             javaBiome.put("effects", effects);

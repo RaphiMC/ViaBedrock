@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-public record EntityLink(long fromUniqueEntityId, long toUniqueEntityId, byte type, boolean immediate, boolean riderInitiated) {
+public record EntityLink(long fromUniqueEntityId, long toUniqueEntityId, byte type, boolean immediate, boolean riderInitiated, float vehicleAngularVelocity) {
 
     // TODO: Enum: Use ActorLinkType for type
 

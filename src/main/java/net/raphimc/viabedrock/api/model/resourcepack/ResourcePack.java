@@ -66,6 +66,7 @@ public class ResourcePack {
     private final String subPackName;
     private final String contentId;
     private final boolean hasScripts;
+    private final boolean isAddonPack;
     private final boolean raytracingCapable;
 
     // Non HTTP resource pack downloading
@@ -81,13 +82,14 @@ public class ResourcePack {
     private byte[] compressedData;
     private Content content;
 
-    public ResourcePack(final UUID packId, final String version, final String contentKey, final String subPackName, final String contentId, final boolean hasScripts, final boolean raytracingCapable, final long compressedSize, final PackType type) {
+    public ResourcePack(final UUID packId, final String version, final String contentKey, final String subPackName, final String contentId, final boolean hasScripts, final boolean isAddonPack, final boolean raytracingCapable, final long compressedSize, final PackType type) {
         this.packId = packId;
         this.version = version;
         this.contentKey = contentKey;
         this.subPackName = subPackName;
         this.contentId = contentId;
         this.hasScripts = hasScripts;
+        this.isAddonPack = isAddonPack;
         this.raytracingCapable = raytracingCapable;
         this.compressedData = new byte[(int) compressedSize];
         this.type = type;
@@ -145,6 +147,10 @@ public class ResourcePack {
 
     public boolean hasScripts() {
         return this.hasScripts;
+    }
+
+    public boolean isAddonPack() {
+        return this.isAddonPack;
     }
 
     public boolean raytracingCapable() {

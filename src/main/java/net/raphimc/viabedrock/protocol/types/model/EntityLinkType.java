@@ -30,7 +30,7 @@ public class EntityLinkType extends Type<EntityLink> {
 
     @Override
     public EntityLink read(ByteBuf buffer) {
-        return new EntityLink(BedrockTypes.VAR_LONG.read(buffer), BedrockTypes.VAR_LONG.read(buffer), buffer.readByte(), buffer.readBoolean(), buffer.readBoolean());
+        return new EntityLink(BedrockTypes.VAR_LONG.read(buffer), BedrockTypes.VAR_LONG.read(buffer), buffer.readByte(), buffer.readBoolean(), buffer.readBoolean(), buffer.readFloatLE());
     }
 
     @Override
@@ -40,6 +40,7 @@ public class EntityLinkType extends Type<EntityLink> {
         buffer.writeByte(value.type());
         buffer.writeBoolean(value.immediate());
         buffer.writeBoolean(value.riderInitiated());
+        buffer.writeFloatLE(value.vehicleAngularVelocity());
     }
 
 }

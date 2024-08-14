@@ -160,7 +160,7 @@ public class ChatPackets {
                     }
                 });
                 read(BedrockTypes.STRING); // xuid
-                read(BedrockTypes.STRING); // platform chat id
+                read(BedrockTypes.STRING); // platform online id
                 read(BedrockTypes.STRING); // filtered message
             }
         });
@@ -259,7 +259,7 @@ public class ChatPackets {
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(EntityTracker.class).getClientPlayer().name())); // source name
                 map(Types.STRING, BedrockTypes.STRING); // message
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(AuthChainData.class).getXuid())); // xuid
-                create(BedrockTypes.STRING, ""); // platform chat id
+                create(BedrockTypes.STRING, ""); // platform online id
                 create(BedrockTypes.STRING, ""); // filtered message
                 handler(PacketWrapper::clearInputBuffer);
                 handler(wrapper -> {

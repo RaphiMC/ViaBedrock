@@ -31,10 +31,12 @@ import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerboundLoadingScreenPacketType;
 import net.raphimc.viabedrock.protocol.data.enums.java.CustomChatCompletionsAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class PacketFactory {
 
@@ -99,6 +101,16 @@ public class PacketFactory {
         containerClose.write(Types.BYTE, (byte) containerType.getValue()); // type
         containerClose.write(Types.BOOLEAN, false); // server initiated
         containerClose.sendToServer(BedrockProtocol.class);
+    }
+
+    public static void sendBedrockLoadingScreen(final UserConnection user, final ServerboundLoadingScreenPacketType type, final Long loadingScreenId) {
+        final PacketWrapper loadingScreen = PacketWrapper.create(ServerboundBedrockPackets.LOADING_SCREEN, user);
+        loadingScreen.write(BedrockTypes.VAR_INT, type.getValue()); // type
+        loadingScreen.write(Types.BOOLEAN, loadingScreenId != null); // has loading screen id
+        if (loadingScreenId != null) {
+            loadingScreen.write(BedrockTypes.UNSIGNED_INT_LE, loadingScreenId); // loading screen id
+        }
+        loadingScreen.sendToServer(BedrockProtocol.class);
     }
 
     public static void writeJavaDisconnect(final PacketWrapper wrapper, final String reason) {

@@ -146,6 +146,7 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_21.CONTAINER_SET_CONTENT, wrapper -> {
             final int windowId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // window id
             final BedrockItem[] items = wrapper.read(wrapper.user().get(ItemRewriter.class).itemArrayType()); // items
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // dynamic window id
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final Container container = inventoryTracker.getContainerClientbound((byte) windowId);
@@ -158,6 +159,7 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_SLOT, ClientboundPackets1_21.CONTAINER_SET_SLOT, wrapper -> {
             final int windowId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // window id
             final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // slot
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // dynamic window id
             final BedrockItem item = wrapper.read(wrapper.user().get(ItemRewriter.class).itemType()); // item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);

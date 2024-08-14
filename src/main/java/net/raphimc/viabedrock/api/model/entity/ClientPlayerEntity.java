@@ -45,6 +45,7 @@ import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -55,7 +56,7 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     // Initial spawn and respawning
     private boolean initiallySpawned;
-    private boolean changingDimension;
+    private DimensionChangeInfo dimensionChangeInfo;
     private boolean wasInsideUnloadedChunk;
 
     // Position syncing
@@ -93,6 +94,9 @@ public class ClientPlayerEntity extends PlayerEntity {
 
         if (this.gameSession.getMovementMode() != ServerAuthMovementMode.ClientAuthoritative && this.initiallySpawned && !this.isDead()) {
             this.sendPlayerAuthInputPacketToServer(ClientPlayMode.Screen);
+        }
+        if (this.gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative && this.dimensionChangeInfo != null && this.dimensionChangeInfo.sendRespawnMovePackets.get()) {
+            this.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Respawn);
         }
     }
 
@@ -134,7 +138,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         if (this.prevPosition == null) this.prevPosition = this.position;
         final Position3f positionDelta = this.position.subtract(this.prevPosition);
         final Position3f gravityAffectedPositionDelta;
-        if (this.abilities.getBooleanValue(AbilitiesIndex.Flying)) {
+        if (!this.initiallySpawned || this.dimensionChangeInfo != null || this.abilities.getBooleanValue(AbilitiesIndex.Flying)) {
             gravityAffectedPositionDelta = positionDelta;
         } else {
             gravityAffectedPositionDelta = positionDelta.subtract(0F, ProtocolConstants.PLAYER_GRAVITY, 0F);
@@ -376,12 +380,12 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.initiallySpawned = true;
     }
 
-    public boolean isChangingDimension() {
-        return this.changingDimension;
+    public DimensionChangeInfo dimensionChangeInfo() {
+        return this.dimensionChangeInfo;
     }
 
-    public void setChangingDimension(final boolean changingDimension) {
-        this.changingDimension = changingDimension;
+    public void setDimensionChangeInfo(final DimensionChangeInfo dimensionChangeInfo) {
+        this.dimensionChangeInfo = dimensionChangeInfo;
     }
 
     public boolean isSneaking() {
@@ -514,7 +518,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         if (chunkTracker.isInUnloadedChunkSection(this.position)) {
             this.wasInsideUnloadedChunk = true;
             if (!this.position.equals(newPosition)) {
-                if (!this.initiallySpawned || this.changingDimension) {
+                if (!this.initiallySpawned || this.dimensionChangeInfo != null) {
                     this.sendPlayerPositionPacketToClient(false);
                 } else {
                     this.waitingForPositionSync = true;
@@ -535,7 +539,7 @@ public class ClientPlayerEntity extends PlayerEntity {
             return false;
         }
         // Not spawned yet or respawning
-        if (!this.initiallySpawned || this.changingDimension) {
+        if (!this.initiallySpawned || this.dimensionChangeInfo != null) {
             if (!this.position.equals(newPosition)) {
                 this.sendPlayerPositionPacketToClient(false);
             }
@@ -551,6 +555,12 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
 
         return false;
+    }
+
+    public record DimensionChangeInfo(Long loadingScreenId, AtomicBoolean sendRespawnMovePackets) {
+        public DimensionChangeInfo(final Long loadingScreenId) {
+            this(loadingScreenId, new AtomicBoolean(false));
+        }
     }
 
     public record BlockBreakingInfo(BlockPosition position, Direction direction) {

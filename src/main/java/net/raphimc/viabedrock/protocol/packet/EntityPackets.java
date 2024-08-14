@@ -470,6 +470,7 @@ public class EntityPackets {
             final BedrockItem chest = wrapper.read(itemRewriter.itemType()); // chest
             final BedrockItem legs = wrapper.read(itemRewriter.itemType()); // legs
             final BedrockItem feet = wrapper.read(itemRewriter.itemType()); // feet
+            final BedrockItem body = wrapper.read(itemRewriter.itemType()); // body
 
             final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(runtimeEntityId);
             if (entity == null || entity instanceof ClientPlayerEntity) {
@@ -484,8 +485,10 @@ public class EntityPackets {
             wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(legs)); // item
             wrapper.write(Types.BYTE, (byte) (EquipmentSlot.CHEST.ordinal() | Byte.MIN_VALUE)); // slot
             wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(chest)); // item
-            wrapper.write(Types.BYTE, (byte) EquipmentSlot.HEAD.ordinal()); // slot
+            wrapper.write(Types.BYTE, (byte) (EquipmentSlot.HEAD.ordinal() | Byte.MIN_VALUE)); // slot
             wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(head)); // item
+            wrapper.write(Types.BYTE, (byte) EquipmentSlot.BODY.ordinal()); // slot
+            wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(body)); // item
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOB_EQUIPMENT, ClientboundPackets1_21.SET_EQUIPMENT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);

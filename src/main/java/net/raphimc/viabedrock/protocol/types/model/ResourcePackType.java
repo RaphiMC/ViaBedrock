@@ -41,7 +41,8 @@ public class ResourcePackType extends Type<ResourcePack> {
         final String contentKey = BedrockTypes.STRING.read(buffer);
         final String subPackName = BedrockTypes.STRING.read(buffer);
         final String contentId = BedrockTypes.STRING.read(buffer);
-        final boolean scripting = buffer.readBoolean();
+        final boolean hasScripts = buffer.readBoolean();
+        final boolean isAddonPack = buffer.readBoolean();
         final boolean raytracingCapable = buffer.readBoolean();
 
         UUID packUUID;
@@ -52,7 +53,7 @@ public class ResourcePackType extends Type<ResourcePack> {
             packUUID = new UUID(0L, 0L);
         }
 
-        return new ResourcePack(packUUID, packVersion, contentKey, subPackName, contentId, scripting, raytracingCapable, packSize, PackType.Resources);
+        return new ResourcePack(packUUID, packVersion, contentKey, subPackName, contentId, hasScripts, isAddonPack, raytracingCapable, packSize, PackType.Resources);
     }
 
     @Override
@@ -64,6 +65,7 @@ public class ResourcePackType extends Type<ResourcePack> {
         BedrockTypes.STRING.write(buffer, value.subPackName());
         BedrockTypes.STRING.write(buffer, value.contentId());
         buffer.writeBoolean(value.hasScripts());
+        buffer.writeBoolean(value.isAddonPack());
         buffer.writeBoolean(value.raytracingCapable());
     }
 

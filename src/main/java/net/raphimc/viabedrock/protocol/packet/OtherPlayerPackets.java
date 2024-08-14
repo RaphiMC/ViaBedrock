@@ -60,7 +60,7 @@ public class OtherPlayerPackets {
             final UUID uuid = wrapper.read(BedrockTypes.UUID); // uuid
             final String username = wrapper.read(BedrockTypes.STRING); // username
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
-            final String platformChatId = wrapper.read(BedrockTypes.STRING); // platform chat id
+            final String platformOnlineId = wrapper.read(BedrockTypes.STRING); // platform online id
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
@@ -84,8 +84,8 @@ public class OtherPlayerPackets {
             playerInfoUpdate.write(Types.UUID, uuid); // uuid
             playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(uuid)); // username
             playerInfoUpdate.write(Types.VAR_INT, 3); // property count
-            playerInfoUpdate.write(Types.STRING, "platform_chat_id"); // property name
-            playerInfoUpdate.write(Types.STRING, platformChatId); // property value
+            playerInfoUpdate.write(Types.STRING, "platform_online_id"); // property name
+            playerInfoUpdate.write(Types.STRING, platformOnlineId); // property value
             playerInfoUpdate.write(Types.OPTIONAL_STRING, null); // signature
             playerInfoUpdate.write(Types.STRING, "device_id"); // property name
             playerInfoUpdate.write(Types.STRING, wrapper.read(BedrockTypes.STRING)); // device id
@@ -156,6 +156,9 @@ public class OtherPlayerPackets {
             if ((mode == PlayerPositionModeComponent_PositionMode.Teleport || mode == PlayerPositionModeComponent_PositionMode.Respawn) && entity instanceof ClientPlayerEntity clientPlayer) {
                 wrapper.setPacketType(ClientboundPackets1_21.PLAYER_POSITION);
                 clientPlayer.writePlayerPositionPacketToClient(wrapper, false, mode == PlayerPositionModeComponent_PositionMode.Respawn);
+                if (clientPlayer.dimensionChangeInfo() != null && mode == PlayerPositionModeComponent_PositionMode.Respawn) {
+                    clientPlayer.dimensionChangeInfo().sendRespawnMovePackets().set(true);
+                }
                 return;
             }
 

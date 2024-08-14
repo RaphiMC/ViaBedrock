@@ -126,6 +126,12 @@ public class WorldPackets {
             final Dimension dimension = Dimension.values()[wrapper.read(BedrockTypes.VAR_INT)]; // dimension
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             wrapper.read(Types.BOOLEAN); // respawn
+            final Long loadingScreenId;
+            if (wrapper.read(Types.BOOLEAN)) { // has loading screen id
+                loadingScreenId = wrapper.read(BedrockTypes.UNSIGNED_INT_LE); // loading screen id
+            } else {
+                loadingScreenId = null;
+            }
 
             if (dimension == wrapper.user().get(ChunkTracker.class).getDimension()) {
                 // Mojang client gets stuck in loading terrain until a proper CHANGE_DIMENSION packet is received
@@ -140,11 +146,12 @@ public class WorldPackets {
             newEntityTracker.addEntity(clientPlayer);
             wrapper.user().put(newEntityTracker);
 
+            PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.StartLoadingScreen, loadingScreenId);
             clientPlayer.setPosition(new Position3f(position.x(), position.y() + clientPlayer.eyeOffset(), position.z()));
             if (gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
                 clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
             }
-            clientPlayer.setChangingDimension(true);
+            clientPlayer.setDimensionChangeInfo(new ClientPlayerEntity.DimensionChangeInfo(loadingScreenId));
             inventoryTracker.closeAllContainers();
 
             wrapper.write(Types.VAR_INT, dimension.ordinal()); // dimension id

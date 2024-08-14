@@ -36,7 +36,7 @@ public class ResourcePackConverterTest {
         System.out.println("Reading took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();
-        final ResourcePack resourcePack = new ResourcePack(UUID.randomUUID(), "1.0.0", "", "", "", false, false, 0, PackType.Resources);
+        final ResourcePack resourcePack = new ResourcePack(UUID.randomUUID(), "1.0.0", "", "", "", false, false, false, 0, PackType.Resources);
         resourcePack.setCompressedDataLength(bytes.length, bytes.length);
         resourcePack.processDataChunk(0, bytes);
 

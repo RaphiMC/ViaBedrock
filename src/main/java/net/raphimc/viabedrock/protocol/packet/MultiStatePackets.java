@@ -56,6 +56,7 @@ public class MultiStatePackets {
             final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
             final Function<String, String> translator = k -> translations.getOrDefault(k, k);
             final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
+            wrapper.read(BedrockTypes.STRING); // filtered message
             final String translatedMessage = BedrockTranslator.translate(rawMessage, translator, new Object[0]);
             PacketFactory.writeJavaDisconnect(wrapper, translatedMessage + " §r(Reason: " + disconnectReason + ")");
         } else {

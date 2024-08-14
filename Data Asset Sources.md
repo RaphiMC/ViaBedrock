@@ -13,7 +13,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/4a334a2c8d7068c84fc9d41ada97a86f77c85c1f/core/src/main/resources/bedrock/block_palette.1_21_0.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/0bc39d5a191777fcded4d9435393c511a3f37f43/core/src/main/resources/bedrock/block_palette.1_21_20.nbt)
 
 ### data/bedrock/block_traits.json
 [wiki.bedrock.dev](https://wiki.bedrock.dev/blocks/block-traits.html)

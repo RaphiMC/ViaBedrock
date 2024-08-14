@@ -54,8 +54,6 @@ public class GameSessionStorage implements StorableObject {
     private boolean immutableWorld;
     private ATextComponent deathMessage;
 
-    private boolean sentStartGameResponsePackets;
-
     public GameSessionStorage() {
         this.bedrockDimensionDefinitions.put("minecraft:the_nether", new IntIntImmutablePair(0, 128));
     }
@@ -187,14 +185,6 @@ public class GameSessionStorage implements StorableObject {
 
     public void setDeathMessage(final ATextComponent deathMessage) {
         this.deathMessage = deathMessage;
-    }
-
-    public boolean hasSentStartGameResponsePackets() {
-        return this.sentStartGameResponsePackets;
-    }
-
-    public void setSentStartGameResponsePackets(final boolean sentStartGameResponsePackets) {
-        this.sentStartGameResponsePackets = sentStartGameResponsePackets;
     }
 
 }

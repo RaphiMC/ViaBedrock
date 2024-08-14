@@ -53,7 +53,7 @@ public class BedrockSoundListGenerator {
 
         final List<String> sortedSoundList = new ArrayList<>(soundList);
         Collections.sort(sortedSoundList);
-        System.out.println(new Gson().newBuilder().setPrettyPrinting().create().toJson(sortedSoundList));
+        System.out.println(new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(sortedSoundList));
     }
 
 }

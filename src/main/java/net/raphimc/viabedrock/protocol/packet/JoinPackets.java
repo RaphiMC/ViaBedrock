@@ -117,7 +117,7 @@ public class JoinPackets {
             startConfiguration.send(BedrockProtocol.class);
             wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
 
-            handleGameJoin(wrapper.user());
+            handleJavaClientGameJoin(wrapper.user());
         } else {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Skipping reconfigure packet as it is not supported by the client. This may cause issues.");
         }
@@ -192,11 +192,12 @@ public class JoinPackets {
                         clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
                         clientPlayer.setInitiallySpawned();
                         if (gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
-                            clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
+                            clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Respawn);
                         } else {
                             clientPlayer.sendPlayerAuthInputPacketToServer(ClientPlayMode.Normal);
                         }
 
+                        PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.EndLoadingScreen, null);
                         final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());
                         setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
                         setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
@@ -398,11 +399,13 @@ public class JoinPackets {
                         updateEnabledFeatures.send(BedrockProtocol.class);
                     }
 
-                    handleGameJoin(wrapper.user());
-                    sendStartGameResponsePackets(wrapper.user());
-                }, State.LOGIN, (PacketHandler) wrapper -> {
-                    wrapper.cancel();
-                    sendStartGameResponsePackets(wrapper.user());
+                    handleJavaClientGameJoin(wrapper.user());
+
+                    final PacketWrapper requestChunkRadius = PacketWrapper.create(ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, wrapper.user());
+                    requestChunkRadius.write(BedrockTypes.VAR_INT, wrapper.user().get(ClientSettingsStorage.class).viewDistance()); // radius
+                    requestChunkRadius.write(Types.BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
+                    requestChunkRadius.sendToServer(BedrockProtocol.class);
+                    PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.StartLoadingScreen, null);
                 }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Mojang client ignores multiple start game packets
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.BIOME_DEFINITION_LIST,
@@ -475,7 +478,7 @@ public class JoinPackets {
         }
     }
 
-    private static void handleGameJoin(final UserConnection user) {
+    private static void handleJavaClientGameJoin(final UserConnection user) {
         final JoinGameStorage joinGameStorage = user.get(JoinGameStorage.class);
         final GameSessionStorage gameSession = user.get(GameSessionStorage.class);
         final ClientSettingsStorage clientSettingsStorage = user.get(ClientSettingsStorage.class);
@@ -583,17 +586,6 @@ public class JoinPackets {
         final PacketWrapper setTime = PacketWrapper.create(ClientboundBedrockPackets.SET_TIME, user);
         setTime.write(BedrockTypes.VAR_INT, joinGameStorage.currentTime()); // time of day
         setTime.send(BedrockProtocol.class, false);
-    }
-
-    private static void sendStartGameResponsePackets(final UserConnection user) {
-        final GameSessionStorage gameSession = user.get(GameSessionStorage.class);
-        if (gameSession.hasSentStartGameResponsePackets()) return;
-        gameSession.setSentStartGameResponsePackets(true);
-
-        final PacketWrapper requestChunkRadius = PacketWrapper.create(ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, user);
-        requestChunkRadius.write(BedrockTypes.VAR_INT, user.get(ClientSettingsStorage.class).viewDistance()); // radius
-        requestChunkRadius.write(Types.BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
-        requestChunkRadius.sendToServer(BedrockProtocol.class);
     }
 
 }
