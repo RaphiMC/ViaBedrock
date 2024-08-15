@@ -143,9 +143,13 @@ public class OtherPlayerPackets {
                 wrapper.cancel();
                 return;
             }
-
             if (mode == PlayerPositionModeComponent_PositionMode.OnlyHeadRot) {
-                BedrockProtocol.kickForIllegalState(wrapper.user(), "PlayerPositionModeComponent_PositionMode.OnlyHeadRot is not implemented");
+                entity.setRotation(new Position3f(rotation.x(), entity.rotation().y(), entity.rotation().z()));
+                wrapper.setPacketType(ClientboundPackets1_21.MOVE_ENTITY_ROT);
+                wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+                wrapper.write(Types.BYTE, MathUtil.float2Byte(entity.rotation().y())); // yaw
+                wrapper.write(Types.BYTE, MathUtil.float2Byte(rotation.x())); // pitch
+                wrapper.write(Types.BOOLEAN, entity.isOnGround()); // on ground
                 return;
             }
 
