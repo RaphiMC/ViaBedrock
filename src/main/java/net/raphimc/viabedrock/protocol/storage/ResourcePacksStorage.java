@@ -58,7 +58,9 @@ public class ResourcePacksStorage extends StoredObject {
     public ResourcePacksStorage(final UserConnection user) {
         super(user);
 
-        this.addPreloadedPack(BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack());
+        if (BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack() != null) { // null if ran from ResourcePackConverterTest
+            this.addPreloadedPack(BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack());
+        }
     }
 
     public void sendResponseIfAllDownloadsCompleted() {
