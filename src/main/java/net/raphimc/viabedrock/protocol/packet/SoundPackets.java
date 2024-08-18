@@ -102,8 +102,8 @@ public class SoundPackets {
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final int data = wrapper.read(BedrockTypes.VAR_INT); // data
             final int entityType = wrapper.read(BedrockTypes.VAR_INT); // entity type
-            final boolean isBabyMob = wrapper.read(Types.BOOLEAN);
-            final boolean isGlobal = wrapper.read(Types.BOOLEAN);
+            final boolean isBabyMob = wrapper.read(Types.BOOLEAN); // is baby mob
+            final boolean isGlobal = wrapper.read(Types.BOOLEAN); // is global sound
 
             final String entityIdentifier = BedrockProtocol.MAPPINGS.getBedrockEntities().inverse().getOrDefault(entityType, "");
             if (entityIdentifier.isEmpty()) {
@@ -122,8 +122,8 @@ public class SoundPackets {
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final int data = wrapper.read(BedrockTypes.VAR_INT); // data
             final String entityIdentifier = wrapper.read(BedrockTypes.STRING); // entity identifier
-            final boolean isBabyMob = wrapper.read(Types.BOOLEAN);
-            final boolean isGlobal = wrapper.read(Types.BOOLEAN);
+            final boolean isBabyMob = wrapper.read(Types.BOOLEAN); // is baby mob
+            final boolean isGlobal = wrapper.read(Types.BOOLEAN); // is global sound
 
             handleLevelSoundEvent(wrapper, soundEvent, position, data, entityIdentifier, isBabyMob, isGlobal);
         });
@@ -138,8 +138,8 @@ public class SoundPackets {
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final int data = wrapper.read(BedrockTypes.VAR_INT); // data
             final String entityIdentifier = wrapper.read(BedrockTypes.STRING); // entity identifier
-            final boolean isBabyMob = wrapper.read(Types.BOOLEAN);
-            final boolean isGlobal = wrapper.read(Types.BOOLEAN);
+            final boolean isBabyMob = wrapper.read(Types.BOOLEAN); // is baby mob
+            final boolean isGlobal = wrapper.read(Types.BOOLEAN); // is global sound
 
             handleLevelSoundEvent(wrapper, soundEvent, position, data, entityIdentifier, isBabyMob, isGlobal);
         });
@@ -203,7 +203,7 @@ public class SoundPackets {
 
         final Map<String, SoundDefinitions.ConfiguredSound> soundEvents = BedrockProtocol.MAPPINGS.getBedrockLevelSoundEvents().get(soundEvent);
         if (soundEvents == null) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock level sound event: " + soundEvent);
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unmapped bedrock level sound event: " + soundEvent);
             return null;
         }
         SoundDefinitions.ConfiguredSound configuredSound = null;
