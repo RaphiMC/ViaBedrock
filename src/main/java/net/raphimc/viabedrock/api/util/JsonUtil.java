@@ -45,6 +45,17 @@ public class JsonUtil {
         }
     }
 
+    public static void merge(final JsonObject target, final JsonObject source) {
+        for (Map.Entry<String, JsonElement> entry : source.entrySet()) {
+            final JsonElement targetElement = target.get(entry.getKey());
+            if (targetElement == null) {
+                target.add(entry.getKey(), entry.getValue().deepCopy());
+            } else if (targetElement.isJsonObject() && entry.getValue().isJsonObject()) {
+                merge(targetElement.getAsJsonObject(), entry.getValue().getAsJsonObject());
+            }
+        }
+    }
+
     public static Object getValue(final JsonElement element) {
         if (element.isJsonPrimitive()) {
             final JsonPrimitive primitive = element.getAsJsonPrimitive();

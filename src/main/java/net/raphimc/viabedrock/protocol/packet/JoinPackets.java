@@ -277,7 +277,7 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // bonus chest enabled
                     wrapper.read(Types.BOOLEAN); // start with map enabled
                     final int playerPermission = wrapper.read(BedrockTypes.VAR_INT); // player permission
-                    wrapper.read(BedrockTypes.INT_LE); // server chunk tick range
+                    final int chunkTickRange = wrapper.read(BedrockTypes.INT_LE); // server chunk tick range
                     wrapper.read(Types.BOOLEAN); // behavior pack locked
                     wrapper.read(Types.BOOLEAN); // resource pack locked
                     wrapper.read(Types.BOOLEAN); // from locked world template
@@ -378,7 +378,7 @@ public class JoinPackets {
                     clientPlayer.setGameType(playerGameType);
                     clientPlayer.setName(wrapper.user().getProtocolInfo().getUsername());
 
-                    wrapper.user().put(new JoinGameStorage(levelName, difficulty, rainLevel, lightningLevel, currentTime));
+                    wrapper.user().put(new JoinGameStorage(levelName, difficulty, rainLevel, lightningLevel, currentTime, chunkTickRange));
                     wrapper.user().put(new GameRulesStorage(wrapper.user(), gameRules));
                     wrapper.user().put(new BlockStateRewriter(blockProperties, hashedRuntimeBlockIds));
                     wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
@@ -522,7 +522,7 @@ public class JoinPackets {
         joinGame.write(Types.STRING_ARRAY, Dimension.getDimensionKeys()); // dimension types
         joinGame.write(Types.VAR_INT, 100); // max players
         joinGame.write(Types.VAR_INT, clientSettingsStorage.viewDistance()); // view distance
-        joinGame.write(Types.VAR_INT, clientSettingsStorage.viewDistance()); // simulation distance
+        joinGame.write(Types.VAR_INT, joinGameStorage.chunkTickRange()); // simulation distance
         joinGame.write(Types.BOOLEAN, ViaBedrock.getConfig().shouldTranslateShowCoordinatesGameRule() && !gameRulesStorage.<Boolean>getGameRule("showCoordinates")); // reduced debug info
         joinGame.write(Types.BOOLEAN, !gameRulesStorage.<Boolean>getGameRule("doImmediateRespawn")); // show death screen
         joinGame.write(Types.BOOLEAN, gameRulesStorage.getGameRule("doLimitedCrafting")); // limited crafting

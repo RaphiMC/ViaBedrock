@@ -43,7 +43,7 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 - [ ] Bossbar
 - [x] Player list
 - [x] Command suggestions
-- [ ] Sounds
+- [x] Sounds
 - [ ] Particles
 - [x] Player Skins (Requires [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility) mod)
 - [x] Basic resource pack conversion (Contributions welcome)

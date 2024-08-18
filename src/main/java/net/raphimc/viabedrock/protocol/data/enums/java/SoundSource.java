@@ -15,10 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.storage;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-import com.viaversion.viaversion.api.connection.StorableObject;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.Difficulty;
+public enum SoundSource {
 
-public record JoinGameStorage(String levelName, Difficulty difficulty, float rainLevel, float lightningLevel, int currentTime, int chunkTickRange) implements StorableObject {
+    MASTER,
+    MUSIC,
+    RECORDS,
+    WEATHER,
+    BLOCKS,
+    HOSTILE,
+    NEUTRAL,
+    PLAYERS,
+    AMBIENT,
+    VOICE,
+
 }

@@ -100,6 +100,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         EntityPackets.register(this);
         HudPackets.register(this);
         InventoryPackets.register(this);
+        SoundPackets.register(this);
         UnhandledPackets.register(this);
 
         // Fallback for unhandled packets (Temporary)

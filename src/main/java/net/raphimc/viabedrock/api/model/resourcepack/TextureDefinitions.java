@@ -33,21 +33,22 @@ public class TextureDefinitions {
 
     public TextureDefinitions(final ResourcePacksStorage resourcePacksStorage) {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
-            if (!pack.content().contains("textures/item_texture.json")) continue;
-            try {
-                final JsonObject itemTexture = pack.content().getJson("textures/item_texture.json");
-                final String textureName = itemTexture.has("texture_name") ? itemTexture.get("texture_name").getAsString() : "atlas.items";
-                if (textureName.equals("atlas.items")) {
-                    final JsonObject textureData = itemTexture.getAsJsonObject("texture_data");
-                    for (Map.Entry<String, JsonElement> entry : textureData.entrySet()) {
-                        final String name = entry.getKey();
-                        final String texturePath = entry.getValue().getAsJsonObject().get("textures").getAsString();
-                        final ItemTextureDefinition itemTextureDefinition = new ItemTextureDefinition(name, texturePath);
-                        this.itemTextures.put(name, itemTextureDefinition);
+            if (pack.content().contains("textures/item_texture.json")) {
+                try {
+                    final JsonObject itemTexture = pack.content().getJson("textures/item_texture.json");
+                    final String textureName = itemTexture.has("texture_name") ? itemTexture.get("texture_name").getAsString() : "atlas.items";
+                    if (textureName.equals("atlas.items")) {
+                        final JsonObject textureData = itemTexture.getAsJsonObject("texture_data");
+                        for (Map.Entry<String, JsonElement> entry : textureData.entrySet()) {
+                            final String name = entry.getKey();
+                            final String texturePath = entry.getValue().getAsJsonObject().get("textures").getAsString();
+                            final ItemTextureDefinition itemTextureDefinition = new ItemTextureDefinition(name, texturePath);
+                            this.itemTextures.put(name, itemTextureDefinition);
+                        }
                     }
+                } catch (Throwable e) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse item_texture.json in pack " + pack.packId(), e);
                 }
-            } catch (Throwable e) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse item texture definition in pack " + pack.packId(), e);
             }
         }
     }

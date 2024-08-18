@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+// https://wiki.bedrock.dev/concepts/text-and-translations.html
 public class TextDefinitions {
 
     private final Map<String, String> translations;

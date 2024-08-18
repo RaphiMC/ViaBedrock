@@ -22,6 +22,7 @@ import net.raphimc.viabedrock.protocol.model.Position3f;
 
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MathUtil {
 
@@ -60,6 +61,14 @@ public class MathUtil {
 
     public static boolean roughlyEquals(final float a, final float b, final float epsilon) {
         return Math.abs(a - b) <= epsilon;
+    }
+
+    public static float randomFloatInclusive(final float min, final float max) {
+        if (min == max) {
+            return min;
+        } else {
+            return min + ThreadLocalRandom.current().nextFloat() * (max - min);
+        }
     }
 
     public static Set<PlayerAuthInputPacket_InputData> calculatePressedDirectionKeys(final Position3f positionDelta, final float yaw) {

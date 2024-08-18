@@ -15,6 +15,9 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 ### data/bedrock/block_palette.nbt
 [GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/0bc39d5a191777fcded4d9435393c511a3f37f43/core/src/main/resources/bedrock/block_palette.1_21_20.nbt)
 
+### data/bedrock/block_sounds.json
+This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
+
 ### data/bedrock/block_traits.json
 [wiki.bedrock.dev](https://wiki.bedrock.dev/blocks/block-traits.html)
 
@@ -26,6 +29,9 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 
 ### data/bedrock/game_rules.json
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
+
+### data/bedrock/level_sound_event_mappings.json
+This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
 
 ### data/bedrock/runtime_item_states.json
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).

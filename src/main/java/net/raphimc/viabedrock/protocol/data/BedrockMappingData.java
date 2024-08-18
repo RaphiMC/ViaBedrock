@@ -45,10 +45,14 @@ import net.raphimc.viabedrock.api.item.ItemUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.NoteBlockInstrument;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.Puv_Legacy_LevelSoundEvent;
+import net.raphimc.viabedrock.protocol.data.enums.java.SoundSource;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -114,7 +118,9 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, String> bedrockToJavaEffects;
 
     // Sounds
-    private Map<String, Integer> bedrockToJavaSounds;
+    private Map<String, String> bedrockBlockSounds;
+    private Map<Puv_Legacy_LevelSoundEvent, Map<String, SoundDefinitions.ConfiguredSound>> bedrockLevelSoundEvents;
+    private Map<String, JavaSoundMapping> bedrockToJavaSounds;
 
     // Other stuff
     private BiMap<String, String> bedrockToJavaExperimentalFeatures;
@@ -157,6 +163,7 @@ public class BedrockMappingData extends MappingDataBase {
             ArgumentTypeRegistry.init();
         }
 
+        final Set<String> bedrockBlocks = new HashSet<>();
         { // Block states
             this.bedrockBlockStateUpgrader = new BlockStateUpgrader();
 
@@ -170,7 +177,9 @@ public class BedrockMappingData extends MappingDataBase {
             final ListTag<CompoundTag> bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.nbt").getListTag("blocks", CompoundTag.class);
             this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
             for (CompoundTag tag : bedrockBlockStatesTag) {
-                this.bedrockBlockStates.add(BedrockBlockState.fromNbt(tag));
+                final BedrockBlockState bedrockBlockState = BedrockBlockState.fromNbt(tag);
+                this.bedrockBlockStates.add(bedrockBlockState);
+                bedrockBlocks.add(bedrockBlockState.namespacedIdentifier());
             }
 
             final JsonObject bedrockToJavaBlockStateMappingsJson = this.readJson("custom/blockstate_mappings.json");
@@ -195,14 +204,7 @@ public class BedrockMappingData extends MappingDataBase {
                 final String tagName = entry.getKey();
                 for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
                     final String bedrockIdentifier = tagValueJson.getAsString();
-                    boolean contains = false;
-                    for (BedrockBlockState bedrockBlockState : this.bedrockBlockStates) {
-                        if (bedrockBlockState.namespacedIdentifier().equals(bedrockIdentifier)) {
-                            contains = true;
-                            break;
-                        }
-                    }
-                    if (!contains) {
+                    if (!bedrockBlocks.contains(bedrockIdentifier)) {
                         throw new RuntimeException("Unknown bedrock block: " + bedrockIdentifier);
                     }
                     if (this.bedrockBlockTags.put(bedrockIdentifier, tagName) != null) {
@@ -603,13 +605,79 @@ public class BedrockMappingData extends MappingDataBase {
             final JsonArray javaSoundsJson = javaViaMappingJson.get("sounds").getAsJsonArray();
             final List<String> javaSounds = new ArrayList<>(javaSoundsJson.size());
             for (int i = 0; i < javaSoundsJson.size(); i++) {
-                javaSounds.add(javaSoundsJson.get(i).getAsString());
+                javaSounds.add(Key.namespaced(javaSoundsJson.get(i).getAsString()));
             }
 
-            final JsonArray bedrockSoundsJson = this.readJson("bedrock/sounds.json", JsonArray.class);
-            final List<String> bedrockSounds = new ArrayList<>(bedrockSoundsJson.size());
-            for (int i = 0; i < bedrockSoundsJson.size(); i++) {
-                bedrockSounds.add(bedrockSoundsJson.get(i).getAsString());
+            final JsonObject bedrockSoundsJson = this.readJson("bedrock/sounds.json");
+            final Map<String, String> bedrockSounds = new HashMap<>(bedrockSoundsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockSoundsJson.entrySet()) {
+                bedrockSounds.put(entry.getKey(), entry.getValue().getAsString());
+            }
+
+            final JsonObject bedrockBlockSoundsJson = this.readJson("bedrock/block_sounds.json");
+            this.bedrockBlockSounds = new HashMap<>(bedrockBlockSoundsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockBlockSoundsJson.entrySet()) {
+                this.bedrockBlockSounds.put(entry.getKey(), entry.getValue().getAsString());
+            }
+
+            final JsonObject bedrockLevelSoundEventMappingsJson = this.readJson("bedrock/level_sound_event_mappings.json");
+            this.bedrockLevelSoundEvents = new EnumMap<>(Puv_Legacy_LevelSoundEvent.class);
+            final Set<Puv_Legacy_LevelSoundEvent> unmappedLevelSoundEvents = EnumSet.noneOf(Puv_Legacy_LevelSoundEvent.class);
+            for (Map.Entry<String, JsonElement> entry : bedrockLevelSoundEventMappingsJson.entrySet()) {
+                final Puv_Legacy_LevelSoundEvent soundEvent = Puv_Legacy_LevelSoundEvent.valueOf(entry.getKey());
+                if (entry.getValue().isJsonNull()) {
+                    unmappedLevelSoundEvents.add(soundEvent);
+                    continue;
+                }
+                final JsonObject soundData = entry.getValue().getAsJsonObject();
+                final Map<String, SoundDefinitions.ConfiguredSound> soundEvents = new HashMap<>(soundData.size());
+                for (Map.Entry<String, JsonElement> soundEventEntry : soundData.entrySet()) {
+                    final String[] keySplit = soundEventEntry.getKey().split(":", 2);
+                    if (keySplit[0].equals("entity")) {
+                        if (!this.bedrockEntities.containsKey(keySplit[1])) {
+                            throw new RuntimeException("Unknown bedrock entity: " + keySplit[1]);
+                        }
+                    } else if (keySplit[0].equals("block")) {
+                        if (!this.bedrockBlockSounds.containsValue(keySplit[1])) {
+                            throw new RuntimeException("Unknown bedrock block sound: " + keySplit[1]);
+                        }
+                    } else if (keySplit[0].isEmpty()) {
+                        // No validation
+                    } else {
+                        throw new RuntimeException("Unknown bedrock level sound event definition: " + soundEventEntry.getKey());
+                    }
+                    final SoundDefinitions.ConfiguredSound configuredSound = SoundDefinitions.ConfiguredSound.fromJson(soundEventEntry.getValue().getAsJsonObject());
+                    if (!bedrockSounds.containsKey(configuredSound.sound())) {
+                        throw new RuntimeException("Unknown bedrock sound: " + configuredSound.sound());
+                    }
+                    if (soundEventEntry.getKey().isEmpty()) {
+                        soundEvents.put(null, configuredSound);
+                    } else {
+                        soundEvents.put(keySplit[1], configuredSound);
+                    }
+                }
+                this.bedrockLevelSoundEvents.put(soundEvent, soundEvents);
+            }
+            for (Puv_Legacy_LevelSoundEvent levelSoundEvent : Puv_Legacy_LevelSoundEvent.values()) {
+                if (!this.bedrockLevelSoundEvents.containsKey(levelSoundEvent) && !unmappedLevelSoundEvents.contains(levelSoundEvent)) {
+                    throw new RuntimeException("Missing bedrock -> java level sound event mapping for " + levelSoundEvent.name());
+                }
+            }
+
+            final JsonObject bedrockToJavaSoundCategoryMappingsJson = this.readJson("custom/sound_category_mappings.json");
+            final Map<String, SoundSource> bedrockToJavaSoundCategories = new HashMap<>(bedrockToJavaSoundCategoryMappingsJson.size());
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaSoundCategoryMappingsJson.entrySet()) {
+                final String bedrockName = entry.getKey();
+                if (!bedrockSounds.containsValue(bedrockName)) {
+                    throw new IllegalStateException("Unknown bedrock sound category: " + bedrockName);
+                }
+                final SoundSource javaCategory = SoundSource.valueOf(entry.getValue().getAsString());
+                bedrockToJavaSoundCategories.put(bedrockName, javaCategory);
+            }
+            for (String categoryName : bedrockSounds.values()) {
+                if (!bedrockToJavaSoundCategories.containsKey(categoryName)) {
+                    throw new IllegalStateException("Missing bedrock -> java sound category mapping for " + categoryName);
+                }
             }
 
             final JsonObject bedrockToJavaSoundMappingsJson = this.readJson("custom/sound_mappings.json");
@@ -617,7 +685,7 @@ public class BedrockMappingData extends MappingDataBase {
             final Set<String> unmappedIdentifiers = new HashSet<>();
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaSoundMappingsJson.entrySet()) {
                 final String bedrockIdentifier = entry.getKey();
-                if (!bedrockSounds.contains(bedrockIdentifier)) {
+                if (!bedrockSounds.containsKey(bedrockIdentifier)) {
                     throw new IllegalStateException("Unknown bedrock sound: " + bedrockIdentifier);
                 }
                 if (entry.getValue().isJsonNull()) {
@@ -628,13 +696,15 @@ public class BedrockMappingData extends MappingDataBase {
                 if (!javaSounds.contains(javaIdentifier)) {
                     throw new IllegalStateException("Unknown java sound: " + javaIdentifier);
                 }
-                this.bedrockToJavaSounds.put(bedrockIdentifier, javaSounds.indexOf(javaIdentifier));
+                this.bedrockToJavaSounds.put(bedrockIdentifier, new JavaSoundMapping(javaSounds.indexOf(javaIdentifier), javaIdentifier, bedrockToJavaSoundCategories.get(bedrockSounds.get(bedrockIdentifier))));
             }
-            for (String bedrockIdentifier : bedrockSounds) {
+            for (String bedrockIdentifier : bedrockSounds.keySet()) {
                 if (!this.bedrockToJavaSounds.containsKey(bedrockIdentifier) && !unmappedIdentifiers.contains(bedrockIdentifier)) {
                     throw new IllegalStateException("Missing bedrock -> java sound mapping for " + bedrockIdentifier);
                 }
             }
+
+            NoteBlockInstrument.values(); // Initialize
         }
 
         { // Other stuff
@@ -810,7 +880,15 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaEffects;
     }
 
-    public Map<String, Integer> getBedrockToJavaSounds() {
+    public Map<String, String> getBedrockBlockSounds() {
+        return this.bedrockBlockSounds;
+    }
+
+    public Map<Puv_Legacy_LevelSoundEvent, Map<String, SoundDefinitions.ConfiguredSound>> getBedrockLevelSoundEvents() {
+        return this.bedrockLevelSoundEvents;
+    }
+
+    public Map<String, JavaSoundMapping> getBedrockToJavaSounds() {
         return this.bedrockToJavaSounds;
     }
 
@@ -914,6 +992,9 @@ public class BedrockMappingData extends MappingDataBase {
             this.getLogger().log(Level.SEVERE, "Could not read block_id_meta_to_1_12_0_nbt.bin", e);
             this.bedrockLegacyBlockStates = null;
         }
+    }
+
+    public record JavaSoundMapping(int id, String identifier, SoundSource category) {
     }
 
 }

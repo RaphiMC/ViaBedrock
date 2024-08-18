@@ -138,6 +138,54 @@ public abstract class EnumGeneratorTask extends DefaultTask {
             enums.put(enumName, values);
         }
 
+        // Manually add missing entries
+        final List<Pair<String, String>> soundEventEnum = enums.get("Puv::Legacy::LevelSoundEvent");
+        soundEventEnum.removeIf(pair -> pair.getKey().equals("Undefined"));
+        soundEventEnum.add(new Pair<>("TrialSpawnerOpenShutter", "484"));
+        soundEventEnum.add(new Pair<>("TrialSpawnerEjectItem", "485"));
+        soundEventEnum.add(new Pair<>("TrialSpawnerDetectPlayer", "486"));
+        soundEventEnum.add(new Pair<>("TrialSpawnerSpawnMob", "487"));
+        soundEventEnum.add(new Pair<>("TrialSpawnerCloseShutter", "488"));
+        soundEventEnum.add(new Pair<>("TrialSpawnerAmbient", "489"));
+        soundEventEnum.add(new Pair<>("AmbientInAir", "492"));
+        soundEventEnum.add(new Pair<>("BreezeWindChargeBurst", "493"));
+        soundEventEnum.add(new Pair<>("ImitateBreeze", "494"));
+        soundEventEnum.add(new Pair<>("ArmadilloBrush", "495"));
+        soundEventEnum.add(new Pair<>("ArmadilloScuteDrop", "496"));
+        soundEventEnum.add(new Pair<>("EquipWolf", "497"));
+        soundEventEnum.add(new Pair<>("UnequipWolf", "498"));
+        soundEventEnum.add(new Pair<>("Reflect", "499"));
+        soundEventEnum.add(new Pair<>("VaultOpenShutter", "500"));
+        soundEventEnum.add(new Pair<>("VaultCloseShutter", "501"));
+        soundEventEnum.add(new Pair<>("VaultEjectItem", "502"));
+        soundEventEnum.add(new Pair<>("VaultInsertItem", "503"));
+        soundEventEnum.add(new Pair<>("VaultInsertItemFail", "504"));
+        soundEventEnum.add(new Pair<>("VaultAmbient", "505"));
+        soundEventEnum.add(new Pair<>("VaultActivate", "506"));
+        soundEventEnum.add(new Pair<>("VaultDeactivate", "507"));
+        soundEventEnum.add(new Pair<>("HurtReduced", "508"));
+        soundEventEnum.add(new Pair<>("WindChargeBurst", "509"));
+        soundEventEnum.add(new Pair<>("ImitateBogged", "510"));
+        soundEventEnum.add(new Pair<>("WolfArmourCrack", "511"));
+        soundEventEnum.add(new Pair<>("WolfArmourBreak", "512"));
+        soundEventEnum.add(new Pair<>("WolfArmourRepair", "513"));
+        soundEventEnum.add(new Pair<>("MaceSmashAir", "514"));
+        soundEventEnum.add(new Pair<>("MaceSmashGround", "515"));
+        soundEventEnum.add(new Pair<>("TrialSpawnerChargeActivate", "516"));
+        soundEventEnum.add(new Pair<>("TrialSpawnerAmbientOminous", "517"));
+        soundEventEnum.add(new Pair<>("OminousItemSpawnerSpawnItem", "518"));
+        soundEventEnum.add(new Pair<>("OminousBottleEndUse", "519"));
+        soundEventEnum.add(new Pair<>("MaceHeavySmashGround", "520"));
+        soundEventEnum.add(new Pair<>("OminousItemSpawnerSpawnItemBegin", "521"));
+        soundEventEnum.add(new Pair<>("ApplyEffectBadOmen", "523"));
+        soundEventEnum.add(new Pair<>("ApplyEffectRaidOmen", "524"));
+        soundEventEnum.add(new Pair<>("ApplyEffectTrialOmen", "525"));
+        soundEventEnum.add(new Pair<>("OminousItemSpawnerAboutToSpawnItem", "526"));
+        soundEventEnum.add(new Pair<>("RecordCreator", "527"));
+        soundEventEnum.add(new Pair<>("RecordCreatorMusicBox", "528"));
+        soundEventEnum.add(new Pair<>("RecordPrecipice", "529"));
+        soundEventEnum.add(new Pair<>("VaultRejectRewardedPlayer", "530"));
+
         final MustacheEngine mustacheEngine = MustacheEngineBuilder.newBuilder()
                 .addTemplateLocator(ClassPathTemplateLocator.builder().setSuffix("mustache").build())
                 .setProperty(EngineConfigurationKey.SKIP_VALUE_ESCAPING, true)
