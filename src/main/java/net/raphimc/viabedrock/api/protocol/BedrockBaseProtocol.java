@@ -17,15 +17,13 @@
  */
 package net.raphimc.viabedrock.api.protocol;
 
-import com.viaversion.viaversion.api.connection.ProtocolInfo;
-import com.viaversion.viaversion.api.protocol.AbstractSimpleProtocol;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.base.ServerboundHandshakePackets;
-import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
+import com.viaversion.viaversion.protocols.base.v1_7.ServerboundBaseProtocol1_7;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 
-public class BedrockBaseProtocol extends AbstractSimpleProtocol {
+public class BedrockBaseProtocol extends ServerboundBaseProtocol1_7 {
 
     public static final BedrockBaseProtocol INSTANCE = new BedrockBaseProtocol();
 
@@ -35,6 +33,7 @@ public class BedrockBaseProtocol extends AbstractSimpleProtocol {
 
     @Override
     protected void registerPackets() {
+        super.registerPackets();
         this.registerServerbound(State.HANDSHAKE, ServerboundHandshakePackets.CLIENT_INTENTION.getId(), -1, wrapper -> {
             wrapper.cancel();
             final int protocolVersion = wrapper.read(Types.VAR_INT); // protocol id
@@ -43,17 +42,6 @@ public class BedrockBaseProtocol extends AbstractSimpleProtocol {
 
             wrapper.user().put(new HandshakeStorage(protocolVersion, hostname, port));
         });
-
-        // Copied from BaseProtocol1_7
-        this.registerServerbound(State.LOGIN, ServerboundLoginPackets.LOGIN_ACKNOWLEDGED.getId(), ServerboundLoginPackets.LOGIN_ACKNOWLEDGED.getId(), wrapper -> {
-            final ProtocolInfo info = wrapper.user().getProtocolInfo();
-            info.setState(State.CONFIGURATION);
-        });
-    }
-
-    @Override
-    public boolean isBaseProtocol() {
-        return true;
     }
 
 }

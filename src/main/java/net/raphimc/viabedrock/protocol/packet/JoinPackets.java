@@ -17,12 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.packet;
 
-import com.google.common.base.Joiner;
 import com.vdurmont.semver4j.Semver;
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.IntArrayTag;
 import com.viaversion.nbt.tag.Tag;
-import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.ProtocolInfo;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.RegistryEntry;
@@ -34,6 +32,7 @@ import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
+import com.viaversion.viaversion.protocols.base.v1_7.ClientboundBaseProtocol1_7;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -135,8 +134,8 @@ public class JoinPackets {
                     }
 
                     if (status == PlayStatus.LoginSuccess) {
-                        wrapper.setPacketType(ClientboundLoginPackets.GAME_PROFILE);
                         final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
+                        wrapper.setPacketType(ClientboundLoginPackets.GAME_PROFILE);
                         wrapper.write(Types.UUID, authChainData.getIdentity()); // uuid
                         wrapper.write(Types.STRING, authChainData.getDisplayName()); // username
                         wrapper.write(Types.VAR_INT, 0); // properties length
@@ -145,15 +144,7 @@ public class JoinPackets {
                         final ProtocolInfo info = wrapper.user().getProtocolInfo();
                         info.setUsername(authChainData.getDisplayName());
                         info.setUuid(authChainData.getIdentity());
-
-                        // Parts of BaseProtocol1_7 GAME_PROFILE handler
-                        Via.getManager().getConnectionManager().onLoginSuccess(wrapper.user());
-                        if (!info.getPipeline().hasNonBaseProtocols()) {
-                            wrapper.user().setActive(false);
-                        }
-                        if (Via.getManager().isDebug()) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "{0} logged in with protocol {1}, Route: {2}", new Object[]{info.getUsername(), info.protocolVersion().getName(), Joiner.on(", ").join(info.getPipeline().pipes(), ", ")});
-                        }
+                        ClientboundBaseProtocol1_7.onLoginSuccess(wrapper.user());
 
                         sendClientCacheStatus(wrapper.user());
                     } else {
