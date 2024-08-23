@@ -94,7 +94,7 @@ public class CommandsStorage extends StoredObject {
     }
 
     public void updateCommandTree() {
-        final PacketWrapper commands = PacketWrapper.create(ClientboundPackets1_21.COMMANDS, this.getUser());
+        final PacketWrapper commands = PacketWrapper.create(ClientboundPackets1_21.COMMANDS, this.user());
         this.writeCommandTree(commands);
         commands.send(BedrockProtocol.class);
     }
@@ -156,7 +156,7 @@ public class CommandsStorage extends StoredObject {
         if (reader.canRead() && reader.peek() == '/') {
             reader.skip();
         }
-        final ParseResults<UserConnection> parseResults = this.dispatcher.parse(reader, this.getUser());
+        final ParseResults<UserConnection> parseResults = this.dispatcher.parse(reader, this.user());
         return this.dispatcher.getCompletionSuggestions(parseResults).join();
     }
 
@@ -165,7 +165,7 @@ public class CommandsStorage extends StoredObject {
         if (reader.canRead() && reader.peek() == '/') {
             reader.skip();
         }
-        final ParseResults<UserConnection> parseResults = this.dispatcher.parse(reader, this.getUser());
+        final ParseResults<UserConnection> parseResults = this.dispatcher.parse(reader, this.user());
         try {
             return this.dispatcher.execute(parseResults);
         } catch (Throwable ignored) {
@@ -183,8 +183,8 @@ public class CommandsStorage extends StoredObject {
 
     private void buildCommandTree() {
         this.dispatcher = new CommandDispatcher<>();
-        final GameSessionStorage gameSession = this.getUser().get(GameSessionStorage.class);
-        final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
+        final GameSessionStorage gameSession = this.user().get(GameSessionStorage.class);
+        final EntityTracker entityTracker = this.user().get(EntityTracker.class);
         final byte playerCommandPermission = entityTracker.getClientPlayer().abilities().commandPermission();
         final Command<UserConnection> action = gameSession.areCommandsEnabled() ? NOOP : ALLOW_SEND;
 
@@ -341,7 +341,7 @@ public class CommandsStorage extends StoredObject {
         }
 
         if (this.dispatcher.getRoot().getChild("help") == null) {
-            final ResourcePacksStorage resourcePacksStorage = this.getUser().get(ResourcePacksStorage.class);
+            final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
             final Function<String, String> translator = resourcePacksStorage.getTexts().lookup();
             final LiteralArgumentBuilder<UserConnection> cmdBuilder = literal("help");
             cmdBuilder.executes(cmd -> {

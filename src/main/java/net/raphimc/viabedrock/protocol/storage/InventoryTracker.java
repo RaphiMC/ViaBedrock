@@ -50,10 +50,10 @@ public class InventoryTracker extends StoredObject {
     private static final int MAX_FAKE_ID = ContainerID.CONTAINER_ID_OFFHAND.getValue() - 1;
     private final AtomicInteger FAKE_ID_COUNTER = new AtomicInteger(MIN_FAKE_ID);
 
-    private final InventoryContainer inventoryContainer = new InventoryContainer(this.getUser());
-    private final OffhandContainer offhandContainer = new OffhandContainer(this.getUser());
-    private final ArmorContainer armorContainer = new ArmorContainer(this.getUser());
-    private final HudContainer hudContainer = new HudContainer(this.getUser());
+    private final InventoryContainer inventoryContainer = new InventoryContainer(this.user());
+    private final OffhandContainer offhandContainer = new OffhandContainer(this.user());
+    private final ArmorContainer armorContainer = new ArmorContainer(this.user());
+    private final HudContainer hudContainer = new HudContainer(this.user());
 
     private final Stack<Container> containerStack = new Stack<>();
     private final List<Container> closeWhenTickedContainers = new ArrayList<>();
@@ -100,12 +100,12 @@ public class InventoryTracker extends StoredObject {
     public void openContainer(final Container container) {
         this.containerStack.push(container);
 
-        final PacketWrapper openScreen = PacketWrapper.create(ClientboundPackets1_21.OPEN_SCREEN, this.getUser());
+        final PacketWrapper openScreen = PacketWrapper.create(ClientboundPackets1_21.OPEN_SCREEN, this.user());
         openScreen.write(Types.VAR_INT, (int) container.javaWindowId()); // window id
         openScreen.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(container.type())); // type
         openScreen.write(Types.TAG, TextUtil.textComponentToNbt(container.title())); // title
         openScreen.send(BedrockProtocol.class);
-        PacketFactory.sendJavaContainerSetContent(this.getUser(), container);
+        PacketFactory.sendJavaContainerSetContent(this.user(), container);
     }
 
     public boolean markPendingClose(final Container container) {
@@ -130,7 +130,7 @@ public class InventoryTracker extends StoredObject {
     public void setCurrentContainerClosed(final boolean serverInitiated) {
         if (serverInitiated) {
             this.pendingCloseContainer = this.getCurrentContainer();
-            PacketFactory.sendBedrockContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
+            PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
         }
         if (this.pendingCloseContainer != this.getCurrentContainer()) {
             throw new IllegalStateException("Current container is not the pending close container");
@@ -151,7 +151,7 @@ public class InventoryTracker extends StoredObject {
                     fakeContainer.onClosed(); // Send user closed response
                 }
             } else {
-                PacketFactory.sendBedrockContainerClose(this.getUser(), container.windowId(), ContainerType.NONE);
+                PacketFactory.sendBedrockContainerClose(this.user(), container.windowId(), ContainerType.NONE);
             }
         }
         this.pendingCloseContainer = null;
@@ -171,8 +171,8 @@ public class InventoryTracker extends StoredObject {
         if (currentContainer != null && currentContainer.position() != null) {
             if (currentContainer.type() == ContainerType.INVENTORY) return;
 
-            final ChunkTracker chunkTracker = this.getUser().get(ChunkTracker.class);
-            final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
+            final ChunkTracker chunkTracker = this.user().get(ChunkTracker.class);
+            final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
             final int blockState = chunkTracker.getBlockState(currentContainer.position());
             final String tag = blockStateRewriter.tag(blockState);
             if (!currentContainer.isValidBlockTag(tag)) {
@@ -181,7 +181,7 @@ public class InventoryTracker extends StoredObject {
                 return;
             }
 
-            final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
+            final EntityTracker entityTracker = this.user().get(EntityTracker.class);
             final Position3f containerPosition = new Position3f(currentContainer.position().x() + 0.5F, currentContainer.position().y() + 0.5F, currentContainer.position().z() + 0.5F);
             final Position3f playerPosition = entityTracker.getClientPlayer().position();
             if (playerPosition.distanceTo(containerPosition) > 6) {
@@ -247,8 +247,8 @@ public class InventoryTracker extends StoredObject {
 
     private void forceCloseContainer(final Container container) {
         this.markPendingClose(container);
-        PacketFactory.sendJavaContainerClose(this.getUser(), this.pendingCloseContainer.javaWindowId());
-        PacketFactory.sendBedrockContainerClose(this.getUser(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
+        PacketFactory.sendJavaContainerClose(this.user(), this.pendingCloseContainer.javaWindowId());
+        PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
     }
 
 }

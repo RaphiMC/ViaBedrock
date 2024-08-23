@@ -115,8 +115,8 @@ public class ChunkTracker extends StoredObject {
         if (!this.isInLoadDistance(chunkX, chunkZ)) return null;
         if (!this.isInRenderDistance(chunkX, chunkZ)) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of render distance, but within load distance: " + chunkX + ", " + chunkZ);
-            final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
-            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_21.SET_CHUNK_CACHE_CENTER, this.getUser());
+            final EntityTracker entityTracker = this.user().get(EntityTracker.class);
+            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_21.SET_CHUNK_CACHE_CENTER, this.user());
             updateViewPosition.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().x() >> 4); // chunk x
             updateViewPosition.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().z() >> 4); // chunk z
             updateViewPosition.send(BedrockProtocol.class);
@@ -141,9 +141,9 @@ public class ChunkTracker extends StoredObject {
         synchronized (this.chunkLock) {
             this.chunks.remove(chunkPos.chunkKey());
         }
-        this.getUser().get(EntityTracker.class).removeItemFrame(chunkPos);
+        this.user().get(EntityTracker.class).removeItemFrame(chunkPos);
 
-        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_21.FORGET_LEVEL_CHUNK, this.getUser());
+        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_21.FORGET_LEVEL_CHUNK, this.user());
         unloadChunk.write(Types.CHUNK_POSITION, chunkPos); // chunk position
         unloadChunk.send(BedrockProtocol.class);
     }
@@ -194,7 +194,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public int getJavaBlockState(final BedrockChunkSection section, final int sectionX, final int sectionY, final int sectionZ) {
-        final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
+        final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
         final List<DataPalette> blockPalettes = section.palettes(PaletteType.BLOCKS);
 
         final int layer0BlockState = blockPalettes.get(0).idAt(sectionX, sectionY, sectionZ);
@@ -262,7 +262,7 @@ public class ChunkTracker extends StoredObject {
 
     public boolean isInLoadDistance(final int chunkX, final int chunkZ) {
         if (!this.isInRenderDistance(chunkX, chunkZ)) { // Bedrock accepts chunks outside the chunk render range and uses the player position as a center to determine if a chunk is allowed to be loaded
-            final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
+            final EntityTracker entityTracker = this.user().get(EntityTracker.class);
             if (entityTracker == null) return false;
             final int centerX = (int) entityTracker.getClientPlayer().position().x() >> 4;
             final int centerZ = (int) entityTracker.getClientPlayer().position().z() >> 4;
@@ -338,8 +338,8 @@ public class ChunkTracker extends StoredObject {
             return null;
         }
 
-        final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
-        final EntityTracker entityTracker = this.getUser().get(EntityTracker.class);
+        final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
+        final EntityTracker entityTracker = this.user().get(EntityTracker.class);
         final int sectionX = blockPosition.x() & 15;
         final int sectionY = blockPosition.y() & 15;
         final int sectionZ = blockPosition.z() & 15;
@@ -371,7 +371,7 @@ public class ChunkTracker extends StoredObject {
                 final BedrockBlockEntity bedrockBlockEntity = this.getBlockEntity(blockPosition);
                 BlockEntity javaBlockEntity = null;
                 if (bedrockBlockEntity != null) {
-                    javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), blockState, bedrockBlockEntity);
+                    javaBlockEntity = BlockEntityRewriter.toJava(this.user(), blockState, bedrockBlockEntity);
                     if (javaBlockEntity instanceof BlockEntityWithBlockState blockEntityWithBlockState) {
                         remappedBlockState = blockEntityWithBlockState.blockState();
                     }
@@ -384,7 +384,7 @@ public class ChunkTracker extends StoredObject {
                     return new IntObjectImmutablePair<>(remappedBlockState, javaBlockEntity);
                 }
             } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
-                this.getUser().get(EntityTracker.class).spawnItemFrame(blockPosition, blockStateRewriter.blockState(blockState));
+                this.user().get(EntityTracker.class).spawnItemFrame(blockPosition, blockStateRewriter.blockState(blockState));
             }
         }
 
@@ -410,7 +410,7 @@ public class ChunkTracker extends StoredObject {
         }
         final Chunk remappedChunk = this.remapChunk(chunk);
 
-        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_21.LEVEL_CHUNK_WITH_LIGHT, this.getUser());
+        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_21.LEVEL_CHUNK_WITH_LIGHT, this.user());
         final BitSet lightMask = new BitSet();
         lightMask.set(0, remappedChunk.getSections().length + 2);
         wrapper.write(this.chunkType, remappedChunk); // chunk
@@ -443,7 +443,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public int airId() {
-        return this.getUser().get(BlockStateRewriter.class).bedrockId(BedrockBlockState.AIR);
+        return this.user().get(BlockStateRewriter.class).bedrockId(BedrockBlockState.AIR);
     }
 
     public boolean isEmpty() {
@@ -460,8 +460,8 @@ public class ChunkTracker extends StoredObject {
     public void tick() {
         synchronized (this.dirtyChunks) {
             if (!this.dirtyChunks.isEmpty()) {
-                this.getUser().getChannel().eventLoop().submit(() -> {
-                    if (!this.getUser().getChannel().isActive()) return;
+                this.user().getChannel().eventLoop().submit(() -> {
+                    if (!this.user().getChannel().isActive()) return;
 
                     synchronized (this.dirtyChunks) {
                         for (Long dirtyChunk : this.dirtyChunks) {
@@ -479,7 +479,7 @@ public class ChunkTracker extends StoredObject {
             }
         }
 
-        if (this.getUser().get(EntityTracker.class) == null || !this.getUser().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
+        if (this.user().get(EntityTracker.class) == null || !this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
             return;
         }
 
@@ -491,7 +491,7 @@ public class ChunkTracker extends StoredObject {
                 final Set<SubChunkPosition> group = this.subChunkRequests.stream().limit(256).collect(Collectors.toSet());
                 this.subChunkRequests.removeAll(group);
 
-                final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.getUser());
+                final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.user());
                 subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
                 subChunkRequest.write(BedrockTypes.POSITION_3I, basePosition); // base position
                 subChunkRequest.write(BedrockTypes.INT_LE, group.size()); // sub chunk offset count
@@ -506,7 +506,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     private Chunk remapChunk(final BedrockChunk chunk) {
-        final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
+        final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
         final int airId = this.airId();
 
         final Chunk remappedChunk = new Chunk1_18(chunk.getX(), chunk.getZ(), new ChunkSection[chunk.getSections().length], new CompoundTag(), new ArrayList<>());
@@ -558,7 +558,7 @@ public class ChunkTracker extends StoredObject {
                             if (BlockEntityRewriter.isJavaBlockEntity(tag)) {
                                 final BedrockBlockEntity bedrockBlockEntity = chunk.getBlockEntityAt(position);
                                 if (bedrockBlockEntity != null) {
-                                    final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(this.getUser(), layer0.idAt(x, y, z), bedrockBlockEntity);
+                                    final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(this.user(), layer0.idAt(x, y, z), bedrockBlockEntity);
                                     if (javaBlockEntity instanceof BlockEntityWithBlockState blockEntityWithBlockState) {
                                         remappedBlockPalette.setIdAt(x, y, z, blockEntityWithBlockState.blockState());
                                     }
@@ -571,7 +571,7 @@ public class ChunkTracker extends StoredObject {
                                     remappedChunk.blockEntities().add(javaBlockEntity);
                                 }
                             } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
-                                this.getUser().get(EntityTracker.class).spawnItemFrame(position, blockStateRewriter.blockState(layer0.idAt(x, y, z)));
+                                this.user().get(EntityTracker.class).spawnItemFrame(position, blockStateRewriter.blockState(layer0.idAt(x, y, z)));
                             }
                         }
                     }
@@ -705,7 +705,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     private void resolvePersistentIds(final BedrockChunkSection bedrockSection) {
-        final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
+        final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
 
         final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
         for (DataPalette palette : palettes) {
@@ -726,7 +726,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     private void replaceLegacyBlocks(final BedrockChunkSection bedrockSection) {
-        final BlockStateRewriter blockStateRewriter = this.getUser().get(BlockStateRewriter.class);
+        final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
 
         final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
         for (DataPalette palette : palettes) {

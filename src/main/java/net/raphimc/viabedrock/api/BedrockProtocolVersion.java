@@ -28,7 +28,12 @@ public class BedrockProtocolVersion {
 
     public static final List<ProtocolVersion> PROTOCOLS = new ArrayList<>();
 
-    public static final ProtocolVersion bedrockLatest = new RedirectProtocolVersion(ProtocolConstants.BEDROCK_PROTOCOL_VERSION, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME, ProtocolConstants.JAVA_VERSION);
+    public static final ProtocolVersion bedrockLatest = new RedirectProtocolVersion(ProtocolConstants.BEDROCK_PROTOCOL_VERSION, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME, ProtocolConstants.JAVA_VERSION) {
+        @Override
+        public ProtocolVersion getBaseProtocolVersion() {
+            return null;
+        }
+    };
 
     static {
         ProtocolVersion.register(bedrockLatest);

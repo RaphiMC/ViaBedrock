@@ -65,7 +65,7 @@ public class ResourcePacksStorage extends StoredObject {
     public void sendResponseIfAllDownloadsCompleted() {
         if (this.packs.values().stream().allMatch(ResourcePack::isDecompressed)) {
             ViaBedrock.getPlatform().getLogger().log(Level.INFO, "All packs have been downloaded and decompressed");
-            final PacketWrapper resourcePackClientResponse = PacketWrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, this.getUser());
+            final PacketWrapper resourcePackClientResponse = PacketWrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, this.user());
             resourcePackClientResponse.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
             resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // resource pack ids
             resourcePackClientResponse.sendToServer(BedrockProtocol.class);
@@ -90,7 +90,7 @@ public class ResourcePacksStorage extends StoredObject {
         }
 
         final ExecutorService httpExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ViaBedrock-Pack-Downloader-%d").build());
-        this.getUser().getChannel().closeFuture().addListener(future -> httpExecutor.shutdownNow());
+        this.user().getChannel().closeFuture().addListener(future -> httpExecutor.shutdownNow());
 
         for (Runnable runnable : tasks) {
             httpExecutor.execute(runnable);

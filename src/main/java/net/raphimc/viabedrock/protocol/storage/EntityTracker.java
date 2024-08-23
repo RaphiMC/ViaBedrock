@@ -50,13 +50,13 @@ public class EntityTracker extends StoredObject {
     public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final EntityTypes1_20_5 type) {
         final UUID javaUuid = uuid != null ? uuid : UUID.randomUUID();
         if (type.isOrHasParent(EntityTypes1_20_5.ABSTRACT_HORSE)) {
-            return this.addEntity(new AbstractHorseEntity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+            return this.addEntity(new AbstractHorseEntity(this.user(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
         } else if (type.isOrHasParent(EntityTypes1_20_5.MOB)) {
-            return this.addEntity(new MobEntity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+            return this.addEntity(new MobEntity(this.user(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
         } else if (type.isOrHasParent(EntityTypes1_20_5.LIVING_ENTITY)) {
-            return this.addEntity(new LivingEntity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+            return this.addEntity(new LivingEntity(this.user(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
         } else {
-            return this.addEntity(new Entity(this.getUser(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+            return this.addEntity(new Entity(this.user(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
         }
     }
 
@@ -75,7 +75,7 @@ public class EntityTracker extends StoredObject {
         final Entity prevEntity = this.entities.put(entity.uniqueId(), entity);
         if (prevEntity != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate unique entity ID: " + entity.uniqueId());
-            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21.REMOVE_ENTITIES, this.getUser());
+            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21.REMOVE_ENTITIES, this.user());
             removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
 
@@ -114,7 +114,7 @@ public class EntityTracker extends StoredObject {
         final int javaId = this.getNextJavaEntityId();
         this.itemFrames.put(position, javaId);
 
-        final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets1_21.ADD_ENTITY, this.getUser());
+        final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets1_21.ADD_ENTITY, this.user());
         spawnEntity.write(Types.VAR_INT, javaId); // entity id
         spawnEntity.write(Types.UUID, UUID.randomUUID()); // uuid
         spawnEntity.write(Types.VAR_INT, blockState.identifier().equals("frame") ? EntityTypes1_20_5.ITEM_FRAME.getId() : EntityTypes1_20_5.GLOW_ITEM_FRAME.getId()); // type id
@@ -141,7 +141,7 @@ public class EntityTracker extends StoredObject {
             return;
         }
 
-        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21.REMOVE_ENTITIES, this.getUser());
+        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21.REMOVE_ENTITIES, this.user());
         removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{javaId}); // entity ids
         removeEntities.send(BedrockProtocol.class);
     }

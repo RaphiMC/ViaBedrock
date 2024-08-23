@@ -47,8 +47,8 @@ public class PacketSyncStorage extends StoredObject {
         }
         final int id = ID.getAndIncrement();
 
-        final State state = this.getUser().getProtocolInfo().getServerState();
-        final PacketWrapper pingPacket = PacketWrapper.create(state == State.PLAY ? ClientboundPackets1_21.PING : ClientboundConfigurationPackets1_21.PING, this.getUser());
+        final State state = this.user().getProtocolInfo().getServerState();
+        final PacketWrapper pingPacket = PacketWrapper.create(state == State.PLAY ? ClientboundPackets1_21.PING : ClientboundConfigurationPackets1_21.PING, this.user());
         pingPacket.write(Types.INT, id); // parameter
         pingPacket.send(BedrockProtocol.class);
 

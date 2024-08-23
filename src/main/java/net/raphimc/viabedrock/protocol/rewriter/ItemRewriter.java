@@ -102,7 +102,7 @@ public class ItemRewriter extends StoredObject {
         final Rewriter rewriter;
         final Map<BlockState, Rewriter> blockItemRewriter = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockItems().get(identifier);
         if (blockItemRewriter != null) {
-            BlockState blockState = this.getUser().get(BlockStateRewriter.class).blockState(bedrockItem.blockRuntimeId());
+            BlockState blockState = this.user().get(BlockStateRewriter.class).blockState(bedrockItem.blockRuntimeId());
             if (!blockItemRewriter.containsKey(blockState)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockItem.blockRuntimeId() + " for item: " + identifier);
                 blockState = blockItemRewriter.keySet().iterator().next();
@@ -125,7 +125,7 @@ public class ItemRewriter extends StoredObject {
                     rewriter = metaItemRewriter.get(meta);
                 }
             } else {
-                final ResourcePacksStorage resourcePacksStorage = this.getUser().get(ResourcePacksStorage.class);
+                final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
                 final ItemDefinitions.ItemDefinition itemDefinition = resourcePacksStorage.getItems().get(identifier);
                 final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
 
@@ -145,7 +145,7 @@ public class ItemRewriter extends StoredObject {
             }
         }
 
-        return rewriter.toJava(this.getUser(), bedrockItem);
+        return rewriter.toJava(this.user(), bedrockItem);
     }
 
     public CompoundTag javaItem(final CompoundTag bedrockTag) {

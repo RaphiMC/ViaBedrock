@@ -46,7 +46,7 @@ public class GameRulesStorage extends StoredObject {
     }
 
     public void updateGameRules(final GameRule[] gameRules) {
-        final State state = this.getUser().getProtocolInfo().getServerState();
+        final State state = this.user().getProtocolInfo().getServerState();
         for (GameRule gameRule : gameRules) {
             if (gameRule.value() != null) {
                 final Object previousValue = this.gameRules.put(gameRule.name().toLowerCase(Locale.ROOT), gameRule.value());
@@ -57,12 +57,12 @@ public class GameRulesStorage extends StoredObject {
 
                 if (previousValue != gameRule.value() && state == State.PLAY) {
                     if (gameRule.name().equalsIgnoreCase("showCoordinates") && ViaBedrock.getConfig().shouldTranslateShowCoordinatesGameRule()) {
-                        final ClientPlayerEntity clientPlayer = this.getUser().get(EntityTracker.class).getClientPlayer();
-                        PacketFactory.sendJavaEntityEvent(this.getUser(), clientPlayer, (boolean) gameRule.value() ? EntityEvent.FULL_DEBUG_INFO : EntityEvent.REDUCED_DEBUG_INFO);
+                        final ClientPlayerEntity clientPlayer = this.user().get(EntityTracker.class).getClientPlayer();
+                        PacketFactory.sendJavaEntityEvent(this.user(), clientPlayer, (boolean) gameRule.value() ? EntityEvent.FULL_DEBUG_INFO : EntityEvent.REDUCED_DEBUG_INFO);
                     } else if (gameRule.name().equalsIgnoreCase("doImmediateRespawn")) {
-                        PacketFactory.sendJavaGameEvent(this.getUser(), GameEventType.IMMEDIATE_RESPAWN, (boolean) gameRule.value() ? 1F : 0F);
+                        PacketFactory.sendJavaGameEvent(this.user(), GameEventType.IMMEDIATE_RESPAWN, (boolean) gameRule.value() ? 1F : 0F);
                     } else if (gameRule.name().equalsIgnoreCase("doLimitedCrafting")) {
-                        PacketFactory.sendJavaGameEvent(this.getUser(), GameEventType.LIMITED_CRAFTING, (boolean) gameRule.value() ? 1F : 0F);
+                        PacketFactory.sendJavaGameEvent(this.user(), GameEventType.LIMITED_CRAFTING, (boolean) gameRule.value() ? 1F : 0F);
                     }
                 }
             }

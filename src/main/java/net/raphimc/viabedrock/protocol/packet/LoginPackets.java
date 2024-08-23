@@ -23,6 +23,7 @@ import com.viaversion.viaversion.api.connection.ProtocolInfo;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.protocols.base.ServerboundHandshakePackets;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.gson.io.GsonDeserializer;
@@ -138,6 +139,13 @@ public class LoginPackets {
             clientToServerHandshake.sendToServer(BedrockProtocol.class);
         });
 
+        protocol.registerServerboundTransition(ServerboundHandshakePackets.CLIENT_INTENTION, null, wrapper -> {
+            wrapper.cancel();
+            final int protocolVersion = wrapper.read(Types.VAR_INT); // protocol version
+            final String hostname = wrapper.read(Types.STRING); // hostname
+            final int port = wrapper.read(Types.UNSIGNED_SHORT); // port
+            wrapper.user().put(new HandshakeStorage(protocolVersion, hostname, port));
+        });
         protocol.registerServerboundTransition(ServerboundLoginPackets.HELLO, ServerboundBedrockPackets.REQUEST_NETWORK_SETTINGS, wrapper -> {
             final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
 
