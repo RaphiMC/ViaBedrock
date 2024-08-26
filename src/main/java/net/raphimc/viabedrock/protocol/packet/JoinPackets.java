@@ -35,8 +35,10 @@ import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.base.v1_7.ClientboundBaseProtocol1_7;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
+import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.StringUtil;
@@ -56,10 +58,7 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class JoinPackets {
@@ -350,6 +349,12 @@ public class JoinPackets {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses server authoritative movement. This is not stable.");
                     }
 
+                    for (ItemEntry itemEntry : itemEntries) {
+                        if (itemEntry.componentBased()) {
+                            resourcePacksStorage.getItems().remove(Key.namespaced(itemEntry.identifier()));
+                        }
+                    }
+
                     gameSession.setBedrockVanillaVersion(version);
                     gameSession.setFlatGenerator(generatorType == GeneratorType.Flat);
                     gameSession.setMovementMode(movementMode);
@@ -444,6 +449,19 @@ public class JoinPackets {
                     }
                 }
         );
+        protocol.registerClientbound(ClientboundBedrockPackets.ITEM_COMPONENT, null, wrapper -> {
+            wrapper.cancel();
+            final ItemDefinitions itemDefinitions = wrapper.user().get(ResourcePacksStorage.class).getItems();
+            final Set<String> componentItems = wrapper.user().get(ItemRewriter.class).getComponentItems();
+            final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // count
+            for (int i = 0; i < count; i++) {
+                final String identifier = Key.namespaced(wrapper.read(BedrockTypes.STRING)); // name
+                final CompoundTag tag = (CompoundTag) wrapper.read(BedrockTypes.NETWORK_TAG); // data
+                if (componentItems.contains(identifier)) {
+                    itemDefinitions.addFromNetworkTag(identifier, tag);
+                }
+            }
+        });
     }
 
     private static void sendClientCacheStatus(final UserConnection user) {
@@ -464,8 +482,8 @@ public class JoinPackets {
             case LoginFailed_ServerFullSubClient, LoginFailed_EditorMismatchVanillaToEditor ->
                     PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.serverFull") + "\n\n\n\n" + translations.get("disconnectionScreen.serverFull.title"));
             case LoginFailed_EditorMismatchEditorToVanilla -> PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.editor.mismatchEditorToVanilla"));
-            default -> throw new IllegalStateException("Unhandled PlayStatus: " + status);
             case PlayerSpawn, LoginSuccess -> wrapper.cancel();
+            default -> throw new IllegalStateException("Unhandled PlayStatus: " + status);
         }
     }
 

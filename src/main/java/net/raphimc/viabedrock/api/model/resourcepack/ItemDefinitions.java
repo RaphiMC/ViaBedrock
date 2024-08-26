@@ -17,6 +17,8 @@
  */
 package net.raphimc.viabedrock.api.model.resourcepack;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+// https://wiki.bedrock.dev/items/item-components.html
 public class ItemDefinitions {
 
     private final Map<String, ItemDefinition> items = new HashMap<>();
@@ -42,6 +45,9 @@ public class ItemDefinitions {
                         if (components.has("minecraft:icon")) {
                             itemDefinition.iconComponent = components.get("minecraft:icon").getAsString();
                         }
+                        if (components.has("minecraft:display_name")) {
+                            itemDefinition.displayNameComponent = components.get("minecraft:display_name").getAsString();
+                        }
                     }
                     this.items.put(identifier, itemDefinition);
                 } catch (Throwable e) {
@@ -51,14 +57,40 @@ public class ItemDefinitions {
         }
     }
 
+    public void addFromNetworkTag(final String identifier, final CompoundTag tag) {
+        final ItemDefinition itemDefinition = new ItemDefinition(identifier);
+        if (tag.get("components") instanceof CompoundTag components) {
+            if (components.get("item_properties") instanceof CompoundTag itemProperties) {
+                if (itemProperties.get("minecraft:icon") instanceof CompoundTag icon) {
+                    if (icon.get("textures") instanceof CompoundTag texture) {
+                        if (texture.get("default") instanceof StringTag defaultTexture) {
+                            itemDefinition.iconComponent = defaultTexture.getValue();
+                        }
+                    }
+                }
+            }
+            if (components.get("minecraft:display_name") instanceof CompoundTag displayName) {
+                if (displayName.get("value") instanceof StringTag value) {
+                    itemDefinition.displayNameComponent = value.getValue();
+                }
+            }
+        }
+        this.items.put(identifier, itemDefinition);
+    }
+
     public ItemDefinition get(final String identifier) {
         return this.items.get(identifier);
+    }
+
+    public void remove(final String identifier) {
+        this.items.remove(identifier);
     }
 
     public static class ItemDefinition {
 
         private final String identifier;
         private String iconComponent;
+        private String displayNameComponent;
 
         public ItemDefinition(final String identifier) {
             this.identifier = identifier;
@@ -70,6 +102,10 @@ public class ItemDefinitions {
 
         public String iconComponent() {
             return this.iconComponent;
+        }
+
+        public String displayNameComponent() {
+            return this.displayNameComponent;
         }
 
     }

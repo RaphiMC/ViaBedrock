@@ -27,8 +27,8 @@ import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
 import java.util.Collections;
 import java.util.logging.Level;
@@ -45,9 +45,9 @@ public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewr
             final ListTag<StringTag> javaSherds = new ListTag<>(StringTag.class);
             for (StringTag bedrockSherd : bedrockSherds) {
                 final String bedrockIdentifier = bedrockSherd.getValue();
-                final ItemRewriter.Rewriter itemRewriter = BedrockProtocol.MAPPINGS.getBedrockToJavaMetaItems().getOrDefault(bedrockIdentifier, Collections.emptyMap()).getOrDefault(null, null);
-                if (itemRewriter != null) {
-                    javaSherds.add(new StringTag(itemRewriter.identifier()));
+                final BedrockMappingData.JavaItemMapping itemMapping = BedrockProtocol.MAPPINGS.getBedrockToJavaMetaItems().getOrDefault(bedrockIdentifier, Collections.emptyMap()).getOrDefault(null, null);
+                if (itemMapping != null) {
+                    javaSherds.add(new StringTag(itemMapping.identifier()));
                 } else if (bedrockIdentifier.isEmpty()) {
                     javaSherds.add(new StringTag("minecraft:brick"));
                 } else {

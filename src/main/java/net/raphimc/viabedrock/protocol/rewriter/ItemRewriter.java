@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.viaversion.nbt.stringified.SNBT;
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.connection.StoredObject;
@@ -29,13 +28,13 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
@@ -47,42 +46,37 @@ import net.raphimc.viabedrock.protocol.types.item.BedrockCreativeItemType;
 import net.raphimc.viabedrock.protocol.types.item.BedrockItemType;
 
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class ItemRewriter extends StoredObject {
 
-    private static final Map<String, RewriterCreator> ITEM_REWRITERS = new HashMap<>();
+    private static final Map<String, NbtRewriter> ITEM_NBT_REWRITERS = new HashMap<>();
 
     private final BiMap<String, Integer> items;
+    private final Set<String> componentItems;
     private final Type<BedrockItem> itemType;
     private final Type<BedrockItem[]> itemArrayType;
     private final Type<BedrockItem> creativeItemType;
     private final Type<BedrockItem[]> creativeItemArrayType;
 
     static {
-        // TODO: Add missing item rewriters
-        ITEM_REWRITERS.put(null, Rewriter::new);
+        // TODO: Add missing item nbt rewriters
     }
 
     public ItemRewriter(final UserConnection user, final ItemEntry[] itemEntries) {
         super(user);
 
         this.items = HashBiMap.create(BedrockProtocol.MAPPINGS.getBedrockItems());
+        this.componentItems = new HashSet<>();
         for (ItemEntry itemEntry : itemEntries) {
-            String namespace = "minecraft";
-            String identifier = itemEntry.identifier();
-            if (identifier.contains(":")) {
-                final String[] namespaceAndIdentifier = identifier.split(":", 2);
-                namespace = namespaceAndIdentifier[0];
-                identifier = namespaceAndIdentifier[1].toLowerCase(Locale.ROOT);
-            } else {
-                identifier = identifier.toLowerCase(Locale.ROOT);
-            }
-
             this.items.inverse().remove(itemEntry.id());
-            this.items.put(namespace + ":" + identifier, itemEntry.id());
+            this.items.put(Key.namespaced(itemEntry.identifier()), itemEntry.id());
+            if (itemEntry.componentBased()) {
+                this.componentItems.add(Key.namespaced(itemEntry.identifier()));
+            }
         }
         this.itemType = new BedrockItemType(this.items.get("minecraft:shield"), true);
         this.itemArrayType = new ArrayType<>(this.itemType, BedrockTypes.UNSIGNED_VAR_INT);
@@ -99,53 +93,86 @@ public class ItemRewriter extends StoredObject {
             return StructuredItem.empty();
         }
 
-        final Rewriter rewriter;
-        final Map<BlockState, Rewriter> blockItemRewriter = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockItems().get(identifier);
-        if (blockItemRewriter != null) {
+        final BedrockMappingData.JavaItemMapping javaItemMapping;
+        final Map<BlockState, BedrockMappingData.JavaItemMapping> blockItemMappings = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockItems().get(identifier);
+        if (blockItemMappings != null) {
             BlockState blockState = this.user().get(BlockStateRewriter.class).blockState(bedrockItem.blockRuntimeId());
-            if (!blockItemRewriter.containsKey(blockState)) {
+            if (!blockItemMappings.containsKey(blockState)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockItem.blockRuntimeId() + " for item: " + identifier);
-                blockState = blockItemRewriter.keySet().iterator().next();
+                blockState = blockItemMappings.keySet().iterator().next();
             }
-            rewriter = blockItemRewriter.get(blockState);
+            javaItemMapping = blockItemMappings.get(blockState);
         } else {
             final int meta = bedrockItem.data() & 0xFFFF;
             final String newIdentifier = BedrockProtocol.MAPPINGS.getBedrockItemUpgrader().upgradeMetaItem(identifier, meta);
             if (newIdentifier != null) {
                 identifier = newIdentifier;
             }
-            final Map<Integer, Rewriter> metaItemRewriter = BedrockProtocol.MAPPINGS.getBedrockToJavaMetaItems().get(identifier);
-            if (metaItemRewriter != null) {
-                if (!metaItemRewriter.containsKey(meta)) {
-                    if (metaItemRewriter.size() != 1 || meta != 0) {
+            final Map<Integer, BedrockMappingData.JavaItemMapping> metaItemMappings = BedrockProtocol.MAPPINGS.getBedrockToJavaMetaItems().get(identifier);
+            if (metaItemMappings != null) {
+                if (!metaItemMappings.containsKey(meta)) {
+                    if (metaItemMappings.size() != 1 || meta != 0) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing meta: " + meta + " for item: " + identifier);
                     }
-                    rewriter = metaItemRewriter.get(null);
+                    javaItemMapping = metaItemMappings.get(null);
                 } else {
-                    rewriter = metaItemRewriter.get(meta);
+                    javaItemMapping = metaItemMappings.get(meta);
                 }
             } else {
-                final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
-                final ItemDefinitions.ItemDefinition itemDefinition = resourcePacksStorage.getItems().get(identifier);
-                final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
-
-                if (itemDefinition != null) {
-                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier) + ".name")));
-                    if (itemDefinition.iconComponent() != null && resourcePacksStorage.isLoadedOnJavaClient()) {
-                        data.set(StructuredDataKey.CUSTOM_MODEL_DATA, CustomItemTextureResourceRewriter.getCustomModelData(itemDefinition.iconComponent()));
-                    } else {
-                        data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Custom item: " + identifier)});
-                    }
-                } else {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java item mapping for " + identifier);
-                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("§cMissing item: " + identifier));
-                }
-
-                return new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), bedrockItem.amount(), data);
+                javaItemMapping = null;
             }
         }
 
-        return rewriter.toJava(this.user(), bedrockItem);
+        final Item javaItem;
+        if (javaItemMapping != null) {
+            final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
+            if (javaItemMapping.overrideTag() != null) {
+                // javaTag.setValue(this.overrideTag.copy().getValue());
+                // TODO: Update: Fix this
+            }
+            if (javaItemMapping.displayName() != null) {
+                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("Bedrock " + javaItemMapping.displayName()));
+            }
+            javaItem = new StructuredItem(javaItemMapping.id(), bedrockItem.amount(), data);
+        } else {
+            final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
+            final ItemDefinitions.ItemDefinition itemDefinition = resourcePacksStorage.getItems().get(identifier);
+            final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
+
+            if (itemDefinition != null) {
+                if (itemDefinition.displayNameComponent() != null) {
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().translate(itemDefinition.displayNameComponent())));
+                } else {
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier) + ".name")));
+                }
+                if (itemDefinition.iconComponent() != null && resourcePacksStorage.isLoadedOnJavaClient()) {
+                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA, CustomItemTextureResourceRewriter.getCustomModelData(itemDefinition.iconComponent()));
+                } else {
+                    data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Custom item: " + identifier)});
+                }
+            } else {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java item mapping for " + identifier);
+                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("§cMissing item: " + identifier));
+            }
+
+            javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), bedrockItem.amount(), data);
+        }
+
+        final CompoundTag bedrockTag = bedrockItem.tag();
+        if (bedrockTag != null) {
+            if (bedrockTag.get("display") instanceof CompoundTag display) {
+                if (display.contains("Name")) { // Bedrock client defaults to empty string if the type is wrong
+                    javaItem.dataContainer().set(StructuredDataKey.CUSTOM_NAME, TextUtil.stringToNbt(display.getString("Name", "")));
+                }
+            }
+        }
+
+        final String tag = BedrockProtocol.MAPPINGS.getBedrockItemTags().get(identifier);
+        if (ITEM_NBT_REWRITERS.containsKey(tag)) {
+            ITEM_NBT_REWRITERS.get(tag).toJava(this.user(), bedrockItem, javaItem);
+        }
+
+        return javaItem;
     }
 
     public CompoundTag javaItem(final CompoundTag bedrockTag) {
@@ -178,6 +205,10 @@ public class ItemRewriter extends StoredObject {
         return this.items;
     }
 
+    public Set<String> getComponentItems() {
+        return this.componentItems;
+    }
+
     public Type<BedrockItem> itemType() {
         return this.itemType;
     }
@@ -194,62 +225,9 @@ public class ItemRewriter extends StoredObject {
         return this.creativeItemArrayType;
     }
 
-    public static class Rewriter {
+    public interface NbtRewriter {
 
-        private final String identifier;
-        private final String displayName;
-        private final CompoundTag overrideTag;
-
-        private Rewriter(final String identifier, final String displayName, final CompoundTag overrideTag) {
-            this.identifier = identifier;
-            this.displayName = displayName;
-            this.overrideTag = overrideTag;
-        }
-
-        public static Rewriter fromJson(final String bedrockIdentifier, final JsonObject javaMapping) {
-            final String javaIdentifier = javaMapping.get("java_id").getAsString();
-            if (!BedrockProtocol.MAPPINGS.getJavaItems().containsKey(javaIdentifier)) {
-                throw new RuntimeException("Unknown java item: " + javaIdentifier);
-            }
-
-            final String javaDisplayName = javaMapping.has("java_display_name") ? javaMapping.get("java_display_name").getAsString() : null;
-            CompoundTag javaTag = null;
-            try {
-                if (javaMapping.has("java_tag")) {
-                    javaTag = SNBT.deserializeCompoundTag(javaMapping.get("java_tag").getAsString());
-                }
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to parse java tag for " + javaIdentifier, e);
-            }
-            final String tag = BedrockProtocol.MAPPINGS.getBedrockItemTags().get(bedrockIdentifier);
-
-            return ITEM_REWRITERS.get(tag).create(javaIdentifier, javaDisplayName, javaTag);
-        }
-
-        public Item toJava(final UserConnection user, final BedrockItem bedrockItem) {
-            final int javaId = BedrockProtocol.MAPPINGS.getJavaItems().get(this.identifier);
-
-            final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
-            if (this.overrideTag != null) {
-                // javaTag.setValue(this.overrideTag.copy().getValue());
-                // TODO: Update: Fix this
-            }
-            if (this.displayName != null) {
-                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("Bedrock " + this.displayName));
-            }
-
-            return new StructuredItem(javaId, bedrockItem.amount(), data);
-        }
-
-        public String identifier() {
-            return this.identifier;
-        }
-
-    }
-
-    private interface RewriterCreator {
-
-        Rewriter create(final String identifier, final String displayName, final CompoundTag overrideTag);
+        void toJava(final UserConnection user, final BedrockItem bedrockItem, final Item javaItem);
 
     }
 

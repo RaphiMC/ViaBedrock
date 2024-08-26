@@ -22,6 +22,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.io.ByteStreams;
 import com.viaversion.nbt.io.NBTIO;
 import com.viaversion.nbt.limiter.TagLimiter;
+import com.viaversion.nbt.stringified.SNBT;
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.IntArrayTag;
 import com.viaversion.nbt.tag.ListTag;
@@ -53,7 +54,6 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.NoteBlockInstrument;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.Puv_Legacy_LevelSoundEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.SoundSource;
-import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.DataInputStream;
@@ -101,8 +101,8 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> javaItems;
     private BiMap<String, Integer> bedrockItems;
     private Map<String, String> bedrockItemTags;
-    private Map<String, Map<BlockState, ItemRewriter.Rewriter>> bedrockToJavaBlockItems;
-    private Map<String, Map<Integer, ItemRewriter.Rewriter>> bedrockToJavaMetaItems;
+    private Map<String, Map<BlockState, JavaItemMapping>> bedrockToJavaBlockItems;
+    private Map<String, Map<Integer, JavaItemMapping>> bedrockToJavaMetaItems;
     private Map<ContainerType, Integer> bedrockToJavaContainers;
 
     // Entities
@@ -372,7 +372,7 @@ public class BedrockMappingData extends MappingDataBase {
                         throw new RuntimeException("Tried to register meta item as block item: " + bedrockIdentifier);
                     }
                     final JsonObject blockDefinition = definition.get("block").getAsJsonObject();
-                    final Map<BlockState, ItemRewriter.Rewriter> blockItems = new LinkedHashMap<>(blockDefinition.size());
+                    final Map<BlockState, JavaItemMapping> blockItems = new LinkedHashMap<>(blockDefinition.size());
                     this.bedrockToJavaBlockItems.put(bedrockIdentifier, blockItems);
                     final List<BlockState> allPossibleStates = new ArrayList<>();
                     for (Map.Entry<String, JsonElement> blockMapping : blockDefinition.entrySet()) {
@@ -394,7 +394,7 @@ public class BedrockMappingData extends MappingDataBase {
                             throw new RuntimeException("Unknown bedrock block state: " + blockState.toBlockStateString());
                         }
                         for (BlockState state : blockStates) {
-                            if (blockItems.put(state, ItemRewriter.Rewriter.fromJson(bedrockIdentifier, blockMapping.getValue().getAsJsonObject())) != null) {
+                            if (blockItems.put(state, this.parseJavaItemData(blockMapping.getValue().getAsJsonObject())) != null) {
                                 throw new RuntimeException("Duplicate bedrock -> java item mapping for " + bedrockIdentifier);
                             }
                         }
@@ -410,7 +410,7 @@ public class BedrockMappingData extends MappingDataBase {
                         throw new RuntimeException("Tried to register block item as meta item: " + bedrockIdentifier);
                     }
                     final JsonObject metaDefinition = definition.get("meta").getAsJsonObject();
-                    final Map<Integer, ItemRewriter.Rewriter> metaItems = new HashMap<>(metaDefinition.size());
+                    final Map<Integer, JavaItemMapping> metaItems = new HashMap<>(metaDefinition.size());
                     this.bedrockToJavaMetaItems.put(bedrockIdentifier, metaItems);
                     for (Map.Entry<String, JsonElement> metaMapping : metaDefinition.entrySet()) {
                         Integer meta;
@@ -419,7 +419,7 @@ public class BedrockMappingData extends MappingDataBase {
                         } catch (NumberFormatException e) {
                             meta = null;
                         }
-                        if (metaItems.put(meta, ItemRewriter.Rewriter.fromJson(bedrockIdentifier, metaMapping.getValue().getAsJsonObject())) != null) {
+                        if (metaItems.put(meta, this.parseJavaItemData(metaMapping.getValue().getAsJsonObject())) != null) {
                             throw new RuntimeException("Duplicate bedrock -> java item mapping for " + bedrockIdentifier + ":" + meta);
                         }
                     }
@@ -434,9 +434,9 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            for (Map.Entry<String, Map<Integer, ItemRewriter.Rewriter>> entry : this.bedrockToJavaMetaItems.entrySet()) {
+            for (Map.Entry<String, Map<Integer, JavaItemMapping>> entry : this.bedrockToJavaMetaItems.entrySet()) {
                 final String bedrockIdentifier = entry.getKey();
-                for (Map.Entry<Integer, ItemRewriter.Rewriter> metaEntry : entry.getValue().entrySet()) {
+                for (Map.Entry<Integer, JavaItemMapping> metaEntry : entry.getValue().entrySet()) {
                     final Integer meta = metaEntry.getKey();
                     if (meta != null) {
                         final String newBedrockIdentifier = this.bedrockItemUpgrader.upgradeMetaItem(bedrockIdentifier, meta);
@@ -836,11 +836,11 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockItemTags;
     }
 
-    public Map<String, Map<BlockState, ItemRewriter.Rewriter>> getBedrockToJavaBlockItems() {
+    public Map<String, Map<BlockState, JavaItemMapping>> getBedrockToJavaBlockItems() {
         return this.bedrockToJavaBlockItems;
     }
 
-    public Map<String, Map<Integer, ItemRewriter.Rewriter>> getBedrockToJavaMetaItems() {
+    public Map<String, Map<Integer, JavaItemMapping>> getBedrockToJavaMetaItems() {
         return this.bedrockToJavaMetaItems;
     }
 
@@ -994,7 +994,28 @@ public class BedrockMappingData extends MappingDataBase {
         }
     }
 
+    private JavaItemMapping parseJavaItemData(final JsonObject obj) {
+        final String javaIdentifier = obj.get("java_id").getAsString();
+        if (!this.javaItems.containsKey(javaIdentifier)) {
+            throw new RuntimeException("Unknown java item: " + javaIdentifier);
+        }
+
+        final String javaDisplayName = obj.has("java_display_name") ? obj.get("java_display_name").getAsString() : null;
+        CompoundTag javaTag = null;
+        try {
+            if (obj.has("java_tag")) {
+                javaTag = SNBT.deserializeCompoundTag(obj.get("java_tag").getAsString());
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException("Failed to parse java tag for " + javaIdentifier, e);
+        }
+        return new JavaItemMapping(this.javaItems.get(javaIdentifier), javaIdentifier, javaDisplayName, javaTag);
+    }
+
     public record JavaSoundMapping(int id, String identifier, SoundSource category) {
+    }
+
+    public record JavaItemMapping(int id, String identifier, String displayName, CompoundTag overrideTag) {
     }
 
 }
