@@ -76,23 +76,6 @@ public class JoinPackets {
         BedrockProtocol.kickForIllegalState(wrapper.user(), "Compressed biome definitions are not supported.");
     };
 
-    private static final PacketHandler DIMENSION_DATA_HANDLER = wrapper -> {
-        if (wrapper.isCancelled()) return;
-
-        final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // entry count
-        for (int i = 0; i < count; i++) {
-            final String dimensionIdentifier = wrapper.read(BedrockTypes.STRING); // dimension identifier
-            final int maximumHeight = wrapper.read(BedrockTypes.VAR_INT); // maximum height
-            final int minimumHeight = wrapper.read(BedrockTypes.VAR_INT); // minimum height
-            wrapper.read(BedrockTypes.VAR_INT); // generator type
-
-            if (!dimensionIdentifier.equals("minecraft:overworld")) {
-                continue; // Mojang client currently only supports overworld
-            }
-            wrapper.user().get(GameSessionStorage.class).putBedrockDimensionDefinition(dimensionIdentifier, new IntIntImmutablePair(minimumHeight, maximumHeight));
-        }
-    };
-
     private static final PacketHandler REQUIRE_UNINITIALIZED_WORLD_HANDLER = wrapper -> {
         if (!wrapper.user().get(ChunkTracker.class).isEmpty()) {
             wrapper.cancel();
@@ -434,20 +417,19 @@ public class JoinPackets {
                 }
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.DIMENSION_DATA,
-                State.CONFIGURATION, new PacketHandlers() {
-                    @Override
-                    protected void register() {
-                        handler(DIMENSION_DATA_HANDLER);
-                        handler(PacketWrapper::cancel);
+                State.CONFIGURATION, (PacketHandler) wrapper -> {
+                    wrapper.cancel();
+                    final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // entry count
+                    for (int i = 0; i < count; i++) {
+                        final String dimensionIdentifier = wrapper.read(BedrockTypes.STRING); // dimension identifier
+                        final int maximumHeight = wrapper.read(BedrockTypes.VAR_INT); // maximum height
+                        final int minimumHeight = wrapper.read(BedrockTypes.VAR_INT); // minimum height
+                        wrapper.read(BedrockTypes.VAR_INT); // generator type
+                        if (dimensionIdentifier.equals("minecraft:overworld")) { // Mojang client currently only supports overworld
+                            wrapper.user().get(GameSessionStorage.class).putBedrockDimensionDefinition(dimensionIdentifier, new IntIntImmutablePair(minimumHeight, maximumHeight));
+                        }
                     }
-                }, State.PLAY, new PacketHandlers() {
-                    @Override
-                    protected void register() {
-                        handler(REQUIRE_UNINITIALIZED_WORLD_HANDLER);
-                        handler(DIMENSION_DATA_HANDLER);
-                        handler(RECONFIGURE_HANDLER);
-                    }
-                }
+                }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Bedrock client ignores dimension data after start game
         );
         protocol.registerClientbound(ClientboundBedrockPackets.ITEM_COMPONENT, null, wrapper -> {
             wrapper.cancel();
