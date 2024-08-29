@@ -184,7 +184,6 @@ public class WorldPackets {
             if (dimension != chunkTracker.getDimension()) {
                 return;
             }
-
             final int sectionCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // sub chunk count
             if (sectionCount < -2) { // Mojang client ignores this packet
                 return;
@@ -192,76 +191,72 @@ public class WorldPackets {
 
             final int startY = chunkTracker.getMinY() >> 4;
             final int endY = chunkTracker.getMaxY() >> 4;
-
-            int requestCount = 0;
+            int requestSectionCount = 0;
             if (sectionCount == -2) {
-                requestCount = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE) + 1; // count
+                requestSectionCount = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE) + 1; // count
             } else if (sectionCount == -1) {
-                requestCount = endY - startY;
+                requestSectionCount = endY - startY;
             }
 
             final BedrockChunk previousChunk = chunkTracker.getChunk(chunkX, chunkZ);
             if (previousChunk != null) {
                 chunkTracker.unloadChunk(new ChunkPosition(chunkX, chunkZ));
-
                 if (previousChunk.isRequestSubChunks()) {
-                    requestCount = endY - startY;
+                    requestSectionCount = endY - startY;
                 }
             }
 
-            final BedrockChunk chunk = chunkTracker.createChunk(chunkX, chunkZ, sectionCount < 0 ? requestCount : sectionCount);
-            if (chunk == null) return;
-
+            final BedrockChunk chunk = chunkTracker.createChunk(chunkX, chunkZ, sectionCount < 0 ? requestSectionCount : sectionCount);
+            if (chunk == null) {
+                return;
+            }
             chunk.setRequestSubChunks(sectionCount < 0);
 
-            final int fRequestCount = requestCount;
+            final int fRequestSectionCount = requestSectionCount;
             final Consumer<byte[]> dataConsumer = combinedData -> {
                 try {
-                    if (fRequestCount > 0) {
-                        chunkTracker.requestSubChunks(chunkX, chunkZ, startY, MathUtil.clamp(startY + fRequestCount, startY + 1, endY));
+                    if (fRequestSectionCount > 0) {
+                        chunkTracker.requestSubChunks(chunkX, chunkZ, startY, MathUtil.clamp(startY + fRequestSectionCount, startY + 1, endY));
                     }
-
                     final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
 
                     final BedrockChunkSection[] sections = chunk.getSections();
                     final List<BlockEntity> blockEntities = chunk.blockEntities();
-                    if (dataBuf.isReadable()) {
-                        try {
-                            for (int i = 0; i < sectionCount; i++) {
-                                sections[i].mergeWith(chunkTracker.handleBlockPalette(BedrockTypes.CHUNK_SECTION.read(dataBuf))); // chunk section
-                                sections[i].applyPendingBlockUpdates(chunkTracker.airId());
-                            }
-                            if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
-                                final byte[] biomeData = new byte[256];
-                                dataBuf.readBytes(biomeData);
-                                for (ChunkSection section : sections) {
-                                    section.addPalette(PaletteType.BIOMES, new BedrockBiomeArray(biomeData));
-                                }
-                            } else {
-                                for (int i = 0; i < sections.length; i++) {
-                                    BedrockDataPalette biomePalette = BedrockTypes.RUNTIME_DATA_PALETTE.read(dataBuf); // biome palette
-                                    if (biomePalette == null) {
-                                        if (i == 0) {
-                                            throw new RuntimeException("First biome palette can not point to previous biome palette");
-                                        }
-                                        biomePalette = ((BedrockDataPalette) sections[i - 1].palette(PaletteType.BIOMES)).clone();
-                                    }
-                                    sections[i].addPalette(PaletteType.BIOMES, biomePalette);
-                                }
-                            }
-
-                            dataBuf.skipBytes(1); // border blocks
-                            while (dataBuf.isReadable()) {
-                                final Tag tag = BedrockTypes.NETWORK_TAG.read(dataBuf); // block entity tag
-                                if (tag instanceof CompoundTag) { // Ignore non-compound tags
-                                    blockEntities.add(new BedrockBlockEntity((CompoundTag) tag));
-                                }
-                            }
-                        } catch (IndexOutOfBoundsException ignored) {
-                            // Mojang client stops reading at whatever point and loads whatever it has read successfully
-                        } catch (Throwable e) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading chunk data", e);
+                    try {
+                        for (int i = 0; i < sectionCount; i++) {
+                            sections[i].mergeWith(chunkTracker.handleBlockPalette(BedrockTypes.CHUNK_SECTION.read(dataBuf))); // chunk section
+                            sections[i].applyPendingBlockUpdates(chunkTracker.airId());
                         }
+                        if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
+                            final byte[] biomeData = new byte[256];
+                            dataBuf.readBytes(biomeData);
+                            for (ChunkSection section : sections) {
+                                section.addPalette(PaletteType.BIOMES, new BedrockBiomeArray(biomeData));
+                            }
+                        } else {
+                            for (int i = 0; i < sections.length; i++) {
+                                BedrockDataPalette biomePalette = BedrockTypes.RUNTIME_DATA_PALETTE.read(dataBuf); // biome palette
+                                if (biomePalette == null) {
+                                    if (i == 0) {
+                                        throw new RuntimeException("First biome palette can not point to previous biome palette");
+                                    }
+                                    biomePalette = ((BedrockDataPalette) sections[i - 1].palette(PaletteType.BIOMES)).clone();
+                                }
+                                sections[i].addPalette(PaletteType.BIOMES, biomePalette);
+                            }
+                        }
+
+                        dataBuf.skipBytes(1); // border blocks
+                        while (dataBuf.isReadable()) {
+                            final Tag tag = BedrockTypes.NETWORK_TAG.read(dataBuf); // block entity tag
+                            if (tag instanceof CompoundTag) { // Ignore non-compound tags
+                                blockEntities.add(new BedrockBlockEntity((CompoundTag) tag));
+                            }
+                        }
+                    } catch (IndexOutOfBoundsException ignored) {
+                        // Mojang client stops reading at whatever point and loads whatever it has read successfully
+                    } catch (Throwable e) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading chunk data", e);
                     }
 
                     if (!chunk.isRequestSubChunks()) {
@@ -298,20 +293,19 @@ public class WorldPackets {
             if (dimension != chunkTracker.getDimension()) {
                 return;
             }
-
             final BlockPosition center = wrapper.read(BedrockTypes.POSITION_3I); // center position
             final long count = wrapper.read(BedrockTypes.UNSIGNED_INT_LE); // count
 
             for (long i = 0; i < count; i++) {
                 final BlockPosition offset = wrapper.read(BedrockTypes.SUB_CHUNK_OFFSET); // offset
-                final BlockPosition absolute = new BlockPosition(center.x() + offset.x(), center.y() + offset.y(), center.z() + offset.z());
                 final SubChunkPacket_SubChunkRequestResult result = SubChunkPacket_SubChunkRequestResult.getByValue(wrapper.read(Types.BYTE), SubChunkPacket_SubChunkRequestResult.Undefined); // result
                 final byte[] data = result != SubChunkPacket_SubChunkRequestResult.SuccessAllAir || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
-                final byte heightmapResult = wrapper.read(Types.BYTE); // heightmap result
-                if (heightmapResult == SubChunkPacket_HeightMapDataType.HasData.getValue()) {
+                final SubChunkPacket_HeightMapDataType heightmapResult = SubChunkPacket_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacket_HeightMapDataType.NoData); // heightmap result
+                if (heightmapResult == SubChunkPacket_HeightMapDataType.HasData) {
                     wrapper.read(new ByteArrayType(256)); // heightmap data
                 }
 
+                final BlockPosition absolute = new BlockPosition(center.x() + offset.x(), center.y() + offset.y(), center.z() + offset.z());
                 final Consumer<byte[]> dataConsumer = combinedData -> {
                     try {
                         if (result == SubChunkPacket_SubChunkRequestResult.SuccessAllAir) {
@@ -412,9 +406,7 @@ public class WorldPackets {
             for (Map.Entry<BlockPosition, List<BlockChangeRecord>> entry : blockChanges.entrySet()) {
                 final BlockPosition chunkPosition = entry.getKey();
                 final List<BlockChangeRecord> changes = entry.getValue();
-                long chunkKey = (chunkPosition.x() & 0x3FFFFFL) << 42;
-                chunkKey |= (chunkPosition.z() & 0x3FFFFFL) << 20;
-                chunkKey |= (chunkPosition.y() & 0xFFFL);
+                final long chunkKey = (chunkPosition.x() & 0x3FFFFFL) << 42 | (chunkPosition.z() & 0x3FFFFFL) << 20 | (chunkPosition.y() & 0xFFFL);
 
                 final PacketWrapper multiBlockChange = wrapper.create(ClientboundPackets1_21.SECTION_BLOCKS_UPDATE);
                 multiBlockChange.write(Types.LONG, chunkKey); // chunk position

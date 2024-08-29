@@ -29,11 +29,15 @@ public class ChunkTrackerTickTask implements Runnable {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
             final ChunkTracker chunkTracker = info.get(ChunkTracker.class);
             if (chunkTracker != null) {
-                try {
-                    chunkTracker.tick();
-                } catch (Throwable e) {
-                    BedrockProtocol.kickForIllegalState(info, "Error ticking chunk tracker. See console for details.", e);
-                }
+                info.getChannel().eventLoop().submit(() -> {
+                    if (!info.getChannel().isActive()) return;
+
+                    try {
+                        chunkTracker.tick();
+                    } catch (Throwable e) {
+                        BedrockProtocol.kickForIllegalState(info, "Error ticking chunk tracker. See console for details.", e);
+                    }
+                });
             }
         }
     }
