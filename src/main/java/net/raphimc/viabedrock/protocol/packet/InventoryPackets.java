@@ -95,7 +95,7 @@ public class InventoryPackets {
                     return;
                 }
                 case CONTAINER -> container = new ChestContainer(wrapper.user(), windowId, title, position, 27);
-                case NONE, CAULDRON, JUKEBOX, ARMOR, HAND, HUD, DECORATED_POT -> { // Mojang client can't open these containers
+                case NONE, CAULDRON, JUKEBOX, ARMOR, HAND, HUD, DECORATED_POT -> { // Bedrock client can't open these containers
                     wrapper.cancel();
                     return;
                 }
@@ -196,7 +196,7 @@ public class InventoryPackets {
             final AForm form;
             try {
                 form = FormSerializer.deserialize(data);
-            } catch (Throwable e) { // Mojang client shows error modal form
+            } catch (Throwable e) { // Bedrock client shows error modal form
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while deserializing form data: " + data, e);
                 wrapper.cancel();
                 return;
@@ -247,7 +247,7 @@ public class InventoryPackets {
             final Container container = inventoryTracker.getContainerServerbound(windowId);
             if (container == null) {
                 if (windowId == ContainerID.CONTAINER_ID_INVENTORY.getValue()) {
-                    // Mojang client can send multiple OpenInventory requests if the server doesn't respond, so this is fine here
+                    // Bedrock client can send multiple OpenInventory requests if the server doesn't respond, so this is fine here
                     final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
                     interact.write(Types.BYTE, (byte) InteractPacket_Action.OpenInventory.getValue()); // action
                     interact.write(BedrockTypes.UNSIGNED_VAR_LONG, wrapper.user().get(EntityTracker.class).getClientPlayer().runtimeId()); // target runtime entity id

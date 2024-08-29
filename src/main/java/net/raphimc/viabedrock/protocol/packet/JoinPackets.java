@@ -385,7 +385,7 @@ public class JoinPackets {
                     requestChunkRadius.write(Types.BYTE, ProtocolConstants.BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS); // max radius
                     requestChunkRadius.sendToServer(BedrockProtocol.class);
                     PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.StartLoadingScreen, null);
-                }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Mojang client ignores multiple start game packets
+                }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Bedrock client ignores multiple start game packets
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.BIOME_DEFINITION_LIST,
                 // Biomes are technically data driven, but the client seems to ignore most of the defined data and instead uses hardcoded values.
@@ -425,7 +425,7 @@ public class JoinPackets {
                         final int maximumHeight = wrapper.read(BedrockTypes.VAR_INT); // maximum height
                         final int minimumHeight = wrapper.read(BedrockTypes.VAR_INT); // minimum height
                         wrapper.read(BedrockTypes.VAR_INT); // generator type
-                        if (dimensionIdentifier.equals("minecraft:overworld")) { // Mojang client currently only supports overworld
+                        if (dimensionIdentifier.equals("minecraft:overworld")) { // Bedrock client currently only supports overworld
                             wrapper.user().get(GameSessionStorage.class).putBedrockDimensionDefinition(dimensionIdentifier, new IntIntImmutablePair(minimumHeight, maximumHeight));
                         }
                     }

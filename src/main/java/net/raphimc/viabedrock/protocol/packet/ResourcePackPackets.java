@@ -130,7 +130,7 @@ public class ResourcePackPackets {
 
             final Pair<UUID, String> idAndVersion = wrapper.read(BedrockTypes.PACK_ID_AND_VERSION); // pack id and version
             final int maxChunkSize = wrapper.read(BedrockTypes.UNSIGNED_INT_LE).intValue(); // max chunk size
-            wrapper.read(BedrockTypes.UNSIGNED_INT_LE); // chunk count | Ignored by Mojang client
+            wrapper.read(BedrockTypes.UNSIGNED_INT_LE); // chunk count | Ignored by Bedrock client
             final long compressedPackSize = wrapper.read(BedrockTypes.LONG_LE); // compressed pack size
             final byte[] hash = wrapper.read(BedrockTypes.BYTE_ARRAY); // hash
             final boolean premium = wrapper.read(Types.BOOLEAN); // premium
@@ -143,7 +143,7 @@ public class ResourcePackPackets {
                 resourcePack.setPremium(premium);
                 resourcePack.setType(type);
                 resourcePack.setCompressedDataLength((int) compressedPackSize, maxChunkSize);
-            } else { // Mojang client requests data anyway
+            } else { // Bedrock client requests data anyway
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACK_DATA_INFO for unknown pack: " + idAndVersion.key());
             }
 

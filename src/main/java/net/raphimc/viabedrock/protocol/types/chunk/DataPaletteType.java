@@ -39,7 +39,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
     public DataPaletteType(final boolean allowPersistentIds) {
         super(BedrockDataPalette.class);
 
-        // Mojang client reads runtime ids regardless of the header flag if allowPersistentIds is false
+        // Bedrock client reads runtime ids regardless of the header flag if allowPersistentIds is false
         this.allowPersistentIds = allowPersistentIds;
     }
 

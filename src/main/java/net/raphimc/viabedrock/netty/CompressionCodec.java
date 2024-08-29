@@ -78,7 +78,7 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
         }
 
         final PacketCompressionAlgorithm algorithm = PacketCompressionAlgorithm.getByValue(in.readUnsignedByte());
-        if (algorithm == null) { // Mojang client just drops the packet if it doesn't know the algorithm
+        if (algorithm == null) { // Bedrock client just drops the packet if it doesn't know the algorithm
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown compression algorithm. Dropping packet.");
             return;
         }
@@ -89,7 +89,7 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
             return;
         }
         final ByteBuf uncompressedData = ctx.alloc().buffer();
-        compressionAlgorithm.decompress(in, uncompressedData); // Mojang client would drop packets with invalid data, but this would be too insane to do
+        compressionAlgorithm.decompress(in, uncompressedData); // Bedrock client would drop packets with invalid data, but this would be too insane to do
         out.add(uncompressedData);
     }
 

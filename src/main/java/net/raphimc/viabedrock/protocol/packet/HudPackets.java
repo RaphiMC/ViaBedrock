@@ -61,7 +61,7 @@ public class HudPackets {
 
             final byte rawAction = wrapper.read(Types.BYTE); // action
             final PlayerListPacketType action = PlayerListPacketType.getByValue(rawAction);
-            if (action == null) { // Mojang client crashes if the action is not valid
+            if (action == null) { // Bedrock client crashes if the action is not valid
                 throw new IllegalStateException("Unknown PlayerListPacketType: " + rawAction);
             }
             switch (action) {
@@ -124,7 +124,7 @@ public class HudPackets {
                     }
 
                     if (!toRemoveUUIDs.isEmpty()) {
-                        // Remove duplicate players from the player list first because Mojang client overwrites entries if they are added twice
+                        // Remove duplicate players from the player list first because Bedrock client overwrites entries if they are added twice
                         final PacketWrapper playerInfoRemove = PacketWrapper.create(ClientboundPackets1_21.PLAYER_INFO_REMOVE, wrapper.user());
                         playerInfoRemove.write(Types.UUID_ARRAY, toRemoveUUIDs.toArray(new UUID[0])); // uuids
                         playerInfoRemove.send(BedrockProtocol.class);
@@ -208,7 +208,7 @@ public class HudPackets {
                     }
                     default -> throw new IllegalStateException("Unhandled SetTitlePacket_TitleType: " + type);
                 }
-            } catch (Throwable e) { // Mojang client silently ignores errors
+            } catch (Throwable e) { // Bedrock client silently ignores errors
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalText + "'", e);
                 wrapper.cancel();
             }
@@ -274,7 +274,7 @@ public class HudPackets {
                         switch (type) {
                             case Player, Entity -> uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
                             case FakePlayer -> fakePlayerName = wrapper.read(BedrockTypes.STRING); // fake player name
-                            case Invalid -> throw new IllegalStateException("Invalid IdentityDefinition_Type: " + rawType); // Mojang client disconnects if the type is not valid
+                            case Invalid -> throw new IllegalStateException("Invalid IdentityDefinition_Type: " + rawType); // Bedrock client disconnects if the type is not valid
                             default -> throw new IllegalStateException("Unhandled IdentityDefinition_Type: " + rawType);
                         }
                         entry = new ScoreboardEntry(score, type, uniqueEntityId, fakePlayerName);

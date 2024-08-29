@@ -66,7 +66,7 @@ public class BlockStateRewriter implements StorableObject {
         for (BlockProperties blockProperty : blockProperties) {
             final String identifier = Key.namespaced(blockProperty.name().toLowerCase(Locale.ROOT));
             if (bedrockBlockIdentifiers.contains(identifier)) {
-                continue; // Mojang client does not allow overriding vanilla block states
+                continue; // Bedrock client does not allow overriding vanilla block states
             }
 
             if (!effectiveBlockProperties.containsKey(identifier)) {
@@ -75,10 +75,10 @@ public class BlockStateRewriter implements StorableObject {
         }
 
         for (Map.Entry<String, CompoundTag> blockProperty : effectiveBlockProperties.entrySet()) {
-            if (!(blockProperty.getValue().get("vanilla_block_data") instanceof CompoundTag)) { // Mojang client ignores blocks without this tag
+            if (!(blockProperty.getValue().get("vanilla_block_data") instanceof CompoundTag)) { // Bedrock client ignores blocks without this tag
                 continue;
             }
-            if (!(blockProperty.getValue().get("menu_category") instanceof CompoundTag)) { // Mojang client crashes if this tag is missing
+            if (!(blockProperty.getValue().get("menu_category") instanceof CompoundTag)) { // Bedrock client crashes if this tag is missing
                 throw new IllegalStateException("Missing menu_category tag for " + blockProperty.getKey());
             }
 

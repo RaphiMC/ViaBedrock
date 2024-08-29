@@ -165,7 +165,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
                 ViaBedrock.getPlatform().getLogger().warning("Received unknown packet " + wrapper.getId() + " in state " + serverState + " with content: " + ByteBufUtil.hexDump(content));
                 throw CancelException.generate();
             }
-            if (serverState == State.LOGIN && !LOGIN_STATE_WHITELIST.contains(packet) && BEFORE_PLAY_STATE_WHITELIST.contains(packet)) { // Mojang client can skip the login state
+            if (serverState == State.LOGIN && !LOGIN_STATE_WHITELIST.contains(packet) && BEFORE_PLAY_STATE_WHITELIST.contains(packet)) { // Bedrock client can skip the login state
                 ViaBedrock.getPlatform().getLogger().warning("Server skipped LOGIN state");
                 final PacketWrapper playStatus = PacketWrapper.create(ClientboundBedrockPackets.PLAY_STATUS, wrapper.user());
                 playStatus.write(Types.INT, PlayStatus.LoginSuccess.getValue()); // status
@@ -173,7 +173,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
                 wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
                 serverState = State.CONFIGURATION;
             }
-            if (serverState != State.PLAY && !BEFORE_PLAY_STATE_WHITELIST.contains(packet)) { // Mojang client ignores most packets before receiving the START_GAME packet
+            if (serverState != State.PLAY && !BEFORE_PLAY_STATE_WHITELIST.contains(packet)) { // Bedrock client ignores most packets before receiving the START_GAME packet
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received packet " + packet + " outside PLAY state. Ignoring it.");
                 throw CancelException.generate();
             }

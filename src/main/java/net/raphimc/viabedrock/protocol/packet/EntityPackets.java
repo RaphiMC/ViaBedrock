@@ -421,7 +421,7 @@ public class EntityPackets {
             }
 
             final String bedrockIdentifier = BedrockProtocol.MAPPINGS.getBedrockEffects().inverse().get(effectId);
-            if (bedrockIdentifier == null) { // Mojang client crashes
+            if (bedrockIdentifier == null) { // Bedrock client crashes
                 throw new IllegalStateException("Unknown bedrock effect: " + effectId);
             }
             final EntityEffect effect = new EntityEffect(bedrockIdentifier, amplifier, duration, showParticles);

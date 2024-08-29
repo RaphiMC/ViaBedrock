@@ -28,7 +28,7 @@ public class GameTypeRewriter {
             effectiveGameType = levelGameType;
         }
         if (effectiveGameType == GameType.Undefined || effectiveGameType == GameType.Default) {
-            effectiveGameType = GameType.Survival; // Mojang client defaults to survival in case of out of bounds values
+            effectiveGameType = GameType.Survival; // Bedrock client defaults to survival in case of out of bounds values
         }
         return (switch (effectiveGameType) {
             case Survival -> GameMode.SURVIVAL;

@@ -134,7 +134,7 @@ public class WorldPackets {
             }
 
             if (dimension == wrapper.user().get(ChunkTracker.class).getDimension()) {
-                // Mojang client gets stuck in loading terrain until a proper CHANGE_DIMENSION packet is received
+                // Bedrock client gets stuck in loading terrain until a proper CHANGE_DIMENSION packet is received
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received CHANGE_DIMENSION packet for the same dimension");
             }
 
@@ -185,7 +185,7 @@ public class WorldPackets {
                 return;
             }
             final int sectionCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // sub chunk count
-            if (sectionCount < -2) { // Mojang client ignores this packet
+            if (sectionCount < -2) { // Bedrock client ignores this packet
                 return;
             }
 
@@ -254,7 +254,7 @@ public class WorldPackets {
                             }
                         }
                     } catch (IndexOutOfBoundsException ignored) {
-                        // Mojang client stops reading at whatever point and loads whatever it has read successfully
+                        // Bedrock client stops reading at whatever point and loads whatever it has read successfully
                     } catch (Throwable e) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading chunk data", e);
                     }
@@ -270,7 +270,7 @@ public class WorldPackets {
             if (wrapper.read(Types.BOOLEAN)) { // caching enabled
                 final Long[] blobs = wrapper.read(BedrockTypes.LONG_ARRAY); // blob ids
                 final int expectedLength = sectionCount < 0 ? 1 : sectionCount + 1;
-                if (blobs.length != expectedLength) { // Mojang client writes random memory contents into the request and most likely crashes
+                if (blobs.length != expectedLength) { // Bedrock client writes random memory contents into the request and most likely crashes
                     throw new IllegalStateException("Invalid blob count: " + blobs.length + " (expected " + expectedLength + ")");
                 }
                 final byte[] data = wrapper.read(BedrockTypes.BYTE_ARRAY); // data
@@ -326,7 +326,7 @@ public class WorldPackets {
                                     }
                                 }
                             } catch (IndexOutOfBoundsException ignored) {
-                                // Mojang client stops reading at whatever point and loads whatever it has read successfully
+                                // Bedrock client stops reading at whatever point and loads whatever it has read successfully
                             } catch (Throwable e) {
                                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading sub chunk data", e);
                             }
@@ -380,7 +380,7 @@ public class WorldPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SUB_CHUNK_BLOCKS, null, wrapper -> {
             wrapper.cancel(); // Need multiple packets because offsets can go over chunk boundaries
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
-            wrapper.read(BedrockTypes.BLOCK_POSITION); // position | Seems to be unused by the Mojang client
+            wrapper.read(BedrockTypes.BLOCK_POSITION); // position | Seems to be unused by the Bedrock client
             final BlockChangeEntry[][] blockUpdatesArray = new BlockChangeEntry[2][];
             blockUpdatesArray[0] = wrapper.read(BedrockTypes.BLOCK_CHANGE_ENTRY_ARRAY); // standard blocks
             blockUpdatesArray[1] = wrapper.read(BedrockTypes.BLOCK_CHANGE_ENTRY_ARRAY); // extra blocks

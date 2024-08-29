@@ -296,13 +296,13 @@ public class CommandsStorage extends StoredObject {
                             }
                             default -> {
                                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled command parameter type: " + parameter.type());
-                                argument = argument(parameter.name() + ": unknown", StringArgumentType.greedyString()); // Mojang client crashes if the type isn't valid
+                                argument = argument(parameter.name() + ": unknown", StringArgumentType.greedyString()); // Bedrock client crashes if the type isn't valid
                             }
                         }
                         if (argumentType != null) {
                             ((RequiredArgumentBuilder<UserConnection, ?>) argument).suggests(argumentType::listSuggestions);
                         }
-                    } else { // Mojang client crashes if the type isn't valid
+                    } else { // Bedrock client crashes if the type isn't valid
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid command parameter: " + parameter);
                         argument = argument(parameter.name() + ": unknown", StringArgumentType.greedyString());
                     }

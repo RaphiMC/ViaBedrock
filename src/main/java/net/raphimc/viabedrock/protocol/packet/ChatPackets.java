@@ -154,7 +154,7 @@ public class ChatPackets {
                             }
                             default -> throw new IllegalStateException("Unhandled TextPacketType: " + type);
                         }
-                    } catch (Throwable e) { // Mojang client silently ignores errors
+                    } catch (Throwable e) { // Bedrock client silently ignores errors
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalMessage + "'", e);
                         wrapper.cancel();
                     }
@@ -169,7 +169,7 @@ public class ChatPackets {
             final CommandOutputType type = CommandOutputType.getByValue(wrapper.read(Types.BYTE), CommandOutputType.None); // type
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
 
-            if (originData.type() != CommandOriginType.Player) { // Mojang client ignores non player origins
+            if (originData.type() != CommandOriginType.Player) { // Bedrock client ignores non player origins
                 wrapper.cancel();
                 return;
             }

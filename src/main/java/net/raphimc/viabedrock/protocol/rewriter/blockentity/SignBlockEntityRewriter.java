@@ -94,7 +94,7 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
         if (bedrockText.get("SignTextColor") instanceof IntTag signTextColorTag) {
             final int signTextColor = signTextColorTag.asInt();
-            if (((signTextColor >> 24) & 0xFF) < 100) { // Mojang client can't properly render very transparent text
+            if (((signTextColor >> 24) & 0xFF) < 100) { // Bedrock client can't properly render very transparent text
                 components.clear();
             }
             final DyeColor dyeColor = DyeColor.getClosestDyeColor(signTextColor);

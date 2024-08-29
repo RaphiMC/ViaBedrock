@@ -60,7 +60,7 @@ public class BedrockItemType extends Type<BedrockItem> {
             final short marker = userData.readShortLE();
             if (marker == 0) {
                 return item;
-            } else if (marker != -1) { // Mojang client crashes if marker isn't -1
+            } else if (marker != -1) { // Bedrock client crashes if marker isn't -1
                 throw new IllegalStateException("Expected -1 marker but got " + marker);
             }
             final byte version = userData.readByte();
@@ -73,7 +73,7 @@ public class BedrockItemType extends Type<BedrockItem> {
                 }
             }
         } catch (IndexOutOfBoundsException ignored) {
-            // Mojang client stops reading at whatever point and loads whatever it has read successfully
+            // Bedrock client stops reading at whatever point and loads whatever it has read successfully
         }
 
         return item;
