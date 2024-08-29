@@ -443,13 +443,13 @@ public class ChunkTracker extends StoredObject {
         while (!this.subChunkRequests.isEmpty()) {
             final Set<SubChunkPosition> group = this.subChunkRequests.stream().limit(256).collect(Collectors.toSet());
             this.subChunkRequests.removeAll(group);
+            this.pendingSubChunks.addAll(group);
 
             final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.user());
             subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
             subChunkRequest.write(BedrockTypes.POSITION_3I, basePosition); // base position
             subChunkRequest.write(BedrockTypes.INT_LE, group.size()); // sub chunk offset count
             for (SubChunkPosition subChunkPosition : group) {
-                this.pendingSubChunks.add(subChunkPosition);
                 final BlockPosition offset = new BlockPosition(subChunkPosition.chunkX - basePosition.x(), subChunkPosition.subChunkY, subChunkPosition.chunkZ - basePosition.z());
                 subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
             }
@@ -494,8 +494,8 @@ public class ChunkTracker extends StoredObject {
 
                 int nonAirBlockCount = 0;
                 for (int x = 0; x < 16; x++) {
-                    for (int y = 0; y < 16; y++) {
-                        for (int z = 0; z < 16; z++) {
+                    for (int z = 0; z < 16; z++) {
+                        for (int y = 0; y < 16; y++) {
                             final int paletteIndex = remappedBlockPalette.paletteIndexAt(remappedBlockPalette.index(x, y, z));
                             final int javaBlockState = remappedBlockPalette.idByIndex(paletteIndex);
                             if (javaBlockState != 0) {
@@ -534,8 +534,8 @@ public class ChunkTracker extends StoredObject {
                     final DataPalette layer1 = blockPalettes.get(1);
                     if (layer1.size() != 1 || layer1.idByIndex(0) != airId) {
                         for (int x = 0; x < 16; x++) {
-                            for (int y = 0; y < 16; y++) {
-                                for (int z = 0; z < 16; z++) {
+                            for (int z = 0; z < 16; z++) {
+                                for (int y = 0; y < 16; y++) {
                                     final int prevBlockState = layer0.idAt(x, y, z);
                                     if (prevBlockState == airId) continue;
                                     final int blockState = layer1.idAt(x, y, z);
@@ -570,14 +570,14 @@ public class ChunkTracker extends StoredObject {
                     remappedBiomePalette.addId(biomePalette.idByIndex(0));
                 } else {
                     for (int x = 0; x < 4; x++) {
-                        for (int y = 0; y < 4; y++) {
-                            for (int z = 0; z < 4; z++) {
+                        for (int z = 0; z < 4; z++) {
+                            for (int y = 0; y < 4; y++) {
                                 final Int2IntMap subBiomes = new Int2IntOpenHashMap();
                                 int maxBiomeId = -1;
                                 int maxValue = -1;
                                 for (int subX = 0; subX < 4; subX++) {
-                                    for (int subY = 0; subY < 4; subY++) {
-                                        for (int subZ = 0; subZ < 4; subZ++) {
+                                    for (int subZ = 0; subZ < 4; subZ++) {
+                                        for (int subY = 0; subY < 4; subY++) {
                                             final int biomeId = biomePalette.idAt(x * 4 + subX, y * 4 + subY, z * 4 + subZ);
                                             final int value = subBiomes.getOrDefault(biomeId, 0) + 1;
                                             subBiomes.put(biomeId, value);
