@@ -38,8 +38,9 @@ public class ProtocolConstants {
     public static final int BEDROCK_COMMAND_VERSION = 41;
     public static final byte BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS = 28;
 
-    public static final float PLAYER_GRAVITY = 0.0784F;
+    public static final float PLAYER_GRAVITY = 0.08F;
     public static final float PLAYER_JUMP_HEIGHT = 0.42F;
+    public static final float BLOCK_FRICTION = 0.6F;
 
     public static StructuredDataContainer createStructuredDataContainer() {
         final StructuredDataContainer data = new StructuredDataContainer();

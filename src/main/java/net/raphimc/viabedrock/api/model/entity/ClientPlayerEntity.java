@@ -137,11 +137,26 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void sendPlayerAuthInputPacketToServer(final ClientPlayMode playMode) {
         if (this.prevPosition == null) this.prevPosition = this.position;
         final Position3f positionDelta = this.position.subtract(this.prevPosition);
-        final Position3f gravityAffectedPositionDelta;
+
+        final Position3f velocity;
         if (!this.initiallySpawned || this.dimensionChangeInfo != null || this.abilities.getBooleanValue(AbilitiesIndex.Flying)) {
-            gravityAffectedPositionDelta = positionDelta;
+            velocity = positionDelta;
         } else {
-            gravityAffectedPositionDelta = positionDelta.subtract(0F, ProtocolConstants.PLAYER_GRAVITY, 0F);
+            float dx = positionDelta.x() * 0.98F;
+            float dy = positionDelta.y();
+            float dz = positionDelta.z() * 0.98F;
+            final float friction = this.onGround ? ProtocolConstants.BLOCK_FRICTION : 1F;
+            dx *= friction;
+            dz *= friction;
+
+            if (this.effects.containsKey("minecraft:levitation")) {
+                dy += (0.05F * (this.effects.get("minecraft:levitation").amplifier() + 1)) * 0.2F;
+            } else {
+                dy -= ProtocolConstants.PLAYER_GRAVITY;
+            }
+            // Slow falling does not change the velocity when standing still
+
+            velocity = new Position3f(dx * 0.91F, dy * 0.98F, dz * 0.91F);
         }
 
         this.authInputData.add(PlayerAuthInputPacket_InputData.BlockBreakingDelayEnabled);
@@ -172,7 +187,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_INT, playMode.getValue()); // play mode
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_INT, NewInteractionModel.Touch.getValue()); // interaction mode
         playerAuthInput.write(BedrockTypes.UNSIGNED_VAR_LONG, (long) this.age); // tick
-        playerAuthInput.write(BedrockTypes.POSITION_3F, gravityAffectedPositionDelta); // position delta
+        playerAuthInput.write(BedrockTypes.POSITION_3F, velocity); // delta
         if (this.authInputData.contains(PlayerAuthInputPacket_InputData.PerformBlockActions)) {
             playerAuthInput.write(BedrockTypes.VAR_INT, this.authInputBlockActions.size()); // player block actions count
             for (AuthInputBlockAction blockAction : this.authInputBlockActions) {

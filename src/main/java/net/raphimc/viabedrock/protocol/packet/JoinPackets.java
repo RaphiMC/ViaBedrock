@@ -537,14 +537,6 @@ public class JoinPackets {
             commandsStorage.updateCommandTree();
         }
 
-        final PacketWrapper updateAttributes = PacketWrapper.create(ClientboundPackets1_21.UPDATE_ATTRIBUTES, user);
-        updateAttributes.write(Types.VAR_INT, clientPlayer.javaId()); // entity id
-        updateAttributes.write(Types.VAR_INT, 1); // attribute count
-        updateAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:generic.gravity")); // attribute id
-        updateAttributes.write(Types.DOUBLE, (double) ProtocolConstants.PLAYER_GRAVITY); // base value
-        updateAttributes.write(Types.VAR_INT, 0); // modifier count
-        updateAttributes.send(BedrockProtocol.class);
-
         final PacketWrapper serverDifficulty = PacketWrapper.create(ClientboundPackets1_21.CHANGE_DIFFICULTY, user);
         serverDifficulty.write(Types.UNSIGNED_BYTE, (short) joinGameStorage.difficulty().getValue()); // difficulty
         serverDifficulty.write(Types.BOOLEAN, false); // locked
