@@ -21,6 +21,8 @@ import com.viaversion.viaversion.api.minecraft.BlockFace;
 
 public record Position3f(float x, float y, float z) {
 
+    public static final Position3f ZERO = new Position3f(0, 0, 0);
+
     public Position3f getRelative(final BlockFace face) {
         return new Position3f(this.x + face.modX(), this.y + face.modY(), this.z + face.modZ());
     }

@@ -40,7 +40,7 @@ public class Entity {
     /**
      * pitch, yaw, headYaw
      */
-    protected Position3f rotation;
+    protected Position3f rotation = Position3f.ZERO;
     protected boolean onGround;
     protected String name;
     protected int age;
