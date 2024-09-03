@@ -53,6 +53,7 @@ public class ResourcePacksStorage extends StoredObject {
     private ItemDefinitions items;
     private TextureDefinitions textures;
     private SoundDefinitions sounds;
+    private ParticleDefinitions particles;
 
     public ResourcePacksStorage(final UserConnection user) {
         super(user);
@@ -147,6 +148,7 @@ public class ResourcePacksStorage extends StoredObject {
         this.items = new ItemDefinitions(this);
         this.textures = new TextureDefinitions(this);
         this.sounds = new SoundDefinitions(this);
+        this.particles = new ParticleDefinitions(this);
     }
 
     public List<ResourcePack> getPackStackTopToBottom() {
@@ -196,6 +198,10 @@ public class ResourcePacksStorage extends StoredObject {
 
     public SoundDefinitions getSounds() {
         return this.sounds;
+    }
+
+    public ParticleDefinitions getParticles() {
+        return this.particles;
     }
 
 }

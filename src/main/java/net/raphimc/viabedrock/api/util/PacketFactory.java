@@ -30,11 +30,13 @@ import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerboundLoadingScreenPacketType;
 import net.raphimc.viabedrock.protocol.data.enums.java.CustomChatCompletionsAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
+import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -126,6 +128,19 @@ public class PacketFactory {
         wrapper.write(Types.VAR_INT, 0); // revision
         wrapper.write(Types1_21.ITEM_ARRAY, container.getJavaItems()); // items
         wrapper.write(Types1_21.ITEM, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
+    }
+
+    public static void writeJavaLevelParticles(final PacketWrapper wrapper, final Position3f position, final BedrockMappingData.JavaParticle particle) {
+        wrapper.write(Types.BOOLEAN, false); // override limiter
+        wrapper.write(Types.DOUBLE, (double) position.x()); // x
+        wrapper.write(Types.DOUBLE, (double) position.y()); // y
+        wrapper.write(Types.DOUBLE, (double) position.z()); // z
+        wrapper.write(Types.FLOAT, particle.offsetX()); // offset x
+        wrapper.write(Types.FLOAT, particle.offsetY()); // offset y
+        wrapper.write(Types.FLOAT, particle.offsetZ()); // offset z
+        wrapper.write(Types.FLOAT, particle.speed()); // speed
+        wrapper.write(Types.INT, particle.count()); // count
+        wrapper.write(Types1_21.PARTICLE, particle.particle().copy()); // particle data
     }
 
 }

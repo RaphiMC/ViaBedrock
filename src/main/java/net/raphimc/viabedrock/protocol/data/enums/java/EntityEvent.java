@@ -104,7 +104,7 @@ public enum EntityEvent {
     }
 
     public byte getValue() {
-        return value;
+        return this.value;
     }
 
 }

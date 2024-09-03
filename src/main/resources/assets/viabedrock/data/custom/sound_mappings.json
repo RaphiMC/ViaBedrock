@@ -1167,7 +1167,7 @@
   "random.burp": "minecraft:entity.player.burp",
   "random.chestclosed": "minecraft:block.chest.close",
   "random.chestopen": "minecraft:block.chest.open",
-  "random.click": "minecraft:block.stone_button.click_on",
+  "random.click": "minecraft:block.dispenser.dispense",
   "random.door_close": "minecraft:block.wooden_door.close",
   "random.door_open": "minecraft:block.wooden_door.open",
   "random.drink_honey": "minecraft:item.honey_bottle.drink",

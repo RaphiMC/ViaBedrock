@@ -1,0 +1,225 @@
+{
+  "Undefined": null,
+  "Bubble": "minecraft:bubble",
+  "BubbleManual": "minecraft:bubble",
+  "Crit": "minecraft:crit",
+  "BlockForceField": {
+    "particle": "minecraft:block_marker",
+    "arguments": [
+      {
+        "type": "block_state",
+        "value": "minecraft:bedrock"
+      }
+    ]
+  },
+  "Smoke": "minecraft:smoke",
+  "Explode": "minecraft:white_smoke",
+  "Evaporation": "minecraft:white_smoke",
+  "Flame": "minecraft:flame",
+  "CandleFlame": "minecraft:small_flame",
+  "Lava": "minecraft:lava",
+  "LargeSmoke": "minecraft:large_smoke",
+  "RedDust": {
+    "particle": "minecraft:dust",
+    "arguments": [
+      {
+        "type": "float",
+        "value": 1
+      },
+      {
+        "type": "float",
+        "value": 0
+      },
+      {
+        "type": "float",
+        "value": 0
+      },
+      {
+        "type": "float",
+        "value": 1
+      }
+    ]
+  },
+  "RisingBorderDust": {
+    "particle": "minecraft:dust",
+    "arguments": [
+      {
+        "type": "float",
+        "value": 1
+      },
+      {
+        "type": "float",
+        "value": 0
+      },
+      {
+        "type": "float",
+        "value": 0
+      },
+      {
+        "type": "float",
+        "value": 1
+      }
+    ]
+  },
+  "IconCrack": "minecraft:item",
+  "SnowballPoof": "minecraft:item_snowball",
+  "LargeExplode": "minecraft:explosion_emitter",
+  "HugeExplosion": "minecraft:explosion_emitter",
+  "BreezeWindExplosion": "minecraft:gust_emitter_small",
+  "MobFlame": "minecraft:large_smoke",
+  "Heart": "minecraft:heart",
+  "Terrain": "minecraft:block",
+  "TownAura": null,
+  "Portal": "minecraft:portal",
+  "MobPortal": "minecraft:portal",
+  "WaterSplash": "minecraft:splash",
+  "WaterSplashManual": "minecraft:splash",
+  "WaterWake": "minecraft:fishing",
+  "DripWater": "minecraft:dripping_water",
+  "DripLava": "minecraft:dripping_lava",
+  "DripHoney": "minecraft:dripping_honey",
+  "StalactiteDripWater": "minecraft:dripping_dripstone_water",
+  "StalactiteDripLava": "minecraft:dripping_dripstone_lava",
+  "FallingDust": "minecraft:dust_color_transition",
+  "MobSpell": "minecraft:entity_effect",
+  "MobSpellAmbient": "minecraft:entity_effect",
+  "MobSpellInstantaneous": "minecraft:entity_effect",
+  "Ink": "minecraft:squid_ink",
+  "Slime": "minecraft:item_slime",
+  "RainSplash": "minecraft:rain",
+  "VillagerAngry": "minecraft:angry_villager",
+  "VillagerHappy": "minecraft:happy_villager",
+  "EnchantingTable": "minecraft:enchant",
+  "TrackingEmitter": null,
+  "Note": "minecraft:note",
+  "WitchSpell": "minecraft:witch",
+  "CarrotBoost": {
+    "particle": "minecraft:item",
+    "offset_x": 0.25,
+    "offset_y": 0.25,
+    "offset_z": 0.25,
+    "speed": 0.1,
+    "count": 1,
+    "arguments": [
+      {
+        "type": "item_stack",
+        "value": "minecraft:carrot"
+      }
+    ]
+  },
+  "MobAppearance": null,
+  "EndRod": "minecraft:end_rod",
+  "DragonBreath": "minecraft:dragon_breath",
+  "Spit": "minecraft:spit",
+  "Totem": "minecraft:totem_of_undying",
+  "Food": "minecraft:item",
+  "FireworksStarter": null,
+  "Fireworks": "minecraft:firework",
+  "FireworksOverlay": "minecraft:small_flame",
+  "BalloonGas": "minecraft:end_rod",
+  "ColoredFlame": "minecraft:soul_fire_flame",
+  "Sparkler": "minecraft:firework",
+  "Conduit": "minecraft:nautilus",
+  "BubbleColumnUp": "minecraft:bubble_column_up",
+  "BubbleColumnDown": "minecraft:current_down",
+  "Sneeze": null,
+  "ShulkerBullet": "minecraft:end_rod",
+  "Bleach": "minecraft:angry_villager",
+  "DragonDestroyBlock": "minecraft:explosion",
+  "MyceliumDust": "minecraft:mycelium",
+  "FallingBorderDust": {
+    "particle": "minecraft:falling_dust",
+    "arguments": [
+      {
+        "type": "block_state",
+        "value": "minecraft:redstone_block"
+      }
+    ]
+  },
+  "CampfireSmoke": "minecraft:campfire_cosy_smoke",
+  "CampfireSmokeTall": "minecraft:campfire_signal_smoke",
+  "DragonBreathFire": "minecraft:dragon_breath",
+  "DragonBreathTrail": "minecraft:dragon_breath",
+  "BlueFlame": "minecraft:soul_fire_flame",
+  "Soul": "minecraft:soul",
+  "ObsidianTear": "minecraft:dripping_obsidian_tear",
+  "PortalReverse": "minecraft:reverse_portal",
+  "Snowflake": "minecraft:snowflake",
+  "VibrationSignal": null,
+  "SculkSensorRedstone": {
+    "particle": "minecraft:dust_color_transition",
+    "arguments": [
+      {
+        "type": "float",
+        "value": 0.224
+      },
+      {
+        "type": "float",
+        "value": 0.839
+      },
+      {
+        "type": "float",
+        "value": 0.878
+      },
+      {
+        "type": "float",
+        "value": 1
+      },
+      {
+        "type": "float",
+        "value": 0
+      },
+      {
+        "type": "float",
+        "value": 0
+      },
+      {
+        "type": "float",
+        "value": 1
+      }
+    ]
+  },
+  "SporeBlossomShower": "minecraft:falling_spore_blossom",
+  "SporeBlossomAmbient": "minecraft:spore_blossom_air",
+  "Wax": "minecraft:wax_off",
+  "ElectricSpark": "minecraft:electric_spark",
+  "Shriek": {
+    "particle": "minecraft:shriek",
+    "arguments": [
+      {
+        "type": "var_int",
+        "value": 0
+      }
+    ]
+  },
+  "SculkSoul": "minecraft:sculk_soul",
+  "SonicExplosion": "minecraft:sonic_boom",
+  "BrushDust": {
+    "particle": "minecraft:block",
+    "offset_x": 0.1,
+    "offset_y": 0.1,
+    "offset_z": 0.1,
+    "speed": 0,
+    "count": 8
+  },
+  "CherryLeaves": "minecraft:cherry_leaves",
+  "DustPlume": "minecraft:dust_plume",
+  "WhiteSmoke": "minecraft:white_smoke",
+  "VaultConnection": "minecraft:vault_connection",
+  "WindExplosion": "minecraft:gust_emitter_small",
+  "WolfArmorCrack": {
+    "particle": "minecraft:item",
+    "offset_x": 0.2,
+    "offset_y": 0.1,
+    "offset_z": 0.2,
+    "speed": 0.1,
+    "count": 20,
+    "arguments": [
+      {
+        "type": "item_stack",
+        "value": "minecraft:armadillo_scute"
+      }
+    ]
+  },
+  "OminousItemSpawner": "minecraft:ominous_spawning"
+}

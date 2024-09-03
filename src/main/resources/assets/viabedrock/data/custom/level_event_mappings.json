@@ -1,0 +1,298 @@
+{
+  "Undefined": null,
+  "SoundClick": {
+    "sound": "random.click",
+    "event": "SOUND_DISPENSER_DISPENSE"
+  },
+  "SoundClickFail": {
+    "sound": "random.click",
+    "event": "SOUND_DISPENSER_FAIL"
+  },
+  "SoundLaunch": "SOUND_DISPENSER_PROJECTILE_LAUNCH",
+  "SoundOpenDoor": {
+    "sound": "random.door_open"
+  },
+  "SoundFizz": {
+    "sound": "random.fizz",
+    "event": "SOUND_EXTINGUISH_FIRE",
+    "data": 1
+  },
+  "SoundFuse": {
+    "sound": "random.fuse"
+  },
+  "SoundPlayRecording": null,
+  "SoundGhastWarning": "SOUND_GHAST_WARNING",
+  "SoundGhastFireball": "SOUND_GHAST_FIREBALL",
+  "SoundBlazeFireball": "SOUND_BLAZE_FIREBALL",
+  "SoundZombieWoodenDoor": "SOUND_ZOMBIE_WOODEN_DOOR",
+  "SoundZombieDoorCrash": "SOUND_ZOMBIE_DOOR_CRASH",
+  "SoundZombieInfected": "SOUND_ZOMBIE_INFECTED",
+  "SoundZombieConverted": "SOUND_ZOMBIE_CONVERTED",
+  "SoundEndermanTeleport": "SOUND_PORTAL_TRAVEL",
+  "SoundAnvilBroken": "SOUND_ANVIL_BROKEN",
+  "SoundAnvilUsed": "SOUND_ANVIL_USED",
+  "SoundAnvilLand": "SOUND_ANVIL_LAND",
+  "SoundInfinityArrowPickup": {
+    "sound": "random.pop"
+  },
+  "SoundTeleportEnderPearl": "SOUND_PORTAL_TRAVEL",
+  "SoundAddItem": {
+    "sound": "block.itemframe.add_item"
+  },
+  "SoundItemFrameBreak": {
+    "sound": "block.itemframe.break"
+  },
+  "SoundItemFramePlace": {
+    "sound": "block.itemframe.place"
+  },
+  "SoundItemFrameRemoveItem": {
+    "sound": "block.itemframe.remove_item"
+  },
+  "SoundItemFrameRotateItem": {
+    "sound": "block.itemframe.rotate_item"
+  },
+  "SoundExperienceOrbPickup": {
+    "sound": "random.orb"
+  },
+  "SoundTotemUsed": {
+    "sound": "random.totem"
+  },
+  "SoundArmorStandBreak": {
+    "sound": "mob.armor_stand.break"
+  },
+  "SoundArmorStandHit": {
+    "sound": "mob.armor_stand.hit"
+  },
+  "SoundArmorStandLand": {
+    "sound": "mob.armor_stand.land"
+  },
+  "SoundArmorStandPlace": {
+    "sound": "mob.armor_stand.place"
+  },
+  "SoundPointedDripstoneLand": "SOUND_POINTED_DRIPSTONE_LAND",
+  "SoundDyeUsed": {
+    "sound": "sign.dye.use"
+  },
+  "SoundInkSacUsed": {
+    "sound": "sign.ink_sac.use"
+  },
+  "SoundAmethystResonate": {
+    "sound": "resonate.amethyst_block"
+  },
+  "QueueCustomMusic": null,
+  "PlayCustomMusic": null,
+  "StopCustomMusic": null,
+  "SetMusicVolume": null,
+  "ParticlesShoot": "PARTICLES_SHOOT_SMOKE",
+  "ParticlesDestroyBlock": "PARTICLES_DESTROY_BLOCK",
+  "ParticlesPotionSplash": "PARTICLES_SPELL_POTION_SPLASH",
+  "ParticlesEyeOfEnderDeath": "PARTICLES_EYE_OF_ENDER_DEATH",
+  "ParticlesMobBlockSpawn": "PARTICLES_MOBBLOCK_SPAWN",
+  "ParticleCropGrowth": "PARTICLES_AND_SOUND_PLANT_GROWTH",
+  "ParticleSoundGuardianGhost": null,
+  "ParticleDeathSmoke": null,
+  "ParticleDenyBlock": {
+    "particle": "minecraft:block_marker",
+    "arguments": [
+      {
+        "type": "block_state",
+        "value": "minecraft:bedrock"
+      }
+    ]
+  },
+  "ParticleGenericSpawn": null,
+  "ParticlesDragonEgg": {
+    "particle": "minecraft:portal",
+    "offset_x": 0.25,
+    "offset_y": 0.25,
+    "offset_z": 0.25,
+    "speed": 0.2,
+    "count": 128
+  },
+  "ParticlesCropEaten": null,
+  "ParticlesCrit": {
+    "particle": "minecraft:crit",
+    "offset_x": 0.25,
+    "offset_y": 0.25,
+    "offset_z": 0.25,
+    "speed": 0.2
+  },
+  "ParticlesTeleport": {
+    "particle": "minecraft:portal",
+    "offset_y": 0.5,
+    "speed": 1,
+    "count": 50
+  },
+  "ParticlesCrackBlock": {
+    "particle": "minecraft:block"
+  },
+  "ParticlesBubble": {
+    "particle": "minecraft:bubble"
+  },
+  "ParticlesEvaporate": "PARTICLES_WATER_EVAPORATING",
+  "ParticlesDestroyArmorStand": {
+    "particle": "minecraft:block",
+    "speed": 0.05,
+    "count": 10,
+    "arguments": [
+      {
+        "type": "block_state",
+        "value": "minecraft:oak_planks"
+      }
+    ]
+  },
+  "ParticlesBreakingEgg": "PARTICLES_EGG_CRACK",
+  "ParticleDestroyEgg": "PARTICLES_WATER_EVAPORATING",
+  "ParticlesEvaporateWater": "PARTICLES_WATER_EVAPORATING",
+  "ParticlesDestroyBlockNoSound": "PARTICLES_AND_SOUND_BRUSH_BLOCK_COMPLETE",
+  "ParticlesKnockbackRoar": {
+    "particle": "minecraft:poof",
+    "speed": 0.25,
+    "count": 32
+  },
+  "ParticlesTeleportTrail": null,
+  "ParticlesPointCloud": null,
+  "ParticlesExplosion": {
+    "particle": "minecraft:explosion_emitter"
+  },
+  "ParticlesBlockExplosion": {
+    "particle": "minecraft:explosion"
+  },
+  "ParticlesVibrationSignal": null,
+  "ParticlesDripstoneDrip": "DRIPSTONE_DRIP",
+  "ParticlesFizzEffect": {
+    "event": "PARTICLES_SHOOT_WHITE_SMOKE",
+    "data": 1
+  },
+  "WaxOn": "PARTICLES_AND_SOUND_WAX_ON",
+  "WaxOff": "PARTICLES_WAX_OFF",
+  "Scrape": "PARTICLES_SCRAPE",
+  "ParticlesElectricSpark": {
+    "event": "PARTICLES_ELECTRIC_SPARK",
+    "data": -1
+  },
+  "ParticleTurtleEgg": {
+    "event": "PARTICLES_TURTLE_EGG_PLACEMENT",
+    "data": 15
+  },
+  "ParticlesSculkShriek": null,
+  "SculkCatalystBloom": null,
+  "SculkCharge": null,
+  "SculkChargePop": null,
+  "SonicExplosion": null,
+  "DustPlume": null,
+  "StartRaining": null,
+  "StartThunderstorm": null,
+  "StopRaining": null,
+  "StopThunderstorm": null,
+  "GlobalPause": null,
+  "SimTimeStep": null,
+  "SimTimeScale": null,
+  "ActivateBlock": "SOUND_DISPENSER_DISPENSE",
+  "CauldronExplode": {
+    "sound": "cauldron.explode"
+  },
+  "CauldronDyeArmor": {
+    "sound": "cauldron.dyearmor"
+  },
+  "CauldronCleanArmor": {
+    "sound": "cauldron.cleanarmor"
+  },
+  "CauldronFillPotion": {
+    "sound": "cauldron.fillpotion"
+  },
+  "CauldronTakePotion": {
+    "sound": "cauldron.takepotion"
+  },
+  "CauldronFillWater": {
+    "sound": "cauldron.fillwater"
+  },
+  "CauldronTakeWater": {
+    "sound": "cauldron.takewater"
+  },
+  "CauldronAddDye": {
+    "sound": "cauldron.adddye"
+  },
+  "CauldronCleanBanner": {
+    "sound": "cauldron.cleanbanner"
+  },
+  "CauldronFlush": {
+    "particle": "minecraft:entity_effect",
+    "offset_x": 0.1,
+    "offset_y": 0.1,
+    "offset_z": 0.1,
+    "speed": 0.5,
+    "count": 8,
+    "arguments": [
+      {
+        "type": "int",
+        "value": 1680816849
+      }
+    ]
+  },
+  "AgentSpawnEffect": {
+    "particle": "minecraft:smoke",
+    "offset_x": 0.25,
+    "offset_y": 0.1,
+    "offset_z": 0.25,
+    "count": 32
+  },
+  "CauldronFillLava": {
+    "sound": "bucket.empty_lava"
+  },
+  "CauldronTakeLava": {
+    "sound": "bucket.fill_lava"
+  },
+  "CauldronFillPowderSnow": {
+    "sound": "bucket.fill_powder_snow"
+  },
+  "CauldronTakePowderSnow": {
+    "sound": "bucket.empty_powder_snow"
+  },
+  "StartBlockCracking": null,
+  "StopBlockCracking": null,
+  "UpdateBlockCracking": null,
+  "ParticlesCrackBlockDown": {
+    "particle": "minecraft:block"
+  },
+  "ParticlesCrackBlockUp": {
+    "particle": "minecraft:block"
+  },
+  "ParticlesCrackBlockNorth": {
+    "particle": "minecraft:block"
+  },
+  "ParticlesCrackBlockSouth": {
+    "particle": "minecraft:block"
+  },
+  "ParticlesCrackBlockWest": {
+    "particle": "minecraft:block"
+  },
+  "ParticlesCrackBlockEast": {
+    "particle": "minecraft:block"
+  },
+  "ParticlesShootWhiteSmoke": "PARTICLES_SHOOT_WHITE_SMOKE",
+  "ParticlesBreezeWindExplosion": {
+    "particle": "minecraft:gust_emitter_large"
+  },
+  "ParticlesTrialSpawnerDetection": {
+    "event": "PARTICLES_TRIAL_SPAWNER_DETECT_PLAYER",
+    "data": 1
+  },
+  "ParticlesTrialSpawnerSpawning": "PARTICLES_TRIAL_SPAWNER_SPAWN",
+  "ParticlesTrialSpawnerEjecting": "ANIMATION_VAULT_EJECT_ITEM",
+  "ParticlesWindExplosion": {
+    "particle": "minecraft:gust_emitter_small"
+  },
+  "ParticlesTrialSpawnerDetectionCharged": null,
+  "ParticlesTrialSpawnerBecomeCharged": "PARTICLES_TRIAL_SPAWNER_BECOME_OMINOUS",
+  "AllPlayersSleeping": null,
+  "deprecated": null,
+  "SleepingPlayers": null,
+  "JumpPrevented": null,
+  "AnimationVaultActivate": "ANIMATION_VAULT_ACTIVATE",
+  "AnimationVaultDeactivate": "ANIMATION_VAULT_DEACTIVATE",
+  "AnimationVaultEjectItem": "ANIMATION_VAULT_EJECT_ITEM",
+  "AnimationSpawnCobweb": "ANIMATION_SPAWN_COBWEB",
+  "ParticleSmashAttackGroundDust": null,
+  "ParticleLegacyEvent": null
+}

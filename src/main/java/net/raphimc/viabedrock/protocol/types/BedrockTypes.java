@@ -27,6 +27,7 @@ import io.netty.util.AsciiString;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.Tag_Type;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;
@@ -68,6 +69,7 @@ public class BedrockTypes {
 
     public static final Type<Tag> NETWORK_TAG = new TagType();
     public static final Type<Tag> TAG_LE = new TagLEType();
+    public static final Type<Tag> COMPOUND_TAG_VALUE = new TagValueType(Tag_Type.Compound);
     public static final Type<BlockPosition> BLOCK_POSITION = new BlockPositionType();
     public static final Type<BlockPosition> POSITION_3I = new Position3iType();
     public static final Type<Position3f> POSITION_3F = new Position3fType();

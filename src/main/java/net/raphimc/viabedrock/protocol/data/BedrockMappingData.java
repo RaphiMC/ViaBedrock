@@ -29,7 +29,11 @@ import com.viaversion.nbt.tag.ListTag;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
+import com.viaversion.viaversion.api.minecraft.Particle;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
+import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.Types1_21;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
@@ -49,10 +53,7 @@ import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.NoteBlockInstrument;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.Puv_Legacy_LevelSoundEvent;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.SoundSource;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -112,15 +113,20 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> javaEntityAttributes;
     private Map<EntityTypes1_20_5, List<String>> javaEntityData;
 
-    // Effects
+    // Entity Effects
     private BiMap<String, Integer> javaEffects;
     private BiMap<String, Integer> bedrockEffects;
     private Map<String, String> bedrockToJavaEffects;
 
-    // Sounds
+    // World Effects
+    private BiMap<String, Integer> javaSounds;
+    private BiMap<String, Integer> javaParticles;
     private Map<String, String> bedrockBlockSounds;
     private Map<Puv_Legacy_LevelSoundEvent, Map<String, SoundDefinitions.ConfiguredSound>> bedrockLevelSoundEvents;
-    private Map<String, JavaSoundMapping> bedrockToJavaSounds;
+    private Map<String, JavaSound> bedrockToJavaSounds;
+    private Map<String, JavaParticle> bedrockToJavaParticles;
+    private Map<LevelEvent, LevelEventMapping> bedrockToJavaLevelEvents;
+    private Map<ParticleType, JavaParticle> bedrockToJavaLevelEventParticles;
 
     // Other stuff
     private BiMap<String, String> bedrockToJavaExperimentalFeatures;
@@ -498,14 +504,14 @@ public class BedrockMappingData extends MappingDataBase {
 
             final JsonObject bedrockToJavaEntityMappingsJson = this.readJson("custom/entity_mappings.json");
             this.bedrockToJavaEntities = new HashMap<>(bedrockToJavaEntityMappingsJson.size());
-            final Set<String> unmappedIdentifiers = new HashSet<>();
+            final Set<String> unmappedEntities = new HashSet<>();
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaEntityMappingsJson.entrySet()) {
                 final String bedrockIdentifier = entry.getKey();
                 if (!this.bedrockEntities.containsKey(bedrockIdentifier)) {
                     throw new RuntimeException("Unknown bedrock entity identifier: " + bedrockIdentifier);
                 }
                 if (entry.getValue().isJsonNull()) {
-                    unmappedIdentifiers.add(bedrockIdentifier);
+                    unmappedEntities.add(bedrockIdentifier);
                     continue;
                 }
                 final String javaIdentifier = entry.getValue().getAsString();
@@ -522,7 +528,7 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockToJavaEntities.put(bedrockIdentifier, javaEntityType);
             }
             for (String bedrockIdentifier : this.bedrockEntities.keySet()) {
-                if (!this.bedrockToJavaEntities.containsKey(bedrockIdentifier) && !unmappedIdentifiers.contains(bedrockIdentifier)) {
+                if (!this.bedrockToJavaEntities.containsKey(bedrockIdentifier) && !unmappedEntities.contains(bedrockIdentifier)) {
                     throw new RuntimeException("Missing bedrock -> java entity mapping for " + bedrockIdentifier);
                 }
             }
@@ -568,7 +574,7 @@ public class BedrockMappingData extends MappingDataBase {
             }
         }
 
-        { // Effects
+        { // Entity Effects
             final JsonArray javaEffectsJson = this.readJson("java/effects.json", JsonArray.class);
             this.javaEffects = HashBiMap.create(javaEffectsJson.size());
             for (int i = 0; i < javaEffectsJson.size(); i++) {
@@ -601,11 +607,17 @@ public class BedrockMappingData extends MappingDataBase {
             }
         }
 
-        { // Sounds
+        { // World Effects
             final JsonArray javaSoundsJson = javaViaMappingJson.get("sounds").getAsJsonArray();
-            final List<String> javaSounds = new ArrayList<>(javaSoundsJson.size());
+            this.javaSounds = HashBiMap.create(javaSoundsJson.size());
             for (int i = 0; i < javaSoundsJson.size(); i++) {
-                javaSounds.add(Key.namespaced(javaSoundsJson.get(i).getAsString()));
+                this.javaSounds.put(Key.namespaced(javaSoundsJson.get(i).getAsString()), i);
+            }
+
+            final JsonArray javaParticlesJson = javaViaMappingJson.get("particles").getAsJsonArray();
+            this.javaParticles = HashBiMap.create(javaParticlesJson.size());
+            for (int i = 0; i < javaParticlesJson.size(); i++) {
+                this.javaParticles.put(Key.namespaced(javaParticlesJson.get(i).getAsString()), i);
             }
 
             final JsonObject bedrockSoundsJson = this.readJson("bedrock/sounds.json");
@@ -682,29 +694,127 @@ public class BedrockMappingData extends MappingDataBase {
 
             final JsonObject bedrockToJavaSoundMappingsJson = this.readJson("custom/sound_mappings.json");
             this.bedrockToJavaSounds = new HashMap<>(bedrockToJavaSoundMappingsJson.size());
-            final Set<String> unmappedIdentifiers = new HashSet<>();
+            final Set<String> unmappedSounds = new HashSet<>();
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaSoundMappingsJson.entrySet()) {
                 final String bedrockIdentifier = entry.getKey();
                 if (!bedrockSounds.containsKey(bedrockIdentifier)) {
                     throw new IllegalStateException("Unknown bedrock sound: " + bedrockIdentifier);
                 }
                 if (entry.getValue().isJsonNull()) {
-                    unmappedIdentifiers.add(bedrockIdentifier);
+                    unmappedSounds.add(bedrockIdentifier);
                     continue;
                 }
                 final String javaIdentifier = entry.getValue().getAsString();
-                if (!javaSounds.contains(javaIdentifier)) {
+                if (!this.javaSounds.containsKey(javaIdentifier)) {
                     throw new IllegalStateException("Unknown java sound: " + javaIdentifier);
                 }
-                this.bedrockToJavaSounds.put(bedrockIdentifier, new JavaSoundMapping(javaSounds.indexOf(javaIdentifier), javaIdentifier, bedrockToJavaSoundCategories.get(bedrockSounds.get(bedrockIdentifier))));
+                final JavaSound javaSoundMapping = new JavaSound(this.javaSounds.get(javaIdentifier), javaIdentifier, bedrockToJavaSoundCategories.get(bedrockSounds.get(bedrockIdentifier)));
+                this.bedrockToJavaSounds.put(bedrockIdentifier, javaSoundMapping);
             }
             for (String bedrockIdentifier : bedrockSounds.keySet()) {
-                if (!this.bedrockToJavaSounds.containsKey(bedrockIdentifier) && !unmappedIdentifiers.contains(bedrockIdentifier)) {
+                if (!this.bedrockToJavaSounds.containsKey(bedrockIdentifier) && !unmappedSounds.contains(bedrockIdentifier)) {
                     throw new IllegalStateException("Missing bedrock -> java sound mapping for " + bedrockIdentifier);
                 }
             }
 
-            NoteBlockInstrument.values(); // Initialize
+            NoteBlockInstrument.values(); // Initialize to run sanity checks
+
+            final JsonArray bedrockParticlesJson = this.readJson("bedrock/particles.json", JsonArray.class);
+            final List<String> bedrockParticles = new ArrayList<>(bedrockParticlesJson.size());
+            for (int i = 0; i < bedrockParticlesJson.size(); i++) {
+                bedrockParticles.add(bedrockParticlesJson.get(i).getAsString());
+            }
+
+            final JsonObject bedrockToJavaParticleMappingsJson = this.readJson("custom/particle_mappings.json");
+            this.bedrockToJavaParticles = new HashMap<>(bedrockToJavaParticleMappingsJson.size());
+            final Set<String> unmappedParticles = new HashSet<>();
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaParticleMappingsJson.entrySet()) {
+                final String bedrockIdentifier = entry.getKey();
+                if (!bedrockParticles.contains(bedrockIdentifier)) {
+                    throw new IllegalStateException("Unknown bedrock particle: " + bedrockIdentifier);
+                }
+                if (entry.getValue().isJsonNull()) {
+                    unmappedParticles.add(bedrockIdentifier);
+                } else if (entry.getValue().isJsonObject()) {
+                    this.bedrockToJavaParticles.put(bedrockIdentifier, this.parseJavaParticle(entry.getValue().getAsJsonObject()));
+                } else {
+                    final String javaIdentifier = entry.getValue().getAsString();
+                    if (!this.javaParticles.containsKey(javaIdentifier)) {
+                        throw new IllegalStateException("Unknown java particle: " + javaIdentifier);
+                    }
+                    final JavaParticle javaParticleMapping = new JavaParticle(new Particle(this.javaParticles.get(javaIdentifier)), 0F, 0F, 0F, 0F, 0);
+                    this.bedrockToJavaParticles.put(bedrockIdentifier, javaParticleMapping);
+                }
+            }
+            for (String bedrockIdentifier : bedrockParticles) {
+                if (!this.bedrockToJavaParticles.containsKey(bedrockIdentifier) && !unmappedParticles.contains(bedrockIdentifier)) {
+                    throw new IllegalStateException("Missing bedrock -> java particle mapping for " + bedrockIdentifier);
+                }
+            }
+
+            final JsonObject bedrockToJavaLevelEventMappingsJson = this.readJson("custom/level_event_mappings.json");
+            this.bedrockToJavaLevelEvents = new EnumMap<>(LevelEvent.class);
+            final Set<LevelEvent> unmappedLevelEvents = EnumSet.noneOf(LevelEvent.class);
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaLevelEventMappingsJson.entrySet()) {
+                final LevelEvent levelEvent = LevelEvent.valueOf(entry.getKey());
+                if (entry.getValue().isJsonNull()) {
+                    unmappedLevelEvents.add(levelEvent);
+                } else if (entry.getValue().isJsonObject()) {
+                    final JsonObject mapping = entry.getValue().getAsJsonObject();
+                    if (mapping.has("event")) {
+                        final Integer data = mapping.has("data") ? mapping.get("data").getAsInt() : null;
+                        final JavaLevelEvent javaLevelEvent = new JavaLevelEvent(net.raphimc.viabedrock.protocol.data.enums.java.LevelEvent.valueOf(mapping.get("event").getAsString()), data);
+                        this.bedrockToJavaLevelEvents.put(levelEvent, javaLevelEvent);
+                    } else if (mapping.has("sound")) {
+                        final String bedrockSound = mapping.get("sound").getAsString();
+                        if (!this.bedrockToJavaSounds.containsKey(bedrockSound)) {
+                            throw new IllegalStateException("Unknown bedrock sound: " + bedrockSound);
+                        }
+                        if (mapping.has("event")) {
+                            final Integer data = mapping.has("data") ? mapping.get("data").getAsInt() : null;
+                            final JavaLevelEvent javaLevelEvent = new JavaLevelEvent(net.raphimc.viabedrock.protocol.data.enums.java.LevelEvent.valueOf(mapping.get("event").getAsString()), data);
+                            this.bedrockToJavaLevelEvents.put(levelEvent, new JavaSoundLevelEvent(this.bedrockToJavaSounds.get(bedrockSound), javaLevelEvent));
+                        } else {
+                            this.bedrockToJavaLevelEvents.put(levelEvent, this.bedrockToJavaSounds.get(bedrockSound));
+                        }
+                    } else if (mapping.has("particle")) {
+                        this.bedrockToJavaLevelEvents.put(levelEvent, this.parseJavaParticle(mapping));
+                    } else {
+                        throw new IllegalStateException("Unknown level event mapping: " + mapping);
+                    }
+                } else {
+                    this.bedrockToJavaLevelEvents.put(levelEvent, new JavaLevelEvent(net.raphimc.viabedrock.protocol.data.enums.java.LevelEvent.valueOf(entry.getValue().getAsString()), null));
+                }
+            }
+            for (LevelEvent levelEvent : LevelEvent.values()) {
+                if (!this.bedrockToJavaLevelEvents.containsKey(levelEvent) && !unmappedLevelEvents.contains(levelEvent)) {
+                    throw new RuntimeException("Missing bedrock -> java level event mapping for " + levelEvent.name());
+                }
+            }
+
+            final JsonObject bedrockToJavaLevelEventParticleMappingsJson = this.readJson("custom/level_event_particle_mappings.json");
+            this.bedrockToJavaLevelEventParticles = new EnumMap<>(ParticleType.class);
+            final Set<ParticleType> unmappedParticleTypes = EnumSet.noneOf(ParticleType.class);
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaLevelEventParticleMappingsJson.entrySet()) {
+                final ParticleType particleType = ParticleType.valueOf(entry.getKey());
+                if (entry.getValue().isJsonNull()) {
+                    unmappedParticleTypes.add(particleType);
+                } else if (entry.getValue().isJsonObject()) {
+                    this.bedrockToJavaLevelEventParticles.put(particleType, this.parseJavaParticle(entry.getValue().getAsJsonObject()));
+                } else {
+                    final String javaIdentifier = entry.getValue().getAsString();
+                    if (!this.javaParticles.containsKey(javaIdentifier)) {
+                        throw new IllegalStateException("Unknown java particle: " + javaIdentifier);
+                    }
+                    final JavaParticle javaParticleMapping = new JavaParticle(new Particle(this.javaParticles.get(javaIdentifier)), 0F, 0F, 0F, 0F, 0);
+                    this.bedrockToJavaLevelEventParticles.put(particleType, javaParticleMapping);
+                }
+            }
+            for (ParticleType particleType : ParticleType.values()) {
+                if (!this.bedrockToJavaLevelEventParticles.containsKey(particleType) && !unmappedParticleTypes.contains(particleType)) {
+                    throw new RuntimeException("Missing bedrock -> java level event particle mapping for " + particleType.name());
+                }
+            }
         }
 
         { // Other stuff
@@ -880,6 +990,14 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaEffects;
     }
 
+    public BiMap<String, Integer> getJavaSounds() {
+        return this.javaSounds;
+    }
+
+    public BiMap<String, Integer> getJavaParticles() {
+        return this.javaParticles;
+    }
+
     public Map<String, String> getBedrockBlockSounds() {
         return this.bedrockBlockSounds;
     }
@@ -888,8 +1006,20 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockLevelSoundEvents;
     }
 
-    public Map<String, JavaSoundMapping> getBedrockToJavaSounds() {
+    public Map<String, JavaSound> getBedrockToJavaSounds() {
         return this.bedrockToJavaSounds;
+    }
+
+    public Map<String, JavaParticle> getBedrockToJavaParticles() {
+        return this.bedrockToJavaParticles;
+    }
+
+    public Map<LevelEvent, LevelEventMapping> getBedrockToJavaLevelEvents() {
+        return this.bedrockToJavaLevelEvents;
+    }
+
+    public Map<ParticleType, JavaParticle> getBedrockToJavaLevelEventParticles() {
+        return this.bedrockToJavaLevelEventParticles;
     }
 
     public BiMap<String, String> getBedrockToJavaExperimentalFeatures() {
@@ -957,6 +1087,46 @@ public class BedrockMappingData extends MappingDataBase {
         }
     }
 
+    private JavaParticle parseJavaParticle(final JsonObject obj) {
+        final String javaIdentifier = obj.get("particle").getAsString();
+        if (!this.javaParticles.containsKey(javaIdentifier)) {
+            throw new IllegalStateException("Unknown java particle: " + javaIdentifier);
+        }
+        final float offsetX = obj.has("offset_x") ? obj.get("offset_x").getAsFloat() : 0F;
+        final float offsetY = obj.has("offset_y") ? obj.get("offset_y").getAsFloat() : 0F;
+        final float offsetZ = obj.has("offset_z") ? obj.get("offset_z").getAsFloat() : 0F;
+        final float speed = obj.has("speed") ? obj.get("speed").getAsFloat() : 0F;
+        final int count = obj.has("count") ? obj.get("count").getAsInt() : 0;
+        final Particle particle = new Particle(this.javaParticles.get(javaIdentifier));
+        if (obj.has("arguments")) {
+            for (JsonElement argument : obj.get("arguments").getAsJsonArray()) {
+                final JsonObject argumentObject = argument.getAsJsonObject();
+                final String type = argumentObject.get("type").getAsString();
+                switch (type) {
+                    case "var_int" -> particle.add(Types.VAR_INT, argumentObject.get("value").getAsInt());
+                    case "float" -> particle.add(Types.FLOAT, argumentObject.get("value").getAsFloat());
+                    case "int" -> particle.add(Types.INT, argumentObject.get("value").getAsInt());
+                    case "block_state" -> {
+                        final BlockState javaBlockState = BlockState.fromString(argumentObject.get("value").getAsString());
+                        if (!this.javaBlockStates.containsKey(javaBlockState)) {
+                            throw new IllegalStateException("Unknown java block state: " + javaBlockState.toBlockStateString());
+                        }
+                        particle.add(Types.VAR_INT, this.javaBlockStates.get(javaBlockState));
+                    }
+                    case "item_stack" -> {
+                        final String identifier = argumentObject.get("value").getAsString();
+                        if (!this.javaItems.containsKey(identifier)) {
+                            throw new IllegalStateException("Unknown java item: " + identifier);
+                        }
+                        particle.add(Types1_21.ITEM, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
+                    }
+                    default -> throw new IllegalStateException("Unknown particle argument type: " + type);
+                }
+            }
+        }
+        return new JavaParticle(particle, offsetX, offsetY, offsetZ, speed, count);
+    }
+
     private void buildLegacyBlockStateMappings() {
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("assets/viabedrock/data/bedrock/block_id_meta_to_1_12_0_nbt.bin")) {
             if (inputStream == null) {
@@ -1012,7 +1182,28 @@ public class BedrockMappingData extends MappingDataBase {
         return new JavaItemMapping(this.javaItems.get(javaIdentifier), javaIdentifier, javaDisplayName, javaTag);
     }
 
-    public record JavaSoundMapping(int id, String identifier, SoundSource category) {
+    public sealed interface LevelEventMapping permits JavaSound, JavaParticle, JavaLevelEvent, JavaSoundLevelEvent {
+    }
+
+    public record JavaSound(int id, String identifier, SoundSource category) implements LevelEventMapping {
+    }
+
+    public record JavaParticle(Particle particle, float offsetX, float offsetY, float offsetZ, float speed, int count) implements LevelEventMapping {
+
+        public JavaParticle withParticle(final Particle particle) {
+            return new JavaParticle(particle, this.offsetX, this.offsetY, this.offsetZ, this.speed, this.count);
+        }
+
+        public JavaParticle withCount(final int count) {
+            return new JavaParticle(this.particle, this.offsetX, this.offsetY, this.offsetZ, this.speed, count);
+        }
+
+    }
+
+    public record JavaLevelEvent(net.raphimc.viabedrock.protocol.data.enums.java.LevelEvent levelEvent, Integer data) implements LevelEventMapping {
+    }
+
+    public record JavaSoundLevelEvent(JavaSound sound, JavaLevelEvent levelEvent) implements LevelEventMapping {
     }
 
     public record JavaItemMapping(int id, String identifier, String displayName, CompoundTag overrideTag) {

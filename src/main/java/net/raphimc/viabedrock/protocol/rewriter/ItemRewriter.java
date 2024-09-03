@@ -98,7 +98,9 @@ public class ItemRewriter extends StoredObject {
         if (blockItemMappings != null) {
             BlockState blockState = this.user().get(BlockStateRewriter.class).blockState(bedrockItem.blockRuntimeId());
             if (!blockItemMappings.containsKey(blockState)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockItem.blockRuntimeId() + " for item: " + identifier);
+                if (bedrockItem.blockRuntimeId() != 0) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockItem.blockRuntimeId() + " for item: " + identifier);
+                }
                 blockState = blockItemMappings.keySet().iterator().next();
             }
             javaItemMapping = blockItemMappings.get(blockState);
