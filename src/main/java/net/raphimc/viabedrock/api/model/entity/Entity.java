@@ -58,6 +58,9 @@ public class Entity {
         this.age++;
     }
 
+    public void remove() {
+    }
+
     public float eyeOffset() {
         return 0F;
     }

@@ -85,6 +85,12 @@ public class PlayerEntity extends LivingEntity {
     }
 
     @Override
+    public void remove() {
+        super.remove();
+        this.deleteTeam();
+    }
+
+    @Override
     public float eyeOffset() {
         return 1.62F;
     }

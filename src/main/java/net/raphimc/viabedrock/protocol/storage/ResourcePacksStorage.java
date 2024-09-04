@@ -47,6 +47,7 @@ public class ResourcePacksStorage extends StoredObject {
 
     private boolean javaClientWaitingForPack;
     private boolean loadedOnJavaClient;
+    private final Map<String, Object> converterData = new HashMap<>();
 
     private TextDefinitions texts;
     private BlockDefinitions blocks;
@@ -54,6 +55,8 @@ public class ResourcePacksStorage extends StoredObject {
     private TextureDefinitions textures;
     private SoundDefinitions sounds;
     private ParticleDefinitions particles;
+    private EntityDefinitions entities;
+    private ModelDefinitions models;
 
     public ResourcePacksStorage(final UserConnection user) {
         super(user);
@@ -149,6 +152,8 @@ public class ResourcePacksStorage extends StoredObject {
         this.textures = new TextureDefinitions(this);
         this.sounds = new SoundDefinitions(this);
         this.particles = new ParticleDefinitions(this);
+        this.entities = new EntityDefinitions(this);
+        this.models = new ModelDefinitions(this);
     }
 
     public List<ResourcePack> getPackStackTopToBottom() {
@@ -174,6 +179,10 @@ public class ResourcePacksStorage extends StoredObject {
     public void setLoadedOnJavaClient() {
         this.javaClientWaitingForPack = false;
         this.loadedOnJavaClient = true;
+    }
+
+    public Map<String, Object> getConverterData() {
+        return this.converterData;
     }
 
     public boolean hasFinishedLoading() {
@@ -202,6 +211,14 @@ public class ResourcePacksStorage extends StoredObject {
 
     public ParticleDefinitions getParticles() {
         return this.particles;
+    }
+
+    public EntityDefinitions getEntities() {
+        return this.entities;
+    }
+
+    public ModelDefinitions getModels() {
+        return this.models;
     }
 
 }

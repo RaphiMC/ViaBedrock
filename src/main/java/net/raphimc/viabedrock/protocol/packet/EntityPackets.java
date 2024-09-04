@@ -30,8 +30,10 @@ import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPacke
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
+import net.raphimc.viabedrock.api.model.entity.CustomEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.entity.LivingEntity;
+import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.RegistryUtil;
@@ -46,6 +48,7 @@ import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.logging.Level;
@@ -60,7 +63,7 @@ public class EntityPackets {
 
             final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
-            final String type = wrapper.read(BedrockTypes.STRING); // type
+            final String type = Key.namespaced(wrapper.read(BedrockTypes.STRING)); // type
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
@@ -77,22 +80,31 @@ public class EntityPackets {
             final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
             final EntityLink[] entityLinks = wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
 
-            // TODO: Handle remaining fields
-
-            final EntityTypes1_20_5 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(type));
-            if (javaEntityType == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity type: " + type);
-                wrapper.cancel();
-                return;
+            final Entity entity;
+            final EntityTypes1_20_5 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(type);
+            if (javaEntityType != null) {
+                entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, javaEntityType);
+            } else {
+                final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
+                final EntityDefinitions.EntityDefinition entityDefinition = resourcePacksStorage.getEntities().get(type);
+                if (entityDefinition != null) {
+                    if (resourcePacksStorage.isLoadedOnJavaClient() && resourcePacksStorage.getConverterData().containsKey("ce_" + entityDefinition.identifier() + "_default")) {
+                        entity = new CustomEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, entityTracker.getNextJavaEntityId(), entityDefinition);
+                    } else {
+                        entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, EntityTypes1_20_5.PIG);
+                    }
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity type: " + type);
+                    wrapper.cancel();
+                    return;
+                }
             }
-
-            final Entity entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, javaEntityType);
             entity.setPosition(position);
             entity.setRotation(rotation);
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.UUID, entity.javaUuid()); // uuid
-            wrapper.write(Types.VAR_INT, javaEntityType.getId()); // type id
+            wrapper.write(Types.VAR_INT, entity.type().getId()); // type id
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y()); // y
             wrapper.write(Types.DOUBLE, (double) position.z()); // z

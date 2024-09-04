@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.rewriter;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
+import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomEntityResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.GlyphSheetResourceRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
@@ -31,6 +32,7 @@ public class ResourcePackRewriter {
 
         GlyphSheetResourceRewriter.apply(resourcePacksStorage, javaContent);
         CustomItemTextureResourceRewriter.apply(resourcePacksStorage, javaContent);
+        CustomEntityResourceRewriter.apply(resourcePacksStorage, javaContent);
 
         javaContent.putJson("pack.mcmeta", createPackManifest());
 

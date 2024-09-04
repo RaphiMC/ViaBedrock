@@ -35,6 +35,14 @@ repositories {
         name = "Minecraft Libraries"
         url "https://libraries.minecraft.net"
     }
+    maven {
+        name = "Jitpack"
+        url "https://jitpack.io"
+
+        content {
+            includeGroup "com.github.Oryxel"
+        }
+    }
 }
 
 dependencies {
@@ -63,6 +71,9 @@ dependencies {
         exclude group: "com.google.guava"
     }
     api "org.lz4:lz4-pure-java:1.8.0"
+    api("com.github.Oryxel:CubeConverter:b382f23e8a") {
+        transitive = false
+    }
 }
 
 sourceSets {

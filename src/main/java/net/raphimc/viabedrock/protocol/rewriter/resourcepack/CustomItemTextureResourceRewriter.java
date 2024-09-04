@@ -30,13 +30,15 @@ import java.util.TreeMap;
 
 public class CustomItemTextureResourceRewriter {
 
+    public static final String ITEM = "paper";
+
     public static void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent) {
         final Map<Integer, JsonObject> overridesMap = new TreeMap<>();
 
         for (Map.Entry<String, TextureDefinitions.ItemTextureDefinition> entry : resourcePacksStorage.getTextures().itemTextures().entrySet()) {
             for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
                 final ResourcePack.Content bedrockContent = pack.content();
-                final BufferedImage texture = bedrockContent.getImageLenient(entry.getValue().texturePath());
+                final BufferedImage texture = bedrockContent.getShortnameImage(entry.getValue().texturePath());
                 if (texture == null) continue;
 
                 final String javaTexturePath = StringUtil.makeIdentifierValueSafe(entry.getValue().texturePath().replace("textures/items/", ""));
@@ -65,13 +67,13 @@ public class CustomItemTextureResourceRewriter {
             final JsonArray overrides = new JsonArray();
             overridesMap.values().forEach(overrides::add);
 
-            final JsonObject paper = new JsonObject();
-            paper.addProperty("parent", "minecraft:item/generated");
-            paper.add("overrides", overrides);
+            final JsonObject itemDefinition = new JsonObject();
+            itemDefinition.addProperty("parent", "minecraft:item/generated");
+            itemDefinition.add("overrides", overrides);
             final JsonObject layer0 = new JsonObject();
-            layer0.addProperty("layer0", "minecraft:item/paper");
-            paper.add("textures", layer0);
-            javaContent.putJson("assets/minecraft/models/item/paper.json", paper);
+            layer0.addProperty("layer0", "minecraft:item/" + ITEM);
+            itemDefinition.add("textures", layer0);
+            javaContent.putJson("assets/minecraft/models/item/" + ITEM + ".json", itemDefinition);
         }
     }
 

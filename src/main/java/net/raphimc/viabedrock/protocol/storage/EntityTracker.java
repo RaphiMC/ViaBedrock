@@ -78,10 +78,7 @@ public class EntityTracker extends StoredObject {
             final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21.REMOVE_ENTITIES, this.user());
             removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
-
-            if (updateTeam && prevEntity instanceof PlayerEntity player) {
-                player.deleteTeam();
-            }
+            prevEntity.remove();
         }
 
         if (updateTeam && entity instanceof PlayerEntity player) {
@@ -98,10 +95,7 @@ public class EntityTracker extends StoredObject {
 
         this.runtimeIdToUniqueId.remove(entity.runtimeId());
         this.entities.remove(entity.uniqueId());
-
-        if (entity instanceof PlayerEntity player) {
-            player.deleteTeam();
-        }
+        entity.remove();
     }
 
     public void spawnItemFrame(final BlockPosition position, final BlockState blockState) {

@@ -434,7 +434,7 @@ public class ResourcePack {
             return this.putString(path, GsonUtil.getGson().toJson(json));
         }
 
-        public BufferedImage getImageLenient(final String path) {
+        public BufferedImage getShortnameImage(final String path) {
             if (this.contains(path)) {
                 return this.getImage(path);
             } else if (this.contains(path + ".png")) {
