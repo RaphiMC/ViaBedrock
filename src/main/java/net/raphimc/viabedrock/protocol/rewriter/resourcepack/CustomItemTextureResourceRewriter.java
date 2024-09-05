@@ -58,7 +58,9 @@ public class CustomItemTextureResourceRewriter {
                 final JsonObject predicate = new JsonObject();
                 predicate.addProperty("custom_model_data", javaModelData);
                 override.add("predicate", predicate);
-                overridesMap.put(javaModelData, override);
+                if (overridesMap.put(javaModelData, override) != null) {
+                    throw new IllegalStateException("Duplicate custom model data: " + override);
+                }
                 break;
             }
         }

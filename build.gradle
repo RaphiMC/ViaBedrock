@@ -75,7 +75,7 @@ dependencies {
         exclude group: "com.google.guava"
     }
     api "org.lz4:lz4-pure-java:1.8.0"
-    api("com.github.Oryxel:CubeConverter:b382f23e8a") {
+    api("com.github.Oryxel:CubeConverter:126b3424a6") {
         transitive = false
     }
 }

@@ -69,10 +69,7 @@ public class CustomEntity extends Entity {
     public void setRotation(final Position3f rotation) {
         super.setRotation(rotation);
 
-        if (!this.spawned) {
-            this.spawned = true;
-            this.spawn();
-        } else {
+        if (this.spawned) {
             this.partEntities.forEach(ItemDisplayEntity::updatePositionAndRotation);
         }
     }
@@ -106,6 +103,7 @@ public class CustomEntity extends Entity {
 
             final float scale = (float) resourcePacksStorage.getConverterData().get("ce_" + this.entityDefinition.identifier() + "_default_" + i + "_scale");
             javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("SCALE"), Types1_21.ENTITY_DATA_TYPES.vector3FType, new Vector3f(scale, scale, scale)));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("TRANSLATION"), Types1_21.ENTITY_DATA_TYPES.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
 
             final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets1_21.ADD_ENTITY, user);
             addEntity.write(Types.VAR_INT, partEntity.javaId()); // entity id

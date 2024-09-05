@@ -17,10 +17,10 @@
  */
 package net.raphimc.viabedrock.api.model.resourcepack;
 
-import com.viaversion.viaversion.libs.gson.JsonElement;
-import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import org.oryxel.cube.model.bedrock.BedrockGeometry;
+import org.oryxel.cube.parser.bedrock.BedrockGeometrySerializer;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,18 +29,15 @@ import java.util.logging.Level;
 
 public class ModelDefinitions {
 
-    private final Map<String, ModelDefinition> entityModels = new HashMap<>();
+    private final Map<String, BedrockGeometry> entityModels = new HashMap<>();
 
     public ModelDefinitions(final ResourcePacksStorage resourcePacksStorage) {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
             for (String modelPath : pack.content().getFilesDeep("models/", ".json")) {
                 try {
-                    for (JsonElement geometryElement : pack.content().getJson(modelPath).getAsJsonArray("minecraft:geometry")) {
-                        final JsonObject description = geometryElement.getAsJsonObject().getAsJsonObject("description");
-                        final String name = description.get("identifier").getAsString();
-                        final ModelDefinition modelDefinition = new ModelDefinition(name, pack.content().getString(modelPath));
+                    for (BedrockGeometry bedrockGeometry : BedrockGeometrySerializer.deserialize(pack.content().getString(modelPath))) {
                         if (modelPath.startsWith("models/entity/")) {
-                            this.entityModels.put(name, modelDefinition);
+                            this.entityModels.put(bedrockGeometry.identifier(), bedrockGeometry);
                         }
                     }
                 } catch (Throwable e) {
@@ -50,32 +47,12 @@ public class ModelDefinitions {
         }
     }
 
-    public ModelDefinition getEntityModel(final String name) {
+    public BedrockGeometry getEntityModel(final String name) {
         return this.entityModels.get(name);
     }
 
-    public Map<String, ModelDefinition> entityModels() {
+    public Map<String, BedrockGeometry> entityModels() {
         return Collections.unmodifiableMap(this.entityModels);
-    }
-
-    public static class ModelDefinition {
-
-        private final String name;
-        private final String jsonForCubeConverter;
-
-        public ModelDefinition(final String name, final String jsonForCubeConverter) {
-            this.name = name;
-            this.jsonForCubeConverter = jsonForCubeConverter;
-        }
-
-        public String name() {
-            return this.name;
-        }
-
-        public String jsonForCubeConverter() {
-            return this.jsonForCubeConverter;
-        }
-
     }
 
 }

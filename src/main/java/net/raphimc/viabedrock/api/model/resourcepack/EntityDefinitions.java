@@ -17,11 +17,11 @@
  */
 package net.raphimc.viabedrock.api.model.resourcepack;
 
-import com.viaversion.viaversion.libs.gson.JsonElement;
-import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import org.oryxel.cube.model.bedrock.BedrockEntityData;
+import org.oryxel.cube.parser.bedrock.BedrockEntitySerializer;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,22 +37,9 @@ public class EntityDefinitions {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
             for (String entityPath : pack.content().getFilesDeep("entity/", ".json")) {
                 try {
-                    final JsonObject description = pack.content().getJson(entityPath).getAsJsonObject("minecraft:client_entity").getAsJsonObject("description");
-                    final String identifier = Key.namespaced(description.get("identifier").getAsString());
-                    final EntityDefinition entityDefinition = new EntityDefinition(identifier, pack.content().getString(entityPath));
-                    if (description.has("geometry")) {
-                        final JsonObject geometry = description.getAsJsonObject("geometry");
-                        for (Map.Entry<String, JsonElement> entry : geometry.entrySet()) {
-                            entityDefinition.models.put(entry.getKey(), entry.getValue().getAsString());
-                        }
-                    }
-                    if (description.has("textures")) {
-                        final JsonObject textures = description.getAsJsonObject("textures");
-                        for (Map.Entry<String, JsonElement> entry : textures.entrySet()) {
-                            entityDefinition.textures.put(entry.getKey(), entry.getValue().getAsString());
-                        }
-                    }
-                    this.entities.put(identifier, entityDefinition);
+                    final BedrockEntityData bedrockEntityData = BedrockEntitySerializer.deserialize(pack.content().getString(entityPath));
+                    final String identifier = Key.namespaced(bedrockEntityData.identifier());
+                    this.entities.put(identifier, new EntityDefinition(identifier, bedrockEntityData));
                 } catch (Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse entity definition " + entityPath + " in pack " + pack.packId(), e);
                 }
@@ -71,29 +58,19 @@ public class EntityDefinitions {
     public static class EntityDefinition {
 
         private final String identifier;
-        private final Map<String, String> models = new HashMap<>();
-        private final Map<String, String> textures = new HashMap<>();
-        private final String jsonForCubeConverter;
+        private final BedrockEntityData entityData;
 
-        public EntityDefinition(final String identifier, final String jsonForCubeConverter) {
+        public EntityDefinition(final String identifier, final BedrockEntityData entityData) {
             this.identifier = identifier;
-            this.jsonForCubeConverter = jsonForCubeConverter;
+            this.entityData = entityData;
         }
 
         public String identifier() {
             return this.identifier;
         }
 
-        public Map<String, String> models() {
-            return Collections.unmodifiableMap(this.models);
-        }
-
-        public Map<String, String> textures() {
-            return Collections.unmodifiableMap(this.textures);
-        }
-
-        public String jsonForCubeConverter() {
-            return this.jsonForCubeConverter;
+        public BedrockEntityData entityData() {
+            return this.entityData;
         }
 
     }
