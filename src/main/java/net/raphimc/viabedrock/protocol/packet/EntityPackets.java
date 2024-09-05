@@ -90,6 +90,7 @@ public class EntityPackets {
                 if (entityDefinition != null) {
                     if (resourcePacksStorage.isLoadedOnJavaClient() && resourcePacksStorage.getConverterData().containsKey("ce_" + entityDefinition.identifier() + "_default")) {
                         entity = new CustomEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, entityTracker.getNextJavaEntityId(), entityDefinition);
+                        entityTracker.addEntity(entity);
                     } else {
                         entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, EntityTypes1_20_5.PIG);
                     }
