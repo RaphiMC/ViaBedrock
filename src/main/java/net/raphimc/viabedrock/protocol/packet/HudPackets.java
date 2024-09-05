@@ -28,19 +28,14 @@ import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockCompone
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardEntry;
 import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardObjective;
-import net.raphimc.viabedrock.api.util.BitSets;
-import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.api.util.StringUtil;
-import net.raphimc.viabedrock.api.util.TextUtil;
+import net.raphimc.viabedrock.api.util.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
-import net.raphimc.viabedrock.protocol.data.enums.java.CustomChatCompletionsAction;
-import net.raphimc.viabedrock.protocol.data.enums.java.ObjectiveCriteriaRenderType;
-import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
-import net.raphimc.viabedrock.protocol.data.enums.java.ScoreboardObjectiveAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.*;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.*;
@@ -346,6 +341,68 @@ public class HudPackets {
                 map(BedrockTypes.STRING, Types.STRING); // objective name
                 create(Types.BYTE, (byte) ScoreboardObjectiveAction.REMOVE.ordinal()); // mode
                 handler(wrapper -> wrapper.user().get(ScoreboardTracker.class).removeObjective(wrapper.get(Types.STRING, 0)));
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.BOSS_EVENT, ClientboundPackets1_21.BOSS_EVENT, wrapper -> {
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            final long bossUniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // boss unique entity id
+            final int rawUpdateType = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // update type
+            final BossEventUpdateType updateType = BossEventUpdateType.getByValue(rawUpdateType);
+            if (updateType == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown BossEventUpdateType: " + rawUpdateType);
+                wrapper.cancel();
+                return;
+            }
+
+            final Entity entity = entityTracker.getEntityByUid(bossUniqueEntityId);
+            if (entity == null) {
+                wrapper.cancel();
+                return;
+            }
+            wrapper.write(Types.UUID, entity.javaUuid()); // uuid
+            switch (updateType) {
+                case Add -> {
+                    if (!entity.hasBossBar()) {
+                        entity.setHasBossBar(true);
+                        wrapper.write(Types.VAR_INT, BossEventOperationType.ADD.ordinal()); // operation
+                        wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(wrapper.read(BedrockTypes.STRING)))); // name
+                        wrapper.write(Types.FLOAT, wrapper.read(BedrockTypes.FLOAT_LE)); // progress
+                        wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // darken screen | Does nothing in Bedrock Edition
+                        wrapper.write(Types.VAR_INT, MathUtil.getOrFallback(wrapper.read(BedrockTypes.UNSIGNED_VAR_INT), 0, 5, 0)); // color
+                        wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // overlay | Does nothing in Bedrock Edition
+                        wrapper.write(Types.VAR_INT, 0); // overlay
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) 0); // flags
+                    } else {
+                        wrapper.cancel();
+                    }
+                }
+                case Remove -> {
+                    entity.setHasBossBar(false);
+                    wrapper.write(Types.VAR_INT, BossEventOperationType.REMOVE.ordinal()); // operation
+                }
+                case Update_Percent -> {
+                    wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_PROGRESS.ordinal()); // operation
+                    wrapper.write(Types.FLOAT, wrapper.read(BedrockTypes.FLOAT_LE)); // progress
+                }
+                case Update_Name -> {
+                    wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_NAME.ordinal()); // operation
+                    wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(wrapper.read(BedrockTypes.STRING)))); // name
+                }
+                case Update_Properties -> {
+                    wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_STYLE.ordinal()); // operation
+                    wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // darken screen | Does nothing in Bedrock Edition
+                    wrapper.write(Types.VAR_INT, MathUtil.getOrFallback(wrapper.read(BedrockTypes.UNSIGNED_VAR_INT), 0, 5, 0)); // color
+                    wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // overlay | Does nothing in Bedrock Edition
+                    wrapper.write(Types.VAR_INT, 0); // overlay
+                }
+                case Update_Style -> {
+                    wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_STYLE.ordinal()); // operation
+                    wrapper.write(Types.VAR_INT, MathUtil.getOrFallback(wrapper.read(BedrockTypes.UNSIGNED_VAR_INT), 0, 5, 0)); // color
+                    wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // overlay | Does nothing in Bedrock Edition
+                    wrapper.write(Types.VAR_INT, 0); // overlay
+                }
+                case PlayerAdded, PlayerRemoved, Query -> wrapper.cancel();
+                default -> throw new IllegalStateException("Unhandled BossEventUpdateType: " + updateType);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.DEATH_INFO, null, wrapper -> {

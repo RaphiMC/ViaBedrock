@@ -162,9 +162,7 @@ public class EntityTracker extends StoredObject {
 
     public void prepareForRespawn() {
         for (Entity entity : this.entities.values()) {
-            if (entity instanceof PlayerEntity player) {
-                player.deleteTeam();
-            }
+            entity.remove();
         }
     }
 

@@ -77,17 +77,14 @@ public class PlayerEntity extends LivingEntity {
         setPlayerTeam.send(BedrockProtocol.class);
     }
 
-    public final void deleteTeam() {
+    @Override
+    public void remove() {
+        super.remove();
+
         final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21.SET_PLAYER_TEAM, this.user);
         setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
         setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.REMOVE.ordinal()); // mode
         setPlayerTeam.send(BedrockProtocol.class);
-    }
-
-    @Override
-    public void remove() {
-        super.remove();
-        this.deleteTeam();
     }
 
     @Override

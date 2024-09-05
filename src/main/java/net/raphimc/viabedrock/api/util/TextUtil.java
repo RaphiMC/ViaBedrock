@@ -25,7 +25,7 @@ import com.viaversion.viaversion.libs.mcstructs.text.serializer.LegacyStringDese
 import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -81,7 +81,7 @@ public class TextUtil {
      */
     private static String appendFormattingCodesAfterColorCode(final String s) {
         final char[] chars = s.toCharArray();
-        final Set<BedrockTextFormatting> styles = new HashSet<>();
+        final Set<BedrockTextFormatting> styles = EnumSet.noneOf(BedrockTextFormatting.class);
         final StringBuilder out = new StringBuilder();
 
         for (int i = 0; i < chars.length; i++) {

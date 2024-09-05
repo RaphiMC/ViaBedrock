@@ -19,7 +19,11 @@ package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.java.BossEventOperationType;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
 import java.util.UUID;
@@ -44,6 +48,7 @@ public class Entity {
     protected boolean onGround;
     protected String name;
     protected int age;
+    protected boolean hasBossBar;
 
     public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid, final EntityTypes1_20_5 type) {
         this.user = user;
@@ -59,6 +64,13 @@ public class Entity {
     }
 
     public void remove() {
+        if (this.hasBossBar) {
+            this.hasBossBar = false;
+            final PacketWrapper bossEvent = PacketWrapper.create(ClientboundPackets1_21.BOSS_EVENT, this.user);
+            bossEvent.write(Types.UUID, this.javaUuid()); // uuid
+            bossEvent.write(Types.VAR_INT, BossEventOperationType.REMOVE.ordinal()); // operation
+            bossEvent.send(BedrockProtocol.class);
+        }
     }
 
     public float eyeOffset() {
@@ -119,6 +131,14 @@ public class Entity {
 
     public int age() {
         return this.age;
+    }
+
+    public boolean hasBossBar() {
+        return this.hasBossBar;
+    }
+
+    public void setHasBossBar(final boolean hasBossBar) {
+        this.hasBossBar = hasBossBar;
     }
 
     public final int getJavaEntityDataIndex(final String fieldName) {

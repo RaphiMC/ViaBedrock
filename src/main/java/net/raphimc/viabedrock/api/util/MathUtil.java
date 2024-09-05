@@ -47,6 +47,10 @@ public class MathUtil {
         }
     }
 
+    public static int getOrFallback(final int value, final int min, final int max, final int fallback) {
+        return value < min || value > max ? fallback : value;
+    }
+
     public static byte float2Byte(final float f) {
         return (byte) (f * 256F / 360F);
     }

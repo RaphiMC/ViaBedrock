@@ -40,7 +40,7 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 - [x] Form GUIs
 - [x] Scoreboard
 - [x] Titles
-- [ ] Bossbar
+- [x] Bossbar
 - [x] Player list
 - [x] Command suggestions
 - [x] Sounds (No mob ambient sounds yet)
