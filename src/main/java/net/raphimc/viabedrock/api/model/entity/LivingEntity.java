@@ -36,8 +36,8 @@ import java.util.logging.Level;
 
 public class LivingEntity extends Entity {
 
-    protected Map<String, EntityAttribute> attributes = new HashMap<>();
-    protected Map<String, EntityEffect> effects = new HashMap<>();
+    protected final Map<String, EntityAttribute> attributes = new HashMap<>();
+    protected final Map<String, EntityEffect> effects = new HashMap<>();
 
     public LivingEntity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid, final EntityTypes1_20_5 type) {
         super(user, uniqueId, runtimeId, javaId, javaUuid, type);
@@ -138,6 +138,10 @@ public class LivingEntity extends Entity {
 
     public Map<String, EntityAttribute> attributes() {
         return this.attributes;
+    }
+
+    public Map<String, EntityEffect> effects() {
+        return this.effects;
     }
 
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {

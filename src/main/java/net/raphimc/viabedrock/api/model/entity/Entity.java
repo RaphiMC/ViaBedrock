@@ -19,14 +19,19 @@ package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.Types1_21;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.java.BossEventOperationType;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
-import java.util.UUID;
+import java.util.*;
+import java.util.logging.Level;
 
 public class Entity {
 
@@ -46,6 +51,7 @@ public class Entity {
      */
     protected Position3f rotation = Position3f.ZERO;
     protected boolean onGround;
+    protected final Map<ActorDataIDs, EntityData> entityData = new EnumMap<>(ActorDataIDs.class);
     protected String name;
     protected int age;
     protected boolean hasBossBar;
@@ -70,6 +76,30 @@ public class Entity {
             bossEvent.write(Types.UUID, this.javaUuid()); // uuid
             bossEvent.write(Types.VAR_INT, BossEventOperationType.REMOVE.ordinal()); // operation
             bossEvent.send(BedrockProtocol.class);
+        }
+    }
+
+    public final void updateEntityData(final EntityData[] entityData) {
+        final List<EntityData> javaEntityData = new ArrayList<>();
+        this.updateEntityData(entityData, javaEntityData);
+        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21.SET_ENTITY_DATA, this.user);
+        setEntityData.write(Types.VAR_INT, this.javaId); // entity id
+        setEntityData.write(Types1_21.ENTITY_DATA_LIST, javaEntityData); // entity data
+        setEntityData.send(BedrockProtocol.class);
+    }
+
+    public final void updateEntityData(final EntityData[] entityData, final List<EntityData> javaEntityData) {
+        for (EntityData data : entityData) {
+            final ActorDataIDs id = ActorDataIDs.getByValue(data.id());
+            if (id == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ActorDataIDs: " + data.id());
+                continue;
+            }
+            this.entityData.put(id, data);
+            if (!this.translateEntityData(id, data, javaEntityData)) {
+                // TODO: Log warning when entity data translation is fully implemented
+                // ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown entity data: " + id + " for entity type: " + this.type);
+            }
         }
     }
 
@@ -121,6 +151,10 @@ public class Entity {
         this.onGround = onGround;
     }
 
+    public Map<ActorDataIDs, EntityData> entityData() {
+        return this.entityData;
+    }
+
     public String name() {
         return this.name;
     }
@@ -147,6 +181,10 @@ public class Entity {
             throw new IllegalStateException("Unknown java entity data field: " + fieldName + " for entity type: " + this.type);
         }
         return index;
+    }
+
+    protected boolean translateEntityData(final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
+        return false;
     }
 
 }

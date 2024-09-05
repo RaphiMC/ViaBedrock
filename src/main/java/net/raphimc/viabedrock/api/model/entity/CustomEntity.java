@@ -58,7 +58,6 @@ public class CustomEntity extends Entity {
         super.setPosition(position);
 
         if (!this.spawned) {
-            this.spawned = true;
             this.spawn();
         } else {
             this.partEntities.forEach(ItemDisplayEntity::updatePositionAndRotation);
@@ -77,17 +76,11 @@ public class CustomEntity extends Entity {
     @Override
     public void remove() {
         super.remove();
-
-        final int[] entityIds = new int[partEntities.size()];
-        for (int i = 0; i < partEntities.size(); i++) {
-            entityIds[i] = partEntities.get(i).javaId;
-        }
-        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21.REMOVE_ENTITIES, this.user);
-        removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, entityIds); // entity ids
-        removeEntities.send(BedrockProtocol.class);
+        this.despawn();
     }
 
     private void spawn() {
+        this.spawned = true;
         final EntityTracker entityTracker = user.get(EntityTracker.class);
         final ResourcePacksStorage resourcePacksStorage = user.get(ResourcePacksStorage.class);
         final int parts = (int) resourcePacksStorage.getConverterData().get("ce_" + this.entityDefinition.identifier() + "_default");
@@ -126,6 +119,17 @@ public class CustomEntity extends Entity {
             setEntityData.write(Types1_21.ENTITY_DATA_LIST, javaEntityData); // entity data
             setEntityData.send(BedrockProtocol.class);
         }
+    }
+
+    private void despawn() {
+        this.spawned = false;
+        final int[] entityIds = new int[partEntities.size()];
+        for (int i = 0; i < partEntities.size(); i++) {
+            entityIds[i] = partEntities.get(i).javaId();
+        }
+        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21.REMOVE_ENTITIES, this.user);
+        removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, entityIds); // entity ids
+        removeEntities.send(BedrockProtocol.class);
     }
 
     private class ItemDisplayEntity extends Entity {

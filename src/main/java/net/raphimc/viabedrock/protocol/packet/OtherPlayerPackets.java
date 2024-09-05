@@ -71,8 +71,6 @@ public class OtherPlayerPackets {
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
             final EntityLink[] entityLinks = wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
 
-            // TODO: Handle remaining fields
-
             final PlayerEntity entity = entityTracker.addEntity(new PlayerEntity(wrapper.user(), runtimeEntityId, entityTracker.getNextJavaEntityId(), uuid, abilities));
             entity.setPosition(position);
             entity.setRotation(rotation);
@@ -117,6 +115,8 @@ public class OtherPlayerPackets {
             setEquipment.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
             setEquipment.write(Types1_21.ITEM, itemRewriter.javaItem(item)); // item
             setEquipment.send(BedrockProtocol.class);
+
+            entity.updateEntityData(entityData);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOVE_PLAYER, ClientboundPackets1_21.TELEPORT_ENTITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
