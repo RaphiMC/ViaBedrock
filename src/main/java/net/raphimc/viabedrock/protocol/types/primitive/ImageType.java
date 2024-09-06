@@ -43,7 +43,7 @@ public class ImageType extends Type<BufferedImage> {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 final int index = (y * width + x) * 4;
-                final int argb = (data[index + 3] << 24) | (data[index] << 16) | (data[index + 1] << 8) | data[index + 2];
+                final int argb = ((data[index + 3] & 0xFF) << 24) | ((data[index] & 0xFF) << 16) | ((data[index + 1] & 0xFF) << 8) | data[index + 2] & 0xFF;
                 image.setRGB(x, y, argb);
             }
         }
