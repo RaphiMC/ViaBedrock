@@ -34,15 +34,18 @@ public record EntityAttribute(String name, float currentValue, float minValue, f
         return new EntityAttribute(this.name, value, this.minValue, this.maxValue, this.defaultValue, this.modifiers);
     }
 
-    public float computeValue(final boolean computeCurrentValue) {
-        final float currentValue = computeCurrentValue ? this.computeCurrentValue() : this.currentValue;
+    public EntityAttribute withModifiers(final Modifier[] modifiers) {
+        return new EntityAttribute(this.name, this.currentValue, this.minValue, this.maxValue, this.defaultValue, modifiers);
+    }
+
+    public float computeClampedValue() {
         final float minValue = this.computeMinValue();
         final float maxValue = this.computeMaxValue();
-        return MathUtil.clamp(currentValue, minValue, maxValue);
+        return MathUtil.clamp(this.currentValue, minValue, maxValue);
     }
 
     public float computeCurrentValue() {
-        return this.applyModifiers(this.currentValue, AttributeOperands.OPERAND_CURRENT);
+        return this.applyModifiers(this.defaultValue, AttributeOperands.OPERAND_CURRENT);
     }
 
     public float computeMinValue() {

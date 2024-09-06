@@ -39,7 +39,7 @@ public class AbstractHorseEntity extends MobEntity {
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         if (attribute.name().equals("minecraft:horse.jump_strength")) {
             javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:generic.jump_strength")); // attribute id
-            javaAttributes.write(Types.DOUBLE, (double) attribute.computeValue(true)); // base value
+            javaAttributes.write(Types.DOUBLE, (double) attribute.computeClampedValue()); // base value
             javaAttributes.write(Types.VAR_INT, 0); // modifier count
             attributeCount.incrementAndGet();
             return true;

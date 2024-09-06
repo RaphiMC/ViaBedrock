@@ -83,7 +83,7 @@ public class LivingEntity extends Entity {
         for (EntityAttribute attribute : attributes) {
             if (attribute.name().equals("minecraft:health") && this instanceof PlayerEntity player && player.abilities().getBooleanValue(AbilitiesIndex.Invulnerable)) {
                 final EntityAttribute oldAttribute = this.attributes.get(attribute.name());
-                if (attribute.computeValue(false) <= oldAttribute.computeValue(false)) continue;
+                if (attribute.computeClampedValue() <= oldAttribute.computeClampedValue()) continue;
             }
             this.attributes.put(attribute.name(), attribute);
             if (!this.translateAttribute(attribute, javaAttributes, attributeCount, javaEntityData)) {
@@ -129,7 +129,7 @@ public class LivingEntity extends Entity {
     }
 
     public boolean isDead() {
-        return this.attributes.get("minecraft:health").computeValue(false) <= 0F;
+        return this.attributes.get("minecraft:health").computeClampedValue() <= 0F;
     }
 
     public void setHealth(final float health) {
@@ -153,13 +153,13 @@ public class LivingEntity extends Entity {
                     case "minecraft:movement" -> "minecraft:generic.movement_speed";
                     default -> throw new IllegalStateException("Unhandled entity attribute: " + attribute.name());
                 })); // attribute id
-                javaAttributes.write(Types.DOUBLE, (double) attribute.computeValue(true)); // base value
+                javaAttributes.write(Types.DOUBLE, (double) attribute.computeClampedValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count
                 attributeCount.incrementAndGet();
                 yield true;
             }
             case "minecraft:health" -> {
-                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("HEALTH"), Types1_21.ENTITY_DATA_TYPES.floatType, attribute.computeValue(false)));
+                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("HEALTH"), Types1_21.ENTITY_DATA_TYPES.floatType, attribute.computeClampedValue()));
                 javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:generic.max_health")); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.maxValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count

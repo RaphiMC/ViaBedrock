@@ -104,7 +104,7 @@ public class PlayerEntity extends LivingEntity {
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         return switch (attribute.name()) {
             case "minecraft:absorption" -> {
-                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("PLAYER_ABSORPTION"), Types1_21.ENTITY_DATA_TYPES.floatType, attribute.computeValue(false)));
+                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("PLAYER_ABSORPTION"), Types1_21.ENTITY_DATA_TYPES.floatType, attribute.computeClampedValue()));
                 javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:generic.max_absorption")); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.maxValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count
@@ -113,7 +113,7 @@ public class PlayerEntity extends LivingEntity {
             }
             case "minecraft:luck" -> {
                 javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:generic.luck")); // attribute id
-                javaAttributes.write(Types.DOUBLE, (double) attribute.computeValue(true)); // base value
+                javaAttributes.write(Types.DOUBLE, (double) attribute.computeClampedValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count
                 attributeCount.incrementAndGet();
                 yield true;

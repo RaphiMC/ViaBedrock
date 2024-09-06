@@ -417,6 +417,16 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     public void setSprinting(final boolean sprinting) {
         this.sprinting = sprinting;
+
+        final EntityAttribute oldMovementAttribute = this.attributes.get("minecraft:movement");
+        final List<EntityAttribute.Modifier> modifiers = new ArrayList<>(Arrays.asList(oldMovementAttribute.modifiers()));
+        modifiers.removeIf(modifier -> modifier.id().equals("d208fc00-42aa-4aad-9276-d5446530de43") && modifier.name().equals("Sprinting speed boost") && modifier.operation() == AttributeModifierOperation.OPERATION_MULTIPLY_TOTAL);
+        if (this.sprinting) {
+            modifiers.add(new EntityAttribute.Modifier("d208fc00-42aa-4aad-9276-d5446530de43", "Sprinting speed boost", 0.3F, AttributeModifierOperation.OPERATION_MULTIPLY_TOTAL, AttributeOperands.OPERAND_CURRENT, false));
+        }
+        final EntityAttribute newMovementAttribute = oldMovementAttribute.withModifiers(modifiers.toArray(new EntityAttribute.Modifier[0]));
+        // Compute the current value, as the client only updates it when a modifier is changed by itself
+        this.updateAttributes(new EntityAttribute[]{newMovementAttribute.withValue(newMovementAttribute.computeCurrentValue())});
     }
 
     public GameType gameType() {
@@ -486,9 +496,9 @@ public class ClientPlayerEntity extends PlayerEntity {
                 final EntityAttribute hunger = attribute.name().equals("minecraft:player.hunger") ? attribute : this.attributes.get("minecraft:player.hunger");
                 final EntityAttribute saturation = attribute.name().equals("minecraft:player.saturation") ? attribute : this.attributes.get("minecraft:player.saturation");
                 final PacketWrapper setHealth = PacketWrapper.create(ClientboundPackets1_21.SET_HEALTH, this.user);
-                setHealth.write(Types.FLOAT, health.computeValue(false)); // health
-                setHealth.write(Types.VAR_INT, (int) hunger.computeValue(false)); // food
-                setHealth.write(Types.FLOAT, saturation.computeValue(false)); // saturation
+                setHealth.write(Types.FLOAT, health.computeClampedValue()); // health
+                setHealth.write(Types.VAR_INT, (int) hunger.computeClampedValue()); // food
+                setHealth.write(Types.FLOAT, saturation.computeClampedValue()); // saturation
                 setHealth.send(BedrockProtocol.class);
 
                 if (attribute.name().equals("minecraft:health")) { // Call super to translate max health
@@ -501,8 +511,8 @@ public class ClientPlayerEntity extends PlayerEntity {
                 final EntityAttribute experience = attribute.name().equals("minecraft:player.experience") ? attribute : this.attributes.get("minecraft:player.experience");
                 final EntityAttribute level = attribute.name().equals("minecraft:player.level") ? attribute : this.attributes.get("minecraft:player.level");
                 final PacketWrapper setExperience = PacketWrapper.create(ClientboundPackets1_21.SET_EXPERIENCE, this.user);
-                setExperience.write(Types.FLOAT, experience.computeValue(false)); // bar progress
-                setExperience.write(Types.VAR_INT, (int) level.computeValue(false)); // experience level
+                setExperience.write(Types.FLOAT, experience.computeClampedValue()); // bar progress
+                setExperience.write(Types.VAR_INT, (int) level.computeClampedValue()); // experience level
                 setExperience.write(Types.VAR_INT, 0); // total experience
                 setExperience.send(BedrockProtocol.class);
                 yield true;
