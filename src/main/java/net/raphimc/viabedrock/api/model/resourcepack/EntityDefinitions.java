@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.api.model.resourcepack;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-import org.oryxel.cube.model.bedrock.BedrockEntityData;
-import org.oryxel.cube.parser.bedrock.BedrockEntitySerializer;
+import org.oryxel.cube.model.bedrock.data.BedrockEntityData;
+import org.oryxel.cube.parser.bedrock.data.BedrockEntitySerializer;
 
 import java.util.Collections;
 import java.util.HashMap;
