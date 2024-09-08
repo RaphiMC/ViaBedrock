@@ -52,7 +52,7 @@ public class ResourcePacksStorage extends StoredObject {
     private TextDefinitions texts;
     private BlockDefinitions blocks;
     private ItemDefinitions items;
-    private AttachableDefinitions attachable;
+    private AttachableDefinitions attachables;
     private TextureDefinitions textures;
     private SoundDefinitions sounds;
     private ParticleDefinitions particles;
@@ -150,7 +150,7 @@ public class ResourcePacksStorage extends StoredObject {
         this.texts = new TextDefinitions(this);
         this.blocks = new BlockDefinitions(this);
         this.items = new ItemDefinitions(this);
-        this.attachable = new AttachableDefinitions(this);
+        this.attachables = new AttachableDefinitions(this);
         this.textures = new TextureDefinitions(this);
         this.sounds = new SoundDefinitions(this);
         this.particles = new ParticleDefinitions(this);
@@ -203,8 +203,8 @@ public class ResourcePacksStorage extends StoredObject {
         return this.items;
     }
 
-    public AttachableDefinitions getAttachable() {
-        return attachable;
+    public AttachableDefinitions getAttachables() {
+        return attachables;
     }
 
     public TextureDefinitions getTextures() {

@@ -38,7 +38,7 @@ public class AttachableDefinitions {
                 try {
                     final BedrockAttachableData attachableData = BedrockAttachableSerializer.deserialize(pack.content().getString(attachablePath));
                     final String identifier = Key.namespaced(attachableData.identifier());
-                    this.attachables.put(identifier, new AttachableDefinition(identifier, "attachable_" + identifier + "_default", attachableData));
+                    this.attachables.put(identifier, new AttachableDefinition(identifier, attachableData));
                 } catch (Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse attachable definition " + attachablePath + " in pack " + pack.packId(), e);
                 }
@@ -50,7 +50,7 @@ public class AttachableDefinitions {
         return Collections.unmodifiableMap(this.attachables);
     }
 
-    public record AttachableDefinition(String identifier, String key, BedrockAttachableData attachableData) {
+    public record AttachableDefinition(String identifier, BedrockAttachableData attachableData) {
     }
 
 }

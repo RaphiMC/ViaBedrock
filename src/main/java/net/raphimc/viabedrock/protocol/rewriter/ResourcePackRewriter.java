@@ -26,10 +26,6 @@ import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureRe
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.GlyphSheetResourceRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
 public class ResourcePackRewriter {
 
     public static ResourcePack.Content bedrockToJava(final ResourcePacksStorage resourcePacksStorage) {
