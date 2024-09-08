@@ -30,7 +30,7 @@ import java.util.logging.Level;
 
 public class AttachableDefinitions {
 
-    private final Map<String, AttachableDefinition> attachableDefinitions = new HashMap<>();
+    private final Map<String, AttachableDefinition> attachables = new HashMap<>();
 
     public AttachableDefinitions(final ResourcePacksStorage resourcePacksStorage) {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
@@ -38,7 +38,7 @@ public class AttachableDefinitions {
                 try {
                     final BedrockAttachableData attachableData = BedrockAttachableSerializer.deserialize(pack.content().getString(attachablePath));
                     final String identifier = Key.namespaced(attachableData.identifier());
-                    this.attachableDefinitions.put(identifier, new AttachableDefinition(identifier, "attachable_" + identifier + "_default", attachableData));
+                    this.attachables.put(identifier, new AttachableDefinition(identifier, "attachable_" + identifier + "_default", attachableData));
                 } catch (Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse attachable definition " + attachablePath + " in pack " + pack.packId(), e);
                 }
@@ -46,8 +46,8 @@ public class AttachableDefinitions {
         }
     }
 
-    public Map<String, AttachableDefinition> attachableDefinitions() {
-        return Collections.unmodifiableMap(attachableDefinitions);
+    public Map<String, AttachableDefinition> attachables() {
+        return Collections.unmodifiableMap(this.attachables);
     }
 
     public record AttachableDefinition(String identifier, String key, BedrockAttachableData attachableData) {

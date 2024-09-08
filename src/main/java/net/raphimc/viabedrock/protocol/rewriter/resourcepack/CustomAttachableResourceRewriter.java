@@ -42,7 +42,7 @@ public class CustomAttachableResourceRewriter {
     public static void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent) {
         final Map<Integer, JsonObject> overridesMap = new TreeMap<>();
 
-        for (Map.Entry<String, AttachableDefinitions.AttachableDefinition> entry : resourcePacksStorage.getAttachable().attachableDefinitions().entrySet()) {
+        for (Map.Entry<String, AttachableDefinitions.AttachableDefinition> entry : resourcePacksStorage.getAttachable().attachables().entrySet()) {
             for (String bedrockPath : entry.getValue().attachableData().textures().values()) {
                 final String javaPath = "attachable_texture/" + StringUtil.makeIdentifierValueSafe(bedrockPath.replace("textures/", ""));
                 for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {

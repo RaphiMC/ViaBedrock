@@ -31,7 +31,6 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
-import net.raphimc.viabedrock.api.model.resourcepack.AttachableDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -155,8 +154,8 @@ public class ItemRewriter extends StoredObject {
                 data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Custom item: " + identifier)});
                 javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get(Key.namespaced(CustomItemTextureResourceRewriter.ITEM)), bedrockItem.amount(), data);
             } else {
-                if (resourcePacksStorage.getAttachable().attachableDefinitions().containsKey(identifier)) {
-                    final String key = resourcePacksStorage.getAttachable().attachableDefinitions().get(identifier).key();
+                if (resourcePacksStorage.getAttachable().attachables().containsKey(identifier)) {
+                    final String key = resourcePacksStorage.getAttachable().attachables().get(identifier).key();
                     data.set(StructuredDataKey.CUSTOM_MODEL_DATA, CustomAttachableResourceRewriter.getCustomModelData(key));
                     javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get(Key.namespaced(CustomAttachableResourceRewriter.ITEM)), bedrockItem.amount(), data);
                 } else if (itemDefinition != null && itemDefinition.iconComponent() != null) {
