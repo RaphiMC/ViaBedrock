@@ -48,7 +48,6 @@ public class ResourcePacksStorage extends StoredObject {
     private boolean javaClientWaitingForPack;
     private boolean loadedOnJavaClient;
     private final Map<String, Object> converterData = new HashMap<>();
-    private final Map<String, Integer> attachableData = new HashMap<>();
 
     private TextDefinitions texts;
     private BlockDefinitions blocks;
@@ -186,10 +185,6 @@ public class ResourcePacksStorage extends StoredObject {
 
     public Map<String, Object> getConverterData() {
         return this.converterData;
-    }
-
-    public Map<String, Integer> getAttachableData() {
-        return attachableData;
     }
 
     public boolean hasFinishedLoading() {

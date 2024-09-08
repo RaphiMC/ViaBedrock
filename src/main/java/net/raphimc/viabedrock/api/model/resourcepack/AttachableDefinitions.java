@@ -23,13 +23,14 @@ import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import org.oryxel.cube.model.bedrock.data.BedrockAttachableData;
 import org.oryxel.cube.parser.bedrock.data.BedrockAttachableSerializer;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
 public class AttachableDefinitions {
 
-    private final Map<String, AttachableDefinitions.AttachableDefinition> attachableDefinitions = new HashMap<>();
+    private final Map<String, AttachableDefinition> attachableDefinitions = new HashMap<>();
 
     public AttachableDefinitions(final ResourcePacksStorage resourcePacksStorage) {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
@@ -37,7 +38,7 @@ public class AttachableDefinitions {
                 try {
                     final BedrockAttachableData attachableData = BedrockAttachableSerializer.deserialize(pack.content().getString(attachablePath));
                     final String identifier = Key.namespaced(attachableData.identifier());
-                    this.attachableDefinitions.put(identifier, new AttachableDefinitions.AttachableDefinition(identifier, attachableData));
+                    this.attachableDefinitions.put(identifier, new AttachableDefinition(identifier, "attachable_" + identifier + "_default", attachableData));
                 } catch (Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse attachable definition " + attachablePath + " in pack " + pack.packId(), e);
                 }
@@ -46,10 +47,10 @@ public class AttachableDefinitions {
     }
 
     public Map<String, AttachableDefinition> attachableDefinitions() {
-        return attachableDefinitions;
+        return Collections.unmodifiableMap(attachableDefinitions);
     }
 
-    public record AttachableDefinition(String identifier, BedrockAttachableData attachableData) {
+    public record AttachableDefinition(String identifier, String key, BedrockAttachableData attachableData) {
     }
 
 }

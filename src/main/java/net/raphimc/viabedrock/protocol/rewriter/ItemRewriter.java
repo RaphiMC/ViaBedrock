@@ -155,9 +155,9 @@ public class ItemRewriter extends StoredObject {
                 data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Custom item: " + identifier)});
                 javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get(Key.namespaced(CustomItemTextureResourceRewriter.ITEM)), bedrockItem.amount(), data);
             } else {
-                if (resourcePacksStorage.getAttachableData().containsKey(identifier)) {
-                    int javaItemModel = resourcePacksStorage.getAttachableData().get(identifier);
-                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA, javaItemModel);
+                if (resourcePacksStorage.getAttachable().attachableDefinitions().containsKey(identifier)) {
+                    final String key = resourcePacksStorage.getAttachable().attachableDefinitions().get(identifier).key();
+                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA, CustomAttachableResourceRewriter.getCustomModelData(key));
                     javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get(Key.namespaced(CustomAttachableResourceRewriter.ITEM)), bedrockItem.amount(), data);
                 } else if (itemDefinition != null && itemDefinition.iconComponent() != null) {
                     data.set(StructuredDataKey.CUSTOM_MODEL_DATA, CustomItemTextureResourceRewriter.getCustomModelData(itemDefinition.iconComponent()));

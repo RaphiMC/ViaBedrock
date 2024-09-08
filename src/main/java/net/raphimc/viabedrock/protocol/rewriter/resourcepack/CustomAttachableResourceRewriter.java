@@ -111,8 +111,6 @@ public class CustomAttachableResourceRewriter {
 
                 if (overridesMap.put(javaModelData, override) != null) {
                     throw new IllegalStateException("Duplicate custom model data: " + override);
-                } else {
-                    resourcePacksStorage.getAttachableData().put(entry.getKey(), javaModelData);
                 }
             }
         }
@@ -131,8 +129,8 @@ public class CustomAttachableResourceRewriter {
         }
     }
 
-    public static int getCustomModelData(final String iconName) {
-        return Math.abs(iconName.hashCode() + 1); // 0 is used for the default model
+    public static int getCustomModelData(final String key) {
+        return Math.abs(key.hashCode() + 1); // 0 is used for the default model
     }
 
 }
