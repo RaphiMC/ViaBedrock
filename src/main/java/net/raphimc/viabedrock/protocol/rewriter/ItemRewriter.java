@@ -38,6 +38,7 @@ import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
+import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomAttachableResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -147,12 +148,17 @@ public class ItemRewriter extends StoredObject {
                 } else {
                     data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier) + ".name")));
                 }
-                if (itemDefinition.iconComponent() != null && resourcePacksStorage.isLoadedOnJavaClient()) {
+
+                if (resourcePacksStorage.getAttachables().attachables().containsKey(identifier) && resourcePacksStorage.isLoadedOnJavaClient()) {
+                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA, CustomAttachableResourceRewriter.getCustomModelData("attachable_" + identifier + "_default"));
+                    javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get(Key.namespaced(CustomAttachableResourceRewriter.ITEM)), bedrockItem.amount(), data);
+                } else if (itemDefinition.iconComponent() != null && resourcePacksStorage.isLoadedOnJavaClient()) {
                     data.set(StructuredDataKey.CUSTOM_MODEL_DATA, CustomItemTextureResourceRewriter.getCustomModelData(itemDefinition.iconComponent()));
+                    javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get(Key.namespaced(CustomItemTextureResourceRewriter.ITEM)), bedrockItem.amount(), data);
                 } else {
                     data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Custom item: " + identifier)});
+                    javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), bedrockItem.amount(), data);
                 }
-                javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get(Key.namespaced(CustomItemTextureResourceRewriter.ITEM)), bedrockItem.amount(), data);
             } else {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java item mapping for " + identifier);
                 data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("§cMissing item: " + identifier));

@@ -17,42 +17,40 @@
  */
 package net.raphimc.viabedrock.api.model.resourcepack;
 
+import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-import org.oryxel.cube.model.bedrock.BedrockGeometry;
-import org.oryxel.cube.parser.bedrock.BedrockGeometrySerializer;
+import org.oryxel.cube.model.bedrock.data.BedrockAttachableData;
+import org.oryxel.cube.parser.bedrock.data.BedrockAttachableSerializer;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class ModelDefinitions {
+public class AttachableDefinitions {
 
-    private final Map<String, BedrockGeometry> entityModels = new HashMap<>();
+    private final Map<String, AttachableDefinition> attachables = new HashMap<>();
 
-    public ModelDefinitions(final ResourcePacksStorage resourcePacksStorage) {
+    public AttachableDefinitions(final ResourcePacksStorage resourcePacksStorage) {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
-            for (String modelPath : pack.content().getFilesDeep("models/", ".json")) {
+            for (String attachablePath : pack.content().getFilesDeep("attachables/", ".json")) {
                 try {
-                    for (BedrockGeometry bedrockGeometry : BedrockGeometrySerializer.deserialize(pack.content().getString(modelPath))) {
-                        if (modelPath.startsWith("models/entity/")) {
-                            this.entityModels.put(bedrockGeometry.identifier(), bedrockGeometry);
-                        }
-                    }
+                    final BedrockAttachableData attachableData = BedrockAttachableSerializer.deserialize(pack.content().getString(attachablePath));
+                    final String identifier = Key.namespaced(attachableData.identifier());
+                    this.attachables.put(identifier, new AttachableDefinition(identifier, attachableData));
                 } catch (Throwable e) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse model definition " + modelPath + " in pack " + pack.packId(), e);
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse attachable definition " + attachablePath + " in pack " + pack.packId(), e);
                 }
             }
         }
     }
 
-    public BedrockGeometry getEntityModel(final String name) {
-        return this.entityModels.get(name);
+    public Map<String, AttachableDefinition> attachables() {
+        return Collections.unmodifiableMap(this.attachables);
     }
 
-    public Map<String, BedrockGeometry> entityModels() {
-        return Collections.unmodifiableMap(this.entityModels);
+    public record AttachableDefinition(String identifier, BedrockAttachableData attachableData) {
     }
 
 }
