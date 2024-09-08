@@ -36,9 +36,7 @@ public class ModelDefinitions {
             for (String modelPath : pack.content().getFilesDeep("models/", ".json")) {
                 try {
                     for (BedrockGeometry bedrockGeometry : BedrockGeometrySerializer.deserialize(pack.content().getString(modelPath))) {
-                        // Attachable can be in models/entity/ for some reason, even tho it has it own folder for attachable definitions
-                        // Just check for models that is not blocks.
-                        if (!modelPath.startsWith("models/blocks/")) {
+                        if (modelPath.startsWith("models/entity/")) {
                             this.models.put(bedrockGeometry.identifier(), bedrockGeometry);
                         }
                     }
