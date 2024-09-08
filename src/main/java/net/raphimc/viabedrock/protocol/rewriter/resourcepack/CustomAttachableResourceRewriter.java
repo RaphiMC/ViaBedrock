@@ -57,7 +57,7 @@ public class CustomAttachableResourceRewriter {
 
             final AttachableDefinitions.AttachableDefinition attachableDefinition = entry.getValue();
             for (Map.Entry<String, String> modelEntry : attachableDefinition.attachableData().geometries().entrySet()) {
-                final BedrockGeometry bedrockGeometry = resourcePacksStorage.getModels().models().get(modelEntry.getValue());
+                final BedrockGeometry bedrockGeometry = resourcePacksStorage.getModels().entityModels().get(modelEntry.getValue());
                 if (bedrockGeometry == null) continue;
                 if (!attachableDefinition.attachableData().textures().containsKey(modelEntry.getKey())) continue;
 

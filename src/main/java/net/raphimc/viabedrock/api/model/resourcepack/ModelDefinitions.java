@@ -29,7 +29,7 @@ import java.util.logging.Level;
 
 public class ModelDefinitions {
 
-    private final Map<String, BedrockGeometry> models = new HashMap<>();
+    private final Map<String, BedrockGeometry> entityModels = new HashMap<>();
 
     public ModelDefinitions(final ResourcePacksStorage resourcePacksStorage) {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
@@ -37,7 +37,7 @@ public class ModelDefinitions {
                 try {
                     for (BedrockGeometry bedrockGeometry : BedrockGeometrySerializer.deserialize(pack.content().getString(modelPath))) {
                         if (modelPath.startsWith("models/entity/")) {
-                            this.models.put(bedrockGeometry.identifier(), bedrockGeometry);
+                            this.entityModels.put(bedrockGeometry.identifier(), bedrockGeometry);
                         }
                     }
                 } catch (Throwable e) {
@@ -47,12 +47,12 @@ public class ModelDefinitions {
         }
     }
 
-    public BedrockGeometry getModel(final String name) {
-        return this.models.get(name);
+    public BedrockGeometry getEntityModel(final String name) {
+        return this.entityModels.get(name);
     }
 
-    public Map<String, BedrockGeometry> models() {
-        return Collections.unmodifiableMap(this.models);
+    public Map<String, BedrockGeometry> entityModels() {
+        return Collections.unmodifiableMap(this.entityModels);
     }
 
 }
