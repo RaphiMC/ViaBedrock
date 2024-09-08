@@ -20,18 +20,20 @@ package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.awt.image.BufferedImage;
 import java.util.Locale;
 
 // https://wiki.bedrock.dev/concepts/emojis
-public class GlyphSheetResourceRewriter {
+public class GlyphSheetResourceRewriter implements ResourcePackRewriter.Rewriter {
 
     private static final int GLYPHS_PER_ROW = 16;
     private static final int GLYPHS_PER_COLUMN = 16;
 
-    public static void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent) {
+    @Override
+    public void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent) {
         final JsonArray providers = new JsonArray();
 
         for (int i = 0; i < 0xFF; i++) {

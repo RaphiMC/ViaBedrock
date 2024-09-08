@@ -37,9 +37,9 @@ public class EntityDefinitions {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
             for (String entityPath : pack.content().getFilesDeep("entity/", ".json")) {
                 try {
-                    final BedrockEntityData bedrockEntityData = BedrockEntitySerializer.deserialize(pack.content().getString(entityPath));
-                    final String identifier = Key.namespaced(bedrockEntityData.identifier());
-                    this.entities.put(identifier, new EntityDefinition(identifier, bedrockEntityData));
+                    final BedrockEntityData entityData = BedrockEntitySerializer.deserialize(pack.content().getString(entityPath));
+                    final String identifier = Key.namespaced(entityData.identifier());
+                    this.entities.put(identifier, new EntityDefinition(identifier, entityData));
                 } catch (Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse entity definition " + entityPath + " in pack " + pack.packId(), e);
                 }
@@ -55,24 +55,7 @@ public class EntityDefinitions {
         return Collections.unmodifiableMap(this.entities);
     }
 
-    public static class EntityDefinition {
-
-        private final String identifier;
-        private final BedrockEntityData entityData;
-
-        public EntityDefinition(final String identifier, final BedrockEntityData entityData) {
-            this.identifier = identifier;
-            this.entityData = entityData;
-        }
-
-        public String identifier() {
-            return this.identifier;
-        }
-
-        public BedrockEntityData entityData() {
-            return this.entityData;
-        }
-
+    public record EntityDefinition(String identifier, BedrockEntityData entityData) {
     }
 
 }

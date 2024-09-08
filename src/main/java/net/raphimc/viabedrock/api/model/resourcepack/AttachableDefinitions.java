@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+// https://wiki.bedrock.dev/items/attachables.html
 public class AttachableDefinitions {
 
     private final Map<String, AttachableDefinition> attachables = new HashMap<>();

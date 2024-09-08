@@ -26,15 +26,26 @@ import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureRe
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.GlyphSheetResourceRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ResourcePackRewriter {
+
+    private static final List<Rewriter> REWRITERS = new ArrayList<>();
+
+    static {
+        REWRITERS.add(new GlyphSheetResourceRewriter());
+        REWRITERS.add(new CustomItemTextureResourceRewriter());
+        REWRITERS.add(new CustomAttachableResourceRewriter());
+        REWRITERS.add(new CustomEntityResourceRewriter());
+    }
 
     public static ResourcePack.Content bedrockToJava(final ResourcePacksStorage resourcePacksStorage) {
         final ResourcePack.Content javaContent = new ResourcePack.Content();
 
-        GlyphSheetResourceRewriter.apply(resourcePacksStorage, javaContent);
-        CustomItemTextureResourceRewriter.apply(resourcePacksStorage, javaContent);
-        CustomAttachableResourceRewriter.apply(resourcePacksStorage, javaContent);
-        CustomEntityResourceRewriter.apply(resourcePacksStorage, javaContent);
+        for (Rewriter rewriter : REWRITERS) {
+            rewriter.apply(resourcePacksStorage, javaContent);
+        }
 
         javaContent.putJson("pack.mcmeta", createPackManifest());
 
@@ -48,6 +59,12 @@ public class ResourcePackRewriter {
         pack.addProperty("pack_format", ProtocolConstants.JAVA_PACK_VERSION);
         pack.addProperty("description", "ViaBedrock Resource Pack");
         return root;
+    }
+
+    public interface Rewriter {
+
+        void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent);
+
     }
 
 }

@@ -17,70 +17,42 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
-import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.model.resourcepack.TextureDefinitions;
-import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.awt.image.BufferedImage;
 import java.util.Map;
-import java.util.TreeMap;
 
-public class CustomItemTextureResourceRewriter {
+public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter {
 
     public static final String ITEM = "paper";
 
-    public static void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent) {
-        final Map<Integer, JsonObject> overridesMap = new TreeMap<>();
+    public CustomItemTextureResourceRewriter() {
+        super(ITEM, "item");
+    }
 
+    @Override
+    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Map<Integer, JsonObject> overridesMap) {
         for (Map.Entry<String, TextureDefinitions.ItemTextureDefinition> entry : resourcePacksStorage.getTextures().itemTextures().entrySet()) {
             for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
                 final ResourcePack.Content bedrockContent = pack.content();
                 final BufferedImage texture = bedrockContent.getShortnameImage(entry.getValue().texturePath());
                 if (texture == null) continue;
 
-                final String javaTexturePath = StringUtil.makeIdentifierValueSafe(entry.getValue().texturePath().replace("textures/items/", ""));
-                final String javaModelName = StringUtil.makeIdentifierValueSafe(entry.getKey());
-                final int javaModelData = getCustomModelData(entry.getKey());
-                javaContent.putImage("assets/viabedrock/textures/item/" + javaTexturePath + ".png", texture);
+                javaContent.putImage("assets/viabedrock/textures/" + this.getJavaTexturePath(entry.getValue().texturePath()) + ".png", texture);
 
                 final JsonObject itemModel = new JsonObject();
                 itemModel.addProperty("parent", "minecraft:item/generated");
                 final JsonObject layer0 = new JsonObject();
-                layer0.addProperty("layer0", "viabedrock:item/" + javaTexturePath);
+                layer0.addProperty("layer0", "viabedrock:" + this.getJavaTexturePath(entry.getValue().texturePath()));
                 itemModel.add("textures", layer0);
-                javaContent.putJson("assets/viabedrock/models/" + javaModelName + ".json", itemModel);
-
-                final JsonObject override = new JsonObject();
-                override.addProperty("model", "viabedrock:" + javaModelName);
-                final JsonObject predicate = new JsonObject();
-                predicate.addProperty("custom_model_data", javaModelData);
-                override.add("predicate", predicate);
-                if (overridesMap.put(javaModelData, override) != null) {
-                    throw new IllegalStateException("Duplicate custom model data: " + override);
-                }
+                javaContent.putJson("assets/viabedrock/models/" + this.getJavaModelName(entry.getKey()) + ".json", itemModel);
+                this.addOverride(overridesMap, entry.getKey());
                 break;
             }
         }
-
-        if (!overridesMap.isEmpty()) {
-            final JsonArray overrides = new JsonArray();
-            overridesMap.values().forEach(overrides::add);
-
-            final JsonObject itemDefinition = new JsonObject();
-            itemDefinition.addProperty("parent", "minecraft:item/generated");
-            itemDefinition.add("overrides", overrides);
-            final JsonObject layer0 = new JsonObject();
-            layer0.addProperty("layer0", "minecraft:item/" + ITEM);
-            itemDefinition.add("textures", layer0);
-            javaContent.putJson("assets/minecraft/models/item/" + ITEM + ".json", itemDefinition);
-        }
-    }
-
-    public static int getCustomModelData(final String iconName) {
-        return Math.abs(iconName.hashCode() + 1); // 0 is used for the default model
     }
 
 }
