@@ -204,7 +204,7 @@ public class ResourcePacksStorage extends StoredObject {
     }
 
     public AttachableDefinitions getAttachables() {
-        return attachables;
+        return this.attachables;
     }
 
     public TextureDefinitions getTextures() {
