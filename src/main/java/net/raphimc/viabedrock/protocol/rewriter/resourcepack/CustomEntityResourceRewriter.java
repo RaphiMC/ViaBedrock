@@ -56,7 +56,7 @@ public class CustomEntityResourceRewriter {
 
             final EntityDefinitions.EntityDefinition entityDefinition = entityEntry.getValue();
             for (Map.Entry<String, String> modelEntry : entityDefinition.entityData().geometries().entrySet()) {
-                final BedrockGeometry bedrockGeometry = resourcePacksStorage.getModels().entityModels().get(modelEntry.getValue());
+                final BedrockGeometry bedrockGeometry = resourcePacksStorage.getModels().models().get(modelEntry.getValue());
                 if (bedrockGeometry == null) continue;
                 if (!entityDefinition.entityData().textures().containsKey(modelEntry.getKey())) continue;
 

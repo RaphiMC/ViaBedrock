@@ -29,15 +29,17 @@ import java.util.logging.Level;
 
 public class ModelDefinitions {
 
-    private final Map<String, BedrockGeometry> entityModels = new HashMap<>();
+    private final Map<String, BedrockGeometry> models = new HashMap<>();
 
     public ModelDefinitions(final ResourcePacksStorage resourcePacksStorage) {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
             for (String modelPath : pack.content().getFilesDeep("models/", ".json")) {
                 try {
                     for (BedrockGeometry bedrockGeometry : BedrockGeometrySerializer.deserialize(pack.content().getString(modelPath))) {
-                        if (modelPath.startsWith("models/entity/")) {
-                            this.entityModels.put(bedrockGeometry.identifier(), bedrockGeometry);
+                        // Attachable can be in models/entity/ for some reason, even tho it has it own folder for attachable definitions
+                        // Just check for models that is not blocks.
+                        if (!modelPath.startsWith("models/blocks/")) {
+                            this.models.put(bedrockGeometry.identifier(), bedrockGeometry);
                         }
                     }
                 } catch (Throwable e) {
@@ -47,12 +49,12 @@ public class ModelDefinitions {
         }
     }
 
-    public BedrockGeometry getEntityModel(final String name) {
-        return this.entityModels.get(name);
+    public BedrockGeometry getModel(final String name) {
+        return this.models.get(name);
     }
 
-    public Map<String, BedrockGeometry> entityModels() {
-        return Collections.unmodifiableMap(this.entityModels);
+    public Map<String, BedrockGeometry> models() {
+        return Collections.unmodifiableMap(this.models);
     }
 
 }
