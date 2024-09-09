@@ -123,7 +123,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         providers.register(BlobCacheProvider.class, ViaBedrock.getConfig().getBlobCacheMode().createProvider());
         providers.register(SkinProvider.class, new SkinProvider());
 
-        if (!ViaBedrock.getConfig().getBlobCacheMode().equals(ViaBedrockConfig.BlobCacheMode.DISABLED)) {
+        if (!ViaBedrock.getConfig().getBlobCacheMode().equals(ViaBedrockConfig.BlobCacheMode.DISABLED) && !providers.get(BlobCacheProvider.class).hasBlob(0L)) {
             providers.get(BlobCacheProvider.class).addBlob(0L, new byte[0]);
         }
 

@@ -17,38 +17,68 @@
  */
 package net.raphimc.viabedrock.protocol.provider.impl;
 
-import com.google.common.primitives.Longs;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.util.LZ4;
+import net.raphimc.viabedrock.api.io.BlobDB;
 import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.stream.Stream;
 
 public class DiskBlobCacheProvider extends BlobCacheProvider {
 
-    private static final byte[] BLOB_KEY_PREFIX = "blob_".getBytes(StandardCharsets.US_ASCII);
+    private static BlobDB BLOB_DB;
+
+    public DiskBlobCacheProvider() {
+        if (BLOB_DB != null) return;
+
+        try {
+            try {
+                BLOB_DB = new BlobDB(ViaBedrock.getPlatform().getBlobCacheFolder());
+            } catch (Throwable e) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to open BlobDB, deleting it...", e);
+                try (Stream<Path> paths = Files.walk(ViaBedrock.getPlatform().getBlobCacheFolder().toPath())) {
+                    for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
+                        Files.delete(path);
+                    }
+                }
+                BLOB_DB = new BlobDB(ViaBedrock.getPlatform().getBlobCacheFolder());
+            }
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    BLOB_DB.save();
+                    BLOB_DB.close();
+                } catch (Throwable e) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to close blob cache", e);
+                }
+            }));
+        } catch (Throwable e) {
+            throw new IllegalStateException("Failed to open or create blob cache", e);
+        }
+    }
 
     @Override
     public void addBlob(final long hash, final byte[] blob) {
-        ViaBedrock.getBlobCache().put(this.createBlobKey(hash), LZ4.compress(blob));
+        BLOB_DB.queuePut(hash, blob);
     }
 
     @Override
     public boolean hasBlob(final long hash) {
-        return ViaBedrock.getBlobCache().get(this.createBlobKey(hash)) != null;
+        return BLOB_DB.contains(hash);
     }
 
     @Override
     public byte[] getBlob(final long hash) {
-        return LZ4.decompress(ViaBedrock.getBlobCache().get(this.createBlobKey(hash)));
-    }
-
-    private byte[] createBlobKey(final long hash) {
-        final byte[] hashKey = Longs.toByteArray(Long.reverseBytes(hash));
-        final byte[] blobKey = new byte[BLOB_KEY_PREFIX.length + hashKey.length];
-        System.arraycopy(BLOB_KEY_PREFIX, 0, blobKey, 0, BLOB_KEY_PREFIX.length);
-        System.arraycopy(hashKey, 0, blobKey, BLOB_KEY_PREFIX.length, hashKey.length);
-        return blobKey;
+        try {
+            return BLOB_DB.get(hash);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
 }
