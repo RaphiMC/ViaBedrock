@@ -26,7 +26,7 @@ import java.util.Objects;
 
 public class BedrockItem implements Item {
 
-    public static final int LAST_BLOCK_ITEM_ID = 255;
+    public static final int VANILLA_LAST_BLOCK_ITEM_ID = 255;
 
     private int id;
     private short data;
@@ -36,8 +36,7 @@ public class BedrockItem implements Item {
     private String[] canBreak;
     private long blockingTicks;
     private int blockRuntimeId;
-    private boolean usingNetId;
-    private int netId;
+    private Integer netId;
 
     public BedrockItem(final int id) {
         this(id, (short) 0, (byte) 1);
@@ -48,10 +47,10 @@ public class BedrockItem implements Item {
     }
 
     public BedrockItem(final int id, final short data, final byte amount, final CompoundTag tag) {
-        this(id, data, amount, tag, new String[0], new String[0], 0, 0, false, 0);
+        this(id, data, amount, tag, new String[0], new String[0], 0, 0, null);
     }
 
-    public BedrockItem(final int id, final short data, final byte amount, final CompoundTag tag, final String[] canPlace, final String[] canBreak, final long blockingTicks, final int blockRuntimeId, final boolean usingNetId, final int netId) {
+    public BedrockItem(final int id, final short data, final byte amount, final CompoundTag tag, final String[] canPlace, final String[] canBreak, final long blockingTicks, final int blockRuntimeId, final Integer netId) {
         this.setIdentifier(id);
         this.setData(data);
         this.amount = amount;
@@ -60,7 +59,6 @@ public class BedrockItem implements Item {
         this.canBreak = canBreak;
         this.blockingTicks = blockingTicks;
         this.blockRuntimeId = blockRuntimeId;
-        this.usingNetId = usingNetId;
         this.netId = netId;
     }
 
@@ -161,25 +159,22 @@ public class BedrockItem implements Item {
         this.blockRuntimeId = blockRuntimeId;
     }
 
-    public boolean usingNetId() {
-        return this.usingNetId;
-    }
-
-    public void setUsingNetId(final boolean usingNetId) {
-        this.usingNetId = usingNetId;
-    }
-
-    public int netId() {
+    public Integer netId() {
         return this.netId;
     }
 
-    public void setNetId(final int netId) {
+    public void setNetId(final Integer netId) {
         this.netId = netId;
+    }
+
+    public boolean isDifferent(final BedrockItem o) {
+        if (o == null) return true;
+        return this.id != o.id || this.data != o.data || this.blockRuntimeId != o.blockRuntimeId || !Objects.equals(this.tag, o.tag);
     }
 
     @Override
     public BedrockItem copy() {
-        return new BedrockItem(this.id, this.data, this.amount, this.tag != null ? this.tag.copy() : null, this.canPlace.clone(), this.canBreak.clone(), this.blockingTicks, this.blockRuntimeId, this.usingNetId, this.netId);
+        return new BedrockItem(this.id, this.data, this.amount, this.tag != null ? this.tag.copy() : null, this.canPlace.clone(), this.canBreak.clone(), this.blockingTicks, this.blockRuntimeId, this.netId);
     }
 
     @Override
@@ -187,15 +182,12 @@ public class BedrockItem implements Item {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BedrockItem that = (BedrockItem) o;
-        return id == that.id && data == that.data && amount == that.amount && blockingTicks == that.blockingTicks && blockRuntimeId == that.blockRuntimeId && usingNetId == that.usingNetId && netId == that.netId && Objects.equals(tag, that.tag) && Arrays.equals(canPlace, that.canPlace) && Arrays.equals(canBreak, that.canBreak);
+        return id == that.id && data == that.data && amount == that.amount && blockingTicks == that.blockingTicks && blockRuntimeId == that.blockRuntimeId && Objects.equals(tag, that.tag) && Objects.deepEquals(canPlace, that.canPlace) && Objects.deepEquals(canBreak, that.canBreak) && Objects.equals(netId, that.netId);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, data, amount, tag, blockingTicks, blockRuntimeId, usingNetId, netId);
-        result = 31 * result + Arrays.hashCode(canPlace);
-        result = 31 * result + Arrays.hashCode(canBreak);
-        return result;
+        return Objects.hash(id, data, amount, tag, Arrays.hashCode(canPlace), Arrays.hashCode(canBreak), blockingTicks, blockRuntimeId, netId);
     }
 
     @Override
@@ -209,7 +201,6 @@ public class BedrockItem implements Item {
                 ", canBreak=" + Arrays.toString(canBreak) +
                 ", blockingTicks=" + blockingTicks +
                 ", blockRuntimeId=" + blockRuntimeId +
-                ", usingNetId=" + usingNetId +
                 ", netId=" + netId +
                 '}';
     }

@@ -118,7 +118,7 @@ public class InventoryContainer extends Container {
     }
 
     private void onSelectedHotbarSlotChanged(final BedrockItem oldItem, final BedrockItem newItem, final PacketWrapper mobEquipment) {
-        if (!oldItem.equals(newItem)) {
+        if (oldItem.isDifferent(newItem)) {
             final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, this.user);
             interact.write(Types.BYTE, (byte) InteractPacket_Action.InteractUpdate.getValue()); // action
             interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target runtime entity id

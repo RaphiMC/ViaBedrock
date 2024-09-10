@@ -375,7 +375,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
                 final JsonObject definition = entry.getValue().getAsJsonObject();
                 if (definition.has("block")) {
-                    if (this.bedrockItems.get(bedrockIdentifier) > BedrockItem.LAST_BLOCK_ITEM_ID) {
+                    if (this.bedrockItems.get(bedrockIdentifier) > BedrockItem.VANILLA_LAST_BLOCK_ITEM_ID) {
                         throw new RuntimeException("Tried to register meta item as block item: " + bedrockIdentifier);
                     }
                     final JsonObject blockDefinition = definition.get("block").getAsJsonObject();
@@ -413,7 +413,7 @@ public class BedrockMappingData extends MappingDataBase {
                         }
                     }*/
                 } else if (definition.has("meta")) {
-                    if (this.bedrockItems.get(bedrockIdentifier) <= BedrockItem.LAST_BLOCK_ITEM_ID) {
+                    if (this.bedrockItems.get(bedrockIdentifier) <= BedrockItem.VANILLA_LAST_BLOCK_ITEM_ID) {
                         throw new RuntimeException("Tried to register block item as meta item: " + bedrockIdentifier);
                     }
                     final JsonObject metaDefinition = definition.get("meta").getAsJsonObject();

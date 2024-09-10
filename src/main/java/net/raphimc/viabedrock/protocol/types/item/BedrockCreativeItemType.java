@@ -26,14 +26,13 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 public class BedrockCreativeItemType extends BedrockItemType {
 
     public BedrockCreativeItemType(final int blockingId, final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates) {
-        super(blockingId, blockItemValidBlockStates, false);
+        super(blockingId, blockItemValidBlockStates, false, false);
     }
 
     @Override
     public BedrockItem read(ByteBuf buffer) {
         final int netId = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final BedrockItem item = super.read(buffer);
-        item.setUsingNetId(true);
         item.setNetId(netId);
         return item;
     }

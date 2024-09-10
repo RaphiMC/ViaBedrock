@@ -62,6 +62,7 @@ public class ItemRewriter extends StoredObject {
 
     private final BiMap<String, Integer> items;
     private final Set<String> componentItems;
+    private final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates;
     private final Type<BedrockItem> itemType;
     private final Type<BedrockItem[]> itemArrayType;
     private final Type<BedrockItem> creativeItemType;
@@ -74,6 +75,13 @@ public class ItemRewriter extends StoredObject {
     public ItemRewriter(final UserConnection user, final ItemEntry[] itemEntries) {
         super(user);
 
+        final Set<String> blockItems = new HashSet<>();
+        for (Map.Entry<String, Integer> entry : BedrockProtocol.MAPPINGS.getBedrockItems().entrySet()) {
+            if (entry.getValue() <= BedrockItem.VANILLA_LAST_BLOCK_ITEM_ID) {
+                blockItems.add(entry.getKey());
+            }
+        }
+
         this.items = HashBiMap.create(BedrockProtocol.MAPPINGS.getBedrockItems());
         this.componentItems = new HashSet<>();
         for (ItemEntry itemEntry : itemEntries) {
@@ -84,35 +92,33 @@ public class ItemRewriter extends StoredObject {
             }
         }
 
-        final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates = new Int2ObjectOpenHashMap<>();
+        this.blockItemValidBlockStates = new Int2ObjectOpenHashMap<>(blockItems.size());
         final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
-        for (Map.Entry<String, Integer> entry : this.items.entrySet()) {
-            if (entry.getValue() <= BedrockItem.LAST_BLOCK_ITEM_ID) {
-                IntSortedSet validBlockStates = blockStateRewriter.validBlockStates(entry.getKey());
-                if (validBlockStates == null) {
-                    final String[] components = entry.getKey().split(":", 2);
-                    if (components[1].startsWith("item.")) {
-                        validBlockStates = blockStateRewriter.validBlockStates(components[0] + ':' + components[1].substring(5));
-                    }
+        for (String identifier : blockItems) {
+            IntSortedSet validBlockStates = blockStateRewriter.validBlockStates(identifier);
+            if (validBlockStates == null) {
+                final String[] components = identifier.split(":", 2);
+                if (components[1].startsWith("item.")) {
+                    validBlockStates = blockStateRewriter.validBlockStates(components[0] + ':' + components[1].substring(5));
                 }
-                if (validBlockStates != null) {
-                    blockItemValidBlockStates.put(entry.getValue().intValue(), validBlockStates);
-                } else {
-                    Via.getPlatform().getLogger().log(Level.WARNING, "Missing block for block item: " + entry.getKey());
-                }
+            }
+            if (validBlockStates != null) {
+                this.blockItemValidBlockStates.put(this.items.get(identifier).intValue(), validBlockStates);
+            } else {
+                Via.getPlatform().getLogger().log(Level.WARNING, "Missing block for block item: " + identifier);
             }
         }
 
-        this.itemType = new BedrockItemType(this.items.get("minecraft:shield"), blockItemValidBlockStates, true);
+        this.itemType = new BedrockItemType(this.items.get("minecraft:shield"), this.blockItemValidBlockStates, true, false);
         this.itemArrayType = new ArrayType<>(this.itemType, BedrockTypes.UNSIGNED_VAR_INT);
-        this.creativeItemType = new BedrockCreativeItemType(this.items.get("minecraft:shield"), blockItemValidBlockStates);
+        this.creativeItemType = new BedrockCreativeItemType(this.items.get("minecraft:shield"), this.blockItemValidBlockStates);
         this.creativeItemArrayType = new ArrayType<>(this.creativeItemType, BedrockTypes.UNSIGNED_VAR_INT);
     }
 
     public Item javaItem(final BedrockItem bedrockItem) {
         if (bedrockItem.isEmpty()) return StructuredItem.empty();
 
-        String identifier = this.items.inverse().get(bedrockItem.identifier());
+        final String identifier = this.items.inverse().get(bedrockItem.identifier());
         if (identifier == null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing item identifier for id: " + bedrockItem.identifier());
             return StructuredItem.empty();
@@ -121,32 +127,36 @@ public class ItemRewriter extends StoredObject {
         final BedrockMappingData.JavaItemMapping javaItemMapping;
         final Map<BlockState, BedrockMappingData.JavaItemMapping> blockItemMappings = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockItems().get(identifier);
         if (blockItemMappings != null) {
-            BlockState blockState = this.user().get(BlockStateRewriter.class).blockState(bedrockItem.blockRuntimeId());
-            if (!blockItemMappings.containsKey(blockState)) {
-                if (bedrockItem.blockRuntimeId() != 0) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockItem.blockRuntimeId() + " for item: " + identifier);
-                }
-                blockState = blockItemMappings.keySet().iterator().next();
+            if (bedrockItem.blockRuntimeId() == 0) { // Manually constructed items might not have a valid block state set
+                final IntSortedSet validBlockStates = this.blockItemValidBlockStates.get(bedrockItem.identifier());
+                bedrockItem.setBlockRuntimeId(validBlockStates.firstInt());
             }
-            javaItemMapping = blockItemMappings.get(blockState);
+            javaItemMapping = blockItemMappings.get(this.user().get(BlockStateRewriter.class).blockState(bedrockItem.blockRuntimeId()));
         } else {
             final int meta = bedrockItem.data() & 0xFFFF;
             final String newIdentifier = BedrockProtocol.MAPPINGS.getBedrockItemUpgrader().upgradeMetaItem(identifier, meta);
             if (newIdentifier != null) {
-                identifier = newIdentifier;
-            }
-            final Map<Integer, BedrockMappingData.JavaItemMapping> metaItemMappings = BedrockProtocol.MAPPINGS.getBedrockToJavaMetaItems().get(identifier);
-            if (metaItemMappings != null) {
-                if (!metaItemMappings.containsKey(meta)) {
-                    if (metaItemMappings.size() != 1 || meta != 0) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing meta: " + meta + " for item: " + identifier);
-                    }
-                    javaItemMapping = metaItemMappings.get(null);
+                final Map<BlockState, BedrockMappingData.JavaItemMapping> newBlockItemMappings = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockItems().get(newIdentifier);
+                if (newBlockItemMappings != null) {
+                    final IntSortedSet validBlockStates = this.blockItemValidBlockStates.get(bedrockItem.identifier());
+                    javaItemMapping = newBlockItemMappings.get(this.user().get(BlockStateRewriter.class).blockState(validBlockStates.firstInt()));
                 } else {
-                    javaItemMapping = metaItemMappings.get(meta);
+                    javaItemMapping = null;
                 }
             } else {
-                javaItemMapping = null;
+                final Map<Integer, BedrockMappingData.JavaItemMapping> metaItemMappings = BedrockProtocol.MAPPINGS.getBedrockToJavaMetaItems().get(identifier);
+                if (metaItemMappings != null) {
+                    if (!metaItemMappings.containsKey(meta)) {
+                        if (metaItemMappings.size() != 1 || meta != 0) {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing meta: " + meta + " for item: " + identifier);
+                        }
+                        javaItemMapping = metaItemMappings.get(null);
+                    } else {
+                        javaItemMapping = metaItemMappings.get(meta);
+                    }
+                } else {
+                    javaItemMapping = null;
+                }
             }
         }
 

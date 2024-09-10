@@ -30,13 +30,15 @@ public class BedrockItemType extends Type<BedrockItem> {
     private final int blockingId;
     private final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates;
     private final boolean hasNetId;
+    private final boolean writeItemNetId;
 
-    public BedrockItemType(final int blockingId, final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates, final boolean hasNetId) {
+    public BedrockItemType(final int blockingId, final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates, final boolean hasNetId, final boolean writeItemNetId) {
         super(BedrockItem.class);
 
         this.blockingId = blockingId;
         this.blockItemValidBlockStates = blockItemValidBlockStates;
         this.hasNetId = hasNetId;
+        this.writeItemNetId = writeItemNetId;
     }
 
     @Override
@@ -49,22 +51,18 @@ public class BedrockItemType extends Type<BedrockItem> {
         final BedrockItem item = new BedrockItem(id);
         item.setAmount(buffer.readUnsignedShortLE());
         item.setData(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
-        if (this.hasNetId) {
-            item.setUsingNetId(buffer.readBoolean());
-            if (item.usingNetId()) {
-                item.setNetId(BedrockTypes.VAR_INT.read(buffer));
-            }
+        if (this.hasNetId && buffer.readBoolean()) {
+            item.setNetId(BedrockTypes.VAR_INT.read(buffer));
         }
         item.setBlockRuntimeId(BedrockTypes.VAR_INT.read(buffer));
-        item.setCanPlace(new String[0]);
-        item.setCanBreak(new String[0]);
 
-        if (item.identifier() <= BedrockItem.LAST_BLOCK_ITEM_ID) {
-            final IntSortedSet validBlockStates = this.blockItemValidBlockStates.get(item.identifier());
-            if (validBlockStates != null && !validBlockStates.contains(item.blockRuntimeId())) {
+        final IntSortedSet validBlockStates = this.blockItemValidBlockStates.get(item.identifier());
+        if (validBlockStates != null) { // Block item
+            item.setData(0);
+            if (!validBlockStates.contains(item.blockRuntimeId())) {
                 item.setBlockRuntimeId(validBlockStates.firstInt());
             }
-        } else {
+        } else { // Meta item
             item.setBlockRuntimeId(0);
         }
 
@@ -103,9 +101,13 @@ public class BedrockItemType extends Type<BedrockItem> {
         buffer.writeShortLE(value.amount());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, (int) value.data());
         if (this.hasNetId) {
-            buffer.writeBoolean(value.usingNetId());
-            if (value.usingNetId()) {
-                BedrockTypes.VAR_INT.write(buffer, value.netId());
+            if (this.writeItemNetId) {
+                buffer.writeBoolean(value.netId() != null);
+                if (value.netId() != null) {
+                    BedrockTypes.VAR_INT.write(buffer, value.netId());
+                }
+            } else {
+                buffer.writeBoolean(false);
             }
         }
         BedrockTypes.VAR_INT.write(buffer, value.blockRuntimeId());
