@@ -55,6 +55,7 @@ import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.SoundSource;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.DataInputStream;
@@ -374,7 +375,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
                 final JsonObject definition = entry.getValue().getAsJsonObject();
                 if (definition.has("block")) {
-                    if (this.bedrockItems.get(bedrockIdentifier) > 255) {
+                    if (this.bedrockItems.get(bedrockIdentifier) > BedrockItem.LAST_BLOCK_ITEM_ID) {
                         throw new RuntimeException("Tried to register meta item as block item: " + bedrockIdentifier);
                     }
                     final JsonObject blockDefinition = definition.get("block").getAsJsonObject();
@@ -412,7 +413,7 @@ public class BedrockMappingData extends MappingDataBase {
                         }
                     }*/
                 } else if (definition.has("meta")) {
-                    if (this.bedrockItems.get(bedrockIdentifier) < 256) {
+                    if (this.bedrockItems.get(bedrockIdentifier) <= BedrockItem.LAST_BLOCK_ITEM_ID) {
                         throw new RuntimeException("Tried to register block item as meta item: " + bedrockIdentifier);
                     }
                     final JsonObject metaDefinition = definition.get("meta").getAsJsonObject();

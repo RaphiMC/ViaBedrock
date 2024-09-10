@@ -26,6 +26,8 @@ import java.util.Objects;
 
 public class BedrockItem implements Item {
 
+    public static final int LAST_BLOCK_ITEM_ID = 255;
+
     private int id;
     private short data;
     private byte amount;

@@ -17,14 +17,16 @@
  */
 package net.raphimc.viabedrock.protocol.types.item;
 
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.ints.IntSortedSet;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class BedrockCreativeItemType extends BedrockItemType {
 
-    public BedrockCreativeItemType(final int blockingId) {
-        super(blockingId, false);
+    public BedrockCreativeItemType(final int blockingId, final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates) {
+        super(blockingId, blockItemValidBlockStates, false);
     }
 
     @Override

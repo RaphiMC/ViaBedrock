@@ -21,6 +21,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.Tag;
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
@@ -28,6 +29,9 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.ints.IntSortedSet;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
@@ -79,9 +83,29 @@ public class ItemRewriter extends StoredObject {
                 this.componentItems.add(Key.namespaced(itemEntry.identifier()));
             }
         }
-        this.itemType = new BedrockItemType(this.items.get("minecraft:shield"), true);
+
+        final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates = new Int2ObjectOpenHashMap<>();
+        final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
+        for (Map.Entry<String, Integer> entry : this.items.entrySet()) {
+            if (entry.getValue() <= BedrockItem.LAST_BLOCK_ITEM_ID) {
+                IntSortedSet validBlockStates = blockStateRewriter.validBlockStates(entry.getKey());
+                if (validBlockStates == null) {
+                    final String[] components = entry.getKey().split(":", 2);
+                    if (components[1].startsWith("item.")) {
+                        validBlockStates = blockStateRewriter.validBlockStates(components[0] + ':' + components[1].substring(5));
+                    }
+                }
+                if (validBlockStates != null) {
+                    blockItemValidBlockStates.put(entry.getValue().intValue(), validBlockStates);
+                } else {
+                    Via.getPlatform().getLogger().log(Level.WARNING, "Missing block for block item: " + entry.getKey());
+                }
+            }
+        }
+
+        this.itemType = new BedrockItemType(this.items.get("minecraft:shield"), blockItemValidBlockStates, true);
         this.itemArrayType = new ArrayType<>(this.itemType, BedrockTypes.UNSIGNED_VAR_INT);
-        this.creativeItemType = new BedrockCreativeItemType(this.items.get("minecraft:shield"));
+        this.creativeItemType = new BedrockCreativeItemType(this.items.get("minecraft:shield"), blockItemValidBlockStates);
         this.creativeItemArrayType = new ArrayType<>(this.creativeItemType, BedrockTypes.UNSIGNED_VAR_INT);
     }
 

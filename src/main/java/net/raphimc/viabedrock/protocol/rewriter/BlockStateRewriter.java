@@ -21,10 +21,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.viaversion.nbt.tag.*;
 import com.viaversion.viaversion.api.connection.StorableObject;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.ints.*;
+import com.viaversion.viaversion.libs.fastutil.objects.Object2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.objects.Object2ObjectOpenHashMap;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.blockstate.BlockStateSanitizer;
@@ -48,6 +47,7 @@ public class BlockStateRewriter implements StorableObject {
     private final Int2IntMap blockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Java
     private final Int2IntMap legacyBlockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Bedrock
     private final BiMap<BlockState, Integer> blockStateMappings = HashBiMap.create(); // Bedrock -> Bedrock
+    private final Object2ObjectMap<String, IntSortedSet> validBlockStates = new Object2ObjectOpenHashMap<>(); // Bedrock -> Bedrock
     private final Int2ObjectMap<String> blockStateTags = new Int2ObjectOpenHashMap<>(); // Bedrock
     private final BlockStateSanitizer blockStateSanitizer;
 
@@ -166,6 +166,7 @@ public class BlockStateRewriter implements StorableObject {
             final int bedrockId = hashedRuntimeBlockIds ? bedrockBlockState.blockStateTag().getIntTag("network_id").asInt() : i;
 
             this.blockStateMappings.put(bedrockBlockState, bedrockId);
+            this.validBlockStates.computeIfAbsent(bedrockBlockState.namespacedIdentifier(), k -> new IntLinkedOpenHashSet()).add(bedrockId);
 
             if (blockTags.containsKey(bedrockBlockState.namespacedIdentifier())) {
                 this.blockStateTags.put(bedrockId, blockTags.get(bedrockBlockState.namespacedIdentifier()));
@@ -233,6 +234,10 @@ public class BlockStateRewriter implements StorableObject {
 
         final BlockState waterlogged = BedrockProtocol.MAPPINGS.getJavaBlockStates().inverse().get(javaBlockStateId).withProperty("waterlogged", "true");
         return BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(waterlogged, -1);
+    }
+
+    public IntSortedSet validBlockStates(final String bedrockBlockIdentifier) {
+        return this.validBlockStates.get(bedrockBlockIdentifier);
     }
 
     public String tag(final int bedrockBlockStateId) {

@@ -19,6 +19,8 @@ package net.raphimc.viabedrock.protocol.types.item;
 
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.ints.IntSortedSet;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -26,12 +28,14 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 public class BedrockItemType extends Type<BedrockItem> {
 
     private final int blockingId;
+    private final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates;
     private final boolean hasNetId;
 
-    public BedrockItemType(final int blockingId, final boolean hasNetId) {
+    public BedrockItemType(final int blockingId, final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates, final boolean hasNetId) {
         super(BedrockItem.class);
 
         this.blockingId = blockingId;
+        this.blockItemValidBlockStates = blockItemValidBlockStates;
         this.hasNetId = hasNetId;
     }
 
@@ -54,6 +58,15 @@ public class BedrockItemType extends Type<BedrockItem> {
         item.setBlockRuntimeId(BedrockTypes.VAR_INT.read(buffer));
         item.setCanPlace(new String[0]);
         item.setCanBreak(new String[0]);
+
+        if (item.identifier() <= BedrockItem.LAST_BLOCK_ITEM_ID) {
+            final IntSortedSet validBlockStates = this.blockItemValidBlockStates.get(item.identifier());
+            if (validBlockStates != null && !validBlockStates.contains(item.blockRuntimeId())) {
+                item.setBlockRuntimeId(validBlockStates.firstInt());
+            }
+        } else {
+            item.setBlockRuntimeId(0);
+        }
 
         final ByteBuf userData = buffer.readSlice(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
         try {
