@@ -23,7 +23,6 @@ import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
-import java.awt.image.BufferedImage;
 import java.util.Locale;
 
 // https://wiki.bedrock.dev/concepts/emojis
@@ -46,8 +45,8 @@ public class GlyphSheetResourceRewriter implements ResourcePackRewriter.Rewriter
                 if (!bedrockContent.contains(bedrockPath)) continue;
 
                 javaContent.copyFrom(bedrockContent, bedrockPath, "assets/viabedrock/textures/" + javaPath);
-                final BufferedImage image = bedrockContent.getImage(bedrockPath);
-                final int glyphHeight = image.getHeight() / GLYPHS_PER_COLUMN;
+                final ResourcePack.Content.LazyImage image = bedrockContent.getImage(bedrockPath);
+                final int glyphHeight = image.getImage().getHeight() / GLYPHS_PER_COLUMN;
 
                 final JsonObject glyphPage = new JsonObject();
                 providers.add(glyphPage);

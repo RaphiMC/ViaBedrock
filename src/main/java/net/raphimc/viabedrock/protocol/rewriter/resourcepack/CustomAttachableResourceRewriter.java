@@ -28,7 +28,6 @@ import org.oryxel.cube.model.bedrock.BedrockGeometry;
 import org.oryxel.cube.model.java.ItemModelData;
 import org.oryxel.cube.parser.java.JavaModelSerializer;
 
-import java.awt.image.BufferedImage;
 import java.util.Map;
 
 public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter {
@@ -45,9 +44,9 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
             for (String bedrockPath : attachableEntry.getValue().attachableData().textures().values()) {
                 for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
                     final ResourcePack.Content bedrockContent = pack.content();
-                    final BufferedImage texture = bedrockContent.getShortnameImage(bedrockPath);
+                    final ResourcePack.Content.LazyImage texture = bedrockContent.getShortnameImage(bedrockPath);
                     if (texture != null) {
-                        javaContent.putImage("assets/viabedrock/textures/" + this.getJavaTexturePath(bedrockPath) + ".png", texture);
+                        javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(bedrockPath) + ".png", texture);
                         break;
                     }
                 }

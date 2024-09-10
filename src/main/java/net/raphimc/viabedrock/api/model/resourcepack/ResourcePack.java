@@ -366,6 +366,19 @@ public class ResourcePack {
             return this.content.keySet().stream().filter(file -> file.startsWith(path) && file.endsWith(extension)).collect(Collectors.toList());
         }
 
+        public String getFullPath(final String shortNamePath, final String... extensions) {
+            if (this.contains(shortNamePath)) {
+                return shortNamePath;
+            }
+            for (final String extension : extensions) {
+                final String path = shortNamePath + "." + extension;
+                if (this.contains(path)) {
+                    return path;
+                }
+            }
+            return null;
+        }
+
         public boolean contains(final String path) {
             return this.content.containsKey(path);
         }
@@ -434,32 +447,30 @@ public class ResourcePack {
             return this.putString(path, GsonUtil.getGson().toJson(json));
         }
 
-        public BufferedImage getShortnameImage(final String path) {
-            if (this.contains(path)) {
-                return this.getImage(path);
-            } else if (this.contains(path + ".png")) {
-                return this.getImage(path + ".png");
-            } else if (this.contains(path + ".jpg")) {
-                return this.getImage(path + ".jpg");
-            } else {
-                return null;
-            }
+        public LazyImage getShortnameImage(final String path) {
+            return this.getImage(this.getFullPath(path, "png", "jpg"));
         }
 
-        public BufferedImage getImage(final String path) {
+        public LazyImage getImage(final String path) {
             final byte[] bytes = this.get(path);
             if (bytes == null) {
                 return null;
             }
 
-            try {
-                return ImageIO.read(new ByteArrayInputStream(bytes));
-            } catch (final IOException e) {
-                throw new RuntimeException(e);
+            final boolean isPng = bytes.length > 8 && bytes[0] == (byte) 0x89 && bytes[1] == (byte) 0x50 && bytes[2] == (byte) 0x4E && bytes[3] == (byte) 0x47 && bytes[4] == (byte) 0x0D && bytes[5] == (byte) 0x0A && bytes[6] == (byte) 0x1A && bytes[7] == (byte) 0x0A;
+            final boolean isJpg = bytes.length > 2 && bytes[0] == (byte) 0xFF && bytes[1] == (byte) 0xD8 && bytes[2] == (byte) 0xFF;
+            if (!isPng && !isJpg) {
+                return null;
             }
+
+            return new LazyImage(bytes, isPng ? "png" : "jpg");
         }
 
-        public boolean putImage(final String path, final BufferedImage image) {
+        public boolean putPngImage(final String path, final LazyImage image) {
+            return this.put(path, image.getPngBytes());
+        }
+
+        public boolean putPngImage(final String path, final BufferedImage image) {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try {
                 ImageIO.write(image, "png", baos);
@@ -487,6 +498,49 @@ public class ResourcePack {
 
         public int size() {
             return this.content.size();
+        }
+
+        public static class LazyImage {
+
+            private final byte[] bytes;
+            private final String format;
+            private BufferedImage image;
+
+            public LazyImage(final byte[] bytes, final String format) {
+                this.bytes = bytes;
+                this.format = format;
+            }
+
+            public BufferedImage getImage() {
+                if (this.image == null) {
+                    try {
+                        this.image = ImageIO.read(new ByteArrayInputStream(this.bytes));
+                    } catch (final IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                return this.image;
+            }
+
+            public byte[] getPngBytes() {
+                return this.getPngBytes(false);
+            }
+
+            public byte[] getPngBytes(final boolean forceWrite) {
+                if (this.format.equals("png") && !forceWrite) {
+                    return this.bytes;
+                } else {
+                    final BufferedImage image = this.getImage();
+                    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    try {
+                        ImageIO.write(image, "png", baos);
+                    } catch (final IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return baos.toByteArray();
+                }
+            }
+
         }
 
     }

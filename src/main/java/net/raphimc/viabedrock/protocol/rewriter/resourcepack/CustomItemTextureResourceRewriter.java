@@ -22,7 +22,6 @@ import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.model.resourcepack.TextureDefinitions;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
-import java.awt.image.BufferedImage;
 import java.util.Map;
 
 public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter {
@@ -38,10 +37,10 @@ public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter
         for (Map.Entry<String, TextureDefinitions.ItemTextureDefinition> entry : resourcePacksStorage.getTextures().itemTextures().entrySet()) {
             for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
                 final ResourcePack.Content bedrockContent = pack.content();
-                final BufferedImage texture = bedrockContent.getShortnameImage(entry.getValue().texturePath());
+                final ResourcePack.Content.LazyImage texture = bedrockContent.getShortnameImage(entry.getValue().texturePath());
                 if (texture == null) continue;
 
-                javaContent.putImage("assets/viabedrock/textures/" + this.getJavaTexturePath(entry.getValue().texturePath()) + ".png", texture);
+                javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(entry.getValue().texturePath()) + ".png", texture);
 
                 final JsonObject itemModel = new JsonObject();
                 itemModel.addProperty("parent", "minecraft:item/generated");

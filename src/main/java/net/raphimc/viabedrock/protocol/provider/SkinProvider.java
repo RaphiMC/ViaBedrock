@@ -46,7 +46,7 @@ public class SkinProvider implements Provider {
         final AuthChainData authChainData = user.get(AuthChainData.class);
 
         final ResourcePack.Content skinPackContent = BedrockProtocol.MAPPINGS.getBedrockVanillaSkinPack().content();
-        final BufferedImage skin = skinPackContent.getImage("steve.png");
+        final BufferedImage skin = skinPackContent.getImage("steve.png").getImage();
         final JsonObject skinGeometry = JsonUtil.sort(skinPackContent.getJson("geometry.json"), Comparator.naturalOrder());
 
         final Map<String, Object> claims = new HashMap<>();
