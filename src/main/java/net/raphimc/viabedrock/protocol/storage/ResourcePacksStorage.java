@@ -188,7 +188,7 @@ public class ResourcePacksStorage extends StoredObject {
     }
 
     public boolean hasFinishedLoading() {
-        return this.texts != null;
+        return this.models != null;
     }
 
     public TextDefinitions getTexts() {
