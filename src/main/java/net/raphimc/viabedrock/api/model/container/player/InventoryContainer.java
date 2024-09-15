@@ -94,6 +94,14 @@ public class InventoryContainer extends Container {
         return (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue();
     }
 
+    public byte getSelectedHotbarSlot() {
+        return this.selectedHotbarSlot;
+    }
+
+    public BedrockItem getSelectedHotbarItem() {
+        return this.getItem(this.selectedHotbarSlot);
+    }
+
     public void sendSelectedHotbarSlotToClient() {
         final PacketWrapper setCarriedItem = PacketWrapper.create(ClientboundPackets1_21.SET_CARRIED_ITEM, this.user);
         setCarriedItem.write(Types.BYTE, this.selectedHotbarSlot);
@@ -122,7 +130,7 @@ public class InventoryContainer extends Container {
             final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, this.user);
             interact.write(Types.BYTE, (byte) InteractPacket_Action.InteractUpdate.getValue()); // action
             interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target runtime entity id
-            interact.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // mouse position
+            interact.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // mouse position
             interact.sendToServer(BedrockProtocol.class);
         }
 

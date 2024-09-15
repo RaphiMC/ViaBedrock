@@ -154,7 +154,7 @@ public class JoinPackets {
                         final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
                         interact.write(Types.BYTE, (byte) InteractPacket_Action.InteractUpdate.getValue()); // action
                         interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target runtime entity id
-                        interact.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // mouse position
+                        interact.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // mouse position
                         interact.sendToServer(BedrockProtocol.class);
 
                         final PacketWrapper emoteList = PacketWrapper.create(ServerboundBedrockPackets.EMOTE_LIST, wrapper.user());

@@ -394,8 +394,7 @@ public class EntityPackets {
             setEntityData.write(Types1_21.ENTITY_DATA_LIST, Lists.newArrayList(new EntityData(entity.getJavaEntityDataIndex("PAINTING_VARIANT"), Types1_21.ENTITY_DATA_TYPES.paintingVariantType, paintingHolder))); // entity data
             setEntityData.send(BedrockProtocol.class);
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.ENTITY_EVENT, null, wrapper -> {
-            wrapper.cancel();
+        protocol.registerClientbound(ClientboundBedrockPackets.ENTITY_EVENT, ClientboundPackets1_21.ENTITY_EVENT, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
@@ -403,26 +402,42 @@ public class EntityPackets {
             final byte rawEvent = wrapper.read(Types.BYTE); // event
             final ActorEvent event = ActorEvent.getByValue(rawEvent); // event
             if (event == null) {
+                wrapper.cancel();
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ActorEvent: " + rawEvent);
                 return;
             }
             final int data = wrapper.read(BedrockTypes.VAR_INT); // data
 
+            final Entity entity = entityTracker.getEntityByRid(runtimeEntityId);
+            if (entity == null) {
+                wrapper.cancel();
+                return;
+            }
             switch (event) {
+                case HURT -> {
+                    final CompoundTag damageTypeRegistry = gameSession.getJavaRegistries().getCompoundTag("minecraft:damage_type");
+                    wrapper.setPacketType(ClientboundPackets1_21.DAMAGE_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+                    wrapper.write(Types.VAR_INT, RegistryUtil.getRegistryIndex(damageTypeRegistry, damageTypeRegistry.getCompoundTag("minecraft:generic"))); // source type
+                    wrapper.write(Types.VAR_INT, 0); // source cause id
+                    wrapper.write(Types.VAR_INT, 0); // source direct id
+                    wrapper.write(Types.BOOLEAN, false); // has source position
+                }
                 case DEATH -> {
-                    if (runtimeEntityId == entityTracker.getClientPlayer().runtimeId()) {
-                        entityTracker.getClientPlayer().setHealth(0F);
-                        entityTracker.getClientPlayer().sendAttribute("minecraft:health");
-
-                        if (gameSession.getDeathMessage() != null && entityTracker.getClientPlayer().isDead()) {
-                            final PacketWrapper playerCombatKill = PacketWrapper.create(ClientboundPackets1_21.PLAYER_COMBAT_KILL, wrapper.user());
-                            playerCombatKill.write(Types.VAR_INT, entityTracker.getClientPlayer().javaId()); // entity id
-                            playerCombatKill.write(Types.TAG, TextUtil.textComponentToNbt(gameSession.getDeathMessage())); // message
-                            playerCombatKill.send(BedrockProtocol.class);
-                        }
+                    wrapper.cancel();
+                    if (entity instanceof LivingEntity livingEntity) {
+                        livingEntity.setHealth(0F);
+                        livingEntity.sendAttribute("minecraft:health");
+                    }
+                    if (entity == entityTracker.getClientPlayer() && entityTracker.getClientPlayer().isDead() && gameSession.getDeathMessage() != null) {
+                        final PacketWrapper playerCombatKill = PacketWrapper.create(ClientboundPackets1_21.PLAYER_COMBAT_KILL, wrapper.user());
+                        playerCombatKill.write(Types.VAR_INT, entityTracker.getClientPlayer().javaId()); // entity id
+                        playerCombatKill.write(Types.TAG, TextUtil.textComponentToNbt(gameSession.getDeathMessage())); // message
+                        playerCombatKill.send(BedrockProtocol.class);
                     }
                 }
                 default -> {
+                    wrapper.cancel();
                     // TODO: Handle remaining events
                     // throw new IllegalStateException("Unhandled ActorEvent: " + event);
                 }

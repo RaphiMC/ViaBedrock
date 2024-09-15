@@ -39,8 +39,9 @@ public class EntityTracker extends StoredObject {
     private final AtomicInteger ID_COUNTER = new AtomicInteger(1);
 
     private ClientPlayerEntity clientPlayerEntity = null;
-    private final Map<Long, Long> runtimeIdToUniqueId = new HashMap<>();
     private final Map<Long, Entity> entities = new HashMap<>();
+    private final Map<Long, Long> runtimeIdToUniqueId = new HashMap<>();
+    private final Map<Integer, Long> javaIdToUniqueId = new HashMap<>();
     private final Map<BlockPosition, Integer> itemFrames = new HashMap<>();
 
     public EntityTracker(final UserConnection user) {
@@ -69,16 +70,19 @@ public class EntityTracker extends StoredObject {
             this.clientPlayerEntity = (ClientPlayerEntity) entity;
         }
 
-        if (this.runtimeIdToUniqueId.putIfAbsent(entity.runtimeId(), entity.uniqueId()) != null) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate runtime entity ID: " + entity.runtimeId());
-        }
         final Entity prevEntity = this.entities.put(entity.uniqueId(), entity);
         if (prevEntity != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate unique entity ID: " + entity.uniqueId());
+            this.removeEntity(prevEntity);
             final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21.REMOVE_ENTITIES, this.user());
             removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
-            prevEntity.remove();
+        }
+        if (this.javaIdToUniqueId.put(entity.javaId(), entity.uniqueId()) != null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate Java entity ID: " + entity.javaId());
+        }
+        if (this.runtimeIdToUniqueId.putIfAbsent(entity.runtimeId(), entity.uniqueId()) != null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate runtime entity ID: " + entity.runtimeId());
         }
 
         if (updateTeam && entity instanceof PlayerEntity player) {
@@ -93,8 +97,9 @@ public class EntityTracker extends StoredObject {
             throw new IllegalArgumentException("Cannot remove client player entity");
         }
 
-        this.runtimeIdToUniqueId.remove(entity.runtimeId());
         this.entities.remove(entity.uniqueId());
+        this.runtimeIdToUniqueId.remove(entity.runtimeId());
+        this.javaIdToUniqueId.remove(entity.javaId());
         entity.remove();
     }
 
@@ -172,6 +177,10 @@ public class EntityTracker extends StoredObject {
 
     public Entity getEntityByUid(final long uniqueId) {
         return this.entities.get(uniqueId);
+    }
+
+    public Entity getEntityByJid(final int javaId) {
+        return this.entities.get(this.javaIdToUniqueId.get(javaId));
     }
 
     public ClientPlayerEntity getClientPlayer() {

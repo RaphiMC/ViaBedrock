@@ -24,7 +24,7 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 - [x] Biomes
 - [x] Player spawning
 - [x] Entity spawning
-- [ ] Entity interactions
+- [x] Entity interactions
 - [ ] Entity metadata
 - [x] Entity attributes
 - [ ] Entity mounting
@@ -43,7 +43,7 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 - [x] Bossbar
 - [x] Player list
 - [x] Command suggestions
-- [x] Sounds (No mob ambient sounds yet)
+- [x] Sounds (No mob sounds yet)
 - [x] Particles
 - [x] Player Skins (Requires [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility) mod)
 - [x] Basic resource pack conversion (Contributions welcome)

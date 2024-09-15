@@ -26,7 +26,9 @@ import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundPac
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
+import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -37,6 +39,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -215,7 +218,7 @@ public class ClientPlayerPackets {
 
             switch (action) {
                 case PERFORM_RESPAWN -> {
-                    wrapper.write(BedrockTypes.POSITION_3F, new Position3f(0F, 0F, 0F)); // position
+                    wrapper.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // position
                     wrapper.write(Types.BYTE, (byte) PlayerRespawnState.ClientReadyToSpawn.getValue()); // state
                     wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
                 }
@@ -353,6 +356,54 @@ public class ClientPlayerPackets {
                 case SWAP_ITEM_WITH_OFFHAND -> {
                 }
                 default -> throw new IllegalStateException("Unhandled PlayerActionAction: " + action);
+            }
+        });
+        protocol.registerServerbound(ServerboundPackets1_20_5.INTERACT, ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper -> {
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
+            final int entityId = wrapper.read(Types.VAR_INT); // entity id
+            final InteractActionType action = InteractActionType.values()[wrapper.read(Types.VAR_INT)]; // action
+            final Entity entity = entityTracker.getEntityByJid(entityId);
+            if (entity == null) {
+                wrapper.cancel();
+                return;
+            }
+
+            wrapper.write(BedrockTypes.VAR_INT, 0); // legacy request id
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemUseOnEntityTransaction.getValue()); // transaction type
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entity.runtimeId()); // runtime entity id
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, (switch (action) {
+                case INTERACT, INTERACT_AT -> ItemUseOnActorInventoryTransaction_ActionType.Interact;
+                case ATTACK -> ItemUseOnActorInventoryTransaction_ActionType.Attack;
+                default -> throw new IllegalStateException("Unhandled InteractActionType: " + action);
+            }).getValue()); // action type
+            wrapper.write(BedrockTypes.VAR_INT, (int) inventoryContainer.getSelectedHotbarSlot()); // hotbar slot
+            wrapper.write(wrapper.user().get(ItemRewriter.class).itemType(), inventoryContainer.getSelectedHotbarItem()); // hand item
+            wrapper.write(BedrockTypes.POSITION_3F, entityTracker.getClientPlayer().position()); // player position
+
+            switch (action) {
+                case INTERACT -> wrapper.cancel();
+                case ATTACK -> {
+                    wrapper.read(Types.BOOLEAN); // secondary action
+                    wrapper.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // click position
+
+                    entityTracker.getClientPlayer().sendSwingPacketToServer();
+                    entityTracker.getClientPlayer().cancelNextSwingPacket();
+                }
+                case INTERACT_AT -> {
+                    final float x = wrapper.read(Types.FLOAT); // x
+                    final float y = wrapper.read(Types.FLOAT); // y
+                    final float z = wrapper.read(Types.FLOAT); // z
+                    final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)]; // hand
+                    if (hand != InteractionHand.MAIN_HAND) {
+                        wrapper.cancel();
+                        return;
+                    }
+                    wrapper.read(Types.BOOLEAN); // secondary action
+                    wrapper.write(BedrockTypes.POSITION_3F, entity.position().add(x, y, z)); // click position
+                }
+                default -> throw new IllegalStateException("Unhandled InteractActionType: " + action);
             }
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.MOVE_PLAYER_STATUS_ONLY, ServerboundBedrockPackets.MOVE_PLAYER, wrapper -> {
