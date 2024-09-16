@@ -138,8 +138,8 @@ public class OtherPlayerPackets {
                 wrapper.cancel();
                 return;
             }
-            if (!entity.type().isOrHasParent(EntityTypes1_20_5.PLAYER)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received move player packet for non-player entity: " + entity.type());
+            if (!entity.javaType().isOrHasParent(EntityTypes1_20_5.PLAYER)) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received move player packet for non-player entity: " + entity.javaType());
                 wrapper.cancel();
                 return;
             }

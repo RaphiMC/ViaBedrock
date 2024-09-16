@@ -85,16 +85,16 @@ public class EntityPackets {
             final Entity entity;
             final EntityTypes1_20_5 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(type);
             if (javaEntityType != null) {
-                entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, javaEntityType);
+                entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, type, javaEntityType);
             } else {
                 final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
                 final EntityDefinitions.EntityDefinition entityDefinition = resourcePacksStorage.getEntities().get(type);
                 if (entityDefinition != null) {
                     if (resourcePacksStorage.isLoadedOnJavaClient() && resourcePacksStorage.getConverterData().containsKey("ce_" + entityDefinition.identifier() + "_default")) {
-                        entity = new CustomEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, entityTracker.getNextJavaEntityId(), entityDefinition);
+                        entity = new CustomEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, type, entityTracker.getNextJavaEntityId(), entityDefinition);
                         entityTracker.addEntity(entity);
                     } else {
-                        entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, EntityTypes1_20_5.PIG);
+                        entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, type, EntityTypes1_20_5.PIG);
                     }
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity type: " + type);
@@ -107,7 +107,7 @@ public class EntityPackets {
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.UUID, entity.javaUuid()); // uuid
-            wrapper.write(Types.VAR_INT, entity.type().getId()); // type id
+            wrapper.write(Types.VAR_INT, entity.javaType().getId()); // type id
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y()); // y
             wrapper.write(Types.DOUBLE, (double) position.z()); // z
@@ -138,12 +138,12 @@ public class EntityPackets {
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
             wrapper.read(Types.BOOLEAN); // from fishing
 
-            final Entity entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, EntityTypes1_20_5.ITEM);
+            final Entity entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, "minecraft:item", EntityTypes1_20_5.ITEM);
             entity.setPosition(position);
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.UUID, entity.javaUuid()); // uuid
-            wrapper.write(Types.VAR_INT, entity.type().getId()); // type id
+            wrapper.write(Types.VAR_INT, entity.javaType().getId()); // type id
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y()); // y
             wrapper.write(Types.DOUBLE, (double) position.z()); // z
@@ -370,12 +370,12 @@ public class EntityPackets {
                 default -> positionOffset;
             };
 
-            final Entity entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, null, EntityTypes1_20_5.PAINTING);
+            final Entity entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, "minecraft:painting", EntityTypes1_20_5.PAINTING);
             entity.setPosition(position);
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.UUID, entity.javaUuid()); // uuid
-            wrapper.write(Types.VAR_INT, entity.type().getId()); // type id
+            wrapper.write(Types.VAR_INT, entity.javaType().getId()); // type id
             wrapper.write(Types.DOUBLE, (double) position.x() + positionOffset.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y() + positionOffset.y()); // y
             wrapper.write(Types.DOUBLE, (double) position.z() + positionOffset.z()); // z
@@ -416,12 +416,18 @@ public class EntityPackets {
             switch (event) {
                 case HURT -> {
                     final CompoundTag damageTypeRegistry = gameSession.getJavaRegistries().getCompoundTag("minecraft:damage_type");
+                    final ActorDamageCause damageCause = ActorDamageCause.getByValue(data, ActorDamageCause.None);
+                    final CompoundTag damageTypeEntry = damageTypeRegistry.getCompoundTag(BedrockProtocol.MAPPINGS.getBedrockToJavaDamageCauses().get(damageCause));
+
                     wrapper.setPacketType(ClientboundPackets1_21.DAMAGE_EVENT);
                     wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
-                    wrapper.write(Types.VAR_INT, RegistryUtil.getRegistryIndex(damageTypeRegistry, damageTypeRegistry.getCompoundTag("minecraft:generic"))); // source type
+                    wrapper.write(Types.VAR_INT, RegistryUtil.getRegistryIndex(damageTypeRegistry, damageTypeEntry)); // source type
                     wrapper.write(Types.VAR_INT, 0); // source cause id
                     wrapper.write(Types.VAR_INT, 0); // source direct id
                     wrapper.write(Types.BOOLEAN, false); // has source position
+                    if (entity != entityTracker.getClientPlayer()) {
+                        entity.playSound(Puv_Legacy_LevelSoundEvent.Hurt);
+                    }
                 }
                 case DEATH -> {
                     wrapper.cancel();
@@ -434,6 +440,9 @@ public class EntityPackets {
                         playerCombatKill.write(Types.VAR_INT, entityTracker.getClientPlayer().javaId()); // entity id
                         playerCombatKill.write(Types.TAG, TextUtil.textComponentToNbt(gameSession.getDeathMessage())); // message
                         playerCombatKill.send(BedrockProtocol.class);
+                    }
+                    if (entity != entityTracker.getClientPlayer()) {
+                        entity.playSound(Puv_Legacy_LevelSoundEvent.Death);
                     }
                 }
                 default -> {
@@ -611,7 +620,7 @@ public class EntityPackets {
 
             final Entity itemEntity = entityTracker.getEntityByRid(itemRuntimeEntityId);
             final Entity collectorEntity = entityTracker.getEntityByRid(collectorRuntimeEntityId);
-            if (itemEntity == null || collectorEntity == null || itemEntity.type() != EntityTypes1_20_5.ITEM) {
+            if (itemEntity == null || collectorEntity == null || itemEntity.javaType() != EntityTypes1_20_5.ITEM) {
                 wrapper.cancel();
                 return;
             }

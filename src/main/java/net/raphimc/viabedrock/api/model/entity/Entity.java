@@ -26,9 +26,12 @@ import com.viaversion.viaversion.api.type.types.version.Types1_21;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.Puv_Legacy_LevelSoundEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.BossEventOperationType;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -38,9 +41,10 @@ public class Entity {
     protected final UserConnection user;
     protected final long uniqueId;
     protected final long runtimeId;
+    protected final String type;
     protected final int javaId;
     protected final UUID javaUuid;
-    protected final EntityTypes1_20_5 type;
+    protected final EntityTypes1_20_5 javaType;
 
     /**
      * x, y, z
@@ -56,13 +60,14 @@ public class Entity {
     protected int age;
     protected boolean hasBossBar;
 
-    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid, final EntityTypes1_20_5 type) {
+    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_20_5 javaType) {
         this.user = user;
         this.uniqueId = uniqueId;
         this.runtimeId = runtimeId;
+        this.type = type;
         this.javaId = javaId;
         this.javaUuid = javaUuid;
-        this.type = type;
+        this.javaType = javaType;
     }
 
     public void tick() {
@@ -103,6 +108,17 @@ public class Entity {
         }
     }
 
+    public void playSound(final Puv_Legacy_LevelSoundEvent soundEvent) {
+        final PacketWrapper levelSoundEvent = PacketWrapper.create(ClientboundBedrockPackets.LEVEL_SOUND_EVENT, this.user);
+        levelSoundEvent.write(BedrockTypes.UNSIGNED_VAR_INT, soundEvent.getValue()); // event
+        levelSoundEvent.write(BedrockTypes.POSITION_3F, this.position); // position
+        levelSoundEvent.write(BedrockTypes.VAR_INT, 0); // data
+        levelSoundEvent.write(BedrockTypes.STRING, this.type); // entity identifier
+        levelSoundEvent.write(Types.BOOLEAN, false); // is baby mob
+        levelSoundEvent.write(Types.BOOLEAN, false); // is global sound
+        levelSoundEvent.send(BedrockProtocol.class, false);
+    }
+
     public float eyeOffset() {
         return 0F;
     }
@@ -115,6 +131,10 @@ public class Entity {
         return this.runtimeId;
     }
 
+    public String type() {
+        return this.type;
+    }
+
     public int javaId() {
         return this.javaId;
     }
@@ -123,8 +143,8 @@ public class Entity {
         return this.javaUuid;
     }
 
-    public EntityTypes1_20_5 type() {
-        return this.type;
+    public EntityTypes1_20_5 javaType() {
+        return this.javaType;
     }
 
     public Position3f position() {
@@ -176,9 +196,9 @@ public class Entity {
     }
 
     public final int getJavaEntityDataIndex(final String fieldName) {
-        final int index = BedrockProtocol.MAPPINGS.getJavaEntityData().get(this.type).indexOf(fieldName);
+        final int index = BedrockProtocol.MAPPINGS.getJavaEntityData().get(this.javaType).indexOf(fieldName);
         if (index == -1) {
-            throw new IllegalStateException("Unknown java entity data field: " + fieldName + " for entity type: " + this.type);
+            throw new IllegalStateException("Unknown java entity data field: " + fieldName + " for entity type: " + this.javaType);
         }
         return index;
     }

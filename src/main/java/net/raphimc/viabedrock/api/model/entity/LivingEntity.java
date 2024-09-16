@@ -39,8 +39,8 @@ public class LivingEntity extends Entity {
     protected final Map<String, EntityAttribute> attributes = new HashMap<>();
     protected final Map<String, EntityEffect> effects = new HashMap<>();
 
-    public LivingEntity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final UUID javaUuid, final EntityTypes1_20_5 type) {
-        super(user, uniqueId, runtimeId, javaId, javaUuid, type);
+    public LivingEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_20_5 javaType) {
+        super(user, uniqueId, runtimeId, type, javaId, javaUuid, javaType);
         this.attributes.put("minecraft:health", new EntityAttribute("minecraft:health", 20F, 0, 20F));
     }
 
@@ -87,7 +87,7 @@ public class LivingEntity extends Entity {
             }
             this.attributes.put(attribute.name(), attribute);
             if (!this.translateAttribute(attribute, javaAttributes, attributeCount, javaEntityData)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown entity attribute: " + attribute.name() + " for entity type: " + this.type());
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown entity attribute: " + attribute.name() + " for entity type: " + this.javaType());
             }
         }
         if (attributeCount.get() > 0) {

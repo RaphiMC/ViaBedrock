@@ -133,6 +133,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, String> bedrockToJavaExperimentalFeatures;
     private BiMap<String, String> bedrockToJavaBannerPatterns;
     private BiMap<String, String> bedrockToJavaPaintings;
+    private Map<ActorDamageCause, String> bedrockToJavaDamageCauses;
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolConstants.JAVA_VERSION.getName());
@@ -835,14 +836,32 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockToJavaBannerPatterns.put(entry.getKey(), javaIdentifier);
             }
 
+            final CompoundTag javaPaintingVariantRegistry = this.javaRegistries.getCompoundTag("minecraft:painting_variant");
             final JsonObject bedrockToJavaPaintingMappingsJson = this.readJson("custom/painting_mappings.json");
             this.bedrockToJavaPaintings = HashBiMap.create(bedrockToJavaPaintingMappingsJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaPaintingMappingsJson.entrySet()) {
                 final String javaIdentifier = entry.getValue().getAsString();
-                if (!this.javaRegistries.getCompoundTag("minecraft:painting_variant").contains(javaIdentifier)) {
+                if (!javaPaintingVariantRegistry.contains(javaIdentifier)) {
                     throw new RuntimeException("Unknown java painting: " + javaIdentifier);
                 }
                 this.bedrockToJavaPaintings.put(entry.getKey(), javaIdentifier);
+            }
+
+            final CompoundTag javaDamageTypeRegistry = this.javaRegistries.getCompoundTag("minecraft:damage_type");
+            final JsonObject bedrockToJavaDamageCauseMappingsJson = this.readJson("custom/damage_cause_mappings.json");
+            this.bedrockToJavaDamageCauses = new EnumMap<>(ActorDamageCause.class);
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaDamageCauseMappingsJson.entrySet()) {
+                final ActorDamageCause damageCause = ActorDamageCause.valueOf(entry.getKey());
+                final String javaIdentifier = entry.getValue().getAsString();
+                if (!javaDamageTypeRegistry.contains(javaIdentifier)) {
+                    throw new RuntimeException("Unknown java damage cause: " + javaIdentifier);
+                }
+                this.bedrockToJavaDamageCauses.put(damageCause, javaIdentifier);
+            }
+            for (ActorDamageCause actorDamageCause : ActorDamageCause.values()) {
+                if (!this.bedrockToJavaDamageCauses.containsKey(actorDamageCause)) {
+                    throw new RuntimeException("Missing bedrock -> java damage cause mapping for " + actorDamageCause.name());
+                }
             }
         }
     }
@@ -1033,6 +1052,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public BiMap<String, String> getBedrockToJavaPaintings() {
         return this.bedrockToJavaPaintings;
+    }
+
+    public Map<ActorDamageCause, String> getBedrockToJavaDamageCauses() {
+        return this.bedrockToJavaDamageCauses;
     }
 
     @Override

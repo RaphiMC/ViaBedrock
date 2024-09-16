@@ -48,8 +48,8 @@ public class CustomEntity extends Entity {
     private final List<ItemDisplayEntity> partEntities = new ArrayList<>();
     private boolean spawned;
 
-    public CustomEntity(final UserConnection user, final long uniqueId, final long runtimeId, final int javaId, final EntityDefinitions.EntityDefinition entityDefinition) {
-        super(user, uniqueId, runtimeId, javaId, UUID.randomUUID(), EntityTypes1_20_5.INTERACTION);
+    public CustomEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final EntityDefinitions.EntityDefinition entityDefinition) {
+        super(user, uniqueId, runtimeId, type, javaId, UUID.randomUUID(), EntityTypes1_20_5.INTERACTION);
         this.entityDefinition = entityDefinition;
     }
 
@@ -101,7 +101,7 @@ public class CustomEntity extends Entity {
             final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets1_21.ADD_ENTITY, user);
             addEntity.write(Types.VAR_INT, partEntity.javaId()); // entity id
             addEntity.write(Types.UUID, partEntity.javaUuid()); // uuid
-            addEntity.write(Types.VAR_INT, partEntity.type().getId()); // type id
+            addEntity.write(Types.VAR_INT, partEntity.javaType().getId()); // type id
             addEntity.write(Types.DOUBLE, (double) this.position.x()); // x
             addEntity.write(Types.DOUBLE, (double) this.position.y()); // y
             addEntity.write(Types.DOUBLE, (double) this.position.z()); // z
@@ -135,7 +135,7 @@ public class CustomEntity extends Entity {
     private class ItemDisplayEntity extends Entity {
 
         public ItemDisplayEntity(final int javaId) {
-            super(CustomEntity.this.user, 0L, 0L, javaId, UUID.randomUUID(), EntityTypes1_20_5.ITEM_DISPLAY);
+            super(CustomEntity.this.user, 0L, 0L, null, javaId, UUID.randomUUID(), EntityTypes1_20_5.ITEM_DISPLAY);
         }
 
         public void updatePositionAndRotation() {

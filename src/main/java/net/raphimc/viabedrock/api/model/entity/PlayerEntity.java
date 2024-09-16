@@ -41,7 +41,7 @@ public class PlayerEntity extends LivingEntity {
     protected PlayerAbilities abilities;
 
     public PlayerEntity(final UserConnection user, final long runtimeId, final int javaId, final UUID javaUuid, final PlayerAbilities abilities) {
-        super(user, abilities.uniqueEntityId(), runtimeId, javaId, javaUuid, EntityTypes1_20_5.PLAYER);
+        super(user, abilities.uniqueEntityId(), runtimeId, "minecraft:player", javaId, javaUuid, EntityTypes1_20_5.PLAYER);
 
         this.abilities = abilities;
     }

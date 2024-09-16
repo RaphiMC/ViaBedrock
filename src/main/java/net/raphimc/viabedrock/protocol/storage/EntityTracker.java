@@ -48,16 +48,16 @@ public class EntityTracker extends StoredObject {
         super(user);
     }
 
-    public Entity addEntity(final long uniqueId, final long runtimeId, final UUID uuid, final EntityTypes1_20_5 type) {
-        final UUID javaUuid = uuid != null ? uuid : UUID.randomUUID();
-        if (type.isOrHasParent(EntityTypes1_20_5.ABSTRACT_HORSE)) {
-            return this.addEntity(new AbstractHorseEntity(this.user(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
-        } else if (type.isOrHasParent(EntityTypes1_20_5.MOB)) {
-            return this.addEntity(new MobEntity(this.user(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
-        } else if (type.isOrHasParent(EntityTypes1_20_5.LIVING_ENTITY)) {
-            return this.addEntity(new LivingEntity(this.user(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+    public Entity addEntity(final long uniqueId, final long runtimeId, final String type, final EntityTypes1_20_5 javaType) {
+        final UUID javaUuid = UUID.randomUUID();
+        if (javaType.isOrHasParent(EntityTypes1_20_5.ABSTRACT_HORSE)) {
+            return this.addEntity(new AbstractHorseEntity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
+        } else if (javaType.isOrHasParent(EntityTypes1_20_5.MOB)) {
+            return this.addEntity(new MobEntity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
+        } else if (javaType.isOrHasParent(EntityTypes1_20_5.LIVING_ENTITY)) {
+            return this.addEntity(new LivingEntity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
         } else {
-            return this.addEntity(new Entity(this.user(), uniqueId, runtimeId, this.getNextJavaEntityId(), javaUuid, type));
+            return this.addEntity(new Entity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
         }
     }
 
