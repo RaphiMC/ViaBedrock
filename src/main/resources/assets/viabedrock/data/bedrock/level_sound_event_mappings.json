@@ -1660,9 +1660,26 @@
     }
   },
   "Bump": null,
-  "BundleDropContents": null,
-  "BundleInsert": null,
-  "BundleRemoveOne": null,
+  "BundleDropContents": {
+    "": {
+      "sound": "bundle.drop_contents"
+    }
+  },
+  "BundleInsert": {
+    "": {
+      "sound": "bundle.insert"
+    }
+  },
+  "BundleInsertFail": {
+    "": {
+      "sound": "bundle.insert_fail"
+    }
+  },
+  "BundleRemoveOne": {
+    "": {
+      "sound": "bundle.remove_one"
+    }
+  },
   "Burp": {
     "": {
       "sound": "random.burp",
@@ -6457,6 +6474,13 @@
       "pitch": 1.8
     }
   },
+  "ImitateDrowned": {
+    "entity:minecraft:parrot": {
+      "sound": "mob.zombie.say",
+      "volume": 0.6,
+      "pitch": 1.8
+    }
+  },
   "ImitateElderGuardian": {
     "entity:minecraft:parrot": {
       "sound": "mob.guardian.land_idle",
@@ -9709,6 +9733,12 @@
   },
   "SpawnBaby": null,
   "Splash": {
+    "": {
+      "sound": "random.splash",
+      "volume": 0.25,
+      "min_pitch": 0.6,
+      "max_pitch": 1.4
+    },
     "entity:minecraft:turtle": {
       "sound": "random.splash",
       "min_pitch": 0.6,
@@ -9780,6 +9810,12 @@
     },
     "entity:minecraft:drowned": {
       "sound": "random.splash",
+      "min_pitch": 0.6,
+      "max_pitch": 1.4
+    },
+    "entity:minecraft:fishing_hook": {
+      "sound": "random.splash",
+      "volume": 0.25,
       "min_pitch": 0.6,
       "max_pitch": 1.4
     },
@@ -9925,7 +9961,7 @@
       "max_pitch": 1.4
     },
     "entity:minecraft:wither_skeleton": {
-      "sound": "random.splash",
+      "sound": "entity.generic.splash",
       "min_pitch": 0.6,
       "max_pitch": 1.4
     },
@@ -10299,7 +10335,8 @@
       "max_pitch": 1.2
     },
     "entity:minecraft:wither_skeleton": {
-      "sound": "mob.skeleton.step"
+      "sound": "entity.wither_skeleton.step",
+      "volume": 0.15
     },
     "block:roots": {
       "sound": "step.roots",

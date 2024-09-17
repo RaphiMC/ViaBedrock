@@ -35,9 +35,9 @@ public class ResourcePackType extends Type<ResourcePack> {
 
     @Override
     public ResourcePack read(ByteBuf buffer) {
-        final String packId = BedrockTypes.STRING.read(buffer);
-        final String packVersion = BedrockTypes.STRING.read(buffer);
-        final long packSize = buffer.readLongLE();
+        final String id = BedrockTypes.STRING.read(buffer);
+        final String version = BedrockTypes.STRING.read(buffer);
+        final long size = buffer.readLongLE();
         final String contentKey = BedrockTypes.STRING.read(buffer);
         final String subPackName = BedrockTypes.STRING.read(buffer);
         final String contentId = BedrockTypes.STRING.read(buffer);
@@ -45,15 +45,15 @@ public class ResourcePackType extends Type<ResourcePack> {
         final boolean isAddonPack = buffer.readBoolean();
         final boolean raytracingCapable = buffer.readBoolean();
 
-        UUID packUUID;
+        UUID uuid;
         try {
-            packUUID = UUID.fromString(packId);
+            uuid = UUID.fromString(id);
         } catch (IllegalArgumentException e) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid resource pack UUID: " + packId, e);
-            packUUID = new UUID(0L, 0L);
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid resource pack UUID: " + id, e);
+            uuid = new UUID(0L, 0L);
         }
 
-        return new ResourcePack(packUUID, packVersion, contentKey, subPackName, contentId, hasScripts, isAddonPack, raytracingCapable, packSize, PackType.Resources);
+        return new ResourcePack(uuid, version, contentKey, subPackName, contentId, hasScripts, isAddonPack, raytracingCapable, size, PackType.Resources);
     }
 
     @Override

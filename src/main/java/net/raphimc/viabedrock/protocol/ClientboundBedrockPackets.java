@@ -178,7 +178,9 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     AWARD_ACHIEVEMENT(MinecraftPacketIds.AwardAchievementPacket.getValue()),
     CLOSE_FORM(MinecraftPacketIds.ClientboundCloseScreen.getValue()),
     JIGSAW_STRUCTURE_DATA(MinecraftPacketIds.JigsawStructureDataPacket.getValue()),
-    CURRENT_STRUCTURE_FEATURE(MinecraftPacketIds.CurrentStructureFeaturePacket.getValue());
+    CURRENT_STRUCTURE_FEATURE(MinecraftPacketIds.CurrentStructureFeaturePacket.getValue()),
+    CAMERA_AIM_ASSIST(MinecraftPacketIds.CameraAimAssist.getValue()),
+    CONTAINER_REGISTRY_CLEANUP(MinecraftPacketIds.ContainerRegistryCleanup.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

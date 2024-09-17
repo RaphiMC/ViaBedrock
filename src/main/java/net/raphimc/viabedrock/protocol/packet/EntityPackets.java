@@ -458,10 +458,12 @@ public class EntityPackets {
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
             final EntityAttribute[] attributes = new EntityAttribute[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // attribute count
             for (int i = 0; i < attributes.length; i++) {
-                final float minValue = wrapper.read(BedrockTypes.FLOAT_LE); // min
-                final float maxValue = wrapper.read(BedrockTypes.FLOAT_LE); // max
-                final float currentValue = wrapper.read(BedrockTypes.FLOAT_LE); // current
-                final float defaultValue = wrapper.read(BedrockTypes.FLOAT_LE); // default
+                final float minValue = wrapper.read(BedrockTypes.FLOAT_LE); // min value
+                final float maxValue = wrapper.read(BedrockTypes.FLOAT_LE); // max value
+                final float currentValue = wrapper.read(BedrockTypes.FLOAT_LE); // current value
+                final float defaultMinValue = wrapper.read(BedrockTypes.FLOAT_LE); // default min value
+                final float defaultMaxValue = wrapper.read(BedrockTypes.FLOAT_LE); // default max value
+                final float defaultValue = wrapper.read(BedrockTypes.FLOAT_LE); // default value
                 final String name = wrapper.read(BedrockTypes.STRING); // name
                 final EntityAttribute.Modifier[] modifiers = new EntityAttribute.Modifier[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // modifier count
                 for (int j = 0; j < modifiers.length; j++) {
@@ -473,7 +475,7 @@ public class EntityPackets {
                     final boolean isSerializable = wrapper.read(Types.BOOLEAN); // is serializable
                     modifiers[j] = new EntityAttribute.Modifier(id, modifierName, amount, operation, operand, isSerializable);
                 }
-                attributes[i] = new EntityAttribute(name, currentValue, minValue, maxValue, defaultValue, modifiers);
+                attributes[i] = new EntityAttribute(name, currentValue, minValue, maxValue, defaultValue, defaultMinValue, defaultMaxValue, modifiers);
             }
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // tick
 

@@ -81,11 +81,11 @@ public class BedrockSoundListGenerator {
             Map.entry("drink.honey", Puv_Legacy_LevelSoundEvent.HoneybottleDrink),
             Map.entry("item.use.on", Puv_Legacy_LevelSoundEvent.ItemUseOn),
             Map.entry("break_pot", Puv_Legacy_LevelSoundEvent.BreakDecoratedPot),
-            Map.entry("shatter_pot", Puv_Legacy_LevelSoundEvent.ShatterDecoratedPot)
+            Map.entry("shatter_pot", Puv_Legacy_LevelSoundEvent.ShatterDecoratedPot),
+            Map.entry("charge.sculk", Puv_Legacy_LevelSoundEvent.SculkCharge)
     );
 
     private static final Set<String> CANCELLED_SOUNDS = Set.of(
-            "imitate.drowned",
             "imitate.panda",
             "guardian.flop",
             "block.sculk_sensor.clicking",
@@ -121,9 +121,6 @@ public class BedrockSoundListGenerator {
             Puv_Legacy_LevelSoundEvent.SpawnBaby,
             Puv_Legacy_LevelSoundEvent.Scared,
             Puv_Legacy_LevelSoundEvent.JumpPrevent,
-            Puv_Legacy_LevelSoundEvent.BundleDropContents,
-            Puv_Legacy_LevelSoundEvent.BundleInsert,
-            Puv_Legacy_LevelSoundEvent.BundleRemoveOne,
             Puv_Legacy_LevelSoundEvent.Bump,
             // Edu sounds
             Puv_Legacy_LevelSoundEvent.ElemConstructOpen,

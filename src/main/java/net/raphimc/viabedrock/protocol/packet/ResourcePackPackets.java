@@ -62,15 +62,9 @@ public class ResourcePackPackets {
             final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage(wrapper.user());
             wrapper.user().put(resourcePacksStorage);
 
-            wrapper.read(Types.BOOLEAN); // must accept
-            wrapper.read(Types.BOOLEAN); // has addons
+            wrapper.read(Types.BOOLEAN); // resource pack required
+            wrapper.read(Types.BOOLEAN); // has addon packs
             wrapper.read(Types.BOOLEAN); // has scripts
-            wrapper.read(Types.BOOLEAN); // force server packs enabled
-
-            final ResourcePack[] behaviorPacks = wrapper.read(BedrockTypes.BEHAVIOUR_PACK_ARRAY);
-            for (ResourcePack behaviorPack : behaviorPacks) {
-                resourcePacksStorage.addPack(behaviorPack);
-            }
             final ResourcePack[] resourcePacks = wrapper.read(BedrockTypes.RESOURCE_PACK_ARRAY);
             for (ResourcePack resourcePack : resourcePacks) {
                 resourcePacksStorage.addPack(resourcePack);

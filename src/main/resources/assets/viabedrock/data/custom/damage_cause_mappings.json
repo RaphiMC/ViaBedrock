@@ -33,5 +33,6 @@
   "RamAttack": "minecraft:mob_attack_no_aggro",
   "SonicBoom": "minecraft:sonic_boom",
   "Campfire": "minecraft:campfire",
-  "SoulCampfire": "minecraft:campfire"
+  "SoulCampfire": "minecraft:campfire",
+  "MaceSmash": "minecraft:generic"
 }

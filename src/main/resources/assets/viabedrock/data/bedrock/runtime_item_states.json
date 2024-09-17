@@ -136,6 +136,10 @@
         "id": -171
     },
     {
+        "name": "minecraft:andesite_wall",
+        "id": -974
+    },
+    {
         "name": "minecraft:angler_pottery_sherd",
         "id": 676
     },
@@ -145,7 +149,7 @@
     },
     {
         "name": "minecraft:apple",
-        "id": 257
+        "id": 261
     },
     {
         "name": "minecraft:archer_pottery_sherd",
@@ -301,7 +305,7 @@
     },
     {
         "name": "minecraft:banner_pattern",
-        "id": 767
+        "id": 770
     },
     {
         "name": "minecraft:barrel",
@@ -597,7 +601,7 @@
     },
     {
         "name": "minecraft:boat",
-        "id": 765
+        "id": 768
     },
     {
         "name": "minecraft:bogged_spawn_egg",
@@ -665,7 +669,7 @@
     },
     {
         "name": "minecraft:breeze_rod",
-        "id": 261
+        "id": 257
     },
     {
         "name": "minecraft:breeze_spawn_egg",
@@ -698,6 +702,10 @@
     {
         "name": "minecraft:brick_stairs",
         "id": 108
+    },
+    {
+        "name": "minecraft:brick_wall",
+        "id": -976
     },
     {
         "name": "minecraft:brown_candle",
@@ -909,7 +917,7 @@
     },
     {
         "name": "minecraft:chemistry_table",
-        "id": 238
+        "id": 762
     },
     {
         "name": "minecraft:cherry_boat",
@@ -1164,12 +1172,28 @@
         "id": 491
     },
     {
-        "name": "minecraft:colored_torch_bp",
+        "name": "minecraft:colored_torch_blue",
         "id": 204
     },
     {
-        "name": "minecraft:colored_torch_rg",
+        "name": "minecraft:colored_torch_bp",
+        "id": 766
+    },
+    {
+        "name": "minecraft:colored_torch_green",
+        "id": -963
+    },
+    {
+        "name": "minecraft:colored_torch_purple",
+        "id": -964
+    },
+    {
+        "name": "minecraft:colored_torch_red",
         "id": 202
+    },
+    {
+        "name": "minecraft:colored_torch_rg",
+        "id": 765
     },
     {
         "name": "minecraft:command_block",
@@ -1194,6 +1218,10 @@
     {
         "name": "minecraft:compound",
         "id": 614
+    },
+    {
+        "name": "minecraft:compound_creator",
+        "id": 238
     },
     {
         "name": "minecraft:concrete",
@@ -1784,6 +1812,14 @@
         "id": -961
     },
     {
+        "name": "minecraft:deprecated_purpur_block_1",
+        "id": -950
+    },
+    {
+        "name": "minecraft:deprecated_purpur_block_2",
+        "id": -952
+    },
+    {
         "name": "minecraft:detector_rail",
         "id": 28
     },
@@ -1854,6 +1890,10 @@
     {
         "name": "minecraft:diorite_stairs",
         "id": -170
+    },
+    {
+        "name": "minecraft:diorite_wall",
+        "id": -973
     },
     {
         "name": "minecraft:dirt",
@@ -1937,7 +1977,7 @@
     },
     {
         "name": "minecraft:dye",
-        "id": 766
+        "id": 769
     },
     {
         "name": "minecraft:echo_shard",
@@ -2428,6 +2468,10 @@
         "id": -110
     },
     {
+        "name": "minecraft:element_constructor",
+        "id": -987
+    },
+    {
         "name": "minecraft:elytra",
         "id": 581
     },
@@ -2469,7 +2513,7 @@
     },
     {
         "name": "minecraft:end_crystal",
-        "id": 769
+        "id": 772
     },
     {
         "name": "minecraft:end_gateway",
@@ -2498,6 +2542,10 @@
     {
         "name": "minecraft:end_stone_brick_slab",
         "id": -162
+    },
+    {
+        "name": "minecraft:end_stone_brick_wall",
+        "id": -980
     },
     {
         "name": "minecraft:ender_chest",
@@ -2753,7 +2801,7 @@
     },
     {
         "name": "minecraft:glow_berries",
-        "id": 770
+        "id": 773
     },
     {
         "name": "minecraft:glow_frame",
@@ -2878,6 +2926,10 @@
     {
         "name": "minecraft:granite_stairs",
         "id": -169
+    },
+    {
+        "name": "minecraft:granite_wall",
+        "id": -972
     },
     {
         "name": "minecraft:grass_block",
@@ -3133,11 +3185,11 @@
     },
     {
         "name": "minecraft:hard_stained_glass",
-        "id": 762
+        "id": 763
     },
     {
         "name": "minecraft:hard_stained_glass_pane",
-        "id": 763
+        "id": 764
     },
     {
         "name": "minecraft:hard_white_stained_glass",
@@ -3576,6 +3628,10 @@
         "id": 391
     },
     {
+        "name": "minecraft:lab_table",
+        "id": -988
+    },
+    {
         "name": "minecraft:ladder",
         "id": 65
     },
@@ -3657,7 +3713,7 @@
     },
     {
         "name": "minecraft:light_block",
-        "id": 764
+        "id": 767
     },
     {
         "name": "minecraft:light_block_0",
@@ -4084,6 +4140,10 @@
         "id": -497
     },
     {
+        "name": "minecraft:material_reducer",
+        "id": -986
+    },
+    {
         "name": "minecraft:medicine",
         "id": 619
     },
@@ -4160,6 +4220,10 @@
         "id": -179
     },
     {
+        "name": "minecraft:mossy_cobblestone_wall",
+        "id": -971
+    },
+    {
         "name": "minecraft:mossy_stone_brick_double_slab",
         "id": -168
     },
@@ -4170,6 +4234,10 @@
     {
         "name": "minecraft:mossy_stone_brick_stairs",
         "id": -175
+    },
+    {
+        "name": "minecraft:mossy_stone_brick_wall",
+        "id": -978
     },
     {
         "name": "minecraft:mossy_stone_bricks",
@@ -4330,6 +4398,10 @@
     {
         "name": "minecraft:nether_brick_stairs",
         "id": 114
+    },
+    {
+        "name": "minecraft:nether_brick_wall",
+        "id": -979
     },
     {
         "name": "minecraft:nether_gold_ore",
@@ -5000,6 +5072,10 @@
         "id": -2
     },
     {
+        "name": "minecraft:prismarine_wall",
+        "id": -981
+    },
+    {
         "name": "minecraft:prize_pottery_sherd",
         "id": 693
     },
@@ -5086,6 +5162,10 @@
     {
         "name": "minecraft:purpur_double_slab",
         "id": -911
+    },
+    {
+        "name": "minecraft:purpur_pillar",
+        "id": -951
     },
     {
         "name": "minecraft:purpur_slab",
@@ -5248,6 +5328,10 @@
         "id": -184
     },
     {
+        "name": "minecraft:red_nether_brick_wall",
+        "id": -983
+    },
+    {
         "name": "minecraft:red_sand",
         "id": -949
     },
@@ -5266,6 +5350,10 @@
     {
         "name": "minecraft:red_sandstone_stairs",
         "id": 180
+    },
+    {
+        "name": "minecraft:red_sandstone_wall",
+        "id": -982
     },
     {
         "name": "minecraft:red_shulker_box",
@@ -5382,6 +5470,10 @@
     {
         "name": "minecraft:sandstone_stairs",
         "id": 128
+    },
+    {
+        "name": "minecraft:sandstone_wall",
+        "id": -975
     },
     {
         "name": "minecraft:sapling",
@@ -5661,7 +5753,7 @@
     },
     {
         "name": "minecraft:spawn_egg",
-        "id": 768
+        "id": 771
     },
     {
         "name": "minecraft:spider_eye",
@@ -5842,6 +5934,10 @@
     {
         "name": "minecraft:stone_brick_stairs",
         "id": 109
+    },
+    {
+        "name": "minecraft:stone_brick_wall",
+        "id": -977
     },
     {
         "name": "minecraft:stone_bricks",
@@ -6198,6 +6294,10 @@
     {
         "name": "minecraft:twisting_vines",
         "id": -287
+    },
+    {
+        "name": "minecraft:underwater_tnt",
+        "id": -985
     },
     {
         "name": "minecraft:underwater_torch",
@@ -6578,6 +6678,10 @@
     {
         "name": "minecraft:weeping_vines",
         "id": -231
+    },
+    {
+        "name": "minecraft:wet_sponge",
+        "id": -984
     },
     {
         "name": "minecraft:wheat",

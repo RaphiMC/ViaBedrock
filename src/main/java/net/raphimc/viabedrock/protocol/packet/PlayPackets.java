@@ -54,6 +54,11 @@ public class PlayPackets {
             protected void register() {
                 map(BedrockTypes.STRING, Types.STRING); // address
                 map(BedrockTypes.UNSIGNED_SHORT_LE, Types.VAR_INT); // port
+                handler(wrapper -> {
+                    if (wrapper.read(Types.BOOLEAN)) { // reload world
+                        wrapper.cancel();
+                    }
+                });
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.GAME_RULES_CHANGED, null, wrapper -> {

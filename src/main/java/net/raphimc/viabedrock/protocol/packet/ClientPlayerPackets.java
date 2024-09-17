@@ -382,6 +382,8 @@ public class ClientPlayerPackets {
             wrapper.write(wrapper.user().get(ItemRewriter.class).itemType(), inventoryContainer.getSelectedHotbarItem()); // hand item
             wrapper.write(BedrockTypes.POSITION_3F, entityTracker.getClientPlayer().position()); // player position
 
+            // TODO: Bedrock client sends INTERACT packet when hovered entity changes. Might be used for anticheat purposes
+
             switch (action) {
                 case INTERACT -> wrapper.cancel();
                 case ATTACK -> {

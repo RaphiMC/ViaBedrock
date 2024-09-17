@@ -243,6 +243,13 @@
       }
     }
   },
+  "minecraft:andesite_wall": {
+    "block": {
+      "minecraft:andesite_wall": {
+        "java_id": "minecraft:andesite_wall"
+      }
+    }
+  },
   "minecraft:angler_pottery_sherd": {
     "meta": {
       "": {
@@ -1514,6 +1521,13 @@
       }
     }
   },
+  "minecraft:brick_wall": {
+    "block": {
+      "minecraft:brick_wall": {
+        "java_id": "minecraft:brick_wall"
+      }
+    }
+  },
   "minecraft:brown_candle": {
     "block": {
       "minecraft:brown_candle": {
@@ -1922,8 +1936,8 @@
     }
   },
   "minecraft:chemistry_table": {
-    "block": {
-      "minecraft:chemistry_table": {
+    "meta": {
+      "": {
         "java_id": "minecraft:cartography_table",
         "java_display_name": "Chemistry Table"
       }
@@ -2336,47 +2350,8 @@
   },
   "minecraft:cobblestone_wall": {
     "block": {
-      "minecraft:cobblestone_wall[wall_block_type=cobblestone]": {
+      "minecraft:cobblestone_wall": {
         "java_id": "minecraft:cobblestone_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=mossy_cobblestone]": {
-        "java_id": "minecraft:mossy_cobblestone_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=granite]": {
-        "java_id": "minecraft:granite_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=diorite]": {
-        "java_id": "minecraft:diorite_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=andesite]": {
-        "java_id": "minecraft:andesite_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=sandstone]": {
-        "java_id": "minecraft:sandstone_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=red_sandstone]": {
-        "java_id": "minecraft:red_sandstone_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=stone_brick]": {
-        "java_id": "minecraft:stone_brick_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=mossy_stone_brick]": {
-        "java_id": "minecraft:mossy_stone_brick_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=brick]": {
-        "java_id": "minecraft:brick_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=nether_brick]": {
-        "java_id": "minecraft:nether_brick_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=red_nether_brick]": {
-        "java_id": "minecraft:red_nether_brick_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=end_brick]": {
-        "java_id": "minecraft:end_stone_brick_wall"
-      },
-      "minecraft:cobblestone_wall[wall_block_type=prismarine]": {
-        "java_id": "minecraft:prismarine_wall"
       }
     }
   },
@@ -2416,17 +2391,49 @@
       }
     }
   },
-  "minecraft:colored_torch_bp": {
+  "minecraft:colored_torch_blue": {
     "block": {
-      "minecraft:colored_torch_bp": {
+      "minecraft:colored_torch_blue": {
+        "java_id": "minecraft:torch",
+        "java_display_name": "Colored Torch Blue"
+      }
+    }
+  },
+  "minecraft:colored_torch_bp": {
+    "meta": {
+      "": {
         "java_id": "minecraft:torch",
         "java_display_name": "Colored Torch BP"
       }
     }
   },
-  "minecraft:colored_torch_rg": {
+  "minecraft:colored_torch_green": {
     "block": {
-      "minecraft:colored_torch_rg": {
+      "minecraft:colored_torch_green": {
+        "java_id": "minecraft:torch",
+        "java_display_name": "Colored Torch Green"
+      }
+    }
+  },
+  "minecraft:colored_torch_purple": {
+    "block": {
+      "minecraft:colored_torch_purple": {
+        "java_id": "minecraft:torch",
+        "java_display_name": "Colored Torch Purple"
+      }
+    }
+  },
+  "minecraft:colored_torch_red": {
+    "block": {
+      "minecraft:colored_torch_red": {
+        "java_id": "minecraft:torch",
+        "java_display_name": "Colored Torch Red"
+      }
+    }
+  },
+  "minecraft:colored_torch_rg": {
+    "meta": {
+      "": {
         "java_id": "minecraft:torch",
         "java_display_name": "Colored Torch RG"
       }
@@ -2472,6 +2479,14 @@
       "": {
         "java_id": "minecraft:iron_ingot",
         "java_display_name": "Compound"
+      }
+    }
+  },
+  "minecraft:compound_creator": {
+    "block": {
+      "minecraft:compound_creator": {
+        "java_id": "minecraft:cartography_table",
+        "java_display_name": "Compound Creator"
       }
     }
   },
@@ -3524,6 +3539,20 @@
       }
     }
   },
+  "minecraft:deprecated_purpur_block_1": {
+    "block": {
+      "minecraft:deprecated_purpur_block_1": {
+        "java_id": "minecraft:purpur_block"
+      }
+    }
+  },
+  "minecraft:deprecated_purpur_block_2": {
+    "block": {
+      "minecraft:deprecated_purpur_block_2": {
+        "java_id": "minecraft:purpur_block"
+      }
+    }
+  },
   "minecraft:detector_rail": {
     "block": {
       "minecraft:detector_rail": {
@@ -3648,6 +3677,13 @@
     "block": {
       "minecraft:diorite_stairs": {
         "java_id": "minecraft:diorite_stairs"
+      }
+    }
+  },
+  "minecraft:diorite_wall": {
+    "block": {
+      "minecraft:diorite_wall": {
+        "java_id": "minecraft:diorite_wall"
       }
     }
   },
@@ -4776,6 +4812,14 @@
       }
     }
   },
+  "minecraft:element_constructor": {
+    "block": {
+      "minecraft:element_constructor": {
+        "java_id": "minecraft:cartography_table",
+        "java_display_name": "Element Constructor"
+      }
+    }
+  },
   "minecraft:elytra": {
     "meta": {
       "": {
@@ -4912,6 +4956,13 @@
     "block": {
       "minecraft:end_stone_brick_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:end_stone_brick_slab"
+      }
+    }
+  },
+  "minecraft:end_stone_brick_wall": {
+    "block": {
+      "minecraft:end_stone_brick_wall": {
+        "java_id": "minecraft:end_stone_brick_wall"
       }
     }
   },
@@ -5640,6 +5691,13 @@
     "block": {
       "minecraft:granite_stairs": {
         "java_id": "minecraft:granite_stairs"
+      }
+    }
+  },
+  "minecraft:granite_wall": {
+    "block": {
+      "minecraft:granite_wall": {
+        "java_id": "minecraft:granite_wall"
       }
     }
   },
@@ -6936,6 +6994,14 @@
       }
     }
   },
+  "minecraft:lab_table": {
+    "block": {
+      "minecraft:lab_table": {
+        "java_id": "minecraft:cartography_table",
+        "java_display_name": "Lab Table"
+      }
+    }
+  },
   "minecraft:ladder": {
     "block": {
       "minecraft:ladder": {
@@ -8031,6 +8097,14 @@
       }
     }
   },
+  "minecraft:material_reducer": {
+    "block": {
+      "minecraft:material_reducer": {
+        "java_id": "minecraft:cartography_table",
+        "java_display_name": "Material Reducer"
+      }
+    }
+  },
   "minecraft:medicine": {
     "meta": {
       "": {
@@ -8183,6 +8257,13 @@
       }
     }
   },
+  "minecraft:mossy_cobblestone_wall": {
+    "block": {
+      "minecraft:mossy_cobblestone_wall": {
+        "java_id": "minecraft:mossy_cobblestone_wall"
+      }
+    }
+  },
   "minecraft:mossy_stone_brick_double_slab": {
     "block": {
       "minecraft:mossy_stone_brick_double_slab[minecraft:vertical_half=bottom]": {
@@ -8202,6 +8283,13 @@
     "block": {
       "minecraft:mossy_stone_brick_stairs": {
         "java_id": "minecraft:mossy_stone_brick_stairs"
+      }
+    }
+  },
+  "minecraft:mossy_stone_brick_wall": {
+    "block": {
+      "minecraft:mossy_stone_brick_wall": {
+        "java_id": "minecraft:mossy_stone_brick_wall"
       }
     }
   },
@@ -8485,6 +8573,13 @@
     "block": {
       "minecraft:nether_brick_stairs": {
         "java_id": "minecraft:nether_brick_stairs"
+      }
+    }
+  },
+  "minecraft:nether_brick_wall": {
+    "block": {
+      "minecraft:nether_brick_wall": {
+        "java_id": "minecraft:nether_brick_wall"
       }
     }
   },
@@ -9855,6 +9950,13 @@
       }
     }
   },
+  "minecraft:prismarine_wall": {
+    "block": {
+      "minecraft:prismarine_wall": {
+        "java_id": "minecraft:prismarine_wall"
+      }
+    }
+  },
   "minecraft:prize_pottery_sherd": {
     "meta": {
       "": {
@@ -9999,10 +10101,7 @@
   },
   "minecraft:purpur_block": {
     "block": {
-      "minecraft:purpur_block[chisel_type=default,pillar_axis=y]": {
-        "java_id": "minecraft:purpur_block"
-      },
-      "minecraft:purpur_block[chisel_type=lines,pillar_axis=y]": {
+      "minecraft:purpur_block[pillar_axis=y]": {
         "java_id": "minecraft:purpur_block"
       }
     }
@@ -10012,6 +10111,13 @@
       "minecraft:purpur_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:purpur_block",
         "java_display_name": "Double Stone Slab"
+      }
+    }
+  },
+  "minecraft:purpur_pillar": {
+    "block": {
+      "minecraft:purpur_pillar": {
+        "java_id": "minecraft:purpur_pillar"
       }
     }
   },
@@ -10299,6 +10405,13 @@
       }
     }
   },
+  "minecraft:red_nether_brick_wall": {
+    "block": {
+      "minecraft:red_nether_brick_wall": {
+        "java_id": "minecraft:red_nether_brick_wall"
+      }
+    }
+  },
   "minecraft:red_sand": {
     "block": {
       "minecraft:red_sand": {
@@ -10332,6 +10445,13 @@
     "block": {
       "minecraft:red_sandstone_stairs": {
         "java_id": "minecraft:red_sandstone_stairs"
+      }
+    }
+  },
+  "minecraft:red_sandstone_wall": {
+    "block": {
+      "minecraft:red_sandstone_wall": {
+        "java_id": "minecraft:red_sandstone_wall"
       }
     }
   },
@@ -10538,6 +10658,13 @@
     "block": {
       "minecraft:sandstone_stairs": {
         "java_id": "minecraft:sandstone_stairs"
+      }
+    }
+  },
+  "minecraft:sandstone_wall": {
+    "block": {
+      "minecraft:sandstone_wall": {
+        "java_id": "minecraft:sandstone_wall"
       }
     }
   },
@@ -11262,10 +11389,7 @@
   },
   "minecraft:sponge": {
     "block": {
-      "minecraft:sponge[sponge_type=dry]": {
-        "java_id": "minecraft:sponge"
-      },
-      "minecraft:sponge[sponge_type=wet]": {
+      "minecraft:sponge": {
         "java_id": "minecraft:sponge"
       }
     }
@@ -11554,6 +11678,13 @@
     "block": {
       "minecraft:stone_brick_stairs": {
         "java_id": "minecraft:stone_brick_stairs"
+      }
+    }
+  },
+  "minecraft:stone_brick_wall": {
+    "block": {
+      "minecraft:stone_brick_wall": {
+        "java_id": "minecraft:stone_brick_wall"
       }
     }
   },
@@ -12184,6 +12315,14 @@
     "block": {
       "minecraft:twisting_vines": {
         "java_id": "minecraft:twisting_vines"
+      }
+    }
+  },
+  "minecraft:underwater_tnt": {
+    "block": {
+      "minecraft:underwater_tnt": {
+        "java_id": "minecraft:tnt",
+        "java_display_name": "Underwater TNT"
       }
     }
   },
@@ -12865,6 +13004,14 @@
     "block": {
       "minecraft:weeping_vines": {
         "java_id": "minecraft:weeping_vines"
+      }
+    }
+  },
+  "minecraft:wet_sponge": {
+    "block": {
+      "minecraft:wet_sponge": {
+        "java_id": "minecraft:sponge",
+        "java_display_name": "Wet Sponge"
       }
     }
   },

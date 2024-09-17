@@ -68,7 +68,9 @@ public class Util {
             "vanilla_1.20.80",
             "vanilla_1.21.0",
             "vanilla_1.21.10",
-            "vanilla_1.21.20"
+            "vanilla_1.21.20",
+            "vanilla_1.21.30",
+            "experimental_bundles"
     );
 
     public static ResourcePacksStorage getClientResourcePacks(final File clientDataDir) {

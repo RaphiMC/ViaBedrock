@@ -1,0 +1,52 @@
+{
+    "remappedMetas": {
+        "minecraft:chemistry_table": {
+            "0": "minecraft:compound_creator"
+        },
+        "minecraft:cobblestone_wall": {
+            "1": "minecraft:mossy_cobblestone_wall",
+            "10": "minecraft:end_stone_brick_wall",
+            "11": "minecraft:prismarine_wall",
+            "12": "minecraft:red_sandstone_wall",
+            "13": "minecraft:red_nether_brick_wall",
+            "2": "minecraft:granite_wall",
+            "3": "minecraft:diorite_wall",
+            "4": "minecraft:andesite_wall",
+            "5": "minecraft:sandstone_wall",
+            "6": "minecraft:brick_wall",
+            "7": "minecraft:stone_brick_wall",
+            "8": "minecraft:mossy_stone_brick_wall",
+            "9": "minecraft:nether_brick_wall"
+        },
+        "minecraft:colored_torch_bp": {
+            "0": "minecraft:colored_torch_blue",
+            "10": "minecraft:colored_torch_purple",
+            "11": "minecraft:colored_torch_purple",
+            "12": "minecraft:colored_torch_purple",
+            "13": "minecraft:colored_torch_purple",
+            "14": "minecraft:colored_torch_purple",
+            "15": "minecraft:colored_torch_purple",
+            "8": "minecraft:colored_torch_purple",
+            "9": "minecraft:colored_torch_purple"
+        },
+        "minecraft:colored_torch_rg": {
+            "0": "minecraft:colored_torch_red",
+            "10": "minecraft:colored_torch_green",
+            "11": "minecraft:colored_torch_green",
+            "12": "minecraft:colored_torch_green",
+            "13": "minecraft:colored_torch_green",
+            "14": "minecraft:colored_torch_green",
+            "15": "minecraft:colored_torch_green",
+            "8": "minecraft:colored_torch_green",
+            "9": "minecraft:colored_torch_green"
+        },
+        "minecraft:purpur_block": {
+            "1": "minecraft:deprecated_purpur_block_1",
+            "2": "minecraft:purpur_pillar",
+            "3": "minecraft:deprecated_purpur_block_2"
+        },
+        "minecraft:sponge": {
+            "1": "minecraft:wet_sponge"
+        }
+    }
+}

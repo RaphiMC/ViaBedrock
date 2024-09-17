@@ -1,0 +1,161 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 21,
+    "maxVersionPatch": 30,
+    "maxVersionRevision": 7,
+    "removedProperties": {
+        "minecraft:structure_void": [
+            "structure_void_type"
+        ]
+    },
+    "remappedStates": {
+        "minecraft:chemistry_table": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "chemistry_table_type",
+                    "suffix": ""
+                },
+                "newState": null,
+                "copiedState": [
+                    "direction"
+                ]
+            }
+        ],
+        "minecraft:cobblestone_wall": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "wall_block_type",
+                    "suffix": "_wall",
+                    "flattenedValueRemaps": {
+                        "end_brick": "end_stone_brick"
+                    }
+                },
+                "newState": null,
+                "copiedState": [
+                    "wall_connection_type_east",
+                    "wall_connection_type_north",
+                    "wall_connection_type_south",
+                    "wall_connection_type_west",
+                    "wall_post_bit"
+                ]
+            }
+        ],
+        "minecraft:colored_torch_bp": [
+            {
+                "oldState": {
+                    "color_bit": {
+                        "byte": 0
+                    }
+                },
+                "newName": "minecraft:colored_torch_blue",
+                "newState": null,
+                "copiedState": [
+                    "torch_facing_direction"
+                ]
+            },
+            {
+                "oldState": {
+                    "color_bit": {
+                        "byte": 1
+                    }
+                },
+                "newName": "minecraft:colored_torch_purple",
+                "newState": null,
+                "copiedState": [
+                    "torch_facing_direction"
+                ]
+            }
+        ],
+        "minecraft:colored_torch_rg": [
+            {
+                "oldState": {
+                    "color_bit": {
+                        "byte": 0
+                    }
+                },
+                "newName": "minecraft:colored_torch_red",
+                "newState": null,
+                "copiedState": [
+                    "torch_facing_direction"
+                ]
+            },
+            {
+                "oldState": {
+                    "color_bit": {
+                        "byte": 1
+                    }
+                },
+                "newName": "minecraft:colored_torch_green",
+                "newState": null,
+                "copiedState": [
+                    "torch_facing_direction"
+                ]
+            }
+        ],
+        "minecraft:purpur_block": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "chisel_type",
+                    "suffix": "",
+                    "flattenedValueRemaps": {
+                        "chiseled": "deprecated_purpur_block_1",
+                        "default": "purpur_block",
+                        "lines": "purpur_pillar",
+                        "smooth": "deprecated_purpur_block_2"
+                    }
+                },
+                "newState": null,
+                "copiedState": [
+                    "pillar_axis"
+                ]
+            }
+        ],
+        "minecraft:sponge": [
+            {
+                "oldState": null,
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "sponge_type",
+                    "suffix": "sponge",
+                    "flattenedValueRemaps": {
+                        "dry": "",
+                        "wet": "wet_"
+                    }
+                },
+                "newState": null
+            }
+        ],
+        "minecraft:tnt": [
+            {
+                "oldState": {
+                    "allow_underwater_bit": {
+                        "byte": 0
+                    }
+                },
+                "newName": "minecraft:tnt",
+                "newState": null,
+                "copiedState": [
+                    "explode_bit"
+                ]
+            },
+            {
+                "oldState": {
+                    "allow_underwater_bit": {
+                        "byte": 1
+                    }
+                },
+                "newName": "minecraft:underwater_tnt",
+                "newState": null,
+                "copiedState": [
+                    "explode_bit"
+                ]
+            }
+        ]
+    }
+}

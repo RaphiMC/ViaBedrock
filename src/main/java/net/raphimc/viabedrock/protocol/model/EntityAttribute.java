@@ -24,18 +24,18 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeOperands;
 import java.util.HashSet;
 import java.util.Set;
 
-public record EntityAttribute(String name, float currentValue, float minValue, float maxValue, float defaultValue, Modifier[] modifiers) {
+public record EntityAttribute(String name, float currentValue, float minValue, float maxValue, float defaultValue, float defaultMinValue, float defaultMaxValue, Modifier[] modifiers) {
 
     public EntityAttribute(final String name, final float currentValue, final float minValue, final float maxValue) {
-        this(name, currentValue, minValue, maxValue, currentValue, new Modifier[0]);
+        this(name, currentValue, minValue, maxValue, currentValue, minValue, maxValue, new Modifier[0]);
     }
 
     public EntityAttribute withValue(final float value) {
-        return new EntityAttribute(this.name, value, this.minValue, this.maxValue, this.defaultValue, this.modifiers);
+        return new EntityAttribute(this.name, value, this.minValue, this.maxValue, this.defaultValue, this.defaultMinValue, this.defaultMaxValue, this.modifiers);
     }
 
     public EntityAttribute withModifiers(final Modifier[] modifiers) {
-        return new EntityAttribute(this.name, this.currentValue, this.minValue, this.maxValue, this.defaultValue, modifiers);
+        return new EntityAttribute(this.name, this.currentValue, this.minValue, this.maxValue, this.defaultValue, this.defaultMinValue, this.defaultMaxValue, modifiers);
     }
 
     public float computeClampedValue() {

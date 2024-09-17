@@ -86,8 +86,6 @@ public class BedrockTypes {
     public static final Type<CommandOriginData> COMMAND_ORIGIN_DATA = new CommandOriginDataType();
     public static final Type<BedrockChunkSection> CHUNK_SECTION = new ChunkSectionType();
     public static final Type<BlockPosition> SUB_CHUNK_OFFSET = new SubChunkOffsetType();
-    public static final Type<ResourcePack> BEHAVIOUR_PACK = new BehaviourPackType();
-    public static final Type<ResourcePack[]> BEHAVIOUR_PACK_ARRAY = new ArrayType<>(BEHAVIOUR_PACK, UNSIGNED_SHORT_LE);
     public static final Type<ResourcePack> RESOURCE_PACK = new ResourcePackType();
     public static final Type<ResourcePack[]> RESOURCE_PACK_ARRAY = new ArrayType<>(RESOURCE_PACK, UNSIGNED_SHORT_LE);
     public static final Type<Pair<UUID, String>> PACK_ID_AND_VERSION = new PackIdAndVersionType();
@@ -105,5 +103,6 @@ public class BedrockTypes {
     public static final Type<SkinData> SKIN = new SkinType();
     public static final Type<PlayerAbilities> PLAYER_ABILITIES = new PlayerAbilitiesType();
     public static final Type<CommandData[]> COMMAND_DATA_ARRAY = new CommandDataArrayType();
+    public static final Type<FullContainerName> FULL_CONTAINER_NAME = new FullContainerNameType();
 
 }
