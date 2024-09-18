@@ -25,8 +25,8 @@ import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 public abstract class InventoryRedirectContainer extends Container {
 
-    public InventoryRedirectContainer(final UserConnection user, final byte windowId, final ContainerType type, final int size) {
-        super(user, windowId, type, null, null, size);
+    public InventoryRedirectContainer(final UserConnection user, final byte containerId, final ContainerType type, final int size) {
+        super(user, containerId, type, null, null, size);
     }
 
     @Override
@@ -35,8 +35,8 @@ public abstract class InventoryRedirectContainer extends Container {
     }
 
     @Override
-    public byte javaWindowId() {
-        return this.user.get(InventoryTracker.class).getInventoryContainer().javaWindowId();
+    public byte javaContainerId() {
+        return this.user.get(InventoryTracker.class).getInventoryContainer().javaContainerId();
     }
 
     protected Item[] getActualJavaItems() {

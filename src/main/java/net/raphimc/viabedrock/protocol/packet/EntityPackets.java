@@ -596,7 +596,7 @@ public class EntityPackets {
             final BedrockItem item = wrapper.read(itemRewriter.itemType()); // item
             final byte slot = wrapper.read(Types.BYTE); // slot
             final byte selectedSlot = wrapper.read(Types.BYTE); // selected slot
-            final byte windowId = wrapper.read(Types.BYTE); // window id
+            final byte containerId = wrapper.read(Types.BYTE); // container id
 
             final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(runtimeEntityId);
             if (entity == null || entity instanceof ClientPlayerEntity) {
@@ -605,10 +605,10 @@ public class EntityPackets {
             }
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
-            if (windowId == ContainerID.CONTAINER_ID_INVENTORY.getValue() && slot >= 0 && slot < 9 && (slot == selectedSlot || selectedSlot < 0)) {
+            if (containerId == ContainerID.CONTAINER_ID_INVENTORY.getValue() && slot >= 0 && slot < 9 && (slot == selectedSlot || selectedSlot < 0)) {
                 wrapper.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
                 wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(item)); // item
-            } else if (windowId == ContainerID.CONTAINER_ID_OFFHAND.getValue()) {
+            } else if (containerId == ContainerID.CONTAINER_ID_OFFHAND.getValue()) {
                 wrapper.write(Types.BYTE, (byte) EquipmentSlot.OFFHAND.ordinal()); // slot
                 wrapper.write(Types1_21.ITEM, itemRewriter.javaItem(item)); // item
             } else {

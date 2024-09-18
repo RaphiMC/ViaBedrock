@@ -28,7 +28,7 @@ import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 public abstract class FakeContainer extends Container {
 
     public FakeContainer(final UserConnection user, final ContainerType type, final ATextComponent title) {
-        super(user, user.get(InventoryTracker.class).getNextFakeWindowId(), type, title, null, 0);
+        super(user, user.get(InventoryTracker.class).getNextFakeContainerId(), type, title, null, 0);
     }
 
     @Override
@@ -53,7 +53,7 @@ public abstract class FakeContainer extends Container {
     }
 
     public void close() {
-        PacketFactory.sendJavaContainerClose(this.user, this.javaWindowId());
+        PacketFactory.sendJavaContainerClose(this.user, this.javaContainerId());
         this.user.get(InventoryTracker.class).markPendingClose(this);
     }
 

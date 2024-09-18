@@ -49,7 +49,7 @@ public class OffhandContainer extends InventorySubContainer {
             mobEquipment.write(this.user.get(ItemRewriter.class).itemType(), newItem); // item
             mobEquipment.write(Types.BYTE, (byte) 1); // slot
             mobEquipment.write(Types.BYTE, (byte) 0); // selected slot
-            mobEquipment.write(Types.BYTE, this.windowId); // window id
+            mobEquipment.write(Types.BYTE, this.containerId); // container id
             mobEquipment.sendToServer(BedrockProtocol.class);
         }
     }

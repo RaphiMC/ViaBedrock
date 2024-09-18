@@ -23,8 +23,8 @@ import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 public abstract class InventorySubContainer extends InventoryRedirectContainer {
 
-    public InventorySubContainer(final UserConnection user, final byte windowId, final ContainerType type, final int size) {
-        super(user, windowId, type, size);
+    public InventorySubContainer(final UserConnection user, final byte containerId, final ContainerType type, final int size) {
+        super(user, containerId, type, size);
     }
 
     @Override

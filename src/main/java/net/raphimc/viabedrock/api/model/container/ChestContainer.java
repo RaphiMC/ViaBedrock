@@ -24,8 +24,8 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 
 public class ChestContainer extends Container {
 
-    public ChestContainer(final UserConnection user, final byte windowId, final ATextComponent title, final BlockPosition position, final int size) {
-        super(user, windowId, ContainerType.CONTAINER, title, position, size, "chest", "trapped_chest");
+    public ChestContainer(final UserConnection user, final byte containerId, final ATextComponent title, final BlockPosition position, final int size) {
+        super(user, containerId, ContainerType.CONTAINER, title, position, size, "chest", "trapped_chest");
     }
 
 }

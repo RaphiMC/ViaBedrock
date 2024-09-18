@@ -84,9 +84,9 @@ public class PacketFactory {
         entityEvent.send(BedrockProtocol.class);
     }
 
-    public static void sendJavaContainerClose(final UserConnection user, final byte windowId) {
+    public static void sendJavaContainerClose(final UserConnection user, final byte containerId) {
         final PacketWrapper containerClose = PacketWrapper.create(ClientboundPackets1_21.CONTAINER_CLOSE, user);
-        containerClose.write(Types.UNSIGNED_BYTE, (short) windowId); // window id
+        containerClose.write(Types.UNSIGNED_BYTE, (short) containerId); // container id
         containerClose.send(BedrockProtocol.class);
     }
 
@@ -97,9 +97,9 @@ public class PacketFactory {
         rotateHead.send(BedrockProtocol.class);
     }
 
-    public static void sendBedrockContainerClose(final UserConnection user, final byte windowId, final ContainerType containerType) {
+    public static void sendBedrockContainerClose(final UserConnection user, final byte containerId, final ContainerType containerType) {
         final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, user);
-        containerClose.write(Types.BYTE, windowId); // window id
+        containerClose.write(Types.BYTE, containerId); // container id
         containerClose.write(Types.BYTE, (byte) containerType.getValue()); // type
         containerClose.write(Types.BOOLEAN, false); // server initiated
         containerClose.sendToServer(BedrockProtocol.class);
@@ -124,7 +124,7 @@ public class PacketFactory {
     }
 
     public static void writeJavaContainerSetContent(final PacketWrapper wrapper, final Container container) {
-        wrapper.write(Types.UNSIGNED_BYTE, (short) container.javaWindowId()); // window id
+        wrapper.write(Types.UNSIGNED_BYTE, (short) container.javaContainerId()); // container id
         wrapper.write(Types.VAR_INT, 0); // revision
         wrapper.write(Types1_21.ITEM_ARRAY, container.getJavaItems()); // items
         wrapper.write(Types1_21.ITEM, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item

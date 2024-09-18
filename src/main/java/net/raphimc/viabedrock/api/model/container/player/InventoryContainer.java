@@ -45,8 +45,8 @@ public class InventoryContainer extends Container {
         super(user, (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue(), ContainerType.INVENTORY, null, null, 36);
     }
 
-    public InventoryContainer(final UserConnection user, final byte windowId, final BlockPosition position, final InventoryContainer inventoryContainer) {
-        super(user, windowId, inventoryContainer.type, inventoryContainer.title, position, inventoryContainer.items, inventoryContainer.validBlockTags);
+    public InventoryContainer(final UserConnection user, final byte containerId, final BlockPosition position, final InventoryContainer inventoryContainer) {
+        super(user, containerId, inventoryContainer.type, inventoryContainer.title, position, inventoryContainer.items, inventoryContainer.validBlockTags);
         this.selectedHotbarSlot = inventoryContainer.selectedHotbarSlot;
     }
 
@@ -90,7 +90,7 @@ public class InventoryContainer extends Container {
     }
 
     @Override
-    public byte javaWindowId() {
+    public byte javaContainerId() {
         return (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue();
     }
 
@@ -138,7 +138,7 @@ public class InventoryContainer extends Container {
         mobEquipment.write(this.user.get(ItemRewriter.class).itemType(), newItem); // item
         mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // slot
         mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // selected slot
-        mobEquipment.write(Types.BYTE, this.windowId); // window id
+        mobEquipment.write(Types.BYTE, this.containerId); // container id
     }
 
 }

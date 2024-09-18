@@ -64,29 +64,29 @@ public class InventoryTracker extends StoredObject {
         super(user);
     }
 
-    public Container getContainerClientbound(final byte windowId) {
-        if (windowId == this.inventoryContainer.windowId()) return this.inventoryContainer;
-        if (windowId == this.offhandContainer.windowId()) return this.offhandContainer;
-        if (windowId == this.armorContainer.windowId()) return this.armorContainer;
-        if (windowId == this.hudContainer.windowId()) return this.hudContainer;
+    public Container getContainerClientbound(final byte containerId) {
+        if (containerId == this.inventoryContainer.containerId()) return this.inventoryContainer;
+        if (containerId == this.offhandContainer.containerId()) return this.offhandContainer;
+        if (containerId == this.armorContainer.containerId()) return this.armorContainer;
+        if (containerId == this.hudContainer.containerId()) return this.hudContainer;
 
         for (int i = this.containerStack.size() - 1; i >= 0; i--) {
             final Container container = this.containerStack.get(i);
             if (container instanceof FakeContainer) continue;
-            if (container.windowId() == windowId) return container;
+            if (container.containerId() == containerId) return container;
         }
         return null;
     }
 
-    public Container getContainerServerbound(final byte windowId) {
+    public Container getContainerServerbound(final byte containerId) {
         for (int i = this.containerStack.size() - 1; i >= 0; i--) {
             final Container container = this.containerStack.get(i);
             if (container instanceof FakeContainer) continue;
-            if (container.javaWindowId() == windowId) return container;
+            if (container.javaContainerId() == containerId) return container;
         }
         for (int i = this.containerStack.size() - 1; i >= 0; i--) {
             final Container container = this.containerStack.get(i);
-            if (container instanceof FakeContainer && container.javaWindowId() == windowId) {
+            if (container instanceof FakeContainer && container.javaContainerId() == containerId) {
                 return container;
             }
         }
@@ -101,7 +101,7 @@ public class InventoryTracker extends StoredObject {
         this.containerStack.push(container);
 
         final PacketWrapper openScreen = PacketWrapper.create(ClientboundPackets1_21.OPEN_SCREEN, this.user());
-        openScreen.write(Types.VAR_INT, (int) container.javaWindowId()); // window id
+        openScreen.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
         openScreen.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(container.type())); // type
         openScreen.write(Types.TAG, TextUtil.textComponentToNbt(container.title())); // title
         openScreen.send(BedrockProtocol.class);
@@ -130,7 +130,7 @@ public class InventoryTracker extends StoredObject {
     public void setCurrentContainerClosed(final boolean serverInitiated) {
         if (serverInitiated) {
             this.pendingCloseContainer = this.getCurrentContainer();
-            PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
+            PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.containerId(), ContainerType.NONE);
         }
         if (this.pendingCloseContainer != this.getCurrentContainer()) {
             throw new IllegalStateException("Current container is not the pending close container");
@@ -151,7 +151,7 @@ public class InventoryTracker extends StoredObject {
                     fakeContainer.onClosed(); // Send user closed response
                 }
             } else {
-                PacketFactory.sendBedrockContainerClose(this.user(), container.windowId(), ContainerType.NONE);
+                PacketFactory.sendBedrockContainerClose(this.user(), container.containerId(), ContainerType.NONE);
             }
         }
         this.pendingCloseContainer = null;
@@ -236,7 +236,7 @@ public class InventoryTracker extends StoredObject {
         return this.pendingCloseContainer;
     }
 
-    public byte getNextFakeWindowId() {
+    public byte getNextFakeContainerId() {
         final int id = this.FAKE_ID_COUNTER.getAndIncrement();
         if (id > MAX_FAKE_ID) {
             this.FAKE_ID_COUNTER.set(MIN_FAKE_ID);
@@ -247,8 +247,8 @@ public class InventoryTracker extends StoredObject {
 
     private void forceCloseContainer(final Container container) {
         this.markPendingClose(container);
-        PacketFactory.sendJavaContainerClose(this.user(), this.pendingCloseContainer.javaWindowId());
-        PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.windowId(), ContainerType.NONE);
+        PacketFactory.sendJavaContainerClose(this.user(), this.pendingCloseContainer.javaContainerId());
+        PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.containerId(), ContainerType.NONE);
     }
 
 }

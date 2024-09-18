@@ -33,16 +33,16 @@ import java.util.logging.Level;
 public abstract class Container {
 
     protected final UserConnection user;
-    protected final byte windowId;
+    protected final byte containerId;
     protected final ContainerType type;
     protected final ATextComponent title;
     protected final BlockPosition position;
     protected final BedrockItem[] items;
     protected final Set<String> validBlockTags;
 
-    public Container(final UserConnection user, final byte windowId, final ContainerType type, final ATextComponent title, final BlockPosition position, final int size, final String... validBlockTags) {
+    public Container(final UserConnection user, final byte containerId, final ContainerType type, final ATextComponent title, final BlockPosition position, final int size, final String... validBlockTags) {
         this.user = user;
-        this.windowId = windowId;
+        this.containerId = containerId;
         this.type = type;
         this.title = title;
         this.position = position;
@@ -50,9 +50,9 @@ public abstract class Container {
         this.validBlockTags = Set.of(validBlockTags);
     }
 
-    protected Container(final UserConnection user, final byte windowId, final ContainerType type, final ATextComponent title, final BlockPosition position, final BedrockItem[] items, final Set<String> validBlockTags) {
+    protected Container(final UserConnection user, final byte containerId, final ContainerType type, final ATextComponent title, final BlockPosition position, final BedrockItem[] items, final Set<String> validBlockTags) {
         this.user = user;
-        this.windowId = windowId;
+        this.containerId = containerId;
         this.type = type;
         this.title = title;
         this.position = position;
@@ -110,16 +110,16 @@ public abstract class Container {
         return slot;
     }
 
-    public byte javaWindowId() {
-        return this.windowId();
+    public byte javaContainerId() {
+        return this.containerId();
     }
 
     public int size() {
         return this.items.length;
     }
 
-    public byte windowId() {
-        return this.windowId;
+    public byte containerId() {
+        return this.containerId;
     }
 
     public ContainerType type() {

@@ -65,7 +65,7 @@ public class InventoryPackets {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = wrapper.user().get(BlockStateRewriter.class);
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            final byte windowId = wrapper.read(Types.BYTE); // window id
+            final byte containerId = wrapper.read(Types.BYTE); // container id
             final byte rawType = wrapper.read(Types.BYTE); // type
             final ContainerType type = ContainerType.getByValue(rawType);
             if (type == null) {
@@ -90,11 +90,11 @@ public class InventoryPackets {
             final Container container;
             switch (type) {
                 case INVENTORY -> {
-                    inventoryTracker.setCurrentContainer(new InventoryContainer(wrapper.user(), windowId, position, inventoryTracker.getInventoryContainer()));
+                    inventoryTracker.setCurrentContainer(new InventoryContainer(wrapper.user(), containerId, position, inventoryTracker.getInventoryContainer()));
                     wrapper.cancel();
                     return;
                 }
-                case CONTAINER -> container = new ChestContainer(wrapper.user(), windowId, title, position, 27);
+                case CONTAINER -> container = new ChestContainer(wrapper.user(), containerId, title, position, 27);
                 case NONE, CAULDRON, JUKEBOX, ARMOR, HAND, HUD, DECORATED_POT -> { // Bedrock client can't open these containers
                     wrapper.cancel();
                     return;
@@ -103,20 +103,20 @@ public class InventoryPackets {
                     // throw new IllegalStateException("Unhandled ContainerType: " + type);
                     wrapper.cancel();
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to open unimplemented container: " + type);
-                    PacketFactory.sendBedrockContainerClose(wrapper.user(), windowId, ContainerType.NONE);
+                    PacketFactory.sendBedrockContainerClose(wrapper.user(), containerId, ContainerType.NONE);
                     return;
                 }
             }
             inventoryTracker.setCurrentContainer(container);
 
-            wrapper.write(Types.VAR_INT, (int) windowId); // window id
+            wrapper.write(Types.VAR_INT, (int) containerId); // container id
             wrapper.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(type)); // type
             wrapper.write(Types.TAG, TextUtil.textComponentToNbt(title)); // title
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_21.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
             protected void register() {
-                map(Types.BYTE, Types.UNSIGNED_BYTE); // window id
+                map(Types.BYTE, Types.UNSIGNED_BYTE); // container id
                 handler(wrapper -> {
                     final ContainerType containerType = ContainerType.getByValue(wrapper.read(Types.BYTE)); // type
                     final boolean serverInitiated = wrapper.read(Types.BOOLEAN); // server initiated
@@ -144,13 +144,13 @@ public class InventoryPackets {
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_21.CONTAINER_SET_CONTENT, wrapper -> {
-            final int windowId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // window id
+            final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
             final BedrockItem[] items = wrapper.read(wrapper.user().get(ItemRewriter.class).itemArrayType()); // items
             wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // dynamic container size
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            final Container container = inventoryTracker.getContainerClientbound((byte) windowId);
+            final Container container = inventoryTracker.getContainerClientbound((byte) containerId);
             if (container != null && container.setItems(items)) {
                 PacketFactory.writeJavaContainerSetContent(wrapper, container);
             } else {
@@ -158,19 +158,19 @@ public class InventoryPackets {
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_SLOT, ClientboundPackets1_21.CONTAINER_SET_SLOT, wrapper -> {
-            final int windowId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // window id
+            final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
             final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // slot
             wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // dynamic container size
             final BedrockItem item = wrapper.read(wrapper.user().get(ItemRewriter.class).itemType()); // item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            final Container container = inventoryTracker.getContainerClientbound((byte) windowId);
+            final Container container = inventoryTracker.getContainerClientbound((byte) containerId);
             if (container != null && container.setItem(slot, item)) {
                 if (container.type() == ContainerType.HUD && slot == 0) { // cursor item
-                    wrapper.write(Types.UNSIGNED_BYTE, (short) -1); // window id
+                    wrapper.write(Types.UNSIGNED_BYTE, (short) -1); // container id
                 } else {
-                    wrapper.write(Types.UNSIGNED_BYTE, (short) container.javaWindowId()); // window id
+                    wrapper.write(Types.UNSIGNED_BYTE, (short) container.javaContainerId()); // container id
                 }
                 wrapper.write(Types.VAR_INT, 0); // revision
                 wrapper.write(Types.SHORT, (short) container.javaSlot(slot)); // slot
@@ -221,21 +221,21 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_HOTBAR, ClientboundPackets1_21.SET_CARRIED_ITEM, wrapper -> {
             final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
             final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // selected slot
-            final byte windowId = wrapper.read(Types.BYTE); // window id
+            final byte containerId = wrapper.read(Types.BYTE); // container id
             final boolean shouldSelectSlot = wrapper.read(Types.BOOLEAN); // should select slot
-            if (slot >= 0 && slot < 9 && windowId == inventoryContainer.windowId() && shouldSelectSlot) {
+            if (slot >= 0 && slot < 9 && containerId == inventoryContainer.containerId() && shouldSelectSlot) {
                 wrapper.write(Types.BYTE, (byte) slot); // slot
             } else {
                 wrapper.cancel();
-                if (windowId != inventoryContainer.windowId()) { // Bedrock client doesn't render hotbar selection and held item anymore
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set hotbar slot with wrong window id: " + windowId);
+                if (containerId != inventoryContainer.containerId()) { // Bedrock client doesn't render hotbar selection and held item anymore
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set hotbar slot with wrong container id: " + containerId);
                 }
             }
         });
 
         protocol.registerServerbound(ServerboundPackets1_20_5.CONTAINER_CLICK, null, wrapper -> {
             wrapper.cancel();
-            final byte windowId = wrapper.read(Types.UNSIGNED_BYTE).byteValue(); // window id
+            final byte containerId = wrapper.read(Types.UNSIGNED_BYTE).byteValue(); // container id
             final int revision = wrapper.read(Types.VAR_INT); // revision
             final short slot = wrapper.read(Types.SHORT); // slot
             final byte button = wrapper.read(Types.BYTE); // button
@@ -246,9 +246,9 @@ public class InventoryPackets {
                 wrapper.cancel();
                 return;
             }
-            final Container container = inventoryTracker.getContainerServerbound(windowId);
+            final Container container = inventoryTracker.getContainerServerbound(containerId);
             if (container == null) {
-                if (windowId == ContainerID.CONTAINER_ID_INVENTORY.getValue()) {
+                if (containerId == ContainerID.CONTAINER_ID_INVENTORY.getValue()) {
                     // Bedrock client can send multiple OpenInventory requests if the server doesn't respond, so this is fine here
                     final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
                     interact.write(Types.BYTE, (byte) InteractPacket_Action.OpenInventory.getValue()); // action
@@ -282,20 +282,20 @@ public class InventoryPackets {
         protocol.registerServerbound(ServerboundPackets1_20_5.CONTAINER_CLOSE, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
             protected void register() {
-                map(Types.UNSIGNED_BYTE, Types.BYTE); // window id
+                map(Types.UNSIGNED_BYTE, Types.BYTE); // container id
                 create(Types.BYTE, (byte) ContainerType.NONE.getValue()); // type
                 create(Types.BOOLEAN, false); // server initiated
                 handler(wrapper -> {
                     final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-                    final byte windowId = wrapper.get(Types.BYTE, 0);
-                    final Container container = inventoryTracker.getContainerServerbound(windowId);
+                    final byte containerId = wrapper.get(Types.BYTE, 0);
+                    final Container container = inventoryTracker.getContainerServerbound(containerId);
                     if (container == null) {
                         wrapper.cancel();
                         return;
                     }
 
-                    if (container.javaWindowId() != container.windowId()) {
-                        wrapper.set(Types.BYTE, 0, container.windowId());
+                    if (container.javaContainerId() != container.containerId()) {
+                        wrapper.set(Types.BYTE, 0, container.containerId());
                     }
                     if (!inventoryTracker.markPendingClose(container)) {
                         wrapper.cancel();
