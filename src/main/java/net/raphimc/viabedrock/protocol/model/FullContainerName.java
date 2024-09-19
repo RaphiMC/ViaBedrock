@@ -17,5 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-public record FullContainerName(byte name, Integer dynamicId) {
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerEnumName;
+
+public record FullContainerName(ContainerEnumName name, Integer dynamicId) {
+
+    public static final FullContainerName EMPTY = new FullContainerName(ContainerEnumName.AnvilInputContainer, null);
+
 }

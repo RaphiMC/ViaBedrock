@@ -48,6 +48,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
@@ -146,11 +147,11 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_21.CONTAINER_SET_CONTENT, wrapper -> {
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
             final BedrockItem[] items = wrapper.read(wrapper.user().get(ItemRewriter.class).itemArrayType()); // items
-            wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
+            final FullContainerName containerName = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // dynamic container size
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            final Container container = inventoryTracker.getContainerClientbound((byte) containerId);
+            final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName);
             if (container != null && container.setItems(items)) {
                 PacketFactory.writeJavaContainerSetContent(wrapper, container);
             } else {
@@ -160,12 +161,12 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_SLOT, ClientboundPackets1_21.CONTAINER_SET_SLOT, wrapper -> {
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
             final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // slot
-            wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
+            final FullContainerName containerName = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
             wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // dynamic container size
             final BedrockItem item = wrapper.read(wrapper.user().get(ItemRewriter.class).itemType()); // item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            final Container container = inventoryTracker.getContainerClientbound((byte) containerId);
+            final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName);
             if (container != null && container.setItem(slot, item)) {
                 if (container.type() == ContainerType.HUD && slot == 0) { // cursor item
                     wrapper.write(Types.UNSIGNED_BYTE, (short) -1); // container id
@@ -230,6 +231,14 @@ public class InventoryPackets {
                 if (containerId != inventoryContainer.containerId()) { // Bedrock client doesn't render hotbar selection and held item anymore
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set hotbar slot with wrong container id: " + containerId);
                 }
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_REGISTRY_CLEANUP, null, wrapper -> {
+            wrapper.cancel();
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            final FullContainerName[] removedContainers = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME_ARRAY); // removed containers
+            for (FullContainerName containerName : removedContainers) {
+                inventoryTracker.removeDynamicContainer(containerName);
             }
         });
 

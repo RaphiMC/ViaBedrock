@@ -15,31 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.types.model;
+package net.raphimc.viabedrock.api.model.container;
 
-import com.viaversion.viaversion.api.type.Type;
-import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerEnumName;
+import com.viaversion.viaversion.api.connection.UserConnection;
+import net.raphimc.viabedrock.api.model.container.player.InventoryRedirectContainer;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public class FullContainerNameType extends Type<FullContainerName> {
+public class DynamicContainer extends InventoryRedirectContainer {
 
-    public FullContainerNameType() {
-        super(FullContainerName.class);
+    private final FullContainerName containerName;
+
+    public DynamicContainer(final UserConnection user, final FullContainerName containerName) {
+        super(user, (byte) ContainerID.CONTAINER_ID_REGISTRY_INVENTORY.getValue(), ContainerType.NONE, 1000 /* Seems to be a hardcoded cap */);
+        this.containerName = containerName;
     }
 
     @Override
-    public FullContainerName read(ByteBuf buffer) {
-        return new FullContainerName(ContainerEnumName.getByValue(buffer.readByte()), buffer.readBoolean() ? buffer.readIntLE() : null);
-    }
-
-    @Override
-    public void write(ByteBuf buffer, FullContainerName value) {
-        buffer.writeByte(value.name().getValue());
-        buffer.writeBoolean(value.dynamicId() != null);
-        if (value.dynamicId() != null) {
-            buffer.writeIntLE(value.dynamicId());
-        }
+    public int javaSlot(final int slot) {
+        return 45; // dummy slot
     }
 
 }
