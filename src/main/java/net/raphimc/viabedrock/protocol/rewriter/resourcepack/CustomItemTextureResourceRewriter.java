@@ -22,6 +22,7 @@ import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.model.resourcepack.TextureDefinitions;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
+import java.util.List;
 import java.util.Map;
 
 public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter {
@@ -34,22 +35,25 @@ public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter
 
     @Override
     protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Map<Integer, JsonObject> overridesMap) {
-        for (Map.Entry<String, TextureDefinitions.ItemTextureDefinition> entry : resourcePacksStorage.getTextures().itemTextures().entrySet()) {
-            for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
-                final ResourcePack.Content bedrockContent = pack.content();
-                final ResourcePack.Content.LazyImage texture = bedrockContent.getShortnameImage(entry.getValue().texturePath());
-                if (texture == null) continue;
+        for (Map.Entry<String, List<TextureDefinitions.ItemTextureDefinition>> entry : resourcePacksStorage.getTextures().itemTextures().entrySet()) {
+            for (int i = 0; i < entry.getValue().size(); i++) {
+                final TextureDefinitions.ItemTextureDefinition itemTextureDefinition = entry.getValue().get(i);
+                for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
+                    final ResourcePack.Content bedrockContent = pack.content();
+                    final ResourcePack.Content.LazyImage texture = bedrockContent.getShortnameImage(itemTextureDefinition.texturePath());
+                    if (texture == null) continue;
 
-                javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(entry.getValue().texturePath()) + ".png", texture);
+                    javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(itemTextureDefinition.texturePath()) + ".png", texture);
 
-                final JsonObject itemModel = new JsonObject();
-                itemModel.addProperty("parent", "minecraft:item/generated");
-                final JsonObject layer0 = new JsonObject();
-                layer0.addProperty("layer0", "viabedrock:" + this.getJavaTexturePath(entry.getValue().texturePath()));
-                itemModel.add("textures", layer0);
-                javaContent.putJson("assets/viabedrock/models/" + this.getJavaModelName(entry.getKey()) + ".json", itemModel);
-                this.addOverride(overridesMap, entry.getKey());
-                break;
+                    final JsonObject itemModel = new JsonObject();
+                    itemModel.addProperty("parent", "minecraft:item/generated");
+                    final JsonObject layer0 = new JsonObject();
+                    layer0.addProperty("layer0", "viabedrock:" + this.getJavaTexturePath(itemTextureDefinition.texturePath()));
+                    itemModel.add("textures", layer0);
+                    javaContent.putJson("assets/viabedrock/models/" + this.getJavaModelName(entry.getKey() + "_" + i) + ".json", itemModel);
+                    this.addOverride(overridesMap, entry.getKey() + "_" + i);
+                    break;
+                }
             }
         }
     }

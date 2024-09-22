@@ -22,14 +22,12 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 public class TextureDefinitions {
 
-    private final Map<String, ItemTextureDefinition> itemTextures = new HashMap<>();
+    private final Map<String, List<ItemTextureDefinition>> itemTextures = new HashMap<>();
 
     public TextureDefinitions(final ResourcePacksStorage resourcePacksStorage) {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
@@ -41,9 +39,16 @@ public class TextureDefinitions {
                         final JsonObject textureData = itemTexture.getAsJsonObject("texture_data");
                         for (Map.Entry<String, JsonElement> entry : textureData.entrySet()) {
                             final String name = entry.getKey();
-                            final String texturePath = entry.getValue().getAsJsonObject().get("textures").getAsString();
-                            final ItemTextureDefinition itemTextureDefinition = new ItemTextureDefinition(name, texturePath);
-                            this.itemTextures.put(name, itemTextureDefinition);
+                            final JsonElement textures = entry.getValue().getAsJsonObject().get("textures");
+                            final List<ItemTextureDefinition> itemTextureDefinitions = new ArrayList<>();
+                            if (textures.isJsonPrimitive() && textures.getAsJsonPrimitive().isString()) {
+                                itemTextureDefinitions.add(new ItemTextureDefinition(name, textures.getAsString()));
+                            } else if (textures.isJsonArray()) {
+                                for (JsonElement texture : textures.getAsJsonArray()) {
+                                    itemTextureDefinitions.add(new ItemTextureDefinition(name, texture.getAsString()));
+                                }
+                            }
+                            this.itemTextures.put(name, itemTextureDefinitions);
                         }
                     }
                 } catch (Throwable e) {
@@ -53,7 +58,7 @@ public class TextureDefinitions {
         }
     }
 
-    public Map<String, ItemTextureDefinition> itemTextures() {
+    public Map<String, List<ItemTextureDefinition>> itemTextures() {
         return Collections.unmodifiableMap(this.itemTextures);
     }
 
