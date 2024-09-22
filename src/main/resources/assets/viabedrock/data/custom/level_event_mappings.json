@@ -28,7 +28,9 @@
   "SoundZombieDoorCrash": "SOUND_ZOMBIE_DOOR_CRASH",
   "SoundZombieInfected": "SOUND_ZOMBIE_INFECTED",
   "SoundZombieConverted": "SOUND_ZOMBIE_CONVERTED",
-  "SoundEndermanTeleport": "SOUND_PORTAL_TRAVEL",
+  "SoundEndermanTeleport": {
+    "sound": "mob.endermen.portal"
+  },
   "SoundAnvilBroken": "SOUND_ANVIL_BROKEN",
   "SoundAnvilUsed": "SOUND_ANVIL_USED",
   "SoundAnvilLand": "SOUND_ANVIL_LAND",

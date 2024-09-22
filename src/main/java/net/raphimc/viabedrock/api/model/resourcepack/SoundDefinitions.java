@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.api.model.resourcepack;
 
+import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.Key;
@@ -223,16 +224,20 @@ public class SoundDefinitions {
                 if (this.minVolume == this.maxVolume) {
                     obj.addProperty("volume", this.minVolume);
                 } else {
-                    obj.addProperty("min_volume", this.minVolume);
-                    obj.addProperty("max_volume", this.maxVolume);
+                    final JsonArray volumeArray = new JsonArray();
+                    volumeArray.add(this.minVolume);
+                    volumeArray.add(this.maxVolume);
+                    obj.add("volume", volumeArray);
                 }
             }
             if (this.minPitch != 1F || this.maxPitch != 1F) {
                 if (this.minPitch == this.maxPitch) {
                     obj.addProperty("pitch", this.minPitch);
                 } else {
-                    obj.addProperty("min_pitch", this.minPitch);
-                    obj.addProperty("max_pitch", this.maxPitch);
+                    final JsonArray pitchArray = new JsonArray();
+                    pitchArray.add(this.minPitch);
+                    pitchArray.add(this.maxPitch);
+                    obj.add("pitch", pitchArray);
                 }
             }
             return obj;

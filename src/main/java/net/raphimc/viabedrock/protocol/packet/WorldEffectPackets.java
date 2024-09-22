@@ -327,7 +327,6 @@ public class WorldEffectPackets {
                         }); // data
                         wrapper.write(Types.BOOLEAN, false); // global
                     } else if (levelEventMapping instanceof BedrockMappingData.JavaSound javaSound) {
-                        if (data < 0 || data > 256_000) data = 1000;
                         wrapper.setPacketType(ClientboundPackets1_21.SOUND);
                         wrapper.write(Types.SOUND_EVENT, Holder.of(javaSound.id())); // sound id
                         wrapper.write(Types.VAR_INT, javaSound.category().ordinal()); // category
@@ -335,7 +334,12 @@ public class WorldEffectPackets {
                         wrapper.write(Types.INT, (int) (position.y() * 8F)); // y
                         wrapper.write(Types.INT, (int) (position.z() * 8F)); // z
                         wrapper.write(Types.FLOAT, 1F); // volume
-                        wrapper.write(Types.FLOAT, data / 1000F); // pitch
+                        wrapper.write(Types.FLOAT, switch (levelEvent) {
+                            case SoundClick, SoundClickFail, SoundOpenDoor, SoundFizz, SoundInfinityArrowPickup, SoundAmethystResonate -> {
+                                yield data > 0 && data <= 256_000 ? (data / 1000F) : 1F;
+                            }
+                            default -> 1F;
+                        }); // pitch
                         wrapper.write(Types.LONG, ThreadLocalRandom.current().nextLong()); // seed
                     } else if (levelEventMapping instanceof BedrockMappingData.JavaParticle javaParticle) {
                         wrapper.setPacketType(ClientboundPackets1_21.LEVEL_PARTICLES);
