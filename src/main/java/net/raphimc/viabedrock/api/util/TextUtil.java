@@ -21,13 +21,16 @@ import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.Style;
 import com.viaversion.viaversion.libs.mcstructs.text.serializer.LegacyStringDeserializer;
+import com.viaversion.viaversion.libs.mcstructs.text.utils.TextUtils;
 import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 public class TextUtil {
@@ -73,7 +76,26 @@ public class TextUtil {
     }
 
     public static ATextComponent stringToTextComponent(final String text) {
-        return LegacyStringDeserializer.parse(appendFormattingCodesAfterColorCode(text), TextFormatting.COLOR_CHAR, BEDROCK_FORMATTING_RESOLVER);
+        final ATextComponent textComponent = LegacyStringDeserializer.parse(appendFormattingCodesAfterColorCode(text), TextFormatting.COLOR_CHAR, ResetTrackingStyle::new, BEDROCK_FORMATTING_RESOLVER);
+        final AtomicBoolean wasReset = new AtomicBoolean(false);
+        TextUtils.iterateAll(textComponent, c -> {
+            final Style style = c.getStyle();
+            if (style instanceof ResetTrackingStyle resetTrackingStyle && resetTrackingStyle.wasReset) {
+                wasReset.set(true);
+            }
+            if (wasReset.get()) {
+                if (!style.isBold()) {
+                    style.setBold(false);
+                }
+                if (!style.isUnderlined()) {
+                    style.setUnderlined(false);
+                }
+                if (!style.isItalic()) {
+                    style.setItalic(false);
+                }
+            }
+        });
+        return textComponent;
     }
 
     /**
@@ -107,6 +129,29 @@ public class TextUtil {
             }
         }
         return out.toString();
+    }
+
+    private static final class ResetTrackingStyle extends Style {
+
+        private boolean wasReset;
+
+        @Override
+        public Style setFormatting(final TextFormatting formatting) {
+            if (formatting == TextFormatting.RESET) {
+                this.wasReset = true;
+            }
+            return super.setFormatting(formatting);
+        }
+
+        @Override
+        public Style copy() {
+            final ResetTrackingStyle copy = new ResetTrackingStyle();
+            copy.setParent(super.copy());
+            copy.applyParent();
+            copy.wasReset = this.wasReset;
+            return copy;
+        }
+
     }
 
 }
