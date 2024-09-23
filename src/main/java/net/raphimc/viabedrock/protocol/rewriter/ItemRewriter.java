@@ -85,16 +85,13 @@ public class ItemRewriter extends StoredObject {
         this.items = HashBiMap.create(BedrockProtocol.MAPPINGS.getBedrockItems());
         this.componentItems = new HashSet<>();
         for (ItemEntry itemEntry : itemEntries) {
-            final String identifier = Key.namespaced(itemEntry.identifier());
-            final String previousIdentifier = this.items.inverse().remove(itemEntry.id());
-            if (previousIdentifier != null) {
-                blockItems.remove(previousIdentifier);
-            }
-            this.items.put(identifier, itemEntry.id());
+            this.items.inverse().remove(itemEntry.id());
+            this.items.put(Key.namespaced(itemEntry.identifier()), itemEntry.id());
             if (itemEntry.componentBased()) {
-                this.componentItems.add(identifier);
+                this.componentItems.add(Key.namespaced(itemEntry.identifier()));
             }
         }
+        blockItems.removeIf(identifier -> !this.items.containsKey(identifier));
 
         this.blockItemValidBlockStates = new Int2ObjectOpenHashMap<>(blockItems.size());
         final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
