@@ -380,7 +380,7 @@ public class BedrockMappingData extends MappingDataBase {
                         throw new RuntimeException("Tried to register meta item as block item: " + bedrockIdentifier);
                     }
                     final JsonObject blockDefinition = definition.get("block").getAsJsonObject();
-                    final Map<BlockState, JavaItemMapping> blockItems = new LinkedHashMap<>(blockDefinition.size());
+                    final Map<BlockState, JavaItemMapping> blockItems = new HashMap<>(blockDefinition.size());
                     this.bedrockToJavaBlockItems.put(bedrockIdentifier, blockItems);
                     final List<BlockState> allPossibleStates = new ArrayList<>();
                     for (Map.Entry<String, JsonElement> blockMapping : blockDefinition.entrySet()) {
@@ -433,9 +433,6 @@ public class BedrockMappingData extends MappingDataBase {
                     }
                     if (!metaItems.containsKey(null)) {
                         throw new RuntimeException("Missing bedrock -> java item mapping for " + bedrockIdentifier + ":null");
-                    }
-                    if (metaItems.size() > 1 && !metaItems.containsKey(0)) {
-                        throw new RuntimeException("Missing bedrock -> java item mapping for " + bedrockIdentifier + ":0");
                     }
                 } else {
                     throw new RuntimeException("Unknown item mapping definition: " + definition);
@@ -1194,7 +1191,7 @@ public class BedrockMappingData extends MappingDataBase {
             throw new RuntimeException("Unknown java item: " + javaIdentifier);
         }
 
-        final String javaDisplayName = obj.has("java_display_name") ? obj.get("java_display_name").getAsString() : null;
+        final String javaName = obj.has("java_name") ? obj.get("java_name").getAsString() : null;
         CompoundTag javaTag = null;
         try {
             if (obj.has("java_tag")) {
@@ -1203,7 +1200,7 @@ public class BedrockMappingData extends MappingDataBase {
         } catch (Throwable e) {
             throw new RuntimeException("Failed to parse java tag for " + javaIdentifier, e);
         }
-        return new JavaItemMapping(this.javaItems.get(javaIdentifier), javaIdentifier, javaDisplayName, javaTag);
+        return new JavaItemMapping(this.javaItems.get(javaIdentifier), javaIdentifier, javaName, javaTag);
     }
 
     public sealed interface LevelEventMapping permits JavaSound, JavaParticle, JavaLevelEvent, JavaSoundLevelEvent {
@@ -1230,7 +1227,7 @@ public class BedrockMappingData extends MappingDataBase {
     public record JavaSoundLevelEvent(JavaSound sound, JavaLevelEvent levelEvent) implements LevelEventMapping {
     }
 
-    public record JavaItemMapping(int id, String identifier, String displayName, CompoundTag overrideTag) {
+    public record JavaItemMapping(int id, String identifier, String name, CompoundTag overrideTag) {
     }
 
 }

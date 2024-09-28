@@ -31,7 +31,7 @@
     "block": {
       "minecraft:acacia_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:acacia_planks",
-        "java_display_name": "Acacia Double Slab"
+        "java_name": "tile.double_wooden_slab.acacia.name"
       }
     }
   },
@@ -116,7 +116,7 @@
     "block": {
       "minecraft:acacia_standing_sign": {
         "java_id": "minecraft:acacia_sign",
-        "java_display_name": "Standing Acacia Sign"
+        "java_name": "tile.acacia_standing_sign.name"
       }
     }
   },
@@ -131,7 +131,7 @@
     "block": {
       "minecraft:acacia_wall_sign": {
         "java_id": "minecraft:acacia_sign",
-        "java_display_name": "Acacia Wall Sign"
+        "java_name": "tile.acacia_wall_sign.name"
       }
     }
   },
@@ -153,7 +153,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:llama_spawn_egg",
-        "java_display_name": "Agent Spawn Egg"
+        "java_name": "item.spawn_egg.entity.agent.name"
       }
     }
   },
@@ -182,7 +182,7 @@
     "block": {
       "minecraft:allow": {
         "java_id": "minecraft:polished_granite",
-        "java_display_name": "Allow"
+        "java_name": "tile.allow.name"
       }
     }
   },
@@ -225,7 +225,7 @@
     "block": {
       "minecraft:andesite_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:andesite",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab3.andesite.name"
       }
     }
   },
@@ -456,7 +456,7 @@
       },
       "37": {
         "java_id": "minecraft:tipped_arrow",
-        "java_display_name": "Arrow of Decay",
+        "java_name": "tipped_arrow.effect.wither",
         "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",amplifier:1,duration:800}],CustomPotionColor:4013879}"
       },
       "38": {
@@ -538,7 +538,71 @@
     "meta": {
       "": {
         "java_id": "minecraft:heart_of_the_sea",
-        "java_display_name": "Balloon"
+        "java_name": "item.balloon.purple.name"
+      },
+      "0": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.white.name"
+      },
+      "1": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.orange.name"
+      },
+      "2": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.magenta.name"
+      },
+      "3": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.lightBlue.name"
+      },
+      "4": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.yellow.name"
+      },
+      "5": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.lime.name"
+      },
+      "6": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.pink.name"
+      },
+      "7": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.gray.name"
+      },
+      "8": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.silver.name"
+      },
+      "9": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.cyan.name"
+      },
+      "10": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.purple.name"
+      },
+      "11": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.blue.name"
+      },
+      "12": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.brown.name"
+      },
+      "13": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.green.name"
+      },
+      "14": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.red.name"
+      },
+      "15": {
+        "java_id": "minecraft:heart_of_the_sea",
+        "java_name": "item.balloon.black.name"
       }
     }
   },
@@ -581,7 +645,7 @@
     "block": {
       "minecraft:bamboo_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:bamboo_block",
-        "java_display_name": "Bamboo Double Slab"
+        "java_name": "tile.bamboo_double_slab.name"
       }
     }
   },
@@ -617,7 +681,7 @@
     "block": {
       "minecraft:bamboo_mosaic_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:bamboo_mosaic",
-        "java_display_name": "Bamboo Mosaic Double Slab"
+        "java_name": "tile.bamboo_mosaic_double_slab.name"
       }
     }
   },
@@ -660,7 +724,7 @@
     "block": {
       "minecraft:bamboo_sapling": {
         "java_id": "minecraft:bamboo",
-        "java_display_name": "Bamboo Sapling"
+        "java_name": "tile.sapling.bamboo.name"
       }
     }
   },
@@ -689,7 +753,7 @@
     "block": {
       "minecraft:bamboo_standing_sign": {
         "java_id": "minecraft:bamboo_sign",
-        "java_display_name": "Standing Bamboo Sign"
+        "java_name": "tile.bamboo_standing_sign.name"
       }
     }
   },
@@ -704,7 +768,7 @@
     "block": {
       "minecraft:bamboo_wall_sign": {
         "java_id": "minecraft:bamboo_sign",
-        "java_display_name": "Bamboo Wall Sign"
+        "java_name": "tile.bamboo_wall_sign.name"
       }
     }
   },
@@ -962,7 +1026,7 @@
     "block": {
       "minecraft:birch_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:birch_planks",
-        "java_display_name": "Birch Double Slab"
+        "java_name": "tile.double_wooden_slab.birch.name"
       }
     }
   },
@@ -1047,7 +1111,7 @@
     "block": {
       "minecraft:birch_standing_sign": {
         "java_id": "minecraft:birch_sign",
-        "java_display_name": "Standing Birch Sign"
+        "java_name": "tile.birch_standing_sign.name"
       }
     }
   },
@@ -1062,7 +1126,7 @@
     "block": {
       "minecraft:birch_wall_sign": {
         "java_id": "minecraft:birch_sign",
-        "java_display_name": "Birch Wall Sign"
+        "java_name": "tile.birch_wall_sign.name"
       }
     }
   },
@@ -1084,7 +1148,7 @@
     "block": {
       "minecraft:black_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Black Candle Cake"
+        "java_name": "tile.black_candle_cake.name"
       }
     }
   },
@@ -1169,7 +1233,7 @@
     "block": {
       "minecraft:blackstone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:blackstone",
-        "java_display_name": "Blackstone Double Slab"
+        "java_name": "tile.blackstone_double_slab.name"
       }
     }
   },
@@ -1233,7 +1297,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:white_dye",
-        "java_display_name": "Bleach"
+        "java_name": "item.bleach.name"
       }
     }
   },
@@ -1248,7 +1312,7 @@
     "block": {
       "minecraft:blue_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Blue Candle Cake"
+        "java_name": "tile.blue_candle_cake.name"
       }
     }
   },
@@ -1403,7 +1467,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:mojang_banner_pattern",
-        "java_display_name": "Bordure Indented Banner Pattern"
+        "java_name": "item.bordure_indented_banner_pattern.name"
       }
     }
   },
@@ -1446,7 +1510,7 @@
     "block": {
       "minecraft:brain_coral_wall_fan": {
         "java_id": "minecraft:brain_coral_fan",
-        "java_display_name": "Brain Coral Wall Fan"
+        "java_name": ""
       }
     }
   },
@@ -1503,7 +1567,7 @@
     "block": {
       "minecraft:brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:brick",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab.brick.name"
       }
     }
   },
@@ -1539,7 +1603,7 @@
     "block": {
       "minecraft:brown_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Brown Candle Cake"
+        "java_name": "tile.brown_candle_cake.name"
       }
     }
   },
@@ -1644,7 +1708,7 @@
     "block": {
       "minecraft:bubble_column": {
         "java_id": "minecraft:chain",
-        "java_display_name": "Bubble Column"
+        "java_name": "tile.bubble_column.name"
       }
     }
   },
@@ -1673,7 +1737,7 @@
     "block": {
       "minecraft:bubble_coral_wall_fan": {
         "java_id": "minecraft:bubble_coral_fan",
-        "java_display_name": "Bubble Coral Wall Fan"
+        "java_name": ""
       }
     }
   },
@@ -1764,7 +1828,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:spyglass",
-        "java_display_name": "Camera"
+        "java_name": "item.camera.name"
       }
     }
   },
@@ -1786,7 +1850,7 @@
     "block": {
       "minecraft:candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Candle Cake"
+        "java_name": "tile.candle_cake.name"
       }
     }
   },
@@ -1815,7 +1879,7 @@
     "block": {
       "minecraft:carrots": {
         "java_id": "minecraft:short_grass",
-        "java_display_name": "Carrots"
+        "java_name": "tile.carrots.name"
       }
     }
   },
@@ -1858,7 +1922,7 @@
     "block": {
       "minecraft:cave_vines": {
         "java_id": "minecraft:weeping_vines",
-        "java_display_name": "Cave Vines"
+        "java_name": "tile.cave_vines.name"
       }
     }
   },
@@ -1866,7 +1930,7 @@
     "block": {
       "minecraft:cave_vines_body_with_berries": {
         "java_id": "minecraft:weeping_vines",
-        "java_display_name": "Cave Vines"
+        "java_name": "tile.cave_vines_body_with_berries.name"
       }
     }
   },
@@ -1874,7 +1938,7 @@
     "block": {
       "minecraft:cave_vines_head_with_berries": {
         "java_id": "minecraft:weeping_vines",
-        "java_display_name": "Cave Vines"
+        "java_name": "tile.cave_vines_head_with_berries.name"
       }
     }
   },
@@ -1931,7 +1995,7 @@
     "block": {
       "minecraft:chemical_heat": {
         "java_id": "minecraft:magma_block",
-        "java_display_name": "Chemical Heat"
+        "java_name": "tile.chemical_heat.name"
       }
     }
   },
@@ -1939,7 +2003,67 @@
     "meta": {
       "": {
         "java_id": "minecraft:cartography_table",
-        "java_display_name": "Chemistry Table"
+        "java_name": "tile.compoundcreator.name"
+      },
+      "1": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.compoundcreator.name"
+      },
+      "2": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.compoundcreator.name"
+      },
+      "3": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.compoundcreator.name"
+      },
+      "4": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.materialreducer.name"
+      },
+      "5": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.materialreducer.name"
+      },
+      "6": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.materialreducer.name"
+      },
+      "7": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.materialreducer.name"
+      },
+      "8": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.elementconstructor.name"
+      },
+      "9": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.elementconstructor.name"
+      },
+      "10": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.elementconstructor.name"
+      },
+      "11": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.elementconstructor.name"
+      },
+      "12": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.labtable.name"
+      },
+      "13": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.labtable.name"
+      },
+      "14": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.labtable.name"
+      },
+      "15": {
+        "java_id": "minecraft:cartography_table",
+        "java_name": "tile.labtable.name"
       }
     }
   },
@@ -1975,7 +2099,7 @@
     "block": {
       "minecraft:cherry_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cherry_planks",
-        "java_display_name": "Cherry Double Slab"
+        "java_name": "tile.cherry_double_slab.name"
       }
     }
   },
@@ -2060,7 +2184,7 @@
     "block": {
       "minecraft:cherry_standing_sign": {
         "java_id": "minecraft:cherry_sign",
-        "java_display_name": "Standing Cherry Sign"
+        "java_name": "tile.cherry_standing_sign.name"
       }
     }
   },
@@ -2075,7 +2199,7 @@
     "block": {
       "minecraft:cherry_wall_sign": {
         "java_id": "minecraft:cherry_sign",
-        "java_display_name": "Cherry Wall Sign"
+        "java_name": "tile.cherry_wall_sign.name"
       }
     }
   },
@@ -2244,7 +2368,7 @@
     "block": {
       "minecraft:client_request_placeholder_block": {
         "java_id": "minecraft:barrier",
-        "java_display_name": "Client Request Placeholder Block"
+        "java_name": "tile.client_request_placeholder_block.name"
       }
     }
   },
@@ -2301,7 +2425,7 @@
     "block": {
       "minecraft:cobbled_deepslate_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cobbled_deepslate",
-        "java_display_name": "Cobbled Deepslate Double Slab"
+        "java_name": "tile.cobbled_deepslate_double_slab.name"
       }
     }
   },
@@ -2337,7 +2461,7 @@
     "block": {
       "minecraft:cobblestone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cobblestone",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab.cobble.name"
       }
     }
   },
@@ -2359,7 +2483,7 @@
     "block": {
       "minecraft:cocoa": {
         "java_id": "minecraft:short_grass",
-        "java_display_name": "Cocoa"
+        "java_name": "tile.cocoa.name"
       }
     }
   },
@@ -2395,7 +2519,7 @@
     "block": {
       "minecraft:colored_torch_blue": {
         "java_id": "minecraft:torch",
-        "java_display_name": "Colored Torch Blue"
+        "java_name": "tile.colored_torch_blue.name"
       }
     }
   },
@@ -2403,7 +2527,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:torch",
-        "java_display_name": "Colored Torch BP"
+        "java_name": "tile.colored_torch_blue.name"
       }
     }
   },
@@ -2411,7 +2535,7 @@
     "block": {
       "minecraft:colored_torch_green": {
         "java_id": "minecraft:torch",
-        "java_display_name": "Colored Torch Green"
+        "java_name": "tile.colored_torch_green.name"
       }
     }
   },
@@ -2419,7 +2543,7 @@
     "block": {
       "minecraft:colored_torch_purple": {
         "java_id": "minecraft:torch",
-        "java_display_name": "Colored Torch Purple"
+        "java_name": "tile.colored_torch_purple.name"
       }
     }
   },
@@ -2427,7 +2551,7 @@
     "block": {
       "minecraft:colored_torch_red": {
         "java_id": "minecraft:torch",
-        "java_display_name": "Colored Torch Red"
+        "java_name": "tile.colored_torch_red.name"
       }
     }
   },
@@ -2435,7 +2559,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:torch",
-        "java_display_name": "Colored Torch RG"
+        "java_name": "tile.colored_torch_red.name"
       }
     }
   },
@@ -2478,7 +2602,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:iron_ingot",
-        "java_display_name": "Compound"
+        "java_name": "item.compound.salt.name"
       }
     }
   },
@@ -2486,7 +2610,7 @@
     "block": {
       "minecraft:compound_creator": {
         "java_id": "minecraft:cartography_table",
-        "java_display_name": "Compound Creator"
+        "java_name": "tile.compoundcreator.name"
       }
     }
   },
@@ -2739,7 +2863,7 @@
     "block": {
       "minecraft:crimson_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:crimson_planks",
-        "java_display_name": "Crimson Double Slab"
+        "java_name": "tile.crimson_double_slab.name"
       }
     }
   },
@@ -2831,7 +2955,7 @@
     "block": {
       "minecraft:crimson_standing_sign": {
         "java_id": "minecraft:crimson_sign",
-        "java_display_name": "Standing Crimson Sign"
+        "java_name": "tile.crimson_standing_sign.name"
       }
     }
   },
@@ -2853,7 +2977,7 @@
     "block": {
       "minecraft:crimson_wall_sign": {
         "java_id": "minecraft:crimson_sign",
-        "java_display_name": "Crimson Wall Sign"
+        "java_name": "tile.crimson_wall_sign.name"
       }
     }
   },
@@ -2903,7 +3027,7 @@
     "block": {
       "minecraft:cut_red_sandstone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cut_red_sandstone",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab4.cut_red_sandstone.name"
       }
     }
   },
@@ -2925,7 +3049,7 @@
     "block": {
       "minecraft:cut_sandstone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cut_sandstone",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab4.cut_sandstone.name"
       }
     }
   },
@@ -2947,7 +3071,7 @@
     "block": {
       "minecraft:cyan_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Cyan Candle Cake"
+        "java_name": "tile.cyan_candle_cake.name"
       }
     }
   },
@@ -3074,7 +3198,7 @@
     "block": {
       "minecraft:dark_oak_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:dark_oak_planks",
-        "java_display_name": "Dark Oak Double Slab"
+        "java_name": "tile.double_wooden_slab.big_oak.name"
       }
     }
   },
@@ -3180,7 +3304,7 @@
     "block": {
       "minecraft:dark_prismarine_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:dark_prismarine",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab2.prismarine.dark.name"
       }
     }
   },
@@ -3202,7 +3326,7 @@
     "block": {
       "minecraft:darkoak_standing_sign": {
         "java_id": "minecraft:dark_oak_sign",
-        "java_display_name": "Standing Dark Oak Sign"
+        "java_name": "tile.darkoak_standing_sign.name"
       }
     }
   },
@@ -3210,7 +3334,7 @@
     "block": {
       "minecraft:darkoak_wall_sign": {
         "java_id": "minecraft:dark_oak_sign",
-        "java_display_name": "Dark Oak Wall Sign"
+        "java_name": "tile.darkoak_wall_sign.name"
       }
     }
   },
@@ -3225,7 +3349,7 @@
     "block": {
       "minecraft:daylight_detector_inverted": {
         "java_id": "minecraft:daylight_detector",
-        "java_display_name": "Inverted Daylight Detector"
+        "java_name": "tile.daylight_detector_inverted.name"
       }
     }
   },
@@ -3254,7 +3378,7 @@
     "block": {
       "minecraft:dead_brain_coral_wall_fan": {
         "java_id": "minecraft:dead_brain_coral_fan",
-        "java_display_name": "Dead Brain Coral Wall Fan"
+        "java_name": ""
       }
     }
   },
@@ -3283,7 +3407,7 @@
     "block": {
       "minecraft:dead_bubble_coral_wall_fan": {
         "java_id": "minecraft:dead_bubble_coral_fan",
-        "java_display_name": "Dead Bubble Coral Wall Fan"
+        "java_name": ""
       }
     }
   },
@@ -3312,7 +3436,7 @@
     "block": {
       "minecraft:dead_fire_coral_wall_fan": {
         "java_id": "minecraft:dead_fire_coral_fan",
-        "java_display_name": "Dead Fire Coral Wall Fan"
+        "java_name": ""
       }
     }
   },
@@ -3341,7 +3465,7 @@
     "block": {
       "minecraft:dead_horn_coral_wall_fan": {
         "java_id": "minecraft:dead_horn_coral_fan",
-        "java_display_name": "Dead Horn Coral Wall Fan"
+        "java_name": ""
       }
     }
   },
@@ -3370,7 +3494,7 @@
     "block": {
       "minecraft:dead_tube_coral_wall_fan": {
         "java_id": "minecraft:dead_tube_coral_fan",
-        "java_display_name": "Dead Tube Coral Wall Fan"
+        "java_name": ""
       }
     }
   },
@@ -3399,7 +3523,7 @@
     "block": {
       "minecraft:deepslate_brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:deepslate_bricks",
-        "java_display_name": "Deepslate Brick Double Slab"
+        "java_name": "tile.deepslate_brick_double_slab.name"
       }
     }
   },
@@ -3491,7 +3615,7 @@
     "block": {
       "minecraft:deepslate_tile_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:deepslate_tiles",
-        "java_display_name": "Deepslate Tile Double Slab"
+        "java_name": "tile.deepslate_tile_double_slab.name"
       }
     }
   },
@@ -3527,15 +3651,14 @@
     "block": {
       "minecraft:deny": {
         "java_id": "minecraft:polished_andesite",
-        "java_display_name": "Deny"
+        "java_name": "tile.deny.name"
       }
     }
   },
   "minecraft:deprecated_anvil": {
     "block": {
       "minecraft:deprecated_anvil": {
-        "java_id": "minecraft:anvil",
-        "java_display_name": "Deprecated Anvil"
+        "java_id": "minecraft:anvil"
       }
     }
   },
@@ -3662,7 +3785,7 @@
     "block": {
       "minecraft:diorite_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:diorite",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab3.diorite.name"
       }
     }
   },
@@ -3733,7 +3856,7 @@
     "block": {
       "minecraft:double_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cut_copper",
-        "java_display_name": "Double Cut Copper Slab"
+        "java_name": "tile.double_cut_copper_slab.name"
       }
     }
   },
@@ -3748,7 +3871,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:smooth_stone",
-        "java_display_name": "Double Stone Block Slab"
+        "java_name": "tile.double_stone_slab.stone.name"
       }
     }
   },
@@ -3756,7 +3879,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:red_sandstone",
-        "java_display_name": "Double Stone Block Slab"
+        "java_name": "tile.double_stone_slab2.red_sandstone.name"
       }
     }
   },
@@ -3764,7 +3887,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:end_stone_bricks",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab3.end_brick.name"
       }
     }
   },
@@ -3772,7 +3895,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:mossy_stone_bricks",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab4.mossy_stone_brick.name"
       }
     }
   },
@@ -3864,7 +3987,7 @@
     "block": {
       "minecraft:element_0": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 0"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3872,7 +3995,7 @@
     "block": {
       "minecraft:element_1": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 1"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3880,7 +4003,7 @@
     "block": {
       "minecraft:element_10": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 10"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3888,7 +4011,7 @@
     "block": {
       "minecraft:element_100": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 100"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3896,7 +4019,7 @@
     "block": {
       "minecraft:element_101": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 101"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3904,7 +4027,7 @@
     "block": {
       "minecraft:element_102": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 102"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3912,7 +4035,7 @@
     "block": {
       "minecraft:element_103": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 103"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3920,7 +4043,7 @@
     "block": {
       "minecraft:element_104": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 104"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3928,7 +4051,7 @@
     "block": {
       "minecraft:element_105": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 105"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3936,7 +4059,7 @@
     "block": {
       "minecraft:element_106": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 106"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3944,7 +4067,7 @@
     "block": {
       "minecraft:element_107": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 107"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3952,7 +4075,7 @@
     "block": {
       "minecraft:element_108": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 108"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3960,7 +4083,7 @@
     "block": {
       "minecraft:element_109": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 109"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3968,7 +4091,7 @@
     "block": {
       "minecraft:element_11": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 11"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3976,7 +4099,7 @@
     "block": {
       "minecraft:element_110": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 110"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3984,7 +4107,7 @@
     "block": {
       "minecraft:element_111": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 111"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -3992,7 +4115,7 @@
     "block": {
       "minecraft:element_112": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 112"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4000,7 +4123,7 @@
     "block": {
       "minecraft:element_113": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 113"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4008,7 +4131,7 @@
     "block": {
       "minecraft:element_114": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 114"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4016,7 +4139,7 @@
     "block": {
       "minecraft:element_115": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 115"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4024,7 +4147,7 @@
     "block": {
       "minecraft:element_116": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 116"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4032,7 +4155,7 @@
     "block": {
       "minecraft:element_117": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 117"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4040,7 +4163,7 @@
     "block": {
       "minecraft:element_118": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 118"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4048,7 +4171,7 @@
     "block": {
       "minecraft:element_12": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 12"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4056,7 +4179,7 @@
     "block": {
       "minecraft:element_13": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 13"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4064,7 +4187,7 @@
     "block": {
       "minecraft:element_14": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 14"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4072,7 +4195,7 @@
     "block": {
       "minecraft:element_15": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 15"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4080,7 +4203,7 @@
     "block": {
       "minecraft:element_16": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 16"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4088,7 +4211,7 @@
     "block": {
       "minecraft:element_17": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 17"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4096,7 +4219,7 @@
     "block": {
       "minecraft:element_18": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 18"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4104,7 +4227,7 @@
     "block": {
       "minecraft:element_19": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 19"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4112,7 +4235,7 @@
     "block": {
       "minecraft:element_2": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 2"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4120,7 +4243,7 @@
     "block": {
       "minecraft:element_20": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 20"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4128,7 +4251,7 @@
     "block": {
       "minecraft:element_21": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 21"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4136,7 +4259,7 @@
     "block": {
       "minecraft:element_22": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 22"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4144,7 +4267,7 @@
     "block": {
       "minecraft:element_23": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 23"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4152,7 +4275,7 @@
     "block": {
       "minecraft:element_24": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 24"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4160,7 +4283,7 @@
     "block": {
       "minecraft:element_25": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 25"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4168,7 +4291,7 @@
     "block": {
       "minecraft:element_26": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 26"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4176,7 +4299,7 @@
     "block": {
       "minecraft:element_27": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 27"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4184,7 +4307,7 @@
     "block": {
       "minecraft:element_28": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 28"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4192,7 +4315,7 @@
     "block": {
       "minecraft:element_29": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 29"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4200,7 +4323,7 @@
     "block": {
       "minecraft:element_3": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 3"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4208,7 +4331,7 @@
     "block": {
       "minecraft:element_30": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 30"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4216,7 +4339,7 @@
     "block": {
       "minecraft:element_31": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 31"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4224,7 +4347,7 @@
     "block": {
       "minecraft:element_32": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 32"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4232,7 +4355,7 @@
     "block": {
       "minecraft:element_33": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 33"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4240,7 +4363,7 @@
     "block": {
       "minecraft:element_34": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 34"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4248,7 +4371,7 @@
     "block": {
       "minecraft:element_35": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 35"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4256,7 +4379,7 @@
     "block": {
       "minecraft:element_36": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 36"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4264,7 +4387,7 @@
     "block": {
       "minecraft:element_37": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 37"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4272,7 +4395,7 @@
     "block": {
       "minecraft:element_38": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 38"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4280,7 +4403,7 @@
     "block": {
       "minecraft:element_39": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 39"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4288,7 +4411,7 @@
     "block": {
       "minecraft:element_4": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 4"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4296,7 +4419,7 @@
     "block": {
       "minecraft:element_40": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 40"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4304,7 +4427,7 @@
     "block": {
       "minecraft:element_41": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 41"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4312,7 +4435,7 @@
     "block": {
       "minecraft:element_42": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 42"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4320,7 +4443,7 @@
     "block": {
       "minecraft:element_43": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 43"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4328,7 +4451,7 @@
     "block": {
       "minecraft:element_44": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 44"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4336,7 +4459,7 @@
     "block": {
       "minecraft:element_45": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 45"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4344,7 +4467,7 @@
     "block": {
       "minecraft:element_46": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 46"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4352,7 +4475,7 @@
     "block": {
       "minecraft:element_47": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 47"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4360,7 +4483,7 @@
     "block": {
       "minecraft:element_48": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 48"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4368,7 +4491,7 @@
     "block": {
       "minecraft:element_49": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 49"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4376,7 +4499,7 @@
     "block": {
       "minecraft:element_5": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 5"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4384,7 +4507,7 @@
     "block": {
       "minecraft:element_50": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 50"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4392,7 +4515,7 @@
     "block": {
       "minecraft:element_51": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 51"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4400,7 +4523,7 @@
     "block": {
       "minecraft:element_52": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 52"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4408,7 +4531,7 @@
     "block": {
       "minecraft:element_53": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 53"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4416,7 +4539,7 @@
     "block": {
       "minecraft:element_54": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 54"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4424,7 +4547,7 @@
     "block": {
       "minecraft:element_55": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 55"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4432,7 +4555,7 @@
     "block": {
       "minecraft:element_56": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 56"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4440,7 +4563,7 @@
     "block": {
       "minecraft:element_57": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 57"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4448,7 +4571,7 @@
     "block": {
       "minecraft:element_58": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 58"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4456,7 +4579,7 @@
     "block": {
       "minecraft:element_59": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 59"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4464,7 +4587,7 @@
     "block": {
       "minecraft:element_6": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 6"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4472,7 +4595,7 @@
     "block": {
       "minecraft:element_60": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 60"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4480,7 +4603,7 @@
     "block": {
       "minecraft:element_61": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 61"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4488,7 +4611,7 @@
     "block": {
       "minecraft:element_62": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 62"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4496,7 +4619,7 @@
     "block": {
       "minecraft:element_63": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 63"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4504,7 +4627,7 @@
     "block": {
       "minecraft:element_64": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 64"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4512,7 +4635,7 @@
     "block": {
       "minecraft:element_65": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 65"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4520,7 +4643,7 @@
     "block": {
       "minecraft:element_66": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 66"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4528,7 +4651,7 @@
     "block": {
       "minecraft:element_67": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 67"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4536,7 +4659,7 @@
     "block": {
       "minecraft:element_68": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 68"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4544,7 +4667,7 @@
     "block": {
       "minecraft:element_69": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 69"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4552,7 +4675,7 @@
     "block": {
       "minecraft:element_7": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 7"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4560,7 +4683,7 @@
     "block": {
       "minecraft:element_70": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 70"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4568,7 +4691,7 @@
     "block": {
       "minecraft:element_71": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 71"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4576,7 +4699,7 @@
     "block": {
       "minecraft:element_72": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 72"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4584,7 +4707,7 @@
     "block": {
       "minecraft:element_73": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 73"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4592,7 +4715,7 @@
     "block": {
       "minecraft:element_74": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 74"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4600,7 +4723,7 @@
     "block": {
       "minecraft:element_75": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 75"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4608,7 +4731,7 @@
     "block": {
       "minecraft:element_76": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 76"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4616,7 +4739,7 @@
     "block": {
       "minecraft:element_77": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 77"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4624,7 +4747,7 @@
     "block": {
       "minecraft:element_78": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 78"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4632,7 +4755,7 @@
     "block": {
       "minecraft:element_79": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 79"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4640,7 +4763,7 @@
     "block": {
       "minecraft:element_8": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 8"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4648,7 +4771,7 @@
     "block": {
       "minecraft:element_80": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 80"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4656,7 +4779,7 @@
     "block": {
       "minecraft:element_81": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 81"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4664,7 +4787,7 @@
     "block": {
       "minecraft:element_82": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 82"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4672,7 +4795,7 @@
     "block": {
       "minecraft:element_83": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 83"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4680,7 +4803,7 @@
     "block": {
       "minecraft:element_84": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 84"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4688,7 +4811,7 @@
     "block": {
       "minecraft:element_85": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 85"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4696,7 +4819,7 @@
     "block": {
       "minecraft:element_86": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 86"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4704,7 +4827,7 @@
     "block": {
       "minecraft:element_87": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 87"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4712,7 +4835,7 @@
     "block": {
       "minecraft:element_88": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 88"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4720,7 +4843,7 @@
     "block": {
       "minecraft:element_89": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 89"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4728,7 +4851,7 @@
     "block": {
       "minecraft:element_9": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 9"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4736,7 +4859,7 @@
     "block": {
       "minecraft:element_90": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 90"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4744,7 +4867,7 @@
     "block": {
       "minecraft:element_91": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 91"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4752,7 +4875,7 @@
     "block": {
       "minecraft:element_92": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 92"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4760,7 +4883,7 @@
     "block": {
       "minecraft:element_93": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 93"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4768,7 +4891,7 @@
     "block": {
       "minecraft:element_94": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 94"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4776,7 +4899,7 @@
     "block": {
       "minecraft:element_95": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 95"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4784,7 +4907,7 @@
     "block": {
       "minecraft:element_96": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 96"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4792,7 +4915,7 @@
     "block": {
       "minecraft:element_97": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 97"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4800,7 +4923,7 @@
     "block": {
       "minecraft:element_98": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 98"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4808,7 +4931,7 @@
     "block": {
       "minecraft:element_99": {
         "java_id": "minecraft:sculk",
-        "java_display_name": "Element 99"
+        "java_name": "tile.element.unknown.name"
       }
     }
   },
@@ -4816,7 +4939,7 @@
     "block": {
       "minecraft:element_constructor": {
         "java_id": "minecraft:cartography_table",
-        "java_display_name": "Element Constructor"
+        "java_name": "tile.elementconstructor.name"
       }
     }
   },
@@ -4861,7 +4984,7 @@
       },
       "2": {
         "java_id": "minecraft:map",
-        "java_display_name": "Empty Locator Map"
+        "java_name": "item.emptyLocatorMap.name"
       }
     }
   },
@@ -4911,7 +5034,7 @@
     "block": {
       "minecraft:end_gateway": {
         "java_id": "minecraft:bedrock",
-        "java_display_name": "End Gateway"
+        "java_name": "tile.end_gateway.name"
       }
     }
   },
@@ -4919,7 +5042,7 @@
     "block": {
       "minecraft:end_portal": {
         "java_id": "minecraft:end_portal_frame",
-        "java_display_name": "End Portal"
+        "java_name": "tile.end_portal.name"
       }
     }
   },
@@ -4948,7 +5071,7 @@
     "block": {
       "minecraft:end_stone_brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:end_stone_bricks",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab3.end_brick.name"
       }
     }
   },
@@ -5096,7 +5219,7 @@
     "block": {
       "minecraft:exposed_double_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:exposed_cut_copper",
-        "java_display_name": "Exposed Cut Copper Double Slab"
+        "java_name": "tile.exposed_double_cut_copper_slab.name"
       }
     }
   },
@@ -5153,7 +5276,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:mojang_banner_pattern",
-        "java_display_name": "Field Masoned Banner Pattern"
+        "java_name": "item.field_masoned_banner_pattern.name"
       }
     }
   },
@@ -5173,15 +5296,47 @@
       },
       "3": {
         "java_id": "minecraft:filled_map",
-        "java_display_name": "Ocean Explorer Map"
+        "java_name": "item.map.exploration.monument.name"
       },
       "4": {
         "java_id": "minecraft:filled_map",
-        "java_display_name": "Woodland Explorer Map"
+        "java_name": "item.map.exploration.mansion.name"
       },
       "5": {
         "java_id": "minecraft:filled_map",
-        "java_display_name": "Treasure Map"
+        "java_name": "item.map.exploration.treasure.name"
+      },
+      "7": {
+        "java_id": "minecraft:filled_map",
+        "java_name": "item.map.exploration.village_snowy.name"
+      },
+      "8": {
+        "java_id": "minecraft:filled_map",
+        "java_name": "item.map.exploration.village_taiga.name"
+      },
+      "9": {
+        "java_id": "minecraft:filled_map",
+        "java_name": "item.map.exploration.village_plains.name"
+      },
+      "10": {
+        "java_id": "minecraft:filled_map",
+        "java_name": "item.map.exploration.village_savanna.name"
+      },
+      "11": {
+        "java_id": "minecraft:filled_map",
+        "java_name": "item.map.exploration.village_desert.name"
+      },
+      "12": {
+        "java_id": "minecraft:filled_map",
+        "java_name": "item.map.exploration.jungle_temple.name"
+      },
+      "13": {
+        "java_id": "minecraft:filled_map",
+        "java_name": "item.map.exploration.swamp_hut.name"
+      },
+      "14": {
+        "java_id": "minecraft:filled_map",
+        "java_name": "item.map.exploration.trial_chambers.name"
       }
     }
   },
@@ -5189,7 +5344,7 @@
     "block": {
       "minecraft:fire": {
         "java_id": "minecraft:fire_charge",
-        "java_display_name": "Fire"
+        "java_name": "tile.fire.name"
       }
     }
   },
@@ -5225,7 +5380,7 @@
     "block": {
       "minecraft:fire_coral_wall_fan": {
         "java_id": "minecraft:fire_coral_fan",
-        "java_display_name": "Fire Coral Wall Fan"
+        "java_name": ""
       }
     }
   },
@@ -5317,7 +5472,7 @@
     "block": {
       "minecraft:flowing_lava": {
         "java_id": "minecraft:lava_bucket",
-        "java_display_name": "Flowing Lava"
+        "java_name": "tile.flowing_lava.name"
       }
     }
   },
@@ -5325,7 +5480,7 @@
     "block": {
       "minecraft:flowing_water": {
         "java_id": "minecraft:water_bucket",
-        "java_display_name": "Flowing Water"
+        "java_name": "tile.flowing_water.name"
       }
     }
   },
@@ -5368,7 +5523,7 @@
     "block": {
       "minecraft:frosted_ice": {
         "java_id": "minecraft:packed_ice",
-        "java_display_name": "Frosted Ice"
+        "java_name": "tile.frosted_ice.name"
       }
     }
   },
@@ -5474,7 +5629,135 @@
     "meta": {
       "": {
         "java_id": "minecraft:stick",
-        "java_display_name": "Glow Stick"
+        "java_name": "item.glow_stick.purple.name"
+      },
+      "0": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.black.name"
+      },
+      "1": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.red.name"
+      },
+      "2": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.green.name"
+      },
+      "3": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.brown.name"
+      },
+      "4": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.blue.name"
+      },
+      "5": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.purple.name"
+      },
+      "6": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.cyan.name"
+      },
+      "7": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.silver.name"
+      },
+      "8": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.gray.name"
+      },
+      "9": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.pink.name"
+      },
+      "10": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.lime.name"
+      },
+      "11": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.yellow.name"
+      },
+      "12": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.lightBlue.name"
+      },
+      "13": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.magenta.name"
+      },
+      "14": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.organe.name"
+      },
+      "15": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.white.name"
+      },
+      "32": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.black.name"
+      },
+      "33": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.red.name"
+      },
+      "34": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.green.name"
+      },
+      "35": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.brown.name"
+      },
+      "36": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.blue.name"
+      },
+      "37": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.purple.name"
+      },
+      "38": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.cyan.name"
+      },
+      "39": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.silver.name"
+      },
+      "40": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.gray.name"
+      },
+      "41": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.pink.name"
+      },
+      "42": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.lime.name"
+      },
+      "43": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.yellow.name"
+      },
+      "44": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.lightBlue.name"
+      },
+      "45": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.magenta.name"
+      },
+      "46": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.organe.name"
+      },
+      "47": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.glow_stick.white.name"
       }
     }
   },
@@ -5482,7 +5765,7 @@
     "block": {
       "minecraft:glowingobsidian": {
         "java_id": "minecraft:crying_obsidian",
-        "java_display_name": "Glowing Obsidian"
+        "java_name": "tile.glowingobsidian.name"
       }
     }
   },
@@ -5676,7 +5959,7 @@
     "block": {
       "minecraft:granite_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:granite",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab3.granite.name"
       }
     }
   },
@@ -5733,7 +6016,7 @@
     "block": {
       "minecraft:gray_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Gray Candle Cake"
+        "java_name": "tile.gray_candle_cake.name"
       }
     }
   },
@@ -5818,7 +6101,7 @@
     "block": {
       "minecraft:green_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Green Candle Cake"
+        "java_name": "tile.green_candle_cake.name"
       }
     }
   },
@@ -5938,7 +6221,7 @@
     "block": {
       "minecraft:hard_black_stained_glass": {
         "java_id": "minecraft:black_stained_glass",
-        "java_display_name": "Black Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.black.name"
       }
     }
   },
@@ -5946,7 +6229,7 @@
     "block": {
       "minecraft:hard_black_stained_glass_pane": {
         "java_id": "minecraft:black_stained_glass_pane",
-        "java_display_name": "Black Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.black.name"
       }
     }
   },
@@ -5954,7 +6237,7 @@
     "block": {
       "minecraft:hard_blue_stained_glass": {
         "java_id": "minecraft:blue_stained_glass",
-        "java_display_name": "Blue Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.blue.name"
       }
     }
   },
@@ -5962,7 +6245,7 @@
     "block": {
       "minecraft:hard_blue_stained_glass_pane": {
         "java_id": "minecraft:blue_stained_glass_pane",
-        "java_display_name": "Blue Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.blue.name"
       }
     }
   },
@@ -5970,7 +6253,7 @@
     "block": {
       "minecraft:hard_brown_stained_glass": {
         "java_id": "minecraft:brown_stained_glass",
-        "java_display_name": "Brown Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.brown.name"
       }
     }
   },
@@ -5978,7 +6261,7 @@
     "block": {
       "minecraft:hard_brown_stained_glass_pane": {
         "java_id": "minecraft:brown_stained_glass_pane",
-        "java_display_name": "Brown Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.brown.name"
       }
     }
   },
@@ -5986,7 +6269,7 @@
     "block": {
       "minecraft:hard_cyan_stained_glass": {
         "java_id": "minecraft:cyan_stained_glass",
-        "java_display_name": "Cyan Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.cyan.name"
       }
     }
   },
@@ -5994,7 +6277,7 @@
     "block": {
       "minecraft:hard_cyan_stained_glass_pane": {
         "java_id": "minecraft:cyan_stained_glass_pane",
-        "java_display_name": "Cyan Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.cyan.name"
       }
     }
   },
@@ -6002,7 +6285,7 @@
     "block": {
       "minecraft:hard_glass": {
         "java_id": "minecraft:glass",
-        "java_display_name": "Hardened Glass"
+        "java_name": "tile.hard_glass.name"
       }
     }
   },
@@ -6010,7 +6293,7 @@
     "block": {
       "minecraft:hard_glass_pane": {
         "java_id": "minecraft:glass_pane",
-        "java_display_name": "Hardened Glass Pane"
+        "java_name": "tile.hard_glass_pane.name"
       }
     }
   },
@@ -6018,7 +6301,7 @@
     "block": {
       "minecraft:hard_gray_stained_glass": {
         "java_id": "minecraft:gray_stained_glass",
-        "java_display_name": "Gray Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.gray.name"
       }
     }
   },
@@ -6026,7 +6309,7 @@
     "block": {
       "minecraft:hard_gray_stained_glass_pane": {
         "java_id": "minecraft:gray_stained_glass_pane",
-        "java_display_name": "Gray Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.gray.name"
       }
     }
   },
@@ -6034,7 +6317,7 @@
     "block": {
       "minecraft:hard_green_stained_glass": {
         "java_id": "minecraft:green_stained_glass",
-        "java_display_name": "Green Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.green.name"
       }
     }
   },
@@ -6042,7 +6325,7 @@
     "block": {
       "minecraft:hard_green_stained_glass_pane": {
         "java_id": "minecraft:green_stained_glass_pane",
-        "java_display_name": "Green Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.green.name"
       }
     }
   },
@@ -6050,7 +6333,7 @@
     "block": {
       "minecraft:hard_light_blue_stained_glass": {
         "java_id": "minecraft:light_blue_stained_glass",
-        "java_display_name": "Light Blue Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.light_blue.name"
       }
     }
   },
@@ -6058,7 +6341,7 @@
     "block": {
       "minecraft:hard_light_blue_stained_glass_pane": {
         "java_id": "minecraft:light_blue_stained_glass_pane",
-        "java_display_name": "Light Blue Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.light_blue.name"
       }
     }
   },
@@ -6066,7 +6349,7 @@
     "block": {
       "minecraft:hard_light_gray_stained_glass": {
         "java_id": "minecraft:light_gray_stained_glass",
-        "java_display_name": "Light Gray Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.silver.name"
       }
     }
   },
@@ -6074,7 +6357,7 @@
     "block": {
       "minecraft:hard_light_gray_stained_glass_pane": {
         "java_id": "minecraft:light_gray_stained_glass_pane",
-        "java_display_name": "Light Gray Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.silver.name"
       }
     }
   },
@@ -6082,7 +6365,7 @@
     "block": {
       "minecraft:hard_lime_stained_glass": {
         "java_id": "minecraft:lime_stained_glass",
-        "java_display_name": "Lime Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.lime.name"
       }
     }
   },
@@ -6090,7 +6373,7 @@
     "block": {
       "minecraft:hard_lime_stained_glass_pane": {
         "java_id": "minecraft:lime_stained_glass_pane",
-        "java_display_name": "Lime Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.lime.name"
       }
     }
   },
@@ -6098,7 +6381,7 @@
     "block": {
       "minecraft:hard_magenta_stained_glass": {
         "java_id": "minecraft:magenta_stained_glass",
-        "java_display_name": "Magenta Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.magenta.name"
       }
     }
   },
@@ -6106,7 +6389,7 @@
     "block": {
       "minecraft:hard_magenta_stained_glass_pane": {
         "java_id": "minecraft:magenta_stained_glass_pane",
-        "java_display_name": "Magenta Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.magenta.name"
       }
     }
   },
@@ -6114,7 +6397,7 @@
     "block": {
       "minecraft:hard_orange_stained_glass": {
         "java_id": "minecraft:orange_stained_glass",
-        "java_display_name": "Orange Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.orange.name"
       }
     }
   },
@@ -6122,7 +6405,7 @@
     "block": {
       "minecraft:hard_orange_stained_glass_pane": {
         "java_id": "minecraft:orange_stained_glass_pane",
-        "java_display_name": "Orange Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.orange.name"
       }
     }
   },
@@ -6130,7 +6413,7 @@
     "block": {
       "minecraft:hard_pink_stained_glass": {
         "java_id": "minecraft:pink_stained_glass",
-        "java_display_name": "Pink Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.pink.name"
       }
     }
   },
@@ -6138,7 +6421,7 @@
     "block": {
       "minecraft:hard_pink_stained_glass_pane": {
         "java_id": "minecraft:pink_stained_glass_pane",
-        "java_display_name": "Pink Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.pink.name"
       }
     }
   },
@@ -6146,7 +6429,7 @@
     "block": {
       "minecraft:hard_purple_stained_glass": {
         "java_id": "minecraft:purple_stained_glass",
-        "java_display_name": "Purple Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.purple.name"
       }
     }
   },
@@ -6154,7 +6437,7 @@
     "block": {
       "minecraft:hard_purple_stained_glass_pane": {
         "java_id": "minecraft:purple_stained_glass_pane",
-        "java_display_name": "Purple Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.purple.name"
       }
     }
   },
@@ -6162,7 +6445,7 @@
     "block": {
       "minecraft:hard_red_stained_glass": {
         "java_id": "minecraft:red_stained_glass",
-        "java_display_name": "Red Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.red.name"
       }
     }
   },
@@ -6170,7 +6453,7 @@
     "block": {
       "minecraft:hard_red_stained_glass_pane": {
         "java_id": "minecraft:red_stained_glass_pane",
-        "java_display_name": "Red Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.red.name"
       }
     }
   },
@@ -6178,7 +6461,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:white_stained_glass",
-        "java_display_name": "White Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.white.name"
       }
     }
   },
@@ -6186,7 +6469,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:white_stained_glass_pane",
-        "java_display_name": "White Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.white.name"
       }
     }
   },
@@ -6194,7 +6477,7 @@
     "block": {
       "minecraft:hard_white_stained_glass": {
         "java_id": "minecraft:white_stained_glass",
-        "java_display_name": "White Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.white.name"
       }
     }
   },
@@ -6202,7 +6485,7 @@
     "block": {
       "minecraft:hard_white_stained_glass_pane": {
         "java_id": "minecraft:white_stained_glass_pane",
-        "java_display_name": "White Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.white.name"
       }
     }
   },
@@ -6210,7 +6493,7 @@
     "block": {
       "minecraft:hard_yellow_stained_glass": {
         "java_id": "minecraft:yellow_stained_glass",
-        "java_display_name": "Yellow Hardened Stained Glass"
+        "java_name": "tile.hard_stained_glass.yellow.name"
       }
     }
   },
@@ -6218,7 +6501,7 @@
     "block": {
       "minecraft:hard_yellow_stained_glass_pane": {
         "java_id": "minecraft:yellow_stained_glass_pane",
-        "java_display_name": "Yellow Hardened Stained Glass Pane"
+        "java_name": "tile.hard_stained_glass_pane.yellow.name"
       }
     }
   },
@@ -6345,7 +6628,7 @@
     "block": {
       "minecraft:horn_coral_wall_fan": {
         "java_id": "minecraft:horn_coral_fan",
-        "java_display_name": "Horn Coral Wall Fan"
+        "java_name": ""
       }
     }
   },
@@ -6388,7 +6671,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:snowball",
-        "java_display_name": "Ice Bomb"
+        "java_name": "item.ice_bomb.name"
       }
     }
   },
@@ -6445,7 +6728,7 @@
     "block": {
       "minecraft:info_update": {
         "java_id": "minecraft:coarse_dirt",
-        "java_display_name": "Info Update"
+        "java_name": "tile.info_update.name"
       }
     }
   },
@@ -6453,7 +6736,7 @@
     "block": {
       "minecraft:info_update2": {
         "java_id": "minecraft:coarse_dirt",
-        "java_display_name": "Info Update 2"
+        "java_name": "tile.info_update2.name"
       }
     }
   },
@@ -6468,7 +6751,7 @@
     "block": {
       "minecraft:invisible_bedrock": {
         "java_id": "minecraft:barrier",
-        "java_display_name": "Invisible Bedrock"
+        "java_name": "tile.invisibleBedrock.name"
       }
     }
   },
@@ -6602,7 +6885,7 @@
     "block": {
       "minecraft:acacia_door": {
         "java_id": "minecraft:acacia_door",
-        "java_display_name": "Acacia Door Item"
+        "java_name": "tile.acacia_door.name"
       }
     }
   },
@@ -6610,7 +6893,7 @@
     "block": {
       "minecraft:bed": {
         "java_id": "minecraft:red_bed",
-        "java_display_name": "Bed Item"
+        "java_name": "tile.bed.name"
       }
     }
   },
@@ -6618,7 +6901,7 @@
     "block": {
       "minecraft:beetroot": {
         "java_id": "minecraft:beetroot_seeds",
-        "java_display_name": "Beetroot Item"
+        "java_name": "tile.beetroot.name"
       }
     }
   },
@@ -6626,7 +6909,7 @@
     "block": {
       "minecraft:birch_door": {
         "java_id": "minecraft:birch_door",
-        "java_display_name": "Birch Door Item"
+        "java_name": "tile.birch_door.name"
       }
     }
   },
@@ -6634,7 +6917,7 @@
     "block": {
       "minecraft:brewing_stand": {
         "java_id": "minecraft:brewing_stand",
-        "java_display_name": "Brewing Stand Item"
+        "java_name": "tile.brewing_stand.name"
       }
     }
   },
@@ -6642,7 +6925,7 @@
     "block": {
       "minecraft:cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Cake Item"
+        "java_name": "tile.cake.name"
       }
     }
   },
@@ -6650,7 +6933,7 @@
     "block": {
       "minecraft:camera": {
         "java_id": "minecraft:spyglass",
-        "java_display_name": "Camera Item"
+        "java_name": "tile.camera.name"
       }
     }
   },
@@ -6658,7 +6941,7 @@
     "block": {
       "minecraft:campfire": {
         "java_id": "minecraft:campfire",
-        "java_display_name": "Campfire Item"
+        "java_name": "tile.campfire.name"
       }
     }
   },
@@ -6666,7 +6949,7 @@
     "block": {
       "minecraft:cauldron": {
         "java_id": "minecraft:cauldron",
-        "java_display_name": "Cauldron Item"
+        "java_name": "tile.cauldron.name"
       }
     }
   },
@@ -6674,7 +6957,7 @@
     "block": {
       "minecraft:chain": {
         "java_id": "minecraft:chain",
-        "java_display_name": "Chain Item"
+        "java_name": "tile.chain.name"
       }
     }
   },
@@ -6682,7 +6965,7 @@
     "block": {
       "minecraft:crimson_door": {
         "java_id": "minecraft:crimson_door",
-        "java_display_name": "Crimson Door Item"
+        "java_name": "tile.crimson_door.name"
       }
     }
   },
@@ -6690,7 +6973,7 @@
     "block": {
       "minecraft:dark_oak_door": {
         "java_id": "minecraft:dark_oak_door",
-        "java_display_name": "Dark Oak Door Item"
+        "java_name": "tile.dark_oak_door.name"
       }
     }
   },
@@ -6698,7 +6981,7 @@
     "block": {
       "minecraft:flower_pot": {
         "java_id": "minecraft:flower_pot",
-        "java_display_name": "Flower Pot Item"
+        "java_name": "tile.flower_pot.name"
       }
     }
   },
@@ -6706,7 +6989,7 @@
     "block": {
       "minecraft:frame": {
         "java_id": "minecraft:item_frame",
-        "java_display_name": "Item Frame Item"
+        "java_name": "tile.frame.name"
       }
     }
   },
@@ -6714,7 +6997,7 @@
     "block": {
       "minecraft:glow_frame": {
         "java_id": "minecraft:glow_item_frame",
-        "java_display_name": "Glow Item Frame Item"
+        "java_name": "tile.glow_frame.name"
       }
     }
   },
@@ -6722,7 +7005,7 @@
     "block": {
       "minecraft:hopper": {
         "java_id": "minecraft:hopper",
-        "java_display_name": "Hopper Item"
+        "java_name": "tile.hopper.name"
       }
     }
   },
@@ -6730,7 +7013,7 @@
     "block": {
       "minecraft:iron_door": {
         "java_id": "minecraft:iron_door",
-        "java_display_name": "Iron Door Item"
+        "java_name": "tile.iron_door.name"
       }
     }
   },
@@ -6738,7 +7021,7 @@
     "block": {
       "minecraft:jungle_door": {
         "java_id": "minecraft:jungle_door",
-        "java_display_name": "Jungle Door Item"
+        "java_name": "tile.jungle_door.name"
       }
     }
   },
@@ -6746,7 +7029,7 @@
     "block": {
       "minecraft:kelp": {
         "java_id": "minecraft:kelp",
-        "java_display_name": "Kelp Item"
+        "java_name": "tile.kelp.name"
       }
     }
   },
@@ -6754,7 +7037,7 @@
     "block": {
       "minecraft:mangrove_door": {
         "java_id": "minecraft:mangrove_door",
-        "java_display_name": "Mangrove Door Item"
+        "java_name": "tile.mangrove_door.name"
       }
     }
   },
@@ -6762,7 +7045,7 @@
     "block": {
       "minecraft:nether_sprouts": {
         "java_id": "minecraft:nether_sprouts",
-        "java_display_name": "Nether Sprouts Item"
+        "java_name": "tile.nether_sprouts.name"
       }
     }
   },
@@ -6770,7 +7053,7 @@
     "block": {
       "minecraft:nether_wart": {
         "java_id": "minecraft:nether_wart",
-        "java_display_name": "Nether Wart Item"
+        "java_name": "tile.nether_wart.name"
       }
     }
   },
@@ -6778,7 +7061,7 @@
     "block": {
       "minecraft:reeds": {
         "java_id": "minecraft:sugar_cane",
-        "java_display_name": "Reeds Item"
+        "java_name": "tile.reeds.name"
       }
     }
   },
@@ -6786,7 +7069,7 @@
     "block": {
       "minecraft:skull": {
         "java_id": "minecraft:skeleton_skull",
-        "java_display_name": "Skull Item"
+        "java_name": "tile.skull.name"
       }
     }
   },
@@ -6794,7 +7077,7 @@
     "block": {
       "minecraft:soul_campfire": {
         "java_id": "minecraft:soul_campfire",
-        "java_display_name": "Soul Campfire Item"
+        "java_name": "tile.soul_campfire.name"
       }
     }
   },
@@ -6802,7 +7085,7 @@
     "block": {
       "minecraft:spruce_door": {
         "java_id": "minecraft:spruce_door",
-        "java_display_name": "Spruce Door Item"
+        "java_name": "tile.spruce_door.name"
       }
     }
   },
@@ -6810,7 +7093,7 @@
     "block": {
       "minecraft:warped_door": {
         "java_id": "minecraft:warped_door",
-        "java_display_name": "Warped Door Item"
+        "java_name": "tile.warped_door.name"
       }
     }
   },
@@ -6818,7 +7101,7 @@
     "block": {
       "minecraft:wheat": {
         "java_id": "minecraft:wheat_seeds",
-        "java_display_name": "Wheat Item"
+        "java_name": "tile.wheat.name"
       }
     }
   },
@@ -6826,7 +7109,7 @@
     "block": {
       "minecraft:wooden_door": {
         "java_id": "minecraft:oak_door",
-        "java_display_name": "Oak Door Item"
+        "java_name": "tile.wooden_door.name"
       }
     }
   },
@@ -6876,7 +7159,7 @@
     "block": {
       "minecraft:jungle_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:jungle_planks",
-        "java_display_name": "Jungle Double Slab"
+        "java_name": "tile.double_wooden_slab.jungle.name"
       }
     }
   },
@@ -6961,7 +7244,7 @@
     "block": {
       "minecraft:jungle_standing_sign": {
         "java_id": "minecraft:jungle_sign",
-        "java_display_name": "Standing Jungle Sign"
+        "java_name": "tile.jungle_standing_sign.name"
       }
     }
   },
@@ -6976,7 +7259,7 @@
     "block": {
       "minecraft:jungle_wall_sign": {
         "java_id": "minecraft:jungle_sign",
-        "java_display_name": "Jungle Wall Sign"
+        "java_name": "tile.jungle_wall_sign.name"
       }
     }
   },
@@ -6998,7 +7281,7 @@
     "block": {
       "minecraft:lab_table": {
         "java_id": "minecraft:cartography_table",
-        "java_display_name": "Lab Table"
+        "java_name": "tile.labtable.name"
       }
     }
   },
@@ -7055,7 +7338,7 @@
     "block": {
       "minecraft:lava": {
         "java_id": "minecraft:lava_bucket",
-        "java_display_name": "Lava"
+        "java_name": "tile.lava.name"
       }
     }
   },
@@ -7290,7 +7573,7 @@
     "block": {
       "minecraft:light_blue_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Light Blue Candle Cake"
+        "java_name": "tile.light_blue_candle_cake.name"
       }
     }
   },
@@ -7375,7 +7658,7 @@
     "block": {
       "minecraft:light_gray_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Light Gray Candle Cake"
+        "java_name": "tile.light_gray_candle_cake.name"
       }
     }
   },
@@ -7481,7 +7764,7 @@
     "block": {
       "minecraft:lime_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Lime Candle Cake"
+        "java_name": "tile.lime_candle_cake.name"
       }
     }
   },
@@ -7570,7 +7853,7 @@
       },
       "2": {
         "java_id": "minecraft:lingering_potion",
-        "java_display_name": "Long Mundane Potion",
+        "java_name": "potion.mundane.extended.linger.name",
         "java_tag": "{Potion:\"minecraft:mundane\"}"
       },
       "3": {
@@ -7707,7 +7990,7 @@
       },
       "36": {
         "java_id": "minecraft:lingering_potion",
-        "java_display_name": "Potion of Decay",
+        "java_name": "potion.wither.linger.name",
         "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",amplifier:1,duration:800}],CustomPotionColor:4013879}"
       },
       "37": {
@@ -7740,7 +8023,7 @@
     "block": {
       "minecraft:lit_blast_furnace": {
         "java_id": "minecraft:blast_furnace",
-        "java_display_name": "Lit Blast Furnace"
+        "java_name": "tile.lit_blast_furnace.name"
       }
     }
   },
@@ -7748,7 +8031,7 @@
     "block": {
       "minecraft:lit_deepslate_redstone_ore": {
         "java_id": "minecraft:deepslate_redstone_ore",
-        "java_display_name": "Lit Deepslate Redstone Ore"
+        "java_name": "tile.lit_deepslate_redstone_ore.name"
       }
     }
   },
@@ -7756,7 +8039,7 @@
     "block": {
       "minecraft:lit_furnace": {
         "java_id": "minecraft:furnace",
-        "java_display_name": "Lit Furnace"
+        "java_name": "tile.lit_furnace.name"
       }
     }
   },
@@ -7771,7 +8054,7 @@
     "block": {
       "minecraft:lit_redstone_lamp": {
         "java_id": "minecraft:redstone_lamp",
-        "java_display_name": "Lit Redstone Lamp"
+        "java_name": "tile.lit_redstone_lamp.name"
       }
     }
   },
@@ -7779,7 +8062,7 @@
     "block": {
       "minecraft:lit_redstone_ore": {
         "java_id": "minecraft:redstone_ore",
-        "java_display_name": "Lit Redstone Ore"
+        "java_name": "tile.lit_redstone_ore.name"
       }
     }
   },
@@ -7787,7 +8070,7 @@
     "block": {
       "minecraft:lit_smoker": {
         "java_id": "minecraft:smoker",
-        "java_display_name": "Lit Smoker"
+        "java_name": "tile.lit_smoker.name"
       }
     }
   },
@@ -7809,7 +8092,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:compass",
-        "java_display_name": "Lodestone Compass"
+        "java_name": "item.lodestonecompass.name"
       }
     }
   },
@@ -7852,7 +8135,7 @@
     "block": {
       "minecraft:magenta_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Magenta Candle Cake"
+        "java_name": "tile.magenta_candle_cake.name"
       }
     }
   },
@@ -7979,7 +8262,7 @@
     "block": {
       "minecraft:mangrove_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:mangrove_planks",
-        "java_display_name": "Mangrove Double Slab"
+        "java_name": "tile.mangrove_double_slab.name"
       }
     }
   },
@@ -8071,7 +8354,7 @@
     "block": {
       "minecraft:mangrove_standing_sign": {
         "java_id": "minecraft:mangrove_sign",
-        "java_display_name": "Standing Mangrove Sign"
+        "java_name": "tile.mangrove_standing_sign.name"
       }
     }
   },
@@ -8086,7 +8369,7 @@
     "block": {
       "minecraft:mangrove_wall_sign": {
         "java_id": "minecraft:mangrove_sign",
-        "java_display_name": "Mangrove Wall Sign"
+        "java_name": "tile.mangrove_wall_sign.name"
       }
     }
   },
@@ -8101,7 +8384,7 @@
     "block": {
       "minecraft:material_reducer": {
         "java_id": "minecraft:cartography_table",
-        "java_display_name": "Material Reducer"
+        "java_name": "tile.materialreducer.name"
       }
     }
   },
@@ -8109,23 +8392,23 @@
     "meta": {
       "": {
         "java_id": "minecraft:milk_bucket",
-        "java_display_name": "Medicine"
+        "java_name": "item.medicine..name"
       },
       "0": {
         "java_id": "minecraft:milk_bucket",
-        "java_display_name": "Blindness Medicine"
+        "java_name": "item.medicine.blindness.name"
       },
       "1": {
         "java_id": "minecraft:milk_bucket",
-        "java_display_name": "Nausea Medicine"
+        "java_name": "item.medicine.nausea.name"
       },
       "2": {
         "java_id": "minecraft:milk_bucket",
-        "java_display_name": "Poison Medicine"
+        "java_name": "item.medicine.poison.name"
       },
       "3": {
         "java_id": "minecraft:milk_bucket",
-        "java_display_name": "Weakness Medicine"
+        "java_name": "item.medicine.weakness.name"
       }
     }
   },
@@ -8161,7 +8444,7 @@
     "block": {
       "minecraft:melon_stem": {
         "java_id": "minecraft:melon_seeds",
-        "java_display_name": "Melon Stem"
+        "java_name": "tile.melon_stem.name"
       }
     }
   },
@@ -8239,7 +8522,7 @@
     "block": {
       "minecraft:mossy_cobblestone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:mossy_cobblestone",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab2.mossy_cobblestone.name"
       }
     }
   },
@@ -8268,7 +8551,7 @@
     "block": {
       "minecraft:mossy_stone_brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:mossy_stone_bricks",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab4.mossy_stone_brick.name"
       }
     }
   },
@@ -8311,7 +8594,7 @@
     "block": {
       "minecraft:moving_block": {
         "java_id": "minecraft:barrier",
-        "java_display_name": "Moving Block"
+        "java_name": "tile.moving_block.name"
       }
     }
   },
@@ -8326,7 +8609,7 @@
     "block": {
       "minecraft:mud_brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:mud_bricks",
-        "java_display_name": "Mud Brick Double Slab"
+        "java_name": "tile.mud_brick_double_slab.name"
       }
     }
   },
@@ -8551,7 +8834,7 @@
     "block": {
       "minecraft:nether_brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:nether_bricks",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab.nether_brick.name"
       }
     }
   },
@@ -8727,7 +9010,7 @@
     "block": {
       "minecraft:netherreactor": {
         "java_id": "minecraft:lodestone",
-        "java_display_name": "Nether Reactor"
+        "java_name": "tile.netherreactor.name"
       }
     }
   },
@@ -8735,7 +9018,7 @@
     "block": {
       "minecraft:normal_stone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:stone",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab4.stone.name"
       }
     }
   },
@@ -8764,7 +9047,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:villager_spawn_egg",
-        "java_display_name": "NPC Spawn Egg"
+        "java_name": "item.spawn_egg.entity.npc.name"
       }
     }
   },
@@ -8786,7 +9069,7 @@
     "block": {
       "minecraft:oak_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:oak_planks",
-        "java_display_name": "Oak Double Slab"
+        "java_name": "tile.double_wooden_slab.oak.name"
       }
     }
   },
@@ -8913,7 +9196,7 @@
     "block": {
       "minecraft:orange_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Orange Candle Cake"
+        "java_name": "tile.orange_candle_cake.name"
       }
     }
   },
@@ -9068,7 +9351,7 @@
     "block": {
       "minecraft:oxidized_double_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:oxidized_cut_copper",
-        "java_display_name": "Oxidized Cut Copper Double Slab"
+        "java_name": "tile.oxidized_double_cut_copper_slab.name"
       }
     }
   },
@@ -9132,7 +9415,7 @@
     "block": {
       "minecraft:petrified_oak_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:oak_planks",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab.wood.name"
       }
     }
   },
@@ -9203,7 +9486,7 @@
     "block": {
       "minecraft:pink_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Pink Candle Cake"
+        "java_name": "tile.pink_candle_cake.name"
       }
     }
   },
@@ -9302,7 +9585,7 @@
     "block": {
       "minecraft:piston_arm_collision": {
         "java_id": "minecraft:barrier",
-        "java_display_name": "Piston Arm Collision"
+        "java_name": "tile.piston_arm_collision.name"
       }
     }
   },
@@ -9310,7 +9593,7 @@
     "block": {
       "minecraft:pitcher_crop": {
         "java_id": "minecraft:pitcher_plant",
-        "java_display_name": "Pitcher Crop"
+        "java_name": "tile.pitcher_crop.name"
       }
     }
   },
@@ -9381,7 +9664,7 @@
     "block": {
       "minecraft:polished_andesite_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_andesite",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab3.andesite.smooth.name"
       }
     }
   },
@@ -9417,7 +9700,7 @@
     "block": {
       "minecraft:polished_blackstone_brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_blackstone_bricks",
-        "java_display_name": "Polished Blackstone Brick Double Slab"
+        "java_name": "tile.polished_blackstone_brick_double_slab.name"
       }
     }
   },
@@ -9460,7 +9743,7 @@
     "block": {
       "minecraft:polished_blackstone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_blackstone",
-        "java_display_name": "Polished Blackstone Double Slab"
+        "java_name": "tile.polished_blackstone_double_slab.name"
       }
     }
   },
@@ -9503,7 +9786,7 @@
     "block": {
       "minecraft:polished_deepslate_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_deepslate",
-        "java_display_name": "Polished Deepslate Double Slab"
+        "java_name": "tile.polished_deepslate_double_slab.name"
       }
     }
   },
@@ -9539,7 +9822,7 @@
     "block": {
       "minecraft:polished_diorite_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_diorite",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab3.diorite.smooth.name"
       }
     }
   },
@@ -9568,7 +9851,7 @@
     "block": {
       "minecraft:polished_granite_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_granite",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab3.granite.smooth.name"
       }
     }
   },
@@ -9597,7 +9880,7 @@
     "block": {
       "minecraft:polished_tuff_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:polished_tuff",
-        "java_display_name": "Polished Tuff Double Slab"
+        "java_name": "tile.polished_tuff_double_slab.name"
       }
     }
   },
@@ -9647,7 +9930,7 @@
     "block": {
       "minecraft:portal": {
         "java_id": "minecraft:amethyst_block",
-        "java_display_name": "Portal"
+        "java_name": "tile.portal.name"
       }
     }
   },
@@ -9662,7 +9945,7 @@
     "block": {
       "minecraft:potatoes": {
         "java_id": "minecraft:potato",
-        "java_display_name": "Potatoes"
+        "java_name": "tile.potatoes.name"
       }
     }
   },
@@ -9681,7 +9964,7 @@
       },
       "2": {
         "java_id": "minecraft:potion",
-        "java_display_name": "Long Mundane Potion",
+        "java_name": "potion.mundane.extended.name",
         "java_tag": "{Potion:\"minecraft:mundane\"}"
       },
       "3": {
@@ -9818,7 +10101,7 @@
       },
       "36": {
         "java_id": "minecraft:potion",
-        "java_display_name": "Potion of Decay",
+        "java_name": "potion.wither.name",
         "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",amplifier:1,duration:800}],CustomPotionColor:4013879}"
       },
       "37": {
@@ -9851,7 +10134,7 @@
     "block": {
       "minecraft:powder_snow": {
         "java_id": "minecraft:snow_block",
-        "java_display_name": "Powder Snow"
+        "java_name": "tile.powder_snow.name"
       }
     }
   },
@@ -9866,7 +10149,7 @@
     "block": {
       "minecraft:powered_comparator": {
         "java_id": "minecraft:comparator",
-        "java_display_name": "Powered Comparator"
+        "java_name": "tile.powered_comparator.name"
       }
     }
   },
@@ -9874,7 +10157,7 @@
     "block": {
       "minecraft:powered_repeater": {
         "java_id": "minecraft:repeater",
-        "java_display_name": "Powered Repeater"
+        "java_name": "tile.powered_repeater.name"
       }
     }
   },
@@ -9889,7 +10172,7 @@
     "block": {
       "minecraft:prismarine_brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:prismarine_bricks",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab2.prismarine.bricks.name"
       }
     }
   },
@@ -9925,7 +10208,7 @@
     "block": {
       "minecraft:prismarine_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:prismarine",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab2.prismarine.rough.name"
       }
     }
   },
@@ -10010,7 +10293,7 @@
     "block": {
       "minecraft:pumpkin_stem": {
         "java_id": "minecraft:pumpkin_seeds",
-        "java_display_name": "Pumpkin Stem"
+        "java_name": "tile.pumpkin_stem.name"
       }
     }
   },
@@ -10025,7 +10308,7 @@
     "block": {
       "minecraft:purple_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Purple Candle Cake"
+        "java_name": "tile.purple_candle_cake.name"
       }
     }
   },
@@ -10110,7 +10393,7 @@
     "block": {
       "minecraft:purpur_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:purpur_block",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab2.purpur.name"
       }
     }
   },
@@ -10160,7 +10443,7 @@
     "block": {
       "minecraft:quartz_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:quartz_block",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab.quartz.name"
       }
     }
   },
@@ -10245,7 +10528,7 @@
     "meta": {
       "": {
         "java_id": "minecraft:bone_meal",
-        "java_display_name": "Rapid Fertilizer"
+        "java_name": "item.rapid_fertilizer.name"
       }
     }
   },
@@ -10316,7 +10599,7 @@
     "block": {
       "minecraft:red_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Red Candle Cake"
+        "java_name": "tile.red_candle_cake.name"
       }
     }
   },
@@ -10387,7 +10670,7 @@
     "block": {
       "minecraft:red_nether_brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:red_nether_bricks",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab2.red_nether_brick.name"
       }
     }
   },
@@ -10430,7 +10713,7 @@
     "block": {
       "minecraft:red_sandstone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:red_sandstone",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab2.red_sandstone.name"
       }
     }
   },
@@ -10536,7 +10819,7 @@
     "block": {
       "minecraft:redstone_wire": {
         "java_id": "minecraft:redstone",
-        "java_display_name": "Redstone Wire"
+        "java_name": "tile.redstone_wire.name"
       }
     }
   },
@@ -10565,7 +10848,7 @@
     "block": {
       "minecraft:reserved6": {
         "java_id": "minecraft:coarse_dirt",
-        "java_display_name": "Reserved6"
+        "java_name": "tile.reserved6.name"
       }
     }
   },
@@ -10643,7 +10926,7 @@
     "block": {
       "minecraft:sandstone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:sandstone",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab.sand.name"
       }
     }
   },
@@ -10973,7 +11256,7 @@
     "block": {
       "minecraft:smooth_quartz_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:smooth_quartz",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab4.smooth_quartz.name"
       }
     }
   },
@@ -11002,7 +11285,7 @@
     "block": {
       "minecraft:smooth_red_sandstone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:smooth_red_sandstone",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab3.red_sandstone.smooth.name"
       }
     }
   },
@@ -11031,7 +11314,7 @@
     "block": {
       "minecraft:smooth_sandstone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:smooth_sandstone",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab2.sandstone.smooth.name"
       }
     }
   },
@@ -11060,7 +11343,7 @@
     "block": {
       "minecraft:smooth_stone_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:smooth_stone",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab.stone.name"
       }
     }
   },
@@ -11138,7 +11421,7 @@
     "block": {
       "minecraft:soul_fire": {
         "java_id": "minecraft:fire_charge",
-        "java_display_name": "Soul Fire"
+        "java_name": "tile.soul_fire.name"
       }
     }
   },
@@ -11174,7 +11457,135 @@
     "meta": {
       "": {
         "java_id": "minecraft:stick",
-        "java_display_name": "Sparkler"
+        "java_name": "item.sparkler.purple.name"
+      },
+      "0": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.black.name"
+      },
+      "1": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.red.name"
+      },
+      "2": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.green.name"
+      },
+      "3": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.brown.name"
+      },
+      "4": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.blue.name"
+      },
+      "5": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.purple.name"
+      },
+      "6": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.cyan.name"
+      },
+      "7": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.silver.name"
+      },
+      "8": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.gray.name"
+      },
+      "9": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.pink.name"
+      },
+      "10": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.lime.name"
+      },
+      "11": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.yellow.name"
+      },
+      "12": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.lightBlue.name"
+      },
+      "13": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.magenta.name"
+      },
+      "14": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.orange.name"
+      },
+      "15": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.white.name"
+      },
+      "32": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.black.name"
+      },
+      "33": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.red.name"
+      },
+      "34": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.green.name"
+      },
+      "35": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.brown.name"
+      },
+      "36": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.blue.name"
+      },
+      "37": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.purple.name"
+      },
+      "38": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.cyan.name"
+      },
+      "39": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.silver.name"
+      },
+      "40": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.gray.name"
+      },
+      "41": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.pink.name"
+      },
+      "42": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.lime.name"
+      },
+      "43": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.yellow.name"
+      },
+      "44": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.lightBlue.name"
+      },
+      "45": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.magenta.name"
+      },
+      "46": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.orange.name"
+      },
+      "47": {
+        "java_id": "minecraft:stick",
+        "java_name": "item.sparkler.white.name"
       }
     }
   },
@@ -11221,7 +11632,7 @@
       },
       "2": {
         "java_id": "minecraft:splash_potion",
-        "java_display_name": "Long Mundane Potion",
+        "java_name": "potion.mundane.extended.splash.name",
         "java_tag": "{Potion:\"minecraft:mundane\"}"
       },
       "3": {
@@ -11358,7 +11769,7 @@
       },
       "36": {
         "java_id": "minecraft:splash_potion",
-        "java_display_name": "Potion of Decay",
+        "java_name": "potion.wither.splash.name",
         "java_tag": "{custom_potion_effects:[{id:\"minecraft:wither\",amplifier:1,duration:800}],CustomPotionColor:4013879}"
       },
       "37": {
@@ -11433,7 +11844,7 @@
     "block": {
       "minecraft:spruce_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:spruce_planks",
-        "java_display_name": "Spruce Double Slab"
+        "java_name": "tile.double_wooden_slab.spruce.name"
       }
     }
   },
@@ -11518,7 +11929,7 @@
     "block": {
       "minecraft:spruce_standing_sign": {
         "java_id": "minecraft:spruce_sign",
-        "java_display_name": "Standing Spruce Sign"
+        "java_name": "tile.spruce_standing_sign.name"
       }
     }
   },
@@ -11533,7 +11944,7 @@
     "block": {
       "minecraft:spruce_wall_sign": {
         "java_id": "minecraft:spruce_sign",
-        "java_display_name": "Spruce Wall Sign"
+        "java_name": "tile.spruce_wall_sign.name"
       }
     }
   },
@@ -11583,7 +11994,7 @@
     "block": {
       "minecraft:standing_banner": {
         "java_id": "minecraft:black_banner",
-        "java_display_name": "Standing Banner"
+        "java_name": "tile.standing_banner.name"
       }
     }
   },
@@ -11591,7 +12002,7 @@
     "block": {
       "minecraft:standing_sign": {
         "java_id": "minecraft:oak_sign",
-        "java_display_name": "Standing Oak Sign"
+        "java_name": "tile.standing_sign.name"
       }
     }
   },
@@ -11613,7 +12024,7 @@
     "block": {
       "minecraft:sticky_piston_arm_collision": {
         "java_id": "minecraft:barrier",
-        "java_display_name": "Sticky Piston Arm Collision"
+        "java_name": "tile.sticky_piston_arm_collision.name"
       }
     }
   },
@@ -11663,7 +12074,7 @@
     "block": {
       "minecraft:stone_brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:stone_bricks",
-        "java_display_name": "Double Stone Slab"
+        "java_name": "tile.double_stone_slab.smoothStoneBrick.name"
       }
     }
   },
@@ -11755,7 +12166,7 @@
     "block": {
       "minecraft:stonecutter": {
         "java_id": "minecraft:stonecutter",
-        "java_display_name": "Legacy Stonecutter"
+        "java_name": "tile.stonecutter.name"
       }
     }
   },
@@ -12001,7 +12412,7 @@
     "block": {
       "minecraft:sweet_berry_bush": {
         "java_id": "minecraft:sweet_berries",
-        "java_display_name": "Sweet Berry Bush"
+        "java_name": "tile.sweet_berry_bush.name"
       }
     }
   },
@@ -12086,7 +12497,7 @@
     "block": {
       "minecraft:torchflower_crop": {
         "java_id": "minecraft:torchflower_seeds",
-        "java_display_name": "Torchflower Crop"
+        "java_name": "tile.torchflower_crop.name"
       }
     }
   },
@@ -12150,7 +12561,7 @@
     "block": {
       "minecraft:trip_wire": {
         "java_id": "minecraft:string",
-        "java_display_name": "Tripwire"
+        "java_name": "tile.trip_wire.name"
       }
     }
   },
@@ -12207,7 +12618,7 @@
     "block": {
       "minecraft:tube_coral_wall_fan": {
         "java_id": "minecraft:tube_coral_fan",
-        "java_display_name": "Tube Coral Wall Fan"
+        "java_name": ""
       }
     }
   },
@@ -12222,7 +12633,7 @@
     "block": {
       "minecraft:tuff_brick_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:tuff_bricks",
-        "java_display_name": "Tuff Brick Double Slab"
+        "java_name": "tile.tuff_brick_double_slab.name"
       }
     }
   },
@@ -12258,7 +12669,7 @@
     "block": {
       "minecraft:tuff_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:tuff",
-        "java_display_name": "Tuff Double Slab"
+        "java_name": "tile.tuff_double_slab.name"
       }
     }
   },
@@ -12322,7 +12733,7 @@
     "block": {
       "minecraft:underwater_tnt": {
         "java_id": "minecraft:tnt",
-        "java_display_name": "Underwater TNT"
+        "java_name": "tile.underwater_tnt.name"
       }
     }
   },
@@ -12330,7 +12741,7 @@
     "block": {
       "minecraft:underwater_torch": {
         "java_id": "minecraft:torch",
-        "java_display_name": "Underwater Torch"
+        "java_name": "tile.underwater_torch.name"
       }
     }
   },
@@ -12345,7 +12756,7 @@
     "block": {
       "minecraft:unknown": {
         "java_id": "minecraft:coarse_dirt",
-        "java_display_name": "Unknown"
+        "java_name": "tile.unknown.name"
       }
     }
   },
@@ -12353,7 +12764,7 @@
     "block": {
       "minecraft:unlit_redstone_torch": {
         "java_id": "minecraft:redstone_torch",
-        "java_display_name": "Unlit Redstone Torch"
+        "java_name": "tile.unlit_redstone_torch.name"
       }
     }
   },
@@ -12361,7 +12772,7 @@
     "block": {
       "minecraft:unpowered_comparator": {
         "java_id": "minecraft:comparator",
-        "java_display_name": "Unpowered Comparator"
+        "java_name": "tile.unpowered_comparator.name"
       }
     }
   },
@@ -12369,7 +12780,7 @@
     "block": {
       "minecraft:unpowered_repeater": {
         "java_id": "minecraft:repeater",
-        "java_display_name": "Unpowered Repeater"
+        "java_name": "tile.unpowered_repeater.name"
       }
     }
   },
@@ -12426,7 +12837,7 @@
     "block": {
       "minecraft:wall_banner": {
         "java_id": "minecraft:black_banner",
-        "java_display_name": "Wall Banner"
+        "java_name": "tile.wall_banner.name"
       }
     }
   },
@@ -12434,7 +12845,7 @@
     "block": {
       "minecraft:wall_sign": {
         "java_id": "minecraft:oak_sign",
-        "java_display_name": "Oak Wall Sign"
+        "java_name": "tile.wall_sign.name"
       }
     }
   },
@@ -12477,7 +12888,7 @@
     "block": {
       "minecraft:warped_double_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:warped_planks",
-        "java_display_name": "Warped Double Slab"
+        "java_name": "tile.warped_double_slab.name"
       }
     }
   },
@@ -12576,7 +12987,7 @@
     "block": {
       "minecraft:warped_standing_sign": {
         "java_id": "minecraft:warped_sign",
-        "java_display_name": "Standing Warped Sign"
+        "java_name": "tile.warped_standing_sign.name"
       }
     }
   },
@@ -12598,7 +13009,7 @@
     "block": {
       "minecraft:warped_wall_sign": {
         "java_id": "minecraft:warped_sign",
-        "java_display_name": "Warped Wall Sign"
+        "java_name": "tile.warped_wall_sign.name"
       }
     }
   },
@@ -12613,7 +13024,7 @@
     "block": {
       "minecraft:water": {
         "java_id": "minecraft:water_bucket",
-        "java_display_name": "Water"
+        "java_name": "tile.water.name"
       }
     }
   },
@@ -12698,7 +13109,7 @@
     "block": {
       "minecraft:waxed_double_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:waxed_cut_copper",
-        "java_display_name": "Waxed Cut Copper Double Slab"
+        "java_name": "tile.waxed_double_cut_copper_slab.name"
       }
     }
   },
@@ -12769,7 +13180,7 @@
     "block": {
       "minecraft:waxed_exposed_double_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:waxed_exposed_cut_copper",
-        "java_display_name": "Waxed Exposed Cut Copper Double Slab"
+        "java_name": "tile.waxed_exposed_double_cut_copper_slab.name"
       }
     }
   },
@@ -12840,7 +13251,7 @@
     "block": {
       "minecraft:waxed_oxidized_double_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:waxed_oxidized_cut_copper",
-        "java_display_name": "Waxed Oxidized Cut Copper Double Slab"
+        "java_name": "tile.waxed_oxidized_double_cut_copper_slab.name"
       }
     }
   },
@@ -12911,7 +13322,7 @@
     "block": {
       "minecraft:waxed_weathered_double_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:waxed_weathered_cut_copper",
-        "java_display_name": "Waxed Weathered Cut Copper Double Slab"
+        "java_name": "tile.waxed_weathered_double_cut_copper_slab.name"
       }
     }
   },
@@ -12989,7 +13400,7 @@
     "block": {
       "minecraft:weathered_double_cut_copper_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:weathered_cut_copper",
-        "java_display_name": "Weathered Cut Copper Double Slab"
+        "java_name": "tile.weathered_double_cut_copper_slab.name"
       }
     }
   },
@@ -13011,7 +13422,7 @@
     "block": {
       "minecraft:wet_sponge": {
         "java_id": "minecraft:sponge",
-        "java_display_name": "Wet Sponge"
+        "java_name": "tile.sponge.wet.name"
       }
     }
   },
@@ -13040,7 +13451,7 @@
     "block": {
       "minecraft:white_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "White Candle Cake"
+        "java_name": "tile.white_candle_cake.name"
       }
     }
   },
@@ -13279,7 +13690,7 @@
     "block": {
       "minecraft:yellow_candle_cake": {
         "java_id": "minecraft:cake",
-        "java_display_name": "Yellow Candle Cake"
+        "java_name": "tile.yellow_candle_cake.name"
       }
     }
   },

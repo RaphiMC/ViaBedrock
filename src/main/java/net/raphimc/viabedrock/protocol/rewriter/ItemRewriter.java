@@ -168,8 +168,10 @@ public class ItemRewriter extends StoredObject {
                 // javaTag.setValue(this.overrideTag.copy().getValue());
                 // TODO: Update: Fix this
             }
-            if (javaItemMapping.displayName() != null) {
-                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt("Bedrock " + javaItemMapping.displayName()));
+            if (javaItemMapping.name() != null) {
+                final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
+                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get(javaItemMapping.name())));
+                data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Mapped item: " + identifier)});
             }
             javaItem = new StructuredItem(javaItemMapping.id(), bedrockItem.amount(), data);
         } else {
