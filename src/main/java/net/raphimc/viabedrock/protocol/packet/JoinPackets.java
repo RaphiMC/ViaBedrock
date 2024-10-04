@@ -498,7 +498,7 @@ public class JoinPackets {
             updateTags.write(Types.VAR_INT, tag.size()); // number of tags
             for (Map.Entry<String, Tag> tagEntry : tag.entrySet()) {
                 updateTags.write(Types.STRING, tagEntry.getKey()); // tag name
-                updateTags.write(Types.VAR_INT_ARRAY_PRIMITIVE, ((IntArrayTag) tagEntry.getValue()).getValue()); // tag ids
+                updateTags.write(Types.VAR_INT_ARRAY_PRIMITIVE, ((IntArrayTag) tagEntry.getValue()).getValue().clone()); // tag ids
             }
         }
         updateTags.send(BedrockProtocol.class);

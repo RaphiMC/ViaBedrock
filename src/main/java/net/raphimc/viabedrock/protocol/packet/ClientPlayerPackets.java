@@ -275,6 +275,7 @@ public class ClientPlayerPackets {
             if (true) return; // TODO: Remove once block breaking is fully working
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+            final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final PlayerActionAction action = PlayerActionAction.values()[wrapper.read(Types.VAR_INT)]; // action
             final BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
             final Direction direction = Direction.values()[wrapper.read(Types.UNSIGNED_BYTE)]; // face
@@ -283,19 +284,9 @@ public class ClientPlayerPackets {
             final boolean isMining = action == PlayerActionAction.START_DESTROY_BLOCK || action == PlayerActionAction.ABORT_DESTROY_BLOCK || action == PlayerActionAction.STOP_DESTROY_BLOCK;
             if (isMining && (gameSession.isImmutableWorld() || !clientPlayer.abilities().getBooleanValue(AbilitiesIndex.Mine))) {
                 // TODO: Prevent breaking and cancel any packets that would be sent (swing, player action)
-                final PacketWrapper blockUpdate = PacketWrapper.create(ClientboundPackets1_21.BLOCK_UPDATE, wrapper.user());
-                blockUpdate.write(Types.BLOCK_POSITION1_14, position); // position
-                blockUpdate.write(Types.VAR_INT, wrapper.user().get(ChunkTracker.class).getJavaBlockState(position)); // block state
-                blockUpdate.send(BedrockProtocol.class);
+                PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, chunkTracker.getJavaBlockState(position));
+                PacketFactory.sendJavaBlockChangedAck(wrapper.user(), sequence);
                 return;
-            }
-
-            // TODO: Set block to air in chunk tracker
-
-            if (sequence > 0) {
-                final PacketWrapper blockChangedAck = PacketWrapper.create(ClientboundPackets1_21.BLOCK_CHANGED_ACK, wrapper.user());
-                blockChangedAck.write(Types.VAR_INT, sequence); // sequence number
-                blockChangedAck.send(BedrockProtocol.class);
             }
 
             switch (action) {
@@ -305,6 +296,7 @@ public class ClientPlayerPackets {
                     clientPlayer.setBlockBreakingInfo(new ClientPlayerEntity.BlockBreakingInfo(position, direction));
                     // TODO: Handle instant breaking
                     // TODO: Handle creative mode mining
+                    // TODO: Test breaking fire
 
                     if (gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
                         clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StartDestroyBlock, position, direction.ordinal());
@@ -331,7 +323,7 @@ public class ClientPlayerPackets {
                             // TODO: InventoryTransactionPacket
                             clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.AbortDestroyBlock, position, 0);
                         } else {
-                            clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.StopDestroyBlock, new BlockPosition(0, 0, 0), 0));
+                            clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.StopDestroyBlock));
                             clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.AbortDestroyBlock, position, 0));
                         }
                     } else {
@@ -345,6 +337,9 @@ public class ClientPlayerPackets {
                             clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.AbortDestroyBlock, position, 0));
                         }
                     }
+
+                    chunkTracker.handleBlockChange(position, 0, chunkTracker.airId());
+                    PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, 0);
                 }
                 case DROP_ALL_ITEMS, DROP_ITEM -> {
                     // TODO: Implement DROP_ALL_ITEMS, DROP_ITEM
@@ -352,10 +347,15 @@ public class ClientPlayerPackets {
                 }
                 case RELEASE_USE_ITEM -> {
                     // TODO: Implement RELEASE_USE_ITEM
+                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
                 }
                 case SWAP_ITEM_WITH_OFFHAND -> {
                 }
                 default -> throw new IllegalStateException("Unhandled PlayerActionAction: " + action);
+            }
+
+            if (sequence > 0) {
+                PacketFactory.sendJavaBlockChangedAck(wrapper.user(), sequence);
             }
         });
         protocol.registerServerbound(ServerboundPackets1_20_5.INTERACT, ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper -> {

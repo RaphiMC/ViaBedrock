@@ -97,6 +97,19 @@ public class PacketFactory {
         rotateHead.send(BedrockProtocol.class);
     }
 
+    public static void sendJavaBlockChangedAck(final UserConnection user, final int sequence) {
+        final PacketWrapper blockChangedAck = PacketWrapper.create(ClientboundPackets1_21.BLOCK_CHANGED_ACK, user);
+        blockChangedAck.write(Types.VAR_INT, sequence); // sequence number
+        blockChangedAck.send(BedrockProtocol.class);
+    }
+
+    public static void sendJavaBlockUpdate(final UserConnection user, final BlockPosition position, final int blockState) {
+        final PacketWrapper blockUpdate = PacketWrapper.create(ClientboundPackets1_21.BLOCK_UPDATE, user);
+        blockUpdate.write(Types.BLOCK_POSITION1_14, position); // position
+        blockUpdate.write(Types.VAR_INT, blockState); // block state
+        blockUpdate.send(BedrockProtocol.class);
+    }
+
     public static void sendBedrockContainerClose(final UserConnection user, final byte containerId, final ContainerType containerType) {
         final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, user);
         containerClose.write(Types.BYTE, containerId); // container id

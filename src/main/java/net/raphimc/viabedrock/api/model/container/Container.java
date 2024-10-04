@@ -135,7 +135,11 @@ public abstract class Container {
     }
 
     public boolean isValidBlockTag(final String tag) {
-        return this.validBlockTags.contains(tag);
+        if (tag == null) {
+            return false;
+        } else {
+            return this.validBlockTags.contains(tag);
+        }
     }
 
     protected void onSlotChanged(final int slot, final BedrockItem oldItem, final BedrockItem newItem) {

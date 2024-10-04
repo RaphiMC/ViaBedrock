@@ -114,10 +114,10 @@ public class ChunkTracker extends StoredObject {
         if (!this.isInRenderDistance(chunkX, chunkZ)) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of render distance, but within load distance: " + chunkX + ", " + chunkZ);
             final EntityTracker entityTracker = this.user().get(EntityTracker.class);
-            final PacketWrapper updateViewPosition = PacketWrapper.create(ClientboundPackets1_21.SET_CHUNK_CACHE_CENTER, this.user());
-            updateViewPosition.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().x() >> 4); // chunk x
-            updateViewPosition.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().z() >> 4); // chunk z
-            updateViewPosition.send(BedrockProtocol.class);
+            final PacketWrapper setChunkCacheCenter = PacketWrapper.create(ClientboundPackets1_21.SET_CHUNK_CACHE_CENTER, this.user());
+            setChunkCacheCenter.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().x() >> 4); // chunk x
+            setChunkCacheCenter.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().z() >> 4); // chunk z
+            setChunkCacheCenter.send(BedrockProtocol.class);
         }
 
         final BedrockChunk chunk = new BedrockChunk(chunkX, chunkZ, new BedrockChunkSection[this.worldHeight >> 4]);
@@ -360,7 +360,7 @@ public class ChunkTracker extends StoredObject {
                     return new IntObjectImmutablePair<>(remappedBlockState, javaBlockEntity);
                 }
             } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
-                this.user().get(EntityTracker.class).spawnItemFrame(blockPosition, blockStateRewriter.blockState(blockState));
+                entityTracker.spawnItemFrame(blockPosition, blockStateRewriter.blockState(blockState));
             }
         }
 
@@ -384,20 +384,20 @@ public class ChunkTracker extends StoredObject {
         }
         final Chunk remappedChunk = this.remapChunk(chunk);
 
-        final PacketWrapper wrapper = PacketWrapper.create(ClientboundPackets1_21.LEVEL_CHUNK_WITH_LIGHT, this.user());
+        final PacketWrapper levelChunkWithLight = PacketWrapper.create(ClientboundPackets1_21.LEVEL_CHUNK_WITH_LIGHT, this.user());
         final BitSet lightMask = new BitSet();
         lightMask.set(0, remappedChunk.getSections().length + 2);
-        wrapper.write(this.chunkType, remappedChunk); // chunk
-        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // sky light mask
-        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, new long[0]); // block light mask
-        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, new long[0]); // empty sky light mask
-        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // empty block light mask
-        wrapper.write(Types.VAR_INT, remappedChunk.getSections().length + 2); // sky light length
+        levelChunkWithLight.write(this.chunkType, remappedChunk); // chunk
+        levelChunkWithLight.write(Types.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // sky light mask
+        levelChunkWithLight.write(Types.LONG_ARRAY_PRIMITIVE, new long[0]); // block light mask
+        levelChunkWithLight.write(Types.LONG_ARRAY_PRIMITIVE, new long[0]); // empty sky light mask
+        levelChunkWithLight.write(Types.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // empty block light mask
+        levelChunkWithLight.write(Types.VAR_INT, remappedChunk.getSections().length + 2); // sky light length
         for (int i = 0; i < remappedChunk.getSections().length + 2; i++) {
-            wrapper.write(Types.BYTE_ARRAY_PRIMITIVE, FULL_LIGHT); // sky light
+            levelChunkWithLight.write(Types.BYTE_ARRAY_PRIMITIVE, FULL_LIGHT); // sky light
         }
-        wrapper.write(Types.VAR_INT, 0); // block light length
-        wrapper.send(BedrockProtocol.class);
+        levelChunkWithLight.write(Types.VAR_INT, 0); // block light length
+        levelChunkWithLight.send(BedrockProtocol.class);
     }
 
     public Dimension getDimension() {

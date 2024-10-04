@@ -160,6 +160,9 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
 
         this.authInputData.add(PlayerAuthInputPacket_InputData.BlockBreakingDelayEnabled);
+        if (this.onGround) {
+            this.authInputData.add(PlayerAuthInputPacket_InputData.VerticalCollision);
+        }
         if (this.sneaking) {
             this.addAuthInputData(PlayerAuthInputPacket_InputData.SneakDown, PlayerAuthInputPacket_InputData.Sneaking, PlayerAuthInputPacket_InputData.WantDown);
         }
@@ -193,7 +196,8 @@ public class ClientPlayerEntity extends PlayerEntity {
             for (AuthInputBlockAction blockAction : this.authInputBlockActions) {
                 playerAuthInput.write(BedrockTypes.VAR_INT, blockAction.action.getValue()); // action
                 switch (blockAction.action) {
-                    case StartDestroyBlock, AbortDestroyBlock, StopDestroyBlock, CrackBlock, PredictDestroyBlock, ContinueDestroyBlock -> {
+                    // StopDestroyBlock does not have additional data even tho bedrock protocol docs claim it does
+                    case StartDestroyBlock, AbortDestroyBlock, CrackBlock, PredictDestroyBlock, ContinueDestroyBlock -> {
                         playerAuthInput.write(BedrockTypes.POSITION_3I, blockAction.position); // position
                         playerAuthInput.write(BedrockTypes.VAR_INT, blockAction.direction); // facing
                     }
@@ -592,6 +596,11 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public record AuthInputBlockAction(PlayerActionType action, BlockPosition position, int direction) {
+
+        public AuthInputBlockAction(final PlayerActionType action) {
+            this(action, null, -1);
+        }
+
     }
 
 }

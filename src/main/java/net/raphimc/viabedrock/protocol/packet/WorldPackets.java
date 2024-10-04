@@ -434,10 +434,7 @@ public class WorldPackets {
 
                     final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(wrapper.user(), chunkTracker.getBlockState(bedrockBlockEntity.position()), bedrockBlockEntity);
                     if (javaBlockEntity instanceof BlockEntityWithBlockState blockEntityWithBlockState) {
-                        final PacketWrapper blockChange = PacketWrapper.create(ClientboundPackets1_21.BLOCK_UPDATE, wrapper.user());
-                        blockChange.write(Types.BLOCK_POSITION1_14, bedrockBlockEntity.position()); // position
-                        blockChange.write(Types.VAR_INT, blockEntityWithBlockState.blockState()); // block state
-                        blockChange.send(BedrockProtocol.class);
+                        PacketFactory.sendJavaBlockUpdate(wrapper.user(), bedrockBlockEntity.position(), blockEntityWithBlockState.blockState());
                     }
 
                     if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
