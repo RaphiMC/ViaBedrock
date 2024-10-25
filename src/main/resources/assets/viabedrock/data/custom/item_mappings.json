@@ -1137,6 +1137,13 @@
       }
     }
   },
+  "minecraft:black_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:black_bundle"
+      }
+    }
+  },
   "minecraft:black_candle": {
     "block": {
       "minecraft:black_candle": {
@@ -1298,6 +1305,13 @@
       "": {
         "java_id": "minecraft:white_dye",
         "java_name": "item.bleach.name"
+      }
+    }
+  },
+  "minecraft:blue_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:blue_bundle"
       }
     }
   },
@@ -1466,8 +1480,7 @@
   "minecraft:bordure_indented_banner_pattern": {
     "meta": {
       "": {
-        "java_id": "minecraft:mojang_banner_pattern",
-        "java_name": "item.bordure_indented_banner_pattern.name"
+        "java_id": "minecraft:bordure_indented_banner_pattern"
       }
     }
   },
@@ -1589,6 +1602,13 @@
     "block": {
       "minecraft:brick_wall": {
         "java_id": "minecraft:brick_wall"
+      }
+    }
+  },
+  "minecraft:brown_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:brown_bundle"
       }
     }
   },
@@ -1752,6 +1772,13 @@
     "block": {
       "minecraft:budding_amethyst": {
         "java_id": "minecraft:budding_amethyst"
+      }
+    }
+  },
+  "minecraft:bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:bundle"
       }
     }
   },
@@ -2205,7 +2232,7 @@
   },
   "minecraft:cherry_wood": {
     "block": {
-      "minecraft:cherry_wood[pillar_axis=y,stripped_bit=0]": {
+      "minecraft:cherry_wood[pillar_axis=y]": {
         "java_id": "minecraft:cherry_wood"
       }
     }
@@ -2838,6 +2865,13 @@
       }
     }
   },
+  "minecraft:creeper_head": {
+    "block": {
+      "minecraft:creeper_head": {
+        "java_id": "minecraft:creeper_head"
+      }
+    }
+  },
   "minecraft:creeper_spawn_egg": {
     "meta": {
       "": {
@@ -3057,6 +3091,13 @@
     "block": {
       "minecraft:cut_sandstone_slab[minecraft:vertical_half=bottom]": {
         "java_id": "minecraft:cut_sandstone_slab"
+      }
+    }
+  },
+  "minecraft:cyan_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:cyan_bundle"
       }
     }
   },
@@ -3910,6 +3951,13 @@
     "block": {
       "minecraft:dragon_egg": {
         "java_id": "minecraft:dragon_egg"
+      }
+    }
+  },
+  "minecraft:dragon_head": {
+    "block": {
+      "minecraft:dragon_head": {
+        "java_id": "minecraft:dragon_head"
       }
     }
   },
@@ -5275,8 +5323,7 @@
   "minecraft:field_masoned_banner_pattern": {
     "meta": {
       "": {
-        "java_id": "minecraft:mojang_banner_pattern",
-        "java_name": "item.field_masoned_banner_pattern.name"
+        "java_id": "minecraft:field_masoned_banner_pattern"
       }
     }
   },
@@ -6005,6 +6052,13 @@
       }
     }
   },
+  "minecraft:gray_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:gray_bundle"
+      }
+    }
+  },
   "minecraft:gray_candle": {
     "block": {
       "minecraft:gray_candle": {
@@ -6087,6 +6141,13 @@
     "block": {
       "minecraft:gray_wool": {
         "java_id": "minecraft:gray_wool"
+      }
+    }
+  },
+  "minecraft:green_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:green_bundle"
       }
     }
   },
@@ -7065,14 +7126,6 @@
       }
     }
   },
-  "minecraft:item.skull": {
-    "block": {
-      "minecraft:skull": {
-        "java_id": "minecraft:skeleton_skull",
-        "java_name": "tile.skull.name"
-      }
-    }
-  },
   "minecraft:item.soul_campfire": {
     "block": {
       "minecraft:soul_campfire": {
@@ -7562,6 +7615,13 @@
       }
     }
   },
+  "minecraft:light_blue_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:light_blue_bundle"
+      }
+    }
+  },
   "minecraft:light_blue_candle": {
     "block": {
       "minecraft:light_blue_candle": {
@@ -7644,6 +7704,13 @@
     "block": {
       "minecraft:light_blue_wool": {
         "java_id": "minecraft:light_blue_wool"
+      }
+    }
+  },
+  "minecraft:light_gray_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:light_gray_bundle"
       }
     }
   },
@@ -7750,6 +7817,13 @@
     "block": {
       "minecraft:lily_of_the_valley": {
         "java_id": "minecraft:lily_of_the_valley"
+      }
+    }
+  },
+  "minecraft:lime_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:lime_bundle"
       }
     }
   },
@@ -8124,6 +8198,13 @@
       }
     }
   },
+  "minecraft:magenta_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:magenta_bundle"
+      }
+    }
+  },
   "minecraft:magenta_candle": {
     "block": {
       "minecraft:magenta_candle": {
@@ -8375,7 +8456,7 @@
   },
   "minecraft:mangrove_wood": {
     "block": {
-      "minecraft:mangrove_wood[pillar_axis=y,stripped_bit=0]": {
+      "minecraft:mangrove_wood[pillar_axis=y]": {
         "java_id": "minecraft:mangrove_wood"
       }
     }
@@ -8652,6 +8733,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:mule_spawn_egg"
+      }
+    }
+  },
+  "minecraft:mushroom_stem": {
+    "block": {
+      "minecraft:mushroom_stem": {
+        "java_id": "minecraft:mushroom_stem"
       }
     }
   },
@@ -9185,6 +9273,13 @@
       }
     }
   },
+  "minecraft:orange_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:orange_bundle"
+      }
+    }
+  },
   "minecraft:orange_candle": {
     "block": {
       "minecraft:orange_candle": {
@@ -9461,6 +9556,13 @@
       }
     }
   },
+  "minecraft:piglin_head": {
+    "block": {
+      "minecraft:piglin_head": {
+        "java_id": "minecraft:piglin_head"
+      }
+    }
+  },
   "minecraft:piglin_spawn_egg": {
     "meta": {
       "": {
@@ -9472,6 +9574,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:pillager_spawn_egg"
+      }
+    }
+  },
+  "minecraft:pink_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:pink_bundle"
       }
     }
   },
@@ -9615,6 +9724,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:oak_planks"
+      }
+    }
+  },
+  "minecraft:player_head": {
+    "block": {
+      "minecraft:player_head": {
+        "java_id": "minecraft:player_head"
       }
     }
   },
@@ -10297,6 +10413,13 @@
       }
     }
   },
+  "minecraft:purple_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:purple_bundle"
+      }
+    }
+  },
   "minecraft:purple_candle": {
     "block": {
       "minecraft:purple_candle": {
@@ -10585,6 +10708,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:recovery_compass"
+      }
+    }
+  },
+  "minecraft:red_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:red_bundle"
       }
     }
   },
@@ -11140,6 +11270,13 @@
       }
     }
   },
+  "minecraft:skeleton_skull": {
+    "block": {
+      "minecraft:skeleton_skull": {
+        "java_id": "minecraft:skeleton_skull"
+      }
+    }
+  },
   "minecraft:skeleton_spawn_egg": {
     "meta": {
       "": {
@@ -11151,27 +11288,6 @@
     "meta": {
       "": {
         "java_id": "minecraft:player_head"
-      },
-      "0": {
-        "java_id": "minecraft:skeleton_skull"
-      },
-      "1": {
-        "java_id": "minecraft:wither_skeleton_skull"
-      },
-      "2": {
-        "java_id": "minecraft:zombie_head"
-      },
-      "3": {
-        "java_id": "minecraft:player_head"
-      },
-      "4": {
-        "java_id": "minecraft:creeper_head"
-      },
-      "5": {
-        "java_id": "minecraft:dragon_head"
-      },
-      "6": {
-        "java_id": "minecraft:piglin_head"
       }
     }
   },
@@ -13440,6 +13556,13 @@
       }
     }
   },
+  "minecraft:white_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:white_bundle"
+      }
+    }
+  },
   "minecraft:white_candle": {
     "block": {
       "minecraft:white_candle": {
@@ -13557,6 +13680,13 @@
     "block": {
       "minecraft:wither_rose": {
         "java_id": "minecraft:wither_rose"
+      }
+    }
+  },
+  "minecraft:wither_skeleton_skull": {
+    "block": {
+      "minecraft:wither_skeleton_skull": {
+        "java_id": "minecraft:wither_skeleton_skull"
       }
     }
   },
@@ -13679,6 +13809,13 @@
       }
     }
   },
+  "minecraft:yellow_bundle": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:yellow_bundle"
+      }
+    }
+  },
   "minecraft:yellow_candle": {
     "block": {
       "minecraft:yellow_candle": {
@@ -13768,6 +13905,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:zoglin_spawn_egg"
+      }
+    }
+  },
+  "minecraft:zombie_head": {
+    "block": {
+      "minecraft:zombie_head": {
+        "java_id": "minecraft:zombie_head"
       }
     }
   },

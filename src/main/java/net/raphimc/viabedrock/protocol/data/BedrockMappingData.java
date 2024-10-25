@@ -30,10 +30,10 @@ import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
 import com.viaversion.viaversion.api.minecraft.Particle;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_2;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21;
+import com.viaversion.viaversion.api.type.types.version.Types1_21_2;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
@@ -109,10 +109,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     // Entities
     private BiMap<String, Integer> bedrockEntities;
-    private Map<String, EntityTypes1_20_5> bedrockToJavaEntities;
+    private Map<String, EntityTypes1_21_2> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
     private BiMap<String, Integer> javaEntityAttributes;
-    private Map<EntityTypes1_20_5, List<String>> javaEntityData;
+    private Map<EntityTypes1_21_2, List<String>> javaEntityData;
 
     // Entity Effects
     private BiMap<String, Integer> javaEffects;
@@ -514,8 +514,8 @@ public class BedrockMappingData extends MappingDataBase {
                     continue;
                 }
                 final String javaIdentifier = entry.getValue().getAsString();
-                EntityTypes1_20_5 javaEntityType = null;
-                for (EntityTypes1_20_5 type : EntityTypes1_20_5.values()) {
+                EntityTypes1_21_2 javaEntityType = null;
+                for (EntityTypes1_21_2 type : EntityTypes1_21_2.values()) {
                     if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
                         javaEntityType = type;
                         break;
@@ -545,15 +545,15 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             final JsonObject javaEntityDataJson = this.readJson("java/entity_data.json");
-            this.javaEntityData = new EnumMap<>(EntityTypes1_20_5.class);
+            this.javaEntityData = new EnumMap<>(EntityTypes1_21_2.class);
             for (Map.Entry<String, JsonElement> entry : javaEntityDataJson.entrySet()) {
-                if (EnumUtil.getEnumConstantOrNull(EntityTypes1_20_5.class, entry.getKey()) == null) {
+                if (EnumUtil.getEnumConstantOrNull(EntityTypes1_21_2.class, entry.getKey()) == null) {
                     throw new RuntimeException("Unknown java entity type: " + entry.getKey());
                 }
             }
-            for (EntityTypes1_20_5 type : EntityTypes1_20_5.values()) {
+            for (EntityTypes1_21_2 type : EntityTypes1_21_2.values()) {
                 if (type.isAbstractType()) continue;
-                final EntityTypes1_20_5 realType = type;
+                final EntityTypes1_21_2 realType = type;
                 final List<String> entityData = new ArrayList<>();
                 do {
                     final JsonArray entityDataArray = javaEntityDataJson.getAsJsonArray(type.name());
@@ -568,7 +568,7 @@ public class BedrockMappingData extends MappingDataBase {
                         }
                         entityData.addAll(0, entityTypeData);
                     }
-                } while ((type = (EntityTypes1_20_5) type.getParent()) != null);
+                } while ((type = (EntityTypes1_21_2) type.getParent()) != null);
                 this.javaEntityData.put(realType, entityData);
             }
         }
@@ -979,7 +979,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockEntities;
     }
 
-    public Map<String, EntityTypes1_20_5> getBedrockToJavaEntities() {
+    public Map<String, EntityTypes1_21_2> getBedrockToJavaEntities() {
         return this.bedrockToJavaEntities;
     }
 
@@ -991,7 +991,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaEntityAttributes;
     }
 
-    public Map<EntityTypes1_20_5, List<String>> getJavaEntityData() {
+    public Map<EntityTypes1_21_2, List<String>> getJavaEntityData() {
         return this.javaEntityData;
     }
 
@@ -1064,7 +1064,7 @@ public class BedrockMappingData extends MappingDataBase {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
             final byte[] bytes = ByteStreams.toByteArray(inputStream);
-            final ResourcePack resourcePack = new ResourcePack(uuid, version, "", "", "", false, false, false, 0, PackType.Resources);
+            final ResourcePack resourcePack = new ResourcePack(uuid, version, "", "", "", false, false, false, null, 0, PackType.Resources);
             resourcePack.setCompressedDataLength(bytes.length, bytes.length);
             resourcePack.processDataChunk(0, bytes);
             return resourcePack;
@@ -1139,7 +1139,7 @@ public class BedrockMappingData extends MappingDataBase {
                         if (!this.javaItems.containsKey(identifier)) {
                             throw new IllegalStateException("Unknown java item: " + identifier);
                         }
-                        particle.add(Types1_21.ITEM, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
+                        particle.add(Types1_21_2.ITEM, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
                     }
                     default -> throw new IllegalStateException("Unknown particle argument type: " + type);
                 }

@@ -1,0 +1,87 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 21,
+    "maxVersionPatch": 40,
+    "maxVersionRevision": 1,
+    "renamedIds": {
+        "minecraft:skull": "minecraft:skeleton_skull"
+    },
+    "removedProperties": {
+        "minecraft:cherry_wood": [
+            "stripped_bit"
+        ],
+        "minecraft:mangrove_wood": [
+            "stripped_bit"
+        ]
+    },
+    "remappedStates": {
+        "minecraft:brown_mushroom_block": [
+            {
+                "oldState": {
+                    "huge_mushroom_bits": {
+                        "int": 10
+                    }
+                },
+                "newName": "minecraft:mushroom_stem",
+                "newState": null,
+                "copiedState": [
+                    "huge_mushroom_bits"
+                ]
+            },
+            {
+                "oldState": {
+                    "huge_mushroom_bits": {
+                        "int": 15
+                    }
+                },
+                "newName": "minecraft:mushroom_stem",
+                "newState": null,
+                "copiedState": [
+                    "huge_mushroom_bits"
+                ]
+            },
+            {
+                "oldState": null,
+                "newName": "minecraft:brown_mushroom_block",
+                "newState": null,
+                "copiedState": [
+                    "huge_mushroom_bits"
+                ]
+            }
+        ],
+        "minecraft:red_mushroom_block": [
+            {
+                "oldState": {
+                    "huge_mushroom_bits": {
+                        "int": 10
+                    }
+                },
+                "newName": "minecraft:mushroom_stem",
+                "newState": null,
+                "copiedState": [
+                    "huge_mushroom_bits"
+                ]
+            },
+            {
+                "oldState": {
+                    "huge_mushroom_bits": {
+                        "int": 15
+                    }
+                },
+                "newName": "minecraft:mushroom_stem",
+                "newState": null,
+                "copiedState": [
+                    "huge_mushroom_bits"
+                ]
+            },
+            {
+                "oldState": null,
+                "newName": "minecraft:red_mushroom_block",
+                "newState": null,
+                "copiedState": [
+                    "huge_mushroom_bits"
+                ]
+            }
+        ]
+    }
+}

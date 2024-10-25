@@ -18,12 +18,12 @@
 package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_2;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21;
-import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import com.viaversion.viaversion.api.type.types.version.Types1_21_2;
+import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
@@ -52,7 +52,7 @@ import java.util.logging.Level;
 public class OtherPlayerPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.ADD_PLAYER, ClientboundPackets1_21.ADD_ENTITY, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.ADD_PLAYER, ClientboundPackets1_21_2.ADD_ENTITY, wrapper -> {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
@@ -76,8 +76,8 @@ public class OtherPlayerPackets {
             entity.setRotation(rotation);
             entity.updateName(username);
 
-            final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21.PLAYER_INFO_UPDATE, wrapper.user());
-            playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM, BitSets.create(6, PlayerInfoUpdateAction.ADD_PLAYER.ordinal(), PlayerInfoUpdateAction.UPDATE_GAME_MODE.ordinal())); // actions
+            final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21_2.PLAYER_INFO_UPDATE, wrapper.user());
+            playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.ADD_PLAYER.ordinal(), PlayerInfoUpdateAction.UPDATE_GAME_MODE.ordinal())); // actions
             playerInfoUpdate.write(Types.VAR_INT, 1); // length
             playerInfoUpdate.write(Types.UUID, uuid); // uuid
             playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(uuid)); // username
@@ -96,7 +96,7 @@ public class OtherPlayerPackets {
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.UUID, uuid); // uuid
-            wrapper.write(Types.VAR_INT, EntityTypes1_20_5.PLAYER.getId()); // type id
+            wrapper.write(Types.VAR_INT, EntityTypes1_21_2.PLAYER.getId()); // type id
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y()); // y
             wrapper.write(Types.DOUBLE, (double) position.z()); // z
@@ -110,15 +110,15 @@ public class OtherPlayerPackets {
             wrapper.send(BedrockProtocol.class);
             wrapper.cancel();
 
-            final PacketWrapper setEquipment = PacketWrapper.create(ClientboundPackets1_21.SET_EQUIPMENT, wrapper.user());
+            final PacketWrapper setEquipment = PacketWrapper.create(ClientboundPackets1_21_2.SET_EQUIPMENT, wrapper.user());
             setEquipment.write(Types.VAR_INT, entity.javaId()); // entity id
             setEquipment.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
-            setEquipment.write(Types1_21.ITEM, itemRewriter.javaItem(item)); // item
+            setEquipment.write(Types1_21_2.ITEM, itemRewriter.javaItem(item)); // item
             setEquipment.send(BedrockProtocol.class);
 
             entity.updateEntityData(entityData);
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.MOVE_PLAYER, ClientboundPackets1_21.TELEPORT_ENTITY, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.MOVE_PLAYER, ClientboundPackets1_21_2.ENTITY_POSITION_SYNC, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
@@ -138,14 +138,14 @@ public class OtherPlayerPackets {
                 wrapper.cancel();
                 return;
             }
-            if (!entity.javaType().isOrHasParent(EntityTypes1_20_5.PLAYER)) {
+            if (!entity.javaType().isOrHasParent(EntityTypes1_21_2.PLAYER)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received move player packet for non-player entity: " + entity.javaType());
                 wrapper.cancel();
                 return;
             }
             if (mode == PlayerPositionModeComponent_PositionMode.OnlyHeadRot) {
                 entity.setRotation(new Position3f(rotation.x(), entity.rotation().y(), entity.rotation().z()));
-                wrapper.setPacketType(ClientboundPackets1_21.MOVE_ENTITY_ROT);
+                wrapper.setPacketType(ClientboundPackets1_21_2.MOVE_ENTITY_ROT);
                 wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
                 wrapper.write(Types.BYTE, MathUtil.float2Byte(entity.rotation().y())); // yaw
                 wrapper.write(Types.BYTE, MathUtil.float2Byte(rotation.x())); // pitch
@@ -158,7 +158,7 @@ public class OtherPlayerPackets {
             entity.setOnGround(onGround);
 
             if ((mode == PlayerPositionModeComponent_PositionMode.Teleport || mode == PlayerPositionModeComponent_PositionMode.Respawn) && entity instanceof ClientPlayerEntity clientPlayer) {
-                wrapper.setPacketType(ClientboundPackets1_21.PLAYER_POSITION);
+                wrapper.setPacketType(ClientboundPackets1_21_2.PLAYER_POSITION);
                 clientPlayer.writePlayerPositionPacketToClient(wrapper, false, mode == PlayerPositionModeComponent_PositionMode.Respawn);
                 if (clientPlayer.dimensionChangeInfo() != null && mode == PlayerPositionModeComponent_PositionMode.Respawn) {
                     clientPlayer.dimensionChangeInfo().sendRespawnMovePackets().set(true);
@@ -170,8 +170,11 @@ public class OtherPlayerPackets {
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y() - entity.eyeOffset()); // y
             wrapper.write(Types.DOUBLE, (double) position.z()); // z
-            wrapper.write(Types.BYTE, MathUtil.float2Byte(rotation.y())); // yaw
-            wrapper.write(Types.BYTE, MathUtil.float2Byte(rotation.x())); // pitch
+            wrapper.write(Types.DOUBLE, 0D); // velocity x
+            wrapper.write(Types.DOUBLE, 0D); // velocity y
+            wrapper.write(Types.DOUBLE, 0D); // velocity z
+            wrapper.write(Types.FLOAT, rotation.y()); // yaw
+            wrapper.write(Types.FLOAT, rotation.x()); // pitch
             wrapper.write(Types.BOOLEAN, onGround); // on ground
 
             PacketFactory.sendJavaRotateHead(wrapper.user(), entity);
@@ -186,7 +189,7 @@ public class OtherPlayerPackets {
 
             Via.getManager().getProviders().get(SkinProvider.class).setSkin(wrapper.user(), uuid, skin);
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, ClientboundPackets1_21.PLAYER_ABILITIES, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, ClientboundPackets1_21_2.PLAYER_ABILITIES, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
             final Entity entity = entityTracker.getEntityByUid(abilities.uniqueEntityId());

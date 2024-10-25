@@ -18,9 +18,9 @@
 package net.raphimc.viabedrock.api.util;
 
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerAuthInputPacket_InputData;
+import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
-import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -75,36 +75,7 @@ public class MathUtil {
         }
     }
 
-    public static Set<PlayerAuthInputPacket_InputData> calculatePressedDirectionKeys(final Position3f positionDelta, final float yaw) {
-        final float dx = positionDelta.x();
-        final float dz = positionDelta.z();
-
-        final double magnitude = Math.sqrt(dx * dx + dz * dz);
-        double directionX = magnitude > 0 ? dx / magnitude : 0;
-        double directionZ = magnitude > 0 ? dz / magnitude : 0;
-
-        directionX = Math.max(-1, Math.min(1, directionX));
-        directionZ = Math.max(-1, Math.min(1, directionZ));
-
-        final double angle = Math.toRadians(-yaw);
-        final double newDirectionX = directionX * Math.cos(angle) - directionZ * Math.sin(angle);
-        final double newDirectionZ = directionX * Math.sin(angle) + directionZ * Math.cos(angle);
-
-        final Set<PlayerAuthInputPacket_InputData> pressedKeys = EnumSet.noneOf(PlayerAuthInputPacket_InputData.class);
-        if (newDirectionX >= 0.65F) {
-            pressedKeys.add(PlayerAuthInputPacket_InputData.Left);
-        } else if (newDirectionX <= -0.65F) {
-            pressedKeys.add(PlayerAuthInputPacket_InputData.Right);
-        }
-        if (newDirectionZ >= 0.65F) {
-            pressedKeys.add(PlayerAuthInputPacket_InputData.Up);
-        } else if (newDirectionZ <= -0.65F) {
-            pressedKeys.add(PlayerAuthInputPacket_InputData.Down);
-        }
-        return pressedKeys;
-    }
-
-    public static float[] calculateMovementDirections(final Set<PlayerAuthInputPacket_InputData> authInputData, final boolean sneaking) {
+    public static Position2f calculateMovementDirections(final Set<PlayerAuthInputPacket_InputData> authInputData, final boolean sneaking) {
         final float[] directions = new float[2];
         directions[0] = authInputData.contains(PlayerAuthInputPacket_InputData.Left) ? 1F : authInputData.contains(PlayerAuthInputPacket_InputData.Right) ? -1F : 0F;
         directions[1] = authInputData.contains(PlayerAuthInputPacket_InputData.Up) ? 1F : authInputData.contains(PlayerAuthInputPacket_InputData.Down) ? -1F : 0F;
@@ -117,7 +88,16 @@ public class MathUtil {
                 directions[i] *= 0.3F;
             }
         }
-        return directions;
+        return new Position2f(directions[0], directions[1]);
+    }
+
+    public static Position3f calculateCameraOrientation(final float yaw, final float pitch) {
+        final float yawRad = (float) Math.toRadians(yaw);
+        final float pitchRad = (float) Math.toRadians(pitch);
+        final float x = -MathUtil.clamp((float) Math.sin(yawRad) * (float) Math.cos(pitchRad), -1F, 1F);
+        final float y = -MathUtil.clamp((float) Math.sin(pitchRad), -1F, 1F);
+        final float z = MathUtil.clamp((float) Math.cos(yawRad) * (float) Math.cos(pitchRad), -1F, 1F);
+        return new Position3f(x, y, z);
     }
 
 }

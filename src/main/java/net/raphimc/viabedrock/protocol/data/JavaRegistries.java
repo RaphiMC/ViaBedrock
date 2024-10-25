@@ -109,7 +109,6 @@ public class JavaRegistries {
             final int waterColorG = (int) (bedrockBiome.getFloatTag("waterColorG").asFloat() * 255);
             final int waterColorB = (int) (bedrockBiome.getFloatTag("waterColorB").asFloat() * 255);
             final int waterColorA = (int) (bedrockBiome.getFloatTag("waterColorA").asFloat() * 255);
-            final int waterTransparency = (int) (bedrockBiome.getFloatTag("waterTransparency").asFloat() * 255);
             final int waterColor = (waterColorR << 16) + (waterColorG << 8) + waterColorB;
             effects.putInt("water_color", waterColor);
 

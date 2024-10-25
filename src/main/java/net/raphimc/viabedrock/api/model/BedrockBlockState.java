@@ -17,12 +17,12 @@
  */
 package net.raphimc.viabedrock.api.model;
 
-import com.google.common.collect.Maps;
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.nbt.tag.Tag;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -44,7 +44,7 @@ public class BedrockBlockState extends BlockState {
         sanitizeName(tag);
 
         final String[] namespaceAndIdentifier = tag.getStringTag("name").getValue().split(":", 2);
-        final Map<String, String> properties = Maps.newHashMap();
+        final Map<String, String> properties = new HashMap<>();
         if (tag.get("states") instanceof CompoundTag) {
             for (Map.Entry<String, Tag> entry : tag.getCompoundTag("states").getValue().entrySet()) {
                 properties.put(entry.getKey(), entry.getValue().getValue().toString());

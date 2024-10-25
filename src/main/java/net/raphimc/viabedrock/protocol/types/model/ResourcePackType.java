@@ -24,6 +24,8 @@ import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -44,6 +46,14 @@ public class ResourcePackType extends Type<ResourcePack> {
         final boolean hasScripts = buffer.readBoolean();
         final boolean isAddonPack = buffer.readBoolean();
         final boolean raytracingCapable = buffer.readBoolean();
+        URL cdnUrl = null;
+        try {
+            final String cdnUrlString = BedrockTypes.STRING.read(buffer);
+            if (!cdnUrlString.isEmpty()) {
+                cdnUrl = new URL(cdnUrlString);
+            }
+        } catch (MalformedURLException ignored) {
+        }
 
         UUID uuid;
         try {
@@ -53,7 +63,7 @@ public class ResourcePackType extends Type<ResourcePack> {
             uuid = new UUID(0L, 0L);
         }
 
-        return new ResourcePack(uuid, version, contentKey, subPackName, contentId, hasScripts, isAddonPack, raytracingCapable, size, PackType.Resources);
+        return new ResourcePack(uuid, version, contentKey, subPackName, contentId, hasScripts, isAddonPack, raytracingCapable, cdnUrl, size, PackType.Resources);
     }
 
     @Override
@@ -67,6 +77,11 @@ public class ResourcePackType extends Type<ResourcePack> {
         buffer.writeBoolean(value.hasScripts());
         buffer.writeBoolean(value.isAddonPack());
         buffer.writeBoolean(value.raytracingCapable());
+        if (value.cdnUrl() != null) {
+            BedrockTypes.STRING.write(buffer, value.cdnUrl().toString());
+        } else {
+            BedrockTypes.STRING.write(buffer, "");
+        }
     }
 
 }

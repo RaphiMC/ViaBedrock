@@ -6871,6 +6871,7 @@
     },
     "block:mob_spawner": {
       "sound": "block.mob_spawner.step",
+      "volume": 0.4,
       "pitch": 0.5
     },
     "block:vault": {
@@ -7020,6 +7021,7 @@
     },
     "block:trial_spawner": {
       "sound": "trial_spawner.hit",
+      "volume": 0.38,
       "pitch": 0.5
     },
     "block:muddy_mangrove_roots": {
@@ -12267,7 +12269,8 @@
       "volume": 0.3
     },
     "block:mob_spawner": {
-      "sound": "block.mob_spawner.step"
+      "sound": "block.mob_spawner.step",
+      "volume": 0.2
     },
     "block:vault": {
       "sound": "vault.step",
@@ -12381,8 +12384,7 @@
       ]
     },
     "entity:minecraft:wither_skeleton": {
-      "sound": "entity.wither_skeleton.step",
-      "volume": 0.15
+      "sound": "entity.wither_skeleton.step"
     },
     "block:roots": {
       "sound": "step.roots",

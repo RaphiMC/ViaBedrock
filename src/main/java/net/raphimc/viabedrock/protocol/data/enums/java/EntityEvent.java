@@ -54,7 +54,7 @@ public enum EntityEvent {
     FISHING_ROD_REEL_IN(31),
     ARMORSTAND_WOBBLE(32),
     STOP_OFFER_FLOWER(34),
-    TALISMAN_ACTIVATE(35),
+    PROTECTED_FROM_DEATH(35),
     DOLPHIN_LOOKING_FOR_TREASURE(38),
     RAVAGER_STUNNED(39),
     TRUSTING_FAILED(40),
@@ -79,7 +79,8 @@ public enum EntityEvent {
     SONIC_CHARGE(62),
     SNIFFER_DIGGING_SOUND(63),
     ARMADILLO_PEEK(64),
-    BODY_BREAK(65);
+    BODY_BREAK(65),
+    SHAKE(66);
 
     private static final Int2ObjectMap<EntityEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

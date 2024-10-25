@@ -75,14 +75,14 @@ public class ResourcePack {
     private PackType type;
 
     // HTTP resource pack downloading
-    private URL url;
+    private URL cdnUrl;
 
     private int maxChunkSize;
     private boolean[] receivedChunks;
     private byte[] compressedData;
     private Content content;
 
-    public ResourcePack(final UUID packId, final String version, final String contentKey, final String subPackName, final String contentId, final boolean hasScripts, final boolean isAddonPack, final boolean raytracingCapable, final long compressedSize, final PackType type) {
+    public ResourcePack(final UUID packId, final String version, final String contentKey, final String subPackName, final String contentId, final boolean hasScripts, final boolean isAddonPack, final boolean raytracingCapable, final URL cdnUrl, final long compressedSize, final PackType type) {
         this.packId = packId;
         this.version = version;
         this.contentKey = contentKey;
@@ -91,6 +91,7 @@ public class ResourcePack {
         this.hasScripts = hasScripts;
         this.isAddonPack = isAddonPack;
         this.raytracingCapable = raytracingCapable;
+        this.cdnUrl = cdnUrl;
         this.compressedData = new byte[(int) compressedSize];
         this.type = type;
     }
@@ -177,12 +178,12 @@ public class ResourcePack {
         this.type = type;
     }
 
-    public URL url() {
-        return this.url;
+    public URL cdnUrl() {
+        return this.cdnUrl;
     }
 
-    public void setUrl(final URL url) {
-        this.url = url;
+    public void setCdnUrl(final URL cdnUrl) {
+        this.cdnUrl = cdnUrl;
     }
 
     public int compressedDataLength() {
@@ -219,7 +220,7 @@ public class ResourcePack {
         this.content = new Content(this.compressedData);
         this.compressedData = null;
 
-        if (!this.content.contains("manifest.json") && this.url != null && this.content.size() == 1) {
+        if (!this.content.contains("manifest.json") && this.cdnUrl != null && this.content.size() == 1) {
             // CDN packs are allowed to contain a single .zip file at the root
             final String key = this.content.content.keySet().iterator().next();
             if (key.endsWith(".zip")) {

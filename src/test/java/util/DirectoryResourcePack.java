@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class DirectoryResourcePack extends ResourcePack {
 
     public DirectoryResourcePack(File directory, UUID packId, String version, String contentKey, String subPackName, String contentId, boolean hasScripts, boolean isAddonPack, boolean raytracingCapable, long compressedSize, PackType type) {
-        super(packId, version, contentKey, subPackName, contentId, hasScripts, isAddonPack, raytracingCapable, compressedSize, type);
+        super(packId, version, contentKey, subPackName, contentId, hasScripts, isAddonPack, raytracingCapable, null, compressedSize, type);
 
         try {
             for (Field field : ResourcePack.class.getDeclaredFields()) {

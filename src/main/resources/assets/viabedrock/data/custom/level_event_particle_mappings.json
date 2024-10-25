@@ -23,16 +23,8 @@
     "particle": "minecraft:dust",
     "arguments": [
       {
-        "type": "float",
-        "value": 1
-      },
-      {
-        "type": "float",
-        "value": 0
-      },
-      {
-        "type": "float",
-        "value": 0
+        "type": "int",
+        "value": -65536
       },
       {
         "type": "float",
@@ -44,16 +36,8 @@
     "particle": "minecraft:dust",
     "arguments": [
       {
-        "type": "float",
-        "value": 1
-      },
-      {
-        "type": "float",
-        "value": 0
-      },
-      {
-        "type": "float",
-        "value": 0
+        "type": "int",
+        "value": -65536
       },
       {
         "type": "float",
@@ -150,28 +134,12 @@
     "particle": "minecraft:dust_color_transition",
     "arguments": [
       {
-        "type": "float",
-        "value": 0.224
+        "type": "int",
+        "value": -12986913
       },
       {
-        "type": "float",
-        "value": 0.839
-      },
-      {
-        "type": "float",
-        "value": 0.878
-      },
-      {
-        "type": "float",
-        "value": 1
-      },
-      {
-        "type": "float",
-        "value": 0
-      },
-      {
-        "type": "float",
-        "value": 0
+        "type": "int",
+        "value": -65536
       },
       {
         "type": "float",

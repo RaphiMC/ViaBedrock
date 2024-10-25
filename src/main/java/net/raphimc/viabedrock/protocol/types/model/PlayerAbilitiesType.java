@@ -19,13 +19,13 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.SerializedAbilitiesData_SerializedAbilitiesLayer;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,8 +45,8 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
         final Map<SerializedAbilitiesData_SerializedAbilitiesLayer, PlayerAbilities.AbilitiesLayer> abilityLayers = new EnumMap<>(SerializedAbilitiesData_SerializedAbilitiesLayer.class);
         for (int i = 0; i < layerCount; i++) {
             final SerializedAbilitiesData_SerializedAbilitiesLayer layer = SerializedAbilitiesData_SerializedAbilitiesLayer.getByValue(buffer.readUnsignedShortLE(), SerializedAbilitiesData_SerializedAbilitiesLayer.CustomCache);
-            final Set<AbilitiesIndex> abilitiesSet = this.getAbilities(buffer.readUnsignedIntLE());
-            final Set<AbilitiesIndex> abilityValues = this.getAbilities(buffer.readUnsignedIntLE());
+            final Set<AbilitiesIndex> abilitiesSet = EnumUtil.getEnumSetFromBitmask(AbilitiesIndex.class, buffer.readUnsignedIntLE(), AbilitiesIndex::getValue);
+            final Set<AbilitiesIndex> abilityValues = EnumUtil.getEnumSetFromBitmask(AbilitiesIndex.class, buffer.readUnsignedIntLE(), AbilitiesIndex::getValue);
             final float flySpeed = buffer.readFloatLE();
             final float walkSpeed = buffer.readFloatLE();
             if (!abilityLayers.containsKey(layer)) {
@@ -66,29 +66,11 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.abilityLayers().size());
         for (final Map.Entry<SerializedAbilitiesData_SerializedAbilitiesLayer, PlayerAbilities.AbilitiesLayer> entry : value.abilityLayers().entrySet()) {
             buffer.writeShortLE(entry.getKey().getValue());
-            buffer.writeIntLE((int) this.getBits(entry.getValue().abilitiesSet()));
-            buffer.writeIntLE((int) this.getBits(entry.getValue().abilityValues()));
+            buffer.writeIntLE((int) EnumUtil.getBitmaskFromEnumSet(entry.getValue().abilitiesSet(), AbilitiesIndex::getValue));
+            buffer.writeIntLE((int) EnumUtil.getBitmaskFromEnumSet(entry.getValue().abilityValues(), AbilitiesIndex::getValue));
             buffer.writeFloatLE(entry.getValue().flySpeed());
             buffer.writeFloatLE(entry.getValue().walkSpeed());
         }
-    }
-
-    private Set<AbilitiesIndex> getAbilities(final long bits) {
-        final Set<AbilitiesIndex> abilities = EnumSet.noneOf(AbilitiesIndex.class);
-        for (AbilitiesIndex index : AbilitiesIndex.values()) {
-            if (index.getValue() >= 0 && (bits & (1L << index.getValue())) != 0) {
-                abilities.add(index);
-            }
-        }
-        return abilities;
-    }
-
-    private long getBits(final Set<AbilitiesIndex> abilities) {
-        long bits = 0;
-        for (AbilitiesIndex index : abilities) {
-            bits |= 1L << index.getValue();
-        }
-        return bits;
     }
 
 }

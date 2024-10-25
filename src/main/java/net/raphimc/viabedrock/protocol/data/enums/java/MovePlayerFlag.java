@@ -17,14 +17,13 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public enum PlayerInfoUpdateAction {
+public enum MovePlayerFlag {
 
-    ADD_PLAYER,
-    INITIALIZE_CHAT,
-    UPDATE_GAME_MODE,
-    UPDATE_LISTED,
-    UPDATE_LATENCY,
-    UPDATE_DISPLAY_NAME,
-    UPDATE_LIST_ORDER,
+    ON_GROUND,
+    HORIZONTAL_COLLISION;
+
+    public byte getBit() {
+        return (byte) (1 << this.ordinal());
+    }
 
 }

@@ -19,5 +19,5 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StorableObject;
 
-public record ClientSettingsStorage(String locale, int viewDistance, int chatVisibility, boolean chatColors, short skinParts, int mainHand, boolean textFiltering, boolean serverListing) implements StorableObject {
+public record ClientSettingsStorage(String locale, int viewDistance, int chatVisibility, boolean chatColors, short skinParts, int mainHand, boolean textFiltering, boolean allowsListing, int particleStatus) implements StorableObject {
 }

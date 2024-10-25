@@ -21,13 +21,13 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Vector3f;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_2;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21;
-import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import com.viaversion.viaversion.api.type.types.version.Types1_21_2;
+import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.util.MathUtil;
@@ -49,7 +49,7 @@ public class CustomEntity extends Entity {
     private boolean spawned;
 
     public CustomEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final EntityDefinitions.EntityDefinition entityDefinition) {
-        super(user, uniqueId, runtimeId, type, javaId, UUID.randomUUID(), EntityTypes1_20_5.INTERACTION);
+        super(user, uniqueId, runtimeId, type, javaId, UUID.randomUUID(), EntityTypes1_21_2.INTERACTION);
         this.entityDefinition = entityDefinition;
     }
 
@@ -92,13 +92,13 @@ public class CustomEntity extends Entity {
             final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
             data.set(StructuredDataKey.CUSTOM_MODEL_DATA, CustomEntityResourceRewriter.getCustomModelData(this.entityDefinition.identifier() + "_default_" + i));
             final StructuredItem item = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get(Key.namespaced(CustomEntityResourceRewriter.ITEM)), 1, data);
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("ITEM_STACK"), Types1_21.ENTITY_DATA_TYPES.itemType, item));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("ITEM_STACK"), Types1_21_2.ENTITY_DATA_TYPES.itemType, item));
 
             final float scale = (float) resourcePacksStorage.getConverterData().get("ce_" + this.entityDefinition.identifier() + "_default_" + i + "_scale");
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("SCALE"), Types1_21.ENTITY_DATA_TYPES.vector3FType, new Vector3f(scale, scale, scale)));
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("TRANSLATION"), Types1_21.ENTITY_DATA_TYPES.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("SCALE"), Types1_21_2.ENTITY_DATA_TYPES.vector3FType, new Vector3f(scale, scale, scale)));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("TRANSLATION"), Types1_21_2.ENTITY_DATA_TYPES.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
 
-            final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets1_21.ADD_ENTITY, user);
+            final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets1_21_2.ADD_ENTITY, user);
             addEntity.write(Types.VAR_INT, partEntity.javaId()); // entity id
             addEntity.write(Types.UUID, partEntity.javaUuid()); // uuid
             addEntity.write(Types.VAR_INT, partEntity.javaType().getId()); // type id
@@ -114,9 +114,9 @@ public class CustomEntity extends Entity {
             addEntity.write(Types.SHORT, (short) 0); // velocity z
             addEntity.send(BedrockProtocol.class);
 
-            final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21.SET_ENTITY_DATA, user);
+            final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_2.SET_ENTITY_DATA, user);
             setEntityData.write(Types.VAR_INT, partEntity.javaId()); // entity id
-            setEntityData.write(Types1_21.ENTITY_DATA_LIST, javaEntityData); // entity data
+            setEntityData.write(Types1_21_2.ENTITY_DATA_LIST, javaEntityData); // entity data
             setEntityData.send(BedrockProtocol.class);
         }
     }
@@ -127,7 +127,7 @@ public class CustomEntity extends Entity {
         for (int i = 0; i < partEntities.size(); i++) {
             entityIds[i] = partEntities.get(i).javaId();
         }
-        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21.REMOVE_ENTITIES, this.user);
+        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21_2.REMOVE_ENTITIES, this.user);
         removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, entityIds); // entity ids
         removeEntities.send(BedrockProtocol.class);
     }
@@ -135,19 +135,22 @@ public class CustomEntity extends Entity {
     private class ItemDisplayEntity extends Entity {
 
         public ItemDisplayEntity(final int javaId) {
-            super(CustomEntity.this.user, 0L, 0L, null, javaId, UUID.randomUUID(), EntityTypes1_20_5.ITEM_DISPLAY);
+            super(CustomEntity.this.user, 0L, 0L, null, javaId, UUID.randomUUID(), EntityTypes1_21_2.ITEM_DISPLAY);
         }
 
         public void updatePositionAndRotation() {
-            final PacketWrapper teleportEntity = PacketWrapper.create(ClientboundPackets1_21.TELEPORT_ENTITY, this.user);
-            teleportEntity.write(Types.VAR_INT, this.javaId()); // entity id
-            teleportEntity.write(Types.DOUBLE, (double) CustomEntity.this.position.x()); // x
-            teleportEntity.write(Types.DOUBLE, (double) CustomEntity.this.position.y()); // y
-            teleportEntity.write(Types.DOUBLE, (double) CustomEntity.this.position.z()); // z
-            teleportEntity.write(Types.BYTE, MathUtil.float2Byte(CustomEntity.this.rotation.y())); // yaw
-            teleportEntity.write(Types.BYTE, MathUtil.float2Byte(CustomEntity.this.rotation.x())); // pitch
-            teleportEntity.write(Types.BOOLEAN, CustomEntity.this.onGround); // on ground
-            teleportEntity.send(BedrockProtocol.class);
+            final PacketWrapper entityPositionSync = PacketWrapper.create(ClientboundPackets1_21_2.ENTITY_POSITION_SYNC, this.user);
+            entityPositionSync.write(Types.VAR_INT, this.javaId()); // entity id
+            entityPositionSync.write(Types.DOUBLE, (double) CustomEntity.this.position.x()); // x
+            entityPositionSync.write(Types.DOUBLE, (double) CustomEntity.this.position.y()); // y
+            entityPositionSync.write(Types.DOUBLE, (double) CustomEntity.this.position.z()); // z
+            entityPositionSync.write(Types.DOUBLE, 0D); // velocity x
+            entityPositionSync.write(Types.DOUBLE, 0D); // velocity y
+            entityPositionSync.write(Types.DOUBLE, 0D); // velocity z
+            entityPositionSync.write(Types.FLOAT, CustomEntity.this.rotation.y()); // yaw
+            entityPositionSync.write(Types.FLOAT, CustomEntity.this.rotation.x()); // pitch
+            entityPositionSync.write(Types.BOOLEAN, CustomEntity.this.onGround); // on ground
+            entityPositionSync.send(BedrockProtocol.class);
         }
 
     }

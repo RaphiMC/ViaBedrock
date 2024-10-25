@@ -81,6 +81,9 @@ public class SkinProvider implements Provider {
         claims.put("DeviceModel", "");
         claims.put("DeviceOS", BuildPlatform.Google.getValue());
         claims.put("LanguageCode", "en_US");
+        claims.put("MaxViewDistance", 96);
+        claims.put("MemoryTier", 5);
+        claims.put("PlatformType", 0);
         claims.put("PlatformOfflineId", "");
         claims.put("PlatformOnlineId", "");
         claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);

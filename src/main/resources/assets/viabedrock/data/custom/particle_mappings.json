@@ -102,16 +102,8 @@
     "particle": "minecraft:dust",
     "arguments": [
       {
-        "type": "float",
-        "value": 1
-      },
-      {
-        "type": "float",
-        "value": 0.3
-      },
-      {
-        "type": "float",
-        "value": 0.9
+        "type": "int",
+        "value": -45851
       },
       {
         "type": "float",
@@ -282,16 +274,8 @@
     "particle": "minecraft:dust",
     "arguments": [
       {
-        "type": "float",
-        "value": 1
-      },
-      {
-        "type": "float",
-        "value": 0
-      },
-      {
-        "type": "float",
-        "value": 0
+        "type": "int",
+        "value": -65536
       },
       {
         "type": "float",
@@ -303,16 +287,8 @@
     "particle": "minecraft:dust",
     "arguments": [
       {
-        "type": "float",
-        "value": 1
-      },
-      {
-        "type": "float",
-        "value": 0
-      },
-      {
-        "type": "float",
-        "value": 0
+        "type": "int",
+        "value": -65536
       },
       {
         "type": "float",
@@ -324,16 +300,8 @@
     "particle": "minecraft:dust",
     "arguments": [
       {
-        "type": "float",
-        "value": 1
-      },
-      {
-        "type": "float",
-        "value": 0
-      },
-      {
-        "type": "float",
-        "value": 0
+        "type": "int",
+        "value": -65536
       },
       {
         "type": "float",
@@ -345,16 +313,8 @@
     "particle": "minecraft:dust",
     "arguments": [
       {
-        "type": "float",
-        "value": 1
-      },
-      {
-        "type": "float",
-        "value": 0
-      },
-      {
-        "type": "float",
-        "value": 0
+        "type": "int",
+        "value": -65536
       },
       {
         "type": "float",
@@ -366,16 +326,8 @@
     "particle": "minecraft:dust",
     "arguments": [
       {
-        "type": "float",
-        "value": 1
-      },
-      {
-        "type": "float",
-        "value": 0
-      },
-      {
-        "type": "float",
-        "value": 0
+        "type": "int",
+        "value": -65536
       },
       {
         "type": "float",
@@ -397,28 +349,12 @@
     "particle": "minecraft:dust_color_transition",
     "arguments": [
       {
-        "type": "float",
-        "value": 0.224
+        "type": "int",
+        "value": -12986913
       },
       {
-        "type": "float",
-        "value": 0.839
-      },
-      {
-        "type": "float",
-        "value": 0.878
-      },
-      {
-        "type": "float",
-        "value": 1
-      },
-      {
-        "type": "float",
-        "value": 0
-      },
-      {
-        "type": "float",
-        "value": 0
+        "type": "int",
+        "value": -65536
       },
       {
         "type": "float",
@@ -468,6 +404,7 @@
       }
     ]
   },
+  "minecraft:sneeze": "minecraft:sneeze",
   "minecraft:snowflake_particle": "minecraft:snowflake",
   "minecraft:sonic_explosion": "minecraft:sonic_boom",
   "minecraft:soul_particle": "minecraft:soul",
@@ -559,6 +496,10 @@
   "minecraft:wind_charged_ambient": "minecraft:small_gust",
   "minecraft:wind_charged_emitter": "minecraft:small_gust",
   "minecraft:wind_explosion_emitter": "minecraft:gust_emitter_small",
+  "minecraft:witchspell_emitter": {
+    "particle": "minecraft:witch",
+    "count": 35
+  },
   "minecraft:wither_boss_invulnerable": {
     "particle": "minecraft:entity_effect",
     "arguments": [

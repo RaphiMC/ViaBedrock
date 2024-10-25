@@ -21,7 +21,7 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.DynamicContainer;
@@ -71,7 +71,7 @@ public class InventoryTracker extends StoredObject {
         if (containerId == this.offhandContainer.containerId()) return this.offhandContainer;
         if (containerId == this.armorContainer.containerId()) return this.armorContainer;
         if (containerId == this.hudContainer.containerId()) return this.hudContainer;
-        if (containerId == ContainerID.CONTAINER_ID_REGISTRY_INVENTORY.getValue() && containerName.name() == ContainerEnumName.DynamicContainer) {
+        if (containerId == ContainerID.CONTAINER_ID_REGISTRY.getValue() && containerName.name() == ContainerEnumName.DynamicContainer) {
             return this.dynamicContainerRegistry.computeIfAbsent(containerName, cn -> new DynamicContainer(this.user(), cn));
         }
 
@@ -113,7 +113,7 @@ public class InventoryTracker extends StoredObject {
     public void openContainer(final Container container) {
         this.containerStack.push(container);
 
-        final PacketWrapper openScreen = PacketWrapper.create(ClientboundPackets1_21.OPEN_SCREEN, this.user());
+        final PacketWrapper openScreen = PacketWrapper.create(ClientboundPackets1_21_2.OPEN_SCREEN, this.user());
         openScreen.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
         openScreen.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(container.type())); // type
         openScreen.write(Types.TAG, TextUtil.textComponentToNbt(container.title())); // title

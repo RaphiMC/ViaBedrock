@@ -80,7 +80,7 @@ public class ResourcePacksStorage extends StoredObject {
     public CompletableFuture<Void> runHttpTask(final Collection<ResourcePack> packs, final Consumer<ResourcePack> task, final BiConsumer<ResourcePack, Throwable> errorHandler) {
         final List<Runnable> tasks = new ArrayList<>();
         for (ResourcePack pack : packs) {
-            if (pack.url() == null) continue;
+            if (pack.cdnUrl() == null) continue;
             tasks.add(() -> {
                 try {
                     task.accept(pack);

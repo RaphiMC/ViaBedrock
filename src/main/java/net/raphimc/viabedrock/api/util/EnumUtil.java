@@ -17,6 +17,10 @@
  */
 package net.raphimc.viabedrock.api.util;
 
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.function.ToIntFunction;
+
 public class EnumUtil {
 
     public static <T extends Enum<T>> T getEnumConstantOrNull(final Class<T> enumClass, final String name) {
@@ -25,6 +29,28 @@ public class EnumUtil {
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    public static <T extends Enum<T>> Set<T> getEnumSetFromBitmask(final Class<T> enumClass, final long bitmask, final ToIntFunction<T> bitGetter) {
+        final EnumSet<T> set = EnumSet.noneOf(enumClass);
+        for (T constant : enumClass.getEnumConstants()) {
+            final int bit = bitGetter.applyAsInt(constant);
+            if (bit >= 0 && bit < Long.SIZE && (bitmask & (1L << bitGetter.applyAsInt(constant))) != 0) {
+                set.add(constant);
+            }
+        }
+        return set;
+    }
+
+    public static <T extends Enum<T>> long getBitmaskFromEnumSet(final Set<T> set, final ToIntFunction<T> bitGetter) {
+        long bitmask = 0;
+        for (T constant : set) {
+            final int bit = bitGetter.applyAsInt(constant);
+            if (bit >= 0 && bit < Long.SIZE) {
+                bitmask |= 1L << bitGetter.applyAsInt(constant);
+            }
+        }
+        return bitmask;
     }
 
 }

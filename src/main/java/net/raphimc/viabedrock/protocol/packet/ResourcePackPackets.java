@@ -41,8 +41,6 @@ import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
@@ -69,28 +67,15 @@ public class ResourcePackPackets {
             for (ResourcePack resourcePack : resourcePacks) {
                 resourcePacksStorage.addPack(resourcePack);
             }
-            final int cdnEntriesCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // cdn entries count
-            for (int i = 0; i < cdnEntriesCount; i++) {
-                final Pair<UUID, String> idAndVersion = wrapper.read(BedrockTypes.PACK_ID_AND_VERSION); // pack id
-                final String url = wrapper.read(BedrockTypes.STRING); // remote url
-                try {
-                    if (resourcePacksStorage.hasPack(idAndVersion.key())) {
-                        resourcePacksStorage.getPack(idAndVersion.key()).setUrl(new URL(url));
-                    } else {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown CDN entry: " + idAndVersion.key() + " (" + url + ")");
-                    }
-                } catch (MalformedURLException ignored) {
-                }
-            }
 
             if (ViaBedrock.getConfig().shouldTranslateResourcePacks() && wrapper.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolConstants.JAVA_VERSION)) {
                 final CompletableFuture<Void> httpFuture = resourcePacksStorage.runHttpTask(resourcePacksStorage.getPacks(), pack -> {
-                    final BedrockPackDownloader downloader = new BedrockPackDownloader(pack.url());
+                    final BedrockPackDownloader downloader = new BedrockPackDownloader(pack.cdnUrl());
                     final int contentLength = downloader.getContentLength();
                     pack.setCompressedDataLength(contentLength, contentLength);
                 }, (pack, e) -> {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to get content length for pack: " + pack.packId() + " (" + pack.url() + ")", e);
-                    pack.setUrl(null); // Use the old resource pack downloading method
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to get content length for pack: " + pack.packId() + " (" + pack.cdnUrl() + ")", e);
+                    pack.setCdnUrl(null); // Use the old resource pack downloading method
                 });
 
                 final UUID httpToken = UUID.randomUUID();
@@ -256,7 +241,7 @@ public class ResourcePackPackets {
                         try {
                             if (Via.getManager().getProviders().get(ResourcePackProvider.class).hasPack(pack)) {
                                 Via.getManager().getProviders().get(ResourcePackProvider.class).loadPack(pack);
-                            } else if (pack.url() != null) {
+                            } else if (pack.cdnUrl() != null) {
                                 missingHttpPacks.add(pack);
                             } else {
                                 missingNonHttpPacks.add(pack.packId() + "_" + pack.version());
@@ -276,7 +261,7 @@ public class ResourcePackPackets {
                             }
                             ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Downloading " + missingHttpPacks.size() + " HTTP packs");
                             resourcePacksStorage.runHttpTask(missingHttpPacks, pack -> {
-                                final BedrockPackDownloader downloader = new BedrockPackDownloader(pack.url());
+                                final BedrockPackDownloader downloader = new BedrockPackDownloader(pack.cdnUrl());
                                 final byte[] data = downloader.download();
                                 pack.setCompressedDataLength(data.length, data.length);
                                 wrapper.user().getChannel().eventLoop().submit(() -> {

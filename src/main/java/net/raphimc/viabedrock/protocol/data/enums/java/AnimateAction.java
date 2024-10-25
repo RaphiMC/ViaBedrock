@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.data.enums.java;
 public enum AnimateAction {
 
     SWING_MAIN_HAND,
-    HURT,
+    UNUSED,
     WAKE_UP,
     SWING_OFF_HAND,
     CRITICAL_HIT,

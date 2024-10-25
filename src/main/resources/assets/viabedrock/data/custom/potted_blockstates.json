@@ -75,6 +75,8 @@
   "minecraft:oak_sapling[stage=1]": "minecraft:potted_oak_sapling",
   "minecraft:orange_tulip": "minecraft:potted_orange_tulip",
   "minecraft:oxeye_daisy": "minecraft:potted_oxeye_daisy",
+  "minecraft:pale_oak_sapling[stage=0]": "minecraft:potted_pale_oak_sapling",
+  "minecraft:pale_oak_sapling[stage=1]": "minecraft:potted_pale_oak_sapling",
   "minecraft:pink_tulip": "minecraft:potted_pink_tulip",
   "minecraft:poppy": "minecraft:potted_poppy",
   "minecraft:red_mushroom": "minecraft:potted_red_mushroom",

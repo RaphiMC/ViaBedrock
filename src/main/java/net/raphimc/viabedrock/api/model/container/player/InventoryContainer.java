@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -103,9 +103,9 @@ public class InventoryContainer extends Container {
     }
 
     public void sendSelectedHotbarSlotToClient() {
-        final PacketWrapper setCarriedItem = PacketWrapper.create(ClientboundPackets1_21.SET_CARRIED_ITEM, this.user);
-        setCarriedItem.write(Types.BYTE, this.selectedHotbarSlot);
-        setCarriedItem.send(BedrockProtocol.class);
+        final PacketWrapper setHeldSlot = PacketWrapper.create(ClientboundPackets1_21_2.SET_HELD_SLOT, this.user);
+        setHeldSlot.write(Types.BYTE, this.selectedHotbarSlot);
+        setHeldSlot.send(BedrockProtocol.class);
     }
 
     public void setSelectedHotbarSlot(final byte slot, final PacketWrapper mobEquipment) {

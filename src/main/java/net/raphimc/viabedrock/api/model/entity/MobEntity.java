@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_20_5;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_2;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
@@ -31,14 +31,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MobEntity extends LivingEntity {
 
-    public MobEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_20_5 javaType) {
+    public MobEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_2 javaType) {
         super(user, uniqueId, runtimeId, type, javaId, javaUuid, javaType);
     }
 
     @Override
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         if (attribute.name().equals("minecraft:follow_range")) {
-            javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:generic.follow_range")); // attribute id
+            javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:follow_range")); // attribute id
             javaAttributes.write(Types.DOUBLE, (double) attribute.computeClampedValue()); // base value
             javaAttributes.write(Types.VAR_INT, 0); // modifier count
             attributeCount.incrementAndGet();

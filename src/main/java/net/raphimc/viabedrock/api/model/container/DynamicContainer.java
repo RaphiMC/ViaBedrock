@@ -28,13 +28,13 @@ public class DynamicContainer extends InventoryRedirectContainer {
     private final FullContainerName containerName;
 
     public DynamicContainer(final UserConnection user, final FullContainerName containerName) {
-        super(user, (byte) ContainerID.CONTAINER_ID_REGISTRY_INVENTORY.getValue(), ContainerType.NONE, 1000 /* Seems to be a hardcoded cap */);
+        super(user, (byte) ContainerID.CONTAINER_ID_REGISTRY.getValue(), ContainerType.NONE, 1000 /* Seems to be a hardcoded cap */);
         this.containerName = containerName;
     }
 
     @Override
     public int javaSlot(final int slot) {
-        return 45; // dummy slot
+        throw new UnsupportedOperationException();
     }
 
 }

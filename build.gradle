@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.0.4-SNAPSHOT"
+    compileOnly "com.viaversion:viaversion-common:5.1.0"
     compileOnly "org.yaml:snakeyaml:2.3"
     compileOnly "com.google.guava:guava:33.3.1-jre"
     compileOnly "io.netty:netty-handler:4.1.114.Final"
@@ -157,7 +157,7 @@ project.tasks.withType(PublishToMavenRepository).forEach {
 
 def enumSourceDir = layout.buildDirectory.dir("generated/enums/main/java")
 def enumGeneratorTask = tasks.register("enumGeneratorTask", EnumGeneratorTask) {
-    commitHash = "2a93b3dc8c81a089b437cc071e0275e4ebe5f8b0" // https://github.com/Mojang/bedrock-protocol-docs
+    commitHash = "fbae8fb6cd53a578e564a2b1f77f80e5842337b1" // https://github.com/Mojang/bedrock-protocol-docs
     outputDirectory = enumSourceDir
 }
 tasks.compileJava.dependsOn(enumGeneratorTask)

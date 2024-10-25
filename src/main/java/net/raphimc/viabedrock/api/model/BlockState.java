@@ -17,8 +17,6 @@
  */
 package net.raphimc.viabedrock.api.model;
 
-import com.google.common.collect.Maps;
-
 import java.util.*;
 
 public class BlockState {
@@ -61,7 +59,7 @@ public class BlockState {
         }
 
         if (propertiesString != null) {
-            final Map<String, String> properties = Maps.newHashMap();
+            final Map<String, String> properties = new HashMap<>();
             final String[] propertiesSplit;
             if (propertiesString.contains(",")) {
                 propertiesSplit = propertiesString.split(",");
@@ -98,19 +96,19 @@ public class BlockState {
     }
 
     public BlockState withProperty(final String key, final String value) {
-        final Map<String, String> newProperties = Maps.newHashMap(this.properties);
+        final Map<String, String> newProperties = new HashMap<>(this.properties);
         newProperties.put(key, value);
         return new BlockState(this.namespace, this.identifier, newProperties);
     }
 
     public BlockState withProperties(final Map<String, String> properties) {
-        final Map<String, String> newProperties = Maps.newHashMap(this.properties);
+        final Map<String, String> newProperties = new HashMap<>(this.properties);
         newProperties.putAll(properties);
         return new BlockState(this.namespace, this.identifier, newProperties);
     }
 
     public BlockState withoutProperties(final String... keys) {
-        final Map<String, String> newProperties = Maps.newHashMap(this.properties);
+        final Map<String, String> newProperties = new HashMap<>(this.properties);
         for (final String key : keys) {
             newProperties.remove(key);
         }
@@ -124,7 +122,7 @@ public class BlockState {
     }
 
     public BlockState replaceProperties(final Map<String, String> properties) {
-        final Map<String, String> newProperties = Maps.newHashMap(this.properties);
+        final Map<String, String> newProperties = new HashMap<>(this.properties);
         for (final Map.Entry<String, String> entry : properties.entrySet()) {
             if (newProperties.containsKey(entry.getKey())) {
                 newProperties.put(entry.getKey(), entry.getValue());

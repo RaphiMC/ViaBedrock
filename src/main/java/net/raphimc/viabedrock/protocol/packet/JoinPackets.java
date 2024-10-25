@@ -34,7 +34,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.base.v1_7.ClientboundBaseProtocol1_7;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
-import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundPackets1_21;
+import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
@@ -94,7 +94,7 @@ public class JoinPackets {
 
         wrapper.user().put(new ChunkTracker(wrapper.user(), wrapper.user().get(ChunkTracker.class).getDimension()));
         if (wrapper.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolVersion.v1_20_2)) {
-            final PacketWrapper startConfiguration = PacketWrapper.create(ClientboundPackets1_21.START_CONFIGURATION, wrapper.user());
+            final PacketWrapper startConfiguration = PacketWrapper.create(ClientboundPackets1_21_2.START_CONFIGURATION, wrapper.user());
             startConfiguration.send(BedrockProtocol.class);
             wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
 
@@ -117,11 +117,10 @@ public class JoinPackets {
 
                     if (status == PlayStatus.LoginSuccess) {
                         final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
-                        wrapper.setPacketType(ClientboundLoginPackets.GAME_PROFILE);
+                        wrapper.setPacketType(ClientboundLoginPackets.LOGIN_FINISHED);
                         wrapper.write(Types.UUID, authChainData.getIdentity()); // uuid
                         wrapper.write(Types.STRING, authChainData.getDisplayName()); // username
                         wrapper.write(Types.VAR_INT, 0); // properties length
-                        wrapper.write(Types.BOOLEAN, true); // strict error handling
 
                         final ProtocolInfo info = wrapper.user().getProtocolInfo();
                         info.setUsername(authChainData.getDisplayName());
@@ -164,10 +163,8 @@ public class JoinPackets {
 
                         clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
                         clientPlayer.setInitiallySpawned();
-                        if (gameSession.getMovementMode() == ServerAuthMovementMode.ClientAuthoritative) {
+                        if (gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
                             clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Respawn);
-                        } else {
-                            clientPlayer.sendPlayerAuthInputPacketToServer(ClientPlayMode.Normal);
                         }
 
                         PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.EndLoadingScreen, null);
@@ -177,7 +174,7 @@ public class JoinPackets {
 
                         PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
                     } else {
-                        wrapper.setPacketType(ClientboundPackets1_21.DISCONNECT);
+                        wrapper.setPacketType(ClientboundPackets1_21_2.DISCONNECT);
                         writePlayStatusKickMessage(wrapper, status);
                     }
                 }, State.CONFIGURATION, (PacketHandler) wrapper -> {
@@ -278,7 +275,7 @@ public class JoinPackets {
                     final String levelName = wrapper.read(BedrockTypes.STRING); // level name
                     wrapper.read(BedrockTypes.STRING); // premium world template id
                     wrapper.read(Types.BOOLEAN); // is trial
-                    final ServerAuthMovementMode movementMode = ServerAuthMovementMode.getByValue(wrapper.read(BedrockTypes.VAR_INT) & 255, ServerAuthMovementMode.ServerAuthoritativeWithRewind); // movement mode
+                    final ServerAuthMovementMode movementMode = ServerAuthMovementMode.getByValue(wrapper.read(BedrockTypes.VAR_INT) & 255, ServerAuthMovementMode.ServerAuthoritativeV3); // movement mode
                     wrapper.read(BedrockTypes.VAR_INT); // rewind history size
                     final boolean blockBreakingServerAuthoritative = wrapper.read(Types.BOOLEAN); // server authoritative block breaking
                     final long levelTime = wrapper.read(BedrockTypes.LONG_LE); // current level time
@@ -326,10 +323,14 @@ public class JoinPackets {
                         }
                     }
 
-                    if (movementMode == ServerAuthMovementMode.ServerAuthoritativeWithRewind) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "This server uses server authoritative movement with rewind. This is not supported.");
-                    } else if (movementMode == ServerAuthMovementMode.ServerAuthoritative) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses server authoritative movement. This is not stable.");
+                    if (movementMode == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses deprecated client authoritative movement.");
+                    }
+                    if (movementMode == ServerAuthMovementMode.ServerAuthoritativeV3) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "This server uses server authoritative movement with rewind. This is not supported yet.");
+                    }
+                    if (!inventoryServerAuthoritative) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.INFO, "This server uses client authoritative inventories. This is not supported yet.");
                     }
 
                     for (ItemEntry itemEntry : itemEntries) {
@@ -507,7 +508,7 @@ public class JoinPackets {
         finishConfiguration.send(BedrockProtocol.class);
         user.getProtocolInfo().setServerState(State.PLAY);
 
-        final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_21.LOGIN, user);
+        final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_21_2.LOGIN, user);
         joinGame.write(Types.INT, clientPlayer.javaId()); // entity id
         joinGame.write(Types.BOOLEAN, gameSession.isHardcoreMode()); // hardcore
         joinGame.write(Types.STRING_ARRAY, Dimension.getDimensionKeys()); // dimension types
@@ -526,6 +527,7 @@ public class JoinPackets {
         joinGame.write(Types.BOOLEAN, gameSession.isFlatGenerator()); // is flat
         joinGame.write(Types.OPTIONAL_GLOBAL_POSITION, null); // last death location
         joinGame.write(Types.VAR_INT, 0); // portal cooldown
+        joinGame.write(Types.VAR_INT, 64); // sea level
         joinGame.write(Types.BOOLEAN, false); // enforce secure chat
         joinGame.send(BedrockProtocol.class);
 
@@ -537,18 +539,18 @@ public class JoinPackets {
             commandsStorage.updateCommandTree();
         }
 
-        final PacketWrapper serverDifficulty = PacketWrapper.create(ClientboundPackets1_21.CHANGE_DIFFICULTY, user);
+        final PacketWrapper serverDifficulty = PacketWrapper.create(ClientboundPackets1_21_2.CHANGE_DIFFICULTY, user);
         serverDifficulty.write(Types.UNSIGNED_BYTE, (short) joinGameStorage.difficulty().getValue()); // difficulty
         serverDifficulty.write(Types.BOOLEAN, false); // locked
         serverDifficulty.send(BedrockProtocol.class);
 
-        final PacketWrapper tabList = PacketWrapper.create(ClientboundPackets1_21.TAB_LIST, user);
+        final PacketWrapper tabList = PacketWrapper.create(ClientboundPackets1_21_2.TAB_LIST, user);
         tabList.write(Types.TAG, TextUtil.stringToNbt(joinGameStorage.levelName() + "\n")); // header
         tabList.write(Types.TAG, TextUtil.stringToNbt("§aViaBedrock §3v" + ViaBedrock.VERSION + "\n§7https://github.com/RaphiMC/ViaBedrock")); // footer
         tabList.send(BedrockProtocol.class);
 
-        final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21.PLAYER_INFO_UPDATE, user);
-        playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM, BitSets.create(6, PlayerInfoUpdateAction.ADD_PLAYER.ordinal(), PlayerInfoUpdateAction.UPDATE_GAME_MODE.ordinal())); // actions
+        final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21_2.PLAYER_INFO_UPDATE, user);
+        playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.ADD_PLAYER.ordinal(), PlayerInfoUpdateAction.UPDATE_GAME_MODE.ordinal())); // actions
         playerInfoUpdate.write(Types.VAR_INT, 1); // length
         playerInfoUpdate.write(Types.UUID, clientPlayer.javaUuid()); // uuid
         playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(clientPlayer.javaUuid())); // username
