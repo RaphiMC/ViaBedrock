@@ -158,8 +158,36 @@ public class ClientPlayerPackets {
                 }
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.CORRECT_PLAYER_MOVE_PREDICTION, null, wrapper -> {
-            throw new UnsupportedOperationException("Received CorrectPlayerMovePrediction packet, but the client does not support movement corrections.");
+        protocol.registerClientbound(ClientboundBedrockPackets.CORRECT_PLAYER_MOVE_PREDICTION, ClientboundPackets1_21_2.PLAYER_POSITION, wrapper -> {
+            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+            if (gameSession.getMovementMode() != ServerAuthMovementMode.ServerAuthoritativeV3) {
+                wrapper.cancel();
+                return;
+            }
+
+            final byte predictionType = wrapper.read(Types.BYTE); // prediction type
+            final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
+            wrapper.read(BedrockTypes.POSITION_3F); // position delta
+            switch (predictionType) {
+                case 0 /* PLAYER */ -> {
+                    final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+                    final boolean onGround = wrapper.read(Types.BOOLEAN); // on ground
+                    final long tick = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // tick
+                    if (tick > clientPlayer.age() || tick < clientPlayer.age() - gameSession.getMovementRewindHistorySize()) {
+                        wrapper.cancel();
+                        return;
+                    }
+
+                    clientPlayer.setPosition(position);
+                    clientPlayer.setOnGround(onGround);
+                    clientPlayer.writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
+                }
+                case 1 /* VEHICLE */ -> wrapper.cancel();
+                default -> {
+                    wrapper.cancel();
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown PredictionType: " + predictionType);
+                }
+            }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SET_PLAYER_GAME_TYPE, null, new PacketHandlers() {
             @Override

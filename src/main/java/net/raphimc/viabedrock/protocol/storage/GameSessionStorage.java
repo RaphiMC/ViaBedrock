@@ -43,6 +43,7 @@ public class GameSessionStorage implements StorableObject {
     private Semver bedrockVanillaVersion;
     private boolean flatGenerator;
     private ServerAuthMovementMode movementMode;
+    private int movementRewindHistorySize;
     private GameType levelGameType;
     private long levelTime;
     private boolean hardcoreMode;
@@ -113,6 +114,14 @@ public class GameSessionStorage implements StorableObject {
 
     public void setMovementMode(final ServerAuthMovementMode movementMode) {
         this.movementMode = movementMode;
+    }
+
+    public int getMovementRewindHistorySize() {
+        return this.movementRewindHistorySize;
+    }
+
+    public void setMovementRewindHistorySize(final int movementRewindHistorySize) {
+        this.movementRewindHistorySize = movementRewindHistorySize;
     }
 
     public GameType getLevelGameType() {

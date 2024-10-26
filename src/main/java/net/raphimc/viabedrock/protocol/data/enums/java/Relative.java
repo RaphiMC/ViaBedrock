@@ -35,7 +35,7 @@ public enum Relative {
 
     public static final Set<Relative> NONE = Collections.unmodifiableSet(EnumSet.noneOf(Relative.class));
     public static final Set<Relative> ROTATION = Collections.unmodifiableSet(EnumSet.of(X_ROT, Y_ROT));
-    public static final Set<Relative> VELOCITY = Collections.unmodifiableSet(EnumSet.of(DELTA_X, DELTA_Y, DELTA_Z, ROTATE_DELTA));
+    public static final Set<Relative> VELOCITY = Collections.unmodifiableSet(EnumSet.of(DELTA_X, DELTA_Y, DELTA_Z));
 
     @SafeVarargs
     public static Set<Relative> union(final Set<Relative>... sets) {

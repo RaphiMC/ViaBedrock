@@ -277,7 +277,7 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.STRING); // premium world template id
                     wrapper.read(Types.BOOLEAN); // is trial
                     final ServerAuthMovementMode movementMode = ServerAuthMovementMode.getByValue(wrapper.read(BedrockTypes.VAR_INT) & 255, ServerAuthMovementMode.ServerAuthoritativeV3); // movement mode
-                    wrapper.read(BedrockTypes.VAR_INT); // rewind history size
+                    final int rewindHistorySize = wrapper.read(BedrockTypes.VAR_INT); // rewind history size
                     final boolean blockBreakingServerAuthoritative = wrapper.read(Types.BOOLEAN); // server authoritative block breaking
                     final long levelTime = wrapper.read(BedrockTypes.LONG_LE); // current level time
                     wrapper.read(BedrockTypes.VAR_INT); // enchantment seed
@@ -327,9 +327,6 @@ public class JoinPackets {
                     if (movementMode == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses deprecated client authoritative movement.");
                     }
-                    if (movementMode == ServerAuthMovementMode.ServerAuthoritativeV3) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "This server uses server authoritative movement with rewind. This is not supported yet.");
-                    }
                     if (!inventoryServerAuthoritative) {
                         ViaBedrock.getPlatform().getLogger().log(Level.INFO, "This server uses client authoritative inventories. This is not supported yet.");
                     }
@@ -343,6 +340,7 @@ public class JoinPackets {
                     gameSession.setBedrockVanillaVersion(version);
                     gameSession.setFlatGenerator(generatorType == GeneratorType.Flat);
                     gameSession.setMovementMode(movementMode);
+                    gameSession.setMovementRewindHistorySize(rewindHistorySize);
                     gameSession.setLevelGameType(levelGameType);
                     gameSession.setLevelTime(levelTime);
                     gameSession.setHardcoreMode(hardcore);
