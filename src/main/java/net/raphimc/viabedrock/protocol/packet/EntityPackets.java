@@ -44,6 +44,7 @@ import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AnimateAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.EquipmentSlot;
+import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
@@ -203,9 +204,8 @@ public class EntityPackets {
                     wrapper.write(Types.FLOAT, entity.rotation().x()); // pitch
                     wrapper.write(Types.BOOLEAN, entity.isOnGround()); // on ground
                 } else { // teleport
-                    // The player should keep the motions, but this is not possible with the current Java Edition protocol
                     wrapper.setPacketType(ClientboundPackets1_21_2.PLAYER_POSITION);
-                    entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, true, true);
+                    entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
                 }
                 return;
             }
@@ -281,9 +281,8 @@ public class EntityPackets {
                     wrapper.write(Types.FLOAT, entity.rotation().x()); // pitch
                     wrapper.write(Types.BOOLEAN, entity.isOnGround()); // on ground
                 } else { // teleport
-                    // The player should keep the motions, but this is not possible with the current Java Edition protocol
                     wrapper.setPacketType(ClientboundPackets1_21_2.PLAYER_POSITION);
-                    entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, true, true);
+                    entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
                 }
                 return;
             }

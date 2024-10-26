@@ -21,6 +21,14 @@ import java.util.BitSet;
 
 public class BitSets {
 
+    public static BitSet create(final int length, final Enum<?>... setBits) {
+        final BitSet bitSet = new BitSet(length);
+        for (final Enum<?> setBit : setBits) {
+            bitSet.set(setBit.ordinal());
+        }
+        return bitSet;
+    }
+
     public static BitSet create(final int length, final int... setBits) {
         final BitSet bitSet = new BitSet(length);
         for (final int setBit : setBits) {

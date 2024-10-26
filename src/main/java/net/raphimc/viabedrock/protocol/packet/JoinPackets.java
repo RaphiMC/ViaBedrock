@@ -52,6 +52,7 @@ import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -534,7 +535,7 @@ public class JoinPackets {
         clientPlayer.createTeam();
         clientPlayer.updateAttributes(clientPlayer.attributes().values().toArray(new EntityAttribute[0]));
         clientPlayer.setAbilities(clientPlayer.abilities());
-        clientPlayer.sendPlayerPositionPacketToClient(false);
+        clientPlayer.sendPlayerPositionPacketToClient(Relative.NONE);
         if (commandsStorage != null) {
             commandsStorage.updateCommandTree();
         }
@@ -550,7 +551,7 @@ public class JoinPackets {
         tabList.send(BedrockProtocol.class);
 
         final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21_2.PLAYER_INFO_UPDATE, user);
-        playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.ADD_PLAYER.ordinal(), PlayerInfoUpdateAction.UPDATE_GAME_MODE.ordinal())); // actions
+        playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.ADD_PLAYER, PlayerInfoUpdateAction.UPDATE_GAME_MODE)); // actions
         playerInfoUpdate.write(Types.VAR_INT, 1); // length
         playerInfoUpdate.write(Types.UUID, clientPlayer.javaUuid()); // uuid
         playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(clientPlayer.javaUuid())); // username

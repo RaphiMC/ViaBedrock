@@ -57,7 +57,7 @@ public class ClientPlayerPackets {
         final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
 
         final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21_2.PLAYER_INFO_UPDATE, wrapper.user());
-        playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.UPDATE_GAME_MODE.ordinal())); // actions
+        playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.UPDATE_GAME_MODE)); // actions
         playerInfoUpdate.write(Types.VAR_INT, 1); // length
         playerInfoUpdate.write(Types.UUID, clientPlayer.javaUuid()); // uuid
         playerInfoUpdate.write(Types.VAR_INT, clientPlayer.javaGameMode().ordinal()); // game mode
@@ -125,7 +125,7 @@ public class ClientPlayerPackets {
                     }
                     wrapper.cancel();
 
-                    clientPlayer.sendPlayerPositionPacketToClient(false);
+                    clientPlayer.sendPlayerPositionPacketToClient(Relative.NONE);
                 }
                 case SearchingForSpawn, ClientReadyToSpawn -> wrapper.cancel();
                 default -> throw new IllegalStateException("Unhandled PlayerRespawnState: " + state);
@@ -153,7 +153,7 @@ public class ClientPlayerPackets {
                     }
                     PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.EndLoadingScreen, clientPlayer.dimensionChangeInfo().loadingScreenId());
                     clientPlayer.setDimensionChangeInfo(null);
-                    clientPlayer.sendPlayerPositionPacketToClient(false);
+                    clientPlayer.sendPlayerPositionPacketToClient(Relative.NONE);
                     PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
                 }
             }
@@ -199,7 +199,7 @@ public class ClientPlayerPackets {
                 return;
             }
 
-            wrapper.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.UPDATE_GAME_MODE.ordinal())); // actions
+            wrapper.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.UPDATE_GAME_MODE)); // actions
             wrapper.write(Types.VAR_INT, 1); // length
             wrapper.write(Types.UUID, playerListEntry.key()); // uuid
             wrapper.write(Types.VAR_INT, GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType()).ordinal()); // game mode

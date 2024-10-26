@@ -49,6 +49,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
@@ -167,7 +168,7 @@ public class WorldPackets {
             wrapper.write(Types.BYTE, (byte) 0x03); // keep data mask
             wrapper.send(BedrockProtocol.class);
             wrapper.cancel();
-            clientPlayer.sendPlayerPositionPacketToClient(false);
+            clientPlayer.sendPlayerPositionPacketToClient(Relative.NONE);
             clientPlayer.sendAttribute("minecraft:health"); // Java client always resets health on respawn, but Bedrock client keeps health when switching dimensions
             clientPlayer.sendEffects(); // Java client always resets effects on respawn. Resend them
             clientPlayer.setAbilities(clientPlayer.abilities()); // Java client always resets abilities on respawn. Resend them

@@ -25,14 +25,12 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
-import net.raphimc.viabedrock.protocol.data.enums.java.AbilitiesFlag;
-import net.raphimc.viabedrock.protocol.data.enums.java.GameMode;
-import net.raphimc.viabedrock.protocol.data.enums.java.InputFlag;
-import net.raphimc.viabedrock.protocol.data.enums.java.MovePlayerFlag;
+import net.raphimc.viabedrock.protocol.data.enums.java.*;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -101,25 +99,25 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.prevOnGround = this.onGround;
     }
 
-    public void sendPlayerPositionPacketToClient(final boolean keepRotation) {
+    public void sendPlayerPositionPacketToClient(final Set<Relative> relatives) {
         final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets1_21_2.PLAYER_POSITION, this.user);
-        this.writePlayerPositionPacketToClient(playerPosition, keepRotation, true);
+        this.writePlayerPositionPacketToClient(playerPosition, relatives, true);
         playerPosition.send(BedrockProtocol.class);
     }
 
-    public void writePlayerPositionPacketToClient(final PacketWrapper wrapper, final boolean keepRotation, final boolean fakeTeleport) {
+    public void writePlayerPositionPacketToClient(final PacketWrapper wrapper, final Set<Relative> relatives, final boolean fakeTeleport) {
         this.pendingTeleportId = TELEPORT_ID.getAndIncrement();
 
         wrapper.write(Types.VAR_INT, this.pendingTeleportId * (fakeTeleport ? -1 : 1)); // teleport id
-        wrapper.write(Types.DOUBLE, (double) this.position.x()); // x
-        wrapper.write(Types.DOUBLE, (double) this.position.y() - this.eyeOffset()); // y
-        wrapper.write(Types.DOUBLE, (double) this.position.z()); // z
+        wrapper.write(Types.DOUBLE, relatives.contains(Relative.X) ? 0D : (double) this.position.x()); // x
+        wrapper.write(Types.DOUBLE, relatives.contains(Relative.Y) ? 0D : (double) (this.position.y() - this.eyeOffset())); // y
+        wrapper.write(Types.DOUBLE, relatives.contains(Relative.Z) ? 0D : (double) this.position.z()); // z
         wrapper.write(Types.DOUBLE, 0D); // velocity x
         wrapper.write(Types.DOUBLE, 0D); // velocity y
         wrapper.write(Types.DOUBLE, 0D); // velocity z
-        wrapper.write(Types.FLOAT, keepRotation ? 0F : this.rotation.y()); // yaw
-        wrapper.write(Types.FLOAT, keepRotation ? 0F : this.rotation.x()); // pitch
-        wrapper.write(Types.INT, (keepRotation ? 0b11000 : 0)); // flags
+        wrapper.write(Types.FLOAT, relatives.contains(Relative.Y_ROT) ? 0F : this.rotation.y()); // yaw
+        wrapper.write(Types.FLOAT, relatives.contains(Relative.X_ROT) ? 0F : this.rotation.x()); // pitch
+        wrapper.write(Types.INT, (int) EnumUtil.getBitmaskFromEnumSet(relatives, Relative::ordinal)); // flags
     }
 
     public void sendMovePlayerPacketToServer(final PlayerPositionModeComponent_PositionMode mode) {
@@ -502,7 +500,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         // Not spawned yet or respawning
         if (!this.initiallySpawned || this.dimensionChangeInfo != null) {
             if (!this.position.equals(newPosition)) {
-                this.sendPlayerPositionPacketToClient(false);
+                this.sendPlayerPositionPacketToClient(Relative.NONE);
             }
             return false;
         }
@@ -511,19 +509,19 @@ public class ClientPlayerEntity extends PlayerEntity {
             this.wasInsideUnloadedChunk = true;
             if (!this.position.equals(newPosition)) {
                 this.waitingForPositionSync = true;
-                this.sendPlayerPositionPacketToClient(true);
+                this.sendPlayerPositionPacketToClient(Relative.ROTATION);
             }
             return false;
         } else if (this.wasInsideUnloadedChunk) {
             this.wasInsideUnloadedChunk = false;
             this.waitingForPositionSync = true;
-            this.sendPlayerPositionPacketToClient(true);
+            this.sendPlayerPositionPacketToClient(Relative.ROTATION);
             return false;
         }
         // Loaded -> Unloaded chunk
         if (newPosition != null && chunkTracker.isInUnloadedChunkSection(newPosition)) {
             this.waitingForPositionSync = true;
-            this.sendPlayerPositionPacketToClient(true);
+            this.sendPlayerPositionPacketToClient(Relative.ROTATION);
             return false;
         }
 

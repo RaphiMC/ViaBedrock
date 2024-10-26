@@ -65,7 +65,7 @@ public class HudPackets {
                     final UUID[] uuids = new UUID[length];
                     final long[] uniqueEntityIds = new long[length];
                     final String[] names = new String[length];
-                    wrapper.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.ADD_PLAYER.ordinal(), PlayerInfoUpdateAction.UPDATE_LISTED.ordinal(), PlayerInfoUpdateAction.UPDATE_DISPLAY_NAME.ordinal())); // actions
+                    wrapper.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.ADD_PLAYER, PlayerInfoUpdateAction.UPDATE_LISTED, PlayerInfoUpdateAction.UPDATE_DISPLAY_NAME)); // actions
                     wrapper.write(Types.VAR_INT, length); // length
                     for (int i = 0; i < length; i++) {
                         uuids[i] = wrapper.read(BedrockTypes.UUID); // uuid
