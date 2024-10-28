@@ -178,6 +178,30 @@ idea {
     }
 }
 
+tasks.register("runViaProxy", JavaExec) {
+    dependsOn tasks.jar
+
+    def viaProxyConfiguration = configurations.create("viaProxy")
+    viaProxyConfiguration.dependencies.add(project.dependencies.create("net.raphimc:ViaProxy:3.3.5-SNAPSHOT") {
+        transitive = false
+    })
+
+    mainClass = "net.raphimc.viaproxy.ViaProxy"
+    classpath viaProxyConfiguration
+
+    workingDir = file("run")
+
+    doFirst {
+        def jarsDir = new File(workingDir, "jars")
+        jarsDir.mkdirs()
+        new File(jarsDir, "${project.name}.jar").bytes = tasks.jar.archiveFile.get().asFile.bytes
+    }
+
+    doLast {
+        new File(workingDir, "jars/${project.name}.jar").delete()
+    }
+}
+
 String latestCommitHash() {
     def stdout = new ByteArrayOutputStream()
     exec {
