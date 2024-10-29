@@ -44,7 +44,7 @@ public class BedrockItemType extends Type<BedrockItem> {
     @Override
     public BedrockItem read(ByteBuf buffer) {
         final int id = BedrockTypes.VAR_INT.read(buffer);
-        if (id == 0) {
+        if (id == 0 || id == -1) {
             return BedrockItem.empty();
         }
 
