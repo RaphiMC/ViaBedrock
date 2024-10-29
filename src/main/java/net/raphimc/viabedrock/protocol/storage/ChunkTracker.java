@@ -27,6 +27,7 @@ import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.api.minecraft.chunks.*;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.chunk.ChunkType1_20_2;
@@ -72,6 +73,7 @@ public class ChunkTracker extends StoredObject {
 
     private final Map<Long, BedrockChunk> chunks = new HashMap<>();
     private final Set<Long> dirtyChunks = new HashSet<>();
+    private final Set<Long> loadedChunks = new HashSet<>();
 
     private final Set<SubChunkPosition> subChunkRequests = new HashSet<>();
     private final Set<SubChunkPosition> pendingSubChunks = new HashSet<>();
@@ -135,6 +137,7 @@ public class ChunkTracker extends StoredObject {
 
     public void unloadChunk(final ChunkPosition chunkPos) {
         this.chunks.remove(chunkPos.chunkKey());
+        this.loadedChunks.remove(chunkPos.chunkKey());
         this.user().get(EntityTracker.class).removeItemFrame(chunkPos);
 
         final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets1_21_2.FORGET_LEVEL_CHUNK, this.user());
@@ -382,6 +385,17 @@ public class ChunkTracker extends StoredObject {
         if (chunk == null) {
             return;
         }
+
+        final boolean unloadBeforeLoad = this.loadedChunks.contains(ChunkPosition.chunkKey(chunkX, chunkZ)) && this.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolVersion.v1_21_2);
+        if (unloadBeforeLoad) {
+            final PacketWrapper bundleStart = PacketWrapper.create(ClientboundPackets1_21_2.BUNDLE_DELIMITER, this.user());
+            bundleStart.send(BedrockProtocol.class);
+
+            final PacketWrapper forgetLevelChunk = PacketWrapper.create(ClientboundPackets1_21_2.FORGET_LEVEL_CHUNK, this.user());
+            forgetLevelChunk.write(Types.CHUNK_POSITION, new ChunkPosition(chunkX, chunkZ)); // chunk position
+            forgetLevelChunk.send(BedrockProtocol.class);
+        }
+
         final Chunk remappedChunk = this.remapChunk(chunk);
 
         final PacketWrapper levelChunkWithLight = PacketWrapper.create(ClientboundPackets1_21_2.LEVEL_CHUNK_WITH_LIGHT, this.user());
@@ -398,6 +412,13 @@ public class ChunkTracker extends StoredObject {
         }
         levelChunkWithLight.write(Types.VAR_INT, 0); // block light length
         levelChunkWithLight.send(BedrockProtocol.class);
+
+        if (unloadBeforeLoad) {
+            final PacketWrapper bundleEnd = PacketWrapper.create(ClientboundPackets1_21_2.BUNDLE_DELIMITER, this.user());
+            bundleEnd.send(BedrockProtocol.class);
+        }
+
+        this.loadedChunks.add(ChunkPosition.chunkKey(chunkX, chunkZ));
     }
 
     public Dimension getDimension() {
