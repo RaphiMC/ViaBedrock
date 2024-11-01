@@ -137,7 +137,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     @Override
     public void init(UserConnection user) {
         user.put(new ClientSettingsStorage("en_us", 12, 0, true, (short) 127, 1, false, true, 0));
-        user.put(new GameSessionStorage());
+        user.put(new GameSessionStorage(user));
         user.put(new BlobCache(user));
         user.put(new PacketSyncStorage(user));
         user.put(new ChannelStorage());

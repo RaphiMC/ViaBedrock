@@ -453,7 +453,7 @@ public class JoinPackets {
     }
 
     private static void writePlayStatusKickMessage(final PacketWrapper wrapper, final PlayStatus status) {
-        final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack().content().getLang("texts/en_US.lang");
+        final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks().get("vanilla").content().getLang("texts/en_US.lang");
 
         switch (status) {
             case LoginFailed_ClientOld -> PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.outdatedClient"));

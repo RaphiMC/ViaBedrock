@@ -545,7 +545,6 @@ public class WorldEffectPackets {
 
         final Map<String, SoundDefinitions.ConfiguredSound> soundEvents = BedrockProtocol.MAPPINGS.getBedrockLevelSoundEvents().get(soundEvent);
         if (soundEvents == null) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unmapped bedrock level sound event: " + soundEvent);
             return null;
         }
         SoundDefinitions.ConfiguredSound configuredSound = null;
@@ -569,7 +568,7 @@ public class WorldEffectPackets {
                 }
             } else {
                 if (LEVEL_SOUND_DEBUG_LOG) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state (level sound event): " + data);
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state (" + soundEvent.name() + " level sound event): " + data);
                 }
                 configuredSound = soundEvents.get("stone");
             }

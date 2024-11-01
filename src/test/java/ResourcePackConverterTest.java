@@ -27,7 +27,6 @@ import java.util.UUID;
 public class ResourcePackConverterTest {
 
     public static void main(String[] args) throws Throwable {
-        ResourcePack.VALIDATE_MANIFEST = false;
         final File input = new File("input.mcpack");
         final File output = new File("output.zip");
 
@@ -36,7 +35,7 @@ public class ResourcePackConverterTest {
         System.out.println("Reading took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();
-        final ResourcePack resourcePack = new ResourcePack(UUID.randomUUID(), "1.0.0", "", "", "", false, false, false, null, 0, PackType.Resources);
+        final ResourcePack resourcePack = new ResourcePack(null, null, "", "", "", false, false, false, null, 0, PackType.Resources);
         resourcePack.setCompressedDataLength(bytes.length, bytes.length);
         resourcePack.processDataChunk(0, bytes);
 

@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.data;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.io.ByteStreams;
 import com.viaversion.nbt.io.NBTIO;
 import com.viaversion.nbt.limiter.TagLimiter;
 import com.viaversion.nbt.stringified.SNBT;
@@ -52,6 +51,7 @@ import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
+import net.raphimc.viabedrock.api.util.FileSystemUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.SoundSource;
@@ -62,6 +62,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,8 +71,7 @@ import java.util.zip.GZIPInputStream;
 public class BedrockMappingData extends MappingDataBase {
 
     // Bedrock misc
-    private ResourcePack bedrockVanillaResourcePack;
-    private ResourcePack bedrockVanillaSkinPack;
+    private Map<String, ResourcePack> bedrockVanillaResourcePacks;
     private Map<String, Object> bedrockGameRules;
 
     // Java misc
@@ -148,9 +148,18 @@ public class BedrockMappingData extends MappingDataBase {
         final JsonObject javaViaMappingJson = this.readJson("java/via_mappings.json");
 
         { // Bedrock misc
-            this.bedrockVanillaResourcePack = this.readResourcePack("bedrock/vanilla_resource_pack.mcpack", UUID.fromString("0575c61f-a5da-4b7f-9961-ffda2908861e"), "0.0.1");
-            this.bedrockVanillaSkinPack = this.readResourcePack("bedrock/vanilla_skin_pack.mcpack", UUID.fromString("c18e65aa-7b21-4637-9b63-8ad63622ef01"), "1.0.0");
-            this.bedrockVanillaSkinPack.setType(PackType.Skins);
+            this.bedrockVanillaResourcePacks = new HashMap<>();
+            try {
+                for (Map.Entry<Path, byte[]> entry : FileSystemUtil.getFilesInDirectory("assets/viabedrock/vanilla_packs").entrySet()) {
+                    final String packName = entry.getKey().getFileName().toString().replace(".mcpack", "");
+                    final ResourcePack resourcePack = new ResourcePack(null, null, "", packName, "", false, false, false, null, 0, PackType.Resources);
+                    resourcePack.setCompressedDataLength(entry.getValue().length, entry.getValue().length);
+                    resourcePack.processDataChunk(0, entry.getValue());
+                    this.bedrockVanillaResourcePacks.put(packName, resourcePack);
+                }
+            } catch (Exception e) {
+                this.getLogger().log(Level.SEVERE, "Failed to load vanilla resource packs", e);
+            }
 
             final JsonObject bedrockGameRulesJson = this.readJson("bedrock/game_rules.json");
             this.bedrockGameRules = new HashMap<>(bedrockGameRulesJson.size());
@@ -863,12 +872,8 @@ public class BedrockMappingData extends MappingDataBase {
         }
     }
 
-    public ResourcePack getBedrockVanillaResourcePack() {
-        return this.bedrockVanillaResourcePack;
-    }
-
-    public ResourcePack getBedrockVanillaSkinPack() {
-        return this.bedrockVanillaSkinPack;
+    public Map<String, ResourcePack> getBedrockVanillaResourcePacks() {
+        return this.bedrockVanillaResourcePacks;
     }
 
     public Map<String, Object> getBedrockGameRules() {
@@ -1063,7 +1068,7 @@ public class BedrockMappingData extends MappingDataBase {
     private ResourcePack readResourcePack(String file, final UUID uuid, final String version) {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
-            final byte[] bytes = ByteStreams.toByteArray(inputStream);
+            final byte[] bytes = inputStream.readAllBytes();
             final ResourcePack resourcePack = new ResourcePack(uuid, version, "", "", "", false, false, false, null, 0, PackType.Resources);
             resourcePack.setCompressedDataLength(bytes.length, bytes.length);
             resourcePack.processDataChunk(0, bytes);
@@ -1154,7 +1159,7 @@ public class BedrockMappingData extends MappingDataBase {
                 this.getLogger().severe("Could not open block_id_meta_to_1_12_0_nbt.bin");
                 return;
             }
-            final byte[] bytes = ByteStreams.toByteArray(inputStream);
+            final byte[] bytes = inputStream.readAllBytes();
             final ByteBuf buf = Unpooled.wrappedBuffer(bytes);
 
             this.bedrockLegacyBlockStates = new Int2ObjectOpenHashMap<>();

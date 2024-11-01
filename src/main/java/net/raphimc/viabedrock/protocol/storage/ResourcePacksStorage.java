@@ -40,8 +40,51 @@ import java.util.logging.Level;
 
 public class ResourcePacksStorage extends StoredObject {
 
+    public static final List<String> VANILLA_PACK_NAMES = List.of(
+            "vanilla",
+            "vanilla_1.14",
+            "vanilla_1.15",
+            "vanilla_1.16",
+            "vanilla_1.16.100",
+            "vanilla_1.16.200",
+            "vanilla_1.16.210",
+            "vanilla_1.16.220",
+            "vanilla_1.17.0",
+            "vanilla_1.17.10",
+            "vanilla_1.17.20",
+            "vanilla_1.17.30",
+            "vanilla_1.17.40",
+            "vanilla_1.18.0",
+            "vanilla_1.18.10",
+            "vanilla_1.18.20",
+            "vanilla_1.18.30",
+            "vanilla_1.19.0",
+            "vanilla_1.19.10",
+            "vanilla_1.19.20",
+            "vanilla_1.19.30",
+            "vanilla_1.19.40",
+            "vanilla_1.19.50",
+            "vanilla_1.19.60",
+            "vanilla_1.19.70",
+            "vanilla_1.19.80",
+            "vanilla_1.20.0",
+            "vanilla_1.20.10",
+            "vanilla_1.20.20",
+            "vanilla_1.20.30",
+            "vanilla_1.20.40",
+            "vanilla_1.20.50",
+            "vanilla_1.20.60",
+            "vanilla_1.20.70",
+            "vanilla_1.20.80",
+            "vanilla_1.21.0",
+            "vanilla_1.21.10",
+            "vanilla_1.21.20",
+            "vanilla_1.21.30",
+            "vanilla_1.21.40",
+            "vanilla_1.21.41"
+    );
+
     private final Map<UUID, ResourcePack> packs = new HashMap<>();
-    private final Set<UUID> preloadedPacks = new LinkedHashSet<>();
     private final List<ResourcePack> packStackTopToBottom = new ArrayList<>();
     private final List<ResourcePack> packStackBottomToTop = new ArrayList<>();
 
@@ -58,13 +101,11 @@ public class ResourcePacksStorage extends StoredObject {
     private ParticleDefinitions particles;
     private EntityDefinitions entities;
     private ModelDefinitions models;
+    private FogDefinitions fogs;
+    private BiomeDefinitions biomes;
 
     public ResourcePacksStorage(final UserConnection user) {
         super(user);
-
-        if (BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack() != null) { // null if ran from ResourcePackConverterTest
-            this.addPreloadedPack(BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePack());
-        }
     }
 
     public void sendResponseIfAllDownloadsCompleted() {
@@ -129,20 +170,15 @@ public class ResourcePacksStorage extends StoredObject {
         this.packs.put(pack.packId(), pack);
     }
 
-    public boolean isPreloaded(final UUID packId) {
-        return this.preloadedPacks.contains(packId);
-    }
-
-    public void addPreloadedPack(final ResourcePack pack) {
-        this.packs.put(pack.packId(), pack);
-        this.preloadedPacks.add(pack.packId());
-    }
-
     public void setPackStack(final UUID[] resourcePackStack, final UUID[] behaviourPackStack) {
         this.packStackTopToBottom.clear();
         Arrays.stream(behaviourPackStack).map(this.packs::get).filter(Objects::nonNull).forEach(this.packStackTopToBottom::add);
         Arrays.stream(resourcePackStack).map(this.packs::get).filter(Objects::nonNull).forEach(this.packStackTopToBottom::add);
-        this.preloadedPacks.stream().map(this.packs::get).forEach(this.packStackTopToBottom::add);
+        if (BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks() != null) { // null if ran from ResourcePackConverterTest
+            for (int i = VANILLA_PACK_NAMES.size() - 1; i >= 0; i--) {
+                this.packStackTopToBottom.add(BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks().get(VANILLA_PACK_NAMES.get(i)));
+            }
+        }
         this.packStackBottomToTop.clear();
         this.packStackBottomToTop.addAll(this.packStackTopToBottom);
         Collections.reverse(this.packStackBottomToTop);
@@ -156,6 +192,8 @@ public class ResourcePacksStorage extends StoredObject {
         this.particles = new ParticleDefinitions(this);
         this.entities = new EntityDefinitions(this);
         this.models = new ModelDefinitions(this);
+        this.fogs = new FogDefinitions(this);
+        this.biomes = new BiomeDefinitions(this);
     }
 
     public List<ResourcePack> getPackStackTopToBottom() {
@@ -188,7 +226,7 @@ public class ResourcePacksStorage extends StoredObject {
     }
 
     public boolean hasFinishedLoading() {
-        return this.models != null;
+        return this.biomes != null;
     }
 
     public TextDefinitions getTexts() {
@@ -225,6 +263,14 @@ public class ResourcePacksStorage extends StoredObject {
 
     public ModelDefinitions getModels() {
         return this.models;
+    }
+
+    public FogDefinitions getFogs() {
+        return this.fogs;
+    }
+
+    public BiomeDefinitions getBiomes() {
+        return this.biomes;
     }
 
 }

@@ -19,7 +19,8 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.vdurmont.semver4j.Semver;
 import com.viaversion.nbt.tag.CompoundTag;
-import com.viaversion.viaversion.api.connection.StorableObject;
+import com.viaversion.viaversion.api.connection.StoredObject;
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
@@ -33,7 +34,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerAuthMovementMode
 import java.util.HashMap;
 import java.util.Map;
 
-public class GameSessionStorage implements StorableObject {
+public class GameSessionStorage extends StoredObject {
 
     private ProtocolCompression protocolCompression;
 
@@ -55,7 +56,9 @@ public class GameSessionStorage implements StorableObject {
     private boolean immutableWorld;
     private ATextComponent deathMessage;
 
-    public GameSessionStorage() {
+    public GameSessionStorage(final UserConnection user) {
+        super(user);
+
         this.bedrockDimensionDefinitions.put("minecraft:the_nether", new IntIntImmutablePair(0, 128));
     }
 
@@ -69,7 +72,7 @@ public class GameSessionStorage implements StorableObject {
 
     public CompoundTag getJavaRegistries() {
         if (this.javaRegistries == null) {
-            this.javaRegistries = JavaRegistries.createJavaRegistries(this);
+            this.javaRegistries = JavaRegistries.createJavaRegistries(this, this.user().get(ResourcePacksStorage.class));
         }
         return this.javaRegistries;
     }

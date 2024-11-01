@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.BuildPlatform;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.InputMode;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MemoryTier;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.UIProfile;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
@@ -45,7 +46,7 @@ public class SkinProvider implements Provider {
         final HandshakeStorage handshakeStorage = user.get(HandshakeStorage.class);
         final AuthChainData authChainData = user.get(AuthChainData.class);
 
-        final ResourcePack.Content skinPackContent = BedrockProtocol.MAPPINGS.getBedrockVanillaSkinPack().content();
+        final ResourcePack.Content skinPackContent = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks().get("vanilla_skin_pack").content();
         final BufferedImage skin = skinPackContent.getImage("steve.png").getImage();
         final JsonObject skinGeometry = JsonUtil.sort(skinPackContent.getJson("geometry.json"), Comparator.naturalOrder());
 
@@ -82,7 +83,7 @@ public class SkinProvider implements Provider {
         claims.put("DeviceOS", BuildPlatform.Google.getValue());
         claims.put("LanguageCode", "en_US");
         claims.put("MaxViewDistance", 96);
-        claims.put("MemoryTier", 5);
+        claims.put("MemoryTier", MemoryTier.SuperHigh.ordinal());
         claims.put("PlatformType", 0);
         claims.put("PlatformOfflineId", "");
         claims.put("PlatformOnlineId", "");

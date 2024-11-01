@@ -187,6 +187,7 @@ public abstract class EnumGeneratorTask extends DefaultTask {
         soundEventEnum.add(new Pair<>("VaultRejectRewardedPlayer", "530"));
         soundEventEnum.add(new Pair<>("ImitateDrowned", "531"));
         soundEventEnum.add(new Pair<>("BundleInsertFail", "533"));
+        soundEventEnum.add(new Pair<>("UNKNOWN_1", "534"));
 
         final MustacheEngine mustacheEngine = MustacheEngineBuilder.newBuilder()
                 .addTemplateLocator(ClassPathTemplateLocator.builder().setSuffix("mustache").build())

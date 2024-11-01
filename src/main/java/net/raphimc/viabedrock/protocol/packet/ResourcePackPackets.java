@@ -236,7 +236,6 @@ public class ResourcePackPackets {
                     final Set<String> missingNonHttpPacks = new HashSet<>();
                     final List<ResourcePack> missingHttpPacks = new ArrayList<>();
                     for (ResourcePack pack : resourcePacksStorage.getPacks()) {
-                        if (resourcePacksStorage.isPreloaded(pack.packId())) continue;
 
                         try {
                             if (Via.getManager().getProviders().get(ResourcePackProvider.class).hasPack(pack)) {

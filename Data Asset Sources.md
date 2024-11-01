@@ -42,14 +42,6 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 ### data/bedrock/sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
 
-### data/bedrock/vanilla_resource_pack.mcpack
-These files have been copied from the official bedrock client's assets folder:  
-`%MC-Root%/data/resource_packs/vanilla/`
-
-### data/bedrock/vanilla_skin_pack.mcpack
-These files have been copied from the official bedrock client's assets folder:  
-`%MC-Root%/data/skin_packs/vanilla/`
-
 ### data/java/via_mappings.json
 [ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.21.2.json)
 
@@ -70,3 +62,6 @@ This file has been dumped from a vanilla server using a fabric mod.
 
 ### item_upgrade_schema/*
 [PMMP/BedrockItemUpgradeSchema](https://github.com/pmmp/BedrockItemUpgradeSchema/tree/master/id_meta_upgrade_schema)
+
+### vanilla_packs/*
+These files have been generated using `BedrockPacksGenerator` using data from the official bedrock client's assets folder.

@@ -28,62 +28,16 @@ import java.util.UUID;
 
 public class Util {
 
-    private static final List<String> VANILLA_PACKS = List.of(
-            "vanilla_base",
-            "vanilla_music",
-            "vanilla",
-            "vanilla_1.14",
-            "vanilla_1.15",
-            "vanilla_1.16",
-            "vanilla_1.16.100",
-            "vanilla_1.16.200",
-            "vanilla_1.16.210",
-            "vanilla_1.16.220",
-            "vanilla_1.17.0",
-            "vanilla_1.17.10",
-            "vanilla_1.17.20",
-            "vanilla_1.17.30",
-            "vanilla_1.17.40",
-            "vanilla_1.18.0",
-            "vanilla_1.18.10",
-            "vanilla_1.18.20",
-            "vanilla_1.18.30",
-            "vanilla_1.19.0",
-            "vanilla_1.19.10",
-            "vanilla_1.19.20",
-            "vanilla_1.19.30",
-            "vanilla_1.19.40",
-            "vanilla_1.19.50",
-            "vanilla_1.19.60",
-            "vanilla_1.19.70",
-            "vanilla_1.19.80",
-            "vanilla_1.20.0",
-            "vanilla_1.20.10",
-            "vanilla_1.20.20",
-            "vanilla_1.20.30",
-            "vanilla_1.20.40",
-            "vanilla_1.20.50",
-            "vanilla_1.20.60",
-            "vanilla_1.20.70",
-            "vanilla_1.20.80",
-            "vanilla_1.21.0",
-            "vanilla_1.21.10",
-            "vanilla_1.21.20",
-            "vanilla_1.21.30",
-            "vanilla_1.21.40",
-            "vanilla_1.21.41"
-    );
-
     public static ResourcePacksStorage getClientResourcePacks(final File clientDataDir) {
         final File resourcePacksDir = new File(clientDataDir, "resource_packs");
         final long start = System.currentTimeMillis();
         final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage(null);
 
         final List<UUID> packStack = new ArrayList<>();
-        for (int i = VANILLA_PACKS.size() - 1; i >= 0; i--) {
-            final File packDir = new File(resourcePacksDir, VANILLA_PACKS.get(i));
+        for (int i = ResourcePacksStorage.VANILLA_PACK_NAMES.size() - 1; i >= 0; i--) {
+            final File packDir = new File(resourcePacksDir, ResourcePacksStorage.VANILLA_PACK_NAMES.get(i));
             if (!packDir.exists()) {
-                throw new IllegalStateException("Missing vanilla pack: " + VANILLA_PACKS.get(i));
+                throw new IllegalStateException("Missing vanilla pack: " + ResourcePacksStorage.VANILLA_PACK_NAMES.get(i));
             }
             final ResourcePack resourcePack = new DirectoryResourcePack(packDir, UUID.randomUUID(), "1.0.0", "", packDir.getName(), "", false, false, false, 0, PackType.Resources);
             resourcePacksStorage.addPack(resourcePack);
