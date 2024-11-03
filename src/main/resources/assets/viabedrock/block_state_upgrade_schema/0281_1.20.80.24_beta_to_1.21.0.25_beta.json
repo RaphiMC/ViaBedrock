@@ -15,6 +15,38 @@
             }
         }
     },
+    "flattenedProperties": {
+        "minecraft:double_plant": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "double_plant_type",
+            "suffix": "",
+            "flattenedValueRemaps": {
+                "fern": "large_fern",
+                "grass": "tall_grass",
+                "paeonia": "peony",
+                "rose": "rose_bush",
+                "syringa": "lilac"
+            }
+        },
+        "minecraft:stone_block_slab": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "stone_slab_type",
+            "suffix": "_slab",
+            "flattenedValueRemaps": {
+                "wood": "petrified_oak"
+            }
+        },
+        "minecraft:tallgrass": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "tall_grass_type",
+            "suffix": "",
+            "flattenedValueRemaps": {
+                "default": "short_grass",
+                "snow": "fern",
+                "tall": "short_grass"
+            }
+        }
+    },
     "remappedStates": {
         "minecraft:coral_block": [
             {
@@ -55,82 +87,6 @@
                         "yellow": "horn"
                     }
                 },
-                "newState": null
-            }
-        ],
-        "minecraft:double_plant": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "double_plant_type",
-                    "suffix": "",
-                    "flattenedValueRemaps": {
-                        "fern": "large_fern",
-                        "grass": "tall_grass",
-                        "paeonia": "peony",
-                        "rose": "rose_bush",
-                        "syringa": "lilac"
-                    }
-                },
-                "newState": null,
-                "copiedState": [
-                    "upper_block_bit"
-                ]
-            }
-        ],
-        "minecraft:stone_block_slab": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "stone_slab_type",
-                    "suffix": "_slab",
-                    "flattenedValueRemaps": {
-                        "wood": "petrified_oak"
-                    }
-                },
-                "newState": null,
-                "copiedState": [
-                    "minecraft:vertical_half"
-                ]
-            }
-        ],
-        "minecraft:tallgrass": [
-            {
-                "oldState": {
-                    "tall_grass_type": {
-                        "string": "default"
-                    }
-                },
-                "newName": "minecraft:short_grass",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "tall_grass_type": {
-                        "string": "fern"
-                    }
-                },
-                "newName": "minecraft:fern",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "tall_grass_type": {
-                        "string": "snow"
-                    }
-                },
-                "newName": "minecraft:fern",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "tall_grass_type": {
-                        "string": "tall"
-                    }
-                },
-                "newName": "minecraft:short_grass",
                 "newState": null
             }
         ]

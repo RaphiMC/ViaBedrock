@@ -6,38 +6,196 @@
     "renamedIds": {
         "minecraft:yellow_flower": "minecraft:dandelion"
     },
-    "remappedStates": {
-        "minecraft:anvil": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "damage",
-                    "suffix": "anvil",
-                    "flattenedValueRemaps": {
-                        "broken": "deprecated_",
-                        "slightly_damaged": "chipped_",
-                        "undamaged": "",
-                        "very_damaged": "damaged_"
-                    }
-                },
-                "newState": null,
-                "copiedState": [
-                    "minecraft:cardinal_direction"
-                ]
+    "removedProperties": {
+        "minecraft:coral_fan_hang3": [
+            "coral_hang_type_bit"
+        ]
+    },
+    "flattenedProperties": {
+        "minecraft:anvil": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "damage",
+            "suffix": "anvil",
+            "flattenedValueRemaps": {
+                "broken": "deprecated_",
+                "slightly_damaged": "chipped_",
+                "undamaged": "",
+                "very_damaged": "damaged_"
             }
-        ],
+        },
+        "minecraft:coral_fan_hang3": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "dead_bit",
+            "flattenedPropertyType": "byte",
+            "suffix": "horn_coral_wall_fan",
+            "flattenedValueRemaps": {
+                "0": "",
+                "1": "dead_",
+                "dummy": "map_not_list"
+            }
+        },
+        "minecraft:dirt": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "dirt_type",
+            "suffix": "dirt",
+            "flattenedValueRemaps": {
+                "coarse": "coarse_",
+                "normal": ""
+            }
+        },
+        "minecraft:double_stone_block_slab": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "stone_slab_type",
+            "suffix": "_double_slab",
+            "flattenedValueRemaps": {
+                "wood": "petrified_oak"
+            }
+        },
+        "minecraft:double_stone_block_slab2": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "stone_slab_type_2",
+            "suffix": "_double_slab",
+            "flattenedValueRemaps": {
+                "prismarine_dark": "dark_prismarine",
+                "prismarine_rough": "prismarine"
+            }
+        },
+        "minecraft:double_stone_block_slab3": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "stone_slab_type_3",
+            "suffix": "_double_slab"
+        },
+        "minecraft:double_stone_block_slab4": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "stone_slab_type_4",
+            "suffix": "_double_slab",
+            "flattenedValueRemaps": {
+                "stone": "normal_stone"
+            }
+        },
+        "minecraft:light_block": {
+            "prefix": "minecraft:light_block_",
+            "flattenedProperty": "block_light_level",
+            "flattenedPropertyType": "int",
+            "suffix": ""
+        },
+        "minecraft:monster_egg": {
+            "prefix": "minecraft:infested_",
+            "flattenedProperty": "monster_egg_stone_type",
+            "suffix": "",
+            "flattenedValueRemaps": {
+                "chiseled_stone_brick": "chiseled_stone_bricks",
+                "cracked_stone_brick": "cracked_stone_bricks",
+                "mossy_stone_brick": "mossy_stone_bricks",
+                "stone_brick": "stone_bricks"
+            }
+        },
+        "minecraft:prismarine": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "prismarine_block_type",
+            "suffix": "",
+            "flattenedValueRemaps": {
+                "bricks": "prismarine_bricks",
+                "dark": "dark_prismarine",
+                "default": "prismarine"
+            }
+        },
+        "minecraft:quartz_block": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "chisel_type",
+            "suffix": "",
+            "flattenedValueRemaps": {
+                "chiseled": "chiseled_quartz_block",
+                "default": "quartz_block",
+                "lines": "quartz_pillar",
+                "smooth": "smooth_quartz"
+            }
+        },
+        "minecraft:red_sandstone": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "sand_stone_type",
+            "suffix": "red_sandstone",
+            "flattenedValueRemaps": {
+                "cut": "cut_",
+                "default": "",
+                "heiroglyphs": "chiseled_",
+                "smooth": "smooth_"
+            }
+        },
+        "minecraft:sand": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "sand_type",
+            "suffix": "sand",
+            "flattenedValueRemaps": {
+                "normal": "",
+                "red": "red_"
+            }
+        },
+        "minecraft:sandstone": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "sand_stone_type",
+            "suffix": "sandstone",
+            "flattenedValueRemaps": {
+                "cut": "cut_",
+                "default": "",
+                "heiroglyphs": "chiseled_",
+                "smooth": "smooth_"
+            }
+        },
+        "minecraft:stone_block_slab2": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "stone_slab_type_2",
+            "suffix": "_slab",
+            "flattenedValueRemaps": {
+                "prismarine_dark": "dark_prismarine",
+                "prismarine_rough": "prismarine"
+            }
+        },
+        "minecraft:stone_block_slab3": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "stone_slab_type_3",
+            "suffix": "_slab"
+        },
+        "minecraft:stone_block_slab4": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "stone_slab_type_4",
+            "suffix": "_slab",
+            "flattenedValueRemaps": {
+                "stone": "normal_stone"
+            }
+        },
+        "minecraft:stonebrick": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "stone_brick_type",
+            "suffix": "stone_bricks",
+            "flattenedValueRemaps": {
+                "chiseled": "chiseled_",
+                "cracked": "cracked_",
+                "default": "",
+                "mossy": "mossy_",
+                "smooth": ""
+            }
+        }
+    },
+    "remappedStates": {
         "minecraft:coral_fan_hang": [
             {
                 "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 0
-                    },
                     "dead_bit": {
                         "byte": 0
                     }
                 },
-                "newName": "minecraft:tube_coral_wall_fan",
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "coral_hang_type_bit",
+                    "flattenedPropertyType": "byte",
+                    "suffix": "_coral_wall_fan",
+                    "flattenedValueRemaps": {
+                        "0": "tube",
+                        "1": "brain",
+                        "dummy": "map_not_list"
+                    }
+                },
                 "newState": null,
                 "copiedState": [
                     "coral_direction"
@@ -45,44 +203,21 @@
             },
             {
                 "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 0
-                    },
                     "dead_bit": {
                         "byte": 1
                     }
                 },
-                "newName": "minecraft:dead_tube_coral_wall_fan",
-                "newState": null,
-                "copiedState": [
-                    "coral_direction"
-                ]
-            },
-            {
-                "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 1
-                    },
-                    "dead_bit": {
-                        "byte": 0
+                "newFlattenedName": {
+                    "prefix": "minecraft:dead_",
+                    "flattenedProperty": "coral_hang_type_bit",
+                    "flattenedPropertyType": "byte",
+                    "suffix": "_coral_wall_fan",
+                    "flattenedValueRemaps": {
+                        "0": "tube",
+                        "1": "brain",
+                        "dummy": "map_not_list"
                     }
                 },
-                "newName": "minecraft:brain_coral_wall_fan",
-                "newState": null,
-                "copiedState": [
-                    "coral_direction"
-                ]
-            },
-            {
-                "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 1
-                    },
-                    "dead_bit": {
-                        "byte": 1
-                    }
-                },
-                "newName": "minecraft:dead_brain_coral_wall_fan",
                 "newState": null,
                 "copiedState": [
                     "coral_direction"
@@ -92,14 +227,21 @@
         "minecraft:coral_fan_hang2": [
             {
                 "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 0
-                    },
                     "dead_bit": {
                         "byte": 0
                     }
                 },
-                "newName": "minecraft:bubble_coral_wall_fan",
+                "newFlattenedName": {
+                    "prefix": "minecraft:",
+                    "flattenedProperty": "coral_hang_type_bit",
+                    "flattenedPropertyType": "byte",
+                    "suffix": "e_coral_wall_fan",
+                    "flattenedValueRemaps": {
+                        "0": "bubbl",
+                        "1": "fir",
+                        "dummy": "map_not_list"
+                    }
+                },
                 "newState": null,
                 "copiedState": [
                     "coral_direction"
@@ -107,535 +249,25 @@
             },
             {
                 "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 0
-                    },
                     "dead_bit": {
                         "byte": 1
                     }
                 },
-                "newName": "minecraft:dead_bubble_coral_wall_fan",
+                "newFlattenedName": {
+                    "prefix": "minecraft:dead_",
+                    "flattenedProperty": "coral_hang_type_bit",
+                    "flattenedPropertyType": "byte",
+                    "suffix": "e_coral_wall_fan",
+                    "flattenedValueRemaps": {
+                        "0": "bubbl",
+                        "1": "fir",
+                        "dummy": "map_not_list"
+                    }
+                },
                 "newState": null,
                 "copiedState": [
                     "coral_direction"
                 ]
-            },
-            {
-                "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 1
-                    },
-                    "dead_bit": {
-                        "byte": 0
-                    }
-                },
-                "newName": "minecraft:fire_coral_wall_fan",
-                "newState": null,
-                "copiedState": [
-                    "coral_direction"
-                ]
-            },
-            {
-                "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 1
-                    },
-                    "dead_bit": {
-                        "byte": 1
-                    }
-                },
-                "newName": "minecraft:dead_fire_coral_wall_fan",
-                "newState": null,
-                "copiedState": [
-                    "coral_direction"
-                ]
-            }
-        ],
-        "minecraft:coral_fan_hang3": [
-            {
-                "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 0
-                    },
-                    "dead_bit": {
-                        "byte": 0
-                    }
-                },
-                "newName": "minecraft:horn_coral_wall_fan",
-                "newState": null,
-                "copiedState": [
-                    "coral_direction"
-                ]
-            },
-            {
-                "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 0
-                    },
-                    "dead_bit": {
-                        "byte": 1
-                    }
-                },
-                "newName": "minecraft:dead_horn_coral_wall_fan",
-                "newState": null,
-                "copiedState": [
-                    "coral_direction"
-                ]
-            },
-            {
-                "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 1
-                    },
-                    "dead_bit": {
-                        "byte": 0
-                    }
-                },
-                "newName": "minecraft:horn_coral_wall_fan",
-                "newState": null,
-                "copiedState": [
-                    "coral_direction"
-                ]
-            },
-            {
-                "oldState": {
-                    "coral_hang_type_bit": {
-                        "byte": 1
-                    },
-                    "dead_bit": {
-                        "byte": 1
-                    }
-                },
-                "newName": "minecraft:dead_horn_coral_wall_fan",
-                "newState": null,
-                "copiedState": [
-                    "coral_direction"
-                ]
-            }
-        ],
-        "minecraft:dirt": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "dirt_type",
-                    "suffix": "dirt",
-                    "flattenedValueRemaps": {
-                        "coarse": "coarse_",
-                        "normal": ""
-                    }
-                },
-                "newState": null
-            }
-        ],
-        "minecraft:double_stone_block_slab": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "stone_slab_type",
-                    "suffix": "_double_slab",
-                    "flattenedValueRemaps": {
-                        "wood": "petrified_oak"
-                    }
-                },
-                "newState": null,
-                "copiedState": [
-                    "minecraft:vertical_half"
-                ]
-            }
-        ],
-        "minecraft:double_stone_block_slab2": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "stone_slab_type_2",
-                    "suffix": "_double_slab",
-                    "flattenedValueRemaps": {
-                        "prismarine_dark": "dark_prismarine",
-                        "prismarine_rough": "prismarine"
-                    }
-                },
-                "newState": null,
-                "copiedState": [
-                    "minecraft:vertical_half"
-                ]
-            }
-        ],
-        "minecraft:double_stone_block_slab3": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "stone_slab_type_3",
-                    "suffix": "_double_slab"
-                },
-                "newState": null,
-                "copiedState": [
-                    "minecraft:vertical_half"
-                ]
-            }
-        ],
-        "minecraft:double_stone_block_slab4": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "stone_slab_type_4",
-                    "suffix": "_double_slab",
-                    "flattenedValueRemaps": {
-                        "stone": "normal_stone"
-                    }
-                },
-                "newState": null,
-                "copiedState": [
-                    "minecraft:vertical_half"
-                ]
-            }
-        ],
-        "minecraft:light_block": [
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 0
-                    }
-                },
-                "newName": "minecraft:light_block_0",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 10
-                    }
-                },
-                "newName": "minecraft:light_block_10",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 11
-                    }
-                },
-                "newName": "minecraft:light_block_11",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 12
-                    }
-                },
-                "newName": "minecraft:light_block_12",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 13
-                    }
-                },
-                "newName": "minecraft:light_block_13",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 14
-                    }
-                },
-                "newName": "minecraft:light_block_14",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 15
-                    }
-                },
-                "newName": "minecraft:light_block_15",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 1
-                    }
-                },
-                "newName": "minecraft:light_block_1",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 2
-                    }
-                },
-                "newName": "minecraft:light_block_2",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 3
-                    }
-                },
-                "newName": "minecraft:light_block_3",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 4
-                    }
-                },
-                "newName": "minecraft:light_block_4",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 5
-                    }
-                },
-                "newName": "minecraft:light_block_5",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 6
-                    }
-                },
-                "newName": "minecraft:light_block_6",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 7
-                    }
-                },
-                "newName": "minecraft:light_block_7",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 8
-                    }
-                },
-                "newName": "minecraft:light_block_8",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "block_light_level": {
-                        "int": 9
-                    }
-                },
-                "newName": "minecraft:light_block_9",
-                "newState": null
-            }
-        ],
-        "minecraft:monster_egg": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:infested_",
-                    "flattenedProperty": "monster_egg_stone_type",
-                    "suffix": "",
-                    "flattenedValueRemaps": {
-                        "chiseled_stone_brick": "chiseled_stone_bricks",
-                        "cracked_stone_brick": "cracked_stone_bricks",
-                        "mossy_stone_brick": "mossy_stone_bricks",
-                        "stone_brick": "stone_bricks"
-                    }
-                },
-                "newState": null
-            }
-        ],
-        "minecraft:prismarine": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "prismarine_block_type",
-                    "suffix": "",
-                    "flattenedValueRemaps": {
-                        "bricks": "prismarine_bricks",
-                        "dark": "dark_prismarine",
-                        "default": "prismarine"
-                    }
-                },
-                "newState": null
-            }
-        ],
-        "minecraft:quartz_block": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "chisel_type",
-                    "suffix": "",
-                    "flattenedValueRemaps": {
-                        "chiseled": "chiseled_quartz_block",
-                        "default": "quartz_block",
-                        "lines": "quartz_pillar",
-                        "smooth": "smooth_quartz"
-                    }
-                },
-                "newState": null,
-                "copiedState": [
-                    "pillar_axis"
-                ]
-            }
-        ],
-        "minecraft:red_sandstone": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "sand_stone_type",
-                    "suffix": "red_sandstone",
-                    "flattenedValueRemaps": {
-                        "cut": "cut_",
-                        "default": "",
-                        "heiroglyphs": "chiseled_",
-                        "smooth": "smooth_"
-                    }
-                },
-                "newState": null
-            }
-        ],
-        "minecraft:sand": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "sand_type",
-                    "suffix": "sand",
-                    "flattenedValueRemaps": {
-                        "normal": "",
-                        "red": "red_"
-                    }
-                },
-                "newState": null
-            }
-        ],
-        "minecraft:sandstone": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "sand_stone_type",
-                    "suffix": "sandstone",
-                    "flattenedValueRemaps": {
-                        "cut": "cut_",
-                        "default": "",
-                        "heiroglyphs": "chiseled_",
-                        "smooth": "smooth_"
-                    }
-                },
-                "newState": null
-            }
-        ],
-        "minecraft:stone_block_slab2": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "stone_slab_type_2",
-                    "suffix": "_slab",
-                    "flattenedValueRemaps": {
-                        "prismarine_dark": "dark_prismarine",
-                        "prismarine_rough": "prismarine"
-                    }
-                },
-                "newState": null,
-                "copiedState": [
-                    "minecraft:vertical_half"
-                ]
-            }
-        ],
-        "minecraft:stone_block_slab3": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "stone_slab_type_3",
-                    "suffix": "_slab"
-                },
-                "newState": null,
-                "copiedState": [
-                    "minecraft:vertical_half"
-                ]
-            }
-        ],
-        "minecraft:stone_block_slab4": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "stone_slab_type_4",
-                    "suffix": "_slab",
-                    "flattenedValueRemaps": {
-                        "stone": "normal_stone"
-                    }
-                },
-                "newState": null,
-                "copiedState": [
-                    "minecraft:vertical_half"
-                ]
-            }
-        ],
-        "minecraft:stonebrick": [
-            {
-                "oldState": {
-                    "stone_brick_type": {
-                        "string": "chiseled"
-                    }
-                },
-                "newName": "minecraft:chiseled_stone_bricks",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "stone_brick_type": {
-                        "string": "cracked"
-                    }
-                },
-                "newName": "minecraft:cracked_stone_bricks",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "stone_brick_type": {
-                        "string": "default"
-                    }
-                },
-                "newName": "minecraft:stone_bricks",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "stone_brick_type": {
-                        "string": "mossy"
-                    }
-                },
-                "newName": "minecraft:mossy_stone_bricks",
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "stone_brick_type": {
-                        "string": "smooth"
-                    }
-                },
-                "newName": "minecraft:stone_bricks",
-                "newState": null
             }
         ]
     }

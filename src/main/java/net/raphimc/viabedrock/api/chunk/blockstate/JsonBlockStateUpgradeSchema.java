@@ -29,6 +29,8 @@ import java.util.function.Function;
 
 public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
+    private static final String NEW_NAME_KEY = "viabedrock:newname_" + UUID.randomUUID();
+
     public JsonBlockStateUpgradeSchema(final JsonObject jsonObject) {
         super(jsonObject.get("maxVersionMajor").getAsInt(), jsonObject.get("maxVersionMinor").getAsInt(), jsonObject.get("maxVersionPatch").getAsInt(), jsonObject.get("maxVersionRevision").getAsInt());
 
@@ -44,7 +46,6 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                 remappedPropertyValuesLookup.put(entry.getKey(), mappings);
             }
         }
-
         if (jsonObject.has("remappedStates")) {
             final JsonObject remappedStates = jsonObject.get("remappedStates").getAsJsonObject();
             for (Map.Entry<String, JsonElement> entry : remappedStates.entrySet()) {
@@ -139,6 +140,93 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                 });
             }
         }
+        if (jsonObject.has("renamedIds")) {
+            final JsonObject renamedIds = jsonObject.get("renamedIds").getAsJsonObject();
+            final Map<String, String> mappings = new HashMap<>();
+            for (Map.Entry<String, JsonElement> mappingEntry : renamedIds.entrySet()) {
+                mappings.put(mappingEntry.getKey().toLowerCase(Locale.ROOT), mappingEntry.getValue().getAsString().toLowerCase(Locale.ROOT));
+            }
+
+            this.actions.add(tag -> {
+                final String name = tag.getStringTag("name").getValue();
+                if (!mappings.containsKey(name)) return;
+
+                tag.putString(NEW_NAME_KEY, mappings.get(name));
+            });
+        }
+        if (jsonObject.has("flattenedProperties")) {
+            final JsonObject flattenedProperties = jsonObject.get("flattenedProperties").getAsJsonObject();
+            for (Map.Entry<String, JsonElement> entry : flattenedProperties.entrySet()) {
+                final String identifier = entry.getKey().toLowerCase(Locale.ROOT);
+                final JsonObject mappingObject = entry.getValue().getAsJsonObject();
+                final String prefix = mappingObject.get("prefix").getAsString();
+                final String flattenedProperty = mappingObject.get("flattenedProperty").getAsString();
+                final String suffix = mappingObject.get("suffix").getAsString();
+                final JsonObject flattenedValueRemapsObject = mappingObject.getAsJsonObject("flattenedValueRemaps");
+                final Map<String, String> flattenedValueRemaps = new HashMap<>();
+                if (flattenedValueRemapsObject != null) {
+                    for (Map.Entry<String, JsonElement> remap : flattenedValueRemapsObject.entrySet()) {
+                        flattenedValueRemaps.put(remap.getKey(), remap.getValue().getAsString());
+                    }
+                }
+
+                this.actions.add(tag -> {
+                    final String name = tag.getStringTag("name").getValue();
+                    if (!name.equals(identifier)) return;
+
+                    if (tag.get("states") instanceof CompoundTag states) {
+                        if (!states.contains(flattenedProperty)) return;
+
+                        final String flattenedValue = states.get(flattenedProperty).getValue().toString();
+                        final String flattenedName = prefix + flattenedValueRemaps.getOrDefault(flattenedValue, flattenedValue) + suffix;
+                        tag.putString(NEW_NAME_KEY, flattenedName.toLowerCase(Locale.ROOT));
+                        states.remove(flattenedProperty);
+                    }
+                });
+            }
+        }
+        if (jsonObject.has("addedProperties")) {
+            final JsonObject addedProperties = jsonObject.get("addedProperties").getAsJsonObject();
+            for (Map.Entry<String, JsonElement> entry : addedProperties.entrySet()) {
+                final String identifier = entry.getKey().toLowerCase(Locale.ROOT);
+                final List<Pair<String, ?>> toAdd = new ArrayList<>();
+                for (Map.Entry<String, JsonElement> toAddEntry : entry.getValue().getAsJsonObject().entrySet()) {
+                    toAdd.add(new Pair<>(toAddEntry.getKey(), this.getValue(toAddEntry.getValue().getAsJsonObject())));
+                }
+
+                this.actions.add(tag -> {
+                    final String name = tag.getStringTag("name").getValue();
+                    if (!name.equals(identifier)) return;
+
+                    if (tag.get("states") instanceof CompoundTag states) {
+                        for (Pair<String, ?> property : toAdd) {
+                            states.put(property.key(), NbtUtil.createTag(property.value()));
+                        }
+                    }
+                });
+            }
+        }
+        if (jsonObject.has("removedProperties")) {
+            final JsonObject removedProperties = jsonObject.get("removedProperties").getAsJsonObject();
+            for (Map.Entry<String, JsonElement> entry : removedProperties.entrySet()) {
+                final String identifier = entry.getKey().toLowerCase(Locale.ROOT);
+                final List<String> toRemove = new ArrayList<>();
+                for (JsonElement toRemoveEntry : entry.getValue().getAsJsonArray()) {
+                    toRemove.add(toRemoveEntry.getAsString());
+                }
+
+                this.actions.add(tag -> {
+                    final String name = tag.getStringTag("name").getValue();
+                    if (!name.equals(identifier)) return;
+
+                    if (tag.get("states") instanceof CompoundTag states) {
+                        for (String property : toRemove) {
+                            states.remove(property);
+                        }
+                    }
+                });
+            }
+        }
         if (jsonObject.has("remappedPropertyValues")) {
             final JsonObject remappedPropertyValues = jsonObject.get("remappedPropertyValues").getAsJsonObject();
             for (Map.Entry<String, JsonElement> entry : remappedPropertyValues.entrySet()) {
@@ -192,62 +280,15 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                 });
             }
         }
-        if (jsonObject.has("removedProperties")) {
-            final JsonObject removedProperties = jsonObject.get("removedProperties").getAsJsonObject();
-            for (Map.Entry<String, JsonElement> entry : removedProperties.entrySet()) {
-                final String identifier = entry.getKey().toLowerCase(Locale.ROOT);
-                final List<String> toRemove = new ArrayList<>();
-                for (JsonElement toRemoveEntry : entry.getValue().getAsJsonArray()) {
-                    toRemove.add(toRemoveEntry.getAsString());
-                }
 
-                this.actions.add(tag -> {
-                    final String name = tag.getStringTag("name").getValue();
-                    if (!name.equals(identifier)) return;
-
-                    if (tag.get("states") instanceof CompoundTag states) {
-                        for (String property : toRemove) {
-                            states.remove(property);
-                        }
-                    }
-                });
+        // Apply the new name last, because the remappers are expecting the old name
+        this.actions.add(tag -> {
+            final String newName = tag.getString(NEW_NAME_KEY, null);
+            if (newName != null) {
+                tag.putString("name", newName);
+                tag.remove(NEW_NAME_KEY);
             }
-        }
-        if (jsonObject.has("addedProperties")) {
-            final JsonObject addedProperties = jsonObject.get("addedProperties").getAsJsonObject();
-            for (Map.Entry<String, JsonElement> entry : addedProperties.entrySet()) {
-                final String identifier = entry.getKey().toLowerCase(Locale.ROOT);
-                final List<Pair<String, ?>> toAdd = new ArrayList<>();
-                for (Map.Entry<String, JsonElement> toAddEntry : entry.getValue().getAsJsonObject().entrySet()) {
-                    toAdd.add(new Pair<>(toAddEntry.getKey(), this.getValue(toAddEntry.getValue().getAsJsonObject())));
-                }
-
-                this.actions.add(tag -> {
-                    final String name = tag.getStringTag("name").getValue();
-                    if (!name.equals(identifier)) return;
-
-                    if (tag.get("states") instanceof CompoundTag states) {
-                        for (Pair<String, ?> property : toAdd) {
-                            states.put(property.key(), NbtUtil.createTag(property.value()));
-                        }
-                    }
-                });
-            }
-        }
-        if (jsonObject.has("renamedIds")) {
-            final JsonObject renamedIds = jsonObject.get("renamedIds").getAsJsonObject();
-            final Map<String, String> mappings = new HashMap<>();
-            for (Map.Entry<String, JsonElement> mappingEntry : renamedIds.entrySet()) {
-                mappings.put(mappingEntry.getKey().toLowerCase(Locale.ROOT), mappingEntry.getValue().getAsString().toLowerCase(Locale.ROOT));
-            }
-
-            this.actions.add(tag -> {
-                final String name = tag.getStringTag("name").getValue();
-                if (!mappings.containsKey(name)) return;
-
-                tag.putString("name", mappings.get(name));
-            });
-        }
+        });
     }
 
     private Object getValue(final JsonObject obj) {

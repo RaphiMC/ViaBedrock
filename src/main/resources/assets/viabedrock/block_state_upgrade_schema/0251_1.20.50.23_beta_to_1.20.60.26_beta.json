@@ -3,34 +3,22 @@
     "maxVersionMinor": 20,
     "maxVersionPatch": 60,
     "maxVersionRevision": 1,
-    "remappedStates": {
-        "minecraft:hard_stained_glass": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:hard_",
-                    "flattenedProperty": "color",
-                    "suffix": "_stained_glass",
-                    "flattenedValueRemaps": {
-                        "silver": "light_gray"
-                    }
-                },
-                "newState": null
+    "flattenedProperties": {
+        "minecraft:hard_stained_glass": {
+            "prefix": "minecraft:hard_",
+            "flattenedProperty": "color",
+            "suffix": "_stained_glass",
+            "flattenedValueRemaps": {
+                "silver": "light_gray"
             }
-        ],
-        "minecraft:hard_stained_glass_pane": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:hard_",
-                    "flattenedProperty": "color",
-                    "suffix": "_stained_glass_pane",
-                    "flattenedValueRemaps": {
-                        "silver": "light_gray"
-                    }
-                },
-                "newState": null
+        },
+        "minecraft:hard_stained_glass_pane": {
+            "prefix": "minecraft:hard_",
+            "flattenedProperty": "color",
+            "suffix": "_stained_glass_pane",
+            "flattenedValueRemaps": {
+                "silver": "light_gray"
             }
-        ]
+        }
     }
 }

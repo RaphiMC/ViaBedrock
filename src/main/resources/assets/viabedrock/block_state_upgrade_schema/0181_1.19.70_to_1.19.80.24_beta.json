@@ -3,45 +3,21 @@
     "maxVersionMinor": 19,
     "maxVersionPatch": 80,
     "maxVersionRevision": 11,
-    "remappedStates": {
-        "minecraft:fence": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "wood_type",
-                    "suffix": "_fence"
-                },
-                "newState": null
-            }
-        ],
-        "minecraft:log": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "old_log_type",
-                    "suffix": "_log"
-                },
-                "newState": null,
-                "copiedState": [
-                    "pillar_axis"
-                ]
-            }
-        ],
-        "minecraft:log2": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "new_log_type",
-                    "suffix": "_log"
-                },
-                "newState": null,
-                "copiedState": [
-                    "pillar_axis"
-                ]
-            }
-        ]
+    "flattenedProperties": {
+        "minecraft:fence": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "wood_type",
+            "suffix": "_fence"
+        },
+        "minecraft:log": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "old_log_type",
+            "suffix": "_log"
+        },
+        "minecraft:log2": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "new_log_type",
+            "suffix": "_log"
+        }
     }
 }

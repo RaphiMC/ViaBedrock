@@ -65,34 +65,22 @@
             }
         ]
     },
-    "remappedStates": {
-        "minecraft:concrete": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "color",
-                    "suffix": "_concrete",
-                    "flattenedValueRemaps": {
-                        "silver": "light_gray"
-                    }
-                },
-                "newState": null
+    "flattenedProperties": {
+        "minecraft:concrete": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "color",
+            "suffix": "_concrete",
+            "flattenedValueRemaps": {
+                "silver": "light_gray"
             }
-        ],
-        "minecraft:shulker_box": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "color",
-                    "suffix": "_shulker_box",
-                    "flattenedValueRemaps": {
-                        "silver": "light_gray"
-                    }
-                },
-                "newState": null
+        },
+        "minecraft:shulker_box": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "color",
+            "suffix": "_shulker_box",
+            "flattenedValueRemaps": {
+                "silver": "light_gray"
             }
-        ]
+        }
     }
 }

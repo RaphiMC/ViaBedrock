@@ -425,34 +425,22 @@
             }
         ]
     },
-    "remappedStates": {
-        "minecraft:stained_glass": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "color",
-                    "suffix": "_stained_glass",
-                    "flattenedValueRemaps": {
-                        "silver": "light_gray"
-                    }
-                },
-                "newState": null
+    "flattenedProperties": {
+        "minecraft:stained_glass": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "color",
+            "suffix": "_stained_glass",
+            "flattenedValueRemaps": {
+                "silver": "light_gray"
             }
-        ],
-        "minecraft:stained_glass_pane": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "color",
-                    "suffix": "_stained_glass_pane",
-                    "flattenedValueRemaps": {
-                        "silver": "light_gray"
-                    }
-                },
-                "newState": null
+        },
+        "minecraft:stained_glass_pane": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "color",
+            "suffix": "_stained_glass_pane",
+            "flattenedValueRemaps": {
+                "silver": "light_gray"
             }
-        ]
+        }
     }
 }

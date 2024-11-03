@@ -100,21 +100,17 @@
             }
         ]
     },
-    "remappedStates": {
-        "minecraft:carpet": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "color",
-                    "suffix": "_carpet",
-                    "flattenedValueRemaps": {
-                        "silver": "light_gray"
-                    }
-                },
-                "newState": null
+    "flattenedProperties": {
+        "minecraft:carpet": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "color",
+            "suffix": "_carpet",
+            "flattenedValueRemaps": {
+                "silver": "light_gray"
             }
-        ],
+        }
+    },
+    "remappedStates": {
         "minecraft:coral": [
             {
                 "oldState": {

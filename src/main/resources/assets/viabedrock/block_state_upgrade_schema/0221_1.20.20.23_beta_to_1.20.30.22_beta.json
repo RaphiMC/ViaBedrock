@@ -207,34 +207,22 @@
             }
         ]
     },
-    "remappedStates": {
-        "minecraft:concrete_powder": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "color",
-                    "suffix": "_concrete_powder",
-                    "flattenedValueRemaps": {
-                        "silver": "light_gray"
-                    }
-                },
-                "newState": null
+    "flattenedProperties": {
+        "minecraft:concrete_powder": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "color",
+            "suffix": "_concrete_powder",
+            "flattenedValueRemaps": {
+                "silver": "light_gray"
             }
-        ],
-        "minecraft:stained_hardened_clay": [
-            {
-                "oldState": null,
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "color",
-                    "suffix": "_terracotta",
-                    "flattenedValueRemaps": {
-                        "silver": "light_gray"
-                    }
-                },
-                "newState": null
+        },
+        "minecraft:stained_hardened_clay": {
+            "prefix": "minecraft:",
+            "flattenedProperty": "color",
+            "suffix": "_terracotta",
+            "flattenedValueRemaps": {
+                "silver": "light_gray"
             }
-        ]
+        }
     }
 }
