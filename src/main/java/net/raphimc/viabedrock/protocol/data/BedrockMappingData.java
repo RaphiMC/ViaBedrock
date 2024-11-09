@@ -82,7 +82,7 @@ public class BedrockMappingData extends MappingDataBase {
     // Block states
     private BlockStateUpgrader bedrockBlockStateUpgrader;
     private BiMap<BlockState, Integer> javaBlockStates;
-    private List<BedrockBlockState> bedrockBlockStates;
+    private Set<BedrockBlockState> bedrockBlockStates;
     private Map<BlockState, BlockState> bedrockToJavaBlockStates;
     private Map<String, String> bedrockBlockTags;
     private Map<String, Map<String, Set<String>>> bedrockBlockTraits;
@@ -192,7 +192,7 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             final ListTag<CompoundTag> bedrockBlockStatesTag = this.readNBT("bedrock/block_palette.nbt").getListTag("blocks", CompoundTag.class);
-            this.bedrockBlockStates = new ArrayList<>(bedrockBlockStatesTag.size());
+            this.bedrockBlockStates = new LinkedHashSet<>(bedrockBlockStatesTag.size(), 1.0F);
             for (CompoundTag tag : bedrockBlockStatesTag) {
                 final BedrockBlockState bedrockBlockState = BedrockBlockState.fromNbt(tag);
                 this.bedrockBlockStates.add(bedrockBlockState);
@@ -900,7 +900,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaBlockStates;
     }
 
-    public List<BedrockBlockState> getBedrockBlockStates() {
+    public Set<BedrockBlockState> getBedrockBlockStates() {
         return this.bedrockBlockStates;
     }
 
