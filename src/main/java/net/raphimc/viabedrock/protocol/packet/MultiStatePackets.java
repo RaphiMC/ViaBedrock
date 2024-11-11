@@ -126,7 +126,7 @@ public class MultiStatePackets {
         wrapper.cancel();
         final String channel = Key.namespaced(wrapper.read(Types.STRING)); // channel
         if (channel.equals("minecraft:register")) {
-            final String[] channels = new String(wrapper.read(Types.REMAINING_BYTES), StandardCharsets.UTF_8).split("\0");
+            final String[] channels = new String(wrapper.read(Types.SERVERBOUND_CUSTOM_PAYLOAD_DATA), StandardCharsets.UTF_8).split("\0");
             wrapper.user().get(ChannelStorage.class).addChannels(channels);
         }
     };
