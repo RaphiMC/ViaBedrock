@@ -53,7 +53,7 @@ dependencies {
     compileOnly "com.viaversion:viaversion-common:5.1.2-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.3"
     compileOnly "com.google.guava:guava:33.3.1-jre"
-    compileOnly "io.netty:netty-handler:4.1.114.Final"
+    compileOnly "io.netty:netty-handler:4.1.115.Final"
     compileOnly "com.google.code.gson:gson:2.11.0"
 
     api("io.netty:netty-codec-http:4.1.114.Final") {
