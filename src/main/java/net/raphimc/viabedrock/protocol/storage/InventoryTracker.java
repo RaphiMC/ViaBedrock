@@ -24,7 +24,7 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
-import net.raphimc.viabedrock.api.model.container.DynamicContainer;
+import net.raphimc.viabedrock.api.model.container.dynamic.BundleContainer;
 import net.raphimc.viabedrock.api.model.container.fake.FakeContainer;
 import net.raphimc.viabedrock.api.model.container.fake.FormContainer;
 import net.raphimc.viabedrock.api.model.container.player.ArmorContainer;
@@ -37,9 +37,11 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,7 +57,7 @@ public class InventoryTracker extends StoredObject {
     private final OffhandContainer offhandContainer = new OffhandContainer(this.user());
     private final ArmorContainer armorContainer = new ArmorContainer(this.user());
     private final HudContainer hudContainer = new HudContainer(this.user());
-    private final Map<FullContainerName, DynamicContainer> dynamicContainerRegistry = new HashMap<>();
+    private final Map<FullContainerName, BundleContainer> dynamicContainerRegistry = new HashMap<>();
 
     private final Stack<Container> containerStack = new Stack<>();
     private final List<Container> closeWhenTickedContainers = new ArrayList<>();
@@ -66,13 +68,18 @@ public class InventoryTracker extends StoredObject {
         super(user);
     }
 
-    public Container getContainerClientbound(final byte containerId, final FullContainerName containerName) {
+    public Container getContainerClientbound(final byte containerId, final FullContainerName containerName, final BedrockItem storageItem) {
         if (containerId == this.inventoryContainer.containerId()) return this.inventoryContainer;
         if (containerId == this.offhandContainer.containerId()) return this.offhandContainer;
         if (containerId == this.armorContainer.containerId()) return this.armorContainer;
         if (containerId == this.hudContainer.containerId()) return this.hudContainer;
         if (containerId == ContainerID.CONTAINER_ID_REGISTRY.getValue() && containerName.name() == ContainerEnumName.DynamicContainer) {
-            return this.dynamicContainerRegistry.computeIfAbsent(containerName, cn -> new DynamicContainer(this.user(), cn));
+            final String itemTag = BedrockProtocol.MAPPINGS.getBedrockItemTags().getOrDefault(this.user().get(ItemRewriter.class).getItems().inverse().get(storageItem.identifier()), "");
+            if (!storageItem.isEmpty() && itemTag.equals("bundle")) {
+                return this.dynamicContainerRegistry.computeIfAbsent(containerName, cn -> new BundleContainer(this.user(), cn));
+            } else {
+                return null;
+            }
         }
 
         for (int i = this.containerStack.size() - 1; i >= 0; i--) {
@@ -98,7 +105,7 @@ public class InventoryTracker extends StoredObject {
         return null;
     }
 
-    public DynamicContainer getDynamicContainer(final FullContainerName containerName) {
+    public BundleContainer getDynamicContainer(final FullContainerName containerName) {
         return this.dynamicContainerRegistry.get(containerName);
     }
 

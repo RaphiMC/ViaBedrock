@@ -192,7 +192,10 @@ public class EntityPackets {
                 }
                 entity.setPosition(position);
 
-                if (forceMoveLocalEntity) {
+                if (teleported) {
+                    wrapper.setPacketType(ClientboundPackets1_21_2.PLAYER_POSITION);
+                    entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
+                } else { // force move local entity
                     wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
                     wrapper.write(Types.DOUBLE, (double) entity.position().x()); // x
                     wrapper.write(Types.DOUBLE, (double) entity.position().y() - entity.eyeOffset()); // y
@@ -203,9 +206,6 @@ public class EntityPackets {
                     wrapper.write(Types.FLOAT, entity.rotation().y()); // yaw
                     wrapper.write(Types.FLOAT, entity.rotation().x()); // pitch
                     wrapper.write(Types.BOOLEAN, entity.isOnGround()); // on ground
-                } else { // teleport
-                    wrapper.setPacketType(ClientboundPackets1_21_2.PLAYER_POSITION);
-                    entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
                 }
                 return;
             }
@@ -269,7 +269,10 @@ public class EntityPackets {
                 entity.setPosition(new Position3f(x, y, z));
 
                 wrapper.clearPacket();
-                if (forceMoveLocalEntity) {
+                if (teleported) {
+                    wrapper.setPacketType(ClientboundPackets1_21_2.PLAYER_POSITION);
+                    entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
+                } else { // force move local entity
                     wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
                     wrapper.write(Types.DOUBLE, (double) entity.position().x()); // x
                     wrapper.write(Types.DOUBLE, (double) entity.position().y() - entity.eyeOffset()); // y
@@ -280,9 +283,6 @@ public class EntityPackets {
                     wrapper.write(Types.FLOAT, entity.rotation().y()); // yaw
                     wrapper.write(Types.FLOAT, entity.rotation().x()); // pitch
                     wrapper.write(Types.BOOLEAN, entity.isOnGround()); // on ground
-                } else { // teleport
-                    wrapper.setPacketType(ClientboundPackets1_21_2.PLAYER_POSITION);
-                    entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
                 }
                 return;
             }

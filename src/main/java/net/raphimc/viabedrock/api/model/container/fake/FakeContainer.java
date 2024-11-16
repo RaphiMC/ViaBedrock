@@ -37,6 +37,11 @@ public abstract class FakeContainer extends Container {
     }
 
     @Override
+    public BedrockItem[] getItems() {
+        throw new UnsupportedOperationException("Fake containers cannot have bedrock items");
+    }
+
+    @Override
     public boolean setItem(final int slot, final BedrockItem item) {
         throw new UnsupportedOperationException("Fake containers cannot have bedrock items");
     }

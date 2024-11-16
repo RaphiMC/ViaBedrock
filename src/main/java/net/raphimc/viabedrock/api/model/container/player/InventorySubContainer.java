@@ -28,14 +28,13 @@ public abstract class InventorySubContainer extends InventoryRedirectContainer {
     }
 
     @Override
-    public boolean setItems(final BedrockItem[] items) {
+    public boolean setItems(BedrockItem[] items) {
         if (items.length != this.size()) {
-            final BedrockItem[] newItems = BedrockItem.emptyArray(this.size());
+            final BedrockItem[] newItems = this.getItems();
             System.arraycopy(items, 0, newItems, 0, Math.min(items.length, newItems.length));
-            return super.setItems(newItems);
-        } else {
-            return super.setItems(items);
+            items = newItems;
         }
+        return super.setItems(items);
     }
 
 }

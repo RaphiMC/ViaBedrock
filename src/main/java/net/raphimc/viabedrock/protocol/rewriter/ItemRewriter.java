@@ -42,6 +42,7 @@ import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
+import net.raphimc.viabedrock.protocol.rewriter.item.BundleItemRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomAttachableResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
@@ -70,6 +71,7 @@ public class ItemRewriter extends StoredObject {
 
     static {
         // TODO: Add missing item nbt rewriters
+        ITEM_NBT_REWRITERS.put("bundle", new BundleItemRewriter());
     }
 
     public ItemRewriter(final UserConnection user, final ItemEntry[] itemEntries) {

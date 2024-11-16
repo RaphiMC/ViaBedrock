@@ -149,10 +149,10 @@ public class InventoryPackets {
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
             final BedrockItem[] items = wrapper.read(itemRewriter.itemArrayType()); // items
             final FullContainerName containerName = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
-            wrapper.read(itemRewriter.itemType()); // storage item
+            final BedrockItem storageItem = wrapper.read(itemRewriter.itemType()); // storage item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName);
+            final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);
             if (container != null && container.setItems(items)) {
                 PacketFactory.writeJavaContainerSetContent(wrapper, container);
             } else {
@@ -164,11 +164,11 @@ public class InventoryPackets {
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
             final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // slot
             final FullContainerName containerName = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
-            wrapper.read(itemRewriter.itemType()); // storage item
+            final BedrockItem storageItem = wrapper.read(itemRewriter.itemType()); // storage item
             final BedrockItem item = wrapper.read(itemRewriter.itemType()); // item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName);
+            final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);
             if (container != null && container.setItem(slot, item)) {
                 if (container.type() == ContainerType.HUD && slot == 0) { // cursor item
                     wrapper.setPacketType(ClientboundPackets1_21_2.SET_CURSOR_ITEM);

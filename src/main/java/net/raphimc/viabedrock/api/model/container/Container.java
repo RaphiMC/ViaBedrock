@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -80,6 +81,10 @@ public abstract class Container {
 
     public BedrockItem getItem(final int slot) {
         return this.items[slot];
+    }
+
+    public BedrockItem[] getItems() {
+        return Arrays.copyOf(this.items, this.items.length);
     }
 
     public boolean setItem(final int slot, final BedrockItem item) {
