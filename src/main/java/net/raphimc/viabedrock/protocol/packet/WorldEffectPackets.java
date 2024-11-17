@@ -528,6 +528,12 @@ public class WorldEffectPackets {
         }
 
         final BedrockMappingData.JavaSound javaSound = BedrockProtocol.MAPPINGS.getBedrockToJavaSounds().get(configuredSound.sound());
+        if (javaSound == null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock sound: " + configuredSound.sound());
+            wrapper.cancel();
+            return;
+        }
+
         wrapper.write(Types.SOUND_EVENT, Holder.of(javaSound.id())); // sound id
         wrapper.write(Types.VAR_INT, javaSound.category().ordinal()); // category
         wrapper.write(Types.INT, (int) (position.x() * 8F)); // x
