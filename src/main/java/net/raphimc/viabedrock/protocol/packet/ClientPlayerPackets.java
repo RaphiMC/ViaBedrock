@@ -306,7 +306,6 @@ public class ClientPlayerPackets {
         });
         protocol.registerServerbound(ServerboundPackets1_21_2.PLAYER_ACTION, null, wrapper -> {
             wrapper.cancel();
-            if (true) return; // TODO: Remove once block breaking is fully working
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
@@ -318,10 +317,13 @@ public class ClientPlayerPackets {
             final boolean isMining = action == PlayerActionAction.START_DESTROY_BLOCK || action == PlayerActionAction.ABORT_DESTROY_BLOCK || action == PlayerActionAction.STOP_DESTROY_BLOCK;
             if (isMining && (gameSession.isImmutableWorld() || !clientPlayer.abilities().getBooleanValue(AbilitiesIndex.Mine))) {
                 // TODO: Prevent breaking and cancel any packets that would be sent (swing, player action)
+                BedrockProtocol.kickForIllegalState(wrapper.user(), "Breaking blocks in protected areas is not handled yet by ViaBedrock");
                 PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, chunkTracker.getJavaBlockState(position));
                 PacketFactory.sendJavaBlockChangedAck(wrapper.user(), sequence);
                 return;
             }
+
+            // TODO: Block breaking: Send correct inventory transactions
 
             switch (action) {
                 case START_DESTROY_BLOCK -> {
@@ -331,6 +333,7 @@ public class ClientPlayerPackets {
                     // TODO: Handle instant breaking
                     // TODO: Handle creative mode mining
                     // TODO: Test breaking fire
+                    // TODO: The java client keeps spamming swing packets while waiting for the block break cooldown. Those need to be cancelled
 
                     if (gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
                         clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StartDestroyBlock, position, direction.ordinal());
@@ -353,11 +356,29 @@ public class ClientPlayerPackets {
                     if (!gameSession.isBlockBreakingServerAuthoritative()) {
                         if (gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
                             clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StopDestroyBlock);
-                            //clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.CrackBlock, position, direction.ordinal());
-                            // TODO: InventoryTransactionPacket
+                            clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.CrackBlock, position, direction.ordinal());
+
+                            final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
+                            final PacketWrapper inventoryTransaction = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
+                            inventoryTransaction.write(BedrockTypes.VAR_INT, 0); // legacy request id
+                            inventoryTransaction.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemUseTransaction.getValue()); // transaction type
+                            inventoryTransaction.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
+                            inventoryTransaction.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseOnActorInventoryTransaction_ActionType.ItemInteract.getValue()); // action type
+                            inventoryTransaction.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_TriggerType.Unknown.getValue()); // trigger type
+                            inventoryTransaction.write(BedrockTypes.BLOCK_POSITION, position); // block position
+                            inventoryTransaction.write(BedrockTypes.VAR_INT, direction.ordinal()); // block face
+                            inventoryTransaction.write(BedrockTypes.VAR_INT, (int) inventoryContainer.getSelectedHotbarSlot()); // hotbar slot
+                            inventoryTransaction.write(wrapper.user().get(ItemRewriter.class).itemType(), inventoryContainer.getSelectedHotbarItem()); // held item
+                            inventoryTransaction.write(BedrockTypes.POSITION_3F, clientPlayer.position()); // player position
+                            inventoryTransaction.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // click position
+                            inventoryTransaction.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // block id
+                            inventoryTransaction.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_PredictedResult.Failure.getValue()); // client prediction
+                            inventoryTransaction.sendToServer(BedrockProtocol.class);
+
                             clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.AbortDestroyBlock, position, 0);
                         } else {
                             clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.StopDestroyBlock));
+                            clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.CrackBlock, position, direction.ordinal()));
                             clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.AbortDestroyBlock, position, 0));
                         }
                     } else {
@@ -413,10 +434,10 @@ public class ClientPlayerPackets {
                 default -> throw new IllegalStateException("Unhandled InteractActionType: " + action);
             }).getValue()); // action type
             wrapper.write(BedrockTypes.VAR_INT, (int) inventoryContainer.getSelectedHotbarSlot()); // hotbar slot
-            wrapper.write(wrapper.user().get(ItemRewriter.class).itemType(), inventoryContainer.getSelectedHotbarItem()); // hand item
+            wrapper.write(wrapper.user().get(ItemRewriter.class).itemType(), inventoryContainer.getSelectedHotbarItem()); // held item
             wrapper.write(BedrockTypes.POSITION_3F, entityTracker.getClientPlayer().position()); // player position
 
-            // TODO: Bedrock client sends INTERACT packet when hovered entity changes. Might be used for anticheat purposes
+            // TODO: Bedrock client sends INTERACT packet when hovered entity changes. Might be used by anticheats
 
             switch (action) {
                 case INTERACT -> wrapper.cancel();

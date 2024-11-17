@@ -65,7 +65,7 @@ public class OtherPlayerPackets {
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
-            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // hand item
+            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // held item
             final GameType gameType = GameType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GameType.Undefined); // game type
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
             final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
