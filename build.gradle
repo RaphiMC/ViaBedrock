@@ -66,7 +66,7 @@ dependencies {
     api("net.lenni0451.mcstructs-bedrock:text:1.2.1") {
         exclude group: "com.google.code.gson", module: "gson"
     }
-    api("net.lenni0451.mcstructs-bedrock:forms:1.2.1") {
+    api("net.lenni0451.mcstructs-bedrock:forms:1.2.2") {
         exclude group: "com.google.code.gson", module: "gson"
     }
     api "com.vdurmont:semver4j:3.1.0"
