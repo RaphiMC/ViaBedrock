@@ -90,7 +90,7 @@ public class CustomEntity extends Entity {
             final List<EntityData> javaEntityData = new ArrayList<>();
 
             final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
-            data.set(StructuredDataKey.CUSTOM_MODEL_DATA, CustomEntityResourceRewriter.getCustomModelData(this.entityDefinition.identifier() + "_default_" + i));
+            data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_20_5, CustomEntityResourceRewriter.getCustomModelData(this.entityDefinition.identifier() + "_default_" + i));
             final StructuredItem item = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get(Key.namespaced(CustomEntityResourceRewriter.ITEM)), 1, data);
             javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("ITEM_STACK"), Types1_21_2.ENTITY_DATA_TYPES.itemType, item));
 
