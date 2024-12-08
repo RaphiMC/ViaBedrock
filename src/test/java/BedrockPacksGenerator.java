@@ -21,12 +21,13 @@ import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class BedrockPacksGenerator {
 
@@ -57,6 +58,18 @@ public class BedrockPacksGenerator {
                 copyFileIfExists(packDir, fsRoot, "font/glyph_E1.png");
                 copyFolder(packDir, fsRoot, "biomes");
                 copyFolder(packDir, fsRoot, "fogs");
+
+                try (Stream<Path> paths = Files.walk(fsRoot)) {
+                    paths.forEach(path -> {
+                        try {
+                            final BasicFileAttributeView attributeView = Files.getFileAttributeView(path, BasicFileAttributeView.class);
+                            attributeView.setTimes(FileTime.from(Instant.EPOCH), FileTime.from(Instant.EPOCH), FileTime.from(Instant.EPOCH));
+                        } catch (NoSuchFileException ignored) {
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
             }
         }
 

@@ -63,6 +63,8 @@ public class ResourcePackPackets {
             wrapper.read(Types.BOOLEAN); // resource pack required
             wrapper.read(Types.BOOLEAN); // has addon packs
             wrapper.read(Types.BOOLEAN); // has scripts
+            wrapper.read(BedrockTypes.UUID); // world template uuid
+            wrapper.read(BedrockTypes.STRING); // world template version
             final ResourcePack[] resourcePacks = wrapper.read(BedrockTypes.RESOURCE_PACK_ARRAY);
             for (ResourcePack resourcePack : resourcePacks) {
                 resourcePacksStorage.addPack(resourcePack);

@@ -61,6 +61,9 @@
   "crafter": [
     "minecraft:crafter"
   ],
+  "creaking_heart": [
+    "minecraft:creaking_heart"
+  ],
   "daylight_detector": [
     "minecraft:daylight_detector",
     "minecraft:daylight_detector_inverted"

@@ -30,7 +30,7 @@ import java.util.TreeMap;
 public class JsonSorter {
 
     public static void main(String[] args) throws Throwable {
-        final byte[] data = JsonSorter.class.getResourceAsStream("/assets/viabedrock/data/custom/item_mappings.json").readAllBytes();
+        final byte[] data = JsonSorter.class.getResourceAsStream("/assets/viabedrock/data/custom/particle_mappings.json").readAllBytes();
         JsonObject obj = JsonParser.parseString(new String(data, StandardCharsets.UTF_8)).getAsJsonObject();
 
         // Sort top level keys
@@ -42,7 +42,7 @@ public class JsonSorter {
         // Deep sort
         // obj = (JsonObject) GsonUtil.sort(obj);
 
-        final String json = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(obj);
+        final String json = new Gson().newBuilder().serializeNulls().setPrettyPrinting().disableHtmlEscaping().create().toJson(obj);
         Files.writeString(new File("sorted_json.json").toPath(), json);
     }
 

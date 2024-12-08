@@ -182,7 +182,8 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     CAMERA_AIM_ASSIST(MinecraftPacketIds.CameraAimAssist.getValue()),
     CONTAINER_REGISTRY_CLEANUP(MinecraftPacketIds.ContainerRegistryCleanup.getValue()),
     MOVEMENT_EFFECT(MinecraftPacketIds.MovementEffect.getValue()),
-    SET_MOVEMENT_AUTHORITY_MODE(MinecraftPacketIds.SetMovementAuthorityMode.getValue());
+    SET_MOVEMENT_AUTHORITY_MODE(MinecraftPacketIds.SetMovementAuthorityMode.getValue()),
+    CAMERA_AIM_ASSIST_PRESETS(MinecraftPacketIds.CameraAimAssistPresets.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

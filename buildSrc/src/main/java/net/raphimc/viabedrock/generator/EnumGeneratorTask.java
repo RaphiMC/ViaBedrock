@@ -186,8 +186,19 @@ public abstract class EnumGeneratorTask extends DefaultTask {
         soundEventEnum.add(new Pair<>("RecordPrecipice", "529"));
         soundEventEnum.add(new Pair<>("VaultRejectRewardedPlayer", "530"));
         soundEventEnum.add(new Pair<>("ImitateDrowned", "531"));
+        soundEventEnum.add(new Pair<>("ImitateCreaking", "532"));
         soundEventEnum.add(new Pair<>("BundleInsertFail", "533"));
-        soundEventEnum.add(new Pair<>("UNKNOWN_1", "534"));
+        soundEventEnum.add(new Pair<>("SpongeAbsorb", "534"));
+        soundEventEnum.add(new Pair<>("CreakingHeartTrail", "536"));
+        soundEventEnum.add(new Pair<>("CreakingHeartSpawn", "537"));
+        soundEventEnum.add(new Pair<>("Activate", "538"));
+        soundEventEnum.add(new Pair<>("Deactivate", "539"));
+        soundEventEnum.add(new Pair<>("Freeze", "540"));
+        soundEventEnum.add(new Pair<>("Unfreeze", "541"));
+        soundEventEnum.add(new Pair<>("Open", "542"));
+        soundEventEnum.add(new Pair<>("OpenLong", "543"));
+        soundEventEnum.add(new Pair<>("Close", "544"));
+        soundEventEnum.add(new Pair<>("CloseLong", "545"));
 
         final MustacheEngine mustacheEngine = MustacheEngineBuilder.newBuilder()
                 .addTemplateLocator(ClassPathTemplateLocator.builder().setSuffix("mustache").build())

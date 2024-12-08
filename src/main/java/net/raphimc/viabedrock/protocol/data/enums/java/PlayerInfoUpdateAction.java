@@ -26,5 +26,6 @@ public enum PlayerInfoUpdateAction {
     UPDATE_LATENCY,
     UPDATE_DISPLAY_NAME,
     UPDATE_LIST_ORDER,
+    UPDATE_HAT,
 
 }

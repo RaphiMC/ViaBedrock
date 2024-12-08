@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.protocol.packet;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.protocols.v1_21_2to1_21_4.packet.ServerboundPackets1_21_4;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
-import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ServerboundPackets1_21_2;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -66,10 +66,10 @@ public class PlayPackets {
             wrapper.user().get(GameRulesStorage.class).updateGameRules(wrapper.read(BedrockTypes.GAME_RULE_ARRAY)); // game rules
         });
 
-        protocol.registerServerbound(ServerboundPackets1_21_2.CLIENT_INFORMATION, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, MultiStatePackets.CLIENT_SETTINGS_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_21_2.PONG, null, MultiStatePackets.PONG_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_21_2.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_21_2.PING_REQUEST, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_21_4.CLIENT_INFORMATION, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, MultiStatePackets.CLIENT_SETTINGS_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_21_4.PONG, null, MultiStatePackets.PONG_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_21_4.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_21_4.PING_REQUEST, null, wrapper -> {
             wrapper.cancel();
             final PacketWrapper pongResponse = wrapper.create(ClientboundPackets1_21_2.PONG_RESPONSE);
             pongResponse.write(Types.LONG, wrapper.read(Types.LONG)); // time

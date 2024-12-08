@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -27,7 +26,6 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class ResourcePackType extends Type<ResourcePack> {
 
@@ -37,7 +35,7 @@ public class ResourcePackType extends Type<ResourcePack> {
 
     @Override
     public ResourcePack read(ByteBuf buffer) {
-        final String id = BedrockTypes.STRING.read(buffer);
+        final UUID uuid = BedrockTypes.UUID.read(buffer);
         final String version = BedrockTypes.STRING.read(buffer);
         final long size = buffer.readLongLE();
         final String contentKey = BedrockTypes.STRING.read(buffer);
@@ -55,20 +53,12 @@ public class ResourcePackType extends Type<ResourcePack> {
         } catch (MalformedURLException ignored) {
         }
 
-        UUID uuid;
-        try {
-            uuid = UUID.fromString(id);
-        } catch (IllegalArgumentException e) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid resource pack UUID: " + id, e);
-            uuid = new UUID(0L, 0L);
-        }
-
         return new ResourcePack(uuid, version, contentKey, subPackName, contentId, hasScripts, isAddonPack, raytracingCapable, cdnUrl, size, PackType.Resources);
     }
 
     @Override
     public void write(ByteBuf buffer, ResourcePack value) {
-        BedrockTypes.STRING.write(buffer, value.packId().toString());
+        BedrockTypes.UUID.write(buffer, value.packId());
         BedrockTypes.STRING.write(buffer, value.version());
         buffer.writeLongLE(value.compressedDataLength());
         BedrockTypes.STRING.write(buffer, value.contentKey());

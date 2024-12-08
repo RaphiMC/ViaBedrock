@@ -296,5 +296,6 @@
   "AnimationVaultEjectItem": "ANIMATION_VAULT_EJECT_ITEM",
   "AnimationSpawnCobweb": "ANIMATION_SPAWN_COBWEB",
   "ParticleSmashAttackGroundDust": null,
+  "ParticleCreakingHeartTrail": null,
   "ParticleLegacyEvent": null
 }

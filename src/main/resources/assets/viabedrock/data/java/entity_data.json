@@ -96,7 +96,9 @@
   ],
   "CREAKING": [
     "CAN_MOVE",
-    "IS_ACTIVE"
+    "IS_ACTIVE",
+    "IS_TEARING_DOWN",
+    "HOME_POS"
   ],
   "CREEPER": [
     "SWELL_DIR",

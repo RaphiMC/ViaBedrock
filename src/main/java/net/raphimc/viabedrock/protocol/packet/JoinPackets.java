@@ -505,7 +505,7 @@ public class JoinPackets {
 
         final PacketWrapper finishConfiguration = PacketWrapper.create(ClientboundConfigurationPackets1_21.FINISH_CONFIGURATION, user);
         finishConfiguration.send(BedrockProtocol.class);
-        user.getProtocolInfo().setServerState(State.PLAY);
+        user.getProtocolInfo().setState(State.PLAY);
 
         final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_21_2.LOGIN, user);
         joinGame.write(Types.INT, clientPlayer.javaId()); // entity id
@@ -557,7 +557,7 @@ public class JoinPackets {
         tabList.send(BedrockProtocol.class);
 
         final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21_2.PLAYER_INFO_UPDATE, user);
-        playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.ADD_PLAYER, PlayerInfoUpdateAction.UPDATE_GAME_MODE)); // actions
+        playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_4, BitSets.create(8, PlayerInfoUpdateAction.ADD_PLAYER, PlayerInfoUpdateAction.UPDATE_GAME_MODE)); // actions
         playerInfoUpdate.write(Types.VAR_INT, 1); // length
         playerInfoUpdate.write(Types.UUID, clientPlayer.javaUuid()); // uuid
         playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(clientPlayer.javaUuid())); // username

@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_2;
+import com.viaversion.viaversion.api.type.types.version.Types1_21_4;
 import com.viaversion.viaversion.libs.gson.JsonNull;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.api.model.container.Container;
@@ -139,12 +139,13 @@ public class PacketFactory {
     public static void writeJavaContainerSetContent(final PacketWrapper wrapper, final Container container) {
         wrapper.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
         wrapper.write(Types.VAR_INT, 0); // revision
-        wrapper.write(Types1_21_2.ITEM_ARRAY, container.getJavaItems()); // items
-        wrapper.write(Types1_21_2.ITEM, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
+        wrapper.write(Types1_21_4.ITEM_ARRAY, container.getJavaItems()); // items
+        wrapper.write(Types1_21_4.ITEM, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
     }
 
     public static void writeJavaLevelParticles(final PacketWrapper wrapper, final Position3f position, final BedrockMappingData.JavaParticle particle) {
         wrapper.write(Types.BOOLEAN, false); // override limiter
+        wrapper.write(Types.BOOLEAN, false); // always show
         wrapper.write(Types.DOUBLE, (double) position.x()); // x
         wrapper.write(Types.DOUBLE, (double) position.y()); // y
         wrapper.write(Types.DOUBLE, (double) position.z()); // z
@@ -153,7 +154,7 @@ public class PacketFactory {
         wrapper.write(Types.FLOAT, particle.offsetZ()); // offset z
         wrapper.write(Types.FLOAT, particle.speed()); // speed
         wrapper.write(Types.INT, particle.count()); // count
-        wrapper.write(Types1_21_2.PARTICLE, particle.particle().copy()); // particle data
+        wrapper.write(Types1_21_4.PARTICLE, particle.particle().copy()); // particle data
     }
 
 }

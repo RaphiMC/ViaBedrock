@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
+import com.viaversion.viaversion.api.minecraft.item.data.CustomModelData1_21_4;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
@@ -29,8 +30,9 @@ import java.util.TreeMap;
 
 public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.Rewriter {
 
-    public static int getCustomModelData(final String key) {
-        return Math.abs(key.hashCode() + 1); // 0 is used for the default model
+    public static CustomModelData1_21_4 getCustomModelData(final String key) {
+        final int value = Math.abs(key.hashCode() + 1); // 0 is used for the default model
+        return new CustomModelData1_21_4(new float[]{value}, new boolean[0], new String[0], new int[0]);
     }
 
     private final String item;
@@ -63,7 +65,9 @@ public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.
 
     protected void addOverride(final Map<Integer, JsonObject> overridesMap, final String javaModelKey) {
         final String javaModelName = getJavaModelName(javaModelKey);
-        final int javaModelData = getCustomModelData(javaModelKey);
+        //final int javaModelData = getCustomModelData(javaModelKey);
+        // TODO: Update: Fix this (Broken in 1.21.4 update)
+        final int javaModelData = 0;
 
         final JsonObject override = new JsonObject();
         override.addProperty("model", "viabedrock:" + javaModelName);

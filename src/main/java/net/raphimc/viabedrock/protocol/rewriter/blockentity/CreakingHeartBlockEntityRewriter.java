@@ -18,25 +18,32 @@
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
 import com.viaversion.nbt.tag.CompoundTag;
-import com.viaversion.nbt.tag.ShortTag;
+import com.viaversion.nbt.tag.IntArrayTag;
+import com.viaversion.nbt.tag.LongTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
+import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
+import com.viaversion.viaversion.util.UUIDUtil;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
+import net.raphimc.viabedrock.api.model.entity.Entity;
+import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
+import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 
-public class FurnaceBlockEntityRewriter extends NamedBlockEntityRewriter {
+public class CreakingHeartBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
-        final BlockEntity javaBlockEntity = super.toJava(user, bedrockBlockEntity);
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
-        final CompoundTag javaTag = javaBlockEntity.tag();
+        final CompoundTag javaTag = new CompoundTag();
 
-        this.copy(bedrockTag, javaTag, "BurnTime", "lit_time_remaining", ShortTag.class);
-        this.copy(bedrockTag, javaTag, "CookTime", "cooking_time_spent", ShortTag.class);
-        this.copy(bedrockTag, javaTag, "BurnDuration", "cooking_total_time", ShortTag.class);
-        this.copyItemList(user, bedrockTag, javaTag);
+        if (bedrockTag.get("SpawnedCreakingID") instanceof LongTag spawnedCreakingIdTag) {
+            final Entity entity = user.get(EntityTracker.class).getEntityByUid(spawnedCreakingIdTag.asLong());
+            if (entity != null) {
+                javaTag.put("creaking", new IntArrayTag(UUIDUtil.toIntArray(entity.javaUuid())));
+            }
+        }
 
-        return javaBlockEntity;
+        return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }
 
 }

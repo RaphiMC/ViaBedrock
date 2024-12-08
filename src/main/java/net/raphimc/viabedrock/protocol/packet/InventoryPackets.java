@@ -23,11 +23,11 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_2;
+import com.viaversion.viaversion.api.type.types.version.Types1_21_4;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.components.TranslationComponent;
+import com.viaversion.viaversion.protocols.v1_21_2to1_21_4.packet.ServerboundPackets1_21_4;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
-import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ServerboundPackets1_21_2;
 import net.lenni0451.mcstructs_bedrock.forms.AForm;
 import net.lenni0451.mcstructs_bedrock.forms.serializer.FormSerializer;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -177,7 +177,7 @@ public class InventoryPackets {
                     wrapper.write(Types.VAR_INT, 0); // revision
                     wrapper.write(Types.SHORT, (short) container.javaSlot(slot)); // slot
                 }
-                wrapper.write(Types1_21_2.ITEM, container.getJavaItem(slot)); // item
+                wrapper.write(Types1_21_4.ITEM, container.getJavaItem(slot)); // item
             } else {
                 wrapper.cancel();
             }
@@ -227,7 +227,7 @@ public class InventoryPackets {
             final byte containerId = wrapper.read(Types.BYTE); // container id
             final boolean shouldSelectSlot = wrapper.read(Types.BOOLEAN); // should select slot
             if (slot >= 0 && slot < 9 && containerId == inventoryContainer.containerId() && shouldSelectSlot) {
-                wrapper.write(Types.BYTE, (byte) slot); // slot
+                wrapper.write(Types.VAR_INT, slot); // slot
             } else {
                 wrapper.cancel();
                 if (containerId != inventoryContainer.containerId()) { // Bedrock client doesn't render hotbar selection and held item anymore
@@ -244,7 +244,7 @@ public class InventoryPackets {
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_21_2.CONTAINER_CLICK, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_21_4.CONTAINER_CLICK, null, wrapper -> {
             wrapper.cancel();
             final int containerId = wrapper.read(Types.VAR_INT); // container id
             final int revision = wrapper.read(Types.VAR_INT); // revision
@@ -278,10 +278,10 @@ public class InventoryPackets {
                 PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_21_2.SET_CREATIVE_MODE_SLOT, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_21_4.SET_CREATIVE_MODE_SLOT, null, wrapper -> {
             wrapper.cancel();
             final short slot = wrapper.read(Types.SHORT); // slot
-            final Item item = wrapper.read(Types1_21_2.ITEM); // item
+            final Item item = wrapper.read(Types1_21_4.ITEM); // item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             if (inventoryTracker.getPendingCloseContainer() != null) {
@@ -290,7 +290,7 @@ public class InventoryPackets {
             }
             PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
         });
-        protocol.registerServerbound(ServerboundPackets1_21_2.CONTAINER_CLOSE, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_21_4.CONTAINER_CLOSE, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(Types.VAR_INT, Types.BYTE); // container id
@@ -314,11 +314,11 @@ public class InventoryPackets {
                 });
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_21_2.SET_CARRIED_ITEM, ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_21_4.SET_CARRIED_ITEM, ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper -> {
             final short slot = wrapper.read(Types.SHORT); // slot
             wrapper.user().get(InventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
         });
-        protocol.registerServerbound(ServerboundPackets1_21_2.RENAME_ITEM, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_21_4.RENAME_ITEM, null, wrapper -> {
             wrapper.cancel();
             final String name = wrapper.read(Types.STRING); // name
             final FakeContainer fakeContainer = wrapper.user().get(InventoryTracker.class).getCurrentFakeContainer();

@@ -1,4 +1,9 @@
 {
+  "Activate": {
+    "entity:minecraft:creaking": {
+      "sound": "mob.creaking.activate"
+    }
+  },
   "AddChest": {
     "entity:minecraft:llama": {
       "sound": "mob.horse.armor",
@@ -325,12 +330,18 @@
         1.1
       ]
     },
+    "block:pale_hanging_moss": {
+      "sound": "block.pale_hanging_moss.ambient"
+    },
     "entity:minecraft:enderman": {
       "sound": "mob.endermen.idle",
       "pitch": [
         0.8,
         1.2
       ]
+    },
+    "entity:minecraft:creaking": {
+      "sound": "mob.creaking.ambient"
     },
     "entity:minecraft:horse": {
       "sound": "mob.horse.idle",
@@ -354,6 +365,9 @@
         0.8,
         1.2
       ]
+    },
+    "block:creaking_heart": {
+      "sound": "block.creaking_heart.ambient"
     },
     "entity:minecraft:evocation_illager": {
       "sound": "mob.evocation_illager.ambient",
@@ -498,6 +512,9 @@
         0.8,
         1.2
       ]
+    },
+    "block:eyeblossom": {
+      "sound": "block.eyeblossom.ambient"
     },
     "entity:minecraft:panda": {
       "sound": "mob.panda.idle",
@@ -687,7 +704,15 @@
   },
   "AmbientInAir": {
     "entity:minecraft:breeze": {
-      "sound": "mob.breeze.idle_air"
+      "sound": "mob.breeze.idle_air",
+      "volume": [
+        0.8,
+        1.0
+      ],
+      "pitch": [
+        0.7,
+        1.1
+      ]
     }
   },
   "AmbientInRaid": {
@@ -1055,14 +1080,6 @@
     }
   },
   "Attack": {
-    "entity:minecraft:bee": {
-      "sound": "mob.bee.sting",
-      "volume": 0.6,
-      "pitch": [
-        0.8,
-        1.0
-      ]
-    },
     "entity:minecraft:fox": {
       "sound": "mob.fox.bite",
       "pitch": [
@@ -1077,20 +1094,8 @@
         1.2
       ]
     },
-    "entity:minecraft:hoglin": {
-      "sound": "mob.hoglin.attack",
-      "pitch": [
-        0.8,
-        1.2
-      ]
-    },
-    "entity:minecraft:phantom": {
-      "sound": "mob.phantom.bite",
-      "volume": 10.0,
-      "pitch": [
-        0.8,
-        1.2
-      ]
+    "entity:minecraft:creaking": {
+      "sound": "mob.creaking.attack"
     },
     "entity:minecraft:axolotl": {
       "sound": "mob.axolotl.attack",
@@ -1112,6 +1117,29 @@
     },
     "entity:minecraft:dolphin": {
       "sound": "mob.dolphin.attack",
+      "pitch": [
+        0.8,
+        1.2
+      ]
+    },
+    "entity:minecraft:bee": {
+      "sound": "mob.bee.sting",
+      "volume": 0.6,
+      "pitch": [
+        0.8,
+        1.0
+      ]
+    },
+    "entity:minecraft:hoglin": {
+      "sound": "mob.hoglin.attack",
+      "pitch": [
+        0.8,
+        1.2
+      ]
+    },
+    "entity:minecraft:phantom": {
+      "sound": "mob.phantom.bite",
+      "volume": 10.0,
       "pitch": [
         0.8,
         1.2
@@ -1519,6 +1547,10 @@
         1.0
       ]
     },
+    "block:pale_hanging_moss": {
+      "sound": "dig.moss",
+      "volume": 0.93
+    },
     "block:azalea_leaves": {
       "sound": "dig.azalea_leaves",
       "pitch": [
@@ -1586,6 +1618,14 @@
         0.8,
         1.0
       ]
+    },
+    "block:wet_sponge": {
+      "sound": "break.wet_sponge",
+      "pitch": 0.8
+    },
+    "block:resin": {
+      "sound": "block.resin.break",
+      "pitch": 0.8
     },
     "block:tuff": {
       "sound": "place.tuff",
@@ -1737,7 +1777,8 @@
       ]
     },
     "block:amethyst_block": {
-      "sound": "break.amethyst_block"
+      "sound": "break.amethyst_block",
+      "pitch": 0.8
     },
     "block:chain": {
       "sound": "dig.chain",
@@ -1778,6 +1819,10 @@
         1.0
       ]
     },
+    "block:sponge": {
+      "sound": "break.sponge",
+      "pitch": 0.8
+    },
     "block:sculk_vein": {
       "sound": "break.sculk_vein",
       "pitch": [
@@ -1785,12 +1830,21 @@
         1.0
       ]
     },
+    "block:creaking_heart": {
+      "sound": "block.creaking_heart.break",
+      "volume": 0.5,
+      "pitch": 0.8
+    },
     "block:cloth": {
       "sound": "dig.cloth",
       "pitch": [
         0.8,
         1.0
       ]
+    },
+    "block:resin_brick": {
+      "sound": "block.resin_brick.break",
+      "pitch": 0.8
     },
     "block:nether_brick": {
       "sound": "dig.nether_brick",
@@ -1816,6 +1870,14 @@
     },
     "block:froglight": {
       "sound": "break.froglight"
+    },
+    "block:glow_lichen": {
+      "sound": "dig.grass",
+      "volume": 0.7,
+      "pitch": [
+        0.8,
+        1.0
+      ]
     },
     "block:shroomlight": {
       "sound": "dig.shroomlight",
@@ -1855,6 +1917,14 @@
     },
     "block:hanging_roots": {
       "sound": "break.hanging_roots",
+      "pitch": [
+        0.8,
+        1.0
+      ]
+    },
+    "block:eyeblossom": {
+      "sound": "dig.grass",
+      "volume": 0.7,
       "pitch": [
         0.8,
         1.0
@@ -2337,6 +2407,16 @@
       "sound": "block.chorusflower.grow"
     }
   },
+  "Close": {
+    "block:eyeblossom": {
+      "sound": "block.eyeblossom.close"
+    }
+  },
+  "CloseLong": {
+    "block:eyeblossom": {
+      "sound": "block.eyeblossom.close_long"
+    }
+  },
   "ComposterEmpty": {
     "": {
       "sound": "block.composter.empty"
@@ -2473,6 +2553,19 @@
       ]
     }
   },
+  "CreakingHeartSpawn": {
+    "entity:minecraft:creaking": {
+      "sound": "mob.creaking.spawn"
+    },
+    "block:creaking_heart": {
+      "sound": "block.creaking_heart.spawn_mob"
+    }
+  },
+  "CreakingHeartTrail": {
+    "": {
+      "sound": "block.creaking_heart.trail"
+    }
+  },
   "CrossbowLoadingEnd": {
     "": {
       "sound": "crossbow.loading.middle"
@@ -2511,6 +2604,11 @@
   "DashReady": {
     "": {
       "sound": "mob.camel.dash_ready"
+    }
+  },
+  "Deactivate": {
+    "entity:minecraft:creaking": {
+      "sound": "mob.creaking.deactivate"
     }
   },
   "Death": {
@@ -2862,6 +2960,9 @@
         0.8,
         1.2
       ]
+    },
+    "entity:minecraft:creaking": {
+      "sound": "mob.creaking.death"
     },
     "entity:minecraft:horse": {
       "sound": "mob.horse.death",
@@ -4881,13 +4982,6 @@
     "block:copper_bulb": {
       "sound": "step.copper_bulb"
     },
-    "block:nether_wood_hanging_sign": {
-      "sound": "step.nether_wood_hanging_sign",
-      "volume": 0.4
-    },
-    "block:medium_amethyst_bud": {
-      "sound": "fall.amethyst_cluster"
-    },
     "block:pointed_dripstone": {
       "sound": "fall.pointed_dripstone",
       "volume": 0.4
@@ -4899,9 +4993,6 @@
       "sound": "fall.hanging_roots",
       "volume": 0.4
     },
-    "block:small_amethyst_bud": {
-      "sound": "fall.amethyst_cluster"
-    },
     "block:cherry_wood_hanging_sign": {
       "sound": "step.cherry_wood_hanging_sign",
       "volume": 0.4
@@ -4910,16 +5001,8 @@
       "sound": "fall.nylium",
       "volume": 0.4
     },
-    "block:netherite": {
-      "sound": "fall.netherite",
-      "volume": 0.4
-    },
     "block:web": {
       "sound": "step.web"
-    },
-    "block:sculk_shrieker": {
-      "sound": "step.sculk_shrieker",
-      "volume": 0.4
     },
     "block:glass": {
       "sound": "fall.stone",
@@ -4928,39 +5011,12 @@
     "block:candle": {
       "sound": "step.candle"
     },
-    "block:spore_blossom": {
-      "sound": "fall.spore_blossom",
-      "volume": 0.4
-    },
-    "block:anvil": {
-      "sound": "step.stone",
-      "volume": 0.4
-    },
-    "block:slime": {
-      "sound": "fall.slime",
-      "volume": 0.4
-    },
     "block:moss_block": {
       "sound": "fall.moss"
     },
     "block:honey_block": {
       "sound": "fall.honey_block",
       "volume": 0.4
-    },
-    "block:decorated_pot": {
-      "sound": "step.decorated_pot"
-    },
-    "block:large_amethyst_bud": {
-      "sound": "fall.amethyst_cluster"
-    },
-    "block:nether_wart": {
-      "sound": "fall.nether_wart",
-      "volume": 0.4
-    },
-    "block:polished_tuff": {
-      "sound": "fall.tuff",
-      "volume": 1.2,
-      "pitch": 1.2
     },
     "block:bamboo_wood_hanging_sign": {
       "sound": "step.bamboo_wood_hanging_sign",
@@ -4982,22 +5038,11 @@
       "sound": "fall.powder_snow",
       "volume": 0.4
     },
-    "block:copper_grate": {
-      "sound": "step.copper_grate"
-    },
-    "block:nether_gold_ore": {
-      "sound": "fall.nether_gold_ore",
-      "volume": 0.4
-    },
     "block:mob_spawner": {
       "sound": "block.mob_spawner.step"
     },
     "block:vault": {
       "sound": "vault.step",
-      "volume": 0.4
-    },
-    "block:lantern": {
-      "sound": "block.lantern.fall",
       "volume": 0.4
     },
     "block:suspicious_gravel": {
@@ -5007,16 +5052,9 @@
     "block:tuff_bricks": {
       "sound": "step.tuff_bricks"
     },
-    "block:mud_bricks": {
-      "sound": "block.mud_bricks.fall",
-      "volume": 0.4
-    },
     "block:azalea": {
       "sound": "fall.azalea",
       "volume": 0.4
-    },
-    "block:amethyst_block": {
-      "sound": "fall.amethyst_block"
     },
     "block:stem": {
       "sound": "fall.stem",
@@ -5024,10 +5062,6 @@
     },
     "block:scaffolding": {
       "sound": "block.scaffolding.fall",
-      "volume": 0.4
-    },
-    "block:chain": {
-      "sound": "fall.chain",
       "volume": 0.4
     },
     "block:packed_mud": {
@@ -5040,10 +5074,6 @@
     },
     "block:cherry_leaves": {
       "sound": "fall.cherry_leaves",
-      "volume": 0.4
-    },
-    "block:mud": {
-      "sound": "block.mud.fall",
       "volume": 0.4
     },
     "block:soul_soil": {
@@ -5061,13 +5091,6 @@
       "sound": "fall.stone",
       "volume": 0.4
     },
-    "block:calcite": {
-      "sound": "fall.calcite"
-    },
-    "block:nether_wood": {
-      "sound": "fall.nether_wood",
-      "volume": 0.4
-    },
     "block:deepslate_bricks": {
       "sound": "fall.deepslate_bricks",
       "volume": 0.4
@@ -5080,25 +5103,179 @@
       "sound": "fall.azalea_leaves",
       "volume": 0.4
     },
-    "block:sculk": {
-      "sound": "step.sculk",
-      "volume": 0.4
-    },
     "block:bamboo_wood": {
       "sound": "fall.bamboo_wood",
-      "volume": 0.4
-    },
-    "block:sculk_vein": {
-      "sound": "step.sculk_vein",
       "volume": 0.4
     },
     "block:ladder": {
       "sound": "fall.ladder",
       "volume": 0.4
     },
+    "block:roots": {
+      "sound": "fall.roots",
+      "volume": 0.4
+    },
+    "block:lodestone": {
+      "sound": "fall.stone",
+      "volume": 0.4
+    },
+    "block:bamboo": {
+      "sound": "block.bamboo.fall",
+      "volume": 0.4
+    },
+    "block:hanging_sign": {
+      "sound": "step.hanging_sign",
+      "volume": 0.4
+    },
+    "block:heavy_core": {
+      "sound": "step.heavy_core"
+    },
+    "block:cherry_wood": {
+      "sound": "fall.cherry_wood",
+      "volume": 0.4
+    },
+    "block:mangrove_roots": {
+      "sound": "block.mangrove_roots.fall",
+      "volume": 0.4
+    },
+    "block:wet_sponge": {
+      "sound": "step.wet_sponge"
+    },
+    "block:resin": {
+      "sound": "block.resin.fall",
+      "volume": 0.5,
+      "pitch": 0.75
+    },
+    "block:tuff": {
+      "sound": "step.tuff"
+    },
+    "block:chiseled_bookshelf": {
+      "sound": "step.chiseled_bookshelf",
+      "volume": 0.4
+    },
+    "block:metal": {
+      "sound": "fall.stone",
+      "volume": 0.4
+    },
+    "block:basalt": {
+      "sound": "fall.basalt",
+      "volume": 0.4
+    },
+    "block:trial_spawner": {
+      "sound": "trial_spawner.step",
+      "volume": 0.4
+    },
+    "block:muddy_mangrove_roots": {
+      "sound": "block.muddy_mangrove_roots.fall",
+      "volume": 0.4
+    },
+    "block:netherrack": {
+      "sound": "fall.netherrack",
+      "volume": 0.4
+    },
+    "block:nether_wood_hanging_sign": {
+      "sound": "step.nether_wood_hanging_sign",
+      "volume": 0.4
+    },
+    "block:medium_amethyst_bud": {
+      "sound": "fall.amethyst_cluster"
+    },
+    "block:small_amethyst_bud": {
+      "sound": "fall.amethyst_cluster"
+    },
+    "block:netherite": {
+      "sound": "fall.netherite",
+      "volume": 0.4
+    },
+    "block:sculk_shrieker": {
+      "sound": "step.sculk_shrieker",
+      "volume": 0.4
+    },
+    "block:spore_blossom": {
+      "sound": "fall.spore_blossom",
+      "volume": 0.4
+    },
+    "block:anvil": {
+      "sound": "step.stone",
+      "volume": 0.4
+    },
+    "block:slime": {
+      "sound": "fall.slime",
+      "volume": 0.4
+    },
+    "block:decorated_pot": {
+      "sound": "step.decorated_pot"
+    },
+    "block:large_amethyst_bud": {
+      "sound": "fall.amethyst_cluster"
+    },
+    "block:nether_wart": {
+      "sound": "fall.nether_wart",
+      "volume": 0.4
+    },
+    "block:polished_tuff": {
+      "sound": "fall.tuff",
+      "volume": 1.2,
+      "pitch": 1.2
+    },
+    "block:copper_grate": {
+      "sound": "step.copper_grate"
+    },
+    "block:nether_gold_ore": {
+      "sound": "fall.nether_gold_ore",
+      "volume": 0.4
+    },
+    "block:lantern": {
+      "sound": "block.lantern.fall",
+      "volume": 0.4
+    },
+    "block:mud_bricks": {
+      "sound": "block.mud_bricks.fall",
+      "volume": 0.4
+    },
+    "block:amethyst_block": {
+      "sound": "fall.amethyst_block",
+      "volume": 0.4
+    },
+    "block:chain": {
+      "sound": "fall.chain",
+      "volume": 0.4
+    },
+    "block:mud": {
+      "sound": "block.mud.fall",
+      "volume": 0.4
+    },
+    "block:calcite": {
+      "sound": "fall.calcite"
+    },
+    "block:nether_wood": {
+      "sound": "fall.nether_wood",
+      "volume": 0.4
+    },
+    "block:sculk": {
+      "sound": "step.sculk",
+      "volume": 0.4
+    },
+    "block:sponge": {
+      "sound": "step.sponge"
+    },
+    "block:sculk_vein": {
+      "sound": "step.sculk_vein",
+      "volume": 0.4
+    },
+    "block:creaking_heart": {
+      "sound": "block.creaking_heart.fall",
+      "volume": 0.5,
+      "pitch": 0.75
+    },
     "block:cloth": {
       "sound": "fall.cloth",
       "volume": 0.4
+    },
+    "block:resin_brick": {
+      "sound": "block.resin_brick.fall",
+      "volume": 0.5,
+      "pitch": 0.75
     },
     "block:nether_brick": {
       "sound": "fall.nether_brick",
@@ -5108,24 +5285,12 @@
       "sound": "step.sculk_catalyst",
       "volume": 0.4
     },
-    "block:roots": {
-      "sound": "fall.roots",
-      "volume": 0.4
-    },
     "block:grass": {
       "sound": "fall.grass",
       "volume": 0.4
     },
     "block:froglight": {
       "sound": "step.froglight",
-      "volume": 0.4
-    },
-    "block:lodestone": {
-      "sound": "fall.stone",
-      "volume": 0.4
-    },
-    "block:bamboo": {
-      "sound": "block.bamboo.fall",
       "volume": 0.4
     },
     "block:shroomlight": {
@@ -5141,27 +5306,12 @@
       "sound": "fall.deepslate",
       "volume": 0.4
     },
-    "block:hanging_sign": {
-      "sound": "step.hanging_sign",
-      "volume": 0.4
-    },
-    "block:heavy_core": {
-      "sound": "step.heavy_core"
-    },
-    "block:cherry_wood": {
-      "sound": "fall.cherry_wood",
-      "volume": 0.4
-    },
     "block:wood": {
       "sound": "fall.wood",
       "volume": 0.4
     },
     "block:gravel": {
       "sound": "fall.gravel",
-      "volume": 0.4
-    },
-    "block:mangrove_roots": {
-      "sound": "block.mangrove_roots.fall",
       "volume": 0.4
     },
     "block:dripstone_block": {
@@ -5180,11 +5330,12 @@
       "sound": "fall.cave_vines",
       "volume": 0.4
     },
-    "block:tuff": {
-      "sound": "step.tuff"
-    },
     "block:vines": {
       "sound": "fall.vines",
+      "volume": 0.4
+    },
+    "block:turtle_egg": {
+      "sound": "fall.egg",
       "volume": 0.4
     },
     "block:sand": {
@@ -5195,40 +5346,16 @@
       "sound": "fall.copper",
       "volume": 0.4
     },
-    "block:chiseled_bookshelf": {
-      "sound": "step.chiseled_bookshelf",
-      "volume": 0.4
-    },
     "block:snow": {
       "sound": "fall.snow",
-      "volume": 0.4
-    },
-    "block:metal": {
-      "sound": "fall.stone",
       "volume": 0.4
     },
     "block:sculk_sensor": {
       "sound": "fall.sculk_sensor",
       "volume": 0.4
     },
-    "block:basalt": {
-      "sound": "fall.basalt",
-      "volume": 0.4
-    },
     "block:big_dripleaf": {
       "sound": "fall.big_dripleaf",
-      "volume": 0.4
-    },
-    "block:trial_spawner": {
-      "sound": "trial_spawner.step",
-      "volume": 0.4
-    },
-    "block:muddy_mangrove_roots": {
-      "sound": "block.muddy_mangrove_roots.fall",
-      "volume": 0.4
-    },
-    "block:netherrack": {
-      "sound": "fall.netherrack",
       "volume": 0.4
     }
   },
@@ -6529,6 +6656,11 @@
       ]
     }
   },
+  "Freeze": {
+    "entity:minecraft:creaking": {
+      "sound": "mob.creaking.freeze"
+    }
+  },
   "FrogspawnBreak": {
     "": {
       "sound": "break.frog_spawn",
@@ -6947,6 +7079,9 @@
       "volume": 0.23,
       "pitch": 0.5
     },
+    "block:pale_hanging_moss": {
+      "sound": "hit.moss"
+    },
     "block:azalea_leaves": {
       "sound": "hit.azalea_leaves",
       "volume": 0.3,
@@ -6994,6 +7129,16 @@
     "block:mangrove_roots": {
       "sound": "block.mangrove_roots.hit",
       "volume": 0.1,
+      "pitch": 0.5
+    },
+    "block:wet_sponge": {
+      "sound": "hit.wet_sponge",
+      "volume": 0.3,
+      "pitch": 0.5
+    },
+    "block:resin": {
+      "sound": "block.resin.hit",
+      "volume": 0.25,
       "pitch": 0.5
     },
     "block:tuff": {
@@ -7124,10 +7269,8 @@
     },
     "block:amethyst_block": {
       "sound": "hit.amethyst_block",
-      "pitch": [
-        0.5,
-        1.2
-      ]
+      "volume": 0.3,
+      "pitch": 0.5
     },
     "block:chain": {
       "sound": "hit.chain",
@@ -7157,14 +7300,29 @@
       "volume": 0.35,
       "pitch": 0.5
     },
+    "block:sponge": {
+      "sound": "hit.sponge",
+      "volume": 0.3,
+      "pitch": 0.5
+    },
     "block:sculk_vein": {
       "sound": "step.sculk_vein",
       "volume": 0.3,
       "pitch": 0.5
     },
+    "block:creaking_heart": {
+      "sound": "block.creaking_heart.hit",
+      "volume": 0.25,
+      "pitch": 0.5
+    },
     "block:cloth": {
       "sound": "hit.cloth",
       "volume": 0.35,
+      "pitch": 0.5
+    },
+    "block:resin_brick": {
+      "sound": "block.resin_brick.hit",
+      "volume": 0.25,
       "pitch": 0.5
     },
     "block:nether_brick": {
@@ -7186,6 +7344,11 @@
       "sound": "step.froglight",
       "volume": 0.83,
       "pitch": 1.3
+    },
+    "block:glow_lichen": {
+      "sound": "hit.grass",
+      "volume": 0.3,
+      "pitch": 0.5
     },
     "block:shroomlight": {
       "sound": "hit.shroomlight",
@@ -7220,6 +7383,11 @@
       "volume": 0.35,
       "pitch": 0.5
     },
+    "block:eyeblossom": {
+      "sound": "hit.grass",
+      "volume": 0.3,
+      "pitch": 0.5
+    },
     "block:ancient_debris": {
       "sound": "hit.ancient_debris",
       "volume": 0.23,
@@ -7233,6 +7401,11 @@
     "block:vines": {
       "sound": "hit.vines",
       "volume": 0.3,
+      "pitch": 0.5
+    },
+    "block:turtle_egg": {
+      "sound": "hit.stone",
+      "volume": 0.25,
       "pitch": 0.5
     },
     "block:sand": {
@@ -8055,6 +8228,11 @@
       "pitch": 1.8
     }
   },
+  "ImitateCreaking": {
+    "entity:minecraft:parrot": {
+      "sound": "mob.parrot.imitate_creaking"
+    }
+  },
   "ImitateCreeper": {
     "entity:minecraft:parrot": {
       "sound": "random.fuse",
@@ -8263,18 +8441,6 @@
     "block:copper_bulb": {
       "sound": "step.copper_bulb"
     },
-    "block:nether_wood_hanging_sign": {
-      "sound": "step.nether_wood_hanging_sign",
-      "pitch": 0.8
-    },
-    "block:itemframe": {
-      "sound": "block.itemframe.place",
-      "pitch": 0.8
-    },
-    "block:medium_amethyst_bud": {
-      "sound": "step.amethyst_cluster",
-      "pitch": 0.8
-    },
     "block:pointed_dripstone": {
       "sound": "use.pointed_dripstone"
     },
@@ -8286,35 +8452,16 @@
       "sound": "use.hanging_roots",
       "pitch": 0.8
     },
-    "block:small_amethyst_bud": {
-      "sound": "step.amethyst_cluster",
-      "pitch": 0.8
-    },
     "block:cherry_wood_hanging_sign": {
       "sound": "step.cherry_wood_hanging_sign",
-      "pitch": 0.8
-    },
-    "block:bamboo_sapling": {
-      "sound": "block.bamboo_sapling.place",
       "pitch": 0.8
     },
     "block:nylium": {
       "sound": "use.nylium",
       "pitch": 0.8
     },
-    "block:netherite": {
-      "sound": "use.netherite",
-      "pitch": 0.8
-    },
     "block:web": {
       "sound": "step.web"
-    },
-    "block:sculk_shrieker": {
-      "sound": "place.sculk_shrieker",
-      "pitch": [
-        0.8,
-        1.0
-      ]
     },
     "block:glass": {
       "sound": "use.stone",
@@ -8328,39 +8475,12 @@
       "sound": "use.candle",
       "pitch": 0.8
     },
-    "block:spore_blossom": {
-      "sound": "use.spore_blossom",
-      "pitch": 0.8
-    },
-    "block:anvil": {
-      "sound": "use.stone",
-      "pitch": [
-        0.8,
-        1.0
-      ]
-    },
-    "block:slime": {
-      "sound": "use.slime",
-      "pitch": 0.8
-    },
     "block:moss_block": {
       "sound": "use.moss"
     },
     "block:honey_block": {
       "sound": "use.honey_block",
       "pitch": 0.8
-    },
-    "block:large_amethyst_bud": {
-      "sound": "step.amethyst_cluster",
-      "pitch": 0.8
-    },
-    "block:nether_wart": {
-      "sound": "use.nether_wart",
-      "pitch": 0.8
-    },
-    "block:polished_tuff": {
-      "sound": "step.tuff",
-      "pitch": 1.2
     },
     "block:bamboo_wood_hanging_sign": {
       "sound": "step.bamboo_wood_hanging_sign",
@@ -8377,31 +8497,12 @@
       "sound": "use.coral",
       "pitch": 0.8
     },
-    "block:copper_grate": {
-      "sound": "step.copper_grate"
-    },
-    "block:nether_gold_ore": {
-      "sound": "use.nether_gold_ore",
-      "pitch": 0.8
-    },
     "block:mob_spawner": {
       "sound": "block.mob_spawner.step"
-    },
-    "block:lantern": {
-      "sound": "block.lantern.place",
-      "pitch": 1.1
     },
     "block:tuff_bricks": {
       "sound": "step.tuff_bricks",
       "volume": 0.22
-    },
-    "block:mud_bricks": {
-      "sound": "block.mud_bricks.step",
-      "pitch": 0.8
-    },
-    "block:amethyst_block": {
-      "sound": "step.amethyst_block",
-      "pitch": 0.8
     },
     "block:stem": {
       "sound": "use.stem",
@@ -8409,10 +8510,6 @@
     },
     "block:scaffolding": {
       "sound": "block.scaffolding.place",
-      "pitch": 0.8
-    },
-    "block:chain": {
-      "sound": "use.chain",
       "pitch": 0.8
     },
     "block:packed_mud": {
@@ -8425,10 +8522,6 @@
     },
     "block:cherry_leaves": {
       "sound": "step.cherry_leaves",
-      "pitch": 0.8
-    },
-    "block:mud": {
-      "sound": "block.mud.step",
       "pitch": 0.8
     },
     "block:soul_soil": {
@@ -8448,6 +8541,156 @@
       "sound": "use.stone",
       "pitch": 0.8
     },
+    "block:deepslate_bricks": {
+      "sound": "use.deepslate_bricks",
+      "pitch": 0.8
+    },
+    "block:pale_hanging_moss": {
+      "sound": "use.moss"
+    },
+    "block:bamboo_wood": {
+      "sound": "step.bamboo_wood",
+      "pitch": 0.8
+    },
+    "block:ladder": {
+      "sound": "use.ladder",
+      "pitch": 0.8
+    },
+    "block:roots": {
+      "sound": "use.roots",
+      "pitch": 0.8
+    },
+    "block:lodestone": {
+      "sound": "dig.stone",
+      "pitch": 0.8
+    },
+    "block:bamboo": {
+      "sound": "block.bamboo.place",
+      "pitch": 0.8
+    },
+    "block:hanging_sign": {
+      "sound": "step.hanging_sign",
+      "pitch": 0.8
+    },
+    "block:heavy_core": {
+      "sound": "step.heavy_core"
+    },
+    "block:cherry_wood": {
+      "sound": "step.cherry_wood",
+      "pitch": 0.8
+    },
+    "block:mangrove_roots": {
+      "sound": "block.mangrove_roots.step",
+      "pitch": 0.8
+    },
+    "block:wet_sponge": {
+      "sound": "step.wet_sponge"
+    },
+    "block:tuff": {
+      "sound": "step.tuff",
+      "volume": 0.22
+    },
+    "block:sweet_berry_bush": {
+      "sound": "block.sweet_berry_bush.place",
+      "pitch": 0.8
+    },
+    "block:basalt": {
+      "sound": "use.basalt",
+      "pitch": 0.8
+    },
+    "block:muddy_mangrove_roots": {
+      "sound": "block.muddy_mangrove_roots.step",
+      "pitch": 0.8
+    },
+    "block:netherrack": {
+      "sound": "use.netherrack",
+      "pitch": 0.8
+    },
+    "block:nether_wood_hanging_sign": {
+      "sound": "step.nether_wood_hanging_sign",
+      "pitch": 0.8
+    },
+    "block:itemframe": {
+      "sound": "block.itemframe.place",
+      "pitch": 0.8
+    },
+    "block:medium_amethyst_bud": {
+      "sound": "step.amethyst_cluster",
+      "pitch": 0.8
+    },
+    "block:small_amethyst_bud": {
+      "sound": "step.amethyst_cluster",
+      "pitch": 0.8
+    },
+    "block:bamboo_sapling": {
+      "sound": "block.bamboo_sapling.place",
+      "pitch": 0.8
+    },
+    "block:netherite": {
+      "sound": "use.netherite",
+      "pitch": 0.8
+    },
+    "block:sculk_shrieker": {
+      "sound": "place.sculk_shrieker",
+      "pitch": [
+        0.8,
+        1.0
+      ]
+    },
+    "block:spore_blossom": {
+      "sound": "use.spore_blossom",
+      "pitch": 0.8
+    },
+    "block:anvil": {
+      "sound": "use.stone",
+      "pitch": [
+        0.8,
+        1.0
+      ]
+    },
+    "block:slime": {
+      "sound": "use.slime",
+      "pitch": 0.8
+    },
+    "block:large_amethyst_bud": {
+      "sound": "step.amethyst_cluster",
+      "pitch": 0.8
+    },
+    "block:nether_wart": {
+      "sound": "use.nether_wart",
+      "pitch": 0.8
+    },
+    "block:polished_tuff": {
+      "sound": "step.tuff",
+      "pitch": 1.2
+    },
+    "block:copper_grate": {
+      "sound": "step.copper_grate"
+    },
+    "block:nether_gold_ore": {
+      "sound": "use.nether_gold_ore",
+      "pitch": 0.8
+    },
+    "block:lantern": {
+      "sound": "block.lantern.place",
+      "pitch": 1.1
+    },
+    "block:mud_bricks": {
+      "sound": "block.mud_bricks.step",
+      "pitch": 0.8
+    },
+    "block:amethyst_block": {
+      "sound": "step.amethyst_block",
+      "pitch": 0.8
+    },
+    "block:chain": {
+      "sound": "use.chain",
+      "pitch": 0.8
+    },
+    "block:mud": {
+      "sound": "block.mud.step",
+      "pitch": 0.8
+    },
     "block:calcite": {
       "sound": "step.calcite",
       "pitch": 0.8
@@ -8460,10 +8703,6 @@
       "sound": "use.wood",
       "pitch": 0.8
     },
-    "block:deepslate_bricks": {
-      "sound": "use.deepslate_bricks",
-      "pitch": 0.8
-    },
     "block:sculk": {
       "sound": "place.sculk",
       "pitch": [
@@ -8471,13 +8710,8 @@
         1.0
       ]
     },
-    "block:bamboo_wood": {
-      "sound": "step.bamboo_wood",
-      "pitch": 0.8
-    },
-    "block:ladder": {
-      "sound": "use.ladder",
-      "pitch": 0.8
+    "block:sponge": {
+      "sound": "step.sponge"
     },
     "block:cloth": {
       "sound": "use.cloth",
@@ -8494,20 +8728,12 @@
         1.0
       ]
     },
-    "block:roots": {
-      "sound": "use.roots",
-      "pitch": 0.8
-    },
     "block:grass": {
       "sound": "use.grass",
       "pitch": 0.8
     },
-    "block:lodestone": {
-      "sound": "dig.stone",
-      "pitch": 0.8
-    },
-    "block:bamboo": {
-      "sound": "block.bamboo.place",
+    "block:glow_lichen": {
+      "sound": "use.grass",
       "pitch": 0.8
     },
     "block:shroomlight": {
@@ -8518,27 +8744,12 @@
       "sound": "use.deepslate",
       "pitch": 0.8
     },
-    "block:hanging_sign": {
-      "sound": "step.hanging_sign",
-      "pitch": 0.8
-    },
-    "block:heavy_core": {
-      "sound": "step.heavy_core"
-    },
-    "block:cherry_wood": {
-      "sound": "step.cherry_wood",
-      "pitch": 0.8
-    },
     "block:wood": {
       "sound": "use.wood",
       "pitch": 0.8
     },
     "block:gravel": {
       "sound": "use.gravel",
-      "pitch": 0.8
-    },
-    "block:mangrove_roots": {
-      "sound": "block.mangrove_roots.step",
       "pitch": 0.8
     },
     "block:dripstone_block": {
@@ -8548,6 +8759,9 @@
       "sound": "use.hanging_roots",
       "pitch": 0.8
     },
+    "block:eyeblossom": {
+      "sound": "use.grass"
+    },
     "block:ancient_debris": {
       "sound": "use.ancient_debris",
       "pitch": 0.8
@@ -8556,17 +8770,13 @@
       "sound": "use.cave_vines",
       "pitch": 0.8
     },
-    "block:tuff": {
-      "sound": "step.tuff",
-      "volume": 0.22
-    },
     "block:vines": {
       "sound": "use.vines",
       "pitch": 0.8
     },
-    "block:sweet_berry_bush": {
-      "sound": "block.sweet_berry_bush.place",
-      "pitch": 0.8
+    "block:turtle_egg": {
+      "sound": "use.stone",
+      "volume": 0.85
     },
     "block:sand": {
       "sound": "use.sand",
@@ -8582,18 +8792,6 @@
     },
     "block:sculk_sensor": {
       "sound": "use.sculk_sensor",
-      "pitch": 0.8
-    },
-    "block:basalt": {
-      "sound": "use.basalt",
-      "pitch": 0.8
-    },
-    "block:muddy_mangrove_roots": {
-      "sound": "block.muddy_mangrove_roots.step",
-      "pitch": 0.8
-    },
-    "block:netherrack": {
-      "sound": "use.netherrack",
       "pitch": 0.8
     }
   },
@@ -8800,6 +8998,16 @@
       "sound": "block.mangrove_roots.step",
       "volume": 0.1
     },
+    "block:wet_sponge": {
+      "sound": "step.wet_sponge",
+      "volume": 0.12,
+      "pitch": 1.1
+    },
+    "block:resin": {
+      "sound": "block.resin.step",
+      "volume": 0.12,
+      "pitch": 1.1
+    },
     "block:tuff": {
       "sound": "step.tuff",
       "volume": 0.12,
@@ -8925,6 +9133,11 @@
       "sound": "mob.horse.jump",
       "volume": 0.4
     },
+    "block:sponge": {
+      "sound": "step.sponge",
+      "volume": 0.12,
+      "pitch": 1.1
+    },
     "block:sculk_vein": {
       "sound": "step.sculk_vein",
       "volume": 0.12
@@ -8933,9 +9146,19 @@
       "sound": "mob.horse.jump",
       "volume": 0.4
     },
+    "block:creaking_heart": {
+      "sound": "block.creaking_heart.step",
+      "volume": 0.12,
+      "pitch": 1.1
+    },
     "block:cloth": {
       "sound": "jump.cloth",
       "volume": 0.12
+    },
+    "block:resin_brick": {
+      "sound": "block.resin_brick.step",
+      "volume": 0.12,
+      "pitch": 1.1
     },
     "block:nether_brick": {
       "sound": "jump.bone_block",
@@ -8952,6 +9175,10 @@
     "block:froglight": {
       "sound": "step.froglight",
       "volume": 0.12
+    },
+    "block:glow_lichen": {
+      "sound": "jump.grass",
+      "volume": 0.11
     },
     "block:shroomlight": {
       "sound": "jump.shroomlight",
@@ -8992,6 +9219,11 @@
     "block:vines": {
       "sound": "jump.vines",
       "volume": 0.12
+    },
+    "block:turtle_egg": {
+      "sound": "jump.stone",
+      "volume": 0.15,
+      "pitch": 0.9
     },
     "block:sand": {
       "sound": "jump.sand",
@@ -9082,7 +9314,8 @@
       "sound": "step.candle"
     },
     "block:moss_block": {
-      "sound": "land.moss"
+      "sound": "land.moss",
+      "volume": 0.5
     },
     "block:honey_block": {
       "sound": "land.honey_block",
@@ -9157,7 +9390,7 @@
     },
     "block:moss_carpet": {
       "sound": "land.moss",
-      "volume": 0.9,
+      "volume": 0.5,
       "pitch": 1.1
     },
     "block:stone": {
@@ -9214,6 +9447,14 @@
     "block:mangrove_roots": {
       "sound": "block.mangrove_roots.fall",
       "volume": 0.1
+    },
+    "block:wet_sponge": {
+      "sound": "step.wet_sponge",
+      "volume": 0.4
+    },
+    "block:resin": {
+      "sound": "block.resin.step",
+      "volume": 0.4
     },
     "block:tuff": {
       "sound": "step.tuff",
@@ -9309,7 +9550,8 @@
       "volume": 0.05
     },
     "block:amethyst_block": {
-      "sound": "step.amethyst_block"
+      "sound": "step.amethyst_block",
+      "volume": 0.26
     },
     "block:chain": {
       "sound": "land.chain",
@@ -9337,6 +9579,10 @@
       "sound": "mob.horse.land",
       "volume": 0.4
     },
+    "block:sponge": {
+      "sound": "step.sponge",
+      "volume": 0.4
+    },
     "block:sculk_vein": {
       "sound": "step.sculk_vein",
       "volume": 0.14
@@ -9345,9 +9591,17 @@
       "sound": "mob.horse.land",
       "volume": 0.4
     },
+    "block:creaking_heart": {
+      "sound": "block.creaking_heart.step",
+      "volume": 0.4
+    },
     "block:cloth": {
       "sound": "land.cloth",
       "volume": 0.18
+    },
+    "block:resin_brick": {
+      "sound": "block.resin_brick.step",
+      "volume": 0.4
     },
     "block:nether_brick": {
       "sound": "land.nether_brick",
@@ -9364,6 +9618,10 @@
     "block:froglight": {
       "sound": "step.froglight",
       "volume": 0.14
+    },
+    "block:glow_lichen": {
+      "sound": "land.grass",
+      "volume": 0.21
     },
     "block:shroomlight": {
       "sound": "land.shroomlight",
@@ -9404,6 +9662,11 @@
     "block:vines": {
       "sound": "land.vines",
       "volume": 0.22
+    },
+    "block:turtle_egg": {
+      "sound": "fall.egg",
+      "volume": 0.2,
+      "pitch": 0.9
     },
     "block:sand": {
       "sound": "land.sand",
@@ -9703,6 +9966,16 @@
       ]
     }
   },
+  "Open": {
+    "block:eyeblossom": {
+      "sound": "block.eyeblossom.open"
+    }
+  },
+  "OpenLong": {
+    "block:eyeblossom": {
+      "sound": "block.eyeblossom.open_long"
+    }
+  },
   "Panic": {
     "entity:minecraft:strider": {
       "sound": "mob.strider.panic",
@@ -9944,6 +10217,10 @@
         1.0
       ]
     },
+    "block:pale_hanging_moss": {
+      "sound": "place.moss",
+      "volume": 0.93
+    },
     "block:azalea_leaves": {
       "sound": "dig.azalea_leaves",
       "pitch": [
@@ -10005,6 +10282,14 @@
         1.0,
         1.2
       ]
+    },
+    "block:wet_sponge": {
+      "sound": "place.wet_sponge",
+      "pitch": 0.8
+    },
+    "block:resin": {
+      "sound": "block.resin.place",
+      "pitch": 0.8
     },
     "block:tuff": {
       "sound": "place.tuff",
@@ -10161,7 +10446,8 @@
       ]
     },
     "block:amethyst_block": {
-      "sound": "place.amethyst_block"
+      "sound": "place.amethyst_block",
+      "pitch": 0.8
     },
     "block:chain": {
       "sound": "dig.chain",
@@ -10196,6 +10482,10 @@
         1.0
       ]
     },
+    "block:sponge": {
+      "sound": "place.sponge",
+      "pitch": 0.8
+    },
     "block:sculk_vein": {
       "sound": "break.sculk_vein",
       "pitch": [
@@ -10203,12 +10493,21 @@
         1.0
       ]
     },
+    "block:creaking_heart": {
+      "sound": "block.creaking_heart.place",
+      "volume": 0.7,
+      "pitch": 0.8
+    },
     "block:cloth": {
       "sound": "dig.cloth",
       "pitch": [
         0.8,
         1.0
       ]
+    },
+    "block:resin_brick": {
+      "sound": "block.resin_brick.place",
+      "pitch": 0.8
     },
     "block:nether_brick": {
       "sound": "dig.nether_brick",
@@ -10234,6 +10533,14 @@
     },
     "block:froglight": {
       "sound": "break.froglight"
+    },
+    "block:glow_lichen": {
+      "sound": "dig.grass",
+      "volume": 0.8,
+      "pitch": [
+        0.8,
+        1.0
+      ]
     },
     "block:shroomlight": {
       "sound": "dig.shroomlight",
@@ -10275,6 +10582,14 @@
         1.0
       ]
     },
+    "block:eyeblossom": {
+      "sound": "dig.grass",
+      "volume": 0.8,
+      "pitch": [
+        0.8,
+        1.0
+      ]
+    },
     "block:ancient_debris": {
       "sound": "dig.ancient_debris",
       "pitch": [
@@ -10291,6 +10606,13 @@
     },
     "block:vines": {
       "sound": "dig.vines",
+      "pitch": [
+        0.8,
+        1.0
+      ]
+    },
+    "block:turtle_egg": {
+      "sound": "dig.stone",
       "pitch": [
         0.8,
         1.0
@@ -10671,6 +10993,11 @@
       "sound": "block.click",
       "pitch": 0.5
     },
+    "block:turtle_egg": {
+      "sound": "block.click",
+      "volume": 0.85,
+      "pitch": 0.6
+    },
     "block:sand": {
       "sound": "block.click",
       "pitch": 0.5
@@ -10936,6 +11263,11 @@
     },
     "block:sweet_berry_bush": {
       "sound": "block.click",
+      "pitch": 0.6
+    },
+    "block:turtle_egg": {
+      "sound": "block.click",
+      "volume": 0.85,
       "pitch": 0.6
     },
     "block:sand": {
@@ -12151,6 +12483,11 @@
       ]
     }
   },
+  "SpongeAbsorb": {
+    "": {
+      "sound": "sponge.absorb"
+    }
+  },
   "SquidInkSquirt": {
     "": {
       "sound": "mob.squid.ink_squirt"
@@ -12234,7 +12571,8 @@
       "sound": "step.candle"
     },
     "block:moss_block": {
-      "sound": "step.moss"
+      "sound": "step.moss",
+      "volume": 0.2
     },
     "block:honey_block": {
       "sound": "step.honey_block",
@@ -12334,7 +12672,7 @@
     },
     "block:moss_carpet": {
       "sound": "step.moss",
-      "volume": 0.9,
+      "volume": 0.2,
       "pitch": 1.1
     },
     "block:stone": {
@@ -12437,6 +12775,10 @@
       "sound": "block.mangrove_roots.step",
       "volume": 0.1
     },
+    "block:wet_sponge": {
+      "sound": "step.wet_sponge",
+      "volume": 0.2
+    },
     "entity:minecraft:zoglin": {
       "sound": "mob.zoglin.step",
       "volume": 0.15
@@ -12448,6 +12790,10 @@
     "entity:minecraft:silverfish": {
       "sound": "mob.silverfish.step",
       "volume": 0.35
+    },
+    "block:resin": {
+      "sound": "block.resin.step",
+      "volume": 0.15
     },
     "block:tuff": {
       "sound": "step.tuff",
@@ -12633,7 +12979,8 @@
       ]
     },
     "block:amethyst_block": {
-      "sound": "step.amethyst_block"
+      "sound": "step.amethyst_block",
+      "volume": 0.22
     },
     "entity:minecraft:goat": {
       "sound": "mob.goat.step",
@@ -12669,6 +13016,10 @@
       "sound": "mob.husk.step",
       "volume": 0.35
     },
+    "entity:minecraft:creaking": {
+      "sound": "mob.creaking.step",
+      "volume": 0.8
+    },
     "block:sculk": {
       "sound": "step.sculk",
       "volume": 0.17
@@ -12680,6 +13031,10 @@
         0.9,
         1.1
       ]
+    },
+    "block:sponge": {
+      "sound": "step.sponge",
+      "volume": 0.2
     },
     "block:sculk_vein": {
       "sound": "step.sculk_vein",
@@ -12693,9 +13048,17 @@
         1.1
       ]
     },
+    "block:creaking_heart": {
+      "sound": "block.creaking_heart.step",
+      "volume": 0.15
+    },
     "block:cloth": {
       "sound": "step.cloth",
       "volume": 0.3
+    },
+    "block:resin_brick": {
+      "sound": "block.resin_brick.step",
+      "volume": 0.15
     },
     "block:nether_brick": {
       "sound": "step.nether_brick",
@@ -12712,6 +13075,10 @@
     "block:froglight": {
       "sound": "step.froglight",
       "volume": 0.17
+    },
+    "block:glow_lichen": {
+      "sound": "step.vines",
+      "volume": 0.3
     },
     "entity:minecraft:ravager": {
       "sound": "mob.ravager.step",
@@ -12793,6 +13160,11 @@
     "block:vines": {
       "sound": "step.vines",
       "volume": 0.3
+    },
+    "block:turtle_egg": {
+      "sound": "step.stone",
+      "volume": 0.3,
+      "pitch": 0.9
     },
     "block:sand": {
       "sound": "step.sand",
@@ -13746,7 +14118,11 @@
       ]
     }
   },
-  "UNKNOWN_1": null,
+  "Unfreeze": {
+    "entity:minecraft:creaking": {
+      "sound": "mob.creaking.unfreeze"
+    }
+  },
   "UseSmithingTable": {
     "": {
       "sound": "smithing_table.use"

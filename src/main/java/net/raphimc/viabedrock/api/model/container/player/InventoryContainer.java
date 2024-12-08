@@ -103,7 +103,7 @@ public class InventoryContainer extends Container {
 
     public void sendSelectedHotbarSlotToClient() {
         final PacketWrapper setHeldSlot = PacketWrapper.create(ClientboundPackets1_21_2.SET_HELD_SLOT, this.user);
-        setHeldSlot.write(Types.BYTE, this.selectedHotbarSlot);
+        setHeldSlot.write(Types.VAR_INT, (int) this.selectedHotbarSlot);
         setHeldSlot.send(BedrockProtocol.class);
     }
 

@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.packet;
 
-import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ServerboundPackets1_21_2;
+import com.viaversion.viaversion.protocols.v1_21_2to1_21_4.packet.ServerboundPackets1_21_4;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 
@@ -43,12 +43,13 @@ public class UnhandledPackets {
         protocol.cancelClientbound(ClientboundBedrockPackets.SET_HUD); // Not possible in Java Edition
         protocol.cancelClientbound(ClientboundBedrockPackets.CURRENT_STRUCTURE_FEATURE); // Useless
         protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST); // Not possible in Java Edition
+        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST_PRESETS); // Not possible in Java Edition
 
-        protocol.cancelServerbound(ServerboundPackets1_21_2.CHAT_ACK);
-        protocol.cancelServerbound(ServerboundPackets1_21_2.CHAT_SESSION_UPDATE);
-        protocol.cancelServerbound(ServerboundPackets1_21_2.CHUNK_BATCH_RECEIVED);
-        protocol.cancelServerbound(ServerboundPackets1_21_2.COOKIE_RESPONSE);
-        protocol.cancelServerbound(ServerboundPackets1_21_2.DEBUG_SAMPLE_SUBSCRIPTION);
+        protocol.cancelServerbound(ServerboundPackets1_21_4.CHAT_ACK);
+        protocol.cancelServerbound(ServerboundPackets1_21_4.CHAT_SESSION_UPDATE);
+        protocol.cancelServerbound(ServerboundPackets1_21_4.CHUNK_BATCH_RECEIVED);
+        protocol.cancelServerbound(ServerboundPackets1_21_4.COOKIE_RESPONSE);
+        protocol.cancelServerbound(ServerboundPackets1_21_4.DEBUG_SAMPLE_SUBSCRIPTION);
     }
 
 }

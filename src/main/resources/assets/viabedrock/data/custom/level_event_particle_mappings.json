@@ -189,5 +189,70 @@
       }
     ]
   },
-  "OminousItemSpawner": "minecraft:ominous_spawning"
+  "OminousItemSpawner": "minecraft:ominous_spawning",
+  "CreakingCrumble": {
+    "_comment": "CreakingCrumble should also play the 'minecraft:creaking_crumble_head' particle effect, but the current mapping system does not support multiple particle effects for a single event.",
+    "particle": "minecraft:block_crumble",
+    "offset_x": 0.225,
+    "offset_y": 0.675,
+    "offset_z": 0.225,
+    "count": 100,
+    "arguments": [
+      {
+        "type": "block_state",
+        "value": "minecraft:pale_oak_wood[axis=y]"
+      }
+    ]
+  },
+  "PaleOakLeaves": "minecraft:pale_oak_leaves",
+  "EyeblossomOpen": {
+    "particle": "minecraft:trail",
+    "arguments": [
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "int",
+        "value": 16545810
+      },
+      {
+        "type": "var_int",
+        "value": 25
+      }
+    ]
+  },
+  "EyeblossomClose": {
+    "particle": "minecraft:trail",
+    "arguments": [
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "int",
+        "value": 6250335
+      },
+      {
+        "type": "var_int",
+        "value": 25
+      }
+    ]
+  }
 }

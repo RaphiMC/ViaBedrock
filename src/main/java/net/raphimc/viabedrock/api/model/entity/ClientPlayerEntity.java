@@ -65,7 +65,8 @@ public class ClientPlayerEntity extends PlayerEntity {
     private boolean prevOnGround;
     private final Set<PlayerAuthInputPacket_InputData> authInputData = EnumSet.noneOf(PlayerAuthInputPacket_InputData.class);
     private final List<AuthInputBlockAction> authInputBlockActions = new ArrayList<>();
-    private final Set<InputFlag> inputFlags = EnumSet.noneOf(InputFlag.class);
+    private Set<InputFlag> inputFlags = EnumSet.noneOf(InputFlag.class);
+    private Set<InputFlag> prevInputFlags = EnumSet.noneOf(InputFlag.class);
     private boolean horizontalCollision;
     private boolean sneaking;
     private boolean sprinting;
@@ -97,6 +98,7 @@ public class ClientPlayerEntity extends PlayerEntity {
 
         this.prevPosition = this.position;
         this.prevOnGround = this.onGround;
+        this.prevInputFlags = this.inputFlags;
     }
 
     public void sendPlayerPositionPacketToClient(final Set<Relative> relatives) {
@@ -117,7 +119,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         wrapper.write(Types.DOUBLE, 0D); // velocity z
         wrapper.write(Types.FLOAT, relatives.contains(Relative.Y_ROT) ? 0F : this.rotation.y()); // yaw
         wrapper.write(Types.FLOAT, relatives.contains(Relative.X_ROT) ? 0F : this.rotation.x()); // pitch
-        wrapper.write(Types.INT, (int) EnumUtil.getBitmaskFromEnumSet(relatives, Relative::ordinal)); // flags
+        wrapper.write(Types.INT, EnumUtil.getIntBitmaskFromEnumSet(relatives, Relative::ordinal)); // flags
     }
 
     public void sendMovePlayerPacketToServer(final PlayerPositionModeComponent_PositionMode mode) {
@@ -359,8 +361,11 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void setInputFlags(final Set<InputFlag> inputFlags) {
-        this.inputFlags.clear();
-        this.inputFlags.addAll(inputFlags);
+        this.inputFlags = inputFlags;
+    }
+
+    public Set<InputFlag> prevInputFlags() {
+        return this.prevInputFlags;
     }
 
     public boolean horizontalCollision() {

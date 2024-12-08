@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.api.util;
 
+import java.math.BigInteger;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.ToIntFunction;
@@ -35,19 +36,52 @@ public class EnumUtil {
         final EnumSet<T> set = EnumSet.noneOf(enumClass);
         for (T constant : enumClass.getEnumConstants()) {
             final int bit = bitGetter.applyAsInt(constant);
-            if (bit >= 0 && bit < Long.SIZE && (bitmask & (1L << bitGetter.applyAsInt(constant))) != 0) {
+            if (bit >= 0 && bit < Long.SIZE && (bitmask & (1L << bit)) != 0) {
                 set.add(constant);
             }
         }
         return set;
     }
 
-    public static <T extends Enum<T>> long getBitmaskFromEnumSet(final Set<T> set, final ToIntFunction<T> bitGetter) {
+    public static <T extends Enum<T>> Set<T> getEnumSetFromBitmask(final Class<T> enumClass, final BigInteger bitmask, final ToIntFunction<T> bitGetter) {
+        final EnumSet<T> set = EnumSet.noneOf(enumClass);
+        for (T constant : enumClass.getEnumConstants()) {
+            final int bit = bitGetter.applyAsInt(constant);
+            if (bit >= 0 && bitmask.testBit(bit)) {
+                set.add(constant);
+            }
+        }
+        return set;
+    }
+
+    public static <T extends Enum<T>> int getIntBitmaskFromEnumSet(final Set<T> set, final ToIntFunction<T> bitGetter) {
+        int bitmask = 0;
+        for (T constant : set) {
+            final int bit = bitGetter.applyAsInt(constant);
+            if (bit >= 0 && bit < Integer.SIZE) {
+                bitmask |= 1 << bit;
+            }
+        }
+        return bitmask;
+    }
+
+    public static <T extends Enum<T>> long getLongBitmaskFromEnumSet(final Set<T> set, final ToIntFunction<T> bitGetter) {
         long bitmask = 0;
         for (T constant : set) {
             final int bit = bitGetter.applyAsInt(constant);
             if (bit >= 0 && bit < Long.SIZE) {
-                bitmask |= 1L << bitGetter.applyAsInt(constant);
+                bitmask |= 1L << bit;
+            }
+        }
+        return bitmask;
+    }
+
+    public static <T extends Enum<T>> BigInteger getBigBitmaskFromEnumSet(final Set<T> set, final ToIntFunction<T> bitGetter) {
+        BigInteger bitmask = BigInteger.ZERO;
+        for (T constant : set) {
+            final int bit = bitGetter.applyAsInt(constant);
+            if (bit >= 0) {
+                bitmask = bitmask.setBit(bit);
             }
         }
         return bitmask;

@@ -71,6 +71,7 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put("comparator", new ComparatorBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("conduit", new ConduitBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("crafter", new CrafterBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put("creaking_heart", new CreakingHeartBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("daylight_detector", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("decorated_pot", new DecoratedPotBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put("dispenser", new LootableContainerBlockEntityRewriter());

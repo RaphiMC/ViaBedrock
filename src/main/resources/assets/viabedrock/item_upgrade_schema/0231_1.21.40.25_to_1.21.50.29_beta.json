@@ -1,0 +1,13 @@
+{
+    "remappedMetas": {
+        "minecraft:boat": {
+            "9": "minecraft:pale_oak_boat"
+        },
+        "minecraft:chest_boat": {
+            "9": "minecraft:pale_oak_chest_boat"
+        },
+        "minecraft:spawn_egg": {
+            "146": "minecraft:creaking_spawn_egg"
+        }
+    }
+}

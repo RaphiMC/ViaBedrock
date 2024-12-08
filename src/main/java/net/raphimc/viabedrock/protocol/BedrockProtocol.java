@@ -30,8 +30,8 @@ import com.viaversion.viaversion.exception.InformativeException;
 import com.viaversion.viaversion.protocol.packet.PacketWrapperImpl;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
+import com.viaversion.viaversion.protocols.v1_21_2to1_21_4.packet.ServerboundPackets1_21_4;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
-import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ServerboundPackets1_21_2;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -51,7 +51,7 @@ import net.raphimc.viabedrock.protocol.task.*;
 import java.util.EnumSet;
 import java.util.logging.Level;
 
-public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedrockPackets, ClientboundPackets1_21_2, ServerboundBedrockPackets, ServerboundPackets1_21_2> {
+public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedrockPackets, ClientboundPackets1_21_2, ServerboundBedrockPackets, ServerboundPackets1_21_4> {
 
     public static final BedrockMappingData MAPPINGS = new BedrockMappingData();
 
@@ -81,7 +81,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     }
 
     public BedrockProtocol() {
-        super(ClientboundBedrockPackets.class, ClientboundPackets1_21_2.class, ServerboundBedrockPackets.class, ServerboundPackets1_21_2.class);
+        super(ClientboundBedrockPackets.class, ClientboundPackets1_21_2.class, ServerboundBedrockPackets.class, ServerboundPackets1_21_4.class);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
                 this.cancelClientbound(packet);
             }
         }
-        for (ServerboundPackets1_21_2 packet : this.unmappedServerboundPacketType.getEnumConstants()) {
+        for (ServerboundPackets1_21_4 packet : this.unmappedServerboundPacketType.getEnumConstants()) {
             if (!this.hasRegisteredServerbound(packet)) {
                 this.cancelServerbound(packet);
             }
@@ -182,7 +182,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         /*if (direction == Direction.CLIENTBOUND) {
             System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ClientboundBedrockPackets.getPacket(wrapper.getId()) + ", wrapper = " + wrapper);
         } else {
-            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_21_2.values()[wrapper.getId()] + ", wrapper = " + wrapper);
+            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_21_4.values()[wrapper.getId()] + ", wrapper = " + wrapper);
         }*/
         super.transform(direction, state, wrapper);
         /*if (direction == Direction.CLIENTBOUND) {

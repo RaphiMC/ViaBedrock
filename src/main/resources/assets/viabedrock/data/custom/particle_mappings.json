@@ -44,6 +44,33 @@
   "minecraft:conduit_absorb_particle": "minecraft:nautilus",
   "minecraft:conduit_attack_emitter": "minecraft:nautilus",
   "minecraft:conduit_particle": "minecraft:nautilus",
+  "minecraft:creaking_crumble_body": {
+    "particle": "minecraft:block_crumble",
+    "offset_x": 0.225,
+    "offset_y": 0.675,
+    "offset_z": 0.225,
+    "count": 100,
+    "arguments": [
+      {
+        "type": "block_state",
+        "value": "minecraft:pale_oak_wood[axis=y]"
+      }
+    ]
+  },
+  "minecraft:creaking_crumble_head": {
+    "particle": "minecraft:block_crumble",
+    "offset_x": 0.225,
+    "offset_y": 0.675,
+    "offset_z": 0.225,
+    "count": 20,
+    "arguments": [
+      {
+        "type": "block_state",
+        "value": "minecraft:creaking_heart[active=true,axis=y,natural=false]"
+      }
+    ]
+  },
+  "minecraft:creaking_heart_trail": null,
   "minecraft:critical_hit_emitter": {
     "particle": "minecraft:crit",
     "offset_x": 0.375,
@@ -98,6 +125,56 @@
   "minecraft:explosion_manual": "minecraft:poof",
   "minecraft:explosion_particle": "minecraft:poof",
   "minecraft:eye_of_ender_bubble_particle": "minecraft:bubble",
+  "minecraft:eyeblossom_close": {
+    "particle": "minecraft:trail",
+    "arguments": [
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "int",
+        "value": 6250335
+      },
+      {
+        "type": "var_int",
+        "value": 25
+      }
+    ]
+  },
+  "minecraft:eyeblossom_open": {
+    "particle": "minecraft:trail",
+    "arguments": [
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "double",
+        "value": 0.0
+      },
+      {
+        "type": "int",
+        "value": 16545810
+      },
+      {
+        "type": "var_int",
+        "value": 25
+      }
+    ]
+  },
   "minecraft:eyeofender_death_explode_particle": {
     "particle": "minecraft:dust",
     "arguments": [
@@ -254,6 +331,7 @@
       }
     ]
   },
+  "minecraft:mobspell_lingering": null,
   "minecraft:mycelium_dust_particle": "minecraft:mycelium",
   "minecraft:nectar_drip_particle": "minecraft:falling_nectar",
   "minecraft:note_particle": "minecraft:note",
@@ -262,6 +340,7 @@
   "minecraft:ominous_spawning_particle": "minecraft:ominous_spawning",
   "minecraft:oozing_ambient": "minecraft:item_slime",
   "minecraft:oozing_emitter": "minecraft:item_slime",
+  "minecraft:pale_oak_leaves_particle": "minecraft:pale_oak_leaves",
   "minecraft:phantom_trail_particle": "minecraft:mycelium",
   "minecraft:portal_directional": "minecraft:portal",
   "minecraft:portal_east_west": "minecraft:portal",

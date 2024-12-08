@@ -138,7 +138,7 @@
   "minecraft:acacia_wood": {
     "block": {
       "minecraft:acacia_wood[pillar_axis=y]": {
-        "java_id": "minecraft:acacia_log"
+        "java_id": "minecraft:acacia_wood"
       }
     }
   },
@@ -1133,7 +1133,7 @@
   "minecraft:birch_wood": {
     "block": {
       "minecraft:birch_wood[pillar_axis=y]": {
-        "java_id": "minecraft:birch_log"
+        "java_id": "minecraft:birch_wood"
       }
     }
   },
@@ -1411,6 +1411,26 @@
     "block": {
       "minecraft:blue_wool": {
         "java_id": "minecraft:blue_wool"
+      }
+    }
+  },
+  "minecraft:board": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:oak_sign",
+        "java_name": "tile.chalkboard.oneByOne.name"
+      },
+      "0": {
+        "java_id": "minecraft:oak_sign",
+        "java_name": "tile.chalkboard.oneByOne.name"
+      },
+      "1": {
+        "java_id": "minecraft:oak_sign",
+        "java_name": "tile.chalkboard.twoByOne.name"
+      },
+      "2": {
+        "java_id": "minecraft:oak_sign",
+        "java_name": "tile.chalkboard.threeByTwo.name"
       }
     }
   },
@@ -2011,6 +2031,14 @@
       }
     }
   },
+  "minecraft:chalkboard": {
+    "block": {
+      "minecraft:chalkboard": {
+        "java_id": "minecraft:cobblestone_wall",
+        "java_name": "tile.chalkboard.name"
+      }
+    }
+  },
   "minecraft:charcoal": {
     "meta": {
       "": {
@@ -2043,54 +2071,6 @@
       "3": {
         "java_id": "minecraft:cartography_table",
         "java_name": "tile.compoundcreator.name"
-      },
-      "4": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.materialreducer.name"
-      },
-      "5": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.materialreducer.name"
-      },
-      "6": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.materialreducer.name"
-      },
-      "7": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.materialreducer.name"
-      },
-      "8": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.elementconstructor.name"
-      },
-      "9": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.elementconstructor.name"
-      },
-      "10": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.elementconstructor.name"
-      },
-      "11": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.elementconstructor.name"
-      },
-      "12": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.labtable.name"
-      },
-      "13": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.labtable.name"
-      },
-      "14": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.labtable.name"
-      },
-      "15": {
-        "java_id": "minecraft:cartography_table",
-        "java_name": "tile.labtable.name"
       }
     }
   },
@@ -2328,6 +2308,13 @@
       }
     }
   },
+  "minecraft:chiseled_resin_bricks": {
+    "block": {
+      "minecraft:chiseled_resin_bricks": {
+        "java_id": "minecraft:chiseled_resin_bricks"
+      }
+    }
+  },
   "minecraft:chiseled_sandstone": {
     "block": {
       "minecraft:chiseled_sandstone": {
@@ -2403,6 +2390,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:clock"
+      }
+    }
+  },
+  "minecraft:closed_eyeblossom": {
+    "block": {
+      "minecraft:closed_eyeblossom": {
+        "java_id": "minecraft:closed_eyeblossom"
       }
     }
   },
@@ -2855,6 +2849,20 @@
     "block": {
       "minecraft:crafting_table": {
         "java_id": "minecraft:crafting_table"
+      }
+    }
+  },
+  "minecraft:creaking_heart": {
+    "block": {
+      "minecraft:creaking_heart": {
+        "java_id": "minecraft:creaking_heart"
+      }
+    }
+  },
+  "minecraft:creaking_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:creaking_spawn_egg"
       }
     }
   },
@@ -3330,7 +3338,7 @@
   "minecraft:dark_oak_wood": {
     "block": {
       "minecraft:dark_oak_wood[pillar_axis=y]": {
-        "java_id": "minecraft:dark_oak_log"
+        "java_id": "minecraft:dark_oak_wood"
       }
     }
   },
@@ -7319,7 +7327,7 @@
   "minecraft:jungle_wood": {
     "block": {
       "minecraft:jungle_wood[pillar_axis=y]": {
-        "java_id": "minecraft:jungle_log"
+        "java_id": "minecraft:jungle_wood"
       }
     }
   },
@@ -9227,7 +9235,7 @@
   "minecraft:oak_wood": {
     "block": {
       "minecraft:oak_wood[pillar_axis=y]": {
-        "java_id": "minecraft:oak_log"
+        "java_id": "minecraft:oak_wood"
       }
     }
   },
@@ -9270,6 +9278,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:ominous_trial_key"
+      }
+    }
+  },
+  "minecraft:open_eyeblossom": {
+    "block": {
+      "minecraft:open_eyeblossom": {
+        "java_id": "minecraft:open_eyeblossom"
       }
     }
   },
@@ -9468,6 +9483,170 @@
     "meta": {
       "": {
         "java_id": "minecraft:painting"
+      }
+    }
+  },
+  "minecraft:pale_hanging_moss": {
+    "block": {
+      "minecraft:pale_hanging_moss": {
+        "java_id": "minecraft:pale_hanging_moss"
+      }
+    }
+  },
+  "minecraft:pale_moss_block": {
+    "block": {
+      "minecraft:pale_moss_block": {
+        "java_id": "minecraft:pale_moss_block"
+      }
+    }
+  },
+  "minecraft:pale_moss_carpet": {
+    "block": {
+      "minecraft:pale_moss_carpet": {
+        "java_id": "minecraft:pale_moss_carpet"
+      }
+    }
+  },
+  "minecraft:pale_oak_boat": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:pale_oak_boat"
+      }
+    }
+  },
+  "minecraft:pale_oak_button": {
+    "block": {
+      "minecraft:pale_oak_button": {
+        "java_id": "minecraft:pale_oak_button"
+      }
+    }
+  },
+  "minecraft:pale_oak_chest_boat": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:pale_oak_chest_boat"
+      }
+    }
+  },
+  "minecraft:pale_oak_door": {
+    "block": {
+      "minecraft:pale_oak_door": {
+        "java_id": "minecraft:pale_oak_door"
+      }
+    }
+  },
+  "minecraft:pale_oak_double_slab": {
+    "block": {
+      "minecraft:pale_oak_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:pale_oak_planks",
+        "java_name": "tile.pale_oak_double_slab.name"
+      }
+    }
+  },
+  "minecraft:pale_oak_fence": {
+    "block": {
+      "minecraft:pale_oak_fence": {
+        "java_id": "minecraft:pale_oak_fence"
+      }
+    }
+  },
+  "minecraft:pale_oak_fence_gate": {
+    "block": {
+      "minecraft:pale_oak_fence_gate[open_bit=0]": {
+        "java_id": "minecraft:pale_oak_fence_gate"
+      }
+    }
+  },
+  "minecraft:pale_oak_hanging_sign": {
+    "block": {
+      "minecraft:pale_oak_hanging_sign": {
+        "java_id": "minecraft:pale_oak_hanging_sign"
+      }
+    }
+  },
+  "minecraft:pale_oak_leaves": {
+    "block": {
+      "minecraft:pale_oak_leaves": {
+        "java_id": "minecraft:pale_oak_leaves"
+      }
+    }
+  },
+  "minecraft:pale_oak_log": {
+    "block": {
+      "minecraft:pale_oak_log[pillar_axis=y]": {
+        "java_id": "minecraft:pale_oak_log"
+      }
+    }
+  },
+  "minecraft:pale_oak_planks": {
+    "block": {
+      "minecraft:pale_oak_planks": {
+        "java_id": "minecraft:pale_oak_planks"
+      }
+    }
+  },
+  "minecraft:pale_oak_pressure_plate": {
+    "block": {
+      "minecraft:pale_oak_pressure_plate": {
+        "java_id": "minecraft:pale_oak_pressure_plate"
+      }
+    }
+  },
+  "minecraft:pale_oak_sapling": {
+    "block": {
+      "minecraft:pale_oak_sapling": {
+        "java_id": "minecraft:pale_oak_sapling"
+      }
+    }
+  },
+  "minecraft:pale_oak_sign": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:pale_oak_sign"
+      }
+    }
+  },
+  "minecraft:pale_oak_slab": {
+    "block": {
+      "minecraft:pale_oak_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:pale_oak_slab"
+      }
+    }
+  },
+  "minecraft:pale_oak_stairs": {
+    "block": {
+      "minecraft:pale_oak_stairs": {
+        "java_id": "minecraft:pale_oak_stairs"
+      }
+    }
+  },
+  "minecraft:pale_oak_standing_sign": {
+    "block": {
+      "minecraft:pale_oak_standing_sign": {
+        "java_id": "minecraft:pale_oak_sign",
+        "java_name": "tile.pale_oak_standing_sign.name"
+      }
+    }
+  },
+  "minecraft:pale_oak_trapdoor": {
+    "block": {
+      "minecraft:pale_oak_trapdoor[open_bit=0]": {
+        "java_id": "minecraft:pale_oak_trapdoor"
+      }
+    }
+  },
+  "minecraft:pale_oak_wall_sign": {
+    "block": {
+      "minecraft:pale_oak_wall_sign": {
+        "java_id": "minecraft:pale_oak_sign",
+        "java_name": "tile.pale_oak_wall_sign.name"
+      }
+    }
+  },
+  "minecraft:pale_oak_wood": {
+    "block": {
+      "minecraft:pale_oak_wood[pillar_axis=y]": {
+        "java_id": "minecraft:pale_oak_wood"
       }
     }
   },
@@ -10982,6 +11161,63 @@
       }
     }
   },
+  "minecraft:resin_block": {
+    "block": {
+      "minecraft:resin_block": {
+        "java_id": "minecraft:resin_block"
+      }
+    }
+  },
+  "minecraft:resin_brick": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:resin_brick"
+      }
+    }
+  },
+  "minecraft:resin_brick_double_slab": {
+    "block": {
+      "minecraft:resin_brick_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:resin_bricks",
+        "java_name": "tile.resin_brick_double_slab.name"
+      }
+    }
+  },
+  "minecraft:resin_brick_slab": {
+    "block": {
+      "minecraft:resin_brick_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:resin_brick_slab"
+      }
+    }
+  },
+  "minecraft:resin_brick_stairs": {
+    "block": {
+      "minecraft:resin_brick_stairs": {
+        "java_id": "minecraft:resin_brick_stairs"
+      }
+    }
+  },
+  "minecraft:resin_brick_wall": {
+    "block": {
+      "minecraft:resin_brick_wall": {
+        "java_id": "minecraft:resin_brick_wall"
+      }
+    }
+  },
+  "minecraft:resin_bricks": {
+    "block": {
+      "minecraft:resin_bricks": {
+        "java_id": "minecraft:resin_bricks"
+      }
+    }
+  },
+  "minecraft:resin_clump": {
+    "block": {
+      "minecraft:resin_clump": {
+        "java_id": "minecraft:resin_clump"
+      }
+    }
+  },
   "minecraft:respawn_anchor": {
     "block": {
       "minecraft:respawn_anchor": {
@@ -12067,7 +12303,7 @@
   "minecraft:spruce_wood": {
     "block": {
       "minecraft:spruce_wood[pillar_axis=y]": {
-        "java_id": "minecraft:spruce_log"
+        "java_id": "minecraft:spruce_wood"
       }
     }
   },
@@ -12324,7 +12560,7 @@
   "minecraft:stripped_acacia_wood": {
     "block": {
       "minecraft:stripped_acacia_wood[pillar_axis=y]": {
-        "java_id": "minecraft:stripped_acacia_log"
+        "java_id": "minecraft:stripped_acacia_wood"
       }
     }
   },
@@ -12345,7 +12581,7 @@
   "minecraft:stripped_birch_wood": {
     "block": {
       "minecraft:stripped_birch_wood[pillar_axis=y]": {
-        "java_id": "minecraft:stripped_birch_log"
+        "java_id": "minecraft:stripped_birch_wood"
       }
     }
   },
@@ -12387,7 +12623,7 @@
   "minecraft:stripped_dark_oak_wood": {
     "block": {
       "minecraft:stripped_dark_oak_wood[pillar_axis=y]": {
-        "java_id": "minecraft:stripped_dark_oak_log"
+        "java_id": "minecraft:stripped_dark_oak_wood"
       }
     }
   },
@@ -12401,7 +12637,7 @@
   "minecraft:stripped_jungle_wood": {
     "block": {
       "minecraft:stripped_jungle_wood[pillar_axis=y]": {
-        "java_id": "minecraft:stripped_jungle_log"
+        "java_id": "minecraft:stripped_jungle_wood"
       }
     }
   },
@@ -12429,7 +12665,21 @@
   "minecraft:stripped_oak_wood": {
     "block": {
       "minecraft:stripped_oak_wood[pillar_axis=y]": {
-        "java_id": "minecraft:stripped_oak_log"
+        "java_id": "minecraft:stripped_oak_wood"
+      }
+    }
+  },
+  "minecraft:stripped_pale_oak_log": {
+    "block": {
+      "minecraft:stripped_pale_oak_log[pillar_axis=y]": {
+        "java_id": "minecraft:stripped_pale_oak_log"
+      }
+    }
+  },
+  "minecraft:stripped_pale_oak_wood": {
+    "block": {
+      "minecraft:stripped_pale_oak_wood[pillar_axis=y]": {
+        "java_id": "minecraft:stripped_pale_oak_wood"
       }
     }
   },
@@ -12443,7 +12693,7 @@
   "minecraft:stripped_spruce_wood": {
     "block": {
       "minecraft:stripped_spruce_wood[pillar_axis=y]": {
-        "java_id": "minecraft:stripped_spruce_log"
+        "java_id": "minecraft:stripped_spruce_wood"
       }
     }
   },

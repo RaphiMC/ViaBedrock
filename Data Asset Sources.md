@@ -13,7 +13,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/29fe033257d78e92cf7f3c957b809599d3f83b06/core/src/main/resources/bedrock/block_palette.1_21_40.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/9e276c10777ddf73dacb4d35769f1801d42882d6/core/src/main/resources/bedrock/block_palette.1_21_50.nbt)
 
 ### data/bedrock/block_sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
@@ -42,11 +42,11 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 ### data/bedrock/sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
 
-### data/java/via_mappings.json
-[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.21.2.json)
-
 ### data/java/effects.json
 [minecraft.wiki](https://minecraft.wiki/w/Effect)
+
+### data/java/entity_data.json
+This file has been dumped using a fabric mod.
 
 ### data/java/heightmap_blockstates.nbt
 This file has been dumped using a fabric mod.
@@ -56,6 +56,9 @@ This file has been dumped from a vanilla server using a fabric mod.
 
 ### data/java/tags.nbt
 This file has been dumped from a vanilla server using a fabric mod.
+
+### data/java/via_mappings.json
+[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/main/mappings/mapping-1.21.4.json)
 
 ### block_state_upgrade_schema/*
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)

@@ -18,11 +18,11 @@
 package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_2;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_4;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_2;
+import com.viaversion.viaversion.api.type.types.version.Types1_21_4;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
@@ -78,7 +78,7 @@ public class OtherPlayerPackets {
             entity.updateName(username);
 
             final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21_2.PLAYER_INFO_UPDATE, wrapper.user());
-            playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_2, BitSets.create(7, PlayerInfoUpdateAction.ADD_PLAYER, PlayerInfoUpdateAction.UPDATE_GAME_MODE)); // actions
+            playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_4, BitSets.create(8, PlayerInfoUpdateAction.ADD_PLAYER, PlayerInfoUpdateAction.UPDATE_GAME_MODE)); // actions
             playerInfoUpdate.write(Types.VAR_INT, 1); // length
             playerInfoUpdate.write(Types.UUID, uuid); // uuid
             playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(uuid)); // username
@@ -97,7 +97,7 @@ public class OtherPlayerPackets {
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.UUID, uuid); // uuid
-            wrapper.write(Types.VAR_INT, EntityTypes1_21_2.PLAYER.getId()); // type id
+            wrapper.write(Types.VAR_INT, EntityTypes1_21_4.PLAYER.getId()); // type id
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y()); // y
             wrapper.write(Types.DOUBLE, (double) position.z()); // z
@@ -114,7 +114,7 @@ public class OtherPlayerPackets {
             final PacketWrapper setEquipment = PacketWrapper.create(ClientboundPackets1_21_2.SET_EQUIPMENT, wrapper.user());
             setEquipment.write(Types.VAR_INT, entity.javaId()); // entity id
             setEquipment.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
-            setEquipment.write(Types1_21_2.ITEM, itemRewriter.javaItem(item)); // item
+            setEquipment.write(Types1_21_4.ITEM, itemRewriter.javaItem(item)); // item
             setEquipment.send(BedrockProtocol.class);
 
             entity.updateEntityData(entityData);
@@ -139,7 +139,7 @@ public class OtherPlayerPackets {
                 wrapper.cancel();
                 return;
             }
-            if (!entity.javaType().isOrHasParent(EntityTypes1_21_2.PLAYER)) {
+            if (!entity.javaType().isOrHasParent(EntityTypes1_21_4.PLAYER)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received move player packet for non-player entity: " + entity.javaType());
                 wrapper.cancel();
                 return;

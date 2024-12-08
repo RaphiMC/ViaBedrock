@@ -37,9 +37,7 @@ public class ConduitBlockEntityRewriter implements BlockEntityRewriter.Rewriter 
         final CompoundTag javaTag = new CompoundTag();
 
         if (bedrockTag.get("Target") instanceof LongTag targetTag && targetTag.asLong() != -1) {
-            final long target = targetTag.asLong();
-
-            final Entity entity = user.get(EntityTracker.class).getEntityByUid(target);
+            final Entity entity = user.get(EntityTracker.class).getEntityByUid(targetTag.asLong());
             if (entity != null) {
                 javaTag.put("Target", new IntArrayTag(UUIDUtil.toIntArray(entity.javaUuid())));
             }
