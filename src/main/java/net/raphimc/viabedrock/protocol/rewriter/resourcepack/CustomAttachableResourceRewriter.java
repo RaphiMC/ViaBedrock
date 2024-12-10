@@ -29,17 +29,16 @@ import org.oryxel.cube.model.java.ItemModelData;
 import org.oryxel.cube.parser.java.JavaModelSerializer;
 
 import java.util.Map;
+import java.util.Set;
 
 public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter {
 
-    public static final String ITEM = "leather";
-
     public CustomAttachableResourceRewriter() {
-        super(ITEM, "attachable");
+        super("attachable", "attachable");
     }
 
     @Override
-    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Map<Integer, JsonObject> overridesMap) {
+    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList) {
         for (Map.Entry<String, AttachableDefinitions.AttachableDefinition> attachableEntry : resourcePacksStorage.getAttachables().attachables().entrySet()) {
             for (String bedrockPath : attachableEntry.getValue().attachableData().textures().values()) {
                 for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
@@ -85,7 +84,7 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
                 final String key = attachableEntry.getKey() + "_" + modelEntry.getKey();
                 resourcePacksStorage.getConverterData().put("ca_" + key, true);
                 javaContent.putJson("assets/viabedrock/models/" + this.getJavaModelName(key) + ".json", itemModel);
-                this.addOverride(overridesMap, key);
+                modelsList.add(key);
             }
         }
     }

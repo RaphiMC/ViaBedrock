@@ -25,59 +25,52 @@ import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.Rewriter {
 
     public static CustomModelData1_21_4 getCustomModelData(final String key) {
-        final int value = Math.abs(key.hashCode() + 1); // 0 is used for the default model
-        return new CustomModelData1_21_4(new float[]{value}, new boolean[0], new String[0], new int[0]);
+        return new CustomModelData1_21_4(new float[0], new boolean[0], new String[]{key}, new int[0]);
     }
 
-    private final String item;
+    private final String name;
     private final String subFolder;
 
-    public ItemModelResourceRewriter(final String item, final String subFolder) {
-        this.item = item;
+    public ItemModelResourceRewriter(final String name, final String subFolder) {
+        this.name = name;
         this.subFolder = subFolder;
     }
 
     @Override
     public final void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent) {
-        final Map<Integer, JsonObject> overridesMap = new TreeMap<>();
-        this.apply(resourcePacksStorage, javaContent, overridesMap);
-        if (!overridesMap.isEmpty()) {
-            final JsonArray overrides = new JsonArray();
-            overridesMap.values().forEach(overrides::add);
+        final Set<String> modelsList = new HashSet<>();
+        this.apply(resourcePacksStorage, javaContent, modelsList);
+        if (!modelsList.isEmpty()) {
+            final JsonArray cases = new JsonArray();
+            for (String modelKey : modelsList) {
+                final JsonObject caseObj = new JsonObject();
+                caseObj.addProperty("when", modelKey);
+
+                final JsonObject model = new JsonObject();
+                model.addProperty("type", "minecraft:model");
+                model.addProperty("model", "viabedrock:" + this.getJavaModelName(modelKey));
+                caseObj.add("model", model);
+
+                cases.add(caseObj);
+            }
 
             final JsonObject itemDefinition = new JsonObject();
-            itemDefinition.addProperty("parent", "minecraft:item/generated");
-            itemDefinition.add("overrides", overrides);
-            final JsonObject layer0 = new JsonObject();
-            layer0.addProperty("layer0", "minecraft:item/" + this.item);
-            itemDefinition.add("textures", layer0);
-            javaContent.putJson("assets/minecraft/models/item/" + this.item + ".json", itemDefinition);
+            final JsonObject model = new JsonObject();
+            model.addProperty("type", "minecraft:select");
+            model.addProperty("property", "minecraft:custom_model_data");
+            model.add("cases", cases);
+            itemDefinition.add("model", model);
+            javaContent.putJson("assets/viabedrock/items/" + this.name + ".json", itemDefinition);
         }
     }
 
-    protected abstract void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Map<Integer, JsonObject> overridesMap);
-
-    protected void addOverride(final Map<Integer, JsonObject> overridesMap, final String javaModelKey) {
-        final String javaModelName = getJavaModelName(javaModelKey);
-        //final int javaModelData = getCustomModelData(javaModelKey);
-        // TODO: Update: Fix this (Broken in 1.21.4 update)
-        final int javaModelData = 0;
-
-        final JsonObject override = new JsonObject();
-        override.addProperty("model", "viabedrock:" + javaModelName);
-        final JsonObject predicate = new JsonObject();
-        predicate.addProperty("custom_model_data", javaModelData);
-        override.add("predicate", predicate);
-        if (overridesMap.put(javaModelData, override) != null) {
-            throw new IllegalStateException("Duplicate custom model data: " + override);
-        }
-    }
+    protected abstract void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList);
 
     protected String getJavaModelName(final String bedrockName) {
         return this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(bedrockName);

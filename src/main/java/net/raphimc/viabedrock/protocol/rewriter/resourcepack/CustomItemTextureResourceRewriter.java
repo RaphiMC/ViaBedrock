@@ -24,17 +24,16 @@ import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter {
 
-    public static final String ITEM = "paper";
-
     public CustomItemTextureResourceRewriter() {
-        super(ITEM, "item");
+        super("item_texture", "item");
     }
 
     @Override
-    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Map<Integer, JsonObject> overridesMap) {
+    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList) {
         for (Map.Entry<String, List<TextureDefinitions.ItemTextureDefinition>> entry : resourcePacksStorage.getTextures().itemTextures().entrySet()) {
             for (int i = 0; i < entry.getValue().size(); i++) {
                 final TextureDefinitions.ItemTextureDefinition itemTextureDefinition = entry.getValue().get(i);
@@ -51,7 +50,7 @@ public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter
                     layer0.addProperty("layer0", "viabedrock:" + this.getJavaTexturePath(itemTextureDefinition.texturePath()));
                     itemModel.add("textures", layer0);
                     javaContent.putJson("assets/viabedrock/models/" + this.getJavaModelName(entry.getKey() + "_" + i) + ".json", itemModel);
-                    this.addOverride(overridesMap, entry.getKey() + "_" + i);
+                    modelsList.add(entry.getKey() + "_" + i);
                     break;
                 }
             }

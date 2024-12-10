@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
 import com.google.common.collect.Lists;
-import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
@@ -29,17 +28,16 @@ import org.oryxel.cube.parser.java.JavaModelSerializer;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
 
-    public static final String ITEM = "armor_stand";
-
     public CustomEntityResourceRewriter() {
-        super(ITEM, "entity");
+        super("entity", "entity");
     }
 
     @Override
-    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Map<Integer, JsonObject> overridesMap) {
+    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList) {
         for (Map.Entry<String, EntityDefinitions.EntityDefinition> entityEntry : resourcePacksStorage.getEntities().entities().entrySet()) {
             for (String bedrockPath : entityEntry.getValue().entityData().textures().values()) {
                 for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
@@ -67,7 +65,7 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
                     resourcePacksStorage.getConverterData().put("ce_" + key + "_" + i + "_scale", (float) cubeConverterItemModel.scale());
 
                     javaContent.putString("assets/viabedrock/models/" + this.getJavaModelName(key + "_" + i) + ".json", JavaModelSerializer.serialize(cubeConverterItemModel).toString());
-                    this.addOverride(overridesMap, key + "_" + i);
+                    modelsList.add(key + "_" + i);
                 }
             }
         }
