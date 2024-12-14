@@ -50,6 +50,7 @@ public class UnhandledPackets {
         protocol.cancelServerbound(ServerboundPackets1_21_4.CHUNK_BATCH_RECEIVED);
         protocol.cancelServerbound(ServerboundPackets1_21_4.COOKIE_RESPONSE);
         protocol.cancelServerbound(ServerboundPackets1_21_4.DEBUG_SAMPLE_SUBSCRIPTION);
+        protocol.cancelServerbound(ServerboundPackets1_21_4.PLAYER_LOADED);
     }
 
 }
