@@ -147,7 +147,6 @@ public class ClientPlayerPackets {
             if (action == PlayerActionType.ChangeDimensionAck) {
                 final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                 if (clientPlayer.dimensionChangeInfo() != null) {
-                    clientPlayer.setDimensionChangeInfo(null);
                     clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.ChangeDimensionAck);
                     if (wrapper.user().get(GameSessionStorage.class).getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
                         clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
@@ -155,6 +154,7 @@ public class ClientPlayerPackets {
                     PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.EndLoadingScreen, clientPlayer.dimensionChangeInfo().loadingScreenId());
                     clientPlayer.sendPlayerPositionPacketToClient(Relative.NONE);
                     PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
+                    clientPlayer.setDimensionChangeInfo(null);
                 }
             }
         });
