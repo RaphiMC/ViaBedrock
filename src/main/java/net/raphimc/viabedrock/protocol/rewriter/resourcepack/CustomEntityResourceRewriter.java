@@ -22,6 +22,7 @@ import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import org.oryxel.cube.converter.FormatConverter;
+import org.oryxel.cube.converter.enums.RotationFixMode;
 import org.oryxel.cube.model.bedrock.BedrockGeometry;
 import org.oryxel.cube.model.java.ItemModelData;
 import org.oryxel.cube.parser.java.JavaModelSerializer;
@@ -57,7 +58,7 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
                 if (!entityDefinition.entityData().textures().containsKey(modelEntry.getKey())) continue;
 
                 final String javaTexturePath = this.getJavaTexturePath(entityDefinition.entityData().textures().get(modelEntry.getKey()));
-                final List<ItemModelData> itemModels = Lists.newArrayList(FormatConverter.bedrockToJava("viabedrock:" + javaTexturePath, bedrockGeometry));
+                final List<ItemModelData> itemModels = Lists.newArrayList(FormatConverter.bedrockToJava("viabedrock:" + javaTexturePath, bedrockGeometry, RotationFixMode.HACKY));
                 final String key = entityEntry.getKey() + "_" + modelEntry.getKey();
                 resourcePacksStorage.getConverterData().put("ce_" + key, itemModels.size());
                 for (int i = 0; i < itemModels.size(); i++) {
