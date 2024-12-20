@@ -172,19 +172,14 @@ public class BlockStateRewriter implements StorableObject {
                 this.blockStateTags.put(bedrockId, blockTags.get(bedrockBlockState.namespacedIdentifier()));
             }
 
-            if (!bedrockToJavaBlockStates.containsKey(bedrockBlockState)) {
+            if (bedrockToJavaBlockStates.containsKey(bedrockBlockState)) {
+                final int javaId = javaBlockStates.get(bedrockToJavaBlockStates.get(bedrockBlockState));
+                this.blockStateIdMappings.put(bedrockId, javaId);
+            } else {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock -> java block state mapping: " + bedrockBlockState.toBlockStateString());
-                continue;
+                final int javaId = javaBlockStates.get(bedrockToJavaBlockStates.get(BedrockBlockState.INFO_UPDATE));
+                this.blockStateIdMappings.put(bedrockId, javaId);
             }
-
-            final int javaId = javaBlockStates.get(bedrockToJavaBlockStates.get(bedrockBlockState));
-            this.blockStateIdMappings.put(bedrockId, javaId);
-        }
-
-        for (BedrockBlockState customBlockState : customBlockStates) {
-            final int bedrockId = this.blockStateMappings.get(customBlockState);
-            final int javaId = javaBlockStates.get(bedrockToJavaBlockStates.get(BedrockBlockState.INFO_UPDATE));
-            this.blockStateIdMappings.put(bedrockId, javaId);
         }
 
         for (Int2ObjectMap.Entry<BedrockBlockState> entry : BedrockProtocol.MAPPINGS.getBedrockLegacyBlockStates().int2ObjectEntrySet()) {
