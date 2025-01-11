@@ -61,6 +61,11 @@ public interface ViaBedrockConfig extends Config {
      */
     boolean shouldTranslateShowCoordinatesGameRule();
 
+    /**
+     * @return If true, disables the internal server blacklist. This will allow you to connect to any server, even if it's known to ban ViaBedrock clients
+     */
+    boolean shouldDisableServerBlacklist();
+
     enum BlobCacheMode {
 
         /**

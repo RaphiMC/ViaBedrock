@@ -12,3 +12,5 @@ resource-pack-url: ""
 pack-cache: "disk"
 # If true, translates bedrock's showCoordinates game rule to java's reduced debug info flag
 translate-show-coordinates-game-rule: false
+# If true, disables the internal server blacklist. This will allow you to connect to any server, even if it's known to ban ViaBedrock clients
+disable-server-blacklist: false
