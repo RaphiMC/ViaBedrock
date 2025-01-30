@@ -19,8 +19,13 @@ package net.raphimc.viabedrock.api.protocol;
 
 import com.viaversion.viaversion.api.protocol.AbstractProtocol;
 import com.viaversion.viaversion.api.protocol.packet.*;
+import com.viaversion.viaversion.api.protocol.packet.provider.PacketTypeMap;
+import com.viaversion.viaversion.api.protocol.packet.provider.PacketTypesProvider;
+import com.viaversion.viaversion.api.protocol.packet.provider.SimplePacketTypesProvider;
 import com.viaversion.viaversion.exception.CancelException;
 import com.viaversion.viaversion.exception.InformativeException;
+
+import java.util.Map;
 
 public abstract class StatelessProtocol<CU extends ClientboundPacketType, CM extends ClientboundPacketType, SM extends ServerboundPacketType, SU extends ServerboundPacketType> extends AbstractProtocol<CU, CM, SM, SU> {
 
@@ -36,6 +41,16 @@ public abstract class StatelessProtocol<CU extends ClientboundPacketType, CM ext
         }
 
         super.transform(direction, direction == Direction.SERVERBOUND ? state : State.PLAY, packetWrapper);
+    }
+
+    @Override
+    protected PacketTypesProvider<CU, CM, SM, SU> createPacketTypesProvider() {
+        return new SimplePacketTypesProvider<>(
+                Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.unmappedClientboundPacketType)),
+                Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.mappedClientboundPacketType)),
+                Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.mappedServerboundPacketType)),
+                Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.unmappedServerboundPacketType))
+        );
     }
 
 }

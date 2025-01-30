@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.2.1"
+    compileOnly "com.viaversion:viaversion-common:5.2.2-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.3"
     compileOnly "com.google.guava:guava:33.4.0-jre"
     compileOnly "io.netty:netty-handler:4.1.117.Final"
@@ -182,7 +182,7 @@ tasks.register("runViaProxy", JavaExec) {
     dependsOn tasks.jar
 
     def viaProxyConfiguration = configurations.create("viaProxy")
-    viaProxyConfiguration.dependencies.add(dependencies.create("net.raphimc:ViaProxy:3.3.7-SNAPSHOT") {
+    viaProxyConfiguration.dependencies.add(dependencies.create("net.raphimc:ViaProxy:3.3.8-SNAPSHOT") {
         transitive = false
     })
 
