@@ -54,7 +54,7 @@ dependencies {
     compileOnly "org.yaml:snakeyaml:2.3"
     compileOnly "com.google.guava:guava:33.4.0-jre"
     compileOnly "io.netty:netty-handler:4.1.117.Final"
-    compileOnly "com.google.code.gson:gson:2.12.0"
+    compileOnly "com.google.code.gson:gson:2.12.1"
 
     api("io.netty:netty-codec-http:4.1.117.Final") {
         transitive = false
