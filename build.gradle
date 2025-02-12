@@ -182,7 +182,7 @@ tasks.register("runViaProxy", JavaExec) {
     dependsOn tasks.jar
 
     def viaProxyConfiguration = configurations.create("viaProxy")
-    viaProxyConfiguration.dependencies.add(dependencies.create("net.raphimc:ViaProxy:3.3.8-SNAPSHOT") {
+    viaProxyConfiguration.dependencies.add(dependencies.create("net.raphimc:ViaProxy:3.4.0-SNAPSHOT") {
         transitive = false
     })
 

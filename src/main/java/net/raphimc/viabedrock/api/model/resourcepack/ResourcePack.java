@@ -217,14 +217,14 @@ public class ResourcePack {
         this.content = new Content(this.compressedData);
         this.compressedData = null;
 
-        if (!this.content.contains("manifest.json") && this.cdnUrl != null && this.content.size() == 1) {
+        if (!this.content.contains("manifest.json") && !this.content.contains("pack_manifest.json") && this.cdnUrl != null && this.content.size() == 1) {
             // CDN packs are allowed to contain a single .zip file at the root
             final String key = this.content.content.keySet().iterator().next();
             if (key.endsWith(".zip")) {
                 this.content = new Content(this.content.get(key));
             }
         }
-        if (!this.content.contains("manifest.json")) {
+        if (!this.content.contains("manifest.json") && !this.content.contains("pack_manifest.json")) {
             // Bedrock allows resource packs to contain a single subfolder at the root
             for (String path : new HashSet<>(this.content.content.keySet())) {
                 if (path.contains("/")) {
@@ -232,7 +232,7 @@ public class ResourcePack {
                 }
             }
         }
-        if (!this.content.contains("manifest.json")) {
+        if (!this.content.contains("manifest.json") && !this.content.contains("pack_manifest.json")) {
             throw new IllegalStateException("Missing manifest.json in resource pack: " + this.packId);
         }
 
@@ -275,7 +275,7 @@ public class ResourcePack {
                     continue;
                 }
                 switch (path) {
-                    case "manifest.json", "pack_icon.png", "README.txt" -> {
+                    case "manifest.json", "pack_manifest.json", "pack_icon.png", "README.txt" -> {
                         continue;
                     }
                 }
@@ -287,7 +287,7 @@ public class ResourcePack {
             }
         }
 
-        final JsonObject manifestJson = this.content.getJson("manifest.json");
+        final JsonObject manifestJson = this.content.contains("manifest.json") ? this.content.getJson("manifest.json") : this.content.getJson("pack_manifest.json");
         final int formatVersion = manifestJson.get("format_version").getAsInt();
         if (formatVersion != 1 && formatVersion != 2) {
             throw new IllegalStateException("Unsupported resource pack format version: " + formatVersion);
