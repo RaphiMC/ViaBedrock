@@ -21,6 +21,7 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.exception.InformativeException;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
@@ -91,7 +92,7 @@ public class HudPackets {
                         wrapper.write(Types.STRING, wrapper.read(Types.BOOLEAN).toString()); // is host
                         wrapper.write(Types.OPTIONAL_STRING, null); // signature
                         wrapper.write(Types.STRING, "is_subclient"); // property name
-                        wrapper.write(Types.STRING, wrapper.read(Types.BOOLEAN).toString()); // is host
+                        wrapper.write(Types.STRING, wrapper.read(Types.BOOLEAN).toString()); // is sub client
                         wrapper.write(Types.OPTIONAL_STRING, null); // signature
 
                         wrapper.write(Types.BOOLEAN, true); // listed
@@ -99,8 +100,11 @@ public class HudPackets {
 
                         Via.getManager().getProviders().get(SkinProvider.class).setSkin(wrapper.user(), uuids[i], skin);
                     }
-                    for (int i = 0; i < length; i++) {
-                        wrapper.read(Types.BOOLEAN); // trusted skin
+                    try {
+                        for (int i = 0; i < length; i++) {
+                            wrapper.read(Types.BOOLEAN); // trusted skin
+                        }
+                    } catch (InformativeException ignored) { // Bedrock client silently ignores read errors
                     }
 
                     final List<UUID> toRemoveUUIDs = new ArrayList<>();
