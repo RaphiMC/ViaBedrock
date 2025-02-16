@@ -48,9 +48,10 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
             final Set<AbilitiesIndex> abilitiesSet = EnumUtil.getEnumSetFromBitmask(AbilitiesIndex.class, buffer.readUnsignedIntLE(), AbilitiesIndex::getValue);
             final Set<AbilitiesIndex> abilityValues = EnumUtil.getEnumSetFromBitmask(AbilitiesIndex.class, buffer.readUnsignedIntLE(), AbilitiesIndex::getValue);
             final float flySpeed = buffer.readFloatLE();
+            final float verticalFlySpeed = buffer.readFloatLE();
             final float walkSpeed = buffer.readFloatLE();
             if (!abilityLayers.containsKey(layer)) {
-                abilityLayers.put(layer, new PlayerAbilities.AbilitiesLayer(abilitiesSet, abilityValues, walkSpeed, flySpeed));
+                abilityLayers.put(layer, new PlayerAbilities.AbilitiesLayer(abilitiesSet, abilityValues, walkSpeed, flySpeed, verticalFlySpeed));
             }
         }
 
@@ -69,6 +70,7 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
             buffer.writeIntLE(EnumUtil.getIntBitmaskFromEnumSet(entry.getValue().abilitiesSet(), AbilitiesIndex::getValue));
             buffer.writeIntLE(EnumUtil.getIntBitmaskFromEnumSet(entry.getValue().abilityValues(), AbilitiesIndex::getValue));
             buffer.writeFloatLE(entry.getValue().flySpeed());
+            buffer.writeFloatLE(entry.getValue().verticalFlySpeed());
             buffer.writeFloatLE(entry.getValue().walkSpeed());
         }
     }

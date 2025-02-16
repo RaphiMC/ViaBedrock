@@ -35,7 +35,6 @@ import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.base.v1_7.ClientboundBaseProtocol1_7;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
-import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
@@ -59,7 +58,10 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class JoinPackets {
@@ -282,7 +284,6 @@ public class JoinPackets {
                     final long levelTime = wrapper.read(BedrockTypes.LONG_LE); // current level time
                     wrapper.read(BedrockTypes.VAR_INT); // enchantment seed
                     final BlockProperties[] blockProperties = wrapper.read(BedrockTypes.BLOCK_PROPERTIES_ARRAY); // block properties
-                    final ItemEntry[] itemEntries = wrapper.read(BedrockTypes.ITEM_ENTRY_ARRAY); // item entries
                     wrapper.read(BedrockTypes.STRING); // multiplayer correlation id
                     final boolean inventoryServerAuthoritative = wrapper.read(Types.BOOLEAN); // server authoritative inventories
                     final String serverEngine = wrapper.read(BedrockTypes.STRING); // server engine
@@ -331,12 +332,6 @@ public class JoinPackets {
                         ViaBedrock.getPlatform().getLogger().log(Level.INFO, "This server uses client authoritative inventories. This is not supported yet.");
                     }
 
-                    for (ItemEntry itemEntry : itemEntries) {
-                        if (itemEntry.componentBased()) {
-                            resourcePacksStorage.getItems().remove(Key.namespaced(itemEntry.identifier()));
-                        }
-                    }
-
                     gameSession.setBedrockVanillaVersion(version);
                     gameSession.setFlatGenerator(generatorType == GeneratorType.Flat);
                     gameSession.setMovementMode(movementMode);
@@ -360,7 +355,6 @@ public class JoinPackets {
                     wrapper.user().put(new JoinGameStorage(levelName, difficulty, rainLevel, lightningLevel, currentTime, chunkTickRange));
                     wrapper.user().put(new GameRulesStorage(wrapper.user(), gameRules));
                     wrapper.user().put(new BlockStateRewriter(blockProperties, hashedRuntimeBlockIds));
-                    wrapper.user().put(new ItemRewriter(wrapper.user(), itemEntries));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimension));
                     final EntityTracker entityTracker = new EntityTracker(wrapper.user());
                     entityTracker.addEntity(clientPlayer, false);
@@ -431,16 +425,25 @@ public class JoinPackets {
                     }
                 }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Bedrock client ignores dimension data after start game
         );
-        protocol.registerClientbound(ClientboundBedrockPackets.ITEM_COMPONENT, null, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.ITEM_REGISTRY, null, wrapper -> {
             wrapper.cancel();
+            if (wrapper.user().has(ItemRewriter.class)) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received ITEM_REGISTRY after item rewriter was already initialized");
+                return;
+            }
+
+            final ItemEntry[] itemEntries = wrapper.read(BedrockTypes.ITEM_ENTRY_ARRAY); // items
+            final ItemRewriter itemRewriter = new ItemRewriter(wrapper.user(), itemEntries);
+            wrapper.user().put(itemRewriter);
             final ItemDefinitions itemDefinitions = wrapper.user().get(ResourcePacksStorage.class).getItems();
-            final Set<String> componentItems = wrapper.user().get(ItemRewriter.class).getComponentItems();
-            final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // count
-            for (int i = 0; i < count; i++) {
-                final String identifier = Key.namespaced(wrapper.read(BedrockTypes.STRING)); // name
-                final CompoundTag tag = (CompoundTag) wrapper.read(BedrockTypes.NETWORK_TAG); // data
-                if (componentItems.contains(identifier)) {
-                    itemDefinitions.addFromNetworkTag(identifier, tag);
+
+            // Component items are loaded from the item registry entries
+            for (String identifier : itemRewriter.getComponentItems()) {
+                itemDefinitions.remove(identifier);
+            }
+            for (ItemEntry itemEntry : itemEntries) {
+                if (itemEntry.componentData() != null && itemEntry.version() == ItemDataVersion.DATA_DRIVEN && itemRewriter.getComponentItems().contains(itemEntry.identifier())) {
+                    itemDefinitions.addFromNetworkTag(itemEntry.identifier(), itemEntry.componentData());
                 }
             }
         });

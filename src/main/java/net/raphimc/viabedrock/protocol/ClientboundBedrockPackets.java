@@ -140,7 +140,7 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     CAMERA_SHAKE(MinecraftPacketIds.CameraShake.getValue()),
     PLAYER_FOG(MinecraftPacketIds.PlayerFogSetting.getValue()),
     CORRECT_PLAYER_MOVE_PREDICTION(MinecraftPacketIds.CorrectPlayerMovePredictionPacket.getValue()),
-    ITEM_COMPONENT(MinecraftPacketIds.ItemComponentPacket.getValue()),
+    ITEM_REGISTRY(MinecraftPacketIds.ItemRegistryPacket.getValue()),
     DEBUG_RENDERER(MinecraftPacketIds.ClientBoundDebugRendererPacket.getValue()),
     SYNC_ENTITY_PROPERTY(MinecraftPacketIds.SyncActorProperty.getValue()),
     ADD_VOLUME_ENTITY(MinecraftPacketIds.AddVolumeEntityPacket.getValue()),
@@ -183,7 +183,8 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     CONTAINER_REGISTRY_CLEANUP(MinecraftPacketIds.ContainerRegistryCleanup.getValue()),
     MOVEMENT_EFFECT(MinecraftPacketIds.MovementEffect.getValue()),
     SET_MOVEMENT_AUTHORITY_MODE(MinecraftPacketIds.SetMovementAuthorityMode.getValue()),
-    CAMERA_AIM_ASSIST_PRESETS(MinecraftPacketIds.CameraAimAssistPresets.getValue());
+    CAMERA_AIM_ASSIST_PRESETS(MinecraftPacketIds.CameraAimAssistPresets.getValue()),
+    CLIENT_CAMERA_AIM_ASSIST(MinecraftPacketIds.ClientCameraAimAssist.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

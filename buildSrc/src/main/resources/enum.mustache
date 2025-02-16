@@ -7,14 +7,21 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum {{enumName}} {
 
-    {{#each this.values}}
-    {{key}}({{value}}){{#if iterHasNext}},{{/if}}{{#unless iterHasNext}};{{/unless}}
+    {{#each values}}
+    {{#if comments}}
+    /**
+    {{#each comments}}
+     * {{.}}{{#if iterHasNext}}<br>{{/if}}
+    {{/each}}
+     */
+    {{/if}}
+    {{name}}({{value}}){{#if iterHasNext}},{{/if}}{{#unless iterHasNext}};{{/unless}}
     {{/each}}
 
     private static final Int2ObjectMap<{{enumName}}> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
-        for (var value : values()) {
+        for ({{enumName}} value : values()) {
             if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
         }
     }

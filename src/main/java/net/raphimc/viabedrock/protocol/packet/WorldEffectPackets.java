@@ -547,10 +547,11 @@ public class WorldEffectPackets {
                 return;
             }
             case Note -> {
-                final NoteBlockInstrument noteBlockInstrument = NoteBlockInstrument.getByValue(data >> 8);
+                final NoteBlockInstrument noteBlockInstrument = NoteBlockInstrument.getByValue(data >> 8, NoteBlockInstrument.Harp);
+                final String noteBlockSound = BedrockProtocol.MAPPINGS.getBedrockNoteBlockInstrumentSounds().get(noteBlockInstrument);
                 final int key = data & 0xFF;
                 final float pitch = (float) Math.pow(2D, (double) (key - 12) / 12);
-                configuredSound = new SoundDefinitions.ConfiguredSound(noteBlockInstrument.soundName(), 1F, 1F, pitch, pitch);
+                configuredSound = new SoundDefinitions.ConfiguredSound(noteBlockSound, 1F, 1F, pitch, pitch);
             }
             default -> {
                 configuredSound = tryFindSound(wrapper.user(), soundEvent, data, entityIdentifier, isBabyMob);

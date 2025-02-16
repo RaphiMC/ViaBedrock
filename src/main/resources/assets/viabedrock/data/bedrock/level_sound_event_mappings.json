@@ -1360,6 +1360,13 @@
       "sound": "break.copper_bulb",
       "pitch": 0.8
     },
+    "block:weeping_vines": {
+      "sound": "block.weeping_vines.break",
+      "pitch": [
+        0.8,
+        1.0
+      ]
+    },
     "block:pointed_dripstone": {
       "sound": "break.pointed_dripstone"
     },
@@ -1489,6 +1496,10 @@
         1.0
       ]
     },
+    "block:iron": {
+      "sound": "break.iron",
+      "pitch": 0.8
+    },
     "block:packed_mud": {
       "sound": "block.packed_mud.break",
       "volume": 0.4,
@@ -1546,10 +1557,6 @@
         0.8,
         1.0
       ]
-    },
-    "block:pale_hanging_moss": {
-      "sound": "dig.moss",
-      "volume": 0.93
     },
     "block:azalea_leaves": {
       "sound": "dig.azalea_leaves",
@@ -1922,14 +1929,6 @@
         1.0
       ]
     },
-    "block:eyeblossom": {
-      "sound": "dig.grass",
-      "volume": 0.7,
-      "pitch": [
-        0.8,
-        1.0
-      ]
-    },
     "block:ancient_debris": {
       "sound": "dig.ancient_debris",
       "pitch": [
@@ -2219,6 +2218,10 @@
       "sound": "random.lever_click",
       "pitch": 0.5
     },
+    "block:iron": {
+      "sound": "random.click",
+      "pitch": 0.5
+    },
     "block:metal": {
       "sound": "random.click",
       "pitch": 0.5
@@ -2247,6 +2250,10 @@
     },
     "block:lever": {
       "sound": "random.lever_click",
+      "pitch": 0.6
+    },
+    "block:iron": {
+      "sound": "random.click",
       "pitch": 0.6
     },
     "block:metal": {
@@ -3401,6 +3408,13 @@
     "block:copper": {
       "sound": "close_door.copper"
     },
+    "block:iron": {
+      "sound": "close.iron_door",
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
     "block:metal": {
       "sound": "close.iron_door",
       "pitch": [
@@ -3443,6 +3457,13 @@
       "pitch": [
         1.0,
         1.1
+      ]
+    },
+    "block:iron": {
+      "sound": "open.iron_door",
+      "pitch": [
+        0.9,
+        1.0
       ]
     },
     "block:metal": {
@@ -5063,6 +5084,9 @@
     "block:scaffolding": {
       "sound": "block.scaffolding.fall",
       "volume": 0.4
+    },
+    "block:iron": {
+      "sound": "step.iron"
     },
     "block:packed_mud": {
       "sound": "block.packed_mud.fall",
@@ -6926,6 +6950,11 @@
       "sound": "step.copper_bulb",
       "pitch": 0.5
     },
+    "block:weeping_vines": {
+      "sound": "block.weeping_vines.hit",
+      "volume": 0.3,
+      "pitch": 0.5
+    },
     "block:pointed_dripstone": {
       "sound": "hit.pointed_dripstone"
     },
@@ -7035,6 +7064,11 @@
       "volume": 0.25,
       "pitch": 0.5
     },
+    "block:iron": {
+      "sound": "hit.iron",
+      "volume": 0.3,
+      "pitch": 0.5
+    },
     "block:packed_mud": {
       "sound": "block.packed_mud.hit",
       "volume": 0.1,
@@ -7078,9 +7112,6 @@
       "sound": "hit.suspicious_sand",
       "volume": 0.23,
       "pitch": 0.5
-    },
-    "block:pale_hanging_moss": {
-      "sound": "hit.moss"
     },
     "block:azalea_leaves": {
       "sound": "hit.azalea_leaves",
@@ -7381,11 +7412,6 @@
     "block:hanging_roots": {
       "sound": "hit.hanging_roots",
       "volume": 0.35,
-      "pitch": 0.5
-    },
-    "block:eyeblossom": {
-      "sound": "hit.grass",
-      "volume": 0.3,
       "pitch": 0.5
     },
     "block:ancient_debris": {
@@ -8441,6 +8467,10 @@
     "block:copper_bulb": {
       "sound": "step.copper_bulb"
     },
+    "block:weeping_vines": {
+      "sound": "block.weeping_vines.use",
+      "pitch": 0.8
+    },
     "block:pointed_dripstone": {
       "sound": "use.pointed_dripstone"
     },
@@ -8512,6 +8542,9 @@
       "sound": "block.scaffolding.place",
       "pitch": 0.8
     },
+    "block:iron": {
+      "sound": "step.iron"
+    },
     "block:packed_mud": {
       "sound": "block.packed_mud.step",
       "pitch": 0.8
@@ -8544,9 +8577,6 @@
     "block:deepslate_bricks": {
       "sound": "use.deepslate_bricks",
       "pitch": 0.8
-    },
-    "block:pale_hanging_moss": {
-      "sound": "use.moss"
     },
     "block:bamboo_wood": {
       "sound": "step.bamboo_wood",
@@ -8759,9 +8789,6 @@
       "sound": "use.hanging_roots",
       "pitch": 0.8
     },
-    "block:eyeblossom": {
-      "sound": "use.grass"
-    },
     "block:ancient_debris": {
       "sound": "use.ancient_debris",
       "pitch": 0.8
@@ -8827,6 +8854,10 @@
       "sound": "step.copper_bulb",
       "volume": 0.12,
       "pitch": 1.1
+    },
+    "block:weeping_vines": {
+      "sound": "block.weeping_vines.jump",
+      "volume": 0.12
     },
     "block:pointed_dripstone": {
       "sound": "jump.pointed_dripstone",
@@ -8915,6 +8946,11 @@
     "block:scaffolding": {
       "sound": "jump.wood",
       "volume": 0.15
+    },
+    "block:iron": {
+      "sound": "step.iron",
+      "volume": 0.12,
+      "pitch": 1.1
     },
     "block:packed_mud": {
       "sound": "block.packed_mud.step",
@@ -9284,6 +9320,10 @@
     "block:copper_bulb": {
       "sound": "step.copper_bulb"
     },
+    "block:weeping_vines": {
+      "sound": "block.weeping_vines.land",
+      "volume": 0.22
+    },
     "block:pointed_dripstone": {
       "sound": "land.pointed_dripstone",
       "volume": 0.14
@@ -9367,6 +9407,10 @@
     "block:scaffolding": {
       "sound": "block.scaffolding.fall",
       "volume": 0.2
+    },
+    "block:iron": {
+      "sound": "step.iron",
+      "volume": 0.4
     },
     "block:packed_mud": {
       "sound": "block.packed_mud.fall",
@@ -10036,6 +10080,13 @@
       "sound": "place.copper_bulb",
       "pitch": 0.8
     },
+    "block:weeping_vines": {
+      "sound": "block.weeping_vines.place",
+      "pitch": [
+        0.8,
+        1.0
+      ]
+    },
     "block:pointed_dripstone": {
       "sound": "place.pointed_dripstone"
     },
@@ -10159,6 +10210,10 @@
         0.9
       ]
     },
+    "block:iron": {
+      "sound": "place.iron",
+      "pitch": 0.8
+    },
     "block:packed_mud": {
       "sound": "block.packed_mud.place",
       "volume": 0.25,
@@ -10216,10 +10271,6 @@
         0.8,
         1.0
       ]
-    },
-    "block:pale_hanging_moss": {
-      "sound": "place.moss",
-      "volume": 0.93
     },
     "block:azalea_leaves": {
       "sound": "dig.azalea_leaves",
@@ -10582,14 +10633,6 @@
         1.0
       ]
     },
-    "block:eyeblossom": {
-      "sound": "dig.grass",
-      "volume": 0.8,
-      "pitch": [
-        0.8,
-        1.0
-      ]
-    },
     "block:ancient_debris": {
       "sound": "dig.ancient_debris",
       "pitch": [
@@ -10880,6 +10923,10 @@
       "sound": "block.click",
       "pitch": 0.5
     },
+    "block:iron": {
+      "sound": "random.click",
+      "pitch": 0.5
+    },
     "block:fungus": {
       "sound": "block.click",
       "volume": 0.85,
@@ -11150,6 +11197,10 @@
     },
     "block:chain": {
       "sound": "block.click",
+      "pitch": 0.6
+    },
+    "block:iron": {
+      "sound": "random.click",
       "pitch": 0.6
     },
     "block:fungus": {
@@ -12538,6 +12589,10 @@
     "block:copper_bulb": {
       "sound": "step.copper_bulb"
     },
+    "block:weeping_vines": {
+      "sound": "block.weeping_vines.step",
+      "volume": 0.3
+    },
     "block:pointed_dripstone": {
       "sound": "step.pointed_dripstone",
       "volume": 0.17
@@ -12637,6 +12692,10 @@
     "block:scaffolding": {
       "sound": "block.scaffolding.step",
       "volume": 0.3
+    },
+    "block:iron": {
+      "sound": "step.iron",
+      "volume": 0.2
     },
     "block:packed_mud": {
       "sound": "block.packed_mud.step",
@@ -13858,6 +13917,13 @@
     "block:copper": {
       "sound": "open_trapdoor.copper"
     },
+    "block:iron": {
+      "sound": "close.iron_trapdoor",
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
     "block:metal": {
       "sound": "close.iron_trapdoor",
       "pitch": [
@@ -13897,6 +13963,13 @@
     },
     "block:copper": {
       "sound": "open_trapdoor.copper"
+    },
+    "block:iron": {
+      "sound": "open.iron_trapdoor",
+      "pitch": [
+        0.9,
+        1.0
+      ]
     },
     "block:metal": {
       "sound": "open.iron_trapdoor",
@@ -14244,17 +14317,17 @@
       "sound": "wind_charge.burst"
     }
   },
-  "WolfArmourBreak": {
+  "WolfArmorBreak": {
     "": {
       "sound": "armor.break_wolf"
     }
   },
-  "WolfArmourCrack": {
+  "WolfArmorCrack": {
     "": {
       "sound": "armor.crack_wolf"
     }
   },
-  "WolfArmourRepair": {
+  "WolfArmorRepair": {
     "": {
       "sound": "armor.repair_wolf"
     }

@@ -35,7 +35,7 @@ public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte c
         this.abilityLayers.put(SerializedAbilitiesData_SerializedAbilitiesLayer.Base, new AbilitiesLayer(
                 abilitiesSet,
                 EnumSet.of(AbilitiesIndex.Build, AbilitiesIndex.Mine, AbilitiesIndex.DoorsAndSwitches, AbilitiesIndex.OpenContainers, AbilitiesIndex.AttackPlayers, AbilitiesIndex.AttackMobs),
-                0.1F, 0.05F
+                0.1F, 0.05F, 1F
         ));
     }
 
@@ -56,6 +56,7 @@ public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte c
                 return switch (ability) {
                     case WalkSpeed -> abilitiesLayer.walkSpeed();
                     case FlySpeed -> abilitiesLayer.flySpeed();
+                    case VerticalFlySpeed -> abilitiesLayer.verticalFlySpeed();
                     default -> throw new IllegalArgumentException("Ability " + ability + " is not a float value");
                 };
             }
@@ -64,10 +65,10 @@ public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte c
     }
 
     public AbilitiesLayer getOrCreateCacheLayer() {
-        return this.abilityLayers.computeIfAbsent(SerializedAbilitiesData_SerializedAbilitiesLayer.CustomCache, layer -> new PlayerAbilities.AbilitiesLayer(EnumSet.noneOf(AbilitiesIndex.class), EnumSet.noneOf(AbilitiesIndex.class), 0F, 0F));
+        return this.abilityLayers.computeIfAbsent(SerializedAbilitiesData_SerializedAbilitiesLayer.CustomCache, layer -> new PlayerAbilities.AbilitiesLayer(EnumSet.noneOf(AbilitiesIndex.class), EnumSet.noneOf(AbilitiesIndex.class), 0F, 0F, 0F));
     }
 
-    public record AbilitiesLayer(Set<AbilitiesIndex> abilitiesSet, Set<AbilitiesIndex> abilityValues, float walkSpeed, float flySpeed) {
+    public record AbilitiesLayer(Set<AbilitiesIndex> abilitiesSet, Set<AbilitiesIndex> abilityValues, float walkSpeed, float flySpeed, float verticalFlySpeed) {
 
         public void setAbility(final AbilitiesIndex ability, final boolean value) {
             this.abilitiesSet.add(ability);

@@ -31,13 +31,14 @@ public class ProtocolConstants {
     public static final int JAVA_PACK_VERSION = 46;
     public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V1_21_4;
 
-    public static final String BEDROCK_VERSION_NAME = "1.21.50";
-    public static final int BEDROCK_PROTOCOL_VERSION = 766;
+    public static final String BEDROCK_VERSION_NAME = "1.21.60";
+    public static final int BEDROCK_PROTOCOL_VERSION = 776;
     public static final int BEDROCK_RAKNET_PROTOCOL_VERSION = 11;
     public static final int BEDROCK_DEFAULT_PORT = 19132;
     public static final int BEDROCK_COMMAND_VERSION = 42;
     public static final byte BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS = 28;
 
+    public static final int LAST_BLOCK_ITEM_ID = 255;
     public static final float PLAYER_GRAVITY = 0.08F;
     public static final float BLOCK_FRICTION = 0.6F;
 

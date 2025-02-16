@@ -17,7 +17,6 @@
  */
 package net.raphimc.viabedrock.generator;
 
-import net.raphimc.viabedrock.generator.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
@@ -46,6 +45,16 @@ public abstract class EnumGeneratorTask extends DefaultTask {
 
     private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/%s/html/enums.html";
     private static final String ENUMS_PACKAGE = "net.raphimc.viabedrock.protocol.data.enums.bedrock";
+    private static final List<String> IGNORED_FIELDS = Arrays.asList("count", "_count", "total", "all", "numenchantments", "numtagtypes", "abilitycount", "nummodes", "input_num", "9800", "total_operations", "total_operands");
+    private static final Map<String, String> VALUE_REPLACEMENTS = new HashMap<>();
+
+    static {
+        VALUE_REPLACEMENTS.put("std::numeric_limits::max()", "Integer.MAX_VALUE");
+        VALUE_REPLACEMENTS.put("std::numeric_limits<uint32_t>::max()", "Integer.MAX_VALUE");
+        VALUE_REPLACEMENTS.put("std::numeric_limits::min()", "Integer.MIN_VALUE");
+        VALUE_REPLACEMENTS.put("std::numeric_limits<uint32_t>::min()", "Integer.MIN_VALUE");
+        VALUE_REPLACEMENTS.put("NonTerminalBit", "0");
+    }
 
     @Input
     public abstract Property<String> getCommitHash();
@@ -60,145 +69,91 @@ public abstract class EnumGeneratorTask extends DefaultTask {
         FileUtils.deleteDirectory(outputDir);
         outputDir.mkdirs();
 
-        final Map<String, List<Pair<String, String>>> enums = new HashMap<>();
+        final Map<String, List<EnumField>> enums = new HashMap<>();
         final Document doc = Jsoup.parse(new URL(String.format(ENUMS_URL, this.getCommitHash().get())), 10_000);
         for (Element element : doc.selectXpath("/html/body/table/tbody/tr")) {
-            final Elements tds = element.getElementsByTag("td");
-            if (tds.isEmpty()) continue;
-            final String enumName = tds.get(0).text();
-            final String valuesString = tds.get(1).wholeText();
-            final List<Pair<String, String>> values = new ArrayList<>();
-            final Set<String> usedNames = new HashSet<>();
-            final Map<String, String> valuesMap = new HashMap<>();
-            for (String value : valuesString.split("\n")) {
-                String fieldName = value.split(" = ")[0];
-                String fieldValue = value.split(" = ")[1];
-                valuesMap.put(fieldName, fieldValue);
+            final Elements tableElements = element.select("td");
+            if (tableElements.isEmpty()) continue;
 
-                if (fieldName.equalsIgnoreCase("Count")) continue;
-                if (fieldName.equalsIgnoreCase("_count")) continue;
-                if (fieldName.equalsIgnoreCase("total")) continue;
-                if (fieldName.equalsIgnoreCase("All")) continue;
-                if (fieldName.equalsIgnoreCase("NumEnchantments")) continue;
-                if (fieldName.equalsIgnoreCase("NumTagTypes")) continue;
-                if (fieldName.equalsIgnoreCase("AbilityCount")) continue;
-                if (fieldName.equalsIgnoreCase("NumModes")) continue;
-                if (fieldName.equalsIgnoreCase("INPUT_NUM")) continue;
-                if (fieldName.equalsIgnoreCase("9800")) continue;
-                if (fieldName.equalsIgnoreCase("TOTAL_OPERATIONS")) continue;
-                if (fieldName.equalsIgnoreCase("TOTAL_OPERANDS")) continue;
+            final String enumName = tableElements.get(0).ownText();
+            final List<EnumField> enumFields = new ArrayList<>();
+            final Set<String> enumFieldNames = new HashSet<>();
+            final Map<String, String> enumValues = new HashMap<>();
+            for (Element fieldTableRowElement : tableElements.get(1).selectXpath("table/tbody/tr")) {
+                final Elements valueElements = fieldTableRowElement.select("td");
+                final String fieldName = valueElements.get(0).ownText();
+                final String fieldValue = valueElements.get(1).ownText();
+                final List<String> fieldComments = Arrays.stream(valueElements.get(2).wholeOwnText().split("\n")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+                enumFields.add(new EnumField(fieldName, fieldValue, fieldComments));
+                enumFieldNames.add(fieldName);
+                enumValues.put(fieldName, fieldValue);
+            }
+            enums.put(enumName, enumFields);
 
-                switch (fieldValue) {
-                    case "std::numeric_limits::max()":
-                    case "std::numeric_limits<uint32_t>::max()":
-                        fieldValue = "Integer.MAX_VALUE";
-                        break;
-                    case "std::numeric_limits::min()":
-                    case "std::numeric_limits<uint32_t>::min()":
-                        fieldValue = "Integer.MIN_VALUE";
-                        break;
-                    case "NonTerminalBit":
-                        fieldValue = "0";
-                        break;
-                }
-
-                if (enumName.equals("PacketCompressionAlgorithm") && fieldName.equals("None")) {
-                    fieldValue = "0xFF";
+            enumFields.removeIf(field -> IGNORED_FIELDS.contains(field.name.toLowerCase(Locale.ROOT)));
+            for (EnumField field : enumFields) {
+                if (VALUE_REPLACEMENTS.containsKey(field.value)) {
+                    field.value = VALUE_REPLACEMENTS.get(field.value);
                 }
 
                 final String[] splitChars = {"|", "-"};
                 for (String splitChar : splitChars) {
-                    if (fieldValue.contains(splitChar) && !fieldValue.startsWith(splitChar)) {
-                        final String[] split = fieldValue.split(Pattern.quote(splitChar));
+                    if (field.value.contains(splitChar) && !field.value.startsWith(splitChar)) {
+                        final String[] split = field.value.split(Pattern.quote(splitChar));
                         for (int i = 0; i < split.length; i++) {
                             String part = split[i].trim();
-                            if (valuesMap.containsKey(part)) {
-                                if (usedNames.contains(part)) {
+                            if (enumValues.containsKey(part)) {
+                                if (enumFieldNames.contains(part) && !IGNORED_FIELDS.contains(part.toLowerCase(Locale.ROOT))) {
                                     part += ".getValue()";
                                 } else {
-                                    part = valuesMap.get(part);
+                                    part = enumValues.get(part);
                                 }
                             }
                             split[i] = part;
                         }
-                        fieldValue = String.join(" " + splitChar + " ", split);
+                        field.value = String.join(" " + splitChar + " ", split);
                     }
                 }
-                if (valuesMap.containsKey(fieldValue)) {
-                    if (usedNames.contains(fieldValue)) {
-                        fieldValue += ".getValue()";
+                if (enumValues.containsKey(field.value)) {
+                    if (enumFieldNames.contains(field.value) && !IGNORED_FIELDS.contains(field.value.toLowerCase(Locale.ROOT))) {
+                        field.value += ".getValue()";
                     } else {
-                        fieldValue = valuesMap.get(fieldValue);
+                        field.value = enumValues.get(field.value);
                     }
                 }
-
-                usedNames.add(fieldName);
-                values.add(new Pair<>(fieldName, fieldValue));
             }
-            enums.put(enumName, values);
         }
 
         // Manually add missing entries
-        final List<Pair<String, String>> soundEventEnum = enums.get("Puv::Legacy::LevelSoundEvent");
-        soundEventEnum.removeIf(pair -> pair.getKey().equals("Undefined"));
-        soundEventEnum.add(new Pair<>("TrialSpawnerOpenShutter", "484"));
-        soundEventEnum.add(new Pair<>("TrialSpawnerEjectItem", "485"));
-        soundEventEnum.add(new Pair<>("TrialSpawnerDetectPlayer", "486"));
-        soundEventEnum.add(new Pair<>("TrialSpawnerSpawnMob", "487"));
-        soundEventEnum.add(new Pair<>("TrialSpawnerCloseShutter", "488"));
-        soundEventEnum.add(new Pair<>("TrialSpawnerAmbient", "489"));
-        soundEventEnum.add(new Pair<>("AmbientInAir", "492"));
-        soundEventEnum.add(new Pair<>("BreezeWindChargeBurst", "493"));
-        soundEventEnum.add(new Pair<>("ImitateBreeze", "494"));
-        soundEventEnum.add(new Pair<>("ArmadilloBrush", "495"));
-        soundEventEnum.add(new Pair<>("ArmadilloScuteDrop", "496"));
-        soundEventEnum.add(new Pair<>("EquipWolf", "497"));
-        soundEventEnum.add(new Pair<>("UnequipWolf", "498"));
-        soundEventEnum.add(new Pair<>("Reflect", "499"));
-        soundEventEnum.add(new Pair<>("VaultOpenShutter", "500"));
-        soundEventEnum.add(new Pair<>("VaultCloseShutter", "501"));
-        soundEventEnum.add(new Pair<>("VaultEjectItem", "502"));
-        soundEventEnum.add(new Pair<>("VaultInsertItem", "503"));
-        soundEventEnum.add(new Pair<>("VaultInsertItemFail", "504"));
-        soundEventEnum.add(new Pair<>("VaultAmbient", "505"));
-        soundEventEnum.add(new Pair<>("VaultActivate", "506"));
-        soundEventEnum.add(new Pair<>("VaultDeactivate", "507"));
-        soundEventEnum.add(new Pair<>("HurtReduced", "508"));
-        soundEventEnum.add(new Pair<>("WindChargeBurst", "509"));
-        soundEventEnum.add(new Pair<>("ImitateBogged", "510"));
-        soundEventEnum.add(new Pair<>("WolfArmourCrack", "511"));
-        soundEventEnum.add(new Pair<>("WolfArmourBreak", "512"));
-        soundEventEnum.add(new Pair<>("WolfArmourRepair", "513"));
-        soundEventEnum.add(new Pair<>("MaceSmashAir", "514"));
-        soundEventEnum.add(new Pair<>("MaceSmashGround", "515"));
-        soundEventEnum.add(new Pair<>("TrialSpawnerChargeActivate", "516"));
-        soundEventEnum.add(new Pair<>("TrialSpawnerAmbientOminous", "517"));
-        soundEventEnum.add(new Pair<>("OminousItemSpawnerSpawnItem", "518"));
-        soundEventEnum.add(new Pair<>("OminousBottleEndUse", "519"));
-        soundEventEnum.add(new Pair<>("MaceHeavySmashGround", "520"));
-        soundEventEnum.add(new Pair<>("OminousItemSpawnerSpawnItemBegin", "521"));
-        soundEventEnum.add(new Pair<>("ApplyEffectBadOmen", "523"));
-        soundEventEnum.add(new Pair<>("ApplyEffectRaidOmen", "524"));
-        soundEventEnum.add(new Pair<>("ApplyEffectTrialOmen", "525"));
-        soundEventEnum.add(new Pair<>("OminousItemSpawnerAboutToSpawnItem", "526"));
-        soundEventEnum.add(new Pair<>("RecordCreator", "527"));
-        soundEventEnum.add(new Pair<>("RecordCreatorMusicBox", "528"));
-        soundEventEnum.add(new Pair<>("RecordPrecipice", "529"));
-        soundEventEnum.add(new Pair<>("VaultRejectRewardedPlayer", "530"));
-        soundEventEnum.add(new Pair<>("ImitateDrowned", "531"));
-        soundEventEnum.add(new Pair<>("ImitateCreaking", "532"));
-        soundEventEnum.add(new Pair<>("BundleInsertFail", "533"));
-        soundEventEnum.add(new Pair<>("SpongeAbsorb", "534"));
-        soundEventEnum.add(new Pair<>("CreakingHeartTrail", "536"));
-        soundEventEnum.add(new Pair<>("CreakingHeartSpawn", "537"));
-        soundEventEnum.add(new Pair<>("Activate", "538"));
-        soundEventEnum.add(new Pair<>("Deactivate", "539"));
-        soundEventEnum.add(new Pair<>("Freeze", "540"));
-        soundEventEnum.add(new Pair<>("Unfreeze", "541"));
-        soundEventEnum.add(new Pair<>("Open", "542"));
-        soundEventEnum.add(new Pair<>("OpenLong", "543"));
-        soundEventEnum.add(new Pair<>("Close", "544"));
-        soundEventEnum.add(new Pair<>("CloseLong", "545"));
+        final List<EnumField> levelSoundEventEnum = enums.get("Puv::Legacy::LevelSoundEvent");
+        levelSoundEventEnum.removeIf(field -> field.name.equals("Undefined"));
+        levelSoundEventEnum.add(new EnumField("ImitateDrowned", "531"));
+        levelSoundEventEnum.add(new EnumField("ImitateCreaking", "532"));
+        levelSoundEventEnum.add(new EnumField("BundleInsertFail", "533"));
+        levelSoundEventEnum.add(new EnumField("SpongeAbsorb", "534"));
+        levelSoundEventEnum.add(new EnumField("CreakingHeartTrail", "536"));
+        levelSoundEventEnum.add(new EnumField("CreakingHeartSpawn", "537"));
+        levelSoundEventEnum.add(new EnumField("Activate", "538"));
+        levelSoundEventEnum.add(new EnumField("Deactivate", "539"));
+        levelSoundEventEnum.add(new EnumField("Freeze", "540"));
+        levelSoundEventEnum.add(new EnumField("Unfreeze", "541"));
+        levelSoundEventEnum.add(new EnumField("Open", "542"));
+        levelSoundEventEnum.add(new EnumField("OpenLong", "543"));
+        levelSoundEventEnum.add(new EnumField("Close", "544"));
+        levelSoundEventEnum.add(new EnumField("CloseLong", "545"));
+
+        // Mojang seems to have pushed an outdated version of this enum. Those values exist in 1.21.50, but not in 1.21.60
+        final List<EnumField> actorDamageCauseEnum = enums.get("ActorDamageCause");
+        actorDamageCauseEnum.add(new EnumField("MaceSmash", "34"));
+
+        // Mojang seems to have pushed an outdated version of this enum. Those values exist in 1.21.50, but not in 1.21.60
+        final List<EnumField> levelEventEnum = enums.get("LevelEvent");
+        levelEventEnum.add(new EnumField("ParticleCreakingHeartTrail", "9816"));
+
+        // Fix wrong values
+        final List<EnumField> packetCompressionAlgorithmEnum = enums.get("PacketCompressionAlgorithm");
+        packetCompressionAlgorithmEnum.removeIf(field -> field.name.equals("None"));
+        packetCompressionAlgorithmEnum.add(new EnumField("None", "0xFF"));
 
         final MustacheEngine mustacheEngine = MustacheEngineBuilder.newBuilder()
                 .addTemplateLocator(ClassPathTemplateLocator.builder().setSuffix("mustache").build())
@@ -207,7 +162,7 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                 .build();
         final Mustache enumTemplate = mustacheEngine.getMustache("enum");
 
-        for (Map.Entry<String, List<Pair<String, String>>> entry : enums.entrySet()) {
+        for (Map.Entry<String, List<EnumField>> entry : enums.entrySet()) {
             final String enumPackage;
             final String enumName;
             if (Character.isLowerCase(entry.getKey().charAt(0)) && entry.getKey().contains("::")) {
@@ -229,6 +184,36 @@ public abstract class EnumGeneratorTask extends DefaultTask {
                 enumTemplate.render(writer, variables);
             }
         }
+    }
+
+    private static class EnumField {
+
+        private final String name;
+        private String value;
+        private final List<String> comments;
+
+        public EnumField(final String name, final String value) {
+            this(name, value, Collections.emptyList());
+        }
+
+        public EnumField(final String name, final String value, final List<String> comments) {
+            this.name = name;
+            this.value = value;
+            this.comments = comments;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+
+        public List<String> getComments() {
+            return this.comments;
+        }
+
     }
 
 }

@@ -59,17 +59,7 @@ public class BedrockPacksGenerator {
                 copyFolder(packDir, fsRoot, "biomes");
                 copyFolder(packDir, fsRoot, "fogs");
 
-                try (Stream<Path> paths = Files.walk(fsRoot)) {
-                    paths.forEach(path -> {
-                        try {
-                            final BasicFileAttributeView attributeView = Files.getFileAttributeView(path, BasicFileAttributeView.class);
-                            attributeView.setTimes(FileTime.from(Instant.EPOCH), FileTime.from(Instant.EPOCH), FileTime.from(Instant.EPOCH));
-                        } catch (NoSuchFileException ignored) {
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
+                removeTimestamps(fsRoot);
             }
         }
 
@@ -77,6 +67,8 @@ public class BedrockPacksGenerator {
             final Path fsRoot = fs.getRootDirectories().iterator().next();
             addLicense(fsRoot);
             copyFolder(new File(clientDataDir, "skin_packs/vanilla"), fsRoot, ".");
+
+            removeTimestamps(fsRoot);
         }
     }
 
@@ -107,6 +99,20 @@ public class BedrockPacksGenerator {
                         Files.copy(path, resolvedTargetPath);
                     }
                 } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
+
+    private static void removeTimestamps(final Path fsRoot) throws IOException {
+        try (Stream<Path> paths = Files.walk(fsRoot)) {
+            paths.forEach(path -> {
+                try {
+                    final BasicFileAttributeView attributeView = Files.getFileAttributeView(path, BasicFileAttributeView.class);
+                    attributeView.setTimes(FileTime.from(Instant.EPOCH), FileTime.from(Instant.EPOCH), FileTime.from(Instant.EPOCH));
+                } catch (NoSuchFileException ignored) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
             });

@@ -40,6 +40,7 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemDataVersion;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.rewriter.item.BundleItemRewriter;
@@ -79,7 +80,7 @@ public class ItemRewriter extends StoredObject {
 
         final Set<String> blockItems = new HashSet<>();
         for (Map.Entry<String, Integer> entry : BedrockProtocol.MAPPINGS.getBedrockItems().entrySet()) {
-            if (entry.getValue() <= BedrockItem.VANILLA_LAST_BLOCK_ITEM_ID) {
+            if (entry.getValue() <= ProtocolConstants.LAST_BLOCK_ITEM_ID) {
                 blockItems.add(entry.getKey());
             }
         }
@@ -88,9 +89,9 @@ public class ItemRewriter extends StoredObject {
         this.componentItems = new HashSet<>();
         for (ItemEntry itemEntry : itemEntries) {
             this.items.inverse().remove(itemEntry.id());
-            this.items.put(Key.namespaced(itemEntry.identifier()), itemEntry.id());
-            if (itemEntry.componentBased()) {
-                this.componentItems.add(Key.namespaced(itemEntry.identifier()));
+            this.items.put(itemEntry.identifier(), itemEntry.id());
+            if (itemEntry.version() == ItemDataVersion.DATA_DRIVEN || (itemEntry.version() == ItemDataVersion.NONE && itemEntry.componentBased())) {
+                this.componentItems.add(itemEntry.identifier());
             }
         }
         blockItems.removeIf(identifier -> !this.items.containsKey(identifier));
@@ -184,6 +185,8 @@ public class ItemRewriter extends StoredObject {
             if (itemDefinition != null) {
                 if (itemDefinition.displayNameComponent() != null) {
                     data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().translate(itemDefinition.displayNameComponent())));
+                } else if (this.componentItems.contains(identifier)) {
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier))));
                 } else {
                     data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier) + ".name")));
                 }

@@ -13,7 +13,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/9e276c10777ddf73dacb4d35769f1801d42882d6/core/src/main/resources/bedrock/block_palette.1_21_50.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/d5b5712e60107175ccaed7fab21deca09c0f15cf/core/src/main/resources/bedrock/block_palette.1_21_60.nbt)
 
 ### data/bedrock/block_sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.

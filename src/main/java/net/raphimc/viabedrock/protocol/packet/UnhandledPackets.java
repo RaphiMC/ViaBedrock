@@ -44,6 +44,7 @@ public class UnhandledPackets {
         protocol.cancelClientbound(ClientboundBedrockPackets.CURRENT_STRUCTURE_FEATURE); // Useless
         protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST); // Not possible in Java Edition
         protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST_PRESETS); // Not possible in Java Edition
+        protocol.cancelClientbound(ClientboundBedrockPackets.CLIENT_CAMERA_AIM_ASSIST); // Not possible in Java Edition
 
         protocol.cancelServerbound(ServerboundPackets1_21_4.CHAT_ACK);
         protocol.cancelServerbound(ServerboundPackets1_21_4.CHAT_SESSION_UPDATE);

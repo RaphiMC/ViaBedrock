@@ -370,6 +370,7 @@ public class HudPackets {
                         entity.setHasBossBar(true);
                         wrapper.write(Types.VAR_INT, BossEventOperationType.ADD.ordinal()); // operation
                         wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(wrapper.read(BedrockTypes.STRING)))); // name
+                        wrapper.read(BedrockTypes.STRING); // filtered name
                         wrapper.write(Types.FLOAT, wrapper.read(BedrockTypes.FLOAT_LE)); // progress
                         wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // darken screen | Does nothing in Bedrock Edition
                         wrapper.write(Types.VAR_INT, MathUtil.getOrFallback(wrapper.read(BedrockTypes.UNSIGNED_VAR_INT), 0, 5, 0)); // color
@@ -391,6 +392,7 @@ public class HudPackets {
                 case Update_Name -> {
                     wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_NAME.ordinal()); // operation
                     wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(wrapper.read(BedrockTypes.STRING)))); // name
+                    wrapper.read(BedrockTypes.STRING); // filtered name
                 }
                 case Update_Properties -> {
                     wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_STYLE.ordinal()); // operation

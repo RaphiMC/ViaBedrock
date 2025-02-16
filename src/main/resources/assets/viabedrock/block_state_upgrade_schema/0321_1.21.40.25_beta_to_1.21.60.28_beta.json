@@ -1,0 +1,304 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 21,
+    "maxVersionPatch": 60,
+    "maxVersionRevision": 33,
+    "renamedProperties": {
+        "minecraft:acacia_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:acacia_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:bamboo_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:bamboo_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:birch_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:birch_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:cherry_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:cherry_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:copper_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:creaking_heart": {
+            "active": "creaking_heart_state"
+        },
+        "minecraft:crimson_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:crimson_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:dark_oak_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:dark_oak_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:exposed_copper_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:iron_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:jungle_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:jungle_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:mangrove_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:mangrove_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:oxidized_copper_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:pale_oak_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:pale_oak_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:spruce_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:spruce_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:warped_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:warped_fence_gate": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:waxed_copper_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:waxed_exposed_copper_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:waxed_oxidized_copper_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:waxed_weathered_copper_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:weathered_copper_door": {
+            "direction": "minecraft:cardinal_direction"
+        },
+        "minecraft:wooden_door": {
+            "direction": "minecraft:cardinal_direction"
+        }
+    },
+    "remappedPropertyValues": {
+        "minecraft:acacia_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:acacia_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:bamboo_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:bamboo_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:birch_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:birch_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:cherry_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:cherry_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:copper_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:creaking_heart": {
+            "active": "active_00"
+        },
+        "minecraft:crimson_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:crimson_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:dark_oak_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:dark_oak_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:exposed_copper_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:iron_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:jungle_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:jungle_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:mangrove_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:mangrove_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:oxidized_copper_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:pale_oak_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:pale_oak_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:spruce_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:spruce_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:warped_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:warped_fence_gate": {
+            "direction": "direction_00"
+        },
+        "minecraft:waxed_copper_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:waxed_exposed_copper_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:waxed_oxidized_copper_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:waxed_weathered_copper_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:weathered_copper_door": {
+            "direction": "direction_00"
+        },
+        "minecraft:wooden_door": {
+            "direction": "direction_00"
+        }
+    },
+    "remappedPropertyValuesIndex": {
+        "active_00": [
+            {
+                "old": {
+                    "byte": 0
+                },
+                "new": {
+                    "string": "dormant"
+                }
+            },
+            {
+                "old": {
+                    "byte": 1
+                },
+                "new": {
+                    "string": "uprooted"
+                }
+            }
+        ],
+        "direction_00": [
+            {
+                "old": {
+                    "int": 0
+                },
+                "new": {
+                    "string": "south"
+                }
+            },
+            {
+                "old": {
+                    "int": 1
+                },
+                "new": {
+                    "string": "west"
+                }
+            },
+            {
+                "old": {
+                    "int": 2
+                },
+                "new": {
+                    "string": "north"
+                }
+            },
+            {
+                "old": {
+                    "int": 3
+                },
+                "new": {
+                    "string": "east"
+                }
+            }
+        ]
+    },
+    "remappedStates": {
+        "minecraft:red_mushroom_block": [
+            {
+                "oldState": {
+                    "huge_mushroom_bits": {
+                        "int": 10
+                    }
+                },
+                "newName": "minecraft:mushroom_stem",
+                "newState": null,
+                "copiedState": [
+                    "huge_mushroom_bits"
+                ]
+            },
+            {
+                "oldState": {
+                    "huge_mushroom_bits": {
+                        "int": 15
+                    }
+                },
+                "newName": "minecraft:mushroom_stem",
+                "newState": null,
+                "copiedState": [
+                    "huge_mushroom_bits"
+                ]
+            },
+            {
+                "oldState": null,
+                "newName": "minecraft:red_mushroom_block",
+                "newState": null,
+                "copiedState": [
+                    "huge_mushroom_bits"
+                ]
+            }
+        ]
+    }
+}

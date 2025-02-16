@@ -34,7 +34,7 @@ import java.util.Map;
 public class BlockStateMappingsUpgrader {
 
     public static void main(String[] args) throws Throwable {
-        final byte[] data = BlockStateMappingsUpgrader.class.getResourceAsStream("/assets/viabedrock/block_state_upgrade_schema/0301_1.21.20.24_beta_to_1.21.30.24_beta.json").readAllBytes();
+        final byte[] data = BlockStateMappingsUpgrader.class.getResourceAsStream("/assets/viabedrock/block_state_upgrade_schema/0321_1.21.40.25_beta_to_1.21.60.28_beta.json").readAllBytes();
         final JsonBlockStateUpgradeSchema schema = new JsonBlockStateUpgradeSchema(JsonParser.parseString(new String(data, StandardCharsets.UTF_8)).getAsJsonObject());
         final byte[] blockStateData = BlockStateMappingsUpgrader.class.getResourceAsStream("/assets/viabedrock/data/custom/blockstate_mappings.json").readAllBytes();
         final JsonObject blockStateMappingsJson = JsonParser.parseString(new String(blockStateData, StandardCharsets.UTF_8)).getAsJsonObject();
@@ -56,7 +56,7 @@ public class BlockStateMappingsUpgrader {
                     statesTag.putBoolean(property.getKey(), false);
                 } else {
                     final boolean byteVal = property.getKey().equals("coral_hang_type_bit") || property.getKey().equals("dead_bit") || property.getKey().equals("color_bit")
-                            || property.getKey().equals("allow_underwater_bit");
+                            || property.getKey().equals("allow_underwater_bit") || property.getKey().equals("active");
                     if (byteVal) {
                         statesTag.putByte(property.getKey(), Byte.parseByte(property.getValue()));
                     } else {
@@ -72,7 +72,15 @@ public class BlockStateMappingsUpgrader {
             schema.upgrade(blockStateTag);
 
             final BedrockBlockState newBedrockBlockState = BedrockBlockState.fromNbt(blockStateTag);
-            newBlockStateMappingsJson.addProperty(newBedrockBlockState.toBlockStateString(true), javaBlockState.toBlockStateString(true));
+            final String newBedrockBlockStateString = newBedrockBlockState.toBlockStateString(true);
+            if (newBlockStateMappingsJson.has(newBedrockBlockStateString)) {
+                throw new IllegalStateException("Duplicate block state: " + newBedrockBlockStateString);
+            }
+            newBlockStateMappingsJson.addProperty(newBedrockBlockStateString, javaBlockState.toBlockStateString(true));
+        }
+
+        if (newBlockStateMappingsJson.size() != blockStateMappingsJson.size()) {
+            throw new IllegalStateException("Something went wrong while upgrading block state mappings");
         }
 
         final String json = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(GsonUtil.sort(newBlockStateMappingsJson));

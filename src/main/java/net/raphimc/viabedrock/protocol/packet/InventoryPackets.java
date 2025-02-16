@@ -217,10 +217,6 @@ public class InventoryPackets {
                 inventoryTracker.closeAllContainers();
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.CREATIVE_CONTENT, null, wrapper -> {
-            wrapper.cancel();
-            final BedrockItem[] items = wrapper.read(wrapper.user().get(ItemRewriter.class).creativeItemArrayType()); // items
-        });
         protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_HOTBAR, ClientboundPackets1_21_2.SET_HELD_SLOT, wrapper -> {
             final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
             final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // selected slot

@@ -101,7 +101,8 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     TOGGLE_CRAFTER_SLOT_REQUEST(MinecraftPacketIds.PlayerToggleCrafterSlotRequestPacket.getValue()),
     SET_PLAYER_INVENTORY_OPTIONS(MinecraftPacketIds.SetPlayerInventoryOptions.getValue()),
     LOADING_SCREEN(MinecraftPacketIds.ServerboundLoadingScreenPacket.getValue()),
-    DEBUG_DIAGNOSTICS(MinecraftPacketIds.ServerboundDiagnosticsPacket.getValue());
+    DEBUG_DIAGNOSTICS(MinecraftPacketIds.ServerboundDiagnosticsPacket.getValue()),
+    MOVEMENT_PREDICTION_SYNC(MinecraftPacketIds.ClientMovementPredictionSyncPacket.getValue());
 
     private static final ServerboundBedrockPackets[] REGISTRY = new ServerboundBedrockPackets[512];
 
