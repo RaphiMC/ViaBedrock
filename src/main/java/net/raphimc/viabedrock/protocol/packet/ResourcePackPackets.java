@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundConfigurationPackets1_20_5;
@@ -99,6 +100,13 @@ public class ResourcePackPackets {
                 resourcePack.write(Types.UUID, UUID.randomUUID()); // pack id
                 resourcePack.write(Types.VAR_INT, ResourcePackAction.DECLINED.ordinal()); // status
                 resourcePack.sendToServer(BedrockProtocol.class, false);
+            }
+        }, State.PLAY, (PacketHandler) wrapper -> {
+            wrapper.cancel();
+            if (wrapper.user().has(ResourcePacksStorage.class)) {
+                if (wrapper.user().get(ResourcePacksStorage.class).hasFinishedLoading()) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACKS_INFO after loading completion");
+                }
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_DATA_INFO, null, wrapper -> {

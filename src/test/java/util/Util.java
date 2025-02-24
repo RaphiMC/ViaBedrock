@@ -39,7 +39,7 @@ public class Util {
             if (!packDir.exists()) {
                 throw new IllegalStateException("Missing vanilla pack: " + ResourcePacksStorage.VANILLA_PACK_NAMES.get(i));
             }
-            final ResourcePack resourcePack = new DirectoryResourcePack(packDir, UUID.randomUUID(), "1.0.0", "", packDir.getName(), "", false, false, false, 0, PackType.Resources);
+            final ResourcePack resourcePack = new DirectoryResourcePack(packDir, UUID.randomUUID(), "1.0.0", new byte[0], packDir.getName(), "", false, false, false, 0, PackType.Resources);
             resourcePacksStorage.addPack(resourcePack);
             packStack.add(resourcePack.packId());
         }
