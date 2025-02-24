@@ -152,7 +152,7 @@ public class BedrockMappingData extends MappingDataBase {
             try {
                 for (Map.Entry<Path, byte[]> entry : FileSystemUtil.getFilesInDirectory("assets/viabedrock/vanilla_packs").entrySet()) {
                     final String packName = entry.getKey().getFileName().toString().replace(".mcpack", "");
-                    final ResourcePack resourcePack = new ResourcePack(null, null, "", packName, "", false, false, false, null, 0, PackType.Resources);
+                    final ResourcePack resourcePack = new ResourcePack(null, null, new byte[0], packName, "", false, false, false, null, 0, PackType.Resources);
                     resourcePack.setCompressedDataLength(entry.getValue().length, entry.getValue().length);
                     resourcePack.processDataChunk(0, entry.getValue());
                     this.bedrockVanillaResourcePacks.put(packName, resourcePack);
@@ -1087,7 +1087,7 @@ public class BedrockMappingData extends MappingDataBase {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
             final byte[] bytes = inputStream.readAllBytes();
-            final ResourcePack resourcePack = new ResourcePack(uuid, version, "", "", "", false, false, false, null, 0, PackType.Resources);
+            final ResourcePack resourcePack = new ResourcePack(uuid, version, new byte[0], "", "", false, false, false, null, 0, PackType.Resources);
             resourcePack.setCompressedDataLength(bytes.length, bytes.length);
             resourcePack.processDataChunk(0, bytes);
             return resourcePack;

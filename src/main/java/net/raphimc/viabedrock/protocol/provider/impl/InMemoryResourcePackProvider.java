@@ -40,7 +40,7 @@ public class InMemoryResourcePackProvider extends ResourcePackProvider {
         }
         final byte[] data = this.packs.get(this.getPackKey(pack));
 
-        pack.setContentKey("");
+        pack.setContentKey(new byte[0]);
         pack.setCompressedDataLength(data.length, data.length);
         pack.processDataChunk(0, data);
     }

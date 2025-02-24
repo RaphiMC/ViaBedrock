@@ -59,7 +59,7 @@ public class ResourcePack {
 
     private UUID packId;
     private String version;
-    private String contentKey;
+    private byte[] contentKey;
     private final String subPackName;
     private final String contentId;
     private final boolean hasScripts;
@@ -79,7 +79,7 @@ public class ResourcePack {
     private byte[] compressedData;
     private Content content;
 
-    public ResourcePack(final UUID packId, final String version, final String contentKey, final String subPackName, final String contentId, final boolean hasScripts, final boolean isAddonPack, final boolean raytracingCapable, final URL cdnUrl, final long compressedSize, final PackType type) {
+    public ResourcePack(final UUID packId, final String version, final byte[] contentKey, final String subPackName, final String contentId, final boolean hasScripts, final boolean isAddonPack, final boolean raytracingCapable, final URL cdnUrl, final long compressedSize, final PackType type) {
         this.packId = packId;
         this.version = version;
         this.contentKey = contentKey;
@@ -127,11 +127,11 @@ public class ResourcePack {
         return this.version;
     }
 
-    public String contentKey() {
+    public byte[] contentKey() {
         return this.contentKey;
     }
 
-    public void setContentKey(final String contentKey) {
+    public void setContentKey(final byte[] contentKey) {
         this.contentKey = contentKey;
     }
 
@@ -236,13 +236,12 @@ public class ResourcePack {
             throw new IllegalStateException("Missing manifest.json in resource pack: " + this.packId);
         }
 
-        if (!this.contentKey.isEmpty()) {
+        if (this.contentKey.length != 0) {
             if (!this.content.contains("contents.json")) {
                 throw new IllegalStateException("Missing contents.json in resource pack: " + this.packId);
             }
             final Cipher aesCfb8 = Cipher.getInstance("AES/CFB8/NoPadding");
-            final byte[] contentKeyBytes = this.contentKey.getBytes(StandardCharsets.ISO_8859_1);
-            aesCfb8.init(Cipher.DECRYPT_MODE, new SecretKeySpec(contentKeyBytes, "AES"), new IvParameterSpec(Arrays.copyOfRange(contentKeyBytes, 0, 16)));
+            aesCfb8.init(Cipher.DECRYPT_MODE, new SecretKeySpec(this.contentKey, "AES"), new IvParameterSpec(Arrays.copyOfRange(this.contentKey, 0, 16)));
             final ByteBuf contents = Unpooled.wrappedBuffer(this.content.get("contents.json"));
             contents.skipBytes(4); // version
             final byte[] magic = new byte[4];

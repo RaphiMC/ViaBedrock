@@ -38,7 +38,7 @@ public class ResourcePackType extends Type<ResourcePack> {
         final UUID uuid = BedrockTypes.UUID.read(buffer);
         final String version = BedrockTypes.STRING.read(buffer);
         final long size = buffer.readLongLE();
-        final String contentKey = BedrockTypes.STRING.read(buffer);
+        final byte[] contentKey = BedrockTypes.BYTE_ARRAY.read(buffer);
         final String subPackName = BedrockTypes.STRING.read(buffer);
         final String contentId = BedrockTypes.STRING.read(buffer);
         final boolean hasScripts = buffer.readBoolean();
@@ -61,7 +61,7 @@ public class ResourcePackType extends Type<ResourcePack> {
         BedrockTypes.UUID.write(buffer, value.packId());
         BedrockTypes.STRING.write(buffer, value.version());
         buffer.writeLongLE(value.compressedDataLength());
-        BedrockTypes.STRING.write(buffer, value.contentKey());
+        BedrockTypes.BYTE_ARRAY.write(buffer, value.contentKey());
         BedrockTypes.STRING.write(buffer, value.subPackName());
         BedrockTypes.STRING.write(buffer, value.contentId());
         buffer.writeBoolean(value.hasScripts());
