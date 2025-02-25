@@ -50,7 +50,7 @@ public class LivingEntity extends Entity {
 
         final Set<String> effectsToRemove = new HashSet<>();
         for (EntityEffect effect : this.effects.values()) {
-            if (effect.duration().decrementAndGet() <= 0) {
+            if (effect.duration().get() != -1 && effect.duration().decrementAndGet() <= 0) {
                 effectsToRemove.add(effect.identifier());
             }
         }
@@ -114,7 +114,7 @@ public class LivingEntity extends Entity {
         javaEffect.write(Types.VAR_INT, this.javaId); // entity id
         javaEffect.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEffects().get(BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(effect.identifier()))); // effect id
         javaEffect.write(Types.VAR_INT, effect.amplifier()); // amplifier
-        javaEffect.write(Types.VAR_INT, Math.max(effect.duration().get(), 0)); // duration
+        javaEffect.write(Types.VAR_INT, effect.duration().get() != -1 ? Math.max(effect.duration().get(), 0) : -1); // duration
         javaEffect.write(Types.BYTE, (byte) (effect.showParticles() ? 2 : 0)); // flags
     }
 
