@@ -37,7 +37,9 @@
   "SoundInfinityArrowPickup": {
     "sound": "random.pop"
   },
-  "SoundTeleportEnderPearl": "SOUND_PORTAL_TRAVEL",
+  "SoundTeleportEnderPearl": {
+    "sound": "mob.endermen.portal"
+  },
   "SoundAddItem": {
     "sound": "block.itemframe.add_item"
   },
