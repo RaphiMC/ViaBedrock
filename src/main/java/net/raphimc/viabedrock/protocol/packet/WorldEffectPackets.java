@@ -397,21 +397,41 @@ public class WorldEffectPackets {
                 return;
             }
             switch (levelEvent) {
+                case ParticlesTeleportTrail -> {
+                    wrapper.cancel();
+                    final Position3f startPosition = new Position3f(data.getFloat("Startx"), data.getFloat("Starty"), data.getFloat("Startz"));
+                    final Position3f endPosition = new Position3f(data.getFloat("Endx"), data.getFloat("Endy"), data.getFloat("Endz"));
+                    final float dirScale = data.getFloat("DirScale");
+                    final float variationX = data.getFloat("Variationx");
+                    final float variationY = data.getFloat("Variationy");
+                    final int count = data.getInt("Count");
+                    for (int i = 0; i < count; i++) {
+                        final float progress = i / (count - 1F);
+                        final Position3f position = new Position3f(
+                                MathUtil.lerp(progress, startPosition.x(), endPosition.x()) + (ThreadLocalRandom.current().nextFloat() - 0.5F) * variationX * 2F,
+                                MathUtil.lerp(progress, startPosition.y(), endPosition.y()) + (ThreadLocalRandom.current().nextFloat() - 0.5F) * variationY * 2F - 1F,
+                                MathUtil.lerp(progress, startPosition.z(), endPosition.z()) + (ThreadLocalRandom.current().nextFloat() - 0.5F) * variationX * 2F
+                        );
+                        final BedrockMappingData.JavaParticle javaParticle = new BedrockMappingData.JavaParticle(
+                                new Particle(BedrockProtocol.MAPPINGS.getJavaParticles().get("minecraft:portal")),
+                                (ThreadLocalRandom.current().nextFloat() - 0.5F) * dirScale,
+                                (ThreadLocalRandom.current().nextFloat() - 0.5F) * dirScale,
+                                (ThreadLocalRandom.current().nextFloat() - 0.5F) * dirScale,
+                                1F,
+                                0
+                        );
+                        PacketFactory.sendJavaLevelParticles(wrapper.user(), position, javaParticle);
+                    }
+                }
                 case ParticlesBlockExplosion -> {
                     wrapper.cancel();
-                    final float originX = data.getFloat("originX");
-                    final float originY = data.getFloat("originY");
-                    final float originZ = data.getFloat("originZ");
+                    final Position3f originPosition = new Position3f(data.getFloat("originX"), data.getFloat("originY"), data.getFloat("originZ"));
                     final float radius = data.getFloat("radius");
                     final int blockCount = data.getInt("size");
                     for (int i = 0; i < blockCount; i++) {
-                        final float x = data.getFloat("pos" + i + "x");
-                        final float y = data.getFloat("pos" + i + "y");
-                        final float z = data.getFloat("pos" + i + "z");
+                        final Position3f position = new Position3f(data.getFloat("pos" + i + "x"), data.getFloat("pos" + i + "y"), data.getFloat("pos" + i + "z"));
                         final Particle particle = new Particle(BedrockProtocol.MAPPINGS.getJavaParticles().get("minecraft:smoke"));
-                        final PacketWrapper levelParticles = PacketWrapper.create(ClientboundPackets1_21_2.LEVEL_PARTICLES, wrapper.user());
-                        PacketFactory.writeJavaLevelParticles(levelParticles, new Position3f(x, y, z), new BedrockMappingData.JavaParticle(particle, 0F, 0F, 0F, 0F, 0));
-                        levelParticles.send(BedrockProtocol.class);
+                        PacketFactory.sendJavaLevelParticles(wrapper.user(), position, new BedrockMappingData.JavaParticle(particle, 0F, 0F, 0F, 0F, 0));
                     }
                 }
                 case ParticlesVibrationSignal -> {
@@ -451,9 +471,7 @@ public class WorldEffectPackets {
                     for (int i = 0; i < 15; i++) {
                         final Particle particle = new Particle(BedrockProtocol.MAPPINGS.getJavaParticles().get("minecraft:shriek"));
                         particle.add(Types.VAR_INT, i * 5); // delay
-                        final PacketWrapper levelParticles = PacketWrapper.create(ClientboundPackets1_21_2.LEVEL_PARTICLES, wrapper.user());
-                        PacketFactory.writeJavaLevelParticles(levelParticles, position, new BedrockMappingData.JavaParticle(particle, 0F, 0F, 0F, 0F, 0));
-                        levelParticles.send(BedrockProtocol.class);
+                        PacketFactory.sendJavaLevelParticles(wrapper.user(), position, new BedrockMappingData.JavaParticle(particle, 0F, 0F, 0F, 0F, 0));
                     }
                 }
                 case SculkCatalystBloom -> {
@@ -511,9 +529,7 @@ public class WorldEffectPackets {
                         particle.add(Types.DOUBLE, (double) heartPosition.z() + ThreadLocalRandom.current().nextFloat()); // target z
                         particle.add(Types.INT, 6250335); // color
                         particle.add(Types.VAR_INT, ThreadLocalRandom.current().nextInt(40) + 10); // duration
-                        final PacketWrapper levelParticles = PacketWrapper.create(ClientboundPackets1_21_2.LEVEL_PARTICLES, wrapper.user());
-                        PacketFactory.writeJavaLevelParticles(levelParticles, creakingPosition, new BedrockMappingData.JavaParticle(particle, 0.5F, 1F, 0.5F, 0F, 1));
-                        levelParticles.send(BedrockProtocol.class);
+                        PacketFactory.sendJavaLevelParticles(wrapper.user(), creakingPosition, new BedrockMappingData.JavaParticle(particle, 0.5F, 1F, 0.5F, 0F, 1));
                     }
                     for (int i = 0; i < creakingAmount; i++) {
                         final Particle particle = new Particle(BedrockProtocol.MAPPINGS.getJavaParticles().get("minecraft:trail"));
@@ -522,9 +538,7 @@ public class WorldEffectPackets {
                         particle.add(Types.DOUBLE, (double) creakingPosition.z() + ThreadLocalRandom.current().nextFloat() * 2F); // target z
                         particle.add(Types.INT, 16545810); // color
                         particle.add(Types.VAR_INT, ThreadLocalRandom.current().nextInt(40) + 10); // duration
-                        final PacketWrapper levelParticles = PacketWrapper.create(ClientboundPackets1_21_2.LEVEL_PARTICLES, wrapper.user());
-                        PacketFactory.writeJavaLevelParticles(levelParticles, heartPosition, new BedrockMappingData.JavaParticle(particle, 0.5F, 0.5F, 0.5F, 0F, 1));
-                        levelParticles.send(BedrockProtocol.class);
+                        PacketFactory.sendJavaLevelParticles(wrapper.user(), heartPosition, new BedrockMappingData.JavaParticle(particle, 0.5F, 0.5F, 0.5F, 0F, 1));
                     }
                 }
                 default -> {

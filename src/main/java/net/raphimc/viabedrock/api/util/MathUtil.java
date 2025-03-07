@@ -47,6 +47,10 @@ public class MathUtil {
         }
     }
 
+    public static float lerp(final float progress, final float start, final float end) {
+        return start + progress * (end - start);
+    }
+
     public static int getOrFallback(final int value, final int min, final int max, final int fallback) {
         return value < min || value > max ? fallback : value;
     }

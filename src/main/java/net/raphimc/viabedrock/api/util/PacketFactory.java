@@ -110,6 +110,12 @@ public class PacketFactory {
         blockUpdate.send(BedrockProtocol.class);
     }
 
+    public static void sendJavaLevelParticles(final UserConnection user, final Position3f position, final BedrockMappingData.JavaParticle particle) {
+        final PacketWrapper levelParticles = PacketWrapper.create(ClientboundPackets1_21_2.LEVEL_PARTICLES, user);
+        writeJavaLevelParticles(levelParticles, position, particle);
+        levelParticles.send(BedrockProtocol.class);
+    }
+
     public static void sendBedrockContainerClose(final UserConnection user, final byte containerId, final ContainerType containerType) {
         final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, user);
         containerClose.write(Types.BYTE, containerId); // container id
