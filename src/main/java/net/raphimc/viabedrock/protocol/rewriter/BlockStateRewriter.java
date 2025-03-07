@@ -64,7 +64,7 @@ public class BlockStateRewriter implements StorableObject {
 
         final Map<String, CompoundTag> effectiveBlockProperties = new HashMap<>();
         for (BlockProperties blockProperty : blockProperties) {
-            final String identifier = Key.namespaced(blockProperty.name().toLowerCase(Locale.ROOT));
+            final String identifier = blockProperty.name().toLowerCase(Locale.ROOT);
             if (bedrockBlockIdentifiers.contains(identifier)) {
                 continue; // Bedrock client does not allow overriding vanilla block states
             }

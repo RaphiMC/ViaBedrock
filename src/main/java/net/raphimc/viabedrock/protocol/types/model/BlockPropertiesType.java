@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.util.Key;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.model.BlockProperties;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -31,7 +32,7 @@ public class BlockPropertiesType extends Type<BlockProperties> {
 
     @Override
     public BlockProperties read(ByteBuf buffer) {
-        return new BlockProperties(BedrockTypes.STRING.read(buffer), (CompoundTag) BedrockTypes.NETWORK_TAG.read(buffer));
+        return new BlockProperties(Key.namespaced(BedrockTypes.STRING.read(buffer)), (CompoundTag) BedrockTypes.NETWORK_TAG.read(buffer));
     }
 
     @Override

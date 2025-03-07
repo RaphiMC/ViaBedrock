@@ -159,11 +159,6 @@ public class JoinPackets {
                         interact.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // mouse position
                         interact.sendToServer(BedrockProtocol.class);
 
-                        final PacketWrapper emoteList = PacketWrapper.create(ServerboundBedrockPackets.EMOTE_LIST, wrapper.user());
-                        emoteList.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
-                        emoteList.write(BedrockTypes.UUID_ARRAY, new UUID[0]); // emote ids
-                        emoteList.sendToServer(BedrockProtocol.class);
-
                         clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
                         clientPlayer.setInitiallySpawned();
                         if (gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {

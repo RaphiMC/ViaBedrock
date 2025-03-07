@@ -165,11 +165,16 @@ public class ClientPlayerPackets {
                 return;
             }
 
-            final byte predictionType = wrapper.read(Types.BYTE); // prediction type
+            final byte rawPredictionType = wrapper.read(Types.BYTE); // prediction type
+            final PredictionType predictionType = PredictionType.getByValue(rawPredictionType);
+            if (predictionType == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown PredictionType: " + rawPredictionType);
+                return;
+            }
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             wrapper.read(BedrockTypes.POSITION_3F); // position delta
             switch (predictionType) {
-                case 0 /* PLAYER */ -> {
+                case Player -> {
                     final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                     final boolean onGround = wrapper.read(Types.BOOLEAN); // on ground
                     final long tick = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // tick
@@ -182,11 +187,8 @@ public class ClientPlayerPackets {
                     clientPlayer.setOnGround(onGround);
                     clientPlayer.writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
                 }
-                case 1 /* VEHICLE */ -> wrapper.cancel();
-                default -> {
-                    wrapper.cancel();
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown PredictionType: " + predictionType);
-                }
+                case Vehicle -> wrapper.cancel();
+                default -> throw new IllegalStateException("Unhandled PredictionType: " + predictionType);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SET_PLAYER_GAME_TYPE, null, new PacketHandlers() {
