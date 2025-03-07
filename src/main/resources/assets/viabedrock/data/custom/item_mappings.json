@@ -1417,19 +1417,19 @@
   "minecraft:board": {
     "meta": {
       "": {
-        "java_id": "minecraft:oak_sign",
+        "java_id": "minecraft:warped_sign",
         "java_name": "tile.chalkboard.oneByOne.name"
       },
       "0": {
-        "java_id": "minecraft:oak_sign",
+        "java_id": "minecraft:warped_sign",
         "java_name": "tile.chalkboard.oneByOne.name"
       },
       "1": {
-        "java_id": "minecraft:oak_sign",
+        "java_id": "minecraft:warped_sign",
         "java_name": "tile.chalkboard.twoByOne.name"
       },
       "2": {
-        "java_id": "minecraft:oak_sign",
+        "java_id": "minecraft:warped_sign",
         "java_name": "tile.chalkboard.threeByTwo.name"
       }
     }
@@ -2034,7 +2034,7 @@
   "minecraft:chalkboard": {
     "block": {
       "minecraft:chalkboard": {
-        "java_id": "minecraft:cobblestone_wall",
+        "java_id": "minecraft:warped_sign",
         "java_name": "tile.chalkboard.name"
       }
     }
