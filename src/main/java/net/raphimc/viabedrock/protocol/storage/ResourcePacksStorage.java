@@ -101,6 +101,7 @@ public class ResourcePacksStorage extends StoredObject {
     private SoundDefinitions sounds;
     private ParticleDefinitions particles;
     private EntityDefinitions entities;
+    private RenderControllerDefinitions renderControllers;
     private ModelDefinitions models;
     private FogDefinitions fogs;
     private BiomeDefinitions biomes;
@@ -195,6 +196,7 @@ public class ResourcePacksStorage extends StoredObject {
         this.models = new ModelDefinitions(this);
         this.fogs = new FogDefinitions(this);
         this.biomes = new BiomeDefinitions(this);
+        this.renderControllers = new RenderControllerDefinitions(this);
     }
 
     public List<ResourcePack> getPackStackTopToBottom() {
@@ -274,4 +276,7 @@ public class ResourcePacksStorage extends StoredObject {
         return this.biomes;
     }
 
+    public RenderControllerDefinitions getRenderControllers() {
+        return this.renderControllers;
+    }
 }
