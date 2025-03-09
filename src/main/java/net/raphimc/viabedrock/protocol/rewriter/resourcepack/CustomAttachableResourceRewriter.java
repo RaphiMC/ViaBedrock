@@ -23,10 +23,9 @@ import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.api.model.resourcepack.AttachableDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-import org.oryxel.cube.converter.FormatConverter;
-import org.oryxel.cube.model.bedrock.BedrockGeometry;
-import org.oryxel.cube.model.java.ItemModelData;
-import org.oryxel.cube.parser.java.JavaModelSerializer;
+import org.cube.converter.converter.enums.RotationFixMode;
+import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
+import org.cube.converter.model.impl.java.JavaItemModel;
 
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +39,7 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
     @Override
     protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList) {
         for (Map.Entry<String, AttachableDefinitions.AttachableDefinition> attachableEntry : resourcePacksStorage.getAttachables().attachables().entrySet()) {
-            for (String bedrockPath : attachableEntry.getValue().attachableData().textures().values()) {
+            for (String bedrockPath : attachableEntry.getValue().attachableData().getTextures().values()) {
                 for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
                     final ResourcePack.Content bedrockContent = pack.content();
                     final ResourcePack.Content.LazyImage texture = bedrockContent.getShortnameImage(bedrockPath);
@@ -52,20 +51,20 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
             }
 
             final AttachableDefinitions.AttachableDefinition attachableDefinition = attachableEntry.getValue();
-            for (Map.Entry<String, String> modelEntry : attachableDefinition.attachableData().geometries().entrySet()) {
-                final BedrockGeometry bedrockGeometry = resourcePacksStorage.getModels().entityModels().get(modelEntry.getValue());
+            for (Map.Entry<String, String> modelEntry : attachableDefinition.attachableData().getGeometries().entrySet()) {
+                final BedrockGeometryModel bedrockGeometry = resourcePacksStorage.getModels().entityModels().get(modelEntry.getValue());
                 if (bedrockGeometry == null) continue;
-                if (!attachableDefinition.attachableData().textures().containsKey(modelEntry.getKey())) continue;
+                if (!attachableDefinition.attachableData().getTextures().containsKey(modelEntry.getKey())) continue;
 
-                final String javaTexturePath = this.getJavaTexturePath(attachableDefinition.attachableData().textures().get(modelEntry.getKey()));
-                final ItemModelData itemModelData = FormatConverter.bedrockToJava("viabedrock:" + javaTexturePath, bedrockGeometry);
-                final JsonObject itemModel = GsonUtil.getGson().fromJson(JavaModelSerializer.serialize(itemModelData).toString(), JsonObject.class);
+                final String javaTexturePath = this.getJavaTexturePath(attachableDefinition.attachableData().getTextures().get(modelEntry.getKey()));
+                final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationFixMode.NONE);
+                final JsonObject itemModel = GsonUtil.getGson().fromJson(itemModelData.compile().toString(), JsonObject.class);
 
                 final JsonObject display = new JsonObject();
                 final JsonArray scaling = new JsonArray();
-                scaling.add(itemModelData.scale());
-                scaling.add(itemModelData.scale());
-                scaling.add(itemModelData.scale());
+                scaling.add(itemModelData.getScale());
+                scaling.add(itemModelData.getScale());
+                scaling.add(itemModelData.getScale());
 
                 final JsonObject value = new JsonObject();
                 value.add("scale", scaling);

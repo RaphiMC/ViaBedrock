@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.api.model.resourcepack;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-import org.oryxel.cube.model.bedrock.data.BedrockEntityData;
-import org.oryxel.cube.parser.bedrock.data.BedrockEntitySerializer;
+import org.cube.converter.data.bedrock.BedrockEntityData;
+import org.cube.converter.parser.bedrock.data.impl.BedrockEntityParser;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,8 +37,8 @@ public class EntityDefinitions {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
             for (String entityPath : pack.content().getFilesDeep("entity/", ".json")) {
                 try {
-                    final BedrockEntityData entityData = BedrockEntitySerializer.deserialize(pack.content().getString(entityPath));
-                    final String identifier = Key.namespaced(entityData.identifier());
+                    final BedrockEntityData entityData = BedrockEntityParser.parse(pack.content().getString(entityPath));
+                    final String identifier = Key.namespaced(entityData.getIdentifier());
                     this.entities.put(identifier, new EntityDefinition(identifier, entityData));
                 } catch (Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse entity definition " + entityPath + " in pack " + pack.packId(), e);
