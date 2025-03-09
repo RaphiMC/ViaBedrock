@@ -21,9 +21,11 @@ import com.google.common.collect.Lists;
 import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-import org.cube.converter.converter.enums.RotationFixMode;
-import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
-import org.cube.converter.model.impl.java.JavaItemModel;
+import org.oryxel.cube.converter.FormatConverter;
+import org.oryxel.cube.converter.enums.RotationFixMode;
+import org.oryxel.cube.model.bedrock.BedrockGeometry;
+import org.oryxel.cube.model.java.ItemModelData;
+import org.oryxel.cube.parser.java.JavaModelSerializer;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +40,7 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
     @Override
     protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList) {
         for (Map.Entry<String, EntityDefinitions.EntityDefinition> entityEntry : resourcePacksStorage.getEntities().entities().entrySet()) {
-            for (String bedrockPath : entityEntry.getValue().entityData().getTextures().values()) {
+            for (String bedrockPath : entityEntry.getValue().entityData().textures().values()) {
                 for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
                     final ResourcePack.Content bedrockContent = pack.content();
                     final ResourcePack.Content.LazyImage texture = bedrockContent.getShortnameImage(bedrockPath);
@@ -50,20 +52,20 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
             }
 
             final EntityDefinitions.EntityDefinition entityDefinition = entityEntry.getValue();
-            for (Map.Entry<String, String> modelEntry : entityDefinition.entityData().getGeometries().entrySet()) {
-                final BedrockGeometryModel bedrockGeometry = resourcePacksStorage.getModels().entityModels().get(modelEntry.getValue());
+            for (Map.Entry<String, String> modelEntry : entityDefinition.entityData().geometries().entrySet()) {
+                final BedrockGeometry bedrockGeometry = resourcePacksStorage.getModels().entityModels().get(modelEntry.getValue());
                 if (bedrockGeometry == null) continue;
-                if (!entityDefinition.entityData().getTextures().containsKey(modelEntry.getKey())) continue;
+                if (!entityDefinition.entityData().textures().containsKey(modelEntry.getKey())) continue;
 
-                final String javaTexturePath = this.getJavaTexturePath(entityDefinition.entityData().getTextures().get(modelEntry.getKey()));
-                final List<JavaItemModel> itemModels = Lists.newArrayList(bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationFixMode.HACKY));
+                final String javaTexturePath = this.getJavaTexturePath(entityDefinition.entityData().textures().get(modelEntry.getKey()));
+                final List<ItemModelData> itemModels = Lists.newArrayList(FormatConverter.bedrockToJava("viabedrock:" + javaTexturePath, bedrockGeometry, RotationFixMode.HACKY));
                 final String key = entityEntry.getKey() + "_" + modelEntry.getKey();
                 resourcePacksStorage.getConverterData().put("ce_" + key, itemModels.size());
                 for (int i = 0; i < itemModels.size(); i++) {
-                    final JavaItemModel cubeConverterItemModel = itemModels.get(i);
-                    resourcePacksStorage.getConverterData().put("ce_" + key + "_" + i + "_scale", (float) cubeConverterItemModel.getScale());
+                    final ItemModelData cubeConverterItemModel = itemModels.get(i);
+                    resourcePacksStorage.getConverterData().put("ce_" + key + "_" + i + "_scale", (float) cubeConverterItemModel.scale());
 
-                    javaContent.putString("assets/viabedrock/models/" + this.getJavaModelName(key + "_" + i) + ".json", cubeConverterItemModel.compile().toString());
+                    javaContent.putString("assets/viabedrock/models/" + this.getJavaModelName(key + "_" + i) + ".json", JavaModelSerializer.serialize(cubeConverterItemModel).toString());
                     modelsList.add(key + "_" + i);
                 }
             }

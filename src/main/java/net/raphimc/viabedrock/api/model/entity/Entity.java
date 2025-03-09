@@ -25,9 +25,11 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.Types1_21_4;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.EntityDataUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.Puv_Legacy_LevelSoundEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.BossEventOperationType;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -56,6 +58,7 @@ public class Entity {
     protected Position3f rotation = Position3f.ZERO;
     protected boolean onGround;
     protected final Map<ActorDataIDs, EntityData> entityData = new EnumMap<>(ActorDataIDs.class);
+    protected EnumSet<ActorFlags> entityFlags = EnumSet.noneOf(ActorFlags.class);
     protected String name;
     protected int age;
     protected boolean hasBossBar;
@@ -93,7 +96,7 @@ public class Entity {
         setEntityData.send(BedrockProtocol.class);
     }
 
-    public final void updateEntityData(final EntityData[] entityData, final List<EntityData> javaEntityData) {
+    public void updateEntityData(final EntityData[] entityData, final List<EntityData> javaEntityData) {
         for (EntityData data : entityData) {
             final ActorDataIDs id = ActorDataIDs.getByValue(data.id());
             if (id == null) {
@@ -101,6 +104,11 @@ public class Entity {
                 continue;
             }
             this.entityData.put(id, data);
+
+            if (id == ActorDataIDs.RESERVED_0) { // Hardcoded.
+                this.entityFlags = EntityDataUtil.getActorFlags(data.value());
+            }
+
             if (!this.translateEntityData(id, data, javaEntityData)) {
                 // TODO: Log warning when entity data translation is fully implemented
                 // ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown entity data: " + id + " for entity type: " + this.type);

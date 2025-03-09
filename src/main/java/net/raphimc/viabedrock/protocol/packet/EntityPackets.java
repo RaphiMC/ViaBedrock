@@ -91,11 +91,12 @@ public class EntityPackets {
                 final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
                 final EntityDefinitions.EntityDefinition entityDefinition = resourcePacksStorage.getEntities().get(type);
                 if (entityDefinition != null) {
-                    if (resourcePacksStorage.isLoadedOnJavaClient() && resourcePacksStorage.getConverterData().containsKey("ce_" + entityDefinition.identifier() + "_default")) {
+                    if (resourcePacksStorage.isLoadedOnJavaClient()) {
                         entity = new CustomEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, type, entityTracker.getNextJavaEntityId(), entityDefinition);
                         entityTracker.addEntity(entity);
                     } else {
                         entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, type, EntityTypes1_21_4.PIG);
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown custom entity: " + entityDefinition.identifier());
                     }
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity type: " + type);

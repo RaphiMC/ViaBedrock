@@ -57,6 +57,7 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
                 if (!attachableDefinition.attachableData().getTextures().containsKey(modelEntry.getKey())) continue;
 
                 final String javaTexturePath = this.getJavaTexturePath(attachableDefinition.attachableData().getTextures().get(modelEntry.getKey()));
+<<<<<<< HEAD
                 final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationFixMode.NONE);
                 final JsonObject itemModel = GsonUtil.getGson().fromJson(itemModelData.compile().toString(), JsonObject.class);
 
@@ -65,6 +66,16 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
                 scaling.add(itemModelData.getScale());
                 scaling.add(itemModelData.getScale());
                 scaling.add(itemModelData.getScale());
+=======
+                final JavaItemModel javaItemModel = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationFixMode.NONE);
+                final JsonObject itemModel = GsonUtil.getGson().fromJson(javaItemModel.compile().toString(), JsonObject.class);
+
+                final JsonObject display = new JsonObject();
+                final JsonArray scaling = new JsonArray();
+                scaling.add(javaItemModel.getScale());
+                scaling.add(javaItemModel.getScale());
+                scaling.add(javaItemModel.getScale());
+>>>>>>> a5e5124 (Added support for render controllers.)
 
                 final JsonObject value = new JsonObject();
                 value.add("scale", scaling);
