@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.api.model.resourcepack;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-import org.oryxel.cube.model.bedrock.data.BedrockAttachableData;
-import org.oryxel.cube.parser.bedrock.data.BedrockAttachableSerializer;
+import org.cube.converter.data.bedrock.BedrockAttachableData;
+import org.cube.converter.parser.bedrock.data.impl.BedrockAttachableParser;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,8 +37,8 @@ public class AttachableDefinitions {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
             for (String attachablePath : pack.content().getFilesDeep("attachables/", ".json")) {
                 try {
-                    final BedrockAttachableData attachableData = BedrockAttachableSerializer.deserialize(pack.content().getString(attachablePath));
-                    final String identifier = Key.namespaced(attachableData.identifier());
+                    final BedrockAttachableData attachableData = BedrockAttachableParser.parse(pack.content().getString(attachablePath));
+                    final String identifier = Key.namespaced(attachableData.getIdentifier());
                     this.attachables.put(identifier, new AttachableDefinition(identifier, attachableData));
                 } catch (Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse attachable definition " + attachablePath + " in pack " + pack.packId(), e);

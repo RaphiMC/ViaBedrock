@@ -19,8 +19,8 @@ package net.raphimc.viabedrock.api.model.resourcepack;
 
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-import org.oryxel.cube.model.bedrock.BedrockGeometry;
-import org.oryxel.cube.parser.bedrock.BedrockGeometrySerializer;
+import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
+import org.cube.converter.parser.bedrock.geometry.BedrockGeometryParser;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,15 +29,15 @@ import java.util.logging.Level;
 
 public class ModelDefinitions {
 
-    private final Map<String, BedrockGeometry> entityModels = new HashMap<>();
+    private final Map<String, BedrockGeometryModel> entityModels = new HashMap<>();
 
     public ModelDefinitions(final ResourcePacksStorage resourcePacksStorage) {
         for (ResourcePack pack : resourcePacksStorage.getPackStackBottomToTop()) {
             for (String modelPath : pack.content().getFilesDeep("models/", ".json")) {
                 try {
-                    for (BedrockGeometry bedrockGeometry : BedrockGeometrySerializer.deserialize(pack.content().getString(modelPath))) {
+                    for (BedrockGeometryModel bedrockGeometry : BedrockGeometryParser.parse(pack.content().getString(modelPath))) {
                         if (modelPath.startsWith("models/entity/")) {
-                            this.entityModels.put(bedrockGeometry.identifier(), bedrockGeometry);
+                            this.entityModels.put(bedrockGeometry.getIdentifier(), bedrockGeometry);
                         }
                     }
                 } catch (Throwable e) {
@@ -47,11 +47,11 @@ public class ModelDefinitions {
         }
     }
 
-    public BedrockGeometry getEntityModel(final String name) {
+    public BedrockGeometryModel getEntityModel(final String name) {
         return this.entityModels.get(name);
     }
 
-    public Map<String, BedrockGeometry> entityModels() {
+    public Map<String, BedrockGeometryModel> entityModels() {
         return Collections.unmodifiableMap(this.entityModels);
     }
 
