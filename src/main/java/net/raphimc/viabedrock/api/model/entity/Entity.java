@@ -25,14 +25,19 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.Types1_21_4;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.DataItemType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.Puv_Legacy_LevelSoundEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.BossEventOperationType;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataTypesBedrock;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -95,15 +100,20 @@ public class Entity {
 
     public final void updateEntityData(final EntityData[] entityData, final List<EntityData> javaEntityData) {
         for (EntityData data : entityData) {
-            final ActorDataIDs id = ActorDataIDs.getByValue(data.id());
-            if (id == null) {
+            final ActorDataIDs dataId = ActorDataIDs.getByValue(data.id());
+            if (dataId == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ActorDataIDs: " + data.id());
                 continue;
             }
-            this.entityData.put(id, data);
-            if (!this.translateEntityData(id, data, javaEntityData)) {
+            final DataItemType expectedType = BedrockProtocol.MAPPINGS.getBedrockEntityDataTypes().get(dataId);
+            if (expectedType != null && expectedType != ((EntityDataTypesBedrock) data.dataType()).dataItemType()) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Discarding entity data " + dataId + " for entity type " + this.type + " due to unexpected data type: " + data.dataType());
+                continue;
+            }
+            this.entityData.put(dataId, data);
+            if (!this.translateEntityData(dataId, data, javaEntityData)) {
                 // TODO: Log warning when entity data translation is fully implemented
-                // ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown entity data: " + id + " for entity type: " + this.type);
+                // ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown entity data: " + dataId + " for entity type: " + this.type);
             }
         }
     }
@@ -173,6 +183,17 @@ public class Entity {
 
     public Map<ActorDataIDs, EntityData> entityData() {
         return this.entityData;
+    }
+
+    public Set<ActorFlags> entityDataFlags() {
+        BigInteger combinedFlags = BigInteger.ZERO;
+        if (this.entityData.containsKey(ActorDataIDs.RESERVED_0)) {
+            combinedFlags = combinedFlags.add(BigInteger.valueOf(this.entityData.get(ActorDataIDs.RESERVED_0).<Long>value().longValue()));
+        }
+        if (this.entityData.containsKey(ActorDataIDs.RESERVED_092)) {
+            combinedFlags = combinedFlags.add(BigInteger.valueOf(this.entityData.get(ActorDataIDs.RESERVED_092).<Long>value().longValue()).shiftLeft(64));
+        }
+        return EnumUtil.getEnumSetFromBitmask(ActorFlags.class, combinedFlags, ActorFlags::getValue);
     }
 
     public String name() {

@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.types.entitydata;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.types.entitydata.EntityDataTypeTemplate;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.DataItemType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class EntityDataType extends EntityDataTypeTemplate {
@@ -27,7 +28,12 @@ public class EntityDataType extends EntityDataTypeTemplate {
     @Override
     public EntityData read(ByteBuf buffer) {
         final int index = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-        final EntityDataTypesBedrock type = EntityDataTypesBedrock.byId(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        final int rawDataItemType = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
+        final DataItemType dataItemType = DataItemType.getByValue(rawDataItemType, DataItemType.Unknown);
+        if (dataItemType == DataItemType.Unknown) { // Bedrock client disconnects if the data item type is not valid
+            throw new IllegalStateException("Unknown DataItemType: " + rawDataItemType);
+        }
+        final EntityDataTypesBedrock type = EntityDataTypesBedrock.byDataItemType(dataItemType);
         return new EntityData(index, type, type.type().read(buffer));
     }
 

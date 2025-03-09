@@ -108,6 +108,7 @@ public class BedrockMappingData extends MappingDataBase {
 
     // Entities
     private BiMap<String, Integer> bedrockEntities;
+    private Map<ActorDataIDs, DataItemType> bedrockEntityDataTypes;
     private Map<String, EntityTypes1_21_4> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
     private BiMap<String, Integer> javaEntityAttributes;
@@ -481,10 +482,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockToJavaContainers = new EnumMap<>(ContainerType.class);
             final Set<ContainerType> unmappedContainerTypes = new HashSet<>();
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaContainersJson.entrySet()) {
-                final ContainerType bedrockContainerType = EnumUtil.getEnumConstantOrNull(ContainerType.class, entry.getKey());
-                if (bedrockContainerType == null) {
-                    throw new IllegalStateException("Unknown bedrock container type: " + entry.getKey());
-                }
+                final ContainerType bedrockContainerType = ContainerType.valueOf(entry.getKey());
                 if (entry.getValue().isJsonNull()) {
                     unmappedContainerTypes.add(bedrockContainerType);
                     continue;
@@ -508,6 +506,24 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockEntities = HashBiMap.create(entityIdentifiersListTag.size());
             for (CompoundTag entry : entityIdentifiersListTag) {
                 this.bedrockEntities.put(entry.getStringTag("id").getValue(), entry.getIntTag("rid").asInt());
+            }
+
+            final JsonObject entityDataTypesJson = this.readJson("bedrock/entity_data_types.json");
+            this.bedrockEntityDataTypes = new EnumMap<>(ActorDataIDs.class);
+            final Set<ActorDataIDs> unmappedEntityDataIds = EnumSet.noneOf(ActorDataIDs.class);
+            for (Map.Entry<String, JsonElement> entry : entityDataTypesJson.entrySet()) {
+                final ActorDataIDs dataId = ActorDataIDs.valueOf(entry.getKey());
+                if (entry.getValue().isJsonNull()) {
+                    unmappedEntityDataIds.add(dataId);
+                    continue;
+                }
+                final DataItemType dataItemType = DataItemType.valueOf(entry.getValue().getAsString());
+                this.bedrockEntityDataTypes.put(dataId, dataItemType);
+            }
+            for (ActorDataIDs dataId : ActorDataIDs.values()) {
+                if (!this.bedrockEntityDataTypes.containsKey(dataId) && !unmappedEntityDataIds.contains(dataId)) {
+                    throw new RuntimeException("Missing bedrock entity data type mapping for " + dataId.name());
+                }
             }
 
             final JsonObject bedrockToJavaEntityMappingsJson = this.readJson("custom/entity_mappings.json");
@@ -996,6 +1012,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public BiMap<String, Integer> getBedrockEntities() {
         return this.bedrockEntities;
+    }
+
+    public Map<ActorDataIDs, DataItemType> getBedrockEntityDataTypes() {
+        return this.bedrockEntityDataTypes;
     }
 
     public Map<String, EntityTypes1_21_4> getBedrockToJavaEntities() {

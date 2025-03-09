@@ -20,36 +20,43 @@ package net.raphimc.viabedrock.protocol.types.entitydata;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityDataType;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.DataItemType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public enum EntityDataTypesBedrock implements EntityDataType {
 
-    BYTE(0, Types.BYTE),
-    SHORT(1, BedrockTypes.SHORT_LE),
-    INT(2, BedrockTypes.VAR_INT),
-    FLOAT(3, BedrockTypes.FLOAT_LE),
-    STRING(4, BedrockTypes.STRING),
-    TAG(5, BedrockTypes.NETWORK_TAG),
-    POSITION_3I(6, BedrockTypes.POSITION_3I),
-    LONG(7, BedrockTypes.VAR_LONG),
-    POSITION_3F(8, BedrockTypes.POSITION_3F);
+    BYTE(DataItemType.Byte, Types.BYTE),
+    SHORT(DataItemType.Short, BedrockTypes.SHORT_LE),
+    INT(DataItemType.Int, BedrockTypes.VAR_INT),
+    FLOAT(DataItemType.Float, BedrockTypes.FLOAT_LE),
+    STRING(DataItemType.String, BedrockTypes.STRING),
+    TAG(DataItemType.CompoundTag, BedrockTypes.NETWORK_TAG),
+    POSITION_3I(DataItemType.Pos, BedrockTypes.POSITION_3I),
+    LONG(DataItemType.Int64, BedrockTypes.VAR_LONG),
+    POSITION_3F(DataItemType.Vec3, BedrockTypes.POSITION_3F);
 
-    private final int typeId;
+    private final DataItemType dataItemType;
     private final Type<?> type;
 
-    EntityDataTypesBedrock(final int typeId, final Type<?> type) {
-        this.typeId = typeId;
+    EntityDataTypesBedrock(final DataItemType dataItemType, final Type<?> type) {
+        this.dataItemType = dataItemType;
         this.type = type;
     }
 
-    public static EntityDataTypesBedrock byId(final int id) {
-        return values()[id];
+    public static EntityDataTypesBedrock byDataItemType(final DataItemType dataItemType) {
+        return values()[dataItemType.getValue()];
     }
 
+    public DataItemType dataItemType() {
+        return this.dataItemType;
+    }
+
+    @Override
     public int typeId() {
-        return this.typeId;
+        return this.dataItemType.getValue();
     }
 
+    @Override
     public Type<?> type() {
         return this.type;
     }
