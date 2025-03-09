@@ -185,7 +185,7 @@ public class Entity {
         return this.entityData;
     }
 
-    public Set<ActorFlags> entityDataFlags() {
+    public Set<ActorFlags> entityFlags() {
         BigInteger combinedFlags = BigInteger.ZERO;
         if (this.entityData.containsKey(ActorDataIDs.RESERVED_0)) {
             combinedFlags = combinedFlags.add(BigInteger.valueOf(this.entityData.get(ActorDataIDs.RESERVED_0).<Long>value().longValue()));
