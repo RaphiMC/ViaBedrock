@@ -17,8 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.data;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Multimap;
 import com.viaversion.nbt.io.NBTIO;
 import com.viaversion.nbt.limiter.TagLimiter;
 import com.viaversion.nbt.stringified.SNBT;
@@ -380,7 +382,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockToJavaBlockItems = new HashMap<>(bedrockToJavaItemMappingsJson.size());
             this.bedrockToJavaMetaItems = new HashMap<>(bedrockToJavaItemMappingsJson.size());
             // NamespacedIdentifier to BedrockBlockState
-            final Map<String, BedrockBlockState> bedrockBlockStateTable = new HashMap<>(this.bedrockBlockStates.size(), 1.0F);
+            final Multimap<String, BedrockBlockState> bedrockBlockStateTable = ArrayListMultimap.create(this.bedrockBlockStates.size(), 192);
             for (final BedrockBlockState bedrockBlockState : this.bedrockBlockStates) {
                 bedrockBlockStateTable.put(bedrockBlockState.namespacedIdentifier(), bedrockBlockState);
             }
@@ -402,8 +404,8 @@ public class BedrockMappingData extends MappingDataBase {
                         final BlockState blockState = BlockState.fromString(blockMapping.getKey());
                         final String blockStateIdentifier = blockState.namespacedIdentifier();
                         final List<BlockState> blockStates = new ArrayList<>();
-                        final BedrockBlockState bedrockBlockState = bedrockBlockStateTable.get(blockStateIdentifier);
-                        if (bedrockBlockState != null) {
+                        final Collection<BedrockBlockState> bedrockBlockStates = bedrockBlockStateTable.get(blockStateIdentifier);
+                        for (final BedrockBlockState bedrockBlockState : bedrockBlockStates) {
                             if (!bedrockBlockState.properties().keySet().containsAll(blockState.properties().keySet())) {
                                 throw new RuntimeException("Unknown bedrock block state property: " + blockState.properties().keySet() + " for " + blockStateIdentifier);
                             }
