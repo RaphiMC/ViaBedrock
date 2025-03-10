@@ -488,10 +488,11 @@ public class BedrockMappingData extends MappingDataBase {
                     continue;
                 }
                 final String javaIdentifier = entry.getValue().getAsString();
-                if (!javaMenus.contains(javaIdentifier)) {
+                final int javaIdentifierIndex = javaMenus.indexOf(javaIdentifier);
+                if (javaIdentifierIndex == -1) {
                     throw new IllegalStateException("Unknown java menu: " + javaIdentifier);
                 }
-                this.bedrockToJavaContainers.put(bedrockContainerType, javaMenus.indexOf(javaIdentifier));
+                this.bedrockToJavaContainers.put(bedrockContainerType, javaIdentifierIndex);
             }
             for (ContainerType containerType : ContainerType.values()) {
                 if (!this.bedrockToJavaContainers.containsKey(containerType) && !unmappedContainerTypes.contains(containerType)) {
@@ -576,8 +577,10 @@ public class BedrockMappingData extends MappingDataBase {
                     throw new RuntimeException("Unknown java entity type: " + entry.getKey());
                 }
             }
+            final Set<String> addedEntityData = new HashSet<>();
             for (EntityTypes1_21_4 type : EntityTypes1_21_4.values()) {
                 if (type.isAbstractType()) continue;
+                addedEntityData.clear();
                 final EntityTypes1_21_4 realType = type;
                 final List<String> entityData = new ArrayList<>();
                 do {
@@ -585,10 +588,11 @@ public class BedrockMappingData extends MappingDataBase {
                     if (entityDataArray != null) {
                         final List<String> entityTypeData = new ArrayList<>(entityDataArray.size());
                         for (JsonElement element : entityDataArray) {
-                            if (entityData.contains(element.getAsString()) || entityTypeData.contains(element.getAsString())) {
-                                throw new IllegalStateException("Duplicate entity data for " + realType.name() + ": " + element.getAsString());
+                            String string = element.getAsString();
+                            if (!addedEntityData.add(string)) {
+                                throw new IllegalStateException("Duplicate entity data for " + realType.name() + ": " + string);
                             } else {
-                                entityTypeData.add(element.getAsString());
+                                entityTypeData.add(string);
                             }
                         }
                         entityData.addAll(0, entityTypeData);
