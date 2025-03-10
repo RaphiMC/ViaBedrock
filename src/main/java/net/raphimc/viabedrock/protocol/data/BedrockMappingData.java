@@ -17,8 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.data;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Multimap;
 import com.viaversion.nbt.io.NBTIO;
 import com.viaversion.nbt.limiter.TagLimiter;
 import com.viaversion.nbt.stringified.SNBT;
@@ -379,6 +381,11 @@ public class BedrockMappingData extends MappingDataBase {
             final JsonObject bedrockToJavaItemMappingsJson = this.readJson("custom/item_mappings.json");
             this.bedrockToJavaBlockItems = new HashMap<>(bedrockToJavaItemMappingsJson.size());
             this.bedrockToJavaMetaItems = new HashMap<>(bedrockToJavaItemMappingsJson.size());
+            // NamespacedIdentifier to BedrockBlockState
+            final Multimap<String, BedrockBlockState> bedrockBlockStateTable = ArrayListMultimap.create(this.bedrockBlockStates.size(), 128);
+            for (final BedrockBlockState bedrockBlockState : this.bedrockBlockStates) {
+                bedrockBlockStateTable.put(bedrockBlockState.namespacedIdentifier(), bedrockBlockState);
+            }
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaItemMappingsJson.entrySet()) {
                 final String bedrockIdentifier = entry.getKey();
                 if (!this.bedrockItems.containsKey(bedrockIdentifier)) {
@@ -397,16 +404,15 @@ public class BedrockMappingData extends MappingDataBase {
                         final BlockState blockState = BlockState.fromString(blockMapping.getKey());
                         final String blockStateIdentifier = blockState.namespacedIdentifier();
                         final List<BlockState> blockStates = new ArrayList<>();
-                        for (BedrockBlockState bedrockBlockState : this.bedrockBlockStates) {
-                            if (bedrockBlockState.namespacedIdentifier().equals(blockStateIdentifier)) {
-                                if (!bedrockBlockState.properties().keySet().containsAll(blockState.properties().keySet())) {
-                                    throw new RuntimeException("Unknown bedrock block state property: " + blockState.properties().keySet() + " for " + blockStateIdentifier);
-                                }
-                                if (bedrockBlockState.properties().entrySet().containsAll(blockState.properties().entrySet())) {
-                                    blockStates.add(bedrockBlockState);
-                                }
-                                allPossibleStates.add(bedrockBlockState);
+                        final Collection<BedrockBlockState> bedrockBlockStates = bedrockBlockStateTable.get(blockStateIdentifier);
+                        for (final BedrockBlockState bedrockBlockState : bedrockBlockStates) {
+                            if (!bedrockBlockState.properties().keySet().containsAll(blockState.properties().keySet())) {
+                                throw new RuntimeException("Unknown bedrock block state property: " + blockState.properties().keySet() + " for " + blockStateIdentifier);
                             }
+                            if (bedrockBlockState.properties().entrySet().containsAll(blockState.properties().entrySet())) {
+                                blockStates.add(bedrockBlockState);
+                            }
+                            allPossibleStates.add(bedrockBlockState);
                         }
                         if (blockStates.isEmpty()) {
                             throw new RuntimeException("Unknown bedrock block state: " + blockState.toBlockStateString());
