@@ -382,7 +382,7 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockToJavaBlockItems = new HashMap<>(bedrockToJavaItemMappingsJson.size());
             this.bedrockToJavaMetaItems = new HashMap<>(bedrockToJavaItemMappingsJson.size());
             // NamespacedIdentifier to BedrockBlockState
-            final Multimap<String, BedrockBlockState> bedrockBlockStateTable = ArrayListMultimap.create(this.bedrockBlockStates.size(), 192);
+            final Multimap<String, BedrockBlockState> bedrockBlockStateTable = ArrayListMultimap.create(this.bedrockBlockStates.size(), 128);
             for (final BedrockBlockState bedrockBlockState : this.bedrockBlockStates) {
                 bedrockBlockStateTable.put(bedrockBlockState.namespacedIdentifier(), bedrockBlockState);
             }
