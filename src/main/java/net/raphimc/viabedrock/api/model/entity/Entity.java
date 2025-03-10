@@ -1,3 +1,4 @@
+
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
  * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
@@ -98,7 +99,7 @@ public class Entity {
         setEntityData.send(BedrockProtocol.class);
     }
 
-    public final void updateEntityData(final EntityData[] entityData, final List<EntityData> javaEntityData) {
+    public void updateEntityData(final EntityData[] entityData, final List<EntityData> javaEntityData) {
         for (EntityData data : entityData) {
             final ActorDataIDs dataId = ActorDataIDs.getByValue(data.id());
             if (dataId == null) {
