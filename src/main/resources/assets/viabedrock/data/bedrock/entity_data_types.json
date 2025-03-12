@@ -1,7 +1,7 @@
 {
   "RESERVED_0": "Int64",
   "STRUCTURAL_INTEGRITY": null,
-  "VARIANT": null,
+  "VARIANT": "Int",
   "COLOR_INDEX": null,
   "NAME": null,
   "OWNER": null,
@@ -42,7 +42,7 @@
   "NPC_DATA": null,
   "ACTIONS": null,
   "AIR_SUPPLY_MAX": null,
-  "MARK_VARIANT": null,
+  "MARK_VARIANT": "Int",
   "CONTAINER_TYPE": null,
   "CONTAINER_SIZE": null,
   "CONTAINER_STRENGTH_MODIFIER": null,

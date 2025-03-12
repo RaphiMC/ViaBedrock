@@ -58,6 +58,7 @@ public class BedrockPacksGenerator {
                 copyFileIfExists(packDir, fsRoot, "font/glyph_E1.png");
                 copyFolder(packDir, fsRoot, "biomes");
                 copyFolder(packDir, fsRoot, "fogs");
+                copyFolder(packDir, fsRoot, "render_controllers");
 
                 removeTimestamps(fsRoot);
             }

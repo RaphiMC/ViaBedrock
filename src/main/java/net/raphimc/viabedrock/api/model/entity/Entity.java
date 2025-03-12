@@ -116,6 +116,7 @@ public class Entity {
                 // ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown entity data: " + dataId + " for entity type: " + this.type);
             }
         }
+        this.onEntityDataChanged();
     }
 
     public void playSound(final Puv_Legacy_LevelSoundEvent soundEvent) {
@@ -226,6 +227,9 @@ public class Entity {
 
     protected boolean translateEntityData(final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
         return false;
+    }
+
+    protected void onEntityDataChanged() {
     }
 
 }

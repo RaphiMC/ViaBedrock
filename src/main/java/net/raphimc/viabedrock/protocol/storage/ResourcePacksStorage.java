@@ -104,6 +104,7 @@ public class ResourcePacksStorage extends StoredObject {
     private ModelDefinitions models;
     private FogDefinitions fogs;
     private BiomeDefinitions biomes;
+    private RenderControllerDefinitions renderControllers;
 
     public ResourcePacksStorage(final UserConnection user) {
         super(user);
@@ -195,6 +196,7 @@ public class ResourcePacksStorage extends StoredObject {
         this.models = new ModelDefinitions(this);
         this.fogs = new FogDefinitions(this);
         this.biomes = new BiomeDefinitions(this);
+        this.renderControllers = new RenderControllerDefinitions(this);
     }
 
     public List<ResourcePack> getPackStackTopToBottom() {
@@ -227,7 +229,7 @@ public class ResourcePacksStorage extends StoredObject {
     }
 
     public boolean hasFinishedLoading() {
-        return this.biomes != null;
+        return this.renderControllers != null;
     }
 
     public TextDefinitions getTexts() {
@@ -272,6 +274,10 @@ public class ResourcePacksStorage extends StoredObject {
 
     public BiomeDefinitions getBiomes() {
         return this.biomes;
+    }
+
+    public RenderControllerDefinitions getRenderControllers() {
+        return this.renderControllers;
     }
 
 }

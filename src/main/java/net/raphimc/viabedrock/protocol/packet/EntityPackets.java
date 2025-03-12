@@ -91,7 +91,7 @@ public class EntityPackets {
                 final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
                 final EntityDefinitions.EntityDefinition entityDefinition = resourcePacksStorage.getEntities().get(type);
                 if (entityDefinition != null) {
-                    if (resourcePacksStorage.isLoadedOnJavaClient() && resourcePacksStorage.getConverterData().containsKey("ce_" + entityDefinition.identifier() + "_default")) {
+                    if (resourcePacksStorage.isLoadedOnJavaClient()) {
                         entity = new CustomEntity(wrapper.user(), uniqueEntityId, runtimeEntityId, type, entityTracker.getNextJavaEntityId(), entityDefinition);
                         entityTracker.addEntity(entity);
                     } else {
