@@ -489,10 +489,11 @@ public class BedrockMappingData extends MappingDataBase {
                     continue;
                 }
                 final String javaIdentifier = entry.getValue().getAsString();
-                if (!javaMenus.contains(javaIdentifier)) {
+                final int javaId = javaMenus.indexOf(javaIdentifier);
+                if (javaId == -1) {
                     throw new IllegalStateException("Unknown java menu: " + javaIdentifier);
                 }
-                this.bedrockToJavaContainers.put(bedrockContainerType, javaMenus.indexOf(javaIdentifier));
+                this.bedrockToJavaContainers.put(bedrockContainerType, javaId);
             }
             for (ContainerType containerType : ContainerType.values()) {
                 if (!this.bedrockToJavaContainers.containsKey(containerType) && !unmappedContainerTypes.contains(containerType)) {
