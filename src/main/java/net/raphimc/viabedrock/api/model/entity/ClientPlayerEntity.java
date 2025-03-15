@@ -59,6 +59,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     // Position syncing
     private int pendingTeleportId;
     private boolean waitingForPositionSync;
+    private boolean serverSideTeleportConfirmed;
 
     // Server Authoritative Movement
     private Position3f prevPosition;
@@ -250,6 +251,7 @@ public class ClientPlayerEntity extends PlayerEntity {
                 this.waitingForPositionSync = false;
             }
         } else {
+            this.serverSideTeleportConfirmed = true;
             if (!this.initiallySpawned) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received teleport confirm for teleport id " + teleportId + " but player is not spawned yet");
             }
@@ -498,6 +500,11 @@ public class ClientPlayerEntity extends PlayerEntity {
     private boolean preMove(final Position3f newPosition, final Position3f newRotation, final boolean newOnGround) {
         final ChunkTracker chunkTracker = this.user.get(ChunkTracker.class);
 
+        // Allow position packet which is sent immediately after confirming a teleport
+        if (this.serverSideTeleportConfirmed) {
+            this.serverSideTeleportConfirmed = false;
+            return true;
+        }
         // Waiting for position sync
         if (this.waitingForPositionSync) {
             return false;
