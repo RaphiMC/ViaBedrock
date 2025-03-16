@@ -63,6 +63,7 @@ public class EntityPackets {
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.ADD_ENTITY, ClientboundPackets1_21_2.ADD_ENTITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
             final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
@@ -87,7 +88,7 @@ public class EntityPackets {
             final EntityTypes1_21_4 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(type);
             if (javaEntityType != null) {
                 entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, type, javaEntityType);
-            } else {
+            } else if (gameSession.getAvailableEntityIdentifiers().contains(type)) {
                 final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
                 final EntityDefinitions.EntityDefinition entityDefinition = resourcePacksStorage.getEntities().get(type);
                 if (entityDefinition != null) {
@@ -98,10 +99,14 @@ public class EntityPackets {
                         entity = entityTracker.addEntity(uniqueEntityId, runtimeEntityId, type, EntityTypes1_21_4.PIG);
                     }
                 } else {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity type: " + type);
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing bedrock entity type: " + type);
                     wrapper.cancel();
                     return;
                 }
+            } else {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown bedrock entity type: " + type);
+                wrapper.cancel();
+                return;
             }
             entity.setPosition(position);
             entity.setRotation(rotation);

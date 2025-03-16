@@ -408,6 +408,7 @@ public class JoinPackets {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.DIMENSION_DATA,
                 State.CONFIGURATION, (PacketHandler) wrapper -> {
                     wrapper.cancel();
+                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // entry count
                     for (int i = 0; i < count; i++) {
                         final String dimensionIdentifier = wrapper.read(BedrockTypes.STRING); // dimension identifier
@@ -415,7 +416,7 @@ public class JoinPackets {
                         final int minimumHeight = wrapper.read(BedrockTypes.VAR_INT); // minimum height
                         wrapper.read(BedrockTypes.VAR_INT); // generator type
                         if (dimensionIdentifier.equals("minecraft:overworld")) { // Bedrock client currently only supports overworld
-                            wrapper.user().get(GameSessionStorage.class).putBedrockDimensionDefinition(dimensionIdentifier, new IntIntImmutablePair(minimumHeight, maximumHeight));
+                            gameSession.putBedrockDimensionDefinition(dimensionIdentifier, new IntIntImmutablePair(minimumHeight, maximumHeight));
                         }
                     }
                 }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Bedrock client ignores dimension data after start game
@@ -442,6 +443,20 @@ public class JoinPackets {
                 }
             }
         });
+        protocol.registerClientboundTransition(ClientboundBedrockPackets.AVAILABLE_ENTITY_IDENTIFIERS,
+                State.CONFIGURATION, (PacketHandler) PacketWrapper::cancel, // Bedrock client ignores entity identifiers before start game
+                State.PLAY, (PacketHandler) wrapper -> {
+                    wrapper.cancel();
+                    final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
+                    final CompoundTag entityIdentifiers = (CompoundTag) wrapper.read(BedrockTypes.NETWORK_TAG); // entity identifiers
+                    for (CompoundTag entityIdentifier : entityIdentifiers.getListTag("idlist", CompoundTag.class)) {
+                        final String identifier = entityIdentifier.getString("id");
+                        if (identifier != null) {
+                            gameSession.addEntityIdentifier(identifier);
+                        }
+                    }
+                }
+        );
     }
 
     private static void sendClientCacheStatus(final UserConnection user) {

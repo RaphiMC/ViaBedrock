@@ -32,7 +32,9 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerAuthMovementMode;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class GameSessionStorage extends StoredObject {
 
@@ -41,6 +43,7 @@ public class GameSessionStorage extends StoredObject {
     private CompoundTag javaRegistries;
     private CompoundTag bedrockBiomeDefinitions = BedrockProtocol.MAPPINGS.getBedrockBiomeDefinitions();
     private final Map<String, IntIntPair> bedrockDimensionDefinitions = new HashMap<>();
+    private final Set<String> availableEntityIdentifiers = new HashSet<>(BedrockProtocol.MAPPINGS.getBedrockEntities().keySet());
     private Semver bedrockVanillaVersion;
     private boolean flatGenerator;
     private ServerAuthMovementMode movementMode;
@@ -93,6 +96,14 @@ public class GameSessionStorage extends StoredObject {
     public void putBedrockDimensionDefinition(final String dimensionIdentifier, final IntIntPair dimensionDefinition) {
         this.bedrockDimensionDefinitions.put(dimensionIdentifier, dimensionDefinition);
         this.javaRegistries = null;
+    }
+
+    public Set<String> getAvailableEntityIdentifiers() {
+        return this.availableEntityIdentifiers;
+    }
+
+    public void addEntityIdentifier(final String entityIdentifier) {
+        this.availableEntityIdentifiers.add(entityIdentifier);
     }
 
     public Semver getBedrockVanillaVersion() {
