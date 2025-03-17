@@ -72,7 +72,7 @@ dependencies {
     api "com.vdurmont:semver4j:3.1.0"
     api "com.mojang:brigadier:1.0.18"
     api "org.lz4:lz4-pure-java:1.8.0"
-    api("com.github.Oryxel:CubeConverter:4765f13686") {
+    api("com.github.Oryxel:CubeConverter:9dffd506d7") {
         transitive = false
     }
     api("team.unnamed:mocha:3.0.1") {
