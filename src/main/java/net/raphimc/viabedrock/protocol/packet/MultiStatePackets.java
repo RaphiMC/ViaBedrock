@@ -28,6 +28,7 @@ import com.viaversion.viaversion.protocols.v1_21_2to1_21_4.packet.ServerboundPac
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import com.viaversion.viaversion.util.Key;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
+import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
@@ -44,6 +45,8 @@ import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -125,8 +128,14 @@ public class MultiStatePackets {
     public static final PacketHandler CUSTOM_PAYLOAD_HANDLER = wrapper -> {
         wrapper.cancel();
         final String channel = Key.namespaced(wrapper.read(Types.STRING)); // channel
+
         if (channel.equals("minecraft:register")) {
-            final String[] channels = new String(wrapper.read(Types.SERVERBOUND_CUSTOM_PAYLOAD_DATA), StandardCharsets.UTF_8).split("\0");
+            final List<String> channels = Arrays.asList(new String(wrapper.read(Types.SERVERBOUND_CUSTOM_PAYLOAD_DATA), StandardCharsets.UTF_8).split("\0"));
+
+            if (channels.contains(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
+                ViaBedrockUtilityInterface.confirm(wrapper.user());
+            }
+
             wrapper.user().get(ChannelStorage.class).addChannels(channels);
         }
     };
