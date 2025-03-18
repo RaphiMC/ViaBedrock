@@ -21,10 +21,13 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
+import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
+import java.nio.charset.StandardCharsets;
+
 public class ViaBedrockUtilityInterface {
-    // This channel CAN ONLY be used by the client to confirm that it's present, the server will use viabedrockutility:data to respond.
+    // This channel WILL ONLY be used to confirm that viabedrockutility is present, the server will use viabedrockutility:data to respond.
     public static final String CONFIRM_CHANNEL = "viabedrockutility:confirm";
 
     public static final String CHANNEL = "viabedrockutility:data";
@@ -38,5 +41,19 @@ public class ViaBedrockUtilityInterface {
         pluginMessage.write(Types.STRING, CHANNEL); // Channel
         pluginMessage.write(Types.INT, MESSAGE_CONFIRM); // Type
         pluginMessage.send(BedrockProtocol.class);
+    }
+
+    public static PacketWrapper spawn(final UserConnection user, final String geometry, final String texture) {
+        final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_21_2.CUSTOM_PAYLOAD, user);
+        pluginMessage.write(Types.STRING, CHANNEL); // Channel
+        pluginMessage.write(Types.INT, MESSAGE_SPAWN_REQUEST); // Type
+        writeString(pluginMessage, geometry);
+        writeString(pluginMessage, texture);
+        return pluginMessage;
+    }
+
+    private static void writeString(final PacketWrapper wrapper, final String s) {
+        wrapper.write(Types.INT, s.length());
+        wrapper.write(Types.REMAINING_BYTES, s.getBytes(StandardCharsets.UTF_8));
     }
 }
