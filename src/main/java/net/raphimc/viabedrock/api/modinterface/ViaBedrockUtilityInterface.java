@@ -23,37 +23,100 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.model.SkinData;
+import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.UUID;
 
 public class ViaBedrockUtilityInterface {
     // This channel WILL ONLY be used to confirm that viabedrockutility is present, the server will use viabedrockutility:data to respond.
     public static final String CONFIRM_CHANNEL = "viabedrockutility:confirm";
 
     public static final String CHANNEL = "viabedrockutility:data";
-    private static final int MESSAGE_CONFIRM = 0;
-    private static final int MESSAGE_SPAWN_REQUEST = 1;
-    private static final int MESSAGE_ANIMATE = 2;
+    private static final int MAX_PAYLOAD_SIZE = 1048576;
 
     // Confirm that ViaBedrock is present.
     public static void confirm(final UserConnection user) {
         final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundConfigurationPackets1_21.CUSTOM_PAYLOAD, user);
         pluginMessage.write(Types.STRING, CHANNEL); // Channel
-        pluginMessage.write(Types.INT, MESSAGE_CONFIRM); // Type
+        pluginMessage.write(Types.INT, PayloadType.CONFIRM.ordinal()); // Type
         pluginMessage.send(BedrockProtocol.class);
     }
 
     public static PacketWrapper spawn(final UserConnection user, final String geometry, final String texture) {
         final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_21_2.CUSTOM_PAYLOAD, user);
         pluginMessage.write(Types.STRING, CHANNEL); // Channel
-        pluginMessage.write(Types.INT, MESSAGE_SPAWN_REQUEST); // Type
+        pluginMessage.write(Types.INT, PayloadType.SPAWN_REQUEST.ordinal()); // Type
         writeString(pluginMessage, geometry);
         writeString(pluginMessage, texture);
         return pluginMessage;
     }
 
+    public static void sendSkin(final UserConnection user, final UUID uuid, final SkinData skin) {
+        if (skin.skinData() == null || skin.persona()) {
+            return;
+        }
+
+        final boolean hasGeometry = !skin.geometryData().isEmpty() && !skin.geometryData().toLowerCase(Locale.ROOT).equals("null");
+        final byte[] skinData = ImageType.getImageData(skin.skinData());
+        final int maxPayloadSize = MAX_PAYLOAD_SIZE - 24;
+        final int chunkCount = (int) Math.ceil(skinData.length / (double) maxPayloadSize);
+
+        {
+            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_21_2.CUSTOM_PAYLOAD, user);
+            pluginMessage.write(Types.STRING, CHANNEL); // Channel
+            pluginMessage.write(Types.INT, PayloadType.SKIN_INFORMATION.ordinal());
+            pluginMessage.write(Types.UUID, uuid);
+            pluginMessage.write(Types.INT, skin.skinData().getWidth());
+            pluginMessage.write(Types.INT, skin.skinData().getHeight());
+            pluginMessage.write(Types.BOOLEAN, hasGeometry);
+            if (hasGeometry) {
+                writeString(pluginMessage, skin.geometryData());
+                writeString(pluginMessage, skin.skinResourcePatch());
+            }
+
+            pluginMessage.write(Types.INT, chunkCount);
+            pluginMessage.send(BedrockProtocol.class);
+        }
+        for (int i = 0; i < chunkCount; i++) {
+            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_21_2.CUSTOM_PAYLOAD, user);
+            pluginMessage.write(Types.STRING, CHANNEL); // Channel
+            pluginMessage.write(Types.INT, PayloadType.SKIN_DATA.ordinal());
+            pluginMessage.write(Types.UUID, uuid);
+            pluginMessage.write(Types.INT, i);
+            if (chunkCount == 1) { // Fast path
+                pluginMessage.write(Types.REMAINING_BYTES, skinData);
+            } else {
+                pluginMessage.write(Types.REMAINING_BYTES, Arrays.copyOfRange(skinData, i * maxPayloadSize, Math.min((i + 1) * maxPayloadSize, skinData.length)));
+            }
+            pluginMessage.send(BedrockProtocol.class);
+        }
+        if (skin.capeData() != null) {
+            final byte[] capeData = ImageType.getImageData(skin.capeData());
+
+            final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_21_2.CUSTOM_PAYLOAD, user);
+            pluginMessage.write(Types.STRING, CHANNEL); // Channel
+            pluginMessage.write(Types.INT, PayloadType.CAPE.ordinal());
+            pluginMessage.write(Types.UUID, uuid);
+            pluginMessage.write(Types.INT, skin.capeData().getWidth());
+            pluginMessage.write(Types.INT, skin.capeData().getHeight());
+            writeString(pluginMessage, skin.capeId());
+            pluginMessage.write(Types.INT, capeData.length);
+            pluginMessage.write(Types.REMAINING_BYTES, capeData);
+            pluginMessage.send(BedrockProtocol.class);
+        }
+    }
+
     private static void writeString(final PacketWrapper wrapper, final String s) {
         wrapper.write(Types.INT, s.length());
         wrapper.write(Types.REMAINING_BYTES, s.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public enum PayloadType {
+        CONFIRM, SPAWN_REQUEST, ANIMATE,
+        CAPE, SKIN_INFORMATION, SKIN_DATA
     }
 }
