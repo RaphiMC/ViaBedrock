@@ -30,6 +30,7 @@ import com.viaversion.viaversion.api.type.types.version.Types1_21_4;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
+import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.MoLangEngine;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -37,6 +38,7 @@ import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomEntityResourceRewriter;
+import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import org.cube.converter.data.bedrock.BedrockEntityData;
@@ -65,7 +67,7 @@ public class CustomEntity extends Entity {
     private final Map<String, String> inverseGeometryMap = new HashMap<>();
     private final Map<String, String> inverseTextureMap = new HashMap<>();
     private final Scope entityScope = BASE_SCOPE.copy();
-    private final List<String> models = new ArrayList<>();
+    private final List<EvaluatedModel> models = new ArrayList<>();
     private final List<ItemDisplayEntity> partEntities = new ArrayList<>();
     private boolean spawned;
 
@@ -150,10 +152,37 @@ public class CustomEntity extends Entity {
             return;
         }
 
-        final EntityTracker entityTracker = user.get(EntityTracker.class);
-        final ResourcePacksStorage resourcePacksStorage = user.get(ResourcePacksStorage.class);
-        for (String modelKey : this.models) {
-            final String key = this.entityDefinition.identifier() + "_" + modelKey;
+        final EntityTracker entityTracker = this.user.get(EntityTracker.class);
+        final ResourcePacksStorage resourcePacksStorage = this.user.get(ResourcePacksStorage.class);
+        final ChannelStorage channelStorage = this.user.get(ChannelStorage.class);
+        if (channelStorage.hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
+            for (EvaluatedModel model : this.models) {
+                final String key = this.entityDefinition.identifier() + "_" + model.key();
+                if (!resourcePacksStorage.getConverterData().containsKey("ce_" + key)) {
+                    continue;
+                }
+
+                final int parts = (int) resourcePacksStorage.getConverterData().get("ce_" + key);
+                for (int i = 0; i < parts; i++) {
+                    final ItemDisplayEntity partEntity = new ItemDisplayEntity(entityTracker.getNextJavaEntityId());
+                    this.partEntities.add(partEntity);
+                    final PacketWrapper customPayload = ViaBedrockUtilityInterface.spawnCustomEntity(this.user, model.geometryValue(), model.textureValue());
+                    customPayload.write(Types.VAR_INT, partEntity.javaId()); // entity id
+                    customPayload.write(Types.UUID, partEntity.javaUuid()); // uuid
+                    customPayload.write(Types.DOUBLE, (double) this.position.x()); // x
+                    customPayload.write(Types.DOUBLE, (double) this.position.y()); // y
+                    customPayload.write(Types.DOUBLE, (double) this.position.z()); // z
+                    customPayload.write(Types.BYTE, MathUtil.float2Byte(this.rotation.x())); // pitch
+                    customPayload.write(Types.BYTE, MathUtil.float2Byte(this.rotation.y())); // yaw
+                    customPayload.write(Types.BYTE, MathUtil.float2Byte(this.rotation.z())); // head yaw
+                    customPayload.send(BedrockProtocol.class);
+                }
+            }
+            return;
+        }
+
+        for (EvaluatedModel model : this.models) {
+            final String key = this.entityDefinition.identifier() + "_" + model.key();
             if (!resourcePacksStorage.getConverterData().containsKey("ce_" + key)) {
                 continue;
             }
@@ -174,7 +203,7 @@ public class CustomEntity extends Entity {
                 javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("SCALE"), Types1_21_4.ENTITY_DATA_TYPES.vector3FType, new Vector3f(scale, scale, scale)));
                 javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("TRANSLATION"), Types1_21_4.ENTITY_DATA_TYPES.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
 
-                final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets1_21_2.ADD_ENTITY, user);
+                final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets1_21_2.ADD_ENTITY, this.user);
                 addEntity.write(Types.VAR_INT, partEntity.javaId()); // entity id
                 addEntity.write(Types.UUID, partEntity.javaUuid()); // uuid
                 addEntity.write(Types.VAR_INT, partEntity.javaType().getId()); // type id
@@ -190,7 +219,7 @@ public class CustomEntity extends Entity {
                 addEntity.write(Types.SHORT, (short) 0); // velocity z
                 addEntity.send(BedrockProtocol.class);
 
-                final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_2.SET_ENTITY_DATA, user);
+                final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_2.SET_ENTITY_DATA, this.user);
                 setEntityData.write(Types.VAR_INT, partEntity.javaId()); // entity id
                 setEntityData.write(Types1_21_4.ENTITY_DATA_LIST, javaEntityData); // entity data
                 setEntityData.send(BedrockProtocol.class);
@@ -223,7 +252,7 @@ public class CustomEntity extends Entity {
         executionScope.set("query", queryBinding);
         executionScope.set("q", queryBinding);
 
-        final List<String> newModels = new ArrayList<>();
+        final List<EvaluatedModel> newModels = new ArrayList<>();
         final ResourcePacksStorage resourcePacksStorage = user.get(ResourcePacksStorage.class);
         for (final BedrockEntityData.RenderController entityRenderController : this.entityDefinition.entityData().getControllers()) {
             final BedrockRenderController renderController = resourcePacksStorage.getRenderControllers().get(entityRenderController.getIdentifier());
@@ -254,7 +283,7 @@ public class CustomEntity extends Entity {
                     final String textureValue = MoLangEngine.eval(renderControllerTextureScope, textureExpression).getAsString();
                     final String textureName = this.inverseTextureMap.get(textureValue);
                     if (geometryName != null && textureName != null) {
-                        newModels.add(geometryName + "_" + textureName);
+                        newModels.add(new EvaluatedModel(geometryName + "_" + textureName, geometryValue, textureValue));
                     }
                 }
             } catch (Throwable e) {
@@ -286,6 +315,9 @@ public class CustomEntity extends Entity {
         }
         arrayBinding.block();
         return arrayBinding;
+    }
+
+    private record EvaluatedModel(String key, String geometryValue, String textureValue) {
     }
 
     private class ItemDisplayEntity extends Entity {

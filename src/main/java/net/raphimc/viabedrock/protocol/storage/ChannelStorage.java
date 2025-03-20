@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StorableObject;
 
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,8 +27,8 @@ public class ChannelStorage implements StorableObject {
 
     private final Set<String> channels = new HashSet<>();
 
-    public void addChannels(final String[] channels) {
-        this.channels.addAll(Arrays.asList(channels));
+    public void addChannels(final Collection<String> channels) {
+        this.channels.addAll(channels);
     }
 
     public boolean hasChannel(final String channel) {

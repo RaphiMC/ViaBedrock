@@ -18,16 +18,21 @@
 package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomAttachableResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomEntityResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.GlyphSheetResourceRewriter;
+import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class ResourcePackRewriter {
 
@@ -48,6 +53,17 @@ public class ResourcePackRewriter {
         }
 
         javaContent.putJson("pack.mcmeta", createPackManifest());
+
+        final ChannelStorage channelStorage = resourcePacksStorage.getUser().get(ChannelStorage.class);
+        if (channelStorage.hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
+            for (ResourcePack pack : resourcePacksStorage.getPacks()) {
+                try {
+                    javaContent.put("bedrock/" + pack.packId() + ".mcpack", pack.content().toZip());
+                } catch (IOException e) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to put bedrock pack " + pack.packId() + " into java resource pack", e);
+                }
+            }
+        }
 
         return javaContent;
     }
