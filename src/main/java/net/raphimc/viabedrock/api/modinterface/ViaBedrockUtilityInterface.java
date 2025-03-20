@@ -79,10 +79,11 @@ public class ViaBedrockUtilityInterface {
             pluginMessage.write(Types.UUID, uuid);
             pluginMessage.write(Types.INT, skin.skinData().getWidth());
             pluginMessage.write(Types.INT, skin.skinData().getHeight());
+
+            writeString(pluginMessage, skin.skinResourcePatch());
             pluginMessage.write(Types.BOOLEAN, hasGeometry);
             if (hasGeometry) {
                 writeString(pluginMessage, skin.geometryData());
-                writeString(pluginMessage, skin.skinResourcePatch());
             }
 
             pluginMessage.write(Types.INT, chunkCount);
