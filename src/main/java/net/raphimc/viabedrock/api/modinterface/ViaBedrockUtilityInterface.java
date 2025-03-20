@@ -22,12 +22,14 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
 import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
+import net.raphimc.viabedrock.api.model.entity.CustomEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -46,13 +48,18 @@ public class ViaBedrockUtilityInterface {
         pluginMessage.send(BedrockProtocol.class);
     }
 
-    public static PacketWrapper spawnCustomEntity(final UserConnection user, final String geometry, final String texture) {
+    public static void spawnCustomEntity(final UserConnection user, final UUID uuid, final List<CustomEntity.EvaluatedModel> models) {
         final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_21_2.CUSTOM_PAYLOAD, user);
         pluginMessage.write(Types.STRING, CHANNEL); // Channel
-        pluginMessage.write(Types.INT, PayloadType.SPAWN_REQUEST.ordinal()); // Type
-        writeString(pluginMessage, geometry);
-        writeString(pluginMessage, texture);
-        return pluginMessage;
+        pluginMessage.write(Types.INT, PayloadType.MODEL_REQUEST.ordinal()); // Type
+        pluginMessage.write(Types.UUID, uuid);
+        pluginMessage.write(Types.INT, models.size());
+        for (CustomEntity.EvaluatedModel model : models) {
+            writeString(pluginMessage, model.geometryValue());
+            writeString(pluginMessage, model.textureValue());
+        }
+
+        pluginMessage.send(BedrockProtocol.class);
     }
 
     public static void sendSkin(final UserConnection user, final UUID uuid, final SkinData skin) {
@@ -116,8 +123,7 @@ public class ViaBedrockUtilityInterface {
     }
 
     private enum PayloadType {
-        CONFIRM, SPAWN_REQUEST, ANIMATE,
+        CONFIRM, MODEL_REQUEST, ANIMATE,
         CAPE, SKIN_INFORMATION, SKIN_DATA
     }
-
 }
