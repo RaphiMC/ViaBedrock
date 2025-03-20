@@ -157,26 +157,18 @@ public class CustomEntity extends Entity {
         final ChannelStorage channelStorage = this.user.get(ChannelStorage.class);
         if (channelStorage.hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
             for (EvaluatedModel model : this.models) {
-                final String key = this.entityDefinition.identifier() + "_" + model.key();
-                if (!resourcePacksStorage.getConverterData().containsKey("ce_" + key)) {
-                    continue;
-                }
-
-                final int parts = (int) resourcePacksStorage.getConverterData().get("ce_" + key);
-                for (int i = 0; i < parts; i++) {
-                    final ItemDisplayEntity partEntity = new ItemDisplayEntity(entityTracker.getNextJavaEntityId());
-                    this.partEntities.add(partEntity);
-                    final PacketWrapper customPayload = ViaBedrockUtilityInterface.spawnCustomEntity(this.user, model.geometryValue(), model.textureValue());
-                    customPayload.write(Types.VAR_INT, partEntity.javaId()); // entity id
-                    customPayload.write(Types.UUID, partEntity.javaUuid()); // uuid
-                    customPayload.write(Types.DOUBLE, (double) this.position.x()); // x
-                    customPayload.write(Types.DOUBLE, (double) this.position.y()); // y
-                    customPayload.write(Types.DOUBLE, (double) this.position.z()); // z
-                    customPayload.write(Types.BYTE, MathUtil.float2Byte(this.rotation.x())); // pitch
-                    customPayload.write(Types.BYTE, MathUtil.float2Byte(this.rotation.y())); // yaw
-                    customPayload.write(Types.BYTE, MathUtil.float2Byte(this.rotation.z())); // head yaw
-                    customPayload.send(BedrockProtocol.class);
-                }
+                final ItemDisplayEntity partEntity = new ItemDisplayEntity(entityTracker.getNextJavaEntityId());
+                this.partEntities.add(partEntity);
+                final PacketWrapper customPayload = ViaBedrockUtilityInterface.spawnCustomEntity(this.user, model.geometryValue(), model.textureValue());
+                customPayload.write(Types.VAR_INT, partEntity.javaId()); // entity id
+                customPayload.write(Types.UUID, partEntity.javaUuid()); // uuid
+                customPayload.write(Types.DOUBLE, (double) this.position.x()); // x
+                customPayload.write(Types.DOUBLE, (double) this.position.y()); // y
+                customPayload.write(Types.DOUBLE, (double) this.position.z()); // z
+                customPayload.write(Types.BYTE, MathUtil.float2Byte(this.rotation.x())); // pitch
+                customPayload.write(Types.BYTE, MathUtil.float2Byte(this.rotation.y())); // yaw
+                customPayload.write(Types.BYTE, MathUtil.float2Byte(this.rotation.z())); // head yaw
+                customPayload.send(BedrockProtocol.class);
             }
             return;
         }
