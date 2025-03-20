@@ -45,8 +45,12 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 - [x] Command suggestions
 - [x] Sounds (No mob sounds yet)
 - [x] Particles
-- [x] Player Skins (Requires [ViaBedrockUtility](https://github.com/Oryxel/ViaBedrockUtility) mod or [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility) mod)
-- [x] Basic resource pack conversion (Contributions welcome)
+- [x] Basic resource pack conversion (Contributions are welcome)
+
+## Optional clientside mods
+Below is a list of mods which can be used in combination with ViaBedrock to enhance certain aspects, which would not be possible without client modification:
+- [ViaBedrockUtility](https://github.com/Oryxel/ViaBedrockUtility): Adds support for some custom player skins and improves custom entity rendering
+- [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility): Adds support for some custom player skins
 
 ## Useful resources
 ViaBedrock would not have been possible without the following projects:
