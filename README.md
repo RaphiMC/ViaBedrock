@@ -45,7 +45,7 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 - [x] Command suggestions
 - [x] Sounds (No mob sounds yet)
 - [x] Particles
-- [x] Player Skins (Requires [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility) mod)
+- [x] Player Skins (Requires [ViaBedrockUtility](https://github.com/Oryxel/ViaBedrockUtility) mod or [BedrockSkinUtility](https://github.com/Camotoy/BedrockSkinUtility) mod)
 - [x] Basic resource pack conversion (Contributions welcome)
 
 ## Useful resources
