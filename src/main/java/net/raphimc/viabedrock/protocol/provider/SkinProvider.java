@@ -21,6 +21,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -102,6 +103,8 @@ public class SkinProvider implements Provider {
         final ChannelStorage channelStorage = user.get(ChannelStorage.class);
         if (channelStorage.hasChannel(ViaBedrockUtilityInterface.CHANNEL)) {
             ViaBedrockUtilityInterface.sendSkin(user, playerUuid, skin);
+        } else if (channelStorage.hasChannel(BedrockSkinUtilityInterface.CHANNEL)) {
+            BedrockSkinUtilityInterface.sendSkin(user, playerUuid, skin);
         }
     }
 

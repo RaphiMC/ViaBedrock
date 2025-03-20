@@ -52,17 +52,14 @@ public class ResourcePackRewriter {
             rewriter.apply(resourcePacksStorage, javaContent);
         }
 
-        final ChannelStorage storage = resourcePacksStorage.getUser().get(ChannelStorage.class);
-        if (storage != null && storage.hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
-            for (final ResourcePack pack : resourcePacksStorage.getPacks()) {
+        if (resourcePacksStorage.getUser().get(ChannelStorage.class).hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
+            for (ResourcePack pack : resourcePacksStorage.getPacks()) {
                 try {
                     javaContent.put("bedrock/" + pack.packId() + ".tmp", pack.content().toZip());
                 } catch (IOException e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to put bedrock pack id " + pack.packId() + " into java texture pack.");
                 }
             }
-        } else if (storage == null) {
-            throw new RuntimeException("Unable to find channel storage!");
         }
 
         javaContent.putJson("pack.mcmeta", createPackManifest());
