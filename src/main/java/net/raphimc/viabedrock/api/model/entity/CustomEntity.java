@@ -79,7 +79,7 @@ public class CustomEntity extends Entity {
         this.entityScope.set("variable", variableBinding);
         this.entityScope.set("v", variableBinding);
         try {
-            for (String initExpression : this.entityDefinition.entityData().getVariables()) {
+            for (String initExpression : this.entityDefinition.entityData().getScripts().initialize()) {
                 MoLangEngine.eval(this.entityScope, initExpression);
             }
         } catch (Throwable e) {
@@ -162,47 +162,44 @@ public class CustomEntity extends Entity {
 
         for (EvaluatedModel model : this.models) {
             final String key = this.entityDefinition.identifier() + "_" + model.key();
-            if (!resourcePacksStorage.getConverterData().containsKey("ce_" + key)) {
+            if (!resourcePacksStorage.getConverterData().containsKey("ce_" + key + "_scale")) {
                 continue;
             }
 
-            final int parts = (int) resourcePacksStorage.getConverterData().get("ce_" + key);
-            for (int i = 0; i < parts; i++) {
-                final ItemDisplayEntity partEntity = new ItemDisplayEntity(entityTracker.getNextJavaEntityId());
-                this.partEntities.add(partEntity);
-                final List<EntityData> javaEntityData = new ArrayList<>();
+            final ItemDisplayEntity partEntity = new ItemDisplayEntity(entityTracker.getNextJavaEntityId());
+            this.partEntities.add(partEntity);
+            final List<EntityData> javaEntityData = new ArrayList<>();
 
-                final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
-                data.set(StructuredDataKey.ITEM_MODEL, "viabedrock:entity");
-                data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomEntityResourceRewriter.getCustomModelData(key + "_" + i));
-                final StructuredItem item = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), 1, data);
-                javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("ITEM_STACK"), Types1_21_4.ENTITY_DATA_TYPES.itemType, item));
+            final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
+            data.set(StructuredDataKey.ITEM_MODEL, "viabedrock:entity");
+            data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomEntityResourceRewriter.getCustomModelData(key));
+            final StructuredItem item = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), 1, data);
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("ITEM_STACK"), Types1_21_4.ENTITY_DATA_TYPES.itemType, item));
 
-                final float scale = (float) resourcePacksStorage.getConverterData().get("ce_" + key + "_" + i + "_scale");
-                javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("SCALE"), Types1_21_4.ENTITY_DATA_TYPES.vector3FType, new Vector3f(scale, scale, scale)));
-                javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("TRANSLATION"), Types1_21_4.ENTITY_DATA_TYPES.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
+            final float scale = (float) resourcePacksStorage.getConverterData().get("ce_" + key + "_scale");
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("SCALE"), Types1_21_4.ENTITY_DATA_TYPES.vector3FType, new Vector3f(scale, scale, scale)));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("TRANSLATION"), Types1_21_4.ENTITY_DATA_TYPES.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
 
-                final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets1_21_2.ADD_ENTITY, this.user);
-                addEntity.write(Types.VAR_INT, partEntity.javaId()); // entity id
-                addEntity.write(Types.UUID, partEntity.javaUuid()); // uuid
-                addEntity.write(Types.VAR_INT, partEntity.javaType().getId()); // type id
-                addEntity.write(Types.DOUBLE, (double) this.position.x()); // x
-                addEntity.write(Types.DOUBLE, (double) this.position.y()); // y
-                addEntity.write(Types.DOUBLE, (double) this.position.z()); // z
-                addEntity.write(Types.BYTE, MathUtil.float2Byte(this.rotation.x())); // pitch
-                addEntity.write(Types.BYTE, MathUtil.float2Byte(this.rotation.y())); // yaw
-                addEntity.write(Types.BYTE, MathUtil.float2Byte(this.rotation.z())); // head yaw
-                addEntity.write(Types.VAR_INT, 0); // data
-                addEntity.write(Types.SHORT, (short) 0); // velocity x
-                addEntity.write(Types.SHORT, (short) 0); // velocity y
-                addEntity.write(Types.SHORT, (short) 0); // velocity z
-                addEntity.send(BedrockProtocol.class);
+            final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets1_21_2.ADD_ENTITY, this.user);
+            addEntity.write(Types.VAR_INT, partEntity.javaId()); // entity id
+            addEntity.write(Types.UUID, partEntity.javaUuid()); // uuid
+            addEntity.write(Types.VAR_INT, partEntity.javaType().getId()); // type id
+            addEntity.write(Types.DOUBLE, (double) this.position.x()); // x
+            addEntity.write(Types.DOUBLE, (double) this.position.y()); // y
+            addEntity.write(Types.DOUBLE, (double) this.position.z()); // z
+            addEntity.write(Types.BYTE, MathUtil.float2Byte(this.rotation.x())); // pitch
+            addEntity.write(Types.BYTE, MathUtil.float2Byte(this.rotation.y())); // yaw
+            addEntity.write(Types.BYTE, MathUtil.float2Byte(this.rotation.z())); // head yaw
+            addEntity.write(Types.VAR_INT, 0); // data
+            addEntity.write(Types.SHORT, (short) 0); // velocity x
+            addEntity.write(Types.SHORT, (short) 0); // velocity y
+            addEntity.write(Types.SHORT, (short) 0); // velocity z
+            addEntity.send(BedrockProtocol.class);
 
-                final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_2.SET_ENTITY_DATA, this.user);
-                setEntityData.write(Types.VAR_INT, partEntity.javaId()); // entity id
-                setEntityData.write(Types1_21_4.ENTITY_DATA_LIST, javaEntityData); // entity data
-                setEntityData.send(BedrockProtocol.class);
-            }
+            final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_2.SET_ENTITY_DATA, this.user);
+            setEntityData.write(Types.VAR_INT, partEntity.javaId()); // entity id
+            setEntityData.write(Types1_21_4.ENTITY_DATA_LIST, javaEntityData); // entity data
+            setEntityData.send(BedrockProtocol.class);
         }
     }
 
@@ -234,13 +231,13 @@ public class CustomEntity extends Entity {
         final List<EvaluatedModel> newModels = new ArrayList<>();
         final ResourcePacksStorage resourcePacksStorage = user.get(ResourcePacksStorage.class);
         for (final BedrockEntityData.RenderController entityRenderController : this.entityDefinition.entityData().getControllers()) {
-            final BedrockRenderController renderController = resourcePacksStorage.getRenderControllers().get(entityRenderController.getIdentifier());
+            final BedrockRenderController renderController = resourcePacksStorage.getRenderControllers().get(entityRenderController.identifier());
             if (renderController == null) {
                 continue;
             }
-            if (!entityRenderController.getCondition().isBlank()) {
+            if (!entityRenderController.condition().isBlank()) {
                 try {
-                    final Value conditionResult = MoLangEngine.eval(executionScope, entityRenderController.getCondition());
+                    final Value conditionResult = MoLangEngine.eval(executionScope, entityRenderController.condition());
                     if (!conditionResult.getAsBoolean()) {
                         continue;
                     }
@@ -252,13 +249,13 @@ public class CustomEntity extends Entity {
 
             try {
                 final Scope renderControllerGeometryScope = executionScope.copy();
-                renderControllerGeometryScope.set("array", this.getArrayBinding(executionScope, renderController.getGeometries()));
+                renderControllerGeometryScope.set("array", this.getArrayBinding(executionScope, renderController.geometries()));
                 final Scope renderControllerTextureScope = executionScope.copy();
-                renderControllerTextureScope.set("array", this.getArrayBinding(executionScope, renderController.getTextures()));
+                renderControllerTextureScope.set("array", this.getArrayBinding(executionScope, renderController.textures()));
 
-                final String geometryValue = MoLangEngine.eval(renderControllerGeometryScope, renderController.getGeometryPath()).getAsString();
+                final String geometryValue = MoLangEngine.eval(renderControllerGeometryScope, renderController.geometryExpression()).getAsString();
                 final String geometryName = this.inverseGeometryMap.get(geometryValue);
-                for (String textureExpression : renderController.getTexturePaths()) {
+                for (String textureExpression : renderController.textureExpressions()) {
                     final String textureValue = MoLangEngine.eval(renderControllerTextureScope, textureExpression).getAsString();
                     final String textureName = this.inverseTextureMap.get(textureValue);
                     if (geometryName != null && textureName != null) {
@@ -284,12 +281,12 @@ public class CustomEntity extends Entity {
     private MutableObjectBinding getArrayBinding(final Scope executionScope, final List<BedrockRenderController.Array> arrays) throws IOException {
         final MutableObjectBinding arrayBinding = new MutableObjectBinding();
         for (BedrockRenderController.Array array : arrays) {
-            if (array.getName().toLowerCase(Locale.ROOT).startsWith("array.")) {
-                final String[] resolvedExpressions = new String[array.getValues().size()];
-                for (int i = 0; i < array.getValues().size(); i++) {
-                    resolvedExpressions[i] = MoLangEngine.eval(executionScope, array.getValues().get(i)).getAsString();
+            if (array.name().toLowerCase(Locale.ROOT).startsWith("array.")) {
+                final String[] resolvedExpressions = new String[array.values().size()];
+                for (int i = 0; i < array.values().size(); i++) {
+                    resolvedExpressions[i] = MoLangEngine.eval(executionScope, array.values().get(i)).getAsString();
                 }
-                arrayBinding.set(array.getName().substring(6), Value.of(resolvedExpressions));
+                arrayBinding.set(array.name().substring(6), Value.of(resolvedExpressions));
             }
         }
         arrayBinding.block();

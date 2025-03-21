@@ -37,7 +37,7 @@ public class RenderControllerDefinitions {
             for (String controllerPath : pack.content().getFilesDeep("render_controllers/", ".json")) {
                 try {
                     for (BedrockRenderController bedrockRenderController : BedrockControllerParser.parse(pack.content().getString(controllerPath))) {
-                        this.renderControllers.put(bedrockRenderController.getIdentifier(), bedrockRenderController);
+                        this.renderControllers.put(bedrockRenderController.identifier(), bedrockRenderController);
                     }
                 } catch (Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse render controller " + controllerPath + " in pack " + pack.packId(), e);
