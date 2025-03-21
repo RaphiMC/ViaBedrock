@@ -111,6 +111,7 @@ public class BedrockMappingData extends MappingDataBase {
     // Entities
     private BiMap<String, Integer> bedrockEntities;
     private Map<ActorDataIDs, DataItemType> bedrockEntityDataTypes;
+    private Map<ActorFlags, String> bedrockEntityFlagMoLangQueries;
     private Map<String, EntityTypes1_21_4> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
     private BiMap<String, Integer> javaEntityAttributes;
@@ -514,17 +515,35 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockEntityDataTypes = new EnumMap<>(ActorDataIDs.class);
             final Set<ActorDataIDs> unmappedEntityDataIds = EnumSet.noneOf(ActorDataIDs.class);
             for (Map.Entry<String, JsonElement> entry : entityDataTypesJson.entrySet()) {
-                final ActorDataIDs dataId = ActorDataIDs.valueOf(entry.getKey());
+                final ActorDataIDs entityDataId = ActorDataIDs.valueOf(entry.getKey());
                 if (entry.getValue().isJsonNull()) {
-                    unmappedEntityDataIds.add(dataId);
+                    unmappedEntityDataIds.add(entityDataId);
                     continue;
                 }
-                final DataItemType dataItemType = DataItemType.valueOf(entry.getValue().getAsString());
-                this.bedrockEntityDataTypes.put(dataId, dataItemType);
+                this.bedrockEntityDataTypes.put(entityDataId, DataItemType.valueOf(entry.getValue().getAsString()));
             }
-            for (ActorDataIDs dataId : ActorDataIDs.values()) {
-                if (!this.bedrockEntityDataTypes.containsKey(dataId) && !unmappedEntityDataIds.contains(dataId)) {
-                    throw new RuntimeException("Missing bedrock entity data type mapping for " + dataId.name());
+            for (ActorDataIDs entityDataId : ActorDataIDs.values()) {
+                if (!this.bedrockEntityDataTypes.containsKey(entityDataId) && !unmappedEntityDataIds.contains(entityDataId)) {
+                    throw new RuntimeException("Missing bedrock entity data type mapping for " + entityDataId.name());
+                }
+            }
+
+            {
+                final JsonObject entityFlagMoLangQueryMappingsJson = this.readJson("bedrock/entity_flag_molang_query_mappings.json");
+                this.bedrockEntityFlagMoLangQueries = new EnumMap<>(ActorFlags.class);
+                final Set<ActorFlags> unmappedEntityFlags = EnumSet.noneOf(ActorFlags.class);
+                for (Map.Entry<String, JsonElement> entry : entityFlagMoLangQueryMappingsJson.entrySet()) {
+                    final ActorFlags entityFlag = ActorFlags.valueOf(entry.getKey());
+                    if (entry.getValue().isJsonNull()) {
+                        unmappedEntityFlags.add(entityFlag);
+                        continue;
+                    }
+                    this.bedrockEntityFlagMoLangQueries.put(entityFlag, entry.getValue().getAsString());
+                }
+                for (ActorFlags entityFlag : ActorFlags.values()) {
+                    if (!this.bedrockEntityFlagMoLangQueries.containsKey(entityFlag) && !unmappedEntityFlags.contains(entityFlag)) {
+                        throw new RuntimeException("Missing bedrock MoLang query mapping for " + entityFlag.name());
+                    }
                 }
             }
 
@@ -1018,6 +1037,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<ActorDataIDs, DataItemType> getBedrockEntityDataTypes() {
         return this.bedrockEntityDataTypes;
+    }
+
+    public Map<ActorFlags, String> getBedrockEntityFlagMoLangQueries() {
+        return this.bedrockEntityFlagMoLangQueries;
     }
 
     public Map<String, EntityTypes1_21_4> getBedrockToJavaEntities() {

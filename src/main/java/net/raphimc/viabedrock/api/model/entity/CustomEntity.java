@@ -36,6 +36,7 @@ import net.raphimc.viabedrock.api.util.MoLangEngine;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomEntityResourceRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
@@ -224,6 +225,17 @@ public class CustomEntity extends Entity {
         if (this.entityData.containsKey(ActorDataIDs.MARK_VARIANT)) {
             queryBinding.set("mark_variant", Value.of(this.entityData.get(ActorDataIDs.MARK_VARIANT).<Integer>value()));
         }
+
+        final Set<ActorFlags> entityFlags = this.entityFlags();
+        for (Map.Entry<ActorFlags, String> entry : BedrockProtocol.MAPPINGS.getBedrockEntityFlagMoLangQueries().entrySet()) {
+            if (entityFlags.contains(entry.getKey())) {
+                queryBinding.set(entry.getValue(), Value.of(true));
+            }
+        }
+        if (entityFlags.contains(ActorFlags.ONFIRE)) { // "on fire" flag has two names in MoLang
+            queryBinding.set("is_onfire", Value.of(true));
+        }
+
         queryBinding.block();
         executionScope.set("query", queryBinding);
         executionScope.set("q", queryBinding);

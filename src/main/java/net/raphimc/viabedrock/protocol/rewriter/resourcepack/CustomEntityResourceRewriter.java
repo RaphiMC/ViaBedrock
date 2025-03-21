@@ -17,14 +17,12 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
-import com.google.common.collect.Lists;
 import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
 import org.cube.converter.model.impl.java.JavaItemModel;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,9 +54,9 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
                 for (Map.Entry<String, String> textureEntry : entityDefinition.entityData().getTextures().entrySet()) {
                     final String javaTexturePath = this.getJavaTexturePath(textureEntry.getValue());
                     final String key = entityEntry.getKey() + "_" + modelEntry.getKey() + "_" + textureEntry.getKey();
-                    final JavaItemModel cubeConverterItemModel = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, true);
-                    resourcePacksStorage.getConverterData().put("ce_" + key + "_scale", cubeConverterItemModel.getScale());
-                    javaContent.putString("assets/viabedrock/models/" + this.getJavaModelName(key) + ".json", cubeConverterItemModel.compile().toString());
+                    final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, true);
+                    resourcePacksStorage.getConverterData().put("ce_" + key + "_scale", itemModelData.getScale());
+                    javaContent.putString("assets/viabedrock/models/" + this.getJavaModelName(key) + ".json", itemModelData.compile().toString());
                     modelsList.add(key);
                 }
             }
