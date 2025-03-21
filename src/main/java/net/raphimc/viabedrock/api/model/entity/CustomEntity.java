@@ -79,7 +79,7 @@ public class CustomEntity extends Entity {
         this.entityScope.set("variable", variableBinding);
         this.entityScope.set("v", variableBinding);
         try {
-            for (String initExpression : this.entityDefinition.entityData().getVariables()) {
+            for (String initExpression : this.entityDefinition.entityData().getScripts().initialize()) {
                 MoLangEngine.eval(this.entityScope, initExpression);
             }
         } catch (Throwable e) {
@@ -234,13 +234,13 @@ public class CustomEntity extends Entity {
         final List<EvaluatedModel> newModels = new ArrayList<>();
         final ResourcePacksStorage resourcePacksStorage = user.get(ResourcePacksStorage.class);
         for (final BedrockEntityData.RenderController entityRenderController : this.entityDefinition.entityData().getControllers()) {
-            final BedrockRenderController renderController = resourcePacksStorage.getRenderControllers().get(entityRenderController.getIdentifier());
+            final BedrockRenderController renderController = resourcePacksStorage.getRenderControllers().get(entityRenderController.identifier());
             if (renderController == null) {
                 continue;
             }
-            if (!entityRenderController.getCondition().isBlank()) {
+            if (!entityRenderController.condition().isBlank()) {
                 try {
-                    final Value conditionResult = MoLangEngine.eval(executionScope, entityRenderController.getCondition());
+                    final Value conditionResult = MoLangEngine.eval(executionScope, entityRenderController.condition());
                     if (!conditionResult.getAsBoolean()) {
                         continue;
                     }
