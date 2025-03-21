@@ -56,15 +56,10 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
                 for (Map.Entry<String, String> textureEntry : entityDefinition.entityData().getTextures().entrySet()) {
                     final String javaTexturePath = this.getJavaTexturePath(textureEntry.getValue());
                     final String key = entityEntry.getKey() + "_" + modelEntry.getKey() + "_" + textureEntry.getKey();
-                    final List<JavaItemModel> itemModels = Lists.newArrayList(bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, true));
-                    resourcePacksStorage.getConverterData().put("ce_" + key, itemModels.size());
-                    for (int i = 0; i < itemModels.size(); i++) {
-                        final JavaItemModel cubeConverterItemModel = itemModels.get(i);
-                        resourcePacksStorage.getConverterData().put("ce_" + key + "_" + i + "_scale", cubeConverterItemModel.getScale());
-
-                        javaContent.putString("assets/viabedrock/models/" + this.getJavaModelName(key + "_" + i) + ".json", cubeConverterItemModel.compile().toString());
-                        modelsList.add(key + "_" + i);
-                    }
+                    final JavaItemModel cubeConverterItemModel = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, true);
+                    resourcePacksStorage.getConverterData().put("ce_" + key + "_scale", cubeConverterItemModel.getScale());
+                    javaContent.putString("assets/viabedrock/models/" + this.getJavaModelName(key) + ".json", cubeConverterItemModel.compile().toString());
+                    modelsList.add(key);
                 }
             }
         }
