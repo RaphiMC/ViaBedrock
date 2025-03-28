@@ -100,7 +100,7 @@ public class FormContainer extends FakeContainer {
                 return true;
             }
         } else if (this.form instanceof ActionForm actionForm) {
-            if (button != 0 | slot == 0) return false;
+            if (button != 0 || slot == 0) return false;
 
             actionForm.setClickedButton(-1);
             final FormElement[] elements = actionForm.getElements();
