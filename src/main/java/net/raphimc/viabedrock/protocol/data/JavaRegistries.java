@@ -18,9 +18,7 @@
 package net.raphimc.viabedrock.protocol.data;
 
 import com.viaversion.nbt.tag.CompoundTag;
-import com.viaversion.nbt.tag.ListTag;
 import com.viaversion.nbt.tag.StringTag;
-import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.resourcepack.BiomeDefinitions;
@@ -45,8 +43,9 @@ public class JavaRegistries {
 
         registries.put("minecraft:worldgen/biome", buildJavaBiomeRegistry(gameSession.getBedrockBiomeDefinitions(), resourcePacksStorage));
         modifyDimensionRegistry(gameSession, registries.getCompoundTag("minecraft:dimension_type"));
-        modifyWolfVariantRegistry(registries.getCompoundTag("minecraft:wolf_variant"));
         registries.remove("minecraft:chat_type"); // Not needed
+        registries.remove("minecraft:test_instance"); // Not needed
+        registries.remove("minecraft:test_environment"); // Not needed
 
         return registries;
     }
@@ -157,13 +156,6 @@ public class JavaRegistries {
         }
 
         return javaBiomes;
-    }
-
-    private static void modifyWolfVariantRegistry(final CompoundTag wolfVariantRegistry) {
-        // Biomes are not used client-side, so clearing it is fine
-        for (Map.Entry<String, Tag> entry : wolfVariantRegistry.entrySet()) {
-            ((CompoundTag) entry.getValue()).put("biomes", new ListTag<>(StringTag.class));
-        }
     }
 
     private static CompoundTag getTheVoidBiome() {

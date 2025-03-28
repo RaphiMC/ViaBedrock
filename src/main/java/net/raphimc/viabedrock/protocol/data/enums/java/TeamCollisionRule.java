@@ -17,15 +17,11 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public enum EquipmentSlot {
+public enum TeamCollisionRule {
 
-    MAINHAND,
-    OFFHAND,
-    FEET,
-    LEGS,
-    CHEST,
-    HEAD,
-    BODY,
-    SADDLE,
+    ALWAYS,
+    NEVER,
+    PUSH_OTHER_TEAMS,
+    PUSH_OWN_TEAM,
 
 }

@@ -22,20 +22,20 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.mcstructs.text.serializer.TextComponentCodec;
-import com.viaversion.viaversion.protocols.v1_21_2to1_21_4.Protocol1_21_2To1_21_4;
+import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.Protocol1_21_4To1_21_5;
 
 public class ProtocolConstants {
 
-    public static final ProtocolVersion JAVA_VERSION = ProtocolVersion.v1_21_4;
-    public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol1_21_2To1_21_4.class;
-    public static final int JAVA_PACK_VERSION = 46;
+    public static final ProtocolVersion JAVA_VERSION = ProtocolVersion.v1_21_5;
+    public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol1_21_4To1_21_5.class;
+    public static final int JAVA_PACK_VERSION = 55;
     public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V1_21_4;
 
-    public static final String BEDROCK_VERSION_NAME = "1.21.60";
-    public static final int BEDROCK_PROTOCOL_VERSION = 776;
+    public static final String BEDROCK_VERSION_NAME = "1.21.70";
+    public static final int BEDROCK_PROTOCOL_VERSION = 786;
     public static final int BEDROCK_RAKNET_PROTOCOL_VERSION = 11;
     public static final int BEDROCK_DEFAULT_PORT = 19132;
-    public static final int BEDROCK_COMMAND_VERSION = 42;
+    public static final int BEDROCK_COMMAND_VERSION = 43;
     public static final byte BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS = 28;
 
     public static final int LAST_BLOCK_ITEM_ID = 255;

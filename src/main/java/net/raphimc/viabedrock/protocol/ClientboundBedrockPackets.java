@@ -39,7 +39,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     MOVE_PLAYER(MinecraftPacketIds.MovePlayer.getValue()),
     UPDATE_BLOCK(MinecraftPacketIds.UpdateBlock.getValue()),
     ADD_PAINTING(MinecraftPacketIds.AddPainting.getValue()),
-    LEVEL_SOUND_EVENT_V1(MinecraftPacketIds.LevelSoundEventV1.getValue()),
     LEVEL_EVENT(MinecraftPacketIds.LevelEvent.getValue()),
     BLOCK_EVENT(MinecraftPacketIds.TileEvent.getValue()),
     ENTITY_EVENT(MinecraftPacketIds.ActorEvent.getValue()),
@@ -112,7 +111,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     NETWORK_STACK_LATENCY(MinecraftPacketIds.Ping.getValue()),
     SPAWN_PARTICLE_EFFECT(MinecraftPacketIds.SpawnParticleEffect.getValue()),
     AVAILABLE_ENTITY_IDENTIFIERS(MinecraftPacketIds.AvailableActorIDList.getValue()),
-    LEVEL_SOUND_EVENT_V2(MinecraftPacketIds.LevelSoundEventV2.getValue()),
     NETWORK_CHUNK_PUBLISHER_UPDATE(MinecraftPacketIds.NetworkChunkPublisherUpdate.getValue()),
     BIOME_DEFINITION_LIST(MinecraftPacketIds.BiomeDefinitionList.getValue()),
     LEVEL_SOUND_EVENT(MinecraftPacketIds.LevelSoundEvent.getValue()),
@@ -184,7 +182,8 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     MOVEMENT_EFFECT(MinecraftPacketIds.MovementEffect.getValue()),
     SET_MOVEMENT_AUTHORITY_MODE(MinecraftPacketIds.SetMovementAuthorityMode.getValue()),
     CAMERA_AIM_ASSIST_PRESETS(MinecraftPacketIds.CameraAimAssistPresets.getValue()),
-    CLIENT_CAMERA_AIM_ASSIST(MinecraftPacketIds.ClientCameraAimAssist.getValue());
+    PLAYER_VIDEO_CAPTURE(MinecraftPacketIds.PlayerVideoCapturePacket.getValue()),
+    PLAYER_UPDATE_ENTITY_OVERRIDES(MinecraftPacketIds.PlayerUpdateEntityOverridesPacket.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

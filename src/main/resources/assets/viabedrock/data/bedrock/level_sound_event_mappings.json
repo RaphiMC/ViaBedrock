@@ -253,6 +253,9 @@
         1.2
       ]
     },
+    "block:firefly_bush": {
+      "sound": "block.firefly_bush.ambient"
+    },
     "entity:minecraft:llama": {
       "sound": "mob.llama.idle",
       "volume": 0.8,
@@ -1394,6 +1397,10 @@
         1.0
       ]
     },
+    "block:cactus_flower": {
+      "sound": "block.cactus_flower.break",
+      "pitch": 0.8
+    },
     "block:web": {
       "sound": "break.web"
     },
@@ -1942,6 +1949,10 @@
         0.8,
         1.0
       ]
+    },
+    "block:leaf_litter": {
+      "sound": "block.leaf_litter.break",
+      "pitch": 0.8
     },
     "block:vines": {
       "sound": "dig.vines",
@@ -7424,6 +7435,11 @@
       "volume": 0.3,
       "pitch": 0.5
     },
+    "block:leaf_litter": {
+      "sound": "block.leaf_litter.step",
+      "volume": 0.25,
+      "pitch": 0.5
+    },
     "block:vines": {
       "sound": "hit.vines",
       "volume": 0.3,
@@ -8203,7 +8219,11 @@
   },
   "HurtReduced": {
     "entity:minecraft:wolf": {
-      "sound": "armor.damage_wolf"
+      "sound": "armor.damage_wolf",
+      "pitch": [
+        0.8,
+        1.2
+      ]
     },
     "entity:minecraft:armadillo": {
       "sound": "mob.armadillo.hurt_reduced",
@@ -9252,6 +9272,10 @@
       "sound": "jump.cave_vines",
       "volume": 0.12
     },
+    "block:leaf_litter": {
+      "sound": "block.leaf_litter.step",
+      "volume": 0.12
+    },
     "block:vines": {
       "sound": "jump.vines",
       "volume": 0.12
@@ -9703,6 +9727,10 @@
       "sound": "land.cave_vines",
       "volume": 0.22
     },
+    "block:leaf_litter": {
+      "sound": "block.leaf_litter.step",
+      "volume": 0.22
+    },
     "block:vines": {
       "sound": "land.vines",
       "volume": 0.22
@@ -10109,6 +10137,10 @@
     },
     "block:nylium": {
       "sound": "dig.nylium",
+      "pitch": 0.8
+    },
+    "block:cactus_flower": {
+      "sound": "block.cactus_flower.place",
       "pitch": 0.8
     },
     "block:web": {
@@ -10646,6 +10678,10 @@
         0.8,
         1.0
       ]
+    },
+    "block:leaf_litter": {
+      "sound": "block.leaf_litter.place",
+      "pitch": 0.8
     },
     "block:vines": {
       "sound": "dig.vines",
@@ -13207,6 +13243,10 @@
     "block:cave_vines": {
       "sound": "step.cave_vines",
       "volume": 0.3
+    },
+    "block:leaf_litter": {
+      "sound": "block.leaf_litter.step",
+      "volume": 0.15
     },
     "entity:minecraft:cave_spider": {
       "sound": "mob.spider.step",

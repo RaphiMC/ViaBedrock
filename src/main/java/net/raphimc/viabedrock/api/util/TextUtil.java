@@ -17,6 +17,9 @@
  */
 package net.raphimc.viabedrock.api.util;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.ListTag;
+import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
@@ -28,6 +31,7 @@ import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -96,6 +100,21 @@ public class TextUtil {
             }
         });
         return textComponent;
+    }
+
+    public static CompoundTag ensureCompoundTag(final Tag tag) {
+        if (tag instanceof CompoundTag compoundTag) {
+            return compoundTag;
+        } else if (tag instanceof StringTag stringTag) {
+            final CompoundTag compoundTag = new CompoundTag();
+            compoundTag.putString("text", stringTag.getValue());
+            return compoundTag;
+        } else {
+            final CompoundTag compoundTag = new CompoundTag();
+            compoundTag.putString("text", "");
+            compoundTag.put("extra", new ListTag<>(List.of(tag)));
+            return compoundTag;
+        }
     }
 
     /**

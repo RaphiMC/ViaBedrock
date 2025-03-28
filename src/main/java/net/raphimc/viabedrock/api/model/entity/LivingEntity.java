@@ -18,12 +18,12 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_4;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_4;
-import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
+import com.viaversion.viaversion.api.type.types.version.Types1_21_5;
+import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
@@ -39,7 +39,7 @@ public class LivingEntity extends Entity {
     protected final Map<String, EntityAttribute> attributes = new HashMap<>();
     protected final Map<String, EntityEffect> effects = new HashMap<>();
 
-    public LivingEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_4 javaType) {
+    public LivingEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_5 javaType) {
         super(user, uniqueId, runtimeId, type, javaId, javaUuid, javaType);
         this.attributes.put("minecraft:health", new EntityAttribute("minecraft:health", 20F, 0, 20F));
     }
@@ -56,7 +56,7 @@ public class LivingEntity extends Entity {
         }
         // Bedrock client removes effects clientside, but Java Edition doesn't, so we need to send a remove packet for each effect
         for (String identifier : effectsToRemove) {
-            final PacketWrapper removeMobEffect = PacketWrapper.create(ClientboundPackets1_21_2.REMOVE_MOB_EFFECT, this.user);
+            final PacketWrapper removeMobEffect = PacketWrapper.create(ClientboundPackets1_21_5.REMOVE_MOB_EFFECT, this.user);
             this.removeEffect(identifier, removeMobEffect);
             removeMobEffect.send(BedrockProtocol.class);
         }
@@ -70,7 +70,7 @@ public class LivingEntity extends Entity {
     }
 
     public final void updateAttributes(final EntityAttribute[] attributes) {
-        final PacketWrapper updateAttributes = PacketWrapper.create(ClientboundPackets1_21_2.UPDATE_ATTRIBUTES, this.user);
+        final PacketWrapper updateAttributes = PacketWrapper.create(ClientboundPackets1_21_5.UPDATE_ATTRIBUTES, this.user);
         this.updateAttributes(attributes, updateAttributes);
         updateAttributes.send(BedrockProtocol.class);
     }
@@ -94,16 +94,16 @@ public class LivingEntity extends Entity {
             javaAttributes.set(Types.VAR_INT, 1, attributeCount.get());
         }
         if (!javaEntityData.isEmpty()) {
-            final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_2.SET_ENTITY_DATA, this.user);
+            final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_5.SET_ENTITY_DATA, this.user);
             setEntityData.write(Types.VAR_INT, this.javaId); // entity id
-            setEntityData.write(Types1_21_4.ENTITY_DATA_LIST, javaEntityData); // entity data
+            setEntityData.write(Types1_21_5.ENTITY_DATA_LIST, javaEntityData); // entity data
             setEntityData.send(BedrockProtocol.class);
         }
     }
 
     public final void sendEffects() {
         for (EntityEffect effect : this.effects.values()) {
-            final PacketWrapper updateMobEffect = PacketWrapper.create(ClientboundPackets1_21_2.UPDATE_MOB_EFFECT, this.user);
+            final PacketWrapper updateMobEffect = PacketWrapper.create(ClientboundPackets1_21_5.UPDATE_MOB_EFFECT, this.user);
             this.updateEffect(effect, updateMobEffect);
             updateMobEffect.send(BedrockProtocol.class);
         }
@@ -159,7 +159,7 @@ public class LivingEntity extends Entity {
                 yield true;
             }
             case "minecraft:health" -> {
-                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("HEALTH"), Types1_21_4.ENTITY_DATA_TYPES.floatType, attribute.computeClampedValue()));
+                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("HEALTH"), Types1_21_5.ENTITY_DATA_TYPES.floatType, attribute.computeClampedValue()));
                 javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:max_health")); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.maxValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count

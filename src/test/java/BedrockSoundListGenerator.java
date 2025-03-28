@@ -148,6 +148,29 @@ public class BedrockSoundListGenerator {
             Puv_Legacy_LevelSoundEvent.SparklerActive
     );
 
+    /* Last output:
+        Unknown block sound: normal
+        Unknown sound: jump.ladder
+        Unknown sound: jump.metal
+        Unknown sound: mob.irongolem.say
+        Unknown sound: land.ladder
+        Unknown sound: mob.attack
+        Unknown sound: mob.attack
+        Unknown sound: mob.piglin.attack
+        Unknown sound: use.powder_snow
+        Unknown sound: use.azalea
+        Unknown sound: use.azalea_leaves
+        Unknown sound: use.anvil
+        Unknown sound: place.sculk_vein
+        Unknown sound: place.froglight
+        Unknown sound: use.big_dripleaf
+        Unknown sound: nearby_closest.warden
+        Unknown sound: mob.zombie.converted_to_drowned
+        Unknown sound: nearby_close.warden
+        Unknown sound: mob.blaze.ambient
+        Unknown sound: nearby_closer.warden
+    */
+
     public static void main(String[] args) throws Throwable {
         final ResourcePacksStorage resourcePacksStorage = Util.getClientResourcePacks(new File("C:\\Users\\User\\Desktop\\data"));
 

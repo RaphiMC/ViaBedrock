@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.model.scoreboard;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
+import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ObjectiveSortOrder;
@@ -85,7 +85,7 @@ public class ScoreboardObjective {
     }
 
     private void updateEntry0(final UserConnection user, final ScoreboardEntry entry) {
-        final PacketWrapper setScore = PacketWrapper.create(ClientboundPackets1_21_2.SET_SCORE, user);
+        final PacketWrapper setScore = PacketWrapper.create(ClientboundPackets1_21_5.SET_SCORE, user);
         setScore.write(Types.STRING, entry.javaName()); // player name
         setScore.write(Types.STRING, this.name); // objective name
         setScore.write(Types.VAR_INT, this.sortOrder == ObjectiveSortOrder.Ascending ? -entry.score() : entry.score()); // score
@@ -95,7 +95,7 @@ public class ScoreboardObjective {
     }
 
     private void removeEntry0(final UserConnection user, final ScoreboardEntry entry) {
-        final PacketWrapper resetScore = PacketWrapper.create(ClientboundPackets1_21_2.RESET_SCORE, user);
+        final PacketWrapper resetScore = PacketWrapper.create(ClientboundPackets1_21_5.RESET_SCORE, user);
         resetScore.write(Types.STRING, entry.javaName()); // player name
         resetScore.write(Types.OPTIONAL_STRING, this.name); // objective name
         resetScore.send(BedrockProtocol.class);

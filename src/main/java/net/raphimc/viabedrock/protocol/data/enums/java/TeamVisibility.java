@@ -17,15 +17,11 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public enum EquipmentSlot {
+public enum TeamVisibility {
 
-    MAINHAND,
-    OFFHAND,
-    FEET,
-    LEGS,
-    CHEST,
-    HEAD,
-    BODY,
-    SADDLE,
+    ALWAYS,
+    NEVER,
+    HIDE_FOR_OTHER_TEAMS,
+    HIDE_FOR_OWN_TEAM,
 
 }

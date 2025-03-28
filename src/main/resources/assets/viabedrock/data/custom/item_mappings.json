@@ -1358,6 +1358,13 @@
       }
     }
   },
+  "minecraft:blue_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:blue_egg"
+      }
+    }
+  },
   "minecraft:blue_glazed_terracotta": {
     "block": {
       "minecraft:blue_glazed_terracotta": {
@@ -1675,6 +1682,13 @@
       }
     }
   },
+  "minecraft:brown_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:brown_egg"
+      }
+    }
+  },
   "minecraft:brown_glazed_terracotta": {
     "block": {
       "minecraft:brown_glazed_terracotta": {
@@ -1809,10 +1823,24 @@
       }
     }
   },
+  "minecraft:bush": {
+    "block": {
+      "minecraft:bush": {
+        "java_id": "minecraft:bush"
+      }
+    }
+  },
   "minecraft:cactus": {
     "block": {
       "minecraft:cactus": {
         "java_id": "minecraft:cactus"
+      }
+    }
+  },
+  "minecraft:cactus_flower": {
+    "block": {
+      "minecraft:cactus_flower": {
+        "java_id": "minecraft:cactus_flower"
       }
     }
   },
@@ -5439,6 +5467,13 @@
       }
     }
   },
+  "minecraft:firefly_bush": {
+    "block": {
+      "minecraft:firefly_bush": {
+        "java_id": "minecraft:firefly_bush"
+      }
+    }
+  },
   "minecraft:firework_rocket": {
     "meta": {
       "": {
@@ -7414,6 +7449,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:lead"
+      }
+    }
+  },
+  "minecraft:leaf_litter": {
+    "block": {
+      "minecraft:leaf_litter": {
+        "java_id": "minecraft:leaf_litter"
       }
     }
   },
@@ -11443,6 +11485,13 @@
       }
     }
   },
+  "minecraft:short_dry_grass": {
+    "block": {
+      "minecraft:short_dry_grass": {
+        "java_id": "minecraft:short_dry_grass"
+      }
+    }
+  },
   "minecraft:short_grass": {
     "block": {
       "minecraft:short_grass": {
@@ -12796,6 +12845,13 @@
       }
     }
   },
+  "minecraft:tall_dry_grass": {
+    "block": {
+      "minecraft:tall_dry_grass": {
+        "java_id": "minecraft:tall_dry_grass"
+      }
+    }
+  },
   "minecraft:tall_grass": {
     "block": {
       "minecraft:tall_grass": {
@@ -13909,6 +13965,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:wild_armor_trim_smithing_template"
+      }
+    }
+  },
+  "minecraft:wildflowers": {
+    "block": {
+      "minecraft:wildflowers": {
+        "java_id": "minecraft:wildflowers"
       }
     }
   },

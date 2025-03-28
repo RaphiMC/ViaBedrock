@@ -30,7 +30,6 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     MOVE_ENTITY_ABSOLUTE(MinecraftPacketIds.MoveAbsoluteActor.getValue()),
     MOVE_PLAYER(MinecraftPacketIds.MovePlayer.getValue()),
     PASSENGER_JUMP(MinecraftPacketIds.PassengerJump.getValue()),
-    LEVEL_SOUND_EVENT_V1(MinecraftPacketIds.LevelSoundEventV1.getValue()),
     ENTITY_EVENT(MinecraftPacketIds.ActorEvent.getValue()),
     INVENTORY_TRANSACTION(MinecraftPacketIds.InventoryTransaction.getValue()),
     MOB_EQUIPMENT(MinecraftPacketIds.PlayerEquipment.getValue()),
@@ -71,7 +70,6 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     LAB_TABLE(MinecraftPacketIds.LabTable.getValue()),
     SET_LOCAL_PLAYER_AS_INITIALIZED(MinecraftPacketIds.SetLocalPlayerAsInit.getValue()),
     NETWORK_STACK_LATENCY(MinecraftPacketIds.Ping.getValue()),
-    LEVEL_SOUND_EVENT_V2(MinecraftPacketIds.LevelSoundEventV2.getValue()),
     LEVEL_SOUND_EVENT(MinecraftPacketIds.LevelSoundEvent.getValue()),
     LECTERN_UPDATE(MinecraftPacketIds.LecternUpdate.getValue()),
     CLIENT_CACHE_STATUS(MinecraftPacketIds.ClientCacheStatus.getValue()),
@@ -102,7 +100,9 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     SET_PLAYER_INVENTORY_OPTIONS(MinecraftPacketIds.SetPlayerInventoryOptions.getValue()),
     LOADING_SCREEN(MinecraftPacketIds.ServerboundLoadingScreenPacket.getValue()),
     DEBUG_DIAGNOSTICS(MinecraftPacketIds.ServerboundDiagnosticsPacket.getValue()),
-    MOVEMENT_PREDICTION_SYNC(MinecraftPacketIds.ClientMovementPredictionSyncPacket.getValue());
+    CLIENT_CAMERA_AIM_ASSIST(MinecraftPacketIds.ClientCameraAimAssist.getValue()),
+    MOVEMENT_PREDICTION_SYNC(MinecraftPacketIds.ClientMovementPredictionSyncPacket.getValue()),
+    UPDATE_CLIENT_OPTIONS(MinecraftPacketIds.UpdateClientOptions.getValue());
 
     private static final ServerboundBedrockPackets[] REGISTRY = new ServerboundBedrockPackets[512];
 

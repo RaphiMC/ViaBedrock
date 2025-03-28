@@ -18,12 +18,12 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_4;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_4;
-import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
+import com.viaversion.viaversion.api.type.types.version.Types1_21_5;
+import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -49,7 +49,7 @@ public class Entity {
     protected final String type;
     protected final int javaId;
     protected final UUID javaUuid;
-    protected final EntityTypes1_21_4 javaType;
+    protected final EntityTypes1_21_5 javaType;
 
     /**
      * x, y, z
@@ -65,7 +65,7 @@ public class Entity {
     protected int age;
     protected boolean hasBossBar;
 
-    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_4 javaType) {
+    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_5 javaType) {
         this.user = user;
         this.uniqueId = uniqueId;
         this.runtimeId = runtimeId;
@@ -82,7 +82,7 @@ public class Entity {
     public void remove() {
         if (this.hasBossBar) {
             this.hasBossBar = false;
-            final PacketWrapper bossEvent = PacketWrapper.create(ClientboundPackets1_21_2.BOSS_EVENT, this.user);
+            final PacketWrapper bossEvent = PacketWrapper.create(ClientboundPackets1_21_5.BOSS_EVENT, this.user);
             bossEvent.write(Types.UUID, this.javaUuid()); // uuid
             bossEvent.write(Types.VAR_INT, BossEventOperationType.REMOVE.ordinal()); // operation
             bossEvent.send(BedrockProtocol.class);
@@ -92,9 +92,9 @@ public class Entity {
     public final void updateEntityData(final EntityData[] entityData) {
         final List<EntityData> javaEntityData = new ArrayList<>();
         this.updateEntityData(entityData, javaEntityData);
-        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_2.SET_ENTITY_DATA, this.user);
+        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_5.SET_ENTITY_DATA, this.user);
         setEntityData.write(Types.VAR_INT, this.javaId); // entity id
-        setEntityData.write(Types1_21_4.ENTITY_DATA_LIST, javaEntityData); // entity data
+        setEntityData.write(Types1_21_5.ENTITY_DATA_LIST, javaEntityData); // entity data
         setEntityData.send(BedrockProtocol.class);
     }
 
@@ -127,6 +127,7 @@ public class Entity {
         levelSoundEvent.write(BedrockTypes.STRING, this.type); // entity identifier
         levelSoundEvent.write(Types.BOOLEAN, false); // is baby mob
         levelSoundEvent.write(Types.BOOLEAN, false); // is global sound
+        levelSoundEvent.write(BedrockTypes.LONG_LE, -1L); // unique entity id
         levelSoundEvent.send(BedrockProtocol.class, false);
     }
 
@@ -154,7 +155,7 @@ public class Entity {
         return this.javaUuid;
     }
 
-    public EntityTypes1_21_4 javaType() {
+    public EntityTypes1_21_5 javaType() {
         return this.javaType;
     }
 

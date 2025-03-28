@@ -50,7 +50,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.2.2-SNAPSHOT"
+    compileOnly "com.viaversion:viaversion-common:5.3.0"
     compileOnly "org.yaml:snakeyaml:2.4"
     compileOnly "com.google.guava:guava:33.4.6-jre"
     compileOnly "io.netty:netty-handler:4.1.119.Final"
@@ -63,10 +63,10 @@ dependencies {
     api("io.jsonwebtoken:jjwt-gson:0.12.6") {
         exclude group: "com.google.code.gson", module: "gson"
     }
-    api("net.lenni0451.mcstructs-bedrock:text:1.2.3") {
+    api("net.lenni0451.mcstructs-bedrock:text:2.0.0-20250327.212256-1") {
         exclude group: "com.google.code.gson", module: "gson"
     }
-    api("net.lenni0451.mcstructs-bedrock:forms:1.2.3") {
+    api("net.lenni0451.mcstructs-bedrock:forms:2.0.0-20250327.212256-1") {
         exclude group: "com.google.code.gson", module: "gson"
     }
     api "com.vdurmont:semver4j:3.1.0"
@@ -160,7 +160,7 @@ project.tasks.withType(PublishToMavenRepository).forEach {
 
 def enumSourceDir = layout.buildDirectory.dir("generated/enums/main/java")
 def enumGeneratorTask = tasks.register("enumGeneratorTask", EnumGeneratorTask) {
-    commitHash = "a27d6bb22a8fa330b502a4beb5cf4d4f242f45a8" // https://github.com/Mojang/bedrock-protocol-docs
+    commitHash = "a9ee55d8aabc0fa761d7f8546dc6af00ba42eb89" // https://github.com/Mojang/bedrock-protocol-docs
     outputDirectory = enumSourceDir
 }
 tasks.compileJava.dependsOn(enumGeneratorTask)

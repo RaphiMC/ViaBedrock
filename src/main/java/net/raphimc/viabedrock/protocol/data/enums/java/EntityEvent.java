@@ -49,8 +49,6 @@ public enum EntityEvent {
     PERMISSION_LEVEL_GAMEMASTERS(26),
     PERMISSION_LEVEL_ADMINS(27),
     PERMISSION_LEVEL_OWNERS(28),
-    ATTACK_BLOCKED(29),
-    SHIELD_DISABLED(30),
     FISHING_ROD_REEL_IN(31),
     ARMORSTAND_WOBBLE(32),
     STOP_OFFER_FLOWER(34),
@@ -80,7 +78,9 @@ public enum EntityEvent {
     SNIFFER_DIGGING_SOUND(63),
     ARMADILLO_PEEK(64),
     BODY_BREAK(65),
-    SHAKE(66);
+    SHAKE(66),
+    DROWN_PARTICLES(67),
+    SADDLE_BREAK(68);
 
     private static final Int2ObjectMap<EntityEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

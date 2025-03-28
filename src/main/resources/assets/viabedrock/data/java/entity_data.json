@@ -22,9 +22,8 @@
     "FLAGS"
   ],
   "ABSTRACT_MINECART": [
-    "DISPLAY_BLOCK",
-    "DISPLAY_OFFSET",
-    "CUSTOM_DISPLAY"
+    "CUSTOM_DISPLAY_BLOCK",
+    "DISPLAY_OFFSET"
   ],
   "ABSTRACT_PIGLIN": [
     "IMMUNE_TO_ZOMBIFICATION"
@@ -90,9 +89,15 @@
     "RELAX_STATE_ONE",
     "COLLAR_COLOR"
   ],
+  "CHICKEN": [
+    "VARIANT"
+  ],
   "COMMAND_BLOCK_MINECART": [
     "COMMAND_NAME",
     "LAST_OUTPUT"
+  ],
+  "COW": [
+    "VARIANT"
   ],
   "CREAKING": [
     "CAN_MOVE",
@@ -123,7 +128,6 @@
     "GLOW_COLOR_OVERRIDE"
   ],
   "DOLPHIN": [
-    "TREASURE_POS",
     "GOT_FISH",
     "MOISTNESS_LEVEL"
   ],
@@ -148,6 +152,9 @@
     "NO_GRAVITY",
     "POSE",
     "TICKS_FROZEN"
+  ],
+  "EXPERIENCE_ORB": [
+    "VALUE"
   ],
   "EYE_OF_ENDER": [
     "ITEM_STACK"
@@ -266,8 +273,8 @@
     "SIZE"
   ],
   "PIG": [
-    "SADDLE",
-    "BOOST_TIME"
+    "BOOST_TIME",
+    "VARIANT"
   ],
   "PIGLIN": [
     "BABY",
@@ -326,8 +333,7 @@
   ],
   "STRIDER": [
     "BOOST_TIME",
-    "SUFFOCATING",
-    "SADDLE"
+    "SUFFOCATING"
   ],
   "TAMABLE_ANIMAL": [
     "FLAGS",
@@ -352,12 +358,8 @@
     "TYPE_VARIANT"
   ],
   "TURTLE": [
-    "HOME_POS",
     "HAS_EGG",
-    "LAYING_EGG",
-    "TRAVEL_POS",
-    "GOING_HOME",
-    "TRAVELLING"
+    "LAYING_EGG"
   ],
   "VEHICLE": [
     "HURT",
@@ -389,7 +391,8 @@
     "INTERESTED",
     "COLLAR_COLOR",
     "REMAINING_ANGER_TIME",
-    "VARIANT"
+    "VARIANT",
+    "SOUND_VARIANT"
   ],
   "ZOGLIN": [
     "BABY"

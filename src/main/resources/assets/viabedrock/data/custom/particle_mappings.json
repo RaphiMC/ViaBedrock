@@ -15,6 +15,15 @@
   "minecraft:basic_flame_particle": "minecraft:flame",
   "minecraft:basic_portal_particle": "minecraft:portal",
   "minecraft:basic_smoke_particle": "minecraft:smoke",
+  "minecraft:biome_tinted_leaves_particle": {
+    "particle": "minecraft:tinted_leaves",
+    "arguments": [
+      {
+        "type": "int",
+        "value": -1
+      }
+    ]
+  },
   "minecraft:bleach": "minecraft:angry_villager",
   "minecraft:block_destruct": null,
   "minecraft:block_slide": null,
@@ -66,7 +75,7 @@
     "arguments": [
       {
         "type": "block_state",
-        "value": "minecraft:creaking_heart[active=true,axis=y,natural=false]"
+        "value": "minecraft:creaking_heart[axis=y,creaking_heart_state=awake,natural=false]"
       }
     ]
   },
@@ -269,6 +278,7 @@
       }
     ]
   },
+  "minecraft:firefly_particle": "minecraft:firefly",
   "minecraft:fish_hook_particle": null,
   "minecraft:fish_pos_particle": null,
   "minecraft:glow_particle": "minecraft:glow",

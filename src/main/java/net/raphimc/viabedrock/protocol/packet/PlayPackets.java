@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.protocol.packet;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_2to1_21_4.packet.ServerboundPackets1_21_4;
-import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
+import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
+import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ServerboundPackets1_21_5;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -32,7 +32,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 public class PlayPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_21_2.CHANGE_DIFFICULTY, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets1_21_5.CHANGE_DIFFICULTY, new PacketHandlers() {
             @Override
             public void register() {
                 map(BedrockTypes.UNSIGNED_VAR_INT, Types.UNSIGNED_BYTE); // difficulty
@@ -49,7 +49,7 @@ public class PlayPackets {
                 blobCache.addBlob(hash, blob);
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.TRANSFER, ClientboundPackets1_21_2.TRANSFER, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.TRANSFER, ClientboundPackets1_21_5.TRANSFER, new PacketHandlers() {
             @Override
             protected void register() {
                 map(BedrockTypes.STRING, Types.STRING); // address
@@ -66,12 +66,12 @@ public class PlayPackets {
             wrapper.user().get(GameRulesStorage.class).updateGameRules(wrapper.read(BedrockTypes.GAME_RULE_ARRAY)); // game rules
         });
 
-        protocol.registerServerbound(ServerboundPackets1_21_4.CLIENT_INFORMATION, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, MultiStatePackets.CLIENT_SETTINGS_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_21_4.PONG, null, MultiStatePackets.PONG_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_21_4.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_21_4.PING_REQUEST, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_21_5.CLIENT_INFORMATION, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, MultiStatePackets.CLIENT_SETTINGS_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_21_5.PONG, null, MultiStatePackets.PONG_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_21_5.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_21_5.PING_REQUEST, null, wrapper -> {
             wrapper.cancel();
-            final PacketWrapper pongResponse = wrapper.create(ClientboundPackets1_21_2.PONG_RESPONSE);
+            final PacketWrapper pongResponse = wrapper.create(ClientboundPackets1_21_5.PONG_RESPONSE);
             pongResponse.write(Types.LONG, wrapper.read(Types.LONG)); // time
             pongResponse.send(BedrockProtocol.class);
         });

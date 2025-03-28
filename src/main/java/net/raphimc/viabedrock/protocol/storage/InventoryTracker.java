@@ -21,7 +21,7 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21to1_21_2.packet.ClientboundPackets1_21_2;
+import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.dynamic.BundleContainer;
@@ -120,7 +120,7 @@ public class InventoryTracker extends StoredObject {
     public void openContainer(final Container container) {
         this.containerStack.push(container);
 
-        final PacketWrapper openScreen = PacketWrapper.create(ClientboundPackets1_21_2.OPEN_SCREEN, this.user());
+        final PacketWrapper openScreen = PacketWrapper.create(ClientboundPackets1_21_5.OPEN_SCREEN, this.user());
         openScreen.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
         openScreen.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(container.type())); // type
         openScreen.write(Types.TAG, TextUtil.textComponentToNbt(container.title())); // title

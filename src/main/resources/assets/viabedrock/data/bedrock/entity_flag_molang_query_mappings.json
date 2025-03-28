@@ -118,5 +118,8 @@
   "TIMER_FLAG_2": "timer_flag_2",
   "TIMER_FLAG_3": "timer_flag_3",
   "BODY_ROTATION_BLOCKED": null,
-  "RENDERS_WHEN_INVISIBLE": null
+  "RENDERS_WHEN_INVISIBLE": null,
+  "BODY_ROTATION_AXIS_ALIGNED": null,
+  "COLLIDABLE": null,
+  "WASD_AIR_CONTROLLED": null
 }

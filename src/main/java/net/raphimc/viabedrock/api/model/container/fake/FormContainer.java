@@ -27,7 +27,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
 import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
-import net.lenni0451.mcstructs_bedrock.forms.AForm;
+import net.lenni0451.mcstructs_bedrock.forms.Form;
 import net.lenni0451.mcstructs_bedrock.forms.elements.*;
 import net.lenni0451.mcstructs_bedrock.forms.types.ActionForm;
 import net.lenni0451.mcstructs_bedrock.forms.types.CustomForm;
@@ -53,13 +53,13 @@ public class FormContainer extends FakeContainer {
     private static final int SIZE = 27;
 
     private final int formId;
-    private final AForm form;
+    private final Form form;
 
     private Item[] formItems;
     private int page = 0;
     private boolean sentResponse = false;
 
-    public FormContainer(final UserConnection user, final int formId, final AForm form) {
+    public FormContainer(final UserConnection user, final int formId, final Form form) {
         super(user, ContainerType.CONTAINER, TextUtil.stringToTextComponent("Form: " + form.getTitle()));
 
         this.formId = formId;
@@ -100,11 +100,25 @@ public class FormContainer extends FakeContainer {
                 return true;
             }
         } else if (this.form instanceof ActionForm actionForm) {
-            if (button != 0) return false;
+            if (button != 0 | slot == 0) return false;
 
             actionForm.setClickedButton(-1);
-            if (slot > 0 && slot <= actionForm.getButtons().length) {
-                actionForm.setClickedButton(slot - 1);
+            final FormElement[] elements = actionForm.getElements();
+            slot -= 1;
+            if (slot >= 0 && slot < elements.length) {
+                final FormElement clickedElement = elements[slot];
+                if (clickedElement instanceof ButtonFormElement) {
+                    int buttonIndex = 0;
+                    for (FormElement element : elements) {
+                        if (element == clickedElement) {
+                            break;
+                        }
+                        if (element instanceof ButtonFormElement) {
+                            buttonIndex++;
+                        }
+                    }
+                    actionForm.setClickedButton(buttonIndex);
+                }
             }
 
             if (actionForm.getClickedButton() != -1) {
@@ -120,7 +134,7 @@ public class FormContainer extends FakeContainer {
             }
 
             if (slot > customForm.getElements().length) return false;
-            final AFormElement element = customForm.getElements()[slot];
+            final FormElement element = customForm.getElements()[slot];
 
             if (element instanceof CheckboxFormElement checkbox) {
                 if (button != 0) return false;
@@ -222,84 +236,93 @@ public class FormContainer extends FakeContainer {
             items.add(this.createItem("minecraft:oak_button", modalForm.getButton2()));
         } else if (this.form instanceof ActionForm actionForm) {
             items.add(this.createItem("minecraft:oak_sign", "Text", actionForm.getText()));
-            for (final ActionForm.Button button : actionForm.getButtons()) {
-                items.add(this.createItem("minecraft:oak_button", button.getText()));
+            for (FormElement element : actionForm.getElements()) {
+                items.add(this.createItemForFormElement(element));
             }
         } else if (this.form instanceof CustomForm customForm) {
-            for (AFormElement element : customForm.getElements()) {
-                if (element instanceof CheckboxFormElement checkbox) {
-                    final List<String> description = new ArrayList<>();
-                    description.add("§7Element: Checkbox");
-                    description.add("§9Left click: §6Toggle");
-                    if (checkbox.isChecked()) {
-                        description.add(0, "Checked: §atrue");
-                        items.add(this.createItem("minecraft:lime_dye", checkbox.getText(), description.toArray(new String[0])));
-                    } else {
-                        description.add(0, "Checked: §cfalse");
-                        items.add(this.createItem("minecraft:gray_dye", checkbox.getText(), description.toArray(new String[0])));
-                    }
-                } else if (element instanceof DropdownFormElement dropdown) {
-                    final List<String> description = new ArrayList<>();
-                    description.add("§7Options:");
-                    for (int i = 0; i < dropdown.getOptions().length; i++) {
-                        final String option = dropdown.getOptions()[i];
-                        if (dropdown.getSelected() == i) {
-                            description.add("§a§l" + option);
-                        } else {
-                            description.add("§c" + option);
-                        }
-                    }
-                    description.add("§7Element: Dropdown");
-                    description.add("§9Left click: §6Go to next option");
-                    description.add("§9Right click: §6Go to previous option");
-
-                    items.add(this.createItem("minecraft:bookshelf", dropdown.getText(), description.toArray(new String[0])));
-                } else if (element instanceof LabelFormElement label) {
-                    items.add(this.createItem("minecraft:oak_sign", "Text", label.getText()));
-                } else if (element instanceof SliderFormElement slider) {
-                    final List<String> description = new ArrayList<>();
-                    description.add("§7Current value: §a" + slider.getCurrent());
-                    description.add("§7Min value: §a" + slider.getMin());
-                    description.add("§7Max value: §a" + slider.getMax());
-                    description.add("§7Element: Slider");
-                    description.add("§9Left click: §6Increase value by " + slider.getStep());
-                    description.add("§9Right click: §6Decrease value by " + slider.getStep());
-
-                    items.add(this.createItem("minecraft:repeater", slider.getText(), description.toArray(new String[0])));
-                } else if (element instanceof StepSliderFormElement stepSlider) {
-                    final List<String> description = new ArrayList<>();
-                    description.add("§7Options:");
-                    for (int i = 0; i < stepSlider.getSteps().length; i++) {
-                        final String option = stepSlider.getSteps()[i];
-                        if (stepSlider.getSelected() == i) {
-                            description.add("§a§l" + option);
-                        } else {
-                            description.add("§c" + option);
-                        }
-                    }
-                    description.add("§7Element: StepSlider");
-                    description.add("§9Left click: §6Go to next option");
-                    description.add("§9Right click: §6Go to previous option");
-
-                    items.add(this.createItem("minecraft:bookshelf", stepSlider.getText(), description.toArray(new String[0])));
-                } else if (element instanceof TextFieldFormElement textField) {
-                    final List<String> description = new ArrayList<>();
-                    description.add("§7Current value: §a" + textField.getValue());
-                    description.add("§7Element: TextField");
-                    description.add("§9Left click: §6Edit text");
-
-                    items.add(this.createItem("minecraft:name_tag", textField.getText(), description.toArray(new String[0])));
-                } else {
-                    throw new IllegalArgumentException("Unknown form element type: " + element.getClass().getSimpleName());
-                }
+            for (FormElement element : customForm.getElements()) {
+                items.add(this.createItemForFormElement(element));
             }
-
             items.add(this.createItem("minecraft:oak_button", this.user.get(ResourcePacksStorage.class).getTexts().get("gui.submit")));
         } else {
-            throw new IllegalArgumentException("Unknown form type: " + this.form.getClass().getSimpleName());
+            throw new IllegalArgumentException("Unhandled form type: " + this.form.getClass().getSimpleName());
         }
 
         this.formItems = items.toArray(new Item[0]);
+    }
+
+    private Item createItemForFormElement(final FormElement element) {
+        if (element instanceof ButtonFormElement button) {
+            return this.createItem("minecraft:oak_button", button.getText());
+        } else if (element instanceof CheckboxFormElement checkbox) {
+            final List<String> description = new ArrayList<>();
+            description.add("§7Element: Checkbox");
+            description.add("§9Left click: §6Toggle");
+            if (checkbox.isChecked()) {
+                description.add(0, "Checked: §atrue");
+                return this.createItem("minecraft:lime_dye", checkbox.getText(), description.toArray(new String[0]));
+            } else {
+                description.add(0, "Checked: §cfalse");
+                return this.createItem("minecraft:gray_dye", checkbox.getText(), description.toArray(new String[0]));
+            }
+        } else if (element instanceof DropdownFormElement dropdown) {
+            final List<String> description = new ArrayList<>();
+            description.add("§7Options:");
+            for (int i = 0; i < dropdown.getOptions().length; i++) {
+                final String option = dropdown.getOptions()[i];
+                if (dropdown.getSelected() == i) {
+                    description.add("§a§l" + option);
+                } else {
+                    description.add("§c" + option);
+                }
+            }
+            description.add("§7Element: Dropdown");
+            description.add("§9Left click: §6Go to next option");
+            description.add("§9Right click: §6Go to previous option");
+
+            return this.createItem("minecraft:bookshelf", dropdown.getText(), description.toArray(new String[0]));
+        } else if (element instanceof SliderFormElement slider) {
+            final List<String> description = new ArrayList<>();
+            description.add("§7Current value: §a" + slider.getCurrent());
+            description.add("§7Min value: §a" + slider.getMin());
+            description.add("§7Max value: §a" + slider.getMax());
+            description.add("§7Element: Slider");
+            description.add("§9Left click: §6Increase value by " + slider.getStep());
+            description.add("§9Right click: §6Decrease value by " + slider.getStep());
+
+            return this.createItem("minecraft:repeater", slider.getText(), description.toArray(new String[0]));
+        } else if (element instanceof StepSliderFormElement stepSlider) {
+            final List<String> description = new ArrayList<>();
+            description.add("§7Options:");
+            for (int i = 0; i < stepSlider.getSteps().length; i++) {
+                final String option = stepSlider.getSteps()[i];
+                if (stepSlider.getSelected() == i) {
+                    description.add("§a§l" + option);
+                } else {
+                    description.add("§c" + option);
+                }
+            }
+            description.add("§7Element: StepSlider");
+            description.add("§9Left click: §6Go to next option");
+            description.add("§9Right click: §6Go to previous option");
+
+            return this.createItem("minecraft:bookshelf", stepSlider.getText(), description.toArray(new String[0]));
+        } else if (element instanceof TextFieldFormElement textField) {
+            final List<String> description = new ArrayList<>();
+            description.add("§7Current value: §a" + textField.getValue());
+            description.add("§7Element: TextField");
+            description.add("§9Left click: §6Edit text");
+
+            return this.createItem("minecraft:name_tag", textField.getText(), description.toArray(new String[0]));
+        } else if (element instanceof HeaderFormElement header) {
+            return this.createItem("minecraft:oak_sign", "Header", header.getText());
+        } else if (element instanceof LabelFormElement label) {
+            return this.createItem("minecraft:oak_sign", "Text", label.getText());
+        } else if (element instanceof DividerFormElement) {
+            return this.createItem("minecraft:iron_bars", "Divider");
+        } else {
+            throw new IllegalArgumentException("Unhandled form element type: " + element.getClass().getSimpleName());
+        }
     }
 
     private Item createItem(final String identifier, final String name, final String... description) {
