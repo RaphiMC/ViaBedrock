@@ -54,7 +54,7 @@ public class ResourcePackRewriter {
 
         javaContent.putJson("pack.mcmeta", createPackManifest());
 
-        final ChannelStorage channelStorage = resourcePacksStorage.getUser().get(ChannelStorage.class);
+        final ChannelStorage channelStorage = resourcePacksStorage.user().get(ChannelStorage.class);
         if (channelStorage.hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
             for (ResourcePack pack : resourcePacksStorage.getPacks()) {
                 try {

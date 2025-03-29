@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
@@ -57,7 +57,7 @@ public class GameSessionStorage extends StoredObject {
     private boolean blockBreakingServerAuthoritative;
 
     private boolean immutableWorld;
-    private ATextComponent deathMessage;
+    private TextComponent deathMessage;
 
     public GameSessionStorage(final UserConnection user) {
         super(user);
@@ -202,11 +202,11 @@ public class GameSessionStorage extends StoredObject {
         this.immutableWorld = immutableWorld;
     }
 
-    public ATextComponent getDeathMessage() {
+    public TextComponent getDeathMessage() {
         return this.deathMessage;
     }
 
-    public void setDeathMessage(final ATextComponent deathMessage) {
+    public void setDeathMessage(final TextComponent deathMessage) {
         this.deathMessage = deathMessage;
     }
 

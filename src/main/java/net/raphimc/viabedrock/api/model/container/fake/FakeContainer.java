@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.api.model.container.fake;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
@@ -27,7 +27,7 @@ import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 public abstract class FakeContainer extends Container {
 
-    public FakeContainer(final UserConnection user, final ContainerType type, final ATextComponent title) {
+    public FakeContainer(final UserConnection user, final ContainerType type, final TextComponent title) {
         super(user, user.get(InventoryTracker.class).getNextFakeContainerId(), type, title, null, 0);
     }
 

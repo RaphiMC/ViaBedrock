@@ -21,7 +21,7 @@ import com.viaversion.nbt.tag.*;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTextUtils;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.util.TextUtil;
@@ -75,7 +75,7 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         }
         final String text = textBuilder.toString();
 
-        final List<ATextComponent> components = new ArrayList<>();
+        final List<TextComponent> components = new ArrayList<>();
         if (bedrockText.get("PersistFormatting") instanceof ByteTag persistFormatting && persistFormatting.asByte() != 0) {
             for (String line : BedrockTextUtils.split(text, "\n")) {
                 components.add(TextUtil.stringToTextComponent(line));
@@ -100,7 +100,7 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             final DyeColor dyeColor = DyeColor.getClosestDyeColor(signTextColor);
             javaText.putString("color", dyeColor.name().toLowerCase());
 
-            for (ATextComponent component : components) {
+            for (TextComponent component : components) {
                 component.forEach(c -> c.getStyle().setColor(signTextColor));
             }
         } else {

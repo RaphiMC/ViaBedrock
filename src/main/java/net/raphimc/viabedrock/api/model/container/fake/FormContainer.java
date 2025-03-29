@@ -25,8 +25,8 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.TextFormatting;
 import net.lenni0451.mcstructs_bedrock.forms.Form;
 import net.lenni0451.mcstructs_bedrock.forms.elements.*;
 import net.lenni0451.mcstructs_bedrock.forms.types.ActionForm;
@@ -347,7 +347,7 @@ public class FormContainer extends FakeContainer {
     }
 
     private Tag stringToNbt(final String text) {
-        final ATextComponent component = TextUtil.stringToTextComponent(text);
+        final TextComponent component = TextUtil.stringToTextComponent(text);
         if (component.getStyle().getColor() == null) {
             component.getStyle().setFormatting(TextFormatting.WHITE);
         }

@@ -22,9 +22,9 @@ import com.viaversion.nbt.tag.ListTag;
 import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.libs.gson.JsonElement;
-import com.viaversion.viaversion.libs.mcstructs.core.TextFormatting;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.Style;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.TextFormatting;
 import com.viaversion.viaversion.libs.mcstructs.text.serializer.LegacyStringDeserializer;
 import com.viaversion.viaversion.libs.mcstructs.text.utils.TextUtils;
 import net.lenni0451.mcstructs_bedrock.text.BedrockTextFormatting;
@@ -59,7 +59,7 @@ public class TextUtil {
         return textComponentToJson(stringToTextComponent(text));
     }
 
-    public static String textComponentToJson(final ATextComponent textComponent) {
+    public static String textComponentToJson(final TextComponent textComponent) {
         return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeJsonString(textComponent);
     }
 
@@ -67,7 +67,7 @@ public class TextUtil {
         return textComponentToGson(stringToTextComponent(text));
     }
 
-    public static JsonElement textComponentToGson(final ATextComponent textComponent) {
+    public static JsonElement textComponentToGson(final TextComponent textComponent) {
         return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeJsonTree(textComponent);
     }
 
@@ -75,12 +75,12 @@ public class TextUtil {
         return textComponentToNbt(stringToTextComponent(text));
     }
 
-    public static Tag textComponentToNbt(final ATextComponent textComponent) {
-        return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeNbt(textComponent);
+    public static Tag textComponentToNbt(final TextComponent textComponent) {
+        return ProtocolConstants.JAVA_TEXT_COMPONENT_SERIALIZER.serializeNbtTree(textComponent);
     }
 
-    public static ATextComponent stringToTextComponent(final String text) {
-        final ATextComponent textComponent = LegacyStringDeserializer.parse(appendFormattingCodesAfterColorCode(text), TextFormatting.COLOR_CHAR, ResetTrackingStyle::new, BEDROCK_FORMATTING_RESOLVER);
+    public static TextComponent stringToTextComponent(final String text) {
+        final TextComponent textComponent = LegacyStringDeserializer.parse(appendFormattingCodesAfterColorCode(text), TextFormatting.COLOR_CHAR, ResetTrackingStyle::new, BEDROCK_FORMATTING_RESOLVER);
         final AtomicBoolean wasReset = new AtomicBoolean(false);
         TextUtils.iterateAll(textComponent, c -> {
             final Style style = c.getStyle();
@@ -166,7 +166,7 @@ public class TextUtil {
         public Style copy() {
             final ResetTrackingStyle copy = new ResetTrackingStyle();
             copy.setParent(super.copy());
-            copy.applyParent();
+            copy.mergeParent();
             copy.wasReset = this.wasReset;
             return copy;
         }

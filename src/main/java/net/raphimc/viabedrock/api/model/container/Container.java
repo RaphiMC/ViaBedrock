@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.model.container;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.item.Item;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
@@ -36,12 +36,12 @@ public abstract class Container {
     protected final UserConnection user;
     protected final byte containerId;
     protected final ContainerType type;
-    protected final ATextComponent title;
+    protected final TextComponent title;
     protected final BlockPosition position;
     protected final BedrockItem[] items;
     protected final Set<String> validBlockTags;
 
-    public Container(final UserConnection user, final byte containerId, final ContainerType type, final ATextComponent title, final BlockPosition position, final int size, final String... validBlockTags) {
+    public Container(final UserConnection user, final byte containerId, final ContainerType type, final TextComponent title, final BlockPosition position, final int size, final String... validBlockTags) {
         this.user = user;
         this.containerId = containerId;
         this.type = type;
@@ -51,7 +51,7 @@ public abstract class Container {
         this.validBlockTags = Set.of(validBlockTags);
     }
 
-    protected Container(final UserConnection user, final byte containerId, final ContainerType type, final ATextComponent title, final BlockPosition position, final BedrockItem[] items, final Set<String> validBlockTags) {
+    protected Container(final UserConnection user, final byte containerId, final ContainerType type, final TextComponent title, final BlockPosition position, final BedrockItem[] items, final Set<String> validBlockTags) {
         this.user = user;
         this.containerId = containerId;
         this.type = type;
@@ -131,7 +131,7 @@ public abstract class Container {
         return this.type;
     }
 
-    public ATextComponent title() {
+    public TextComponent title() {
         return this.title;
     }
 

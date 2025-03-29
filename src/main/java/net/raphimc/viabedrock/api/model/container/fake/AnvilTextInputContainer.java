@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.api.model.container.fake;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
-import com.viaversion.viaversion.libs.mcstructs.text.ATextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 
 import java.util.function.Consumer;
@@ -28,7 +28,7 @@ public class AnvilTextInputContainer extends FakeContainer {
 
     private final Consumer<String> onRename;
 
-    public AnvilTextInputContainer(final UserConnection user, final ATextComponent title, final Consumer<String> onRename) {
+    public AnvilTextInputContainer(final UserConnection user, final TextComponent title, final Consumer<String> onRename) {
         super(user, ContainerType.ANVIL, title);
 
         this.onRename = onRename;
