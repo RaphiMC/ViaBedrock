@@ -107,13 +107,11 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             javaText.putString("color", DyeColor.LIGHT_GRAY.name().toLowerCase());
         }
 
-        if (!components.isEmpty()) {
-            final ListTag<CompoundTag> messages = new ListTag<>(CompoundTag.class);
-            for (int i = 0; i < 4; i++) {
-                messages.add(TextUtil.ensureCompoundTag(components.size() > i ? TextUtil.textComponentToNbt(components.get(i)) : TextUtil.stringToNbt("")));
-            }
-            javaText.put("messages", messages);
+        final ListTag<CompoundTag> messages = new ListTag<>(CompoundTag.class);
+        for (int i = 0; i < 4; i++) {
+            messages.add(TextUtil.ensureCompoundTag(components.size() > i ? TextUtil.textComponentToNbt(components.get(i)) : TextUtil.stringToNbt("")));
         }
+        javaText.put("messages", messages);
 
         return javaText;
     }
