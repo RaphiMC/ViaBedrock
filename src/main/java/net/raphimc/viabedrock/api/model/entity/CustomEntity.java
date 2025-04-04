@@ -31,6 +31,7 @@ import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPac
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
+import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.MoLangEngine;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -157,7 +158,7 @@ public class CustomEntity extends Entity {
         final ResourcePacksStorage resourcePacksStorage = this.user.get(ResourcePacksStorage.class);
         final ChannelStorage channelStorage = this.user.get(ChannelStorage.class);
         if (channelStorage.hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
-            ViaBedrockUtilityInterface.spawnCustomEntity(this.user, this.javaUuid(), Collections.unmodifiableList(this.models));
+            ViaBedrockUtilityInterface.spawnCustomEntity(this.user, this.javaUuid(), this.entityDefinition.identifier(), this.entityData());
             return;
         }
 
