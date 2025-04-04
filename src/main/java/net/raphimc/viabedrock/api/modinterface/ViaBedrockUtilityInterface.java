@@ -18,20 +18,18 @@
 package net.raphimc.viabedrock.api.modinterface;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
-import net.raphimc.viabedrock.api.model.entity.CustomEntity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 public class ViaBedrockUtilityInterface {
 
@@ -48,17 +46,26 @@ public class ViaBedrockUtilityInterface {
         pluginMessage.send(BedrockProtocol.class);
     }
 
-    public static void spawnCustomEntity(final UserConnection user, final UUID uuid, final List<CustomEntity.EvaluatedModel> models) {
+    public static void spawnCustomEntity(final UserConnection user, final UUID uuid, final String identifier, final long bitmask, final Map<ActorDataIDs, EntityData> entityData) {
         final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_21_5.CUSTOM_PAYLOAD, user);
         pluginMessage.write(Types.STRING, CHANNEL); // Channel
         pluginMessage.write(Types.INT, PayloadType.MODEL_REQUEST.ordinal()); // Type
-        pluginMessage.write(Types.UUID, uuid);
-        pluginMessage.write(Types.INT, models.size());
-        for (CustomEntity.EvaluatedModel model : models) {
-            writeString(pluginMessage, model.geometryValue());
-            writeString(pluginMessage, model.textureValue());
+        writeString(pluginMessage, identifier);
+        pluginMessage.write(Types.LONG, bitmask);
+
+        boolean writeVariant = entityData.containsKey(ActorDataIDs.VARIANT);
+        pluginMessage.write(Types.BOOLEAN, writeVariant);
+        if (writeVariant) {
+            pluginMessage.write(Types.INT, entityData.get(ActorDataIDs.VARIANT).<Integer>value());
         }
 
+        boolean writeMarkVariant = entityData.containsKey(ActorDataIDs.MARK_VARIANT);
+        pluginMessage.write(Types.BOOLEAN, writeMarkVariant);
+        if (writeMarkVariant) {
+            pluginMessage.write(Types.INT, entityData.get(ActorDataIDs.MARK_VARIANT).<Integer>value());
+        }
+
+        pluginMessage.write(Types.UUID, uuid);
         pluginMessage.send(BedrockProtocol.class);
     }
 
