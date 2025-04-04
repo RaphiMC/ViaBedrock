@@ -249,7 +249,7 @@ public class WorldEffectPackets {
                             particle.add(Types.FLOAT, 1F); // scale
                             yield javaParticle.withParticle(particle);
                         }
-                        case MobSpell -> {
+                        case MobSpell, MobSpellAmbient, MobSpellInstantaneous -> {
                             final Particle particle = new Particle(javaParticle.particle().id());
                             particle.add(Types.INT, (0xFF << 24) | data); // color
                             yield javaParticle.withParticle(particle);
