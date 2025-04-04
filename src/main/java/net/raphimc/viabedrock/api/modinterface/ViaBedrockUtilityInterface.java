@@ -46,12 +46,22 @@ public class ViaBedrockUtilityInterface {
         pluginMessage.send(BedrockProtocol.class);
     }
 
-    public static void spawnCustomEntity(final UserConnection user, final UUID uuid, final String identifier, final long bitmask, final Map<ActorDataIDs, EntityData> entityData) {
+    public static void spawnCustomEntity(final UserConnection user, final UUID uuid, final String identifier, final Map<ActorDataIDs, EntityData> entityData) {
         final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets1_21_5.CUSTOM_PAYLOAD, user);
         pluginMessage.write(Types.STRING, CHANNEL); // Channel
         pluginMessage.write(Types.INT, PayloadType.MODEL_REQUEST.ordinal()); // Type
         writeString(pluginMessage, identifier);
-        pluginMessage.write(Types.LONG, bitmask);
+
+        boolean writeBitmask1 = entityData.containsKey(ActorDataIDs.RESERVED_0);
+        pluginMessage.write(Types.BOOLEAN, writeBitmask1);
+        if (writeBitmask1) {
+            pluginMessage.write(Types.LONG, entityData.get(ActorDataIDs.RESERVED_0).<Long>value());
+        }
+        boolean writeBitmask2 = entityData.containsKey(ActorDataIDs.RESERVED_092);
+        pluginMessage.write(Types.BOOLEAN, writeBitmask2);
+        if (writeBitmask2) {
+            pluginMessage.write(Types.LONG, entityData.get(ActorDataIDs.RESERVED_092).<Long>value());
+        }
 
         boolean writeVariant = entityData.containsKey(ActorDataIDs.VARIANT);
         pluginMessage.write(Types.BOOLEAN, writeVariant);

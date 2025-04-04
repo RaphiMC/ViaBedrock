@@ -158,7 +158,7 @@ public class CustomEntity extends Entity {
         final ResourcePacksStorage resourcePacksStorage = this.user.get(ResourcePacksStorage.class);
         final ChannelStorage channelStorage = this.user.get(ChannelStorage.class);
         if (channelStorage.hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
-            ViaBedrockUtilityInterface.spawnCustomEntity(this.user, this.javaUuid(), this.entityDefinition.identifier(), EnumUtil.getLongBitmaskFromEnumSet(this.entityFlags(), ActorFlags::getValue), this.entityData());
+            ViaBedrockUtilityInterface.spawnCustomEntity(this.user, this.javaUuid(), this.entityDefinition.identifier(), this.entityData());
             return;
         }
 
