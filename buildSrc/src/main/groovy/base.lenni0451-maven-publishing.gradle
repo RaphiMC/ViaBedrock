@@ -1,0 +1,13 @@
+publishing {
+    repositories {
+        maven {
+            name = "reposilite"
+            url = "https://maven.lenni0451.net/" + (project.maven_version.endsWith("SNAPSHOT") ? "snapshots" : "releases")
+
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+}

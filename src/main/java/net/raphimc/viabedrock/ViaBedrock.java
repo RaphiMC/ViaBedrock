@@ -26,7 +26,7 @@ import java.util.logging.Level;
 public class ViaBedrock {
 
     public static final String VERSION = "${version}";
-    public static final String IMPL_VERSION = "${impl_version}";
+    public static final String IMPL_VERSION = "git-ViaBedrock-${version}:${commit_hash}";
 
     private static ViaBedrockPlatform platform;
     private static ViaBedrockConfig config;

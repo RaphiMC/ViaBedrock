@@ -2,27 +2,19 @@ import net.raphimc.viabedrock.generator.EnumGeneratorTask
 
 plugins {
     id "java-library"
-    id "maven-publish"
-    id "signing"
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.10"
+    id "base.base-conventions"
+    id "base.fill-build-constants"
+    id "viabedrock.publishing-conventions"
+    id "via.run-with-viaproxy-task"
     id "net.raphimc.class-token-replacer" version "1.1.4"
-}
-
-base {
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-    compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
-
-    group = project.maven_group ?: rootProject.maven_group
-    archivesName = project.maven_name ?: rootProject.maven_name
-    version = project.maven_version ?: rootProject.maven_version
+    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.10"
 }
 
 configurations {
-    testImplementation.extendsFrom compileOnly
+    testImplementation.extendsFrom(compileOnly)
 }
 
 repositories {
-    mavenCentral()
     maven {
         name = "ViaVersion"
         url = "https://repo.viaversion.com"
@@ -80,84 +72,6 @@ dependencies {
     }
 }
 
-sourceSets {
-    main {
-        classTokenReplacer {
-            property("\${version}", project.version)
-            property("\${impl_version}", "git-${project.name}-${project.version}:${project.latestCommitHash().get()}")
-        }
-    }
-}
-
-java {
-    withSourcesJar()
-}
-
-jar {
-    from("LICENSE") {
-        rename { "${it}_${project.name ?: rootProject.name}" }
-    }
-}
-
-artifacts {
-    archives sourcesJar
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "reposilite"
-            url = "https://maven.lenni0451.net/" + (project.maven_version.endsWith("SNAPSHOT") ? "snapshots" : "releases")
-
-            credentials(PasswordCredentials)
-            authentication {
-                basic(BasicAuthentication)
-            }
-        }
-    }
-    publications {
-        maven(MavenPublication) {
-            groupId = project.maven_group
-            artifactId = project.maven_name
-            version = project.maven_version
-
-            from components.java
-
-            pom {
-                name = "ViaBedrock"
-                description = "ViaVersion addon to add support for Minecraft: Bedrock Edition servers"
-                url = "https://github.com/RaphiMC/ViaBedrock"
-                licenses {
-                    license {
-                        name = "GPL-3.0 License"
-                        url = "https://github.com/RaphiMC/ViaBedrock/blob/main/LICENSE"
-                    }
-                }
-                developers {
-                    developer {
-                        id = "RK_01"
-                    }
-                }
-                scm {
-                    connection = "scm:git:git://github.com/RaphiMC/ViaBedrock.git"
-                    developerConnection = "scm:git:ssh://github.com/RaphiMC/ViaBedrock.git"
-                    url = "https://github.com/RaphiMC/ViaBedrock.git"
-                }
-            }
-        }
-    }
-}
-
-signing {
-    setRequired(false)
-    sign configurations.archives
-    sign publishing.publications.maven
-}
-
-project.tasks.withType(PublishToMavenRepository).forEach {
-    it.dependsOn(project.tasks.withType(Sign))
-}
-
 def enumSourceDir = layout.buildDirectory.dir("generated/enums/main/java")
 def enumGeneratorTask = tasks.register("enumGeneratorTask", EnumGeneratorTask) {
     commitHash = "a9ee55d8aabc0fa761d7f8546dc6af00ba42eb89" // https://github.com/Mojang/bedrock-protocol-docs
@@ -169,45 +83,9 @@ tasks.sourcesJar.dependsOn(enumGeneratorTask)
 sourceSets.main.java.srcDir(enumSourceDir)
 
 idea {
-    module {
-        ["run"].each {
-            excludeDirs << file("$it")
-        }
-    }
     project.settings {
         taskTriggers {
-            afterSync enumGeneratorTask
+            afterSync(enumGeneratorTask)
         }
     }
-}
-
-tasks.register("runViaProxy", JavaExec) {
-    dependsOn tasks.jar
-
-    def viaProxyConfiguration = configurations.create("viaProxy")
-    viaProxyConfiguration.dependencies.add(dependencies.create("net.raphimc:ViaProxy:3.4.1-SNAPSHOT") {
-        transitive = false
-    })
-
-    mainClass = "net.raphimc.viaproxy.ViaProxy"
-    classpath = viaProxyConfiguration
-    workingDir = file("run")
-    jvmArgs = ["-DskipUpdateCheck"]
-
-    doFirst {
-        def jarsDir = file("$workingDir/jars")
-        jarsDir.mkdirs()
-        file("$jarsDir/${project.name}.jar").bytes = tasks.jar.archiveFile.get().asFile.bytes
-    }
-
-    doLast {
-        file("$workingDir/jars/${project.name}.jar").delete()
-        file("$workingDir/logs").deleteDir()
-    }
-}
-
-Provider<String> latestCommitHash() {
-    return providers.exec {
-        commandLine = ["git", "rev-parse", "--short", "HEAD"]
-    }.standardOutput.getAsText().map(String::trim)
 }

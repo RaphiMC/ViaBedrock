@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 // TODO: Feature: Lighting
 public class ChunkTracker extends StoredObject {
 
-    private static final byte[] FULL_LIGHT = new byte[2048];
+    private static final byte[] FULL_LIGHT = new byte[ChunkSectionLight.LIGHT_LENGTH];
 
     static {
         Arrays.fill(FULL_LIGHT, (byte) 0xFF);
