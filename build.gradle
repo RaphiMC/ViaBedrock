@@ -6,7 +6,7 @@ plugins {
     id "base.fill-build-constants"
     id "viabedrock.publishing-conventions"
     id "via.run-with-viaproxy-task"
-    id "net.raphimc.class-token-replacer" version "1.1.4"
+    id "net.raphimc.class-token-replacer" version "1.1.5"
     id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.10"
 }
 
