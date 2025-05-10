@@ -149,7 +149,6 @@ public class JoinPackets {
                         sendClientCacheStatus(wrapper.user());
                     } else if (status == PlayStatus.PlayerSpawn) {
                         wrapper.cancel();
-                        final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                         final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                         if (clientPlayer.isInitiallySpawned()) return;
 
@@ -161,9 +160,6 @@ public class JoinPackets {
 
                         clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
                         clientPlayer.setInitiallySpawned();
-                        if (gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
-                            clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Respawn);
-                        }
 
                         PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.EndLoadingScreen, null);
                         final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());
@@ -273,7 +269,7 @@ public class JoinPackets {
                     final String levelName = wrapper.read(BedrockTypes.STRING); // level name
                     wrapper.read(BedrockTypes.STRING); // premium world template id
                     wrapper.read(Types.BOOLEAN); // is trial
-                    final ServerAuthMovementMode movementMode = ServerAuthMovementMode.getByValue(wrapper.read(BedrockTypes.VAR_INT) & 255, ServerAuthMovementMode.ServerAuthoritativeV3); // movement mode
+                    final int rawMovementMode = wrapper.read(BedrockTypes.VAR_INT) & 255; // movement mode
                     final int rewindHistorySize = wrapper.read(BedrockTypes.VAR_INT); // rewind history size
                     final boolean blockBreakingServerAuthoritative = wrapper.read(Types.BOOLEAN); // server authoritative block breaking
                     final long levelTime = wrapper.read(BedrockTypes.LONG_LE); // current level time
@@ -289,6 +285,10 @@ public class JoinPackets {
                     final boolean hashedRuntimeBlockIds = wrapper.read(Types.BOOLEAN); // use hashed block runtime ids
                     wrapper.read(Types.BOOLEAN); // server authoritative sounds
 
+                    final ServerAuthMovementMode movementMode = ServerAuthMovementMode.getByValue(rawMovementMode);
+                    if (movementMode == null) { // Bedrock client disconnects if the movement mode is not valid
+                        throw new IllegalStateException("Unknown ServerAuthMovementMode: " + rawMovementMode);
+                    }
                     if (editorWorldType == Editor_WorldType.EditorProject) {
                         final PacketWrapper disconnect = PacketWrapper.create(ClientboundConfigurationPackets1_21.DISCONNECT, wrapper.user());
                         PacketFactory.writeJavaDisconnect(wrapper, resourcePacksStorage.getTexts().get("disconnectionScreen.editor.mismatchEditorWorld"));
@@ -320,9 +320,6 @@ public class JoinPackets {
                         }
                     }
 
-                    if (movementMode == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "This server uses deprecated client authoritative movement.");
-                    }
                     if (!inventoryServerAuthoritative) {
                         ViaBedrock.getPlatform().getLogger().log(Level.INFO, "This server uses client authoritative inventories. This is not supported yet.");
                     }
@@ -350,6 +347,7 @@ public class JoinPackets {
                     wrapper.user().put(new JoinGameStorage(levelName, difficulty, rainLevel, lightningLevel, currentTime, chunkTickRange));
                     wrapper.user().put(new GameRulesStorage(wrapper.user(), gameRules));
                     wrapper.user().put(new BlockStateRewriter(blockProperties, hashedRuntimeBlockIds));
+                    wrapper.user().put(new ItemRewriter(wrapper.user(), new ItemEntry[0]));
                     wrapper.user().put(new ChunkTracker(wrapper.user(), dimension));
                     final EntityTracker entityTracker = new EntityTracker(wrapper.user());
                     entityTracker.addEntity(clientPlayer, false);
@@ -391,20 +389,6 @@ public class JoinPackets {
                     }
                 }
         );
-        protocol.registerClientboundTransition(ClientboundBedrockPackets.COMPRESSED_BIOME_DEFINITION_LIST,
-                State.CONFIGURATION, new PacketHandlers() {
-                    @Override
-                    protected void register() {
-                        handler(PacketWrapper::cancel);
-                    }
-                }, State.PLAY, new PacketHandlers() {
-                    @Override
-                    protected void register() {
-                        handler(REQUIRE_UNINITIALIZED_WORLD_HANDLER);
-                        handler(PacketWrapper::cancel);
-                    }
-                }
-        );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.DIMENSION_DATA,
                 State.CONFIGURATION, (PacketHandler) wrapper -> {
                     wrapper.cancel();
@@ -423,7 +407,7 @@ public class JoinPackets {
         );
         protocol.registerClientbound(ClientboundBedrockPackets.ITEM_REGISTRY, null, wrapper -> {
             wrapper.cancel();
-            if (wrapper.user().has(ItemRewriter.class)) {
+            if (wrapper.user().has(ItemRewriter.class) && !wrapper.user().get(ItemRewriter.class).getItems().isEmpty()) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received ITEM_REGISTRY after item rewriter was already initialized");
                 return;
             }

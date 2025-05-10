@@ -16,6 +16,7 @@
   "mobGriefing": true,
   "pvp": true,
   "showCoordinates": false,
+  "locatorBar": true,
   "showDaysPlayed": false,
   "naturalRegeneration": true,
   "tntExplodes": true,

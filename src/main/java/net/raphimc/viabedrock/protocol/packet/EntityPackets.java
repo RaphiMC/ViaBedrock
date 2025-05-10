@@ -563,7 +563,7 @@ public class EntityPackets {
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.UNSIGNED_BYTE, (short) (switch (action) {
-                case NoAction, RowRight, RowLeft -> {
+                case NoAction -> {
                     wrapper.cancel();
                     yield AnimateAction.SWING_MAIN_HAND; // any action
                 }

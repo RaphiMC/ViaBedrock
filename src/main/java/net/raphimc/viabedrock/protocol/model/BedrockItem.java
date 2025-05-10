@@ -165,6 +165,11 @@ public class BedrockItem implements Item {
         this.netId = netId;
     }
 
+    @Override
+    public boolean isEmpty() {
+        return this.id == 0 || this.id == -1 || this.amount <= 0;
+    }
+
     public boolean isDifferent(final BedrockItem o) {
         if (o == null) return true;
         return this.id != o.id || this.data != o.data || this.blockRuntimeId != o.blockRuntimeId || !Objects.equals(this.tag, o.tag);

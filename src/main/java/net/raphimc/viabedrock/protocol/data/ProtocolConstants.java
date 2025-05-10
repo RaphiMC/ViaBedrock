@@ -31,8 +31,8 @@ public class ProtocolConstants {
     public static final int JAVA_PACK_VERSION = 55;
     public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V1_21_5;
 
-    public static final String BEDROCK_VERSION_NAME = "1.21.70";
-    public static final int BEDROCK_PROTOCOL_VERSION = 786;
+    public static final String BEDROCK_VERSION_NAME = "1.21.80";
+    public static final int BEDROCK_PROTOCOL_VERSION = 800;
     public static final int BEDROCK_RAKNET_PROTOCOL_VERSION = 11;
     public static final int BEDROCK_DEFAULT_PORT = 19132;
     public static final int BEDROCK_COMMAND_VERSION = 43;

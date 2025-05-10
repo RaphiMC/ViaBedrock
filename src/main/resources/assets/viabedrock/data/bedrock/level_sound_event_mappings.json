@@ -301,6 +301,9 @@
         1.2
       ]
     },
+    "block:deadbush": {
+      "sound": "block.deadbush.ambient"
+    },
     "entity:minecraft:husk": {
       "sound": "mob.husk.ambient",
       "pitch": [
@@ -547,6 +550,9 @@
         1.2
       ]
     },
+    "block:sand": {
+      "sound": "block.sand.ambient"
+    },
     "entity:minecraft:hoglin": {
       "sound": "mob.hoglin.ambient",
       "pitch": [
@@ -590,6 +596,9 @@
         0.8,
         1.2
       ]
+    },
+    "block:terracotta": {
+      "sound": "block.sand.ambient"
     },
     "entity:minecraft:allay": {
       "sound": "mob.allay.idle",
@@ -8252,7 +8261,13 @@
       ]
     }
   },
-  "ImitateBlaze": {},
+  "ImitateBlaze": {
+    "entity:minecraft:parrot": {
+      "sound": "mob.blaze.breathe",
+      "volume": 0.4,
+      "pitch": 1.8
+    }
+  },
   "ImitateBogged": {
     "entity:minecraft:parrot": {
       "sound": "mob.bogged.ambient",
@@ -8335,6 +8350,13 @@
       "pitch": 1.8
     }
   },
+  "ImitateGuardian": {
+    "entity:minecraft:parrot": {
+      "sound": "mob.guardian.ambient",
+      "volume": 0.7,
+      "pitch": 1.8
+    }
+  },
   "ImitateHusk": {
     "entity:minecraft:parrot": {
       "sound": "mob.husk.ambient",
@@ -8350,11 +8372,32 @@
       "pitch": 1.8
     }
   },
+  "ImitatePhantom": {
+    "entity:minecraft:parrot": {
+      "sound": "mob.phantom.idle",
+      "volume": 0.7,
+      "pitch": 1.5
+    }
+  },
+  "ImitatePillager": {
+    "entity:minecraft:parrot": {
+      "sound": "mob.pillager.idle",
+      "volume": 0.7,
+      "pitch": 1.8
+    }
+  },
   "ImitatePolarBear": {
     "entity:minecraft:parrot": {
       "sound": "mob.polarbear.idle",
       "volume": 0.7,
       "pitch": 0.8
+    }
+  },
+  "ImitateRavager": {
+    "entity:minecraft:parrot": {
+      "sound": "mob.ravager.ambient",
+      "volume": 0.7,
+      "pitch": 1.7
     }
   },
   "ImitateShulker": {
@@ -8445,6 +8488,13 @@
       "sound": "mob.wolf.bark",
       "volume": 0.6,
       "pitch": 1.8
+    }
+  },
+  "ImitateZoglin": {
+    "entity:minecraft:parrot": {
+      "sound": "mob.zoglin.idle",
+      "volume": 0.7,
+      "pitch": 1.7
     }
   },
   "ImitateZombie": {

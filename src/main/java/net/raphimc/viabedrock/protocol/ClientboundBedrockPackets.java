@@ -167,7 +167,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     CAMERA_PRESETS(MinecraftPacketIds.CameraPresets.getValue()),
     UNLOCKED_RECIPES(MinecraftPacketIds.UnlockedRecipes.getValue()),
     CAMERA_INSTRUCTION(MinecraftPacketIds.CameraInstruction.getValue()),
-    COMPRESSED_BIOME_DEFINITION_LIST(MinecraftPacketIds.CompressedBiomeDefinitionList.getValue()),
     TRIM_DATA(MinecraftPacketIds.TrimData.getValue()),
     OPEN_SIGN(MinecraftPacketIds.OpenSign.getValue()),
     AGENT_ANIMATION(MinecraftPacketIds.AgentAnimation.getValue()),
@@ -183,7 +182,9 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     SET_MOVEMENT_AUTHORITY_MODE(MinecraftPacketIds.SetMovementAuthorityMode.getValue()),
     CAMERA_AIM_ASSIST_PRESETS(MinecraftPacketIds.CameraAimAssistPresets.getValue()),
     PLAYER_VIDEO_CAPTURE(MinecraftPacketIds.PlayerVideoCapturePacket.getValue()),
-    PLAYER_UPDATE_ENTITY_OVERRIDES(MinecraftPacketIds.PlayerUpdateEntityOverridesPacket.getValue());
+    PLAYER_UPDATE_ENTITY_OVERRIDES(MinecraftPacketIds.PlayerUpdateEntityOverridesPacket.getValue()),
+    PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue()),
+    CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

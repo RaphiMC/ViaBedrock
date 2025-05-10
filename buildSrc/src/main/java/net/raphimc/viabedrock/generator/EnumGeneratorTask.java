@@ -91,6 +91,7 @@ public abstract class EnumGeneratorTask extends DefaultTask {
             enums.put(enumName, enumFields);
 
             enumFields.removeIf(field -> IGNORED_FIELDS.contains(field.name.toLowerCase(Locale.ROOT)));
+            enumFields.removeIf(field -> field.name.toLowerCase(Locale.ROOT).contains("_deprecated"));
             for (EnumField field : enumFields) {
                 if (VALUE_REPLACEMENTS.containsKey(field.value)) {
                     field.value = VALUE_REPLACEMENTS.get(field.value);
@@ -141,6 +142,11 @@ public abstract class EnumGeneratorTask extends DefaultTask {
         levelSoundEventEnum.add(new EnumField("OpenLong", "543"));
         levelSoundEventEnum.add(new EnumField("Close", "544"));
         levelSoundEventEnum.add(new EnumField("CloseLong", "545"));
+        levelSoundEventEnum.add(new EnumField("ImitatePhantom", "546"));
+        levelSoundEventEnum.add(new EnumField("ImitateZoglin", "547"));
+        levelSoundEventEnum.add(new EnumField("ImitateGuardian", "548"));
+        levelSoundEventEnum.add(new EnumField("ImitateRavager", "549"));
+        levelSoundEventEnum.add(new EnumField("ImitatePillager", "550"));
 
         // Mojang seems to have pushed an outdated version of this enum. Those values exist in 1.21.50, but not in 1.21.60
         final List<EnumField> actorDamageCauseEnum = enums.get("ActorDamageCause");

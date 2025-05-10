@@ -42,7 +42,6 @@ import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -93,10 +92,6 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void tick() {
         super.tick();
 
-        if (this.gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1 && this.dimensionChangeInfo != null && this.dimensionChangeInfo.sendRespawnMovePackets.get()) {
-            this.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Respawn);
-        }
-
         this.prevPosition = this.position;
         this.prevOnGround = this.onGround;
         this.prevInputFlags = this.inputFlags;
@@ -121,22 +116,6 @@ public class ClientPlayerEntity extends PlayerEntity {
         wrapper.write(Types.FLOAT, relatives.contains(Relative.Y_ROT) ? 0F : this.rotation.y()); // yaw
         wrapper.write(Types.FLOAT, relatives.contains(Relative.X_ROT) ? 0F : this.rotation.x()); // pitch
         wrapper.write(Types.INT, EnumUtil.getIntBitmaskFromEnumSet(relatives, Relative::ordinal)); // flags
-    }
-
-    public void sendMovePlayerPacketToServer(final PlayerPositionModeComponent_PositionMode mode) {
-        final PacketWrapper movePlayer = PacketWrapper.create(ServerboundBedrockPackets.MOVE_PLAYER, this.user);
-        this.writeMovePlayerPacketToServer(movePlayer, mode);
-        movePlayer.sendToServer(BedrockProtocol.class);
-    }
-
-    public void writeMovePlayerPacketToServer(final PacketWrapper wrapper, final PlayerPositionModeComponent_PositionMode mode) {
-        wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
-        wrapper.write(BedrockTypes.POSITION_3F, this.position); // position
-        wrapper.write(BedrockTypes.POSITION_3F, this.rotation); // rotation
-        wrapper.write(Types.BYTE, (byte) mode.getValue()); // mode
-        wrapper.write(Types.BOOLEAN, this.onGround); // on ground
-        wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // riding runtime entity id
-        wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // tick
     }
 
     public void sendPlayerActionPacketToServer(final PlayerActionType action) {
@@ -164,51 +143,36 @@ public class ClientPlayerEntity extends PlayerEntity {
         animate.sendToServer(BedrockProtocol.class);
     }
 
-    public void updatePlayerPosition(final PacketWrapper wrapper, final short flags) {
+    public void updatePlayerPosition(final short flags) {
         final boolean newOnGround = (flags & MovePlayerFlag.ON_GROUND.getBit()) != 0;
 
         if (!this.preMove(null, null, newOnGround)) {
-            wrapper.cancel();
             return;
         }
 
         this.onGround = newOnGround;
         this.horizontalCollision = (flags & MovePlayerFlag.HORIZONTAL_COLLISION.getBit()) != 0;
-
-        if (this.gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
-            this.writeMovePlayerPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
-        } else {
-            wrapper.cancel();
-        }
     }
 
-    public void updatePlayerPosition(final PacketWrapper wrapper, final double x, final double y, final double z, final short flags) {
+    public void updatePlayerPosition(final double x, final double y, final double z, final short flags) {
         final Position3f newPosition = new Position3f((float) x, (float) y + this.eyeOffset(), (float) z);
         final boolean newOnGround = (flags & MovePlayerFlag.ON_GROUND.getBit()) != 0;
 
         if (!this.preMove(newPosition, null, newOnGround)) {
-            wrapper.cancel();
             return;
         }
 
         this.position = newPosition;
         this.onGround = newOnGround;
         this.horizontalCollision = (flags & MovePlayerFlag.HORIZONTAL_COLLISION.getBit()) != 0;
-
-        if (this.gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
-            this.writeMovePlayerPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
-        } else {
-            wrapper.cancel();
-        }
     }
 
-    public void updatePlayerPosition(final PacketWrapper wrapper, final double x, final double y, final double z, final float yaw, final float pitch, final short flags) {
+    public void updatePlayerPosition(final double x, final double y, final double z, final float yaw, final float pitch, final short flags) {
         final Position3f newPosition = new Position3f((float) x, (float) y + this.eyeOffset(), (float) z);
         final Position3f newRotation = new Position3f(pitch, yaw, yaw);
         final boolean newOnGround = (flags & MovePlayerFlag.ON_GROUND.getBit()) != 0;
 
         if (!this.preMove(newPosition, newRotation, newOnGround)) {
-            wrapper.cancel();
             return;
         }
 
@@ -216,32 +180,19 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.rotation = newRotation;
         this.onGround = newOnGround;
         this.horizontalCollision = (flags & MovePlayerFlag.HORIZONTAL_COLLISION.getBit()) != 0;
-
-        if (this.gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
-            this.writeMovePlayerPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
-        } else {
-            wrapper.cancel();
-        }
     }
 
-    public void updatePlayerPosition(final PacketWrapper wrapper, final float yaw, final float pitch, final short flags) {
+    public void updatePlayerPosition(final float yaw, final float pitch, final short flags) {
         final Position3f newRotation = new Position3f(pitch, yaw, yaw);
         final boolean newOnGround = (flags & MovePlayerFlag.ON_GROUND.getBit()) != 0;
 
         if (!this.preMove(null, newRotation, newOnGround)) {
-            wrapper.cancel();
             return;
         }
 
         this.rotation = newRotation;
         this.onGround = newOnGround;
         this.horizontalCollision = (flags & MovePlayerFlag.HORIZONTAL_COLLISION.getBit()) != 0;
-
-        if (this.gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
-            this.writeMovePlayerPacketToServer(wrapper, PlayerPositionModeComponent_PositionMode.Normal);
-        } else {
-            wrapper.cancel();
-        }
     }
 
     public void confirmTeleport(final int teleportId) {
@@ -255,11 +206,7 @@ public class ClientPlayerEntity extends PlayerEntity {
             if (!this.initiallySpawned) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received teleport confirm for teleport id " + teleportId + " but player is not spawned yet");
             }
-            if (this.gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
-                this.sendPlayerActionPacketToServer(PlayerActionType.HandledTeleport);
-            } else {
-                this.authInputData.add(PlayerAuthInputPacket_InputData.HandledTeleport);
-            }
+            this.authInputData.add(PlayerAuthInputPacket_InputData.HandledTeleport);
         }
     }
 
@@ -548,12 +495,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         return false;
     }
 
-    public record DimensionChangeInfo(Long loadingScreenId, AtomicBoolean sendRespawnMovePackets) {
-
-        public DimensionChangeInfo(final Long loadingScreenId) {
-            this(loadingScreenId, new AtomicBoolean(false));
-        }
-
+    public record DimensionChangeInfo(Long loadingScreenId) {
     }
 
     public record BlockBreakingInfo(BlockPosition position, Direction direction) {

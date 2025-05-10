@@ -75,14 +75,7 @@ public class ItemRewriter extends StoredObject {
     public ItemRewriter(final UserConnection user, final ItemEntry[] itemEntries) {
         super(user);
 
-        final Set<String> blockItems = new HashSet<>();
-        for (Map.Entry<String, Integer> entry : BedrockProtocol.MAPPINGS.getBedrockItems().entrySet()) {
-            if (entry.getValue() <= ProtocolConstants.LAST_BLOCK_ITEM_ID) {
-                blockItems.add(entry.getKey());
-            }
-        }
-
-        this.items = HashBiMap.create(BedrockProtocol.MAPPINGS.getBedrockItems());
+        this.items = HashBiMap.create(itemEntries.length);
         this.componentItems = new HashSet<>();
         for (ItemEntry itemEntry : itemEntries) {
             this.items.inverse().remove(itemEntry.id());
@@ -91,6 +84,7 @@ public class ItemRewriter extends StoredObject {
                 this.componentItems.add(itemEntry.identifier());
             }
         }
+        final Set<String> blockItems = new HashSet<>(BedrockProtocol.MAPPINGS.getBedrockBlockItems());
         blockItems.removeIf(identifier -> !this.items.containsKey(identifier));
 
         this.blockItemValidBlockStates = new Int2ObjectOpenHashMap<>(blockItems.size());
@@ -110,7 +104,7 @@ public class ItemRewriter extends StoredObject {
             }
         }
 
-        this.itemType = new BedrockItemType(this.items.get("minecraft:shield"), this.blockItemValidBlockStates, false);
+        this.itemType = new BedrockItemType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false);
         this.itemArrayType = new ArrayType<>(this.itemType, BedrockTypes.UNSIGNED_VAR_INT);
     }
 

@@ -102,7 +102,8 @@ public class BedrockMappingData extends MappingDataBase {
     // Items
     private ItemUpgrader bedrockItemUpgrader;
     private BiMap<String, Integer> javaItems;
-    private BiMap<String, Integer> bedrockItems;
+    private Set<String> bedrockBlockItems;
+    private Set<String> bedrockMetaItems;
     private Map<String, String> bedrockItemTags;
     private Map<String, Map<BlockState, JavaItemMapping>> bedrockToJavaBlockItems;
     private Map<String, Map<Integer, JavaItemMapping>> bedrockToJavaMetaItems;
@@ -357,12 +358,19 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             final JsonArray bedrockItemsJson = this.readJson("bedrock/runtime_item_states.json", JsonArray.class);
-            this.bedrockItems = HashBiMap.create(bedrockItemsJson.size());
+            final Set<String> bedrockItems = new HashSet<>(bedrockItemsJson.size());
+            this.bedrockBlockItems = new HashSet<>();
+            this.bedrockMetaItems = new HashSet<>();
             for (JsonElement entry : bedrockItemsJson) {
                 final JsonObject itemEntry = entry.getAsJsonObject();
                 final String identifier = itemEntry.get("name").getAsString();
                 final int id = itemEntry.get("id").getAsInt();
-                this.bedrockItems.put(identifier, id);
+                bedrockItems.add(identifier);
+                if (id <= ProtocolConstants.LAST_BLOCK_ITEM_ID) {
+                    this.bedrockBlockItems.add(identifier);
+                } else {
+                    this.bedrockMetaItems.add(identifier);
+                }
             }
 
             final JsonObject bedrockItemTagsJson = this.readJson("custom/item_tags.json");
@@ -371,7 +379,7 @@ public class BedrockMappingData extends MappingDataBase {
                 final String tagName = entry.getKey();
                 for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
                     final String bedrockIdentifier = tagValueJson.getAsString();
-                    if (!this.bedrockItems.containsKey(bedrockIdentifier)) {
+                    if (!bedrockItems.contains(bedrockIdentifier)) {
                         throw new RuntimeException("Unknown bedrock item: " + bedrockIdentifier);
                     }
                     if (this.bedrockItemTags.put(bedrockIdentifier, tagName) != null) {
@@ -385,12 +393,12 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockToJavaMetaItems = new HashMap<>(bedrockToJavaItemMappingsJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaItemMappingsJson.entrySet()) {
                 final String bedrockIdentifier = entry.getKey();
-                if (!this.bedrockItems.containsKey(bedrockIdentifier)) {
+                if (!bedrockItems.contains(bedrockIdentifier)) {
                     throw new RuntimeException("Unknown bedrock item: " + bedrockIdentifier);
                 }
                 final JsonObject definition = entry.getValue().getAsJsonObject();
                 if (definition.has("block")) {
-                    if (this.bedrockItems.get(bedrockIdentifier) > ProtocolConstants.LAST_BLOCK_ITEM_ID) {
+                    if (!this.bedrockBlockItems.contains(bedrockIdentifier)) {
                         throw new RuntimeException("Tried to register meta item as block item: " + bedrockIdentifier);
                     }
                     final JsonObject blockDefinition = definition.get("block").getAsJsonObject();
@@ -426,7 +434,7 @@ public class BedrockMappingData extends MappingDataBase {
                         }
                     }*/
                 } else if (definition.has("meta")) {
-                    if (this.bedrockItems.get(bedrockIdentifier) <= ProtocolConstants.LAST_BLOCK_ITEM_ID) {
+                    if (!this.bedrockMetaItems.contains(bedrockIdentifier)) {
                         throw new RuntimeException("Tried to register block item as meta item: " + bedrockIdentifier);
                     }
                     final JsonObject metaDefinition = definition.get("meta").getAsJsonObject();
@@ -468,7 +476,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            for (String bedrockIdentifier : this.bedrockItems.keySet()) {
+            for (String bedrockIdentifier : bedrockItems) {
                 if (!this.bedrockToJavaBlockItems.containsKey(bedrockIdentifier) && !this.bedrockToJavaMetaItems.containsKey(bedrockIdentifier)) {
                     throw new RuntimeException("Missing bedrock -> java item mapping for " + bedrockIdentifier);
                 }
@@ -1011,8 +1019,12 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaItems;
     }
 
-    public BiMap<String, Integer> getBedrockItems() {
-        return this.bedrockItems;
+    public Set<String> getBedrockBlockItems() {
+        return this.bedrockBlockItems;
+    }
+
+    public Set<String> getBedrockMetaItems() {
+        return this.bedrockMetaItems;
     }
 
     public Map<String, String> getBedrockItemTags() {

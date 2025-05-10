@@ -167,7 +167,6 @@ public class BedrockSoundListGenerator {
         Unknown sound: nearby_closest.warden
         Unknown sound: mob.zombie.converted_to_drowned
         Unknown sound: nearby_close.warden
-        Unknown sound: mob.blaze.ambient
         Unknown sound: nearby_closer.warden
     */
 

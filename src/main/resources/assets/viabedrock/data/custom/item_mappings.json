@@ -1194,6 +1194,14 @@
       }
     }
   },
+  "minecraft:black_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:black_shulker_box": {
     "block": {
       "minecraft:black_shulker_box": {
@@ -1369,6 +1377,14 @@
     "block": {
       "minecraft:blue_glazed_terracotta": {
         "java_id": "minecraft:blue_glazed_terracotta"
+      }
+    }
+  },
+  "minecraft:blue_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -1693,6 +1709,14 @@
     "block": {
       "minecraft:brown_glazed_terracotta": {
         "java_id": "minecraft:brown_glazed_terracotta"
+      }
+    }
+  },
+  "minecraft:brown_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -3187,6 +3211,14 @@
       }
     }
   },
+  "minecraft:cyan_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:cyan_shulker_box": {
     "block": {
       "minecraft:cyan_shulker_box": {
@@ -3994,6 +4026,14 @@
     "block": {
       "minecraft:dragon_head": {
         "java_id": "minecraft:dragon_head"
+      }
+    }
+  },
+  "minecraft:dried_ghast": {
+    "block": {
+      "minecraft:dried_ghast": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -6152,6 +6192,14 @@
       }
     }
   },
+  "minecraft:gray_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:gray_shulker_box": {
     "block": {
       "minecraft:gray_shulker_box": {
@@ -6244,6 +6292,14 @@
       }
     }
   },
+  "minecraft:green_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:green_shulker_box": {
     "block": {
       "minecraft:green_shulker_box": {
@@ -6318,6 +6374,14 @@
     "block": {
       "minecraft:hanging_roots": {
         "java_id": "minecraft:hanging_roots"
+      }
+    }
+  },
+  "minecraft:happy_ghast_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -7722,6 +7786,14 @@
       }
     }
   },
+  "minecraft:light_blue_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:light_blue_shulker_box": {
     "block": {
       "minecraft:light_blue_shulker_box": {
@@ -7804,6 +7876,14 @@
     "meta": {
       "": {
         "java_id": "minecraft:light_gray_dye"
+      }
+    }
+  },
+  "minecraft:light_gray_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -7924,6 +8004,14 @@
     "block": {
       "minecraft:lime_glazed_terracotta": {
         "java_id": "minecraft:lime_glazed_terracotta"
+      }
+    }
+  },
+  "minecraft:lime_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -8302,6 +8390,14 @@
     "block": {
       "minecraft:magenta_glazed_terracotta": {
         "java_id": "minecraft:magenta_glazed_terracotta"
+      }
+    }
+  },
+  "minecraft:magenta_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -9387,6 +9483,14 @@
       }
     }
   },
+  "minecraft:orange_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:orange_shulker_box": {
     "block": {
       "minecraft:orange_shulker_box": {
@@ -9852,6 +9956,14 @@
     "block": {
       "minecraft:pink_glazed_terracotta": {
         "java_id": "minecraft:pink_glazed_terracotta"
+      }
+    }
+  },
+  "minecraft:pink_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -10691,6 +10803,14 @@
       }
     }
   },
+  "minecraft:purple_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:purple_shulker_box": {
     "block": {
       "minecraft:purple_shulker_box": {
@@ -10993,6 +11113,14 @@
     "block": {
       "minecraft:red_glazed_terracotta": {
         "java_id": "minecraft:red_glazed_terracotta"
+      }
+    }
+  },
+  "minecraft:red_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -13919,6 +14047,14 @@
       }
     }
   },
+  "minecraft:white_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:white_shulker_box": {
     "block": {
       "minecraft:white_shulker_box": {
@@ -14176,6 +14312,14 @@
     "block": {
       "minecraft:yellow_glazed_terracotta": {
         "java_id": "minecraft:yellow_glazed_terracotta"
+      }
+    }
+  },
+  "minecraft:yellow_harness": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },

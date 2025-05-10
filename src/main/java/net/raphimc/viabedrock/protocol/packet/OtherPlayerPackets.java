@@ -161,9 +161,6 @@ public class OtherPlayerPackets {
             if ((mode == PlayerPositionModeComponent_PositionMode.Teleport || mode == PlayerPositionModeComponent_PositionMode.Respawn) && entity instanceof ClientPlayerEntity clientPlayer) {
                 wrapper.setPacketType(ClientboundPackets1_21_5.PLAYER_POSITION);
                 clientPlayer.writePlayerPositionPacketToClient(wrapper, Relative.NONE, mode == PlayerPositionModeComponent_PositionMode.Respawn);
-                if (clientPlayer.dimensionChangeInfo() != null && mode == PlayerPositionModeComponent_PositionMode.Respawn) {
-                    clientPlayer.dimensionChangeInfo().sendRespawnMovePackets().set(true);
-                }
                 return;
             }
 

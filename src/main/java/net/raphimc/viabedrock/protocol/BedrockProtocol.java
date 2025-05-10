@@ -70,7 +70,6 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
             ClientboundBedrockPackets.RESOURCE_PACK_CHUNK_DATA,
             ClientboundBedrockPackets.RESOURCE_PACK_STACK,
             ClientboundBedrockPackets.BIOME_DEFINITION_LIST,
-            ClientboundBedrockPackets.COMPRESSED_BIOME_DEFINITION_LIST,
             ClientboundBedrockPackets.DIMENSION_DATA,
             ClientboundBedrockPackets.AVAILABLE_COMMANDS,
             ClientboundBedrockPackets.START_GAME

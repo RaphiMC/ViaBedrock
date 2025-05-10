@@ -48,7 +48,10 @@ import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerboundLoadingScreenPacketType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.SpawnPositionType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkPacket_HeightMapDataType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.SubChunkPacket_SubChunkRequestResult;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -149,9 +152,6 @@ public class WorldPackets {
 
             PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.StartLoadingScreen, loadingScreenId);
             clientPlayer.setPosition(new Position3f(position.x(), position.y() + clientPlayer.eyeOffset(), position.z()));
-            if (gameSession.getMovementMode() == ServerAuthMovementMode.LegacyClientAuthoritativeV1) {
-                clientPlayer.sendMovePlayerPacketToServer(PlayerPositionModeComponent_PositionMode.Normal);
-            }
             clientPlayer.setDimensionChangeInfo(new ClientPlayerEntity.DimensionChangeInfo(loadingScreenId));
             inventoryTracker.closeAllContainers();
 

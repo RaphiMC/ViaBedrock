@@ -309,6 +309,14 @@
   "minecraft:lava_drip_particle": "minecraft:dripping_lava",
   "minecraft:lava_particle": "minecraft:lava",
   "minecraft:llama_spit_smoke": "minecraft:spit",
+  "minecraft:magic_critical_hit_emitter": {
+    "particle": "minecraft:enchanted_hit",
+    "offset_x": 0.375,
+    "offset_y": 0.5,
+    "offset_z": 0.375,
+    "speed": 0.25,
+    "count": 10
+  },
   "minecraft:magnesium_salts_emitter": {
     "particle": "minecraft:entity_effect",
     "arguments": [

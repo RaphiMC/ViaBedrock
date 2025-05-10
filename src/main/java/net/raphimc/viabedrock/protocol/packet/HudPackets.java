@@ -94,6 +94,7 @@ public class HudPackets {
                         wrapper.write(Types.STRING, "is_subclient"); // property name
                         wrapper.write(Types.STRING, wrapper.read(Types.BOOLEAN).toString()); // is sub client
                         wrapper.write(Types.OPTIONAL_STRING, null); // signature
+                        wrapper.read(BedrockTypes.INT_LE); // color (argb)
 
                         wrapper.write(Types.BOOLEAN, true); // listed
                         wrapper.write(Types.OPTIONAL_TAG, TextUtil.stringToNbt(names[i])); // display name

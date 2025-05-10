@@ -29,7 +29,6 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     TEXT(MinecraftPacketIds.Text.getValue()),
     MOVE_ENTITY_ABSOLUTE(MinecraftPacketIds.MoveAbsoluteActor.getValue()),
     MOVE_PLAYER(MinecraftPacketIds.MovePlayer.getValue()),
-    PASSENGER_JUMP(MinecraftPacketIds.PassengerJump.getValue()),
     ENTITY_EVENT(MinecraftPacketIds.ActorEvent.getValue()),
     INVENTORY_TRANSACTION(MinecraftPacketIds.InventoryTransaction.getValue()),
     MOB_EQUIPMENT(MinecraftPacketIds.PlayerEquipment.getValue()),
@@ -46,7 +45,6 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     CONTAINER_CLOSE(MinecraftPacketIds.ContainerClose.getValue()),
     PLAYER_HOTBAR(MinecraftPacketIds.PlayerHotbar.getValue()),
     BLOCK_ENTITY_DATA(MinecraftPacketIds.BlockActorData.getValue()),
-    PLAYER_INPUT(MinecraftPacketIds.PlayerInput.getValue()),
     SET_DIFFICULTY(MinecraftPacketIds.SetDifficulty.getValue()),
     SET_PLAYER_GAME_TYPE(MinecraftPacketIds.SetPlayerGameType.getValue()),
     SIMPLE_EVENT(MinecraftPacketIds.SimpleEvent.getValue()),
@@ -102,7 +100,8 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     DEBUG_DIAGNOSTICS(MinecraftPacketIds.ServerboundDiagnosticsPacket.getValue()),
     CLIENT_CAMERA_AIM_ASSIST(MinecraftPacketIds.ClientCameraAimAssist.getValue()),
     MOVEMENT_PREDICTION_SYNC(MinecraftPacketIds.ClientMovementPredictionSyncPacket.getValue()),
-    UPDATE_CLIENT_OPTIONS(MinecraftPacketIds.UpdateClientOptions.getValue());
+    UPDATE_CLIENT_OPTIONS(MinecraftPacketIds.UpdateClientOptions.getValue()),
+    PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue());
 
     private static final ServerboundBedrockPackets[] REGISTRY = new ServerboundBedrockPackets[512];
 
