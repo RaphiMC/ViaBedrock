@@ -34,35 +34,51 @@ import java.util.logging.Level;
 
 public class PacketSyncStorage extends StoredObject {
 
-    private final AtomicInteger ID = new AtomicInteger(0);
+    private final AtomicInteger ID_COUNTER = new AtomicInteger(0);
+    private final Int2ObjectMap<Long> pendingNetworkStackLatencyResponses = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectMap<Runnable> pendingActions = new Int2ObjectOpenHashMap<>();
 
     public PacketSyncStorage(final UserConnection user) {
         super(user);
     }
 
-    public void syncWithClient(final Runnable runnable) {
-        if (ID.get() >= Short.MAX_VALUE) { // VB compatibility
-            ID.set(0);
+    public int addNetworkStackLatencyResponse(final long timestamp) {
+        if (ID_COUNTER.get() >= Short.MAX_VALUE) { // VB compatibility
+            ID_COUNTER.set(0);
         }
-        final int id = ID.getAndIncrement();
+        final int id = this.ID_COUNTER.getAndIncrement();
+        if (this.pendingNetworkStackLatencyResponses.put(id, Long.valueOf(timestamp)) != null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Overwrote pending network stack latency response with id " + id);
+        }
+        return id;
+    }
+
+    public Long getNetworkStackLatencyResponse(final int id) {
+        return this.pendingNetworkStackLatencyResponses.remove(id);
+    }
+
+    public void syncWithClient(final Runnable runnable) {
+        if (ID_COUNTER.get() >= Short.MAX_VALUE) { // VB compatibility
+            ID_COUNTER.set(0);
+        }
+        final int id = ID_COUNTER.getAndIncrement();
+        if (this.pendingActions.put(id, runnable) != null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Overwrote pending action with id " + id);
+        }
 
         final State state = this.user().getProtocolInfo().getServerState();
         final PacketWrapper pingPacket = PacketWrapper.create(state == State.PLAY ? ClientboundPackets1_21_5.PING : ClientboundConfigurationPackets1_21.PING, this.user());
         pingPacket.write(Types.INT, id); // parameter
         pingPacket.send(BedrockProtocol.class);
-
-        if (this.pendingActions.put(id, runnable) != null) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Overwrote pending action with id " + id);
-        }
     }
 
-    public void handleResponse(final int id) {
+    public boolean handleSyncTask(final int id) {
         final Runnable runnable = this.pendingActions.remove(id);
         if (runnable != null) {
             runnable.run();
+            return true;
         } else {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unexpected packet sync response with id " + id);
+            return false;
         }
     }
 

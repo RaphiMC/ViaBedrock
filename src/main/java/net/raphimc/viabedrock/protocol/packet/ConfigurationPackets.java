@@ -39,7 +39,6 @@ public class ConfigurationPackets {
             wrapper.cancel();
             wrapper.user().getProtocolInfo().setClientState(State.PLAY);
         });
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_5.PONG, null, MultiStatePackets.PONG_HANDLER);
         protocol.registerServerbound(ServerboundPackets1_21_5.CONFIGURATION_ACKNOWLEDGED, null, wrapper -> {
             wrapper.cancel();
             wrapper.user().getProtocolInfo().setClientState(State.CONFIGURATION);

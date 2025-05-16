@@ -26,9 +26,9 @@ import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfi
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
-public class KeepAliveTask implements Runnable {
+import java.util.concurrent.ThreadLocalRandom;
 
-    public static final long INTERNAL_ID = 999; // ID which the server can't possibly send
+public class KeepAliveTask implements Runnable {
 
     @Override
     public void run() {
@@ -40,7 +40,7 @@ public class KeepAliveTask implements Runnable {
 
                     try {
                         final PacketWrapper keepAlive = PacketWrapper.create(info.getProtocolInfo().getServerState() == State.PLAY ? ClientboundPackets1_21_5.KEEP_ALIVE : ClientboundConfigurationPackets1_21.KEEP_ALIVE, info);
-                        keepAlive.write(Types.LONG, INTERNAL_ID); // id
+                        keepAlive.write(Types.LONG, ThreadLocalRandom.current().nextLong()); // id
                         keepAlive.send(BedrockProtocol.class);
                     } catch (Throwable e) {
                         BedrockProtocol.kickForIllegalState(info, "Error sending keep alive packet. See console for details.", e);

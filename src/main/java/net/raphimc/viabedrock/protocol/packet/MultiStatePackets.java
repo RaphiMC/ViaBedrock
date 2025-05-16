@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
-import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundConfigurationPackets1_20_5;
@@ -28,6 +27,7 @@ import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPac
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ServerboundPackets1_21_5;
 import com.viaversion.viaversion.util.Key;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -41,7 +41,6 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketViolationType;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.ClientSettingsStorage;
 import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
-import net.raphimc.viabedrock.protocol.task.KeepAliveTask;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.nio.charset.StandardCharsets;
@@ -49,6 +48,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.logging.Level;
 
 public class MultiStatePackets {
 
@@ -84,28 +84,28 @@ public class MultiStatePackets {
         PacketFactory.writeJavaDisconnect(wrapper, reason);
     };
 
-    private static final PacketHandlers KEEP_ALIVE_HANDLER = new PacketHandlers() {
-        @Override
-        public void register() {
-            map(Types.LONG, BedrockTypes.LONG_LE); // id
-            create(Types.BOOLEAN, true); // from server
-            handler(wrapper -> {
-                if (wrapper.get(BedrockTypes.LONG_LE, 0) == KeepAliveTask.INTERNAL_ID) { // It's a keep alive packet sent from ViaBedrock to prevent the client from disconnecting
-                    wrapper.cancel();
-                }
-            });
+    private static final PacketHandler NETWORK_STACK_LATENCY_HANDLER = wrapper -> {
+        final long timestamp = wrapper.read(BedrockTypes.LONG_LE); // timestamp
+        if (!wrapper.read(Types.BOOLEAN)) { // from server
+            wrapper.cancel();
+            return;
         }
+        final int id = wrapper.user().get(PacketSyncStorage.class).addNetworkStackLatencyResponse(timestamp);
+        wrapper.write(Types.INT, id); // parameter
     };
 
-    private static final PacketHandlers NETWORK_STACK_LATENCY_HANDLER = new PacketHandlers() {
-        @Override
-        protected void register() {
-            map(BedrockTypes.LONG_LE, Types.LONG, t -> t * 1_000_000); // timestamp
-            handler(wrapper -> {
-                if (!wrapper.read(Types.BOOLEAN)) { // from server
-                    wrapper.cancel();
-                }
-            });
+    private static final PacketHandler PONG_HANDLER = wrapper -> {
+        final PacketSyncStorage packetSyncStorage = wrapper.user().get(PacketSyncStorage.class);
+        final int id = wrapper.read(Types.INT); // parameter
+        final Long timestamp = packetSyncStorage.getNetworkStackLatencyResponse(id);
+        if (timestamp != null) {
+            wrapper.write(BedrockTypes.LONG_LE, timestamp * 1_000_000L); // timestamp
+            wrapper.write(Types.BOOLEAN, true); // from server
+        } else {
+            wrapper.cancel();
+            if (!packetSyncStorage.handleSyncTask(id)) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unexpected pong with id " + id);
+            }
         }
     };
 
@@ -138,11 +138,6 @@ public class MultiStatePackets {
         }
     };
 
-    public static final PacketHandler PONG_HANDLER = wrapper -> {
-        wrapper.cancel();
-        wrapper.user().get(PacketSyncStorage.class).handleResponse(wrapper.read(Types.INT)); // parameter
-    };
-
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.DISCONNECT,
                 ClientboundPackets1_21_5.DISCONNECT, DISCONNECT_HANDLER,
@@ -155,12 +150,12 @@ public class MultiStatePackets {
                 ClientboundConfigurationPackets1_21.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
-                ClientboundPackets1_21_5.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER,
+                ClientboundPackets1_21_5.PING, NETWORK_STACK_LATENCY_HANDLER,
                 State.LOGIN, (PacketHandler) wrapper -> {
                     NETWORK_STACK_LATENCY_HANDLER.handle(wrapper);
                     if (!wrapper.isCancelled()) {
                         wrapper.resetReader();
-                        KEEP_ALIVE_HANDLER.handle(wrapper);
+                        PONG_HANDLER.handle(wrapper);
                         if (!wrapper.isCancelled()) {
                             wrapper.setPacketType(ServerboundBedrockPackets.NETWORK_STACK_LATENCY);
                             wrapper.sendToServer(BedrockProtocol.class);
@@ -168,11 +163,11 @@ public class MultiStatePackets {
                         }
                     }
                 },
-                ClientboundConfigurationPackets1_21.KEEP_ALIVE, NETWORK_STACK_LATENCY_HANDLER
+                ClientboundConfigurationPackets1_21.PING, NETWORK_STACK_LATENCY_HANDLER
         );
 
-        protocol.registerServerbound(ServerboundPackets1_21_5.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, KEEP_ALIVE_HANDLER);
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_5.KEEP_ALIVE, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, KEEP_ALIVE_HANDLER);
+        protocol.registerServerbound(ServerboundPackets1_21_5.PONG, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, PONG_HANDLER);
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_5.PONG, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, PONG_HANDLER);
     }
 
 }

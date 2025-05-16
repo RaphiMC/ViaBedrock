@@ -67,7 +67,6 @@ public class PlayPackets {
         });
 
         protocol.registerServerbound(ServerboundPackets1_21_5.CLIENT_INFORMATION, ServerboundBedrockPackets.REQUEST_CHUNK_RADIUS, MultiStatePackets.CLIENT_SETTINGS_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_21_5.PONG, null, MultiStatePackets.PONG_HANDLER);
         protocol.registerServerbound(ServerboundPackets1_21_5.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
         protocol.registerServerbound(ServerboundPackets1_21_5.PING_REQUEST, null, wrapper -> {
             wrapper.cancel();
