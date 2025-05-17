@@ -34,7 +34,7 @@ import com.viaversion.viaversion.api.minecraft.Particle;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_5;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_5;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
@@ -1220,7 +1220,7 @@ public class BedrockMappingData extends MappingDataBase {
                         if (!this.javaItems.containsKey(identifier)) {
                             throw new IllegalStateException("Unknown java item: " + identifier);
                         }
-                        particle.add(Types1_21_5.ITEM, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
+                        particle.add(VersionedTypes.V1_21_5.item, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
                     }
                     default -> throw new IllegalStateException("Unknown particle argument type: " + type);
                 }

@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_5;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.mcstructs.text.TextFormatting;
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import net.raphimc.viabedrock.api.util.StringUtil;
@@ -106,7 +106,7 @@ public class PlayerEntity extends LivingEntity {
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         return switch (attribute.name()) {
             case "minecraft:absorption" -> {
-                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("PLAYER_ABSORPTION"), Types1_21_5.ENTITY_DATA_TYPES.floatType, attribute.computeClampedValue()));
+                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("PLAYER_ABSORPTION"), VersionedTypes.V1_21_5.entityDataTypes.floatType, attribute.computeClampedValue()));
                 javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:max_absorption")); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.maxValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count

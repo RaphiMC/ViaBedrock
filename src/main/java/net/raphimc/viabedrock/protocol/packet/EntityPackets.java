@@ -25,7 +25,7 @@ import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_5;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -165,10 +165,10 @@ public class EntityPackets {
 
             final List<EntityData> javaEntityData = new ArrayList<>();
             entity.updateEntityData(entityData, javaEntityData);
-            javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("ITEM"), Types1_21_5.ENTITY_DATA_TYPES.itemType, itemRewriter.javaItem(item)));
+            javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("ITEM"), VersionedTypes.V1_21_5.entityDataTypes.itemType, itemRewriter.javaItem(item)));
             final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_5.SET_ENTITY_DATA, wrapper.user());
             setEntityData.write(Types.VAR_INT, entity.javaId()); // entity id
-            setEntityData.write(Types1_21_5.ENTITY_DATA_LIST, javaEntityData); // entity data
+            setEntityData.write(VersionedTypes.V1_21_5.entityDataList, javaEntityData); // entity data
             setEntityData.send(BedrockProtocol.class);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOVE_ENTITY_ABSOLUTE, ClientboundPackets1_21_5.ENTITY_POSITION_SYNC, wrapper -> {
@@ -407,7 +407,7 @@ public class EntityPackets {
 
             final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_5.SET_ENTITY_DATA, wrapper.user());
             setEntityData.write(Types.VAR_INT, entity.javaId()); // entity id
-            setEntityData.write(Types1_21_5.ENTITY_DATA_LIST, Lists.newArrayList(new EntityData(entity.getJavaEntityDataIndex("PAINTING_VARIANT"), Types1_21_5.ENTITY_DATA_TYPES.paintingVariantType, paintingHolder))); // entity data
+            setEntityData.write(VersionedTypes.V1_21_5.entityDataList, Lists.newArrayList(new EntityData(entity.getJavaEntityDataIndex("PAINTING_VARIANT"), VersionedTypes.V1_21_5.entityDataTypes.paintingVariantType, paintingHolder))); // entity data
             setEntityData.send(BedrockProtocol.class);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.ENTITY_EVENT, ClientboundPackets1_21_5.ENTITY_EVENT, wrapper -> {
@@ -519,7 +519,7 @@ public class EntityPackets {
             final List<EntityData> javaEntityData = new ArrayList<>();
             entity.updateEntityData(entityData, javaEntityData);
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
-            wrapper.write(Types1_21_5.ENTITY_DATA_LIST, javaEntityData); // entity data
+            wrapper.write(VersionedTypes.V1_21_5.entityDataList, javaEntityData); // entity data
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOB_EFFECT, ClientboundPackets1_21_5.UPDATE_MOB_EFFECT, wrapper -> {
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
@@ -596,15 +596,15 @@ public class EntityPackets {
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.BYTE, (byte) (EquipmentSlot.FEET.ordinal() | Byte.MIN_VALUE)); // slot
-            wrapper.write(Types1_21_5.ITEM, itemRewriter.javaItem(feet)); // item
+            wrapper.write(VersionedTypes.V1_21_5.item, itemRewriter.javaItem(feet)); // item
             wrapper.write(Types.BYTE, (byte) (EquipmentSlot.LEGS.ordinal() | Byte.MIN_VALUE)); // slot
-            wrapper.write(Types1_21_5.ITEM, itemRewriter.javaItem(legs)); // item
+            wrapper.write(VersionedTypes.V1_21_5.item, itemRewriter.javaItem(legs)); // item
             wrapper.write(Types.BYTE, (byte) (EquipmentSlot.CHEST.ordinal() | Byte.MIN_VALUE)); // slot
-            wrapper.write(Types1_21_5.ITEM, itemRewriter.javaItem(chest)); // item
+            wrapper.write(VersionedTypes.V1_21_5.item, itemRewriter.javaItem(chest)); // item
             wrapper.write(Types.BYTE, (byte) (EquipmentSlot.HEAD.ordinal() | Byte.MIN_VALUE)); // slot
-            wrapper.write(Types1_21_5.ITEM, itemRewriter.javaItem(head)); // item
+            wrapper.write(VersionedTypes.V1_21_5.item, itemRewriter.javaItem(head)); // item
             wrapper.write(Types.BYTE, (byte) EquipmentSlot.BODY.ordinal()); // slot
-            wrapper.write(Types1_21_5.ITEM, itemRewriter.javaItem(body)); // item
+            wrapper.write(VersionedTypes.V1_21_5.item, itemRewriter.javaItem(body)); // item
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOB_EQUIPMENT, ClientboundPackets1_21_5.SET_EQUIPMENT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
@@ -623,10 +623,10 @@ public class EntityPackets {
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             if (containerId == ContainerID.CONTAINER_ID_INVENTORY.getValue() && slot >= 0 && slot < 9 && (slot == selectedSlot || selectedSlot < 0)) {
                 wrapper.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
-                wrapper.write(Types1_21_5.ITEM, itemRewriter.javaItem(item)); // item
+                wrapper.write(VersionedTypes.V1_21_5.item, itemRewriter.javaItem(item)); // item
             } else if (containerId == ContainerID.CONTAINER_ID_OFFHAND.getValue()) {
                 wrapper.write(Types.BYTE, (byte) EquipmentSlot.OFFHAND.ordinal()); // slot
-                wrapper.write(Types1_21_5.ITEM, itemRewriter.javaItem(item)); // item
+                wrapper.write(VersionedTypes.V1_21_5.item, itemRewriter.javaItem(item)); // item
             } else {
                 wrapper.cancel();
             }

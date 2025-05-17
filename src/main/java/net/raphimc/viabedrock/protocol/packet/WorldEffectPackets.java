@@ -25,7 +25,7 @@ import com.viaversion.viaversion.api.minecraft.Holder;
 import com.viaversion.viaversion.api.minecraft.Particle;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_5;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -227,7 +227,7 @@ public class WorldEffectPackets {
                         case IconCrack, Food -> {
                             final BedrockItem bedrockItem = new BedrockItem(data >> 16, (short) (data & 0xFFFF), (byte) 1);
                             final Particle particle = new Particle(javaParticle.particle().id());
-                            particle.add(Types1_21_5.ITEM, wrapper.user().get(ItemRewriter.class).javaItem(bedrockItem)); // item
+                            particle.add(VersionedTypes.V1_21_5.item, wrapper.user().get(ItemRewriter.class).javaItem(bedrockItem)); // item
                             yield javaParticle.withParticle(particle);
                         }
                         case Terrain, BrushDust -> {

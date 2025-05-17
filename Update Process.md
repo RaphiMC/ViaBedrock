@@ -8,7 +8,7 @@ This file lists the steps necessary to update ViaBedrock.
 4. Update hardcoded blockstates: Search all files for `new BlockState("`
 5. Add new vanilla packs to `ResourcePacksStorage#VANILLA_PACK_NAMES`
 6. Update data in the `protocol/data` package
-7. Replace `Types1_21_5` and `EntityTypes1_21_5` with the new type
+7. Replace `VersionedTypes.V1_21_5` and `EntityTypes1_21_5` with the new type
 8. Replace `ClientboundPackets1_21_5` and `ServerboundPackets1_21_5` with the new packet enum
 9. Replace `ClientboundConfigurationPackets1_21` and `ServerboundConfigurationPackets1_20_5` with the new packet enum
 10. Check `StructuredDataKey` usages and update them to new Minecraft version if needed

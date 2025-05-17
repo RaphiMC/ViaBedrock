@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_5;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
@@ -114,7 +114,7 @@ public class OtherPlayerPackets {
             final PacketWrapper setEquipment = PacketWrapper.create(ClientboundPackets1_21_5.SET_EQUIPMENT, wrapper.user());
             setEquipment.write(Types.VAR_INT, entity.javaId()); // entity id
             setEquipment.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
-            setEquipment.write(Types1_21_5.ITEM, itemRewriter.javaItem(item)); // item
+            setEquipment.write(VersionedTypes.V1_21_5.item, itemRewriter.javaItem(item)); // item
             setEquipment.send(BedrockProtocol.class);
 
             entity.updateEntityData(entityData);

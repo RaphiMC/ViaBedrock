@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_5;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.components.TranslationComponent;
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
@@ -177,7 +177,7 @@ public class InventoryPackets {
                     wrapper.write(Types.VAR_INT, 0); // revision
                     wrapper.write(Types.SHORT, (short) container.javaSlot(slot)); // slot
                 }
-                wrapper.write(Types1_21_5.ITEM, container.getJavaItem(slot)); // item
+                wrapper.write(VersionedTypes.V1_21_5.item, container.getJavaItem(slot)); // item
             } else {
                 wrapper.cancel();
             }
@@ -277,7 +277,7 @@ public class InventoryPackets {
         protocol.registerServerbound(ServerboundPackets1_21_5.SET_CREATIVE_MODE_SLOT, null, wrapper -> {
             wrapper.cancel();
             final short slot = wrapper.read(Types.SHORT); // slot
-            final Item item = wrapper.read(Types1_21_5.LENGTH_PREFIXED_ITEM); // item
+            final Item item = wrapper.read(VersionedTypes.V1_21_5.lengthPrefixedItem); // item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             if (inventoryTracker.getPendingCloseContainer() != null) {

@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_21_5;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
@@ -94,7 +94,7 @@ public class Entity {
         this.updateEntityData(entityData, javaEntityData);
         final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_5.SET_ENTITY_DATA, this.user);
         setEntityData.write(Types.VAR_INT, this.javaId); // entity id
-        setEntityData.write(Types1_21_5.ENTITY_DATA_LIST, javaEntityData); // entity data
+        setEntityData.write(VersionedTypes.V1_21_5.entityDataList, javaEntityData); // entity data
         setEntityData.send(BedrockProtocol.class);
     }
 
