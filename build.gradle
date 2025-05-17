@@ -48,7 +48,7 @@ dependencies {
     compileOnly "io.netty:netty-handler:4.2.0.Final"
     compileOnly "com.google.code.gson:gson:2.13.1"
 
-    api("io.netty:netty-codec-http:4.2.0.Final") {
+    api("io.netty:netty-codec-http:4.2.1.Final") {
         transitive = false
     }
     api "io.jsonwebtoken:jjwt-impl:0.12.6"
