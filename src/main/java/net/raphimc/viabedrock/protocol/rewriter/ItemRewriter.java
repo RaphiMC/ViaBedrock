@@ -181,10 +181,10 @@ public class ItemRewriter extends StoredObject {
                 }
 
                 if (resourcePacksStorage.getAttachables().attachables().containsKey(identifier) && resourcePacksStorage.isLoadedOnJavaClient() && resourcePacksStorage.getConverterData().containsKey("ca_" + identifier + "_default")) {
-                    data.set(StructuredDataKey.ITEM_MODEL, "viabedrock:attachable");
+                    data.set(StructuredDataKey.ITEM_MODEL, Key.of("viabedrock:attachable"));
                     data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomAttachableResourceRewriter.getCustomModelData(identifier + "_default"));
                 } else if (itemDefinition.iconComponent() != null && resourcePacksStorage.isLoadedOnJavaClient()) {
-                    data.set(StructuredDataKey.ITEM_MODEL, "viabedrock:item_texture");
+                    data.set(StructuredDataKey.ITEM_MODEL, Key.of("viabedrock:item_texture"));
                     data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomItemTextureResourceRewriter.getCustomModelData(itemDefinition.iconComponent() + "_0"));
                 } else {
                     data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Custom item: " + identifier)});

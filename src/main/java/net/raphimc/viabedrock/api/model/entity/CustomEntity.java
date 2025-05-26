@@ -28,6 +28,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
+import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
@@ -172,7 +173,7 @@ public class CustomEntity extends Entity {
             final List<EntityData> javaEntityData = new ArrayList<>();
 
             final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
-            data.set(StructuredDataKey.ITEM_MODEL, "viabedrock:entity");
+            data.set(StructuredDataKey.ITEM_MODEL, Key.of("viabedrock:entity"));
             data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomEntityResourceRewriter.getCustomModelData(key));
             final StructuredItem item = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), 1, data);
             javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("ITEM_STACK"), VersionedTypes.V1_21_5.entityDataTypes.itemType, item));

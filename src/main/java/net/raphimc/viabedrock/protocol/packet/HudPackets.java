@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.minecraft.GameProfile;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
@@ -73,29 +74,23 @@ public class HudPackets {
                         wrapper.write(Types.UUID, uuids[i]); // uuid
                         uniqueEntityIds[i] = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
                         names[i] = wrapper.read(BedrockTypes.STRING); // username
-                        wrapper.write(Types.STRING, StringUtil.encodeUUID(uuids[i])); // username
-                        wrapper.write(Types.VAR_INT, 6); // property count
-                        wrapper.write(Types.STRING, "xuid"); // property name
-                        wrapper.write(Types.STRING, wrapper.read(BedrockTypes.STRING)); // xuid
-                        wrapper.write(Types.OPTIONAL_STRING, null); // signature
-                        wrapper.write(Types.STRING, "platform_online_id"); // property name
-                        wrapper.write(Types.STRING, wrapper.read(BedrockTypes.STRING)); // platform online id
-                        wrapper.write(Types.OPTIONAL_STRING, null); // signature
-                        wrapper.write(Types.STRING, "device_os"); // property name
-                        wrapper.write(Types.STRING, wrapper.read(BedrockTypes.INT_LE).toString()); // device os
-                        wrapper.write(Types.OPTIONAL_STRING, null); // signature
+                        final String xuid = wrapper.read(BedrockTypes.STRING); // xuid
+                        final String platformOnlineId = wrapper.read(BedrockTypes.STRING); // platform online id
+                        final int deviceOs = wrapper.read(BedrockTypes.INT_LE); // device os
                         final SkinData skin = wrapper.read(BedrockTypes.SKIN); // skin
-                        wrapper.write(Types.STRING, "is_teacher"); // property name
-                        wrapper.write(Types.STRING, wrapper.read(Types.BOOLEAN).toString()); // is teacher
-                        wrapper.write(Types.OPTIONAL_STRING, null); // signature
-                        wrapper.write(Types.STRING, "is_host"); // property name
-                        wrapper.write(Types.STRING, wrapper.read(Types.BOOLEAN).toString()); // is host
-                        wrapper.write(Types.OPTIONAL_STRING, null); // signature
-                        wrapper.write(Types.STRING, "is_subclient"); // property name
-                        wrapper.write(Types.STRING, wrapper.read(Types.BOOLEAN).toString()); // is sub client
-                        wrapper.write(Types.OPTIONAL_STRING, null); // signature
+                        final boolean isTeacher = wrapper.read(Types.BOOLEAN); // is teacher
+                        final boolean isHost = wrapper.read(Types.BOOLEAN); // is host
+                        final boolean isSubClient = wrapper.read(Types.BOOLEAN); // is sub client
                         wrapper.read(BedrockTypes.INT_LE); // color (argb)
-
+                        wrapper.write(Types.STRING, StringUtil.encodeUUID(uuids[i])); // username
+                        wrapper.write(Types.PROFILE_PROPERTY_ARRAY, new GameProfile.Property[]{
+                                new GameProfile.Property("xuid", xuid, null),
+                                new GameProfile.Property("platform_online_id", platformOnlineId, null),
+                                new GameProfile.Property("device_os", String.valueOf(deviceOs), null),
+                                new GameProfile.Property("is_teacher", String.valueOf(isTeacher), null),
+                                new GameProfile.Property("is_host", String.valueOf(isHost), null),
+                                new GameProfile.Property("is_subclient", String.valueOf(isSubClient), null)
+                        }); // properties
                         wrapper.write(Types.BOOLEAN, true); // listed
                         wrapper.write(Types.OPTIONAL_TAG, TextUtil.stringToNbt(names[i])); // display name
 

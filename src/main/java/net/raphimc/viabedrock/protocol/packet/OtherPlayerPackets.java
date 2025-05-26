@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.minecraft.GameProfile;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_5;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
@@ -82,16 +83,11 @@ public class OtherPlayerPackets {
             playerInfoUpdate.write(Types.VAR_INT, 1); // length
             playerInfoUpdate.write(Types.UUID, uuid); // uuid
             playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(uuid)); // username
-            playerInfoUpdate.write(Types.VAR_INT, 3); // property count
-            playerInfoUpdate.write(Types.STRING, "platform_online_id"); // property name
-            playerInfoUpdate.write(Types.STRING, platformOnlineId); // property value
-            playerInfoUpdate.write(Types.OPTIONAL_STRING, null); // signature
-            playerInfoUpdate.write(Types.STRING, "device_id"); // property name
-            playerInfoUpdate.write(Types.STRING, wrapper.read(BedrockTypes.STRING)); // device id
-            playerInfoUpdate.write(Types.OPTIONAL_STRING, null); // signature
-            playerInfoUpdate.write(Types.STRING, "device_os"); // property name
-            playerInfoUpdate.write(Types.STRING, wrapper.read(BedrockTypes.INT_LE).toString()); // device os
-            playerInfoUpdate.write(Types.OPTIONAL_STRING, null); // signature
+            playerInfoUpdate.write(Types.PROFILE_PROPERTY_ARRAY, new GameProfile.Property[]{
+                    new GameProfile.Property("platform_online_id", platformOnlineId, null),
+                    new GameProfile.Property("device_id", wrapper.read(BedrockTypes.STRING), null), // device id
+                    new GameProfile.Property("device_os", wrapper.read(BedrockTypes.INT_LE).toString(), null) // device os
+            }); // properties
             playerInfoUpdate.write(Types.VAR_INT, GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType()).ordinal()); // game mode
             playerInfoUpdate.send(BedrockProtocol.class);
 
