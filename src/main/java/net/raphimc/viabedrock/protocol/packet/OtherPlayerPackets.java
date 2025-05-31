@@ -84,9 +84,9 @@ public class OtherPlayerPackets {
             playerInfoUpdate.write(Types.UUID, uuid); // uuid
             playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(uuid)); // username
             playerInfoUpdate.write(Types.PROFILE_PROPERTY_ARRAY, new GameProfile.Property[]{
-                    new GameProfile.Property("platform_online_id", platformOnlineId, null),
-                    new GameProfile.Property("device_id", wrapper.read(BedrockTypes.STRING), null), // device id
-                    new GameProfile.Property("device_os", wrapper.read(BedrockTypes.INT_LE).toString(), null) // device os
+                    new GameProfile.Property("platform_online_id", platformOnlineId),
+                    new GameProfile.Property("device_id", wrapper.read(BedrockTypes.STRING)), // device id
+                    new GameProfile.Property("device_os", wrapper.read(BedrockTypes.INT_LE).toString()) // device os
             }); // properties
             playerInfoUpdate.write(Types.VAR_INT, GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType()).ordinal()); // game mode
             playerInfoUpdate.send(BedrockProtocol.class);

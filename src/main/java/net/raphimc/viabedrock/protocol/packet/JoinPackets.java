@@ -124,7 +124,7 @@ public class JoinPackets {
                         wrapper.setPacketType(ClientboundLoginPackets.LOGIN_FINISHED);
                         wrapper.write(Types.UUID, authChainData.getIdentity()); // uuid
                         wrapper.write(Types.STRING, authChainData.getDisplayName()); // username
-                        wrapper.write(Types.VAR_INT, 0); // properties length
+                        wrapper.write(Types.PROFILE_PROPERTY_ARRAY, new GameProfile.Property[0]); // properties
 
                         final ProtocolInfo info = wrapper.user().getProtocolInfo();
                         info.setUsername(authChainData.getDisplayName());

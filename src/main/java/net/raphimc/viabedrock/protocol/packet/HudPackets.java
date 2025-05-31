@@ -72,6 +72,7 @@ public class HudPackets {
                     for (int i = 0; i < length; i++) {
                         uuids[i] = wrapper.read(BedrockTypes.UUID); // uuid
                         wrapper.write(Types.UUID, uuids[i]); // uuid
+                        wrapper.write(Types.STRING, StringUtil.encodeUUID(uuids[i])); // username
                         uniqueEntityIds[i] = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
                         names[i] = wrapper.read(BedrockTypes.STRING); // username
                         final String xuid = wrapper.read(BedrockTypes.STRING); // xuid
@@ -82,14 +83,13 @@ public class HudPackets {
                         final boolean isHost = wrapper.read(Types.BOOLEAN); // is host
                         final boolean isSubClient = wrapper.read(Types.BOOLEAN); // is sub client
                         wrapper.read(BedrockTypes.INT_LE); // color (argb)
-                        wrapper.write(Types.STRING, StringUtil.encodeUUID(uuids[i])); // username
                         wrapper.write(Types.PROFILE_PROPERTY_ARRAY, new GameProfile.Property[]{
-                                new GameProfile.Property("xuid", xuid, null),
-                                new GameProfile.Property("platform_online_id", platformOnlineId, null),
-                                new GameProfile.Property("device_os", String.valueOf(deviceOs), null),
-                                new GameProfile.Property("is_teacher", String.valueOf(isTeacher), null),
-                                new GameProfile.Property("is_host", String.valueOf(isHost), null),
-                                new GameProfile.Property("is_subclient", String.valueOf(isSubClient), null)
+                                new GameProfile.Property("xuid", xuid),
+                                new GameProfile.Property("platform_online_id", platformOnlineId),
+                                new GameProfile.Property("device_os", String.valueOf(deviceOs)),
+                                new GameProfile.Property("is_teacher", String.valueOf(isTeacher)),
+                                new GameProfile.Property("is_host", String.valueOf(isHost)),
+                                new GameProfile.Property("is_subclient", String.valueOf(isSubClient))
                         }); // properties
                         wrapper.write(Types.BOOLEAN, true); // listed
                         wrapper.write(Types.OPTIONAL_TAG, TextUtil.stringToNbt(names[i])); // display name
