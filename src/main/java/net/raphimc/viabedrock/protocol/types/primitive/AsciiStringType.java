@@ -18,32 +18,25 @@
 package net.raphimc.viabedrock.protocol.types.primitive;
 
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.TypeConverter;
 import io.netty.buffer.ByteBuf;
-import io.netty.util.AsciiString;
 
 import java.nio.charset.StandardCharsets;
 
-public class AsciiStringType extends Type<AsciiString> implements TypeConverter<AsciiString> {
+public class AsciiStringType extends Type<String> {
 
     public AsciiStringType() {
-        super(AsciiString.class);
+        super(String.class);
     }
 
     @Override
-    public AsciiString read(ByteBuf buffer) {
-        return AsciiString.of(buffer.readCharSequence(buffer.readIntLE(), StandardCharsets.US_ASCII));
+    public String read(ByteBuf buffer) {
+        return buffer.readString(buffer.readIntLE(), StandardCharsets.US_ASCII);
     }
 
     @Override
-    public void write(ByteBuf buffer, AsciiString value) {
+    public void write(ByteBuf buffer, String value) {
         buffer.writeIntLE(value.length());
         buffer.writeCharSequence(value, StandardCharsets.US_ASCII);
-    }
-
-    @Override
-    public AsciiString from(Object o) {
-        return AsciiString.of(o.toString());
     }
 
 }

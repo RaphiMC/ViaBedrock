@@ -22,8 +22,8 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundConfigurationPackets1_20_5;
-import com.viaversion.viaversion.protocols.v1_20_5to1_21.packet.ClientboundConfigurationPackets1_21;
+import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundConfigurationPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundConfigurationPackets1_21_6;
 import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -49,7 +49,7 @@ import java.util.logging.Level;
 public class ResourcePackPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientboundTransition(ClientboundBedrockPackets.RESOURCE_PACKS_INFO, ClientboundConfigurationPackets1_21.RESOURCE_PACK_PUSH, (PacketHandler) wrapper -> {
+        protocol.registerClientboundTransition(ClientboundBedrockPackets.RESOURCE_PACKS_INFO, ClientboundConfigurationPackets1_21_6.RESOURCE_PACK_PUSH, (PacketHandler) wrapper -> {
             wrapper.cancel();
             if (wrapper.user().has(ResourcePacksStorage.class)) {
                 if (wrapper.user().get(ResourcePacksStorage.class).hasFinishedLoading()) {
@@ -64,6 +64,7 @@ public class ResourcePackPackets {
             wrapper.read(Types.BOOLEAN); // resource pack required
             wrapper.read(Types.BOOLEAN); // has addon packs
             wrapper.read(Types.BOOLEAN); // has scripts
+            wrapper.read(Types.BOOLEAN); // force disable vibrant visuals
             wrapper.read(BedrockTypes.UUID); // world template uuid
             wrapper.read(BedrockTypes.STRING); // world template version
             final ResourcePack[] resourcePacks = wrapper.read(BedrockTypes.RESOURCE_PACK_ARRAY);
@@ -96,7 +97,7 @@ public class ResourcePackPackets {
                 ); // prompt message
                 httpFuture.thenRun(() -> resourcePackPush.scheduleSend(BedrockProtocol.class));
             } else {
-                final PacketWrapper resourcePack = PacketWrapper.create(ServerboundConfigurationPackets1_20_5.RESOURCE_PACK, wrapper.user());
+                final PacketWrapper resourcePack = PacketWrapper.create(ServerboundConfigurationPackets1_21_6.RESOURCE_PACK, wrapper.user());
                 resourcePack.write(Types.UUID, UUID.randomUUID()); // pack id
                 resourcePack.write(Types.VAR_INT, ResourcePackAction.DECLINED.ordinal()); // status
                 resourcePack.sendToServer(BedrockProtocol.class, false);
@@ -210,7 +211,7 @@ public class ResourcePackPackets {
             }
         });
 
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_5.RESOURCE_PACK, ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, wrapper -> {
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_6.RESOURCE_PACK, ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, wrapper -> {
             final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
 
             wrapper.read(Types.UUID); // pack id

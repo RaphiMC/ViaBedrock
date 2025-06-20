@@ -239,6 +239,9 @@
         1.2
       ]
     },
+    "entity:minecraft:happy_ghast": {
+      "sound": "mob.happy_ghast.ambient"
+    },
     "entity:minecraft:camel": {
       "sound": "mob.camel.ambient",
       "pitch": [
@@ -424,6 +427,9 @@
         0.8,
         1.2
       ]
+    },
+    "block:dried_ghast": {
+      "sound": "block.dried_ghast.ambient"
     },
     "entity:minecraft:donkey": {
       "sound": "mob.horse.donkey.idle",
@@ -784,6 +790,9 @@
         1.2
       ]
     },
+    "block:dried_ghast": {
+      "sound": "block.dried_ghast.ambient_water"
+    },
     "entity:minecraft:guardian": {
       "sound": "mob.guardian.ambient",
       "pitch": [
@@ -1089,6 +1098,9 @@
     "": {
       "sound": "block.click",
       "pitch": 0.7
+    },
+    "entity:minecraft:happy_ghast": {
+      "sound": "mob.happy_ghast.goggles_down"
     }
   },
   "Attack": {
@@ -1920,6 +1932,11 @@
         0.8,
         1.0
       ]
+    },
+    "block:dried_ghast": {
+      "sound": "block.dried_ghast.break",
+      "volume": 0.8,
+      "pitch": 0.96
     },
     "block:wood": {
       "sound": "dig.wood",
@@ -2861,6 +2878,9 @@
         1.2
       ]
     },
+    "entity:minecraft:happy_ghast": {
+      "sound": "mob.happy_ghast.death"
+    },
     "entity:minecraft:camel": {
       "sound": "mob.camel.death",
       "pitch": [
@@ -3406,6 +3426,9 @@
         1.1,
         1.33
       ]
+    },
+    "entity:minecraft:happy_ghast": {
+      "sound": "mob.happy_ghast.goggles_up"
     }
   },
   "Disappeared": {
@@ -4959,6 +4982,9 @@
   "EquipGeneric": {
     "": {
       "sound": "armor.equip_generic"
+    },
+    "entity:minecraft:happy_ghast": {
+      "sound": "mob.happy_ghast.harness_equip"
     }
   },
   "EquipGold": {
@@ -5349,6 +5375,11 @@
     "block:deepslate": {
       "sound": "fall.deepslate",
       "volume": 0.4
+    },
+    "block:dried_ghast": {
+      "sound": "block.dried_ghast.fall",
+      "volume": 0.4,
+      "pitch": 0.9
     },
     "block:wood": {
       "sound": "fall.wood",
@@ -7733,6 +7764,9 @@
         1.2
       ]
     },
+    "entity:minecraft:happy_ghast": {
+      "sound": "mob.happy_ghast.hurt"
+    },
     "entity:minecraft:camel": {
       "sound": "mob.camel.hurt",
       "pitch": [
@@ -8303,7 +8337,7 @@
   },
   "ImitateDrowned": {
     "entity:minecraft:parrot": {
-      "sound": "mob.zombie.say",
+      "sound": "mob.drowned.say",
       "volume": 0.6,
       "pitch": 1.8
     }
@@ -8357,6 +8391,12 @@
       "pitch": 1.8
     }
   },
+  "ImitateHappyGhast": {
+    "entity:minecraft:parrot": {
+      "sound": "mob.happy_ghast.ambient",
+      "pitch": 1.7
+    }
+  },
   "ImitateHusk": {
     "entity:minecraft:parrot": {
       "sound": "mob.husk.ambient",
@@ -8364,7 +8404,6 @@
       "pitch": 1.8
     }
   },
-  "ImitateIllusionIllager": null,
   "ImitateMagmaCube": {
     "entity:minecraft:parrot": {
       "sound": "mob.magmacube.big",
@@ -8478,7 +8517,7 @@
   },
   "ImitateWitherSkeleton": {
     "entity:minecraft:parrot": {
-      "sound": "mob.skeleton.say",
+      "sound": "entity.wither_skeleton.ambient",
       "volume": 0.7,
       "pitch": 1.8
     }
@@ -9298,6 +9337,11 @@
       "sound": "jump.deepslate",
       "volume": 0.12
     },
+    "block:dried_ghast": {
+      "sound": "block.dried_ghast.step",
+      "volume": 0.12,
+      "pitch": 1.2
+    },
     "block:wood": {
       "sound": "jump.wood",
       "volume": 0.12
@@ -9753,6 +9797,9 @@
       "sound": "land.deepslate",
       "volume": 0.22
     },
+    "block:dried_ghast": {
+      "sound": "block.dried_ghast.step"
+    },
     "block:wood": {
       "sound": "land.wood",
       "volume": 0.18
@@ -9859,6 +9906,21 @@
       "sound": "mob.frog.lay_spawn",
       "volume": 0.3,
       "pitch": 0.9
+    }
+  },
+  "LeadBreak": {
+    "": {
+      "sound": "lead.break"
+    }
+  },
+  "LeadLeash": {
+    "": {
+      "sound": "leashknot.place"
+    }
+  },
+  "LeadUnleash": {
+    "": {
+      "sound": "leashknot.break"
     }
   },
   "LecternBookPlace": {
@@ -10694,6 +10756,11 @@
         1.0
       ]
     },
+    "block:dried_ghast": {
+      "sound": "block.dried_ghast.place",
+      "volume": 0.8,
+      "pitch": 0.96
+    },
     "block:wood": {
       "sound": "dig.wood",
       "pitch": 0.8
@@ -10782,6 +10849,13 @@
         0.8,
         1.0
       ]
+    }
+  },
+  "PlaceInWater": {
+    "block:dried_ghast": {
+      "sound": "block.dried_ghast.place_in_water",
+      "volume": 0.8,
+      "pitch": 0.96
     }
   },
   "PlaceLeashKnot": {
@@ -11643,6 +11717,11 @@
       "sound": "record.strad"
     }
   },
+  "RecordTears": {
+    "": {
+      "sound": "record.tears"
+    }
+  },
   "RecordWait": {
     "": {
       "sound": "record.wait"
@@ -11927,6 +12006,7 @@
     },
     "entity:minecraft:blaze": {
       "sound": "mob.blaze.shoot",
+      "volume": 2.0,
       "pitch": [
         0.8,
         1.2
@@ -12667,6 +12747,11 @@
       "sound": "mob.endermen.stare"
     }
   },
+  "StateChange": {
+    "block:dried_ghast": {
+      "sound": "block.dried_ghast.state_change"
+    }
+  },
   "Step": {
     "block:soul_sand": {
       "sound": "step.soul_sand",
@@ -13250,6 +13335,11 @@
     "block:deepslate": {
       "sound": "step.deepslate",
       "volume": 0.3
+    },
+    "block:dried_ghast": {
+      "sound": "block.dried_ghast.step",
+      "volume": 0.12,
+      "pitch": 1.2
     },
     "block:wood": {
       "sound": "step.wood",
@@ -13955,6 +14045,16 @@
       ]
     }
   },
+  "TheEndLightFlash": {
+    "": {
+      "sound": "ambient.weather.the_end_light_flash",
+      "volume": 6.25,
+      "pitch": [
+        0.8,
+        1.0
+      ]
+    }
+  },
   "Thorns": {
     "": {
       "sound": "damage.thorns",
@@ -14263,6 +14363,18 @@
       "sound": "ui.stonecutter.take_result"
     }
   },
+  "Undefined": null,
+  "UnequipGeneric": {
+    "entity:minecraft:happy_ghast": {
+      "sound": "mob.happy_ghast.harness_unequip"
+    },
+    "entity:minecraft:llama": {
+      "sound": "mob.llama.carpet_unequip"
+    },
+    "entity:minecraft:horse": {
+      "sound": "mob.horse.horse_armor_unequip"
+    }
+  },
   "UnequipWolf": {
     "": {
       "sound": "armor.unequip_wolf"
@@ -14284,6 +14396,26 @@
   "Unfreeze": {
     "entity:minecraft:creaking": {
       "sound": "mob.creaking.unfreeze"
+    }
+  },
+  "Unsaddle": {
+    "entity:minecraft:camel": {
+      "sound": "mob.unsaddle"
+    },
+    "entity:minecraft:pig": {
+      "sound": "mob.unsaddle"
+    },
+    "entity:minecraft:horse": {
+      "sound": "mob.unsaddle"
+    },
+    "entity:minecraft:mule": {
+      "sound": "mob.unsaddle"
+    },
+    "entity:minecraft:donkey": {
+      "sound": "mob.unsaddle"
+    },
+    "entity:minecraft:strider": {
+      "sound": "mob.unsaddle"
     }
   },
   "UseSmithingTable": {

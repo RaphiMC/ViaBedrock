@@ -29,8 +29,7 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 - [x] Entity attributes
 - [ ] Entity mounting
 - [x] Player abilities
-- [x] Client-Authoritative Movement
-- [x] Server-Authoritative Movement
+- [x] Movement
 - [ ] Client-Authoritative Inventory
 - [ ] Server-Authoritative Inventory
 - [ ] Item data

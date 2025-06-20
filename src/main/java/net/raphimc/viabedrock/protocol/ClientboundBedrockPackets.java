@@ -179,12 +179,12 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     CAMERA_AIM_ASSIST(MinecraftPacketIds.CameraAimAssist.getValue()),
     CONTAINER_REGISTRY_CLEANUP(MinecraftPacketIds.ContainerRegistryCleanup.getValue()),
     MOVEMENT_EFFECT(MinecraftPacketIds.MovementEffect.getValue()),
-    SET_MOVEMENT_AUTHORITY_MODE(MinecraftPacketIds.SetMovementAuthorityMode.getValue()),
     CAMERA_AIM_ASSIST_PRESETS(MinecraftPacketIds.CameraAimAssistPresets.getValue()),
     PLAYER_VIDEO_CAPTURE(MinecraftPacketIds.PlayerVideoCapturePacket.getValue()),
     PLAYER_UPDATE_ENTITY_OVERRIDES(MinecraftPacketIds.PlayerUpdateEntityOverridesPacket.getValue()),
     PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue()),
-    CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue());
+    CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue()),
+    SERVER_SCRIPT_DEBUG_DRAWER(MinecraftPacketIds.ServerScriptDebugDrawerPacket.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

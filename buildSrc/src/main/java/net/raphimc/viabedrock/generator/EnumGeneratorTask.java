@@ -125,29 +125,6 @@ public abstract class EnumGeneratorTask extends DefaultTask {
             }
         }
 
-        // Manually add missing entries
-        final List<EnumField> levelSoundEventEnum = enums.get("Puv::Legacy::LevelSoundEvent");
-        levelSoundEventEnum.removeIf(field -> field.name.equals("Undefined"));
-        levelSoundEventEnum.add(new EnumField("ImitateDrowned", "531"));
-        levelSoundEventEnum.add(new EnumField("ImitateCreaking", "532"));
-        levelSoundEventEnum.add(new EnumField("BundleInsertFail", "533"));
-        levelSoundEventEnum.add(new EnumField("SpongeAbsorb", "534"));
-        levelSoundEventEnum.add(new EnumField("CreakingHeartTrail", "536"));
-        levelSoundEventEnum.add(new EnumField("CreakingHeartSpawn", "537"));
-        levelSoundEventEnum.add(new EnumField("Activate", "538"));
-        levelSoundEventEnum.add(new EnumField("Deactivate", "539"));
-        levelSoundEventEnum.add(new EnumField("Freeze", "540"));
-        levelSoundEventEnum.add(new EnumField("Unfreeze", "541"));
-        levelSoundEventEnum.add(new EnumField("Open", "542"));
-        levelSoundEventEnum.add(new EnumField("OpenLong", "543"));
-        levelSoundEventEnum.add(new EnumField("Close", "544"));
-        levelSoundEventEnum.add(new EnumField("CloseLong", "545"));
-        levelSoundEventEnum.add(new EnumField("ImitatePhantom", "546"));
-        levelSoundEventEnum.add(new EnumField("ImitateZoglin", "547"));
-        levelSoundEventEnum.add(new EnumField("ImitateGuardian", "548"));
-        levelSoundEventEnum.add(new EnumField("ImitateRavager", "549"));
-        levelSoundEventEnum.add(new EnumField("ImitatePillager", "550"));
-
         // Mojang seems to have pushed an outdated version of this enum. Those values exist in 1.21.50, but not in 1.21.60
         final List<EnumField> actorDamageCauseEnum = enums.get("ActorDamageCause");
         actorDamageCauseEnum.add(new EnumField("MaceSmash", "34"));

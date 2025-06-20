@@ -80,7 +80,8 @@ public enum EntityEvent {
     BODY_BREAK(65),
     SHAKE(66),
     DROWN_PARTICLES(67),
-    SADDLE_BREAK(68);
+    SADDLE_BREAK(68),
+    RAVAGER_ROARED(69);
 
     private static final Int2ObjectMap<EntityEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

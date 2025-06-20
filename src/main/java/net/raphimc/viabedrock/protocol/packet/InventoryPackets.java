@@ -26,8 +26,8 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.components.TranslationComponent;
-import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
-import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ServerboundPackets1_21_5;
+import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
 import net.lenni0451.mcstructs_bedrock.forms.Form;
 import net.lenni0451.mcstructs_bedrock.forms.serializer.FormSerializer;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -62,7 +62,7 @@ import java.util.logging.Level;
 public class InventoryPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_21_5.OPEN_SCREEN, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_21_6.OPEN_SCREEN, wrapper -> {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = wrapper.user().get(BlockStateRewriter.class);
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
@@ -114,7 +114,7 @@ public class InventoryPackets {
             wrapper.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(type)); // type
             wrapper.write(Types.TAG, TextUtil.textComponentToNbt(title)); // title
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_21_5.CONTAINER_CLOSE, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_21_6.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(Types.BYTE, Types.VAR_INT); // container id
@@ -144,7 +144,7 @@ public class InventoryPackets {
                 });
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_21_5.CONTAINER_SET_CONTENT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets1_21_6.CONTAINER_SET_CONTENT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
             final BedrockItem[] items = wrapper.read(itemRewriter.itemArrayType()); // items
@@ -159,7 +159,7 @@ public class InventoryPackets {
                 wrapper.cancel();
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_SLOT, ClientboundPackets1_21_5.CONTAINER_SET_SLOT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_SLOT, ClientboundPackets1_21_6.CONTAINER_SET_SLOT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
             final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // slot
@@ -171,13 +171,13 @@ public class InventoryPackets {
             final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);
             if (container != null && container.setItem(slot, item)) {
                 if (container.type() == ContainerType.HUD && slot == 0) { // cursor item
-                    wrapper.setPacketType(ClientboundPackets1_21_5.SET_CURSOR_ITEM);
+                    wrapper.setPacketType(ClientboundPackets1_21_6.SET_CURSOR_ITEM);
                 } else {
                     wrapper.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
                     wrapper.write(Types.VAR_INT, 0); // revision
                     wrapper.write(Types.SHORT, (short) container.javaSlot(slot)); // slot
                 }
-                wrapper.write(VersionedTypes.V1_21_5.item, container.getJavaItem(slot)); // item
+                wrapper.write(VersionedTypes.V1_21_6.item, container.getJavaItem(slot)); // item
             } else {
                 wrapper.cancel();
             }
@@ -217,7 +217,7 @@ public class InventoryPackets {
                 inventoryTracker.closeAllContainers();
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_HOTBAR, ClientboundPackets1_21_5.SET_HELD_SLOT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_HOTBAR, ClientboundPackets1_21_6.SET_HELD_SLOT, wrapper -> {
             final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
             final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // selected slot
             final byte containerId = wrapper.read(Types.BYTE); // container id
@@ -240,7 +240,7 @@ public class InventoryPackets {
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_21_5.CONTAINER_CLICK, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_21_6.CONTAINER_CLICK, null, wrapper -> {
             wrapper.cancel();
             final int containerId = wrapper.read(Types.VAR_INT); // container id
             final int revision = wrapper.read(Types.VAR_INT); // revision
@@ -274,10 +274,10 @@ public class InventoryPackets {
                 PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_21_5.SET_CREATIVE_MODE_SLOT, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_21_6.SET_CREATIVE_MODE_SLOT, null, wrapper -> {
             wrapper.cancel();
             final short slot = wrapper.read(Types.SHORT); // slot
-            final Item item = wrapper.read(VersionedTypes.V1_21_5.lengthPrefixedItem); // item
+            final Item item = wrapper.read(VersionedTypes.V1_21_6.lengthPrefixedItem); // item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             if (inventoryTracker.getPendingCloseContainer() != null) {
@@ -286,7 +286,7 @@ public class InventoryPackets {
             }
             PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
         });
-        protocol.registerServerbound(ServerboundPackets1_21_5.CONTAINER_CLOSE, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets1_21_6.CONTAINER_CLOSE, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(Types.VAR_INT, Types.BYTE); // container id
@@ -310,11 +310,11 @@ public class InventoryPackets {
                 });
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_21_5.SET_CARRIED_ITEM, ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_21_6.SET_CARRIED_ITEM, ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper -> {
             final short slot = wrapper.read(Types.SHORT); // slot
             wrapper.user().get(InventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
         });
-        protocol.registerServerbound(ServerboundPackets1_21_5.RENAME_ITEM, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets1_21_6.RENAME_ITEM, null, wrapper -> {
             wrapper.cancel();
             final String name = wrapper.read(Types.STRING); // name
             final FakeContainer fakeContainer = wrapper.user().get(InventoryTracker.class).getCurrentFakeContainer();

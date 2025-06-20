@@ -23,7 +23,6 @@ import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.util.Pair;
 import com.viaversion.viaversion.util.Triple;
-import io.netty.util.AsciiString;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
@@ -59,7 +58,7 @@ public class BedrockTypes {
     public static final Type<BigInteger> UNSIGNED_VAR_BIG_INTEGER = new UnsignedVarBigIntegerType();
     public static final Type<Long[]> LONG_ARRAY = new ArrayType<>(LONG_LE, UNSIGNED_VAR_INT);
     public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
-    public static final Type<AsciiString> ASCII_STRING = new AsciiStringType();
+    public static final Type<String> ASCII_STRING = new AsciiStringType();
     public static final Type<String> STRING = new StringType();
     public static final Type<String[]> SHORT_LE_STRING_ARRAY = new ArrayType<>(STRING, SHORT_LE);
     public static final Type<String[]> STRING_ARRAY = new ArrayType<>(STRING, UNSIGNED_VAR_INT);

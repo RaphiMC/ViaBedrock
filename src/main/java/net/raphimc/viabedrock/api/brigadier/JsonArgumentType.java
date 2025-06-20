@@ -17,12 +17,12 @@
  */
 package net.raphimc.viabedrock.api.brigadier;
 
-import com.google.gson.JsonObject;
 import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.gson.stream.JsonReader;
 import com.viaversion.viaversion.util.GsonUtil;
 

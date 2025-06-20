@@ -18,8 +18,8 @@
 package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.protocols.v1_20_3to1_20_5.packet.ServerboundConfigurationPackets1_20_5;
-import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ServerboundPackets1_21_5;
+import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundConfigurationPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 
@@ -48,16 +48,16 @@ public class UnhandledPackets {
         protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST_PRESETS); // Not possible in Java Edition
         protocol.cancelClientbound(ClientboundBedrockPackets.PLAYER_VIDEO_CAPTURE); // Not possible in Java Edition
 
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_20_5.KEEP_ALIVE, null, PacketWrapper::cancel);
-        protocol.cancelServerbound(ServerboundPackets1_21_5.CHAT_ACK);
-        protocol.cancelServerbound(ServerboundPackets1_21_5.CHAT_SESSION_UPDATE);
-        protocol.cancelServerbound(ServerboundPackets1_21_5.CHUNK_BATCH_RECEIVED);
-        protocol.cancelServerbound(ServerboundPackets1_21_5.COOKIE_RESPONSE);
-        protocol.cancelServerbound(ServerboundPackets1_21_5.DEBUG_SAMPLE_SUBSCRIPTION);
-        protocol.cancelServerbound(ServerboundPackets1_21_5.KEEP_ALIVE);
-        protocol.cancelServerbound(ServerboundPackets1_21_5.PLAYER_LOADED);
-        protocol.cancelServerbound(ServerboundPackets1_21_5.SET_TEST_BLOCK);
-        protocol.cancelServerbound(ServerboundPackets1_21_5.TEST_INSTANCE_BLOCK_ACTION);
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_6.KEEP_ALIVE, null, PacketWrapper::cancel);
+        protocol.cancelServerbound(ServerboundPackets1_21_6.CHAT_ACK);
+        protocol.cancelServerbound(ServerboundPackets1_21_6.CHAT_SESSION_UPDATE);
+        protocol.cancelServerbound(ServerboundPackets1_21_6.CHUNK_BATCH_RECEIVED);
+        protocol.cancelServerbound(ServerboundPackets1_21_6.COOKIE_RESPONSE);
+        protocol.cancelServerbound(ServerboundPackets1_21_6.DEBUG_SAMPLE_SUBSCRIPTION);
+        protocol.cancelServerbound(ServerboundPackets1_21_6.KEEP_ALIVE);
+        protocol.cancelServerbound(ServerboundPackets1_21_6.PLAYER_LOADED);
+        protocol.cancelServerbound(ServerboundPackets1_21_6.SET_TEST_BLOCK);
+        protocol.cancelServerbound(ServerboundPackets1_21_6.TEST_INSTANCE_BLOCK_ACTION);
     }
 
 }

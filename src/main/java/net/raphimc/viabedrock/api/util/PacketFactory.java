@@ -25,7 +25,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.gson.JsonNull;
-import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
+import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPackets1_21_6;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -43,14 +43,14 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 public class PacketFactory {
 
     public static void sendJavaSystemChat(final UserConnection user, final Tag message) {
-        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_21_5.SYSTEM_CHAT, user);
+        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_21_6.SYSTEM_CHAT, user);
         systemChat.write(Types.TAG, message); // message
         systemChat.write(Types.BOOLEAN, false); // overlay
         systemChat.send(BedrockProtocol.class);
     }
 
     public static void sendJavaBlockEntityData(final UserConnection user, final BlockPosition position, final BlockEntity blockEntity) {
-        final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_21_5.BLOCK_ENTITY_DATA, user);
+        final PacketWrapper blockEntityData = PacketWrapper.create(ClientboundPackets1_21_6.BLOCK_ENTITY_DATA, user);
         blockEntityData.write(Types.BLOCK_POSITION1_14, position); // position
         blockEntityData.write(Types.VAR_INT, blockEntity.typeId()); // type
         blockEntityData.write(Types.COMPOUND_TAG, blockEntity.tag()); // block entity tag
@@ -58,60 +58,60 @@ public class PacketFactory {
     }
 
     public static void sendJavaCustomChatCompletions(final UserConnection user, final CustomChatCompletionsAction action, final String[] entries) {
-        final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_21_5.CUSTOM_CHAT_COMPLETIONS, user);
+        final PacketWrapper customChatCompletions = PacketWrapper.create(ClientboundPackets1_21_6.CUSTOM_CHAT_COMPLETIONS, user);
         customChatCompletions.write(Types.VAR_INT, action.ordinal()); // action
         customChatCompletions.write(Types.STRING_ARRAY, entries); // entries
         customChatCompletions.send(BedrockProtocol.class);
     }
 
     public static void sendJavaContainerSetContent(final UserConnection user, final Container container) {
-        final PacketWrapper containerSetContent = PacketWrapper.create(ClientboundPackets1_21_5.CONTAINER_SET_CONTENT, user);
+        final PacketWrapper containerSetContent = PacketWrapper.create(ClientboundPackets1_21_6.CONTAINER_SET_CONTENT, user);
         writeJavaContainerSetContent(containerSetContent, container);
         containerSetContent.send(BedrockProtocol.class);
     }
 
     public static void sendJavaGameEvent(final UserConnection user, final GameEventType event, final float value) {
-        final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_21_5.GAME_EVENT, user);
+        final PacketWrapper gameEvent = PacketWrapper.create(ClientboundPackets1_21_6.GAME_EVENT, user);
         gameEvent.write(Types.UNSIGNED_BYTE, (short) event.ordinal()); // event id
         gameEvent.write(Types.FLOAT, value); // value
         gameEvent.send(BedrockProtocol.class);
     }
 
     public static void sendJavaEntityEvent(final UserConnection user, final Entity entity, final EntityEvent event) {
-        final PacketWrapper entityEvent = PacketWrapper.create(ClientboundPackets1_21_5.ENTITY_EVENT, user);
+        final PacketWrapper entityEvent = PacketWrapper.create(ClientboundPackets1_21_6.ENTITY_EVENT, user);
         entityEvent.write(Types.INT, entity.javaId()); // entity id
         entityEvent.write(Types.BYTE, event.getValue()); // event
         entityEvent.send(BedrockProtocol.class);
     }
 
     public static void sendJavaContainerClose(final UserConnection user, final int containerId) {
-        final PacketWrapper containerClose = PacketWrapper.create(ClientboundPackets1_21_5.CONTAINER_CLOSE, user);
+        final PacketWrapper containerClose = PacketWrapper.create(ClientboundPackets1_21_6.CONTAINER_CLOSE, user);
         containerClose.write(Types.VAR_INT, containerId); // container id
         containerClose.send(BedrockProtocol.class);
     }
 
     public static void sendJavaRotateHead(final UserConnection user, final Entity entity) {
-        final PacketWrapper rotateHead = PacketWrapper.create(ClientboundPackets1_21_5.ROTATE_HEAD, user);
+        final PacketWrapper rotateHead = PacketWrapper.create(ClientboundPackets1_21_6.ROTATE_HEAD, user);
         rotateHead.write(Types.VAR_INT, entity.javaId()); // entity id
         rotateHead.write(Types.BYTE, MathUtil.float2Byte(entity.rotation().z())); // head yaw
         rotateHead.send(BedrockProtocol.class);
     }
 
     public static void sendJavaBlockChangedAck(final UserConnection user, final int sequence) {
-        final PacketWrapper blockChangedAck = PacketWrapper.create(ClientboundPackets1_21_5.BLOCK_CHANGED_ACK, user);
+        final PacketWrapper blockChangedAck = PacketWrapper.create(ClientboundPackets1_21_6.BLOCK_CHANGED_ACK, user);
         blockChangedAck.write(Types.VAR_INT, sequence); // sequence number
         blockChangedAck.send(BedrockProtocol.class);
     }
 
     public static void sendJavaBlockUpdate(final UserConnection user, final BlockPosition position, final int blockState) {
-        final PacketWrapper blockUpdate = PacketWrapper.create(ClientboundPackets1_21_5.BLOCK_UPDATE, user);
+        final PacketWrapper blockUpdate = PacketWrapper.create(ClientboundPackets1_21_6.BLOCK_UPDATE, user);
         blockUpdate.write(Types.BLOCK_POSITION1_14, position); // position
         blockUpdate.write(Types.VAR_INT, blockState); // block state
         blockUpdate.send(BedrockProtocol.class);
     }
 
     public static void sendJavaLevelParticles(final UserConnection user, final Position3f position, final BedrockMappingData.JavaParticle particle) {
-        final PacketWrapper levelParticles = PacketWrapper.create(ClientboundPackets1_21_5.LEVEL_PARTICLES, user);
+        final PacketWrapper levelParticles = PacketWrapper.create(ClientboundPackets1_21_6.LEVEL_PARTICLES, user);
         writeJavaLevelParticles(levelParticles, position, particle);
         levelParticles.send(BedrockProtocol.class);
     }
@@ -145,8 +145,8 @@ public class PacketFactory {
     public static void writeJavaContainerSetContent(final PacketWrapper wrapper, final Container container) {
         wrapper.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
         wrapper.write(Types.VAR_INT, 0); // revision
-        wrapper.write(VersionedTypes.V1_21_5.itemArray, container.getJavaItems()); // items
-        wrapper.write(VersionedTypes.V1_21_5.item, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
+        wrapper.write(VersionedTypes.V1_21_6.itemArray, container.getJavaItems()); // items
+        wrapper.write(VersionedTypes.V1_21_6.item, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
     }
 
     public static void writeJavaLevelParticles(final PacketWrapper wrapper, final Position3f position, final BedrockMappingData.JavaParticle particle) {
@@ -160,7 +160,7 @@ public class PacketFactory {
         wrapper.write(Types.FLOAT, particle.offsetZ()); // offset z
         wrapper.write(Types.FLOAT, particle.speed()); // speed
         wrapper.write(Types.INT, particle.count()); // count
-        wrapper.write(VersionedTypes.V1_21_5.particle, particle.particle().copy()); // particle data
+        wrapper.write(VersionedTypes.V1_21_6.particle, particle.particle().copy()); // particle data
     }
 
 }

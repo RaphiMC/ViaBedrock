@@ -29,7 +29,6 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ChatRestrictionLevel;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ServerAuthMovementMode;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +45,6 @@ public class GameSessionStorage extends StoredObject {
     private final Set<String> availableEntityIdentifiers = new HashSet<>(BedrockProtocol.MAPPINGS.getBedrockEntities().keySet());
     private Semver bedrockVanillaVersion;
     private boolean flatGenerator;
-    private ServerAuthMovementMode movementMode;
     private int movementRewindHistorySize;
     private GameType levelGameType;
     private long levelTime;
@@ -120,14 +118,6 @@ public class GameSessionStorage extends StoredObject {
 
     public void setFlatGenerator(final boolean flatGenerator) {
         this.flatGenerator = flatGenerator;
-    }
-
-    public ServerAuthMovementMode getMovementMode() {
-        return this.movementMode;
-    }
-
-    public void setMovementMode(final ServerAuthMovementMode movementMode) {
-        this.movementMode = movementMode;
     }
 
     public int getMovementRewindHistorySize() {

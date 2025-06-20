@@ -29,5 +29,6 @@ public enum SoundSource {
     PLAYERS,
     AMBIENT,
     VOICE,
+    UI,
 
 }

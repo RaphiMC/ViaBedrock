@@ -18,12 +18,12 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_5;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_6;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.protocols.v1_21_4to1_21_5.packet.ClientboundPackets1_21_5;
+import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPackets1_21_6;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -31,7 +31,7 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.DataItemType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.Puv_Legacy_LevelSoundEvent;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.SharedTypes_Legacy_LevelSoundEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.BossEventOperationType;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -49,7 +49,7 @@ public class Entity {
     protected final String type;
     protected final int javaId;
     protected final UUID javaUuid;
-    protected final EntityTypes1_21_5 javaType;
+    protected final EntityTypes1_21_6 javaType;
 
     /**
      * x, y, z
@@ -65,7 +65,7 @@ public class Entity {
     protected int age;
     protected boolean hasBossBar;
 
-    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_5 javaType) {
+    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_6 javaType) {
         this.user = user;
         this.uniqueId = uniqueId;
         this.runtimeId = runtimeId;
@@ -82,7 +82,7 @@ public class Entity {
     public void remove() {
         if (this.hasBossBar) {
             this.hasBossBar = false;
-            final PacketWrapper bossEvent = PacketWrapper.create(ClientboundPackets1_21_5.BOSS_EVENT, this.user);
+            final PacketWrapper bossEvent = PacketWrapper.create(ClientboundPackets1_21_6.BOSS_EVENT, this.user);
             bossEvent.write(Types.UUID, this.javaUuid()); // uuid
             bossEvent.write(Types.VAR_INT, BossEventOperationType.REMOVE.ordinal()); // operation
             bossEvent.send(BedrockProtocol.class);
@@ -92,9 +92,9 @@ public class Entity {
     public final void updateEntityData(final EntityData[] entityData) {
         final List<EntityData> javaEntityData = new ArrayList<>();
         this.updateEntityData(entityData, javaEntityData);
-        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_5.SET_ENTITY_DATA, this.user);
+        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_6.SET_ENTITY_DATA, this.user);
         setEntityData.write(Types.VAR_INT, this.javaId); // entity id
-        setEntityData.write(VersionedTypes.V1_21_5.entityDataList, javaEntityData); // entity data
+        setEntityData.write(VersionedTypes.V1_21_6.entityDataList, javaEntityData); // entity data
         setEntityData.send(BedrockProtocol.class);
     }
 
@@ -119,7 +119,7 @@ public class Entity {
         this.onEntityDataChanged();
     }
 
-    public void playSound(final Puv_Legacy_LevelSoundEvent soundEvent) {
+    public void playSound(final SharedTypes_Legacy_LevelSoundEvent soundEvent) {
         final PacketWrapper levelSoundEvent = PacketWrapper.create(ClientboundBedrockPackets.LEVEL_SOUND_EVENT, this.user);
         levelSoundEvent.write(BedrockTypes.UNSIGNED_VAR_INT, soundEvent.getValue()); // event
         levelSoundEvent.write(BedrockTypes.POSITION_3F, this.position); // position
@@ -155,7 +155,7 @@ public class Entity {
         return this.javaUuid;
     }
 
-    public EntityTypes1_21_5 javaType() {
+    public EntityTypes1_21_6 javaType() {
         return this.javaType;
     }
 

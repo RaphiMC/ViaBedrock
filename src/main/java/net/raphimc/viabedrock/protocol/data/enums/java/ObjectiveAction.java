@@ -17,14 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public enum PlayerCommandAction {
+public enum ObjectiveAction {
 
-    STOP_SLEEPING,
-    START_SPRINTING,
-    STOP_SPRINTING,
-    START_RIDING_JUMP,
-    STOP_RIDING_JUMP,
-    OPEN_INVENTORY,
-    START_FALL_FLYING,
+    ADD,
+    REMOVE,
+    CHANGE,
 
 }

@@ -43,8 +43,9 @@ public class JavaRegistries {
 
         registries.put("minecraft:worldgen/biome", buildJavaBiomeRegistry(gameSession.getBedrockBiomeDefinitions(), resourcePacksStorage));
         modifyDimensionRegistry(gameSession, registries.getCompoundTag("minecraft:dimension_type"));
-        registries.remove("minecraft:chat_type"); // Not needed
+        registries.remove("minecraft:dialog"); // Not needed
         registries.remove("minecraft:test_instance"); // Not needed
+        registries.remove("minecraft:chat_type"); // Not needed
         registries.remove("minecraft:test_environment"); // Not needed
 
         return registries;

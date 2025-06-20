@@ -1197,8 +1197,7 @@
   "minecraft:black_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:black_harness"
       }
     }
   },
@@ -1383,8 +1382,7 @@
   "minecraft:blue_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:blue_harness"
       }
     }
   },
@@ -1715,8 +1713,7 @@
   "minecraft:brown_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:brown_harness"
       }
     }
   },
@@ -3214,8 +3211,7 @@
   "minecraft:cyan_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:cyan_harness"
       }
     }
   },
@@ -4032,8 +4028,7 @@
   "minecraft:dried_ghast": {
     "block": {
       "minecraft:dried_ghast": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:dried_ghast"
       }
     }
   },
@@ -6195,8 +6190,7 @@
   "minecraft:gray_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:gray_harness"
       }
     }
   },
@@ -6295,8 +6289,7 @@
   "minecraft:green_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:green_harness"
       }
     }
   },
@@ -6380,8 +6373,7 @@
   "minecraft:happy_ghast_spawn_egg": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:happy_ghast_spawn_egg"
       }
     }
   },
@@ -7789,8 +7781,7 @@
   "minecraft:light_blue_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:light_blue_harness"
       }
     }
   },
@@ -7882,8 +7873,7 @@
   "minecraft:light_gray_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:light_gray_harness"
       }
     }
   },
@@ -8010,8 +8000,7 @@
   "minecraft:lime_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:lime_harness"
       }
     }
   },
@@ -8396,8 +8385,7 @@
   "minecraft:magenta_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:magenta_harness"
       }
     }
   },
@@ -9015,6 +9003,13 @@
       }
     }
   },
+  "minecraft:music_disc_tears": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:music_disc_tears"
+      }
+    }
+  },
   "minecraft:music_disc_wait": {
     "meta": {
       "": {
@@ -9486,8 +9481,7 @@
   "minecraft:orange_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:orange_harness"
       }
     }
   },
@@ -9962,8 +9956,7 @@
   "minecraft:pink_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:pink_harness"
       }
     }
   },
@@ -10806,8 +10799,7 @@
   "minecraft:purple_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:purple_harness"
       }
     }
   },
@@ -11119,8 +11111,7 @@
   "minecraft:red_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:red_harness"
       }
     }
   },
@@ -14050,8 +14041,7 @@
   "minecraft:white_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:white_harness"
       }
     }
   },
@@ -14318,8 +14308,7 @@
   "minecraft:yellow_harness": {
     "meta": {
       "": {
-        "java_id": "minecraft:paper",
-        "java_name": "TODO: Waiting for Java Edition to add this item"
+        "java_id": "minecraft:yellow_harness"
       }
     }
   },

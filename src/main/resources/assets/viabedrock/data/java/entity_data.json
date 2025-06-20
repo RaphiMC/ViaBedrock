@@ -202,6 +202,13 @@
     "MOVING",
     "ATTACK_TARGET"
   ],
+  "HANGING_ENTITY": [
+    "DIRECTION"
+  ],
+  "HAPPY_GHAST": [
+    "IS_LEASH_HOLDER",
+    "STAYS_STILL"
+  ],
   "HOGLIN": [
     "IMMUNE_TO_ZOMBIFICATION"
   ],

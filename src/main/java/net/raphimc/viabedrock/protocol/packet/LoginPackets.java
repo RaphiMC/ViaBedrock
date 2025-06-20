@@ -28,7 +28,6 @@ import com.viaversion.viaversion.protocols.base.ServerboundHandshakePackets;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.gson.io.GsonDeserializer;
-import io.netty.util.AsciiString;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.api.util.PacketFactory;
@@ -36,6 +35,7 @@ import net.raphimc.viabedrock.api.util.ServerBlacklist;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.AuthenticationType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
 import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
@@ -95,7 +95,7 @@ public class LoginPackets {
             }
             gameSession.setProtocolCompression(protocolCompression);
 
-            final JsonObject rootObj = new JsonObject();
+            final JsonObject certificateChainObj = new JsonObject();
             final JsonArray chain = new JsonArray();
             if (authChainData.getSelfSignedJwt() != null) {
                 chain.add(new JsonPrimitive(authChainData.getSelfSignedJwt()));
@@ -106,14 +106,19 @@ public class LoginPackets {
             if (authChainData.getIdentityJwt() != null) {
                 chain.add(new JsonPrimitive(authChainData.getIdentityJwt()));
             }
-            rootObj.add("chain", chain);
-            final String chainData = rootObj.toString();
+            certificateChainObj.add("chain", chain);
+
+            final JsonObject authInfoObj = new JsonObject();
+            authInfoObj.addProperty("AuthenticationType", authChainData.getMojangJwt() != null ? AuthenticationType.Full.ordinal() : AuthenticationType.SelfSigned.ordinal());
+            authInfoObj.addProperty("Certificate", certificateChainObj.toString());
+            authInfoObj.addProperty("Token", "");
+            final String authInfo = authInfoObj.toString();
 
             final PacketWrapper login = PacketWrapper.create(ServerboundBedrockPackets.LOGIN, wrapper.user());
             login.write(Types.INT, handshakeStorage.protocolVersion()); // protocol version
-            login.write(BedrockTypes.UNSIGNED_VAR_INT, chainData.length() + authChainData.getSkinJwt().length() + 8); // length
-            login.write(BedrockTypes.ASCII_STRING, AsciiString.of(chainData)); // chain data
-            login.write(BedrockTypes.ASCII_STRING, AsciiString.of(authChainData.getSkinJwt())); // skin data
+            login.write(BedrockTypes.UNSIGNED_VAR_INT, authInfo.length() + authChainData.getSkinJwt().length() + Integer.BYTES * 2); // length
+            login.write(BedrockTypes.ASCII_STRING, authInfo); // auth info
+            login.write(BedrockTypes.ASCII_STRING, authChainData.getSkinJwt()); // client properties
             login.sendToServer(BedrockProtocol.class);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE, null, wrapper -> {

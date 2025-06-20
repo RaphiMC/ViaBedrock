@@ -23,7 +23,6 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
-import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
@@ -46,7 +45,7 @@ public class SkinProvider implements Provider {
 
         final ResourcePack.Content skinPackContent = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks().get("vanilla_skin_pack").content();
         final BufferedImage skin = skinPackContent.getImage("steve.png").getImage();
-        final JsonObject skinGeometry = JsonUtil.sort(skinPackContent.getJson("geometry.json"), Comparator.naturalOrder());
+        final JsonObject skinGeometry = skinPackContent.getSortedJson("geometry.json");
 
         final Map<String, Object> claims = new HashMap<>();
         claims.put("PlayFabId", authChainData.getPlayFabId().toLowerCase(Locale.ROOT));
@@ -74,7 +73,7 @@ public class SkinProvider implements Provider {
         claims.put("SelfSignedId", UUID.randomUUID().toString()); // ?
         claims.put("CurrentInputMode", InputMode.Mouse.getValue());
         claims.put("DefaultInputMode", InputMode.Mouse.getValue());
-        claims.put("GuiScale", -1L);
+        claims.put("GuiScale", -1);
         claims.put("UIProfile", UIProfile.Classic.getValue());
         claims.put("DeviceId", authChainData.getDeviceId().toString());
         claims.put("DeviceModel", "");
@@ -89,7 +88,6 @@ public class SkinProvider implements Provider {
         claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);
         claims.put("ServerAddress", handshakeStorage.hostname() + ":" + handshakeStorage.port());
         claims.put("ThirdPartyName", user.getProtocolInfo().getUsername());
-        claims.put("ThirdPartyNameOnly", false);
         claims.put("IsEditorMode", false);
         claims.put("TrustedSkin", false);
         claims.put("OverrideSkin", false);
