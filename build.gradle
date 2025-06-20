@@ -42,7 +42,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.4.0"
+    compileOnly "com.viaversion:viaversion-common:5.4.1-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.4"
     compileOnly "com.google.guava:guava:33.4.8-jre"
     compileOnly "io.netty:netty-handler:4.2.2.Final"
