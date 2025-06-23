@@ -49,8 +49,8 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 ## How it works
 
 We've made a small diagram to show where ViaBedrock sits and what it does.
-ViaBedrock may either be installed by a player on their client to join Bedrock server
-or by a Bedrock server owner to let java users join their Bedrock server.
+ViaBedrock may either be installed by a player on their Java client to join Bedrock server
+or by a Bedrock server owner to let Java users join their Bedrock server.
 
 ```mermaid
 flowchart TD
