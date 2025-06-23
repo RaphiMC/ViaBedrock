@@ -46,6 +46,30 @@ If you want to talk about ViaBedrock or learn more about it you can join my [Dis
 - [x] Particles
 - [x] Basic resource pack conversion (Contributions are welcome)
 
+## How it works
+
+We've mad ea small diagram to show where VIaBedrock sits and what it does.
+ViaBedrock may either be installed by a player on their client to join Bedrock server
+or by a Bedrock server owner to let java users join their Bedrock server.
+
+```mermaid
+flowchart TD
+    subgraph Player
+        A(Java Edition Client)
+    end
+
+    subgraph ViaBedrock
+        B(Protocol Translator)
+    end
+
+    subgraph Server
+        E(Bedrock Edition Server)
+    end
+
+    A -- Java Packets --> B
+    B -- Bedrock Packets --> E
+```
+
 ## Optional clientside mods
 Below is a list of mods which can be used in combination with ViaBedrock to enhance certain aspects, which would not be possible without client modification:
 - [ViaBedrockUtility](https://github.com/Oryxel/ViaBedrockUtility): Adds support for some custom player skins and improves custom entity rendering
