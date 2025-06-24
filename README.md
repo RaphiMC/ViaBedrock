@@ -6,11 +6,15 @@ ViaBedrock aims to be as compatible and accurate as possible with the Minecraft:
 ## Usage
 **ViaBedrock is in very early stages of development and NOT intended for regular use yet.**
 
-If you want to try it out anyway you can download the latest [ViaProxy dev build](https://build.lenni0451.net/job/ViaProxy/) (Click on the **ViaProxy-x.x.x.jar** file).
-
 **Do not report any bugs yet. There are still a lot of things which are not implemented yet.**
 
 If you want to talk about ViaBedrock or learn more about it you can join my [Discord](https://discord.gg/dCzT9XHEWu).
+
+### Standalone proxy (Serverside / Clientside)
+To use ViaBedrock independently of any server or client software, you can download the latest [ViaProxy dev build](https://build.lenni0451.net/job/ViaProxy/) (Click on the **ViaProxy-x.x.x.jar** file).
+
+### Fabric mod (Clientside)
+To use ViaBedrock as a Fabric mod, you can download the latest [ViaFabricPlus dev build](https://ci.viaversion.com/view/Platforms/job/ViaFabricPlus/).
 
 ## Features
 - [x] Pinging
