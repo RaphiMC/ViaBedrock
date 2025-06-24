@@ -17,25 +17,47 @@
  */
 package net.raphimc.viabedrock.protocol.packet;
 
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.StringTag;
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
+import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
+import com.viaversion.viaversion.libs.mcstructs.converter.impl.v1_21_5.NbtConverter_v1_21_5;
+import com.viaversion.viaversion.libs.mcstructs.core.Identifier;
+import com.viaversion.viaversion.libs.mcstructs.dialog.ActionButton;
+import com.viaversion.viaversion.libs.mcstructs.dialog.AfterAction;
+import com.viaversion.viaversion.libs.mcstructs.dialog.Dialog;
+import com.viaversion.viaversion.libs.mcstructs.dialog.Input;
+import com.viaversion.viaversion.libs.mcstructs.dialog.action.CustomAllAction;
+import com.viaversion.viaversion.libs.mcstructs.dialog.body.PlainMessageBody;
+import com.viaversion.viaversion.libs.mcstructs.dialog.impl.MultiActionDialog;
+import com.viaversion.viaversion.libs.mcstructs.dialog.input.BooleanInput;
+import com.viaversion.viaversion.libs.mcstructs.dialog.input.NumberRangeInput;
+import com.viaversion.viaversion.libs.mcstructs.dialog.input.SingleOptionInput;
+import com.viaversion.viaversion.libs.mcstructs.dialog.input.TextInput;
+import com.viaversion.viaversion.libs.mcstructs.dialog.serializer.DialogSerializer;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import com.viaversion.viaversion.libs.mcstructs.text.components.StringComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.components.TranslationComponent;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPackets1_21_6;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
 import net.lenni0451.mcstructs_bedrock.forms.Form;
+import net.lenni0451.mcstructs_bedrock.forms.elements.*;
 import net.lenni0451.mcstructs_bedrock.forms.serializer.FormSerializer;
+import net.lenni0451.mcstructs_bedrock.forms.types.ActionForm;
+import net.lenni0451.mcstructs_bedrock.forms.types.CustomForm;
+import net.lenni0451.mcstructs_bedrock.forms.types.ModalForm;
+import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTextUtils;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.container.ChestContainer;
 import net.raphimc.viabedrock.api.model.container.Container;
-import net.raphimc.viabedrock.api.model.container.fake.FakeContainer;
-import net.raphimc.viabedrock.api.model.container.fake.FormContainer;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
@@ -57,9 +79,14 @@ import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class InventoryPackets {
+
+    private static final int DIALOG_BUTTON_WIDTH = 200;
+    private static final int DIALOG_FAKE_BUTTON_WIDTH = 300;
+    private static final String DIALOG_FAKE_BUTTON_TEXT = "This is not actually a button, but has to be one because dialogs don't support adding text only elements. Clicking it has the same effect as closing the dialog.";
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_21_6.OPEN_SCREEN, wrapper -> {
@@ -77,8 +104,9 @@ public class InventoryPackets {
             final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
             wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
 
-            if (inventoryTracker.isContainerOpen()) {
+            if (inventoryTracker.isAnyScreenOpen()) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Server tried to open container while another container is open");
+                PacketFactory.sendBedrockContainerClose(wrapper.user(), (byte) -1, ContainerType.NONE);
                 wrapper.cancel();
                 return;
             }
@@ -124,23 +152,17 @@ public class InventoryPackets {
 
                     final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
                     final Container container = serverInitiated ? inventoryTracker.getCurrentContainer() : inventoryTracker.getPendingCloseContainer();
-                    if (container != null) {
-                        if (serverInitiated && containerType != container.type()) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Server tried to close container, but container type was not correct");
-                            wrapper.cancel();
-                            return;
-                        }
-                        if (container == inventoryTracker.getOpenContainer()) {
-                            wrapper.send(BedrockProtocol.class);
-                            inventoryTracker.setCurrentContainerClosed(serverInitiated);
-                        } else {
-                            inventoryTracker.closeWhenTicked(container);
-                        }
+                    if (container == null) {
                         wrapper.cancel();
-                    } else if (inventoryTracker.getCurrentFakeContainer() != null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Server tried to close container, but no container was open");
-                        wrapper.cancel();
+                        return;
                     }
+
+                    if (serverInitiated && containerType != container.type()) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Server tried to close container, but container type was not correct");
+                        wrapper.cancel();
+                        return;
+                    }
+                    inventoryTracker.setCurrentContainerClosed(serverInitiated);
                 });
             }
         });
@@ -182,19 +204,19 @@ public class InventoryPackets {
                 wrapper.cancel();
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.MODAL_FORM_REQUEST, null, wrapper -> {
-            wrapper.cancel();
+        protocol.registerClientbound(ClientboundBedrockPackets.MODAL_FORM_REQUEST, ClientboundPackets1_21_6.SHOW_DIALOG, wrapper -> {
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final int id = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // id
             final String data = wrapper.read(BedrockTypes.STRING); // data
 
-            if (inventoryTracker.getCurrentContainer() != null && inventoryTracker.getCurrentContainer().type() == ContainerType.INVENTORY) {
+            if (inventoryTracker.getCurrentContainer() != null || inventoryTracker.getCurrentForm() != null) {
                 final PacketWrapper modalFormResponse = PacketWrapper.create(ServerboundBedrockPackets.MODAL_FORM_RESPONSE, wrapper.user());
                 modalFormResponse.write(BedrockTypes.UNSIGNED_VAR_INT, id); // id
                 modalFormResponse.write(Types.BOOLEAN, false); // has response
                 modalFormResponse.write(Types.BOOLEAN, true); // has cancel reason
                 modalFormResponse.write(Types.BYTE, (byte) ModalFormCancelReason.UserBusy.getValue()); // cancel reason
                 modalFormResponse.sendToServer(BedrockProtocol.class);
+                wrapper.cancel();
                 return;
             }
 
@@ -206,15 +228,104 @@ public class InventoryPackets {
                 wrapper.cancel();
                 return;
             }
-            form.setTranslator(wrapper.user().get(ResourcePacksStorage.class).getTexts()::translate);
-            inventoryTracker.openContainer(new FormContainer(wrapper.user(), id, form));
+            final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
+            form.setTranslator(resourcePacksStorage.getTexts()::translate);
+            inventoryTracker.setCurrentForm(IntObjectPair.of(id, form));
+
+            final Identifier responseIdentifier = Identifier.of("viabedrock", "form/" + id);
+            final CompoundTag exitButtonAdditions = new CompoundTag();
+            exitButtonAdditions.putBoolean("exit", true);
+            final ActionButton exitButton = new ActionButton(new StringComponent(resourcePacksStorage.getTexts().get("gui.close")), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, exitButtonAdditions));
+            final MultiActionDialog dialog = new MultiActionDialog(TextUtil.stringToTextComponent(form.getTitle()), true, false, AfterAction.CLOSE, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), exitButton, 1);
+            if (form instanceof ModalForm modalForm) {
+                addTextToDialog(wrapper.user(), dialog, modalForm.getText());
+                final CompoundTag button1Additions = new CompoundTag();
+                button1Additions.putInt("button_id", 0);
+                dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(modalForm.getButton1()), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, button1Additions)));
+                final CompoundTag button2Additions = new CompoundTag();
+                button2Additions.putInt("button_id", 1);
+                dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(modalForm.getButton2()), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, button2Additions)));
+            } else if (form instanceof ActionForm actionForm) {
+                addTextToDialog(wrapper.user(), dialog, actionForm.getText());
+                int buttonIndex = 0;
+                for (int elementIndex = 0; elementIndex < actionForm.getElements().length; elementIndex++) {
+                    final FormElement element = actionForm.getElements()[elementIndex];
+                    if (element instanceof ButtonFormElement button) {
+                        final CompoundTag buttonAdditions = new CompoundTag();
+                        buttonAdditions.putInt("button_id", buttonIndex);
+                        dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(button.getText()), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, buttonAdditions)));
+                        buttonIndex++;
+                    } else if (element instanceof HeaderFormElement header) {
+                        dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(header.getText()), new StringComponent(DIALOG_FAKE_BUTTON_TEXT), DIALOG_FAKE_BUTTON_WIDTH, exitButton.getAction()));
+                    } else if (element instanceof LabelFormElement label) {
+                        dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(label.getText()), new StringComponent(DIALOG_FAKE_BUTTON_TEXT), DIALOG_FAKE_BUTTON_WIDTH, exitButton.getAction()));
+                    } else if (element instanceof DividerFormElement) {
+                    } else {
+                        throw new IllegalArgumentException("Unhandled form element type: " + element.getClass().getSimpleName());
+                    }
+                }
+            } else if (form instanceof CustomForm customForm) {
+                for (int elementIndex = 0; elementIndex < customForm.getElements().length; elementIndex++) {
+                    final FormElement element = customForm.getElements()[elementIndex];
+                    final String inputKey = String.valueOf(elementIndex);
+                    if (element instanceof CheckboxFormElement checkbox) {
+                        final BooleanInput booleanInput = new BooleanInput(TextUtil.stringToTextComponent(checkbox.getText()));
+                        booleanInput.setInitial(checkbox.getDefaultValue());
+                        dialog.getInputs().add(new Input(inputKey, booleanInput));
+                    } else if (element instanceof DropdownFormElement dropdown) {
+                        final SingleOptionInput singleOptionInput = new SingleOptionInput(new ArrayList<>(dropdown.getOptions().length), TextUtil.stringToTextComponent(dropdown.getText()));
+                        for (int dropdownIndex = 0; dropdownIndex < dropdown.getOptions().length; dropdownIndex++) {
+                            final String option = dropdown.getOptions()[dropdownIndex];
+                            singleOptionInput.getOptions().add(new SingleOptionInput.Entry(String.valueOf(dropdownIndex), TextUtil.stringToTextComponent(option), dropdownIndex == dropdown.getDefaultOption()));
+                        }
+                        dialog.getInputs().add(new Input(inputKey, singleOptionInput));
+                    } else if (element instanceof SliderFormElement slider) {
+                        final NumberRangeInput numberRangeInput = new NumberRangeInput(TextUtil.stringToTextComponent(slider.getText()), new NumberRangeInput.Range(slider.getMin(), slider.getMax(), slider.getDefaultValue(), slider.getStep()));
+                        dialog.getInputs().add(new Input(inputKey, numberRangeInput));
+                    } else if (element instanceof StepSliderFormElement stepSlider) {
+                        final SingleOptionInput singleOptionInput = new SingleOptionInput(new ArrayList<>(stepSlider.getSteps().length), TextUtil.stringToTextComponent(stepSlider.getText()));
+                        for (int stepIndex = 0; stepIndex < stepSlider.getSteps().length; stepIndex++) {
+                            final String step = stepSlider.getSteps()[stepIndex];
+                            final String stepKey = String.valueOf(stepIndex);
+                            singleOptionInput.getOptions().add(new SingleOptionInput.Entry(stepKey, TextUtil.stringToTextComponent(step), stepIndex == stepSlider.getDefaultStep()));
+                        }
+                        dialog.getInputs().add(new Input(inputKey, singleOptionInput));
+                    } else if (element instanceof TextFieldFormElement textField) {
+                        final TextInput textInput = new TextInput(TextUtil.stringToTextComponent(textField.getText()));
+                        textInput.setMaxLength(100);
+                        textInput.setInitial(textField.getDefaultValue());
+                        dialog.getInputs().add(new Input(inputKey, textInput));
+                    } else if (element instanceof HeaderFormElement header) {
+                        addTextToDialog(wrapper.user(), dialog, header.getText());
+                    } else if (element instanceof LabelFormElement label) {
+                        addTextToDialog(wrapper.user(), dialog, label.getText());
+                    } else if (element instanceof DividerFormElement) {
+                        if (wrapper.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolVersion.v1_21_6)) {
+                            final TextInput textInput = new TextInput(DIALOG_BUTTON_WIDTH, new StringComponent(), false, " ", 1, new TextInput.MultilineOptions(null, 1));
+                            dialog.getInputs().add(new Input("dummy", textInput));
+                        }
+                    } else {
+                        throw new IllegalArgumentException("Unhandled form element type: " + element.getClass().getSimpleName());
+                    }
+                }
+                dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(resourcePacksStorage.getTexts().get("gui.submit")), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, null)));
+            } else {
+                throw new IllegalArgumentException("Unhandled form type: " + form.getClass().getSimpleName());
+            }
+
+            wrapper.write(Types.VAR_INT, 0); // registry id
+            wrapper.write(Types.TAG, DialogSerializer.V1_21_6.getDirectCodec().serialize(NbtConverter_v1_21_5.INSTANCE, dialog).get()); // dialog data
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.CLOSE_FORM, null, wrapper -> {
-            wrapper.cancel();
+        protocol.registerClientbound(ClientboundBedrockPackets.CLOSE_FORM, ClientboundPackets1_21_6.CLEAR_DIALOG, wrapper -> {
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            if (inventoryTracker.getCurrentFakeContainer() != null) {
-                // Bedrock closes all inventories/forms on the stack if the stack contains a form
-                inventoryTracker.closeAllContainers();
+            if (inventoryTracker.getCurrentForm() != null) {
+                final PacketWrapper modalFormResponse = PacketWrapper.create(ServerboundBedrockPackets.MODAL_FORM_RESPONSE, wrapper.user());
+                modalFormResponse.write(BedrockTypes.UNSIGNED_VAR_INT, inventoryTracker.getCurrentForm().left()); // id
+                modalFormResponse.write(Types.BOOLEAN, false); // has response
+                modalFormResponse.write(Types.BOOLEAN, true); // has cancel reason
+                modalFormResponse.write(Types.BYTE, (byte) ModalFormCancelReason.UserClosed.getValue()); // cancel reason
+                modalFormResponse.sendToServer(BedrockProtocol.class);
+                inventoryTracker.setCurrentForm(null);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_HOTBAR, ClientboundPackets1_21_6.SET_HELD_SLOT, wrapper -> {
@@ -286,6 +397,61 @@ public class InventoryPackets {
             }
             PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
         });
+        protocol.registerServerbound(ServerboundPackets1_21_6.CUSTOM_CLICK_ACTION, ServerboundBedrockPackets.MODAL_FORM_RESPONSE, wrapper -> {
+            final String id = wrapper.read(Types.STRING); // id
+            final CompoundTag payload = (CompoundTag) wrapper.read(Types.OPTIONAL_TAG); // payload
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            if (inventoryTracker.getCurrentForm() == null) {
+                wrapper.cancel();
+                return;
+            }
+
+            final Form form = inventoryTracker.getCurrentForm().right();
+            final int formId = inventoryTracker.getCurrentForm().left();
+            if (!id.equals("viabedrock:form/" + formId)) {
+                wrapper.cancel();
+                return;
+            }
+
+            inventoryTracker.setCurrentForm(null);
+            if (payload.contains("exit") && payload.getBoolean("exit")) {
+                wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, formId); // id
+                wrapper.write(Types.BOOLEAN, false); // has response
+                wrapper.write(Types.BOOLEAN, true); // has cancel reason
+                wrapper.write(Types.BYTE, (byte) ModalFormCancelReason.UserClosed.getValue()); // cancel reason
+                return;
+            }
+
+            if (form instanceof ModalForm modalForm) {
+                modalForm.setClickedButton(payload.getInt("button_id"));
+            } else if (form instanceof ActionForm actionForm) {
+                actionForm.setClickedButton(payload.getInt("button_id"));
+            } else if (form instanceof CustomForm customForm) {
+                for (int elementIndex = 0; elementIndex < customForm.getElements().length; elementIndex++) {
+                    final String inputKey = String.valueOf(elementIndex);
+                    if (!payload.contains(inputKey)) continue;
+                    final FormElement element = customForm.getElements()[elementIndex];
+                    if (element instanceof CheckboxFormElement checkbox) {
+                        checkbox.setChecked(payload.getBoolean(inputKey));
+                    } else if (element instanceof DropdownFormElement dropdown) {
+                        dropdown.setSelected(Integer.parseInt(payload.getString(inputKey)));
+                    } else if (element instanceof SliderFormElement slider) {
+                        slider.setCurrent(payload.getFloat(inputKey));
+                    } else if (element instanceof StepSliderFormElement stepSlider) {
+                        stepSlider.setSelected(Integer.parseInt(payload.getString(inputKey)));
+                    } else if (element instanceof TextFieldFormElement textField) {
+                        textField.setValue(payload.getString(inputKey));
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException("Unhandled form type: " + form.getClass().getSimpleName());
+            }
+
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, formId); // id
+            wrapper.write(Types.BOOLEAN, true); // has response
+            wrapper.write(BedrockTypes.STRING, form.serializeResponse() + '\n'); // response
+            wrapper.write(Types.BOOLEAN, false); // has cancel reason
+        });
         protocol.registerServerbound(ServerboundPackets1_21_6.CONTAINER_CLOSE, ServerboundBedrockPackets.CONTAINER_CLOSE, new PacketHandlers() {
             @Override
             protected void register() {
@@ -304,9 +470,7 @@ public class InventoryPackets {
                     if (container.javaContainerId() != container.containerId()) {
                         wrapper.set(Types.BYTE, 0, container.containerId());
                     }
-                    if (!inventoryTracker.markPendingClose(container)) {
-                        wrapper.cancel();
-                    }
+                    inventoryTracker.markPendingClose(container);
                 });
             }
         });
@@ -314,14 +478,26 @@ public class InventoryPackets {
             final short slot = wrapper.read(Types.SHORT); // slot
             wrapper.user().get(InventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
         });
-        protocol.registerServerbound(ServerboundPackets1_21_6.RENAME_ITEM, null, wrapper -> {
-            wrapper.cancel();
-            final String name = wrapper.read(Types.STRING); // name
-            final FakeContainer fakeContainer = wrapper.user().get(InventoryTracker.class).getCurrentFakeContainer();
-            if (fakeContainer != null) {
-                fakeContainer.onAnvilRename(name);
+    }
+
+    private static void addTextToDialog(final UserConnection userConnection, final Dialog dialog, final String text) {
+        if (dialog.getInputs().isEmpty()) {
+            for (String line : BedrockTextUtils.split(text, "\n")) {
+                dialog.getBody().add(new PlainMessageBody(TextUtil.stringToTextComponent(line)));
             }
-        });
+        } else {
+            if (userConnection.getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolVersion.v1_21_6)) {
+                for (String line : BedrockTextUtils.split(text, "\n")) {
+                    final TextInput textInput = new TextInput(TextUtil.stringToTextComponent(line));
+                    textInput.setInitial(" ");
+                    textInput.setMaxLength(1);
+                    textInput.setMultiline(new TextInput.MultilineOptions(null, 1));
+                    dialog.getInputs().add(new Input("dummy", textInput));
+                }
+            } else { // VB compatibility
+                dialog.getInputs().add(new Input("dummy", new BooleanInput(TextUtil.stringToTextComponent(text))));
+            }
+        }
     }
 
 }

@@ -64,6 +64,12 @@ dependencies {
     api("net.lenni0451.mcstructs-bedrock:forms:2.0.0") {
         exclude group: "com.google.code.gson", module: "gson"
     }
+    api("com.viaversion.mcstructs:dialog:5-3.1.1-SNAPSHOT") {
+        exclude group: "com.viaversion.mcstructs", module: "core"
+        exclude group: "com.viaversion.mcstructs", module: "text"
+        exclude group: "com.viaversion.mcstructs", module: "snbt"
+        exclude group: "com.viaversion.mcstructs", module: "converter"
+    }
     api "com.vdurmont:semver4j:3.1.0"
     api "com.mojang:brigadier:1.3.10"
     api "org.lz4:lz4-pure-java:1.8.0"

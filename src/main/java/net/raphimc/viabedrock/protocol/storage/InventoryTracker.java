@@ -19,20 +19,16 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPackets1_21_6;
+import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
+import net.lenni0451.mcstructs_bedrock.forms.Form;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.dynamic.BundleContainer;
-import net.raphimc.viabedrock.api.model.container.fake.FakeContainer;
-import net.raphimc.viabedrock.api.model.container.fake.FormContainer;
 import net.raphimc.viabedrock.api.model.container.player.ArmorContainer;
 import net.raphimc.viabedrock.api.model.container.player.HudContainer;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.container.player.OffhandContainer;
 import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
@@ -43,15 +39,11 @@ import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class InventoryTracker extends StoredObject {
-
-    private static final int MIN_FAKE_ID = ContainerID.CONTAINER_ID_LAST.getValue() + 1;
-    private static final int MAX_FAKE_ID = ContainerID.CONTAINER_ID_OFFHAND.getValue() - 1;
-    private final AtomicInteger FAKE_ID_COUNTER = new AtomicInteger(MIN_FAKE_ID);
 
     private final InventoryContainer inventoryContainer = new InventoryContainer(this.user());
     private final OffhandContainer offhandContainer = new OffhandContainer(this.user());
@@ -59,10 +51,9 @@ public class InventoryTracker extends StoredObject {
     private final HudContainer hudContainer = new HudContainer(this.user());
     private final Map<FullContainerName, BundleContainer> dynamicContainerRegistry = new HashMap<>();
 
-    private final Stack<Container> containerStack = new Stack<>();
-    private final List<Container> closeWhenTickedContainers = new ArrayList<>();
-
+    private Container currentContainer = null;
     private Container pendingCloseContainer = null;
+    private IntObjectPair<Form> currentForm = null;
 
     public InventoryTracker(final UserConnection user) {
         super(user);
@@ -81,26 +72,15 @@ public class InventoryTracker extends StoredObject {
                 return null;
             }
         }
-
-        for (int i = this.containerStack.size() - 1; i >= 0; i--) {
-            final Container container = this.containerStack.get(i);
-            if (container instanceof FakeContainer) continue;
-            if (container.containerId() == containerId) return container;
+        if (this.currentContainer != null && containerId == this.currentContainer.containerId()) {
+            return this.currentContainer;
         }
         return null;
     }
 
     public Container getContainerServerbound(final byte containerId) {
-        for (int i = this.containerStack.size() - 1; i >= 0; i--) {
-            final Container container = this.containerStack.get(i);
-            if (container instanceof FakeContainer) continue;
-            if (container.javaContainerId() == containerId) return container;
-        }
-        for (int i = this.containerStack.size() - 1; i >= 0; i--) {
-            final Container container = this.containerStack.get(i);
-            if (container instanceof FakeContainer && container.javaContainerId() == containerId) {
-                return container;
-            }
+        if (this.currentContainer != null && containerId == this.currentContainer.javaContainerId()) {
+            return this.currentContainer;
         }
         return null;
     }
@@ -113,106 +93,62 @@ public class InventoryTracker extends StoredObject {
         this.dynamicContainerRegistry.remove(containerName);
     }
 
-    public void setCurrentContainer(final Container container) {
-        this.containerStack.push(container);
-    }
-
-    public void openContainer(final Container container) {
-        this.containerStack.push(container);
-
-        final PacketWrapper openScreen = PacketWrapper.create(ClientboundPackets1_21_6.OPEN_SCREEN, this.user());
-        openScreen.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
-        openScreen.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(container.type())); // type
-        openScreen.write(Types.TAG, TextUtil.textComponentToNbt(container.title())); // title
-        openScreen.send(BedrockProtocol.class);
-        PacketFactory.sendJavaContainerSetContent(this.user(), container);
-    }
-
-    public boolean markPendingClose(final Container container) {
-        if (container instanceof FakeContainer fakeContainer) {
-            this.containerStack.remove(fakeContainer);
-            fakeContainer.onClosed();
-            if (!this.containerStack.isEmpty()) {
-                this.openContainer(this.containerStack.pop());
-            }
-            return false;
-        } else if (this.pendingCloseContainer == container) {
-            return false;
-        }
-
+    public void markPendingClose(final Container container) {
         if (this.pendingCloseContainer != null) {
             throw new IllegalStateException("There is already another container pending close");
         }
+        if (this.currentContainer == container) {
+            this.currentContainer = null;
+        }
         this.pendingCloseContainer = container;
-        return true;
     }
 
     public void setCurrentContainerClosed(final boolean serverInitiated) {
         if (serverInitiated) {
-            this.pendingCloseContainer = this.getCurrentContainer();
-            PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.containerId(), ContainerType.NONE);
+            PacketFactory.sendBedrockContainerClose(this.user(), this.currentContainer.containerId(), ContainerType.NONE);
         }
-        if (this.pendingCloseContainer != this.getCurrentContainer()) {
-            throw new IllegalStateException("Current container is not the pending close container");
-        }
-        this.containerStack.remove(this.pendingCloseContainer);
+        this.currentContainer = null;
         this.pendingCloseContainer = null;
-
-        if (!this.containerStack.isEmpty()) {
-            this.openContainer(this.containerStack.pop());
-        }
     }
 
     public void closeAllContainers() {
-        while (!this.containerStack.isEmpty()) {
-            final Container container = this.containerStack.pop();
-            if (container instanceof FakeContainer fakeContainer) {
-                if (fakeContainer instanceof FormContainer) {
-                    fakeContainer.onClosed(); // Send user closed response
-                }
-            } else {
-                PacketFactory.sendBedrockContainerClose(this.user(), container.containerId(), ContainerType.NONE);
-            }
+        if (this.currentContainer != null) {
+            PacketFactory.sendBedrockContainerClose(this.user(), this.currentContainer.containerId(), ContainerType.NONE);
+            this.currentContainer = null;
         }
         this.pendingCloseContainer = null;
     }
 
-    public void closeWhenTicked(final Container container) {
-        this.closeWhenTickedContainers.add(container);
-    }
-
     public void tick() {
-        final Container currentContainer = this.getOpenContainer();
-        if (this.closeWhenTickedContainers.remove(currentContainer)) {
-            this.forceCloseContainer(currentContainer);
-            return;
-        }
-
-        if (currentContainer != null && currentContainer.position() != null) {
-            if (currentContainer.type() == ContainerType.INVENTORY) return;
+        if (this.currentContainer != null && this.currentContainer.position() != null) {
+            if (this.currentContainer.type() == ContainerType.INVENTORY) return;
 
             final ChunkTracker chunkTracker = this.user().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
-            final int blockState = chunkTracker.getBlockState(currentContainer.position());
+            final int blockState = chunkTracker.getBlockState(this.currentContainer.position());
             final String tag = blockStateRewriter.tag(blockState);
-            if (!currentContainer.isValidBlockTag(tag)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + currentContainer.type() + " because block state is not valid for container type: " + blockState);
-                this.forceCloseContainer(currentContainer);
+            if (!this.currentContainer.isValidBlockTag(tag)) {
+                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + this.currentContainer.type() + " because block state is not valid for container type: " + blockState);
+                this.forceCloseContainer(this.currentContainer);
                 return;
             }
 
             final EntityTracker entityTracker = this.user().get(EntityTracker.class);
-            final Position3f containerPosition = new Position3f(currentContainer.position().x() + 0.5F, currentContainer.position().y() + 0.5F, currentContainer.position().z() + 0.5F);
+            final Position3f containerPosition = new Position3f(this.currentContainer.position().x() + 0.5F, this.currentContainer.position().y() + 0.5F, this.currentContainer.position().z() + 0.5F);
             final Position3f playerPosition = entityTracker.getClientPlayer().position();
             if (playerPosition.distanceTo(containerPosition) > 6) {
-                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + currentContainer.type() + " because player is too far away (" + playerPosition.distanceTo(containerPosition) + " > 6)");
-                this.forceCloseContainer(currentContainer);
+                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + this.currentContainer.type() + " because player is too far away (" + playerPosition.distanceTo(containerPosition) + " > 6)");
+                this.forceCloseContainer(this.currentContainer);
             }
         }
     }
 
     public boolean isContainerOpen() {
-        return this.getCurrentContainer() != null || this.pendingCloseContainer != null;
+        return this.currentContainer != null || this.pendingCloseContainer != null;
+    }
+
+    public boolean isAnyScreenOpen() {
+        return this.isContainerOpen() || this.currentForm != null;
     }
 
     public InventoryContainer getInventoryContainer() {
@@ -232,37 +168,26 @@ public class InventoryTracker extends StoredObject {
     }
 
     public Container getCurrentContainer() {
-        for (int i = this.containerStack.size() - 1; i >= 0; i--) {
-            final Container container = this.containerStack.get(i);
-            if (container instanceof FakeContainer) continue;
-            return container;
-        }
-        return null;
+        return this.currentContainer;
     }
 
-    public FakeContainer getCurrentFakeContainer() {
-        for (int i = this.containerStack.size() - 1; i >= 0; i--) {
-            final Container container = this.containerStack.get(i);
-            if (container instanceof FakeContainer fakeContainer) return fakeContainer;
+    public void setCurrentContainer(final Container container) {
+        if (this.isContainerOpen()) {
+            throw new IllegalStateException("There is already another container open");
         }
-        return null;
-    }
-
-    public Container getOpenContainer() {
-        return this.containerStack.isEmpty() ? null : this.containerStack.peek();
+        this.currentContainer = container;
     }
 
     public Container getPendingCloseContainer() {
         return this.pendingCloseContainer;
     }
 
-    public byte getNextFakeContainerId() {
-        final int id = this.FAKE_ID_COUNTER.getAndIncrement();
-        if (id > MAX_FAKE_ID) {
-            this.FAKE_ID_COUNTER.set(MIN_FAKE_ID);
-            return (byte) MIN_FAKE_ID;
-        }
-        return (byte) id;
+    public IntObjectPair<Form> getCurrentForm() {
+        return this.currentForm;
+    }
+
+    public void setCurrentForm(final IntObjectPair<Form> currentForm) {
+        this.currentForm = currentForm;
     }
 
     private void forceCloseContainer(final Container container) {

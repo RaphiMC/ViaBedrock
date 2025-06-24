@@ -29,7 +29,7 @@ public class ProtocolConstants {
     public static final ProtocolVersion JAVA_VERSION = ProtocolVersion.v1_21_6;
     public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol1_21_5To1_21_6.class;
     public static final int JAVA_PACK_VERSION = 63;
-    public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V1_21_5;
+    public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V1_21_6;
 
     public static final String BEDROCK_VERSION_NAME = "1.21.90";
     public static final int BEDROCK_PROTOCOL_VERSION = 818;
