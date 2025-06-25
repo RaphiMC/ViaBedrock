@@ -305,7 +305,6 @@ public class ClientPlayerPackets {
                     // TODO: Test breaking fire
                     // TODO: The java client keeps spamming swing packets while waiting for the block break cooldown. Those need to be cancelled
 
-                    System.out.println("Start block brekaing!");
                     clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.StartDestroyBlock, position, direction.ordinal()));
                 }
                 case ABORT_DESTROY_BLOCK -> {
