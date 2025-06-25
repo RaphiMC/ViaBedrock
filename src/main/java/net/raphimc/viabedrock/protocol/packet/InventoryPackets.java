@@ -301,7 +301,10 @@ public class InventoryPackets {
                         addTextToDialog(wrapper.user(), dialog, label.getText());
                     } else if (element instanceof DividerFormElement) {
                         if (wrapper.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolVersion.v1_21_6)) {
-                            final TextInput textInput = new TextInput(DIALOG_BUTTON_WIDTH, new StringComponent(), false, " ", 1, new TextInput.MultilineOptions(null, 1));
+                            final TextInput textInput = new TextInput(new StringComponent());
+                            textInput.setLabelVisible(false);
+                            textInput.setMaxLength(Integer.MAX_VALUE);
+                            textInput.setMultiline(new TextInput.MultilineOptions(null, 1));
                             dialog.getInputs().add(new Input("dummy", textInput));
                         }
                     } else {
@@ -489,8 +492,7 @@ public class InventoryPackets {
             if (userConnection.getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolVersion.v1_21_6)) {
                 for (String line : BedrockTextUtils.split(text, "\n")) {
                     final TextInput textInput = new TextInput(TextUtil.stringToTextComponent(line));
-                    textInput.setInitial(" ");
-                    textInput.setMaxLength(1);
+                    textInput.setMaxLength(Integer.MAX_VALUE);
                     textInput.setMultiline(new TextInput.MultilineOptions(null, 1));
                     dialog.getInputs().add(new Input("dummy", textInput));
                 }
