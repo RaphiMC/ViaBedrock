@@ -507,7 +507,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     public record DimensionChangeInfo(Long loadingScreenId) {
     }
 
-    public record BlockBreakingInfo(BlockPosition position, Direction direction) {
+    public record BlockBreakingInfo(BlockPosition position, Direction direction, long sinceStart) {
     }
 
     public record AuthInputBlockAction(PlayerActionType action, BlockPosition position, int direction) {
