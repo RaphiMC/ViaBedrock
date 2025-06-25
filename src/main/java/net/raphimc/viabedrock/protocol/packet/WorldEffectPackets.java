@@ -30,6 +30,7 @@ import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPac
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
+import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
@@ -314,9 +315,38 @@ public class WorldEffectPackets {
                     ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Server sped up the game. This is not supported by ViaBedrock.");
                     wrapper.cancel();
                 }
-                case StartBlockCracking, StopBlockCracking, UpdateBlockCracking -> {
-                    wrapper.cancel(); // TODO: Implement block break progress translation
+
+                case StartBlockCracking -> {
+                    final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+                    clientPlayer.setBlockCrackingPosition(position);
+
+                    PacketFactory.sendJavaBlockDestroyProgress(wrapper.user(), clientPlayer, new BlockPosition((int) position.x(), (int) position.x(), (int) position.x()), 10);
+                    wrapper.cancel();
                 }
+
+                // UpdateBlockCracking doesn't advance the block cracking process, only the rate of change of the cracking effect.
+                case UpdateBlockCracking -> {
+                    final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+
+                    final Position3f lastCrackingPosition = clientPlayer.blockCrackingPosition();
+
+                    // These conditions have to be satisfied before breaking animation can be shown.
+                    if (lastCrackingPosition == null || lastCrackingPosition.x() != position.x() || lastCrackingPosition.y() != position.y() || lastCrackingPosition.z() != position.z()) {
+                        PacketFactory.sendJavaBlockDestroyProgress(wrapper.user(), clientPlayer, new BlockPosition((int) position.x(), (int) position.x(), (int) position.x()), 10);
+                    }
+                    wrapper.cancel();
+                }
+
+                case StopBlockCracking -> {
+                    final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+                    if (clientPlayer.blockCrackingPosition() == null) {
+                        return;
+                    }
+
+                    clientPlayer.setBlockCrackingPosition(null);
+                    PacketFactory.sendJavaBlockDestroyProgress(wrapper.user(), clientPlayer, new BlockPosition((int) position.x(), (int) position.x(), (int) position.x()), 10);
+                }
+
                 default -> {
                     BedrockMappingData.LevelEventMapping levelEventMapping = BedrockProtocol.MAPPINGS.getBedrockToJavaLevelEvents().get(levelEvent);
                     if (levelEventMapping instanceof BedrockMappingData.JavaSoundLevelEvent javaSoundLevelEvent) {
