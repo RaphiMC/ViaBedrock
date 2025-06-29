@@ -299,7 +299,7 @@ public class ClientPlayerPackets {
                 case START_DESTROY_BLOCK -> {
                     clientPlayer.sendSwingPacketToServer();
                     clientPlayer.cancelNextSwingPacket();
-                    clientPlayer.setBlockBreakingInfo(new ClientPlayerEntity.BlockBreakingInfo(position, direction));
+                    clientPlayer.setBlockBreakingInfo(new ClientPlayerEntity.BlockBreakingInfo(position, direction, System.currentTimeMillis()));
                     // TODO: Handle instant breaking
                     // TODO: Handle creative mode mining
                     // TODO: Test breaking fire
@@ -563,9 +563,18 @@ public class ClientPlayerPackets {
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
 
             if (clientPlayer.blockBreakingInfo() != null) {
+                final ClientPlayerEntity.BlockBreakingInfo blockBreakingInfo = clientPlayer.blockBreakingInfo();
+                final Position3f blockCrackingPosition = clientPlayer.blockCrackingPosition();
+
                 if (!gameSession.isBlockBreakingServerAuthoritative()) {
-                    final ClientPlayerEntity.BlockBreakingInfo blockBreakingInfo = clientPlayer.blockBreakingInfo();
                     clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.CrackBlock, blockBreakingInfo.position(), blockBreakingInfo.direction().ordinal()));
+                }
+
+                final BlockPosition breakingPosition = blockBreakingInfo.position();
+
+                // Bedrock won't start the block breaking animation until StartBlockCracking is sent.
+                if (blockCrackingPosition == null || blockCrackingPosition.x() != breakingPosition.x() || blockCrackingPosition.y() != breakingPosition.y() || blockCrackingPosition.z() != breakingPosition.z()) {
+                    PacketFactory.sendJavaBlockDestroyProgress(wrapper.user(), clientPlayer, breakingPosition, 10);
                 }
             } else {
                 clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.MissedSwing);
