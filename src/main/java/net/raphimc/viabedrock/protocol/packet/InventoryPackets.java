@@ -402,7 +402,7 @@ public class InventoryPackets {
         });
         protocol.registerServerbound(ServerboundPackets1_21_6.CUSTOM_CLICK_ACTION, ServerboundBedrockPackets.MODAL_FORM_RESPONSE, wrapper -> {
             final String id = wrapper.read(Types.STRING); // id
-            final CompoundTag payload = (CompoundTag) wrapper.read(Types.OPTIONAL_TAG); // payload
+            final CompoundTag payload = (CompoundTag) wrapper.read(Types.CUSTOM_CLICK_ACTION_TAG); // payload
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             if (inventoryTracker.getCurrentForm() == null) {
                 wrapper.cancel();
