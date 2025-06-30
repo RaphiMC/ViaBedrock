@@ -498,7 +498,7 @@ public class JoinPackets {
 
         final PacketWrapper finishConfiguration = PacketWrapper.create(ClientboundConfigurationPackets1_21_6.FINISH_CONFIGURATION, user);
         finishConfiguration.send(BedrockProtocol.class);
-        user.getProtocolInfo().setState(State.PLAY);
+        user.getProtocolInfo().setServerState(State.PLAY);
 
         final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_21_6.LOGIN, user);
         joinGame.write(Types.INT, clientPlayer.javaId()); // entity id
