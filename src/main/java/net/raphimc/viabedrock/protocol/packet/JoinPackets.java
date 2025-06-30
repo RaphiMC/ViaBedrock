@@ -499,6 +499,10 @@ public class JoinPackets {
         final PacketWrapper finishConfiguration = PacketWrapper.create(ClientboundConfigurationPackets1_21_6.FINISH_CONFIGURATION, user);
         finishConfiguration.send(BedrockProtocol.class);
         user.getProtocolInfo().setServerState(State.PLAY);
+        if (user.getProtocolInfo().protocolVersion().betweenInclusive(ProtocolVersion.v1_20_2, ProtocolVersion.v1_21_2)) { // VB compatibility
+            // Problematic code: https://github.com/ViaVersion/ViaBackwards/blob/b90b573f1d6f4d59841a3243e5bd072a43ec78e5/common/src/main/java/com/viaversion/viabackwards/protocol/v1_21_4to1_21_2/rewriter/EntityPacketRewriter1_21_4.java#L109
+            user.getProtocolInfo().setClientState(State.PLAY); // Wrong, but needed because ViaBackwards expects this and would otherwise send the player loaded packet in configuration state.
+        }
 
         final PacketWrapper joinGame = PacketWrapper.create(ClientboundPackets1_21_6.LOGIN, user);
         joinGame.write(Types.INT, clientPlayer.javaId()); // entity id
