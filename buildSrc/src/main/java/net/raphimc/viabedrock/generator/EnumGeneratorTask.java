@@ -125,6 +125,12 @@ public abstract class EnumGeneratorTask extends DefaultTask {
             }
         }
 
+        // Temp: bedrock-protocol-docs hasn't updated to 1.21.93 yet
+        final List<EnumField> levelSoundEventEnum = enums.get("SharedTypes::Legacy::LevelSoundEvent");
+        levelSoundEventEnum.removeIf(field -> field.name.equals("Undefined"));
+        levelSoundEventEnum.add(new EnumField("RecordLavaChicken", "561"));
+        levelSoundEventEnum.add(new EnumField("Undefined", "562"));
+
         // Mojang seems to have pushed an outdated version of this enum. Those values exist in 1.21.50, but not in 1.21.60
         final List<EnumField> actorDamageCauseEnum = enums.get("ActorDamageCause");
         actorDamageCauseEnum.add(new EnumField("MaceSmash", "34"));

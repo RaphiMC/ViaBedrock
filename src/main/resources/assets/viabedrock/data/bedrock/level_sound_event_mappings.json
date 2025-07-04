@@ -11675,6 +11675,11 @@
       "sound": "record.far"
     }
   },
+  "RecordLavaChicken": {
+    "": {
+      "sound": "record.lava_chicken"
+    }
+  },
   "RecordMall": {
     "": {
       "sound": "record.mall"

@@ -202,6 +202,10 @@ public class BedrockSoundListGenerator {
             soundsWithoutCategory.remove("record.tears");
             soundList.addProperty("record.tears", "record");
         }
+        if (soundsWithoutCategory.contains("record.lava_chicken")) {
+            soundsWithoutCategory.remove("record.lava_chicken");
+            soundList.addProperty("record.lava_chicken", "record");
+        }
         // Check if there are any sounds without a category
         for (String s : soundsWithoutCategory) {
             throw new IllegalStateException("Sound without category: " + s);

@@ -8947,6 +8947,13 @@
       }
     }
   },
+  "minecraft:music_disc_lava_chicken": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:music_disc_lava_chicken"
+      }
+    }
+  },
   "minecraft:music_disc_mall": {
     "meta": {
       "": {
