@@ -76,6 +76,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     private GameMode javaGameMode;
     private boolean cancelNextSwingPacket;
     private BlockBreakingInfo blockBreakingInfo;
+    private Position3f blockCrackingPosition;
 
     public ClientPlayerEntity(final UserConnection user, final long runtimeId, final UUID javaUuid, final PlayerAbilities abilities) {
         super(user, runtimeId, 0, javaUuid, abilities);
@@ -410,6 +411,14 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.blockBreakingInfo = blockBreakingInfo;
     }
 
+    public Position3f blockCrackingPosition() {
+        return this.blockCrackingPosition;
+    }
+
+    public void setBlockCrackingPosition(Position3f blockCrackingPosition) {
+        this.blockCrackingPosition = blockCrackingPosition;
+    }
+
     @Override
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         return switch (attribute.name()) {
@@ -498,7 +507,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     public record DimensionChangeInfo(Long loadingScreenId) {
     }
 
-    public record BlockBreakingInfo(BlockPosition position, Direction direction) {
+    public record BlockBreakingInfo(BlockPosition position, Direction direction, long sinceStart) {
     }
 
     public record AuthInputBlockAction(PlayerActionType action, BlockPosition position, int direction) {
