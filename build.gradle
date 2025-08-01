@@ -10,8 +10,11 @@ plugins {
     id "org.jetbrains.gradle.plugin.idea-ext" version "1.2"
 }
 
-configurations {
-    testImplementation.extendsFrom(compileOnly)
+sourceSets {
+    tool
+
+    tool.compileClasspath += main.output + main.compileClasspath
+    tool.runtimeClasspath += tool.compileClasspath
 }
 
 repositories {
