@@ -19,6 +19,8 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
 import net.lenni0451.mcstructs_bedrock.forms.Form;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -30,14 +32,17 @@ import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.container.player.OffhandContainer;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -111,12 +116,17 @@ public class InventoryTracker extends StoredObject {
         this.pendingCloseContainer = null;
     }
 
-    public void closeAllContainers() {
-        if (this.currentContainer != null) {
-            PacketFactory.sendBedrockContainerClose(this.user(), this.currentContainer.containerId(), ContainerType.NONE);
-            this.currentContainer = null;
+    public void closeCurrentForm() {
+        if (this.currentForm == null) {
+            throw new IllegalStateException("There is no form currently open");
         }
-        this.pendingCloseContainer = null;
+        final PacketWrapper modalFormResponse = PacketWrapper.create(ServerboundBedrockPackets.MODAL_FORM_RESPONSE, this.user());
+        modalFormResponse.write(BedrockTypes.UNSIGNED_VAR_INT, this.currentForm.leftInt()); // id
+        modalFormResponse.write(Types.BOOLEAN, false); // has response
+        modalFormResponse.write(Types.BOOLEAN, true); // has cancel reason
+        modalFormResponse.write(Types.BYTE, (byte) ModalFormCancelReason.UserClosed.getValue()); // cancel reason
+        modalFormResponse.sendToServer(BedrockProtocol.class);
+        this.currentForm = null;
     }
 
     public void tick() {
@@ -129,7 +139,7 @@ public class InventoryTracker extends StoredObject {
             final String tag = blockStateRewriter.tag(blockState);
             if (!this.currentContainer.isValidBlockTag(tag)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + this.currentContainer.type() + " because block state is not valid for container type: " + blockState);
-                this.forceCloseContainer(this.currentContainer);
+                this.forceCloseCurrentContainer();
                 return;
             }
 
@@ -138,7 +148,7 @@ public class InventoryTracker extends StoredObject {
             final Position3f playerPosition = entityTracker.getClientPlayer().position();
             if (playerPosition.distanceTo(containerPosition) > 6) {
                 ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + this.currentContainer.type() + " because player is too far away (" + playerPosition.distanceTo(containerPosition) + " > 6)");
-                this.forceCloseContainer(this.currentContainer);
+                this.forceCloseCurrentContainer();
             }
         }
     }
@@ -190,8 +200,8 @@ public class InventoryTracker extends StoredObject {
         this.currentForm = currentForm;
     }
 
-    private void forceCloseContainer(final Container container) {
-        this.markPendingClose(container);
+    private void forceCloseCurrentContainer() {
+        this.markPendingClose(this.currentContainer);
         PacketFactory.sendJavaContainerClose(this.user(), this.pendingCloseContainer.javaContainerId());
         PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.containerId(), ContainerType.NONE);
     }

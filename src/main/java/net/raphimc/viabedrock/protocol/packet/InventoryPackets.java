@@ -322,13 +322,7 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.CLOSE_FORM, ClientboundPackets1_21_6.CLEAR_DIALOG, wrapper -> {
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             if (inventoryTracker.getCurrentForm() != null) {
-                final PacketWrapper modalFormResponse = PacketWrapper.create(ServerboundBedrockPackets.MODAL_FORM_RESPONSE, wrapper.user());
-                modalFormResponse.write(BedrockTypes.UNSIGNED_VAR_INT, inventoryTracker.getCurrentForm().left()); // id
-                modalFormResponse.write(Types.BOOLEAN, false); // has response
-                modalFormResponse.write(Types.BOOLEAN, true); // has cancel reason
-                modalFormResponse.write(Types.BYTE, (byte) ModalFormCancelReason.UserClosed.getValue()); // cancel reason
-                modalFormResponse.sendToServer(BedrockProtocol.class);
-                inventoryTracker.setCurrentForm(null);
+                inventoryTracker.closeCurrentForm();
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_HOTBAR, ClientboundPackets1_21_6.SET_HELD_SLOT, wrapper -> {
@@ -410,7 +404,7 @@ public class InventoryPackets {
             }
 
             final Form form = inventoryTracker.getCurrentForm().right();
-            final int formId = inventoryTracker.getCurrentForm().left();
+            final int formId = inventoryTracker.getCurrentForm().leftInt();
             if (!id.equals("viabedrock:form/" + formId)) {
                 wrapper.cancel();
                 return;

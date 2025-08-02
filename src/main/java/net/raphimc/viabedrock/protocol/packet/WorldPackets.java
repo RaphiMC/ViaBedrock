@@ -153,7 +153,12 @@ public class WorldPackets {
             PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.StartLoadingScreen, loadingScreenId);
             clientPlayer.setPosition(new Position3f(position.x(), position.y() + clientPlayer.eyeOffset(), position.z()));
             clientPlayer.setDimensionChangeInfo(new ClientPlayerEntity.DimensionChangeInfo(loadingScreenId));
-            inventoryTracker.closeAllContainers();
+            if (inventoryTracker.isContainerOpen()) {
+                inventoryTracker.setCurrentContainerClosed(true);
+            }
+            if (inventoryTracker.getCurrentForm() != null) {
+                inventoryTracker.closeCurrentForm();
+            }
 
             wrapper.write(Types.VAR_INT, dimension.ordinal()); // dimension id
             wrapper.write(Types.STRING, dimension.getKey()); // dimension name
