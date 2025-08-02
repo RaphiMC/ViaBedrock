@@ -115,8 +115,8 @@ public class ChunkTracker extends StoredObject {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of render distance, but within load distance: " + chunkX + ", " + chunkZ);
             final EntityTracker entityTracker = this.user().get(EntityTracker.class);
             final PacketWrapper setChunkCacheCenter = PacketWrapper.create(ClientboundPackets1_21_6.SET_CHUNK_CACHE_CENTER, this.user());
-            setChunkCacheCenter.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().x() >> 4); // chunk x
-            setChunkCacheCenter.write(Types.VAR_INT, (int) entityTracker.getClientPlayer().position().z() >> 4); // chunk z
+            setChunkCacheCenter.write(Types.VAR_INT, (int) Math.floor(entityTracker.getClientPlayer().position().x()) >> 4); // chunk x
+            setChunkCacheCenter.write(Types.VAR_INT, (int) Math.floor(entityTracker.getClientPlayer().position().z()) >> 4); // chunk z
             setChunkCacheCenter.send(BedrockProtocol.class);
         }
 
@@ -229,7 +229,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public boolean isInUnloadedChunkSection(final Position3f playerPosition) {
-        final BlockPosition chunkSectionPosition = new BlockPosition((int) Math.floor(playerPosition.x() / 16), (int) Math.floor((playerPosition.y() - 1.62F) / 16), (int) Math.floor(playerPosition.z() / 16));
+        final BlockPosition chunkSectionPosition = new BlockPosition((int) Math.floor(playerPosition.x()) >> 4, (int) Math.floor((playerPosition.y() - 1.62F)) >> 4, (int) Math.floor(playerPosition.z()) >> 4);
         final ChunkPosition chunkPos = new ChunkPosition(chunkSectionPosition.x(), chunkSectionPosition.z());
         if (!this.isChunkLoaded(chunkPos)) {
             return true;
@@ -248,8 +248,8 @@ public class ChunkTracker extends StoredObject {
         if (!this.isInRenderDistance(chunkX, chunkZ)) { // Bedrock accepts chunks outside the chunk render range and uses the player position as a center to determine if a chunk is allowed to be loaded
             final EntityTracker entityTracker = this.user().get(EntityTracker.class);
             if (entityTracker == null) return false;
-            final int centerX = (int) entityTracker.getClientPlayer().position().x() >> 4;
-            final int centerZ = (int) entityTracker.getClientPlayer().position().z() >> 4;
+            final int centerX = (int) Math.floor(entityTracker.getClientPlayer().position().x()) >> 4;
+            final int centerZ = (int) Math.floor(entityTracker.getClientPlayer().position().z()) >> 4;
             return Math.abs(chunkX - centerX) <= this.radius && Math.abs(chunkZ - centerZ) <= this.radius;
         }
 
