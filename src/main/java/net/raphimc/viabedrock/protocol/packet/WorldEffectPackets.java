@@ -368,12 +368,12 @@ public class WorldEffectPackets {
                     } else if (levelEventMapping instanceof BedrockMappingData.JavaParticle javaParticle) {
                         wrapper.setPacketType(ClientboundPackets1_21_6.LEVEL_PARTICLES);
                         PacketFactory.writeJavaLevelParticles(wrapper, switch (levelEvent) {
-                            case ParticlesCrackBlockDown -> new Position3f((int) position.x() + 0.5F, (int) position.y(), (int) position.z() + 0.5F);
-                            case ParticlesCrackBlockUp -> new Position3f((int) position.x() + 0.5F, (int) position.y() + 1F, (int) position.z() + 0.5F);
-                            case ParticlesCrackBlockNorth -> new Position3f((int) position.x() + 0.5F, (int) position.y() + 0.5F, (int) position.z());
-                            case ParticlesCrackBlockSouth -> new Position3f((int) position.x() + 0.5F, (int) position.y() + 0.5F, (int) position.z() + 1F);
-                            case ParticlesCrackBlockWest -> new Position3f((int) position.x(), (int) position.y() + 0.5F, (int) position.z() + 0.5F);
-                            case ParticlesCrackBlockEast -> new Position3f((int) position.x() + 1F, (int) position.y() + 0.5F, (int) position.z() + 0.5F);
+                            case ParticlesCrackBlockDown -> new Position3f(MathUtil.floor(position.x()) + 0.5F, MathUtil.floor(position.y()), MathUtil.floor(position.z()) + 0.5F);
+                            case ParticlesCrackBlockUp -> new Position3f(MathUtil.floor(position.x()) + 0.5F, MathUtil.floor(position.y()) + 1F, MathUtil.floor(position.z()) + 0.5F);
+                            case ParticlesCrackBlockNorth -> new Position3f(MathUtil.floor(position.x()) + 0.5F, MathUtil.floor(position.y()) + 0.5F, MathUtil.floor(position.z()));
+                            case ParticlesCrackBlockSouth -> new Position3f(MathUtil.floor(position.x()) + 0.5F, MathUtil.floor(position.y()) + 0.5F, MathUtil.floor(position.z()) + 1F);
+                            case ParticlesCrackBlockWest -> new Position3f(MathUtil.floor(position.x()), MathUtil.floor(position.y()) + 0.5F, MathUtil.floor(position.z()) + 0.5F);
+                            case ParticlesCrackBlockEast -> new Position3f(MathUtil.floor(position.x()) + 1F, MathUtil.floor(position.y()) + 0.5F, MathUtil.floor(position.z()) + 0.5F);
                             default -> position;
                         }, switch (levelEvent) {
                             case ParticlesCrit -> javaParticle.withCount(data);

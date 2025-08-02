@@ -31,6 +31,11 @@ public class MathUtil {
         return f > i ? i + 1 : i;
     }
 
+    public static int floor(final float f) {
+        final int i = (int) f;
+        return f < i ? i - 1 : i;
+    }
+
     public static float clamp(final float value, final float min, final float max) {
         if (value < min) {
             return min;
