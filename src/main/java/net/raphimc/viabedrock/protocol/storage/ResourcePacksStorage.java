@@ -26,7 +26,7 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.resourcepack.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ResourcePackResponse;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ResourcePackResponse;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.*;

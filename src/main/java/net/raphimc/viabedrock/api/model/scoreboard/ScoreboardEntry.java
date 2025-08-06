@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.model.scoreboard;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.api.util.StringUtil;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.IdentityDefinition_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 

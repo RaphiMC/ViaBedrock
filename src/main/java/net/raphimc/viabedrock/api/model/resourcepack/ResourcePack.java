@@ -26,7 +26,7 @@ import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PackType;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

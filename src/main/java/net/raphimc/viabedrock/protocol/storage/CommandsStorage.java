@@ -50,8 +50,8 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ArgumentTypeRegistry;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandEnumConstraints;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandFlags;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandParameterOption;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandPermissionLevel;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandParameterOption;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandPermissionLevel;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 
 import java.util.*;

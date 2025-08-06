@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.io.compression;
 import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.compression.Snappy;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompressionAlgorithm;
 
 public class SnappyCompression implements CompressionAlgorithm {
 

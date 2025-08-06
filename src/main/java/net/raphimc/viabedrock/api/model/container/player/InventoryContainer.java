@@ -27,9 +27,9 @@ import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPac
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerID;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractPacket_Action;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;

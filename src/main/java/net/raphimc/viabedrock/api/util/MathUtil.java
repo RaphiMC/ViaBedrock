@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.api.util;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerAuthInputPacket_InputData;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerAuthInputPacket_InputData;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 

@@ -1,5 +1,3 @@
-import net.raphimc.viabedrock.generator.EnumGeneratorTask
-
 plugins {
     id "java-library"
     id "base.base-conventions"
@@ -7,7 +5,6 @@ plugins {
     id "viabedrock.publishing-conventions"
     id "via.run-with-viaproxy-task"
     id "net.raphimc.class-token-replacer" version "1.1.7"
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.2"
 }
 
 sourceSets {
@@ -82,22 +79,7 @@ dependencies {
     api("team.unnamed:mocha:3.0.1") {
         transitive = false
     }
-}
 
-def enumSourceDir = layout.buildDirectory.dir("generated/enums/main/java")
-def enumGeneratorTask = tasks.register("enumGeneratorTask", EnumGeneratorTask) {
-    commitHash = "2a42b85946a308d830984f54ea20349aa2beaeed" // https://github.com/Mojang/bedrock-protocol-docs
-    outputDirectory = enumSourceDir
-}
-tasks.compileJava.dependsOn(enumGeneratorTask)
-tasks.sourcesJar.dependsOn(enumGeneratorTask)
-
-sourceSets.main.java.srcDir(enumSourceDir)
-
-idea {
-    project.settings {
-        taskTriggers {
-            afterSync(enumGeneratorTask)
-        }
-    }
+    toolImplementation "org.trimou:trimou-core:2.5.1.Final"
+    toolImplementation "org.jsoup:jsoup:1.21.1"
 }

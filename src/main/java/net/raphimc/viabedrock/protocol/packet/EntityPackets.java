@@ -41,7 +41,7 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AnimateAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;

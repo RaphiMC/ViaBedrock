@@ -22,8 +22,8 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPackets1_21_6;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.IdentityDefinition_Type;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ObjectiveSortOrder;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.IdentityDefinition_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ObjectiveSortOrder;
 
 import java.util.HashMap;
 import java.util.Map;

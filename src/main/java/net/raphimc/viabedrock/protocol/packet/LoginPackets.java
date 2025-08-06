@@ -36,7 +36,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.AuthenticationType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompressionAlgorithm;
 import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;

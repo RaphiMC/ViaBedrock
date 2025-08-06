@@ -1,5 +1,5 @@
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PackType;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 

@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.api.io.compression;
 
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompressionAlgorithm;
 
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;

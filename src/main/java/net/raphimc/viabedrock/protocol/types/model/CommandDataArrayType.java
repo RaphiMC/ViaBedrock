@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandRegistry_HardNonTerminal;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandRegistry_HardNonTerminal;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 

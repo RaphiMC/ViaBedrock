@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameRule_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GameRule_Type;
 import net.raphimc.viabedrock.protocol.model.GameRule;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 

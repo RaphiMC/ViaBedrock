@@ -36,7 +36,7 @@ import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardObjective;
 import net.raphimc.viabedrock.api.util.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;

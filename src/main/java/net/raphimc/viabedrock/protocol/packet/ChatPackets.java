@@ -40,7 +40,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 import net.raphimc.viabedrock.protocol.model.CommandOriginData;
 import net.raphimc.viabedrock.protocol.storage.*;

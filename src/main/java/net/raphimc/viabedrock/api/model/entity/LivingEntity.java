@@ -26,7 +26,7 @@ import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPackets1_21_6;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.AbilitiesIndex;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.EntityEffect;
 

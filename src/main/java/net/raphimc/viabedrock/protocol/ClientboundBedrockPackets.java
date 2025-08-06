@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol;
 
 import com.viaversion.viaversion.api.protocol.packet.ClientboundPacketType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MinecraftPacketIds;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.MinecraftPacketIds;
 
 public enum ClientboundBedrockPackets implements ClientboundPacketType {
 

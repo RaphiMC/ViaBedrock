@@ -22,7 +22,7 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.api.model.resourcepack.BlockDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.SharedTypes_Legacy_LevelSoundEvent;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SharedTypes_Legacy_LevelSoundEvent;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import util.Util;
 

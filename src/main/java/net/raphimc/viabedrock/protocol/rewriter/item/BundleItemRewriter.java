@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import net.raphimc.viabedrock.api.model.container.dynamic.BundleContainer;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerEnumName;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;

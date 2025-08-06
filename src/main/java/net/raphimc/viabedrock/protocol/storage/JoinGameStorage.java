@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StorableObject;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.Difficulty;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Difficulty;
 
 public record JoinGameStorage(String levelName, Difficulty difficulty, float rainLevel, float lightningLevel, int currentTime, int chunkTickRange) implements StorableObject {
 }

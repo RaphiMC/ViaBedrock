@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.protocol.types.model;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.api.util.EnumUtil;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.SerializedAbilitiesData_SerializedAbilitiesLayer;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.AbilitiesIndex;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SerializedAbilitiesData_SerializedAbilitiesLayer;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 

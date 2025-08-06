@@ -17,8 +17,8 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.SerializedAbilitiesData_SerializedAbilitiesLayer;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.AbilitiesIndex;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SerializedAbilitiesData_SerializedAbilitiesLayer;
 
 import java.util.EnumMap;
 import java.util.EnumSet;

@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerEnumName;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 
 public record FullContainerName(ContainerEnumName name, Integer dynamicId) {
 

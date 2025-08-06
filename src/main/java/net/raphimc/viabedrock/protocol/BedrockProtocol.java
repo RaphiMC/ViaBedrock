@@ -39,7 +39,7 @@ import net.raphimc.viabedrock.api.protocol.StatelessTransitionProtocol;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayStatus;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayStatus;
 import net.raphimc.viabedrock.protocol.packet.*;
 import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;

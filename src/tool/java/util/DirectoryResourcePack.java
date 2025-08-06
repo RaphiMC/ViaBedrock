@@ -18,7 +18,7 @@
 package util;
 
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PackType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PackType;
 
 import java.io.File;
 import java.io.IOException;
