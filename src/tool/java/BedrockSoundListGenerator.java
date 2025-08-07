@@ -122,6 +122,7 @@ public class BedrockSoundListGenerator {
             SharedTypes_Legacy_LevelSoundEvent.Scared,
             SharedTypes_Legacy_LevelSoundEvent.JumpPrevent,
             SharedTypes_Legacy_LevelSoundEvent.Bump,
+            SharedTypes_Legacy_LevelSoundEvent.EquipCopper,
             SharedTypes_Legacy_LevelSoundEvent.Undefined,
             // Edu sounds
             SharedTypes_Legacy_LevelSoundEvent.ElemConstructOpen,

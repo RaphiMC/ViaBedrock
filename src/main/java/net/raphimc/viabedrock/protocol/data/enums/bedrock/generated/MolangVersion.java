@@ -21,7 +21,8 @@ public enum MolangVersion {
     DeprecateOldBlockQueryNames(10),
     DeprecatedSnifferAndCamelQueries(11),
     LeafSupportingInFirstSolidBlockBelow(12),
-    NumValidVersions(13),
+    CarryingBlockQueryAllActors (13),
+    NumValidVersions(14),
     Latest(NumValidVersions.getValue() - 1),
     HardcodedMolang(Latest.getValue());
 

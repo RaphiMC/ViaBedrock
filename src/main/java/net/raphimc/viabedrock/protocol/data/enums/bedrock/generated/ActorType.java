@@ -159,7 +159,8 @@ public enum ActorType {
     Bogged(144 | SkeletonMonster.getValue()),
     OminousItemSpawner(145),
     Creaking(146 | Monster.getValue()),
-    HappyGhast(147 | Animal.getValue());
+    HappyGhast(147 | Animal.getValue()),
+    CopperGolem(148 | PathfinderMob.getValue());
 
     private static final Int2ObjectMap<ActorType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

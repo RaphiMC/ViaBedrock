@@ -2761,10 +2761,26 @@
       }
     }
   },
+  "minecraft:copper_axe": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:copper_block": {
     "block": {
       "minecraft:copper_block": {
         "java_id": "minecraft:copper_block"
+      }
+    }
+  },
+  "minecraft:copper_boots": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -2775,10 +2791,34 @@
       }
     }
   },
+  "minecraft:copper_chest": {
+    "block": {
+      "minecraft:copper_chest": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
+  "minecraft:copper_chestplate": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:copper_door": {
     "block": {
       "minecraft:copper_door": {
         "java_id": "minecraft:copper_door"
+      }
+    }
+  },
+  "minecraft:copper_golem_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -2789,6 +2829,22 @@
       }
     }
   },
+  "minecraft:copper_helmet": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
+  "minecraft:copper_hoe": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:copper_ingot": {
     "meta": {
       "": {
@@ -2796,10 +2852,50 @@
       }
     }
   },
+  "minecraft:copper_leggings": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
+  "minecraft:copper_nugget": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:copper_ore": {
     "block": {
       "minecraft:copper_ore": {
         "java_id": "minecraft:copper_ore"
+      }
+    }
+  },
+  "minecraft:copper_pickaxe": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
+  "minecraft:copper_shovel": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
+  "minecraft:copper_sword": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -5289,6 +5385,14 @@
     "block": {
       "minecraft:exposed_copper_bulb": {
         "java_id": "minecraft:exposed_copper_bulb"
+      }
+    }
+  },
+  "minecraft:exposed_copper_chest": {
+    "block": {
+      "minecraft:exposed_copper_chest": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -9562,6 +9666,14 @@
       }
     }
   },
+  "minecraft:oxidized_copper_chest": {
+    "block": {
+      "minecraft:oxidized_copper_chest": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:oxidized_copper_door": {
     "block": {
       "minecraft:oxidized_copper_door": {
@@ -13611,6 +13723,14 @@
       }
     }
   },
+  "minecraft:waxed_copper_chest": {
+    "block": {
+      "minecraft:waxed_copper_chest": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:waxed_copper_door": {
     "block": {
       "minecraft:waxed_copper_door": {
@@ -13679,6 +13799,14 @@
     "block": {
       "minecraft:waxed_exposed_copper_bulb": {
         "java_id": "minecraft:waxed_exposed_copper_bulb"
+      }
+    }
+  },
+  "minecraft:waxed_exposed_copper_chest": {
+    "block": {
+      "minecraft:waxed_exposed_copper_chest": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -13753,6 +13881,14 @@
       }
     }
   },
+  "minecraft:waxed_oxidized_copper_chest": {
+    "block": {
+      "minecraft:waxed_oxidized_copper_chest": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
+      }
+    }
+  },
   "minecraft:waxed_oxidized_copper_door": {
     "block": {
       "minecraft:waxed_oxidized_copper_door": {
@@ -13821,6 +13957,14 @@
     "block": {
       "minecraft:waxed_weathered_copper_bulb": {
         "java_id": "minecraft:waxed_weathered_copper_bulb"
+      }
+    }
+  },
+  "minecraft:waxed_weathered_copper_chest": {
+    "block": {
+      "minecraft:waxed_weathered_copper_chest": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },
@@ -13899,6 +14043,14 @@
     "block": {
       "minecraft:weathered_copper_bulb": {
         "java_id": "minecraft:weathered_copper_bulb"
+      }
+    }
+  },
+  "minecraft:weathered_copper_chest": {
+    "block": {
+      "minecraft:weathered_copper_chest": {
+        "java_id": "minecraft:paper",
+        "java_name": "TODO: Waiting for Java Edition to add this item"
       }
     }
   },

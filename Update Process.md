@@ -15,3 +15,28 @@ This file lists the steps necessary to update ViaBedrock.
 11. Update changed packet contents
 12. Update rewriters
 13. Done!
+
+Waiting for the next Java Edition update:
+- entity_mappings.json
+  - minecraft:copper_golem
+- item_mappings.json
+  - minecraft:copper_helmet
+  - minecraft:copper_leggings
+  - minecraft:copper_shovel
+  - minecraft:copper_pickaxe
+  - minecraft:waxed_exposed_copper_chest
+  - minecraft:exposed_copper_chest
+  - minecraft:weathered_copper_chest
+  - minecraft:copper_nugget
+  - minecraft:waxed_weathered_copper_chest
+  - minecraft:copper_chestplate
+  - minecraft:oxidized_copper_chest
+  - minecraft:copper_golem_spawn_egg
+  - minecraft:copper_sword
+  - minecraft:copper_chest
+  - minecraft:copper_axe
+  - minecraft:waxed_copper_chest
+  - minecraft:copper_hoe
+  - minecraft:waxed_oxidized_copper_chest
+  - minecraft:copper_boots
+- Check block entity list and rewrites

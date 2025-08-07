@@ -267,8 +267,8 @@ public class BedrockMappingData extends MappingDataBase {
 
             final JsonArray javaPreWaterloggedBlockStatesJson = this.readJson("custom/pre_waterlogged_blockstates.json").getAsJsonArray("blockstates");
             this.javaPreWaterloggedBlockStates = new IntOpenHashSet(javaPreWaterloggedBlockStatesJson.size());
-            for (JsonElement entry : javaPreWaterloggedBlockStatesJson) {
-                final BlockState javaBlockState = BlockState.fromString(entry.getAsString());
+            for (JsonElement stateJson : javaPreWaterloggedBlockStatesJson) {
+                final BlockState javaBlockState = BlockState.fromString(stateJson.getAsString());
                 if (!this.javaBlockStates.containsKey(javaBlockState)) {
                     throw new RuntimeException("Unknown java block state: " + javaBlockState.toBlockStateString());
                 }
@@ -484,8 +484,8 @@ public class BedrockMappingData extends MappingDataBase {
 
             final JsonArray javaMenusJson = javaViaMappingJson.get("menus").getAsJsonArray();
             final List<String> javaMenus = new ArrayList<>(javaMenusJson.size());
-            for (int i = 0; i < javaMenusJson.size(); i++) {
-                javaMenus.add(Key.namespaced(javaMenusJson.get(i).getAsString()));
+            for (JsonElement menuJson : javaMenusJson) {
+                javaMenus.add(Key.namespaced(menuJson.getAsString()));
             }
 
             final JsonObject bedrockToJavaContainersJson = this.readJson("custom/container_mappings.json");
@@ -613,11 +613,11 @@ public class BedrockMappingData extends MappingDataBase {
                     final JsonArray entityDataArray = javaEntityDataJson.getAsJsonArray(type.name());
                     if (entityDataArray != null) {
                         final List<String> entityTypeData = new ArrayList<>(entityDataArray.size());
-                        for (JsonElement element : entityDataArray) {
-                            if (entityData.contains(element.getAsString()) || entityTypeData.contains(element.getAsString())) {
-                                throw new IllegalStateException("Duplicate entity data for " + realType.name() + ": " + element.getAsString());
+                        for (JsonElement entry : entityDataArray) {
+                            if (entityData.contains(entry.getAsString()) || entityTypeData.contains(entry.getAsString())) {
+                                throw new IllegalStateException("Duplicate entity data for " + realType.name() + ": " + entry.getAsString());
                             } else {
-                                entityTypeData.add(element.getAsString());
+                                entityTypeData.add(entry.getAsString());
                             }
                         }
                         entityData.addAll(0, entityTypeData);
@@ -788,8 +788,8 @@ public class BedrockMappingData extends MappingDataBase {
 
             final JsonArray bedrockParticlesJson = this.readJson("bedrock/particles.json", JsonArray.class);
             final List<String> bedrockParticles = new ArrayList<>(bedrockParticlesJson.size());
-            for (int i = 0; i < bedrockParticlesJson.size(); i++) {
-                bedrockParticles.add(bedrockParticlesJson.get(i).getAsString());
+            for (JsonElement particleJson : bedrockParticlesJson) {
+                bedrockParticles.add(particleJson.getAsString());
             }
 
             final JsonObject bedrockToJavaParticleMappingsJson = this.readJson("custom/particle_mappings.json");

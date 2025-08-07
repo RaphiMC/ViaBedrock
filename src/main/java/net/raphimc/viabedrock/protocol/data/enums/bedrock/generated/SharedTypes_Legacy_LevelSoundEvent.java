@@ -529,8 +529,9 @@ public enum SharedTypes_Legacy_LevelSoundEvent {
     LeadUnleash(558),
     LeadBreak(559),
     Unsaddle(560),
-    RecordLavaChicken(561),
-    Undefined(562);
+    EquipCopper(561),
+    RecordLavaChicken(562),
+    Undefined(563);
 
     private static final Int2ObjectMap<SharedTypes_Legacy_LevelSoundEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

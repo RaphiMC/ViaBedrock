@@ -167,6 +167,10 @@ public class ClientPlayerPackets {
             }
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             wrapper.read(BedrockTypes.POSITION_3F); // position delta
+            wrapper.read(BedrockTypes.POSITION_2F); // vehicle rotation
+            if (wrapper.read(Types.BOOLEAN)) {
+                wrapper.read(BedrockTypes.FLOAT_LE); // vehicle angular velocity
+            }
             switch (predictionType) {
                 case Player -> {
                     final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();

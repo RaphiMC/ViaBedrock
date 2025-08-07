@@ -285,6 +285,7 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.UUID); // world template id
                     wrapper.read(Types.BOOLEAN); // client side generation
                     final boolean hashedRuntimeBlockIds = wrapper.read(Types.BOOLEAN); // use hashed block runtime ids
+                    wrapper.read(Types.BOOLEAN); // enable tick death systems
                     wrapper.read(Types.BOOLEAN); // server authoritative sounds
 
                     if (editorWorldType == Editor_WorldType.EditorProject) {
