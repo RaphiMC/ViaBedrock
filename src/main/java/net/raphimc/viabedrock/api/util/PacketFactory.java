@@ -110,6 +110,14 @@ public class PacketFactory {
         blockUpdate.send(BedrockProtocol.class);
     }
 
+    public static void sendJavaBlockDestroyProgress(final UserConnection user, final Entity entity, final BlockPosition position, final int stage) {
+        final PacketWrapper blockDestruction = PacketWrapper.create(ClientboundPackets1_21_6.BLOCK_DESTRUCTION, user);
+        blockDestruction.write(Types.VAR_INT, entity.javaId()); // entity id
+        blockDestruction.write(Types.BLOCK_POSITION1_14, position); // position
+        blockDestruction.write(Types.VAR_INT, stage); // destroy stage
+        blockDestruction.send(BedrockProtocol.class);
+    }
+
     public static void sendJavaLevelParticles(final UserConnection user, final Position3f position, final BedrockMappingData.JavaParticle particle) {
         final PacketWrapper levelParticles = PacketWrapper.create(ClientboundPackets1_21_6.LEVEL_PARTICLES, user);
         writeJavaLevelParticles(levelParticles, position, particle);
