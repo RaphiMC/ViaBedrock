@@ -317,11 +317,13 @@ public class WorldEffectPackets {
                 }
                 case StartBlockCracking, UpdateBlockCracking -> {
                     wrapper.cancel();
-                    wrapper.user().get(BreakingTracker.class).updateCrackingInfo(position, data, levelEvent == LevelEvent.UpdateBlockCracking);
+                    wrapper.user().get(BreakingTracker.class).updateCrackingInfo(new Position3f(
+                            MathUtil.floor(position.x()), MathUtil.floor(position.y()), MathUtil.floor(position.z())
+                    ), data, levelEvent == LevelEvent.UpdateBlockCracking);
                 }
                 case StopBlockCracking -> {
                     wrapper.cancel();
-                    wrapper.user().get(BreakingTracker.class).stopCracking(position);
+                    wrapper.user().get(BreakingTracker.class).stopCracking(new Position3f(MathUtil.floor(position.x()), MathUtil.floor(position.y()), MathUtil.floor(position.z())));
                 }
                 default -> {
                     BedrockMappingData.LevelEventMapping levelEventMapping = BedrockProtocol.MAPPINGS.getBedrockToJavaLevelEvents().get(levelEvent);

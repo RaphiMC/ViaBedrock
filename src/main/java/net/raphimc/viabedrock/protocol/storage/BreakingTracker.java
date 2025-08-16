@@ -71,22 +71,19 @@ public class BreakingTracker extends StoredObject {
         }
 
         BlockCrackingInfo info = entry == null ? null : entry.getValue();
-        if (!update) {
-            if (info != null) {
-                // If there is an old cached block cracking info, we stop the breaking first.
-                PacketFactory.sendJavaBlockDestroyProgress(user(), info.breakId(), new BlockPosition((int) position3f.x(), (int) position3f.y(), (int) position3f.z()), 10);
-            }
-            
+        if (info == null) {
             this.blockCrackingInfos.put(position3f, info = new BlockCrackingInfo(breakTime));
 
-            PacketFactory.sendJavaBlockDestroyProgress(user(), info.breakId(), new BlockPosition((int) position3f.x(), (int) position3f.y(), (int) position3f.z()), 10);
+            // Lets the client know that we want to start cracking this block.
+            PacketFactory.sendJavaBlockDestroyProgress(user(), info.breakId(), new BlockPosition((int) position3f.x(), (int) position3f.y(), (int) position3f.z()), 0);
         } else {
             info.breakTime(breakTime);
 
             // If the cracking animation has finished, we start over.
             if (info.prevProgress() >= 9) {
                 info.startTime(System.currentTimeMillis());
-                PacketFactory.sendJavaBlockDestroyProgress(user(), info.breakId(), new BlockPosition((int) position3f.x(), (int) position3f.y(), (int) position3f.z()), 10);
+                info.prevProgress(0);
+                PacketFactory.sendJavaBlockDestroyProgress(user(), info.breakId(), new BlockPosition((int) position3f.x(), (int) position3f.y(), (int) position3f.z()), 0);
             }
         }
     }
