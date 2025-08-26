@@ -81,5 +81,5 @@ dependencies {
     }
 
     toolImplementation "org.trimou:trimou-core:2.5.1.Final"
-    toolImplementation "org.jsoup:jsoup:1.21.1"
+    toolImplementation "org.jsoup:jsoup:1.21.2"
 }
