@@ -36,6 +36,16 @@ public class MathUtil {
         return f < i ? i - 1 : i;
     }
 
+    public static float wrapDegrees(float degrees) {
+        degrees = degrees % 360.0f;
+        if (degrees < -180.0f) {
+            degrees += 360.0f;
+        } else if (degrees >= 180.0f) {
+            degrees -= 360.0f;
+        }
+        return degrees;
+    }
+
     public static float clamp(final float value, final float min, final float max) {
         if (value < min) {
             return min;
