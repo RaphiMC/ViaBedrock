@@ -413,12 +413,12 @@ public class ClientPlayerPackets {
         protocol.registerServerbound(ServerboundPackets1_21_6.MOVE_PLAYER_POS_ROT, null, wrapper -> {
             wrapper.cancel();
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
-            clientPlayer.updatePlayerPosition(wrapper.read(Types.DOUBLE), wrapper.read(Types.DOUBLE), wrapper.read(Types.DOUBLE), wrapper.read(Types.FLOAT), wrapper.read(Types.FLOAT), wrapper.read(Types.UNSIGNED_BYTE));
+            clientPlayer.updatePlayerPosition(wrapper.read(Types.DOUBLE), wrapper.read(Types.DOUBLE), wrapper.read(Types.DOUBLE), MathUtil.wrapDegrees(wrapper.read(Types.FLOAT)), wrapper.read(Types.FLOAT), wrapper.read(Types.UNSIGNED_BYTE));
         });
         protocol.registerServerbound(ServerboundPackets1_21_6.MOVE_PLAYER_ROT, null, wrapper -> {
             wrapper.cancel();
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
-            clientPlayer.updatePlayerPosition(wrapper.read(Types.FLOAT), wrapper.read(Types.FLOAT), wrapper.read(Types.UNSIGNED_BYTE));
+            clientPlayer.updatePlayerPosition(MathUtil.wrapDegrees(wrapper.read(Types.FLOAT)), wrapper.read(Types.FLOAT), wrapper.read(Types.UNSIGNED_BYTE));
         });
         protocol.registerServerbound(ServerboundPackets1_21_6.ACCEPT_TELEPORTATION, null, wrapper -> {
             wrapper.cancel();
