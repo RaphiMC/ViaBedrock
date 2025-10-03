@@ -104,9 +104,33 @@
   },
   "minecraft:death_explosion_emitter": "minecraft:poof",
   "minecraft:dolphin_move_particle": "minecraft:dolphin",
-  "minecraft:dragon_breath_fire": "minecraft:dragon_breath",
-  "minecraft:dragon_breath_lingering": "minecraft:dragon_breath",
-  "minecraft:dragon_breath_trail": "minecraft:dragon_breath",
+  "minecraft:dragon_breath_fire": {
+    "particle": "minecraft:dragon_breath",
+    "arguments": [
+      {
+        "type": "float",
+        "value": 1
+      }
+    ]
+  },
+  "minecraft:dragon_breath_lingering": {
+    "particle": "minecraft:dragon_breath",
+    "arguments": [
+      {
+        "type": "float",
+        "value": 1
+      }
+    ]
+  },
+  "minecraft:dragon_breath_trail": {
+    "particle": "minecraft:dragon_breath",
+    "arguments": [
+      {
+        "type": "float",
+        "value": 1
+      }
+    ]
+  },
   "minecraft:dragon_death_explosion_emitter": "minecraft:explosion_emitter",
   "minecraft:dragon_destroy_block": "minecraft:explosion",
   "minecraft:dragon_dying_explosion": "minecraft:explosion",
@@ -282,6 +306,7 @@
   "minecraft:fish_hook_particle": null,
   "minecraft:fish_pos_particle": null,
   "minecraft:glow_particle": "minecraft:glow",
+  "minecraft:green_flame_particle": "minecraft:copper_fire_flame",
   "minecraft:guardian_attack_particle": "minecraft:bubble",
   "minecraft:guardian_water_move_particle": "minecraft:bubble",
   "minecraft:heart_particle": "minecraft:heart",

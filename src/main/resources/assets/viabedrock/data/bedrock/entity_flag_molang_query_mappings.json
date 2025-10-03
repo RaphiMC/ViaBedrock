@@ -109,9 +109,6 @@
   "SONIC_BOOM": "is_sonic_boom",
   "HAS_DASH_COOLDOWN": "has_dash_cooldown",
   "PUSH_TOWARDS_CLOSEST_SPACE": null,
-  "DEPRECATED_1": null,
-  "DEPRECATED_2": null,
-  "DEPRECATED_3": null,
   "SEARCHING": "is_searching",
   "CRAWLING": "is_crawling",
   "TIMER_FLAG_1": "timer_flag_1",
@@ -121,7 +118,8 @@
   "RENDERS_WHEN_INVISIBLE": null,
   "ROTATION_AXIS_ALIGNED": null,
   "COLLIDABLE": null,
-  "WASD_AIR_CONTROLLED": null,
+  "WASD_FREE_CAMERA_CONTROLLED": null,
   "DOES_SERVER_AUTH_ONLY_DISMOUNT": null,
-  "BODY_ROTATION_ALWAYS_FOLLOWS_HEAD": null
+  "BODY_ROTATION_ALWAYS_FOLLOWS_HEAD": null,
+  "CAN_USE_VERTICAL_MOVEMENT_ACTION": null
 }

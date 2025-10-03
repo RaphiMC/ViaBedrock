@@ -2,6 +2,12 @@
   "Activate": {
     "entity:minecraft:creaking": {
       "sound": "mob.creaking.activate"
+    },
+    "block:shelf": {
+      "sound": "block.shelf.activate"
+    },
+    "block:copper_golem_statue": {
+      "sound": "mob.copper_golem.becoming_statue"
     }
   },
   "AddChest": {
@@ -1830,6 +1836,9 @@
         1.0
       ]
     },
+    "block:copper_golem_statue": {
+      "sound": "block.copper_golem_statue.break"
+    },
     "block:calcite": {
       "sound": "break.calcite"
     },
@@ -2021,6 +2030,9 @@
         0.8,
         1.0
       ]
+    },
+    "block:shelf": {
+      "sound": "block.shelf.break"
     }
   },
   "BreakBlock": {
@@ -2429,12 +2441,54 @@
         0.9,
         1.0
       ]
+    },
+    "block:copper_chest_weathered": {
+      "sound": "block.copper_chest.weathered.closed",
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
+    "block:copper_chest": {
+      "sound": "block.copper_chest.closed",
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
+    "block:copper_chest_oxidized": {
+      "sound": "block.copper_chest.oxidized.closed",
+      "pitch": [
+        0.9,
+        1.0
+      ]
     }
   },
   "ChestOpen": {
     "": {
       "sound": "random.chestopen",
       "volume": 0.5,
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
+    "block:copper_chest_weathered": {
+      "sound": "block.copper_chest.weathered.open",
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
+    "block:copper_chest": {
+      "sound": "block.copper_chest.open",
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
+    "block:copper_chest_oxidized": {
+      "sound": "block.copper_chest.oxidized.open",
       "pitch": [
         0.9,
         1.0
@@ -2651,8 +2705,14 @@
     }
   },
   "Deactivate": {
+    "entity:minecraft:copper_golem": {
+      "sound": "mob.copper_golem.becoming_statue"
+    },
     "entity:minecraft:creaking": {
       "sound": "mob.creaking.deactivate"
+    },
+    "block:shelf": {
+      "sound": "block.shelf.deactivate"
     }
   },
   "Death": {
@@ -2757,6 +2817,9 @@
         0.8,
         1.2
       ]
+    },
+    "entity:minecraft:copper_golem": {
+      "sound": "mob.copper_golem.death"
     },
     "entity:minecraft:drowned": {
       "sound": "mob.drowned.death",
@@ -4969,7 +5032,11 @@
       "sound": "armor.equip_chain"
     }
   },
-  "EquipCopper": null,
+  "EquipCopper": {
+    "": {
+      "sound": "armor.equip_copper"
+    }
+  },
   "EquipDiamond": {
     "": {
       "sound": "armor.equip_diamond"
@@ -5315,6 +5382,9 @@
     "block:mud": {
       "sound": "block.mud.fall",
       "volume": 0.4
+    },
+    "block:copper_golem_statue": {
+      "sound": "block.copper_golem_statue.hit"
     },
     "block:calcite": {
       "sound": "fall.calcite"
@@ -7365,6 +7435,9 @@
       "volume": 0.1,
       "pitch": 0.5
     },
+    "block:copper_golem_statue": {
+      "sound": "block.copper_golem_statue.hit"
+    },
     "block:calcite": {
       "sound": "hit.calcite"
     },
@@ -7644,6 +7717,9 @@
         0.8,
         1.2
       ]
+    },
+    "entity:minecraft:copper_golem": {
+      "sound": "mob.copper_golem.hurt"
     },
     "entity:minecraft:drowned": {
       "sound": "mob.drowned.hurt",
@@ -10084,6 +10160,11 @@
       "sound": "mob.mooshroom.convert"
     }
   },
+  "MultiItemSwap": {
+    "block:shelf": {
+      "sound": "block.shelf.multi_swap"
+    }
+  },
   "NearbyClose": {
     "entity:minecraft:warden": {
       "sound": "mob.warden.nearby_close",
@@ -10660,6 +10741,9 @@
         1.0
       ]
     },
+    "block:copper_golem_statue": {
+      "sound": "block.copper_golem_statue.place"
+    },
     "block:calcite": {
       "sound": "place.calcite"
     },
@@ -10857,6 +10941,11 @@
       "sound": "block.dried_ghast.place_in_water",
       "volume": 0.8,
       "pitch": 0.96
+    }
+  },
+  "PlaceItem": {
+    "block:shelf": {
+      "sound": "block.shelf.place_item"
     }
   },
   "PlaceLeashKnot": {
@@ -12072,6 +12161,11 @@
       ]
     }
   },
+  "SingleItemSwap": {
+    "block:shelf": {
+      "sound": "block.shelf.single_swap"
+    }
+  },
   "Sleep": {
     "entity:minecraft:fox": {
       "sound": "mob.fox.sleep",
@@ -12159,6 +12253,9 @@
   "Spawn": {
     "entity:minecraft:wither": {
       "sound": "mob.wither.spawn"
+    },
+    "entity:minecraft:copper_golem": {
+      "sound": "mob.copper_golem.spawn"
     },
     "entity:minecraft:npc": {
       "sound": "mob.villager.idle",
@@ -12792,6 +12889,9 @@
       "sound": "step.nylium",
       "volume": 0.15
     },
+    "entity:minecraft:copper_golem": {
+      "sound": "mob.copper_golem.step"
+    },
     "block:web": {
       "sound": "step.web"
     },
@@ -13240,6 +13340,9 @@
     "entity:minecraft:strider": {
       "sound": "mob.strider.step",
       "volume": 0.25
+    },
+    "block:copper_golem_statue": {
+      "sound": "block.copper_golem_statue.hit"
     },
     "block:calcite": {
       "sound": "step.calcite"

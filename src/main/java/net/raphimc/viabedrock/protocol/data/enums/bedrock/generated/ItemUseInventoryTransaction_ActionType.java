@@ -22,7 +22,8 @@ public enum ItemUseInventoryTransaction_ActionType {
      * When using server auth block breaking as specified in StartGamePacket this is never sent.<br>
      * Instead, block actions are supplied in Player Auth Input.
      */
-    Destroy(2);
+    Destroy(2),
+    UseAsAttack(3);
 
     private static final Int2ObjectMap<ItemUseInventoryTransaction_ActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

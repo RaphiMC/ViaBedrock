@@ -52,7 +52,6 @@ public class SkinProvider implements Provider {
         final JsonObject skinGeometry = skinPackContent.getSortedJson("geometry.json");
 
         final Map<String, Object> claims = new HashMap<>();
-        claims.put("PlayFabId", authChainData.getPlayFabId().toLowerCase(Locale.ROOT));
         claims.put("SkinId", "Custom" + authChainData.getDeviceId());
         claims.put("SkinResourcePatch", Base64.getEncoder().encodeToString("{\"geometry\":{\"default\":\"geometry.humanoid.custom\"}}".getBytes(StandardCharsets.UTF_8)));
         claims.put("SkinImageWidth", skin.getWidth());

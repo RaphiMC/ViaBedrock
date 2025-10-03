@@ -41,7 +41,15 @@
     "minecraft:cauldron"
   ],
   "chest": [
-    "minecraft:chest"
+    "minecraft:chest",
+    "minecraft:copper_chest",
+    "minecraft:exposed_copper_chest",
+    "minecraft:oxidized_copper_chest",
+    "minecraft:waxed_copper_chest",
+    "minecraft:waxed_exposed_copper_chest",
+    "minecraft:waxed_oxidized_copper_chest",
+    "minecraft:waxed_weathered_copper_chest",
+    "minecraft:weathered_copper_chest"
   ],
   "chiseled_bookshelf": [
     "minecraft:chiseled_bookshelf"
@@ -57,6 +65,16 @@
   ],
   "conduit": [
     "minecraft:conduit"
+  ],
+  "copper_golem_statue": [
+    "minecraft:copper_golem_statue",
+    "minecraft:exposed_copper_golem_statue",
+    "minecraft:oxidized_copper_golem_statue",
+    "minecraft:waxed_copper_golem_statue",
+    "minecraft:waxed_exposed_copper_golem_statue",
+    "minecraft:waxed_oxidized_copper_golem_statue",
+    "minecraft:waxed_weathered_copper_golem_statue",
+    "minecraft:weathered_copper_golem_statue"
   ],
   "crafter": [
     "minecraft:crafter"
@@ -106,6 +124,7 @@
     "minecraft:jungle_hanging_sign",
     "minecraft:mangrove_hanging_sign",
     "minecraft:oak_hanging_sign",
+    "minecraft:pale_oak_hanging_sign",
     "minecraft:spruce_hanging_sign",
     "minecraft:warped_hanging_sign"
   ],
@@ -153,6 +172,20 @@
   "sculk_shrieker": [
     "minecraft:sculk_shrieker"
   ],
+  "shelf": [
+    "minecraft:acacia_shelf",
+    "minecraft:bamboo_shelf",
+    "minecraft:birch_shelf",
+    "minecraft:cherry_shelf",
+    "minecraft:crimson_shelf",
+    "minecraft:dark_oak_shelf",
+    "minecraft:jungle_shelf",
+    "minecraft:mangrove_shelf",
+    "minecraft:pale_oak_shelf",
+    "minecraft:spruce_shelf",
+    "minecraft:oak_shelf",
+    "minecraft:warped_shelf"
+  ],
   "shulker_box": [
     "minecraft:white_shulker_box",
     "minecraft:orange_shulker_box",
@@ -189,10 +222,12 @@
     "minecraft:jungle_wall_sign",
     "minecraft:mangrove_standing_sign",
     "minecraft:mangrove_wall_sign",
-    "minecraft:standing_sign",
-    "minecraft:wall_sign",
+    "minecraft:pale_oak_standing_sign",
+    "minecraft:pale_oak_wall_sign",
     "minecraft:spruce_standing_sign",
     "minecraft:spruce_wall_sign",
+    "minecraft:standing_sign",
+    "minecraft:wall_sign",
     "minecraft:warped_standing_sign",
     "minecraft:warped_wall_sign"
   ],

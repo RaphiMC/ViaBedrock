@@ -19,7 +19,6 @@ public enum LegacyTelemetryEventPacket_Type {
     AgentCreated(9),
     PatternRemoved_OBSOLETE(10),
     SlashCommand(11),
-    Deprecated_FishBucketed(12),
     MobBorn(13),
     PetDied_OBSOLETE(14),
     POICauldronUsed(15),

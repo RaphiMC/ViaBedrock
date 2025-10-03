@@ -218,7 +218,7 @@
                     "byte": 0
                 },
                 "new": {
-                    "string": "dormant"
+                    "string": "uprooted"
                 }
             },
             {
@@ -226,7 +226,7 @@
                     "byte": 1
                 },
                 "new": {
-                    "string": "uprooted"
+                    "string": "awake"
                 }
             }
         ],

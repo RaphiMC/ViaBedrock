@@ -219,6 +219,7 @@ public enum MinecraftPacketIds {
     PlayerLocation(326),
     ClientboundControlSchemeSetPacket(327),
     ServerScriptDebugDrawerPacket(328),
+    ServerboundPackSettingChange(329),
     EndId(329);
 
     private static final Int2ObjectMap<MinecraftPacketIds> BY_VALUE = new Int2ObjectOpenHashMap<>();

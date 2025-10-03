@@ -48,11 +48,13 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put("brewing_stand", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("calibrated_sculk_sensor", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("campfire", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("copper_golem_statue", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("note_block", NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("piston", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("moving_block", NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("sculk_sensor", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("sculk_shrieker", NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put("shelf", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("trial_spawner", NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put("vault", NOOP_REWRITER);
 

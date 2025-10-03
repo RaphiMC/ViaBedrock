@@ -104,7 +104,8 @@ public enum ParticleType {
     CreakingCrumble(94),
     PaleOakLeaves(95),
     EyeblossomOpen(96),
-    EyeblossomClose(97);
+    EyeblossomClose(97),
+    GreenFlame(98);
 
     private static final Int2ObjectMap<ParticleType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
