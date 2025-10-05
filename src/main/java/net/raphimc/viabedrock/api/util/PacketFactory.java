@@ -116,6 +116,14 @@ public class PacketFactory {
         levelParticles.send(BedrockProtocol.class);
     }
 
+    public static void sendJavaBlockBreakAnimation(final UserConnection user, final int entityId, final BlockPosition position, final short stage) {
+        final PacketWrapper blockBreakAnimation = PacketWrapper.create(ClientboundPackets1_21_9.BLOCK_DESTRUCTION, user);
+        blockBreakAnimation.write(Types.VAR_INT, entityId); // entity id
+        blockBreakAnimation.write(Types.BLOCK_POSITION1_14, position); // position
+        blockBreakAnimation.write(Types.UNSIGNED_BYTE, stage); // stage
+        blockBreakAnimation.send(BedrockProtocol.class);
+    }
+
     public static void sendBedrockContainerClose(final UserConnection user, final byte containerId, final ContainerType containerType) {
         final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, user);
         containerClose.write(Types.BYTE, containerId); // container id

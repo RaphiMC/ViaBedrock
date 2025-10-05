@@ -315,7 +315,15 @@ public class WorldEffectPackets {
                     wrapper.cancel();
                 }
                 case StartBlockCracking, StopBlockCracking, UpdateBlockCracking -> {
-                    wrapper.cancel(); // TODO: Implement block break progress translation
+                    //Bedrock sends constant Block Break updates with no progress, the additional data seems to indicate the block hardness
+                    int uuidFromBlockPos = position.hashCode();
+                    int destroyStage = switch (levelEvent) {
+                        case StartBlockCracking -> 0;
+                        case StopBlockCracking -> 10; //10 = reset
+                        default -> 1; //TODO: Manually increment based on hardness and break time...
+                    };
+                    PacketFactory.sendJavaBlockBreakAnimation(wrapper.user(), uuidFromBlockPos, new BlockPosition((int) position.x(), (int) position.y(), (int) position.z()), (short) destroyStage);
+                    wrapper.cancel();
                 }
                 default -> {
                     BedrockMappingData.LevelEventMapping levelEventMapping = BedrockProtocol.MAPPINGS.getBedrockToJavaLevelEvents().get(levelEvent);

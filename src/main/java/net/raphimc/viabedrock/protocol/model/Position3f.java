@@ -47,4 +47,12 @@ public record Position3f(float x, float y, float z) {
         return (float) Math.sqrt(Math.pow(this.x - position.x, 2) + Math.pow(this.y - position.y, 2) + Math.pow(this.z - position.z, 2));
     }
 
+    @Override
+    public int hashCode() {
+        int result = Float.hashCode(x);
+        result = 31 * result + Float.hashCode(y);
+        result = 31 * result + Float.hashCode(z);
+        return result;
+    }
+
 }

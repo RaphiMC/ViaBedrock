@@ -32,21 +32,21 @@ public class UnhandledPackets {
         protocol.cancelClientbound(ClientboundBedrockPackets.SHOW_PROFILE);
         protocol.cancelClientbound(ClientboundBedrockPackets.LAB_TABLE); // Not relevant (Education Edition)
         protocol.cancelClientbound(ClientboundBedrockPackets.EDUCATION_SETTINGS); // Not relevant (Education Edition)
-        protocol.cancelClientbound(ClientboundBedrockPackets.EMOTE); // Not possible in Java Edition
+        protocol.cancelClientbound(ClientboundBedrockPackets.EMOTE); // Not possible in Java Edition TODO: Send plugin packet for mods?
         protocol.cancelClientbound(ClientboundBedrockPackets.CODE_BUILDER); // Not relevant (Education Edition)
-        protocol.cancelClientbound(ClientboundBedrockPackets.EMOTE_LIST); // Not possible in Java Edition
-        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_SHAKE); // Not possible in Java Edition
-        protocol.cancelClientbound(ClientboundBedrockPackets.PLAYER_FOG); // Not possible in Java Edition
+        protocol.cancelClientbound(ClientboundBedrockPackets.EMOTE_LIST); // Not possible in Java Edition TODO: Send plugin packet for mods?
+        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_SHAKE); // Not possible in Java Edition TODO: Send plugin packet for mods?
+        protocol.cancelClientbound(ClientboundBedrockPackets.PLAYER_FOG); // Not possible in Java Edition TODO: Send plugin packet for mods?
         protocol.cancelClientbound(ClientboundBedrockPackets.EDU_URI_RESOURCE); // Not relevant (Education Edition)
         protocol.cancelClientbound(ClientboundBedrockPackets.SCRIPT_MESSAGE); // Not relevant (Education Edition)
         protocol.cancelClientbound(ClientboundBedrockPackets.LESSON_PROGRESS); // Not relevant (Education Edition)
-        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_PRESETS); // Not possible in Java Edition
-        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_INSTRUCTION); // Not possible in Java Edition
-        protocol.cancelClientbound(ClientboundBedrockPackets.SET_HUD); // Not possible in Java Edition
+        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_PRESETS); // Not possible in Java Edition TODO: Send plugin packet for mods?
+        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_INSTRUCTION); // Not possible in Java Edition TODO: Send plugin packet for mods?
+        protocol.cancelClientbound(ClientboundBedrockPackets.SET_HUD); // Not possible in Java Edition TODO: Send plugin packet for mods?
         protocol.cancelClientbound(ClientboundBedrockPackets.CURRENT_STRUCTURE_FEATURE); // Useless
-        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST); // Not possible in Java Edition
-        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST_PRESETS); // Not possible in Java Edition
-        protocol.cancelClientbound(ClientboundBedrockPackets.PLAYER_VIDEO_CAPTURE); // Not possible in Java Edition
+        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST); // Not possible in Java Edition TODO: Send plugin packet for mods?
+        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST_PRESETS); // Not possible in Java Edition TODO: Send plugin packet for mods?
+        protocol.cancelClientbound(ClientboundBedrockPackets.PLAYER_VIDEO_CAPTURE); // Not possible in Java Edition TODO: Send plugin packet for mods?
 
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_9.KEEP_ALIVE, null, PacketWrapper::cancel);
         protocol.cancelServerbound(ServerboundPackets1_21_6.CHAT_ACK);
