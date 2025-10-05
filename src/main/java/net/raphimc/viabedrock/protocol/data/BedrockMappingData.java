@@ -56,6 +56,7 @@ import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.FileSystemUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
+import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.SoundSource;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -139,6 +140,8 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, String> bedrockToJavaBannerPatterns;
     private BiMap<String, String> bedrockToJavaPaintings;
     private Map<ActorDamageCause, String> bedrockToJavaDamageCauses;
+
+    private Map<ActorEvent, EntityEvent> pleaseChangeThisName;
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolConstants.JAVA_VERSION.getName());
@@ -929,6 +932,23 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
         }
+
+        //Please change this
+        {
+            final JsonObject help = this.readJson("bedrock/entity_event_mappings.jsonc");
+            this.pleaseChangeThisName = new HashMap<>(help.size());
+            for (Map.Entry<String, JsonElement> entry : help.entrySet()) {
+                ActorEvent actorEvent = ActorEvent.getByValue(Integer.parseInt(entry.getKey()));
+                EntityEvent entityEvent = EntityEvent.getByValue(entry.getValue().getAsByte(), null);
+                if (actorEvent != null && entityEvent != null) {
+                    this.pleaseChangeThisName.put(actorEvent, entityEvent);
+                }
+            }
+        }
+    }
+
+    public Map<ActorEvent, EntityEvent> getPleaseChangeThisName() {
+        return this.pleaseChangeThisName;
     }
 
     public Map<String, ResourcePack> getBedrockVanillaResourcePacks() {

@@ -44,6 +44,7 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AnimateAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.model.*;
@@ -422,6 +423,16 @@ public class EntityPackets {
                 wrapper.cancel();
                 return;
             }
+
+            if (BedrockProtocol.MAPPINGS.getPleaseChangeThisName().containsKey(event)) {
+                //Event can be directly mapped to a Java entity event
+                final EntityEvent javaEvent = BedrockProtocol.MAPPINGS.getPleaseChangeThisName().get(event);
+                wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+                wrapper.write(Types.BYTE, javaEvent.getValue()); // event id
+                //TODO: Overlap with the HURT event below!
+            }
+
             switch (event) {
                 case HURT -> {
                     final CompoundTag damageTypeRegistry = gameSession.getJavaRegistries().getCompoundTag("minecraft:damage_type");
