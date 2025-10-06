@@ -423,6 +423,9 @@ public class EntityPackets {
                 wrapper.cancel();
                 return;
             }
+
+            //https://minecraft.wiki/w/Bedrock_Edition_protocol/Entity_Events
+            //https://minecraft.wiki/w/Java_Edition_protocol/Entity_statuses
             switch (event) {
                 case HURT -> {
                     final CompoundTag damageTypeRegistry = gameSession.getJavaRegistries().getCompoundTag("minecraft:damage_type");
@@ -474,6 +477,11 @@ public class EntityPackets {
                     wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
                     wrapper.write(Types.VAR_INT, entity.javaId());
                     wrapper.write(Types.BYTE, EntityEvent.EAT_GRASS.getValue());
+                }
+                case SQUID_FLEEING -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.SQUID_ANIM_SYNCH.getValue());
                 }
                 case ZOMBIE_CONVERTING -> {
                     wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
