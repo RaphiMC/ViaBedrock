@@ -729,7 +729,6 @@ public class EntityPackets {
             wrapper.write(Types.VAR_INT, itemEntity.javaId()); // item entity id
             wrapper.write(Types.VAR_INT, collectorEntity.javaId()); // collector entity id
             wrapper.write(Types.VAR_INT, 0); // amount
-            //TODO: Java requires the item amount, either send it here or make sure to resync the inventory
         });
     }
 
