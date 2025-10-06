@@ -424,8 +424,6 @@ public class EntityPackets {
                 return;
             }
 
-            System.out.println(event.name() + " -> " + data);
-
             //https://minecraft.wiki/w/Bedrock_Edition_protocol/Entity_Events
             //https://minecraft.wiki/w/Java_Edition_protocol/Entity_statuses
             switch (event) {
