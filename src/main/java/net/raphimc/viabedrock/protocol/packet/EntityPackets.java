@@ -506,6 +506,10 @@ public class EntityPackets {
                     wrapper.write(Types.VAR_INT, entity.javaId());
                     wrapper.write(Types.BYTE, EntityEvent.WITCH_HAT_MAGIC.getValue());
                 }
+                case FIREWORKS_EXPLODE -> {
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.FIREWORKS_EXPLODE.getValue());
+                }
                 case IN_LOVE_HEARTS -> {
                     wrapper.write(Types.VAR_INT, entity.javaId());
                     wrapper.write(Types.BYTE, EntityEvent.IN_LOVE_HEARTS.getValue());
@@ -521,6 +525,10 @@ public class EntityPackets {
                 case AIR_SUPPLY -> {
                     wrapper.write(Types.VAR_INT, entity.javaId());
                     wrapper.write(Types.BYTE, EntityEvent.DROWN_PARTICLES.getValue());
+                }
+                case SHAKE -> {
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.SHAKE.getValue());
                 }
                 case INSTANT_DEATH -> {
                     wrapper.write(Types.VAR_INT, entity.javaId());
