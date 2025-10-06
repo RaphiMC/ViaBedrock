@@ -424,6 +424,8 @@ public class EntityPackets {
                 return;
             }
 
+            System.out.println(event.name() + " -> " + data);
+
             //https://minecraft.wiki/w/Bedrock_Edition_protocol/Entity_Events
             //https://minecraft.wiki/w/Java_Edition_protocol/Entity_statuses
             switch (event) {
@@ -459,84 +461,84 @@ public class EntityPackets {
                     }
                 }
                 case TAMING_FAILED -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.TAMING_FAILED.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.TAMING_FAILED.getValue()); // entity event
                 }
                 case TAMING_SUCCEEDED -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.TAMING_SUCCEEDED.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.TAMING_SUCCEEDED.getValue()); // entity event
                 }
                 case SHAKE_WETNESS -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.SHAKE_WETNESS.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SHAKE_WETNESS.getValue()); // entity event
                 }
                 case EAT_GRASS -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.EAT_GRASS.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.EAT_GRASS.getValue()); // entity event
                 }
                 case SQUID_FLEEING -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.SQUID_ANIM_SYNCH.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SQUID_ANIM_SYNCH.getValue()); // entity event
                 }
                 case ZOMBIE_CONVERTING -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.ZOMBIE_CONVERTING.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.ZOMBIE_CONVERTING.getValue()); // entity event
                 }
                 case START_OFFER_FLOWER -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.OFFER_FLOWER.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.OFFER_FLOWER.getValue()); // entity event
                 }
                 case STOP_OFFER_FLOWER -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.STOP_OFFER_FLOWER.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.STOP_OFFER_FLOWER.getValue()); // entity event
                 }
                 case LOVE_HEARTS -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.LOVE_HEARTS.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.LOVE_HEARTS.getValue()); // entity event
                 }
                 case VILLAGER_ANGRY -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.VILLAGER_ANGRY.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.VILLAGER_ANGRY.getValue()); // entity event
                 }
                 case VILLAGER_HAPPY -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.VILLAGER_HAPPY.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.VILLAGER_HAPPY.getValue()); // entity event
                 }
                 case WITCH_HAT_MAGIC -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.WITCH_HAT_MAGIC.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.WITCH_HAT_MAGIC.getValue()); // entity event
                 }
                 case FIREWORKS_EXPLODE -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.FIREWORKS_EXPLODE.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.FIREWORKS_EXPLODE.getValue()); // entity event
                 }
                 case IN_LOVE_HEARTS -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.IN_LOVE_HEARTS.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.IN_LOVE_HEARTS.getValue()); // entity event
                 }
                 case SILVERFISH_MERGE_ANIM -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.SILVERFISH_MERGE_ANIM.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SILVERFISH_MERGE_ANIM.getValue()); // entity event
                 }
                 case GUARDIAN_ATTACK_SOUND -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.GUARDIAN_ATTACK_SOUND.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.GUARDIAN_ATTACK_SOUND.getValue()); // entity event
                 }
                 case AIR_SUPPLY -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.DROWN_PARTICLES.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.DROWN_PARTICLES.getValue()); // entity event
                 }
                 case SHAKE -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.SHAKE.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SHAKE.getValue()); // entity event
                 }
                 case INSTANT_DEATH -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.POOF.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.POOF.getValue()); // entity event
                 }
                 case TALISMAN_ACTIVATE -> {
-                    wrapper.write(Types.VAR_INT, entity.javaId());
-                    wrapper.write(Types.BYTE, EntityEvent.PROTECTED_FROM_DEATH.getValue());
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.PROTECTED_FROM_DEATH.getValue()); // entity event
                 }
                 case GUARDIAN_MINING_FATIGUE -> {
                     // Handled in WorldEffectPackets under ParticleSoundGuardianGhost
@@ -727,6 +729,7 @@ public class EntityPackets {
             wrapper.write(Types.VAR_INT, itemEntity.javaId()); // item entity id
             wrapper.write(Types.VAR_INT, collectorEntity.javaId()); // collector entity id
             wrapper.write(Types.VAR_INT, 0); // amount
+            //TODO: Java requires the item amount, either send it here or make sure to resync the inventory
         });
     }
 
