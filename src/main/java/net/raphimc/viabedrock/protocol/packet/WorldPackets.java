@@ -486,6 +486,16 @@ public class WorldPackets {
             wrapper.write(Types.LONG, bedrockTime >= 0 ? bedrockTime % 24000L : 24000 + (bedrockTime % 24000L)); // time of day
             wrapper.write(Types.BOOLEAN, wrapper.user().get(GameRulesStorage.class).<Boolean>getGameRule("doDayLightCycle")); // do day light cycle
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.BLOCK_EVENT, ClientboundPackets1_21_9.BLOCK_EVENT, wrapper -> {
+            final BlockPosition pos = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
+            final int type = wrapper.read(BedrockTypes.VAR_INT); // event type
+            final int data = wrapper.read(BedrockTypes.VAR_INT); // event data
+
+            wrapper.write(Types.BLOCK_POSITION1_14, pos); // position
+            wrapper.write(Types.UNSIGNED_BYTE, (short) (type & 0xFF)); // event type
+            wrapper.write(Types.UNSIGNED_BYTE, (short) (data & 0xFF)); // event data
+            wrapper.write(Types.VAR_INT, 0); // block ID (Unused in the vanilla client)
+        });
     }
 
 }
