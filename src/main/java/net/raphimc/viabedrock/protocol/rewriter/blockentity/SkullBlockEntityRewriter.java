@@ -29,6 +29,7 @@ import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
+import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
@@ -86,7 +87,7 @@ public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             f += 360F;
         }
 
-        return (int) Math.ceil((f / 360F) * 15);
+        return MathUtil.ceil((f / 360F) * 15);
     }
 
 }

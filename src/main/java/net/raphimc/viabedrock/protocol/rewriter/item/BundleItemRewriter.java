@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import net.raphimc.viabedrock.api.model.container.dynamic.BundleContainer;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerEnumName;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -55,7 +55,7 @@ public class BundleItemRewriter implements ItemRewriter.NbtRewriter {
             javaItems[i] = javaItems[javaItems.length - i - 1];
             javaItems[javaItems.length - i - 1] = temp;
         }
-        javaItem.dataContainer().set(VersionedTypes.V1_21_6.structuredDataKeys.bundleContents, javaItems);
+        javaItem.dataContainer().set(VersionedTypes.V1_21_9.structuredDataKeys.bundleContents, javaItems);
     }
 
 }

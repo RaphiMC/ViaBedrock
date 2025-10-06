@@ -18,8 +18,8 @@
 package net.raphimc.viabedrock.protocol.model;
 
 import net.raphimc.viabedrock.api.util.MathUtil;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeModifierOperation;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.AttributeOperands;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.AttributeModifierOperation;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.AttributeOperands;
 
 import java.util.HashSet;
 import java.util.Set;

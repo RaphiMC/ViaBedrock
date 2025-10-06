@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandOriginType;
 
 import java.util.UUID;
 

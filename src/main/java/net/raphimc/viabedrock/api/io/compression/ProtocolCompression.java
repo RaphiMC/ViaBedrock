@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.api.io.compression;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompressionAlgorithm;
 
 public class ProtocolCompression {
 

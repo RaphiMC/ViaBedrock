@@ -27,8 +27,8 @@ import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ChatRestrictionLevel;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ChatRestrictionLevel;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GameType;
 
 import java.util.HashMap;
 import java.util.HashSet;

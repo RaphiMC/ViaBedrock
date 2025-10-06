@@ -24,7 +24,7 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.io.compression.CompressionAlgorithm;
 import net.raphimc.viabedrock.api.io.compression.NoopCompression;
 import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompressionAlgorithm;
 
 import java.util.List;
 import java.util.logging.Level;

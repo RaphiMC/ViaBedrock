@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol;
 
 import com.viaversion.viaversion.api.protocol.packet.ServerboundPacketType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MinecraftPacketIds;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.MinecraftPacketIds;
 
 public enum ServerboundBedrockPackets implements ServerboundPacketType {
 
@@ -101,7 +101,8 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     CLIENT_CAMERA_AIM_ASSIST(MinecraftPacketIds.ClientCameraAimAssist.getValue()),
     MOVEMENT_PREDICTION_SYNC(MinecraftPacketIds.ClientMovementPredictionSyncPacket.getValue()),
     UPDATE_CLIENT_OPTIONS(MinecraftPacketIds.UpdateClientOptions.getValue()),
-    PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue());
+    PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue()),
+    PACK_SETTING_CHANGE(MinecraftPacketIds.ServerboundPackSettingChange.getValue());
 
     private static final ServerboundBedrockPackets[] REGISTRY = new ServerboundBedrockPackets[512];
 

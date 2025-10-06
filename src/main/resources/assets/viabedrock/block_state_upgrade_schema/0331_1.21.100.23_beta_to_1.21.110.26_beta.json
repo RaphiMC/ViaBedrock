@@ -1,0 +1,16 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 21,
+    "maxVersionPatch": 60,
+    "maxVersionRevision": 33,
+    "renamedIds": {
+        "minecraft:chain": "minecraft:iron_chain"
+    },
+    "addedProperties": {
+        "minecraft:lightning_rod": {
+            "powered_bit": {
+                "byte": 0
+            }
+        }
+    }
+}

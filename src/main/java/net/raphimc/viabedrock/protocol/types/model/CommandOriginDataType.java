@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandOriginType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandOriginType;
 import net.raphimc.viabedrock.protocol.model.CommandOriginData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 

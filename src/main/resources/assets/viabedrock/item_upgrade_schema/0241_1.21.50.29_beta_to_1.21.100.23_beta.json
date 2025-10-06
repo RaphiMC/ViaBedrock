@@ -1,0 +1,12 @@
+{
+    "remappedMetas": {
+        "minecraft:spawn_egg": {
+            "147": "minecraft:happy_ghast_spawn_egg",
+            "148": "minecraft:copper_golem_spawn_egg"
+        }
+    },
+    "renamedIds": {
+        "minecraft:record_lava_chicken": "minecraft:music_disc_lava_chicken",
+        "minecraft:record_tears": "minecraft:music_disc_tears"
+    }
+}

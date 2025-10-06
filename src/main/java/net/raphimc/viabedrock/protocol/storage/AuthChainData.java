@@ -30,7 +30,6 @@ public class AuthChainData implements StorableObject {
     private final ECPublicKey publicKey;
     private final ECPrivateKey privateKey;
     private final UUID deviceId;
-    private final String playFabId;
 
     private String selfSignedJwt;
     private String skinJwt;
@@ -38,13 +37,17 @@ public class AuthChainData implements StorableObject {
     private UUID identity;
     private String xuid;
 
+    public AuthChainData(final String mojangJwt, final String identityJwt, final ECPublicKey publicKey, final ECPrivateKey privateKey, final UUID deviceId) {
+        this(mojangJwt, identityJwt, publicKey, privateKey, deviceId, null);
+    }
+
+    @Deprecated(forRemoval = true)
     public AuthChainData(final String mojangJwt, final String identityJwt, final ECPublicKey publicKey, final ECPrivateKey privateKey, final UUID deviceId, final String playFabId) {
         this.mojangJwt = mojangJwt;
         this.identityJwt = identityJwt;
         this.publicKey = publicKey;
         this.privateKey = privateKey;
         this.deviceId = deviceId;
-        this.playFabId = playFabId;
     }
 
     public String getMojangJwt() {
@@ -65,10 +68,6 @@ public class AuthChainData implements StorableObject {
 
     public UUID getDeviceId() {
         return this.deviceId;
-    }
-
-    public String getPlayFabId() {
-        return this.playFabId;
     }
 
     public String getSelfSignedJwt() {

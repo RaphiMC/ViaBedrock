@@ -26,7 +26,7 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.resourcepack.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ResourcePackResponse;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ResourcePackResponse;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.*;
@@ -85,7 +85,9 @@ public class ResourcePacksStorage extends StoredObject {
             "vanilla_1.21.60",
             "vanilla_1.21.70",
             "vanilla_1.21.80",
-            "vanilla_1.21.90"
+            "vanilla_1.21.90",
+            "vanilla_1.21.100",
+            "vanilla_1.21.110"
     );
 
     private final Map<UUID, ResourcePack> packs = new HashMap<>();

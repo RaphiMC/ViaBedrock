@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.api;
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-import com.viaversion.viaversion.protocol.RedirectProtocolVersion;
+import com.viaversion.viaversion.protocol.SpecialProtocolVersion;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class BedrockProtocolVersion {
 
     public static final List<ProtocolVersion> PROTOCOLS = new ArrayList<>();
 
-    public static final ProtocolVersion bedrockLatest = new RedirectProtocolVersion(ProtocolConstants.BEDROCK_PROTOCOL_VERSION, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME, ProtocolConstants.JAVA_VERSION) {
+    public static final ProtocolVersion bedrockLatest = new SpecialProtocolVersion(ProtocolConstants.BEDROCK_PROTOCOL_VERSION, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME, ProtocolConstants.JAVA_VERSION) {
         @Override
         public ProtocolVersion getBaseProtocolVersion() {
             return null;

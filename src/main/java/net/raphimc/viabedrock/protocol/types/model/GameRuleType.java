@@ -19,14 +19,17 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameRule_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GameRule_Type;
 import net.raphimc.viabedrock.protocol.model.GameRule;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class GameRuleType extends Type<GameRule> {
 
-    public GameRuleType() {
+    private final boolean varInt;
+
+    public GameRuleType(final boolean varInt) {
         super(GameRule.class);
+        this.varInt = varInt;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class GameRuleType extends Type<GameRule> {
         final GameRule_Type type = GameRule_Type.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer), GameRule_Type.Invalid);
         return switch (type) {
             case Bool -> new GameRule(name, editable, buffer.readBoolean());
-            case Int -> new GameRule(name, editable, BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer));
+            case Int -> new GameRule(name, editable, this.varInt ? BedrockTypes.VAR_INT.readPrimitive(buffer) : BedrockTypes.INT_LE.readPrimitive(buffer));
             case Float -> new GameRule(name, editable, BedrockTypes.FLOAT_LE.readPrimitive(buffer));
             case Invalid -> new GameRule(name, editable, null);
             default -> throw new IllegalStateException("Unhandled GameRule_Type: " + type);
@@ -52,7 +55,13 @@ public class GameRuleType extends Type<GameRule> {
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, type.getValue());
         switch (type) {
             case Bool -> buffer.writeBoolean((Boolean) value.value());
-            case Int -> BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, (Integer) value.value());
+            case Int -> {
+                if (this.varInt) {
+                    BedrockTypes.VAR_INT.writePrimitive(buffer, (Integer) value.value());
+                } else {
+                    BedrockTypes.INT_LE.writePrimitive(buffer, (Integer) value.value());
+                }
+            }
             case Float -> BedrockTypes.FLOAT_LE.writePrimitive(buffer, (Float) value.value());
             default -> throw new IllegalStateException("Unhandled GameRule_Type: " + type);
         }

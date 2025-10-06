@@ -24,7 +24,7 @@ import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.api.io.NetworkByteBufInputStream;
 import net.raphimc.viabedrock.api.io.NetworkByteBufOutputStream;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.Tag_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Tag_Type;
 
 import java.io.IOException;
 

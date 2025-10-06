@@ -21,10 +21,10 @@ import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundConfigurationPackets1_21_6;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPackets1_21_6;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundConfigurationPackets1_21_6;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundConfigurationPackets1_21_9;
+import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
+import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ServerboundConfigurationPackets1_21_9;
 import com.viaversion.viaversion.util.Key;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -34,10 +34,10 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.Connection_DisconnectFailReason;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MinecraftPacketIds;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketViolationSeverity;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketViolationType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Connection_DisconnectFailReason;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.MinecraftPacketIds;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketViolationSeverity;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketViolationType;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.ClientSettingsStorage;
 import net.raphimc.viabedrock.protocol.storage.PacketSyncStorage;
@@ -140,17 +140,17 @@ public class MultiStatePackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.DISCONNECT,
-                ClientboundPackets1_21_6.DISCONNECT, DISCONNECT_HANDLER,
+                ClientboundPackets1_21_9.DISCONNECT, DISCONNECT_HANDLER,
                 ClientboundLoginPackets.LOGIN_DISCONNECT, DISCONNECT_HANDLER,
-                ClientboundConfigurationPackets1_21_6.DISCONNECT, DISCONNECT_HANDLER
+                ClientboundConfigurationPackets1_21_9.DISCONNECT, DISCONNECT_HANDLER
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING,
-                ClientboundPackets1_21_6.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
+                ClientboundPackets1_21_9.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
                 ClientboundLoginPackets.LOGIN_DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
-                ClientboundConfigurationPackets1_21_6.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER
+                ClientboundConfigurationPackets1_21_9.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
-                ClientboundPackets1_21_6.PING, NETWORK_STACK_LATENCY_HANDLER,
+                ClientboundPackets1_21_9.PING, NETWORK_STACK_LATENCY_HANDLER,
                 State.LOGIN, (PacketHandler) wrapper -> {
                     NETWORK_STACK_LATENCY_HANDLER.handle(wrapper);
                     if (!wrapper.isCancelled()) {
@@ -163,11 +163,11 @@ public class MultiStatePackets {
                         }
                     }
                 },
-                ClientboundConfigurationPackets1_21_6.PING, NETWORK_STACK_LATENCY_HANDLER
+                ClientboundConfigurationPackets1_21_9.PING, NETWORK_STACK_LATENCY_HANDLER
         );
 
         protocol.registerServerbound(ServerboundPackets1_21_6.PONG, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, PONG_HANDLER);
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_6.PONG, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, PONG_HANDLER);
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_9.PONG, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, PONG_HANDLER);
     }
 
 }

@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.api.util;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PlayerAuthInputPacket_InputData;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerAuthInputPacket_InputData;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
@@ -29,6 +29,11 @@ public class MathUtil {
     public static int ceil(final float f) {
         final int i = (int) f;
         return f > i ? i + 1 : i;
+    }
+
+    public static int floor(final float f) {
+        final int i = (int) f;
+        return f < i ? i - 1 : i;
     }
 
     public static float clamp(final float value, final float min, final float max) {
@@ -49,6 +54,17 @@ public class MathUtil {
 
     public static float lerp(final float progress, final float start, final float end) {
         return start + progress * (end - start);
+    }
+
+    public static float wrapDegrees(float degrees) {
+        degrees = degrees % 360F;
+        if (degrees >= 180F) {
+            degrees -= 360F;
+        }
+        if (degrees < -180F) {
+            degrees += 360F;
+        }
+        return degrees;
     }
 
     public static int getOrFallback(final int value, final int min, final int max, final int fallback) {

@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.types.entitydata;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.types.entitydata.EntityDataTypeTemplate;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.DataItemType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.DataItemType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class EntityDataType extends EntityDataTypeTemplate {

@@ -23,6 +23,7 @@ import java.util.Locale;
 public class ServerBlacklist {
 
     private static final List<String> BLACKLISTED_HOSTS = List.of(
+            "hivebedrock.network",
             "geo.hivebedrock.network",
             "ca.hivebedrock.network",
             "fr.hivebedrock.network",

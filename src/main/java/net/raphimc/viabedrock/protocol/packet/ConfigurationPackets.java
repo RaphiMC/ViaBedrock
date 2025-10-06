@@ -20,22 +20,22 @@ package net.raphimc.viabedrock.protocol.packet;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundConfigurationPackets1_21_6;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ServerboundConfigurationPackets1_21_9;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 public class ConfigurationPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_6.CLIENT_INFORMATION, null, new PacketHandlers() {
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_9.CLIENT_INFORMATION, null, new PacketHandlers() {
             @Override
             protected void register() {
                 handler(MultiStatePackets.CLIENT_SETTINGS_HANDLER);
                 handler(PacketWrapper::cancel);
             }
         });
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_6.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
-        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_6.FINISH_CONFIGURATION, null, wrapper -> {
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_9.CUSTOM_PAYLOAD, null, MultiStatePackets.CUSTOM_PAYLOAD_HANDLER);
+        protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_9.FINISH_CONFIGURATION, null, wrapper -> {
             wrapper.cancel();
             wrapper.user().getProtocolInfo().setClientState(State.PLAY);
         });

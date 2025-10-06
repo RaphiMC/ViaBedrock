@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.GameType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GameType;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameMode;
 
 public class GameTypeRewriter {

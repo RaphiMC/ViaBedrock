@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
 public enum MemoryTier {
 
-    Undetermined,
     SuperLow,
     Low,
     Mid,

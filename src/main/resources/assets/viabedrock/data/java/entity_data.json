@@ -58,6 +58,10 @@
   "ARROW": [
     "EFFECT_COLOR"
   ],
+  "AVATAR": [
+    "PLAYER_MAIN_HAND",
+    "PLAYER_MODE_CUSTOMISATION"
+  ],
   "AXOLOTL": [
     "VARIANT",
     "PLAYING_DEAD",
@@ -95,6 +99,10 @@
   "COMMAND_BLOCK_MINECART": [
     "COMMAND_NAME",
     "LAST_OUTPUT"
+  ],
+  "COPPER_GOLEM": [
+    "WEATHER_STATE",
+    "COPPER_GOLEM_STATE"
   ],
   "COW": [
     "VARIANT"
@@ -250,6 +258,11 @@
     "STRENGTH",
     "VARIANT"
   ],
+  "MANNEQUIN": [
+    "PROFILE",
+    "IMMOVABLE",
+    "DESCRIPTION"
+  ],
   "MOB": [
     "MOB_FLAGS"
   ],
@@ -294,10 +307,8 @@
   "PLAYER": [
     "PLAYER_ABSORPTION",
     "SCORE",
-    "PLAYER_MODE_CUSTOMISATION",
-    "PLAYER_MAIN_HAND",
-    "SHOULDER_LEFT",
-    "SHOULDER_RIGHT"
+    "SHOULDER_PARROT_LEFT",
+    "SHOULDER_PARROT_RIGHT"
   ],
   "POLAR_BEAR": [
     "STANDING"

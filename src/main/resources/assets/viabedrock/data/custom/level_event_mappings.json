@@ -290,7 +290,6 @@
   "ParticlesTrialSpawnerDetectionCharged": null,
   "ParticlesTrialSpawnerBecomeCharged": "PARTICLES_TRIAL_SPAWNER_BECOME_OMINOUS",
   "AllPlayersSleeping": null,
-  "deprecated": null,
   "SleepingPlayers": null,
   "JumpPrevented": null,
   "AnimationVaultActivate": "ANIMATION_VAULT_ACTIVATE",

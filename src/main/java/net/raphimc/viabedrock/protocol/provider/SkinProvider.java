@@ -25,7 +25,11 @@ import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.MemoryTier;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.BuildPlatform;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GraphicsMode;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InputMode;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.UIProfile;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
@@ -48,7 +52,6 @@ public class SkinProvider implements Provider {
         final JsonObject skinGeometry = skinPackContent.getSortedJson("geometry.json");
 
         final Map<String, Object> claims = new HashMap<>();
-        claims.put("PlayFabId", authChainData.getPlayFabId().toLowerCase(Locale.ROOT));
         claims.put("SkinId", "Custom" + authChainData.getDeviceId());
         claims.put("SkinResourcePatch", Base64.getEncoder().encodeToString("{\"geometry\":{\"default\":\"geometry.humanoid.custom\"}}".getBytes(StandardCharsets.UTF_8)));
         claims.put("SkinImageWidth", skin.getWidth());

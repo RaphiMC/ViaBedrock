@@ -1,27 +1,37 @@
-import net.raphimc.viabedrock.generator.EnumGeneratorTask
-
 plugins {
     id "java-library"
     id "base.base-conventions"
     id "base.fill-build-constants"
     id "viabedrock.publishing-conventions"
     id "via.run-with-viaproxy-task"
-    id "net.raphimc.class-token-replacer" version "1.1.6"
-    id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.10"
+    id "net.raphimc.class-token-replacer" version "1.1.7"
 }
 
-configurations {
-    testImplementation.extendsFrom(compileOnly)
+sourceSets {
+    tool
+
+    tool.compileClasspath += main.output + main.compileClasspath
+    tool.runtimeClasspath += tool.compileClasspath
 }
 
 repositories {
     maven {
         name = "ViaVersion"
         url = "https://repo.viaversion.com"
+
+        content {
+            includeGroupByRegex "com\\.viaversion(\\..+)?"
+            includeGroupByRegex "net\\.raphimc(\\..+)?"
+        }
     }
     maven {
         name = "Lenni0451"
-        url = "https://maven.lenni0451.net/everything"
+        url = "https://maven.lenni0451.net/snapshots"
+
+        content {
+            includeGroupByRegex "net\\.lenni0451(\\..+)?"
+            includeGroupByRegex "net\\.raphimc(\\..+)?"
+        }
     }
     maven {
         name = "Minecraft Libraries"
@@ -36,26 +46,26 @@ repositories {
         url = "https://jitpack.io"
 
         content {
-            includeGroup "com.github.Oryxel"
+            includeGroupByRegex "com\\.github\\..+"
         }
     }
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.4.1-SNAPSHOT"
-    compileOnly "org.yaml:snakeyaml:2.4"
-    compileOnly "com.google.guava:guava:33.4.8-jre"
-    compileOnly "io.netty:netty-handler:4.2.2.Final"
-    compileOnly "com.google.code.gson:gson:2.13.1"
+    compileOnly "com.viaversion:viaversion-common:5.5.0"
+    compileOnly "org.yaml:snakeyaml:2.5"
+    compileOnly "com.google.guava:guava:33.5.0-jre"
+    compileOnly "io.netty:netty-handler:4.2.6.Final"
+    compileOnly "com.google.code.gson:gson:2.13.2"
 
-    api("io.netty:netty-codec-http:4.2.2.Final") {
+    api("io.netty:netty-codec-http:4.2.6.Final") {
         transitive = false
     }
-    api("io.netty:netty-codec-compression:4.2.2.Final") {
+    api("io.netty:netty-codec-compression:4.2.6.Final") {
         transitive = false
     }
-    api "io.jsonwebtoken:jjwt-impl:0.12.6"
-    api("io.jsonwebtoken:jjwt-gson:0.12.6") {
+    api "io.jsonwebtoken:jjwt-impl:0.13.0"
+    api("io.jsonwebtoken:jjwt-gson:0.13.0") {
         exclude group: "com.google.code.gson", module: "gson"
     }
     api("net.lenni0451.mcstructs-bedrock:text:2.0.1") {
@@ -64,7 +74,7 @@ dependencies {
     api("net.lenni0451.mcstructs-bedrock:forms:2.0.1") {
         exclude group: "com.google.code.gson", module: "gson"
     }
-    api("com.viaversion.mcstructs:dialog:5-3.1.1-SNAPSHOT") {
+    api("com.viaversion.mcstructs:dialog:5-3.2.0-SNAPSHOT") {
         exclude group: "com.viaversion.mcstructs", module: "core"
         exclude group: "com.viaversion.mcstructs", module: "text"
         exclude group: "com.viaversion.mcstructs", module: "snbt"
@@ -79,22 +89,7 @@ dependencies {
     api("team.unnamed:mocha:3.0.1") {
         transitive = false
     }
-}
 
-def enumSourceDir = layout.buildDirectory.dir("generated/enums/main/java")
-def enumGeneratorTask = tasks.register("enumGeneratorTask", EnumGeneratorTask) {
-    commitHash = "2a42b85946a308d830984f54ea20349aa2beaeed" // https://github.com/Mojang/bedrock-protocol-docs
-    outputDirectory = enumSourceDir
-}
-tasks.compileJava.dependsOn(enumGeneratorTask)
-tasks.sourcesJar.dependsOn(enumGeneratorTask)
-
-sourceSets.main.java.srcDir(enumSourceDir)
-
-idea {
-    project.settings {
-        taskTriggers {
-            afterSync(enumGeneratorTask)
-        }
-    }
+    toolImplementation "org.trimou:trimou-core:2.5.1.Final"
+    toolImplementation "org.jsoup:jsoup:1.21.2"
 }

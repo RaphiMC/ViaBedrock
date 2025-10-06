@@ -36,7 +36,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.AuthenticationType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PacketCompressionAlgorithm;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompressionAlgorithm;
 import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthChainData;
@@ -264,7 +264,7 @@ public class LoginPackets {
                     .notBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
                     .compact();
 
-            final AuthChainData authChainData = new AuthChainData(null, identityJwt, publicKey, privateKey, UUID.randomUUID(), "");
+            final AuthChainData authChainData = new AuthChainData(null, identityJwt, publicKey, privateKey, UUID.randomUUID());
             authChainData.setXuid((String) extraData.get("XUID"));
             authChainData.setIdentity(UUID.fromString((String) extraData.get("identity")));
             authChainData.setDisplayName((String) extraData.get("displayName"));
