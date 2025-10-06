@@ -21,8 +21,11 @@ import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
+import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.Types1_16;
+import com.viaversion.viaversion.api.type.types.version.Types1_20;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.gson.JsonNull;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
@@ -114,6 +117,13 @@ public class PacketFactory {
         final PacketWrapper levelParticles = PacketWrapper.create(ClientboundPackets1_21_9.LEVEL_PARTICLES, user);
         writeJavaLevelParticles(levelParticles, position, particle);
         levelParticles.send(BedrockProtocol.class);
+    }
+
+    public static void sendJavaInventorySlot(final UserConnection user, final int slot, Item item) {
+        final PacketWrapper inventorySlot = PacketWrapper.create(ClientboundPackets1_21_9.SET_PLAYER_INVENTORY, user);
+        inventorySlot.write(Types.VAR_INT, slot);
+        inventorySlot.write(VersionedTypes.V1_21_9.item, item);
+        inventorySlot.send(BedrockProtocol.class);
     }
 
     public static void sendBedrockContainerClose(final UserConnection user, final byte containerId, final ContainerType containerType) {

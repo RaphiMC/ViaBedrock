@@ -69,8 +69,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerTyp
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
-import net.raphimc.viabedrock.protocol.model.BedrockItem;
-import net.raphimc.viabedrock.protocol.model.FullContainerName;
+import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
@@ -80,6 +79,7 @@ import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class InventoryPackets {
@@ -89,6 +89,39 @@ public class InventoryPackets {
     private static final String DIALOG_FAKE_BUTTON_TEXT = "This is not actually a button, but has to be one because dialogs don't support adding text only elements. Clicking it has the same effect as closing the dialog.";
 
     public static void register(final BedrockProtocol protocol) {
+        //TODO: INVENTORY_TRANSACTION is also Serverbound
+        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_TRANSACTION, ClientboundPackets1_21_9.SET_PLAYER_INVENTORY, wrapper -> {
+            wrapper.cancel(); //Each action is handled separately
+            final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            BedrockInventoryTransaction transaction = wrapper.read(BedrockTypes.INVENTORY_TRANSACTION);
+
+            if (transaction.transactionType() != InventoryTransactionType.NORMAL) {
+                //TODO: Handle other transaction types if necessary
+                return;
+            }
+
+            for (InventoryActionData action : transaction.actions()) {
+                switch (action.source().type()) {
+                    case CONTAINER -> {
+                        if (ContainerID.getByValue(action.source().containerId()) == ContainerID.CONTAINER_ID_INVENTORY) {
+                            final int slot = action.slot();
+                            if (slot < 0 || slot > 45) {
+                                //Ignore invalid slots
+                                continue;
+                            }
+                            final Item javaItem = itemRewriter.javaItem(action.toItem());
+                            PacketFactory.sendJavaInventorySlot(wrapper.user(), slot, javaItem);
+                        } else {
+                            //TODO: Send container_set_slot
+                        }
+                    }
+                    default -> {
+                        //TODO: Handle other action types if necessary
+                    }
+                }
+            }
+        });
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets1_21_9.OPEN_SCREEN, wrapper -> {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = wrapper.user().get(BlockStateRewriter.class);
