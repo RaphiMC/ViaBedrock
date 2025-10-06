@@ -112,7 +112,7 @@ public class BedrockTypes {
 
     public static final Type<BedrockInventoryTransaction> INVENTORY_TRANSACTION = new BedrockInventoryTransactionType();
     public static final Type<LegacySetItemSlotData[]> LEGACY_SET_ITEM_SLOT_DATA = new ArrayType<>(new LegacySetItemSlotDataType(), UNSIGNED_VAR_INT);
-    public static final Type<InventorySource> INVENTORY_SOURCE = new InventorySourceType();
+    public static final Type<InventorySource> INVENTORY_SOURCE = new InventorySourcePacketType();
     public static final Type<InventoryActionData[]> INVENTORY_ACTION_DATA = new ArrayType<>(new InventoryActionDataType(), UNSIGNED_VAR_INT);
 
 }

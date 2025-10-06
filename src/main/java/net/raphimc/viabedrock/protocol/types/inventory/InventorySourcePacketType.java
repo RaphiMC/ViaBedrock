@@ -19,28 +19,30 @@ package net.raphimc.viabedrock.protocol.types.inventory;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySource_InventorySourceFlags;
 import net.raphimc.viabedrock.protocol.model.InventorySource;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class InventorySourceType extends Type<InventorySource> {
+public class InventorySourcePacketType extends Type<InventorySource> {
 
-    public InventorySourceType() {
+    public InventorySourcePacketType() {
         super(InventorySource.class);
     }
 
     @Override
     public InventorySource read(ByteBuf buffer) {
-        final InventorySource.Type type = InventorySource.Type.byId(BedrockTypes.VAR_INT.read(buffer));
+        final InventorySourceType type = InventorySourceType.getByValue(BedrockTypes.VAR_INT.read(buffer));
         final int containerId = BedrockTypes.VAR_INT.read(buffer);
-        final InventorySource.Flag flag = InventorySource.Flag.NONE; //TODO
+        final InventorySource_InventorySourceFlags flag = InventorySource_InventorySourceFlags.getByValue(BedrockTypes.VAR_INT.read(buffer));
 
         return new InventorySource(type, containerId, flag);
     }
 
     @Override
     public void write(ByteBuf buffer, InventorySource value) {
-        BedrockTypes.VAR_INT.write(buffer, value.type().id());
+        BedrockTypes.VAR_INT.write(buffer, value.type().getValue());
         BedrockTypes.VAR_INT.write(buffer, value.containerId());
-        BedrockTypes.VAR_INT.write(buffer, value.flag().ordinal()); //TODO: Id instead of ordinal?
+        BedrockTypes.VAR_INT.write(buffer, value.flag().getValue());
     }
 }

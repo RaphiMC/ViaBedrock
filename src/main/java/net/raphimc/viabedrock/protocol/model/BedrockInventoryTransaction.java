@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.protocol.model;
 
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ComplexInventoryTransaction_Type;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public record BedrockInventoryTransaction(
         int legacyRequestId,
         List<LegacySetItemSlotData> legacySlots,
         List<InventoryActionData> actions,
-        InventoryTransactionType transactionType,
+        ComplexInventoryTransaction_Type transactionType,
         int actionType,
         long runtimeEntityId,
         BlockPosition blockPosition,
