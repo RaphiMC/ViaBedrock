@@ -17,46 +17,8 @@
  */
 package net.raphimc.viabedrock.protocol.model;
 
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySource_InventorySourceFlags;
 
-public record InventorySource(Type type, int containerId, Flag flag) {
-    public enum Type {
-        INVALID(-1),
-        CONTAINER(0),
-        GLOBAL(1),
-        WORLD_INTERACTION(2),
-        CREATIVE(3),
-        UNTRACKED_INTERACTION_UI(100),
-        NON_IMPLEMENTED_TODO(99999);
-
-        private static final Int2ObjectMap<Type> BY_ID = new Int2ObjectOpenHashMap<>(6);
-
-        static {
-            for (Type type : values()) {
-                BY_ID.put(type.id, type);
-            }
-        }
-
-        private final int id;
-
-        Type(int id) {
-            this.id = id;
-        }
-
-        public static Type byId(int id) {
-            Type type = BY_ID.get(id);
-            return type == null ? INVALID : type;
-        }
-
-        public int id() {
-            return id;
-        }
-    }
-
-    public enum Flag {
-        DROP_ITEM,
-        PICKUP_ITEM,
-        NONE
-    }
+public record InventorySource(InventorySourceType type, int containerId, InventorySource_InventorySourceFlags flag) {
 }

@@ -20,9 +20,9 @@ package net.raphimc.viabedrock.protocol.types.inventory;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ComplexInventoryTransaction_Type;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
-import net.raphimc.viabedrock.protocol.types.item.BedrockItemType;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
         final int legacyRequestId = BedrockTypes.VAR_INT.read(buffer);
         final List<LegacySetItemSlotData> legacySlots = List.of(BedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.read(buffer));
         final List<InventoryActionData> actions = List.of(BedrockTypes.INVENTORY_ACTION_DATA.read(buffer));
-        final InventoryTransactionType transactionType = InventoryTransactionType.values()[BedrockTypes.VAR_INT.read(buffer)]; //TODO: Use ids
+        final ComplexInventoryTransaction_Type transactionType = ComplexInventoryTransaction_Type.getByValue(BedrockTypes.VAR_INT.read(buffer));
         final int actionType = BedrockTypes.VAR_INT.read(buffer);
         final long runtimeEntityId = BedrockTypes.VAR_LONG.read(buffer);
         final BlockPosition blockPosition = BedrockTypes.POSITION_3I.read(buffer);
@@ -73,7 +73,7 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
         BedrockTypes.VAR_INT.write(buffer, value.legacyRequestId());
         BedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, value.legacySlots().toArray(new LegacySetItemSlotData[0]));
         BedrockTypes.INVENTORY_ACTION_DATA.write(buffer, value.actions().toArray(new InventoryActionData[0]));
-        BedrockTypes.VAR_INT.write(buffer, value.transactionType().ordinal()); //TODO: Use ids
+        BedrockTypes.VAR_INT.write(buffer, value.transactionType().getValue());
         BedrockTypes.VAR_INT.write(buffer, value.actionType());
         BedrockTypes.VAR_LONG.write(buffer, value.runtimeEntityId());
         BedrockTypes.POSITION_3I.write(buffer, value.blockPosition());

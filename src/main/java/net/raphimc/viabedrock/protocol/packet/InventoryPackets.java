@@ -64,10 +64,7 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacket_Action;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ModalFormCancelReason;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
@@ -93,17 +90,16 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_TRANSACTION, ClientboundPackets1_21_9.SET_PLAYER_INVENTORY, wrapper -> {
             wrapper.cancel(); //Each action is handled separately
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
-            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             BedrockInventoryTransaction transaction = wrapper.read(BedrockTypes.INVENTORY_TRANSACTION);
 
-            if (transaction.transactionType() != InventoryTransactionType.NORMAL) {
+            if (transaction.transactionType() != ComplexInventoryTransaction_Type.NormalTransaction) {
                 //TODO: Handle other transaction types if necessary
                 return;
             }
 
             for (InventoryActionData action : transaction.actions()) {
                 switch (action.source().type()) {
-                    case CONTAINER -> {
+                    case ContainerInventory -> {
                         if (ContainerID.getByValue(action.source().containerId()) == ContainerID.CONTAINER_ID_INVENTORY) {
                             final int slot = action.slot();
                             if (slot < 0 || slot > 45) {
