@@ -470,7 +470,7 @@ public class EntityPackets {
                     wrapper.write(Types.VAR_INT, entity.javaId());
                     wrapper.write(Types.BYTE, EntityEvent.SHAKE_WETNESS.getValue());
                 }
-                case  EAT_GRASS -> {
+                case EAT_GRASS -> {
                     wrapper.write(Types.VAR_INT, entity.javaId());
                     wrapper.write(Types.BYTE, EntityEvent.EAT_GRASS.getValue());
                 }
@@ -529,6 +529,11 @@ public class EntityPackets {
                 case TALISMAN_ACTIVATE -> {
                     wrapper.write(Types.VAR_INT, entity.javaId());
                     wrapper.write(Types.BYTE, EntityEvent.PROTECTED_FROM_DEATH.getValue());
+                }
+                case GUARDIAN_MINING_FATIGUE -> {
+                    // Handled in WorldEffectPackets under ParticleSoundGuardianGhost
+                    //TODO: Should it be moved here / also handled here?
+                    wrapper.cancel();
                 }
                 default -> {
                     wrapper.cancel();
