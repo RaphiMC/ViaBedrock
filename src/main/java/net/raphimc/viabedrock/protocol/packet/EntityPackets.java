@@ -44,6 +44,7 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AnimateAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.model.*;
@@ -453,6 +454,91 @@ public class EntityPackets {
                     if (entity != entityTracker.getClientPlayer()) {
                         entity.playSound(SharedTypes_Legacy_LevelSoundEvent.Death);
                     }
+                }
+                case TAMING_FAILED -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.TAMING_FAILED.getValue());
+                }
+                case TAMING_SUCCEEDED -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.TAMING_SUCCEEDED.getValue());
+                }
+                case SHAKE_WETNESS -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.SHAKE_WETNESS.getValue());
+                }
+                case  EAT_GRASS -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.EAT_GRASS.getValue());
+                }
+                case ZOMBIE_CONVERTING -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.ZOMBIE_CONVERTING.getValue());
+                }
+                case START_OFFER_FLOWER -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.OFFER_FLOWER.getValue());
+                }
+                case STOP_OFFER_FLOWER -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.STOP_OFFER_FLOWER.getValue());
+                }
+                case LOVE_HEARTS -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.LOVE_HEARTS.getValue());
+                }
+                case VILLAGER_ANGRY -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.VILLAGER_ANGRY.getValue());
+                }
+                case VILLAGER_HAPPY -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.VILLAGER_HAPPY.getValue());
+                }
+                case WITCH_HAT_MAGIC -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.WITCH_HAT_MAGIC.getValue());
+                }
+                case IN_LOVE_HEARTS -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.IN_LOVE_HEARTS.getValue());
+                }
+                case SILVERFISH_MERGE_ANIM -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.SILVERFISH_MERGE_ANIM.getValue());
+                }
+                case GUARDIAN_ATTACK_SOUND -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.GUARDIAN_ATTACK_SOUND.getValue());
+                }
+                case AIR_SUPPLY -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.DROWN_PARTICLES.getValue());
+                }
+                case INSTANT_DEATH -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.POOF.getValue());
+                }
+                case TALISMAN_ACTIVATE -> {
+                    wrapper.setPacketType(ClientboundPackets1_21_9.ENTITY_EVENT);
+                    wrapper.write(Types.VAR_INT, entity.javaId());
+                    wrapper.write(Types.BYTE, EntityEvent.PROTECTED_FROM_DEATH.getValue());
                 }
                 default -> {
                     wrapper.cancel();
