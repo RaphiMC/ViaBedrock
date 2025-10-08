@@ -443,7 +443,6 @@ public class EntityPackets {
                     }
                 }
                 case DEATH -> {
-                    wrapper.cancel();
                     if (entity instanceof LivingEntity livingEntity) {
                         livingEntity.setHealth(0F);
                         livingEntity.sendAttribute("minecraft:health");
@@ -455,7 +454,8 @@ public class EntityPackets {
                         playerCombatKill.send(BedrockProtocol.class);
                     }
                     if (entity != entityTracker.getClientPlayer()) {
-                        entity.playSound(SharedTypes_Legacy_LevelSoundEvent.Death);
+                        wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+                        wrapper.write(Types.BYTE, EntityEvent.DEATH.getValue()); // entity event
                     }
                 }
                 case TAMING_FAILED -> {
@@ -537,6 +537,22 @@ public class EntityPackets {
                 case TALISMAN_ACTIVATE -> {
                     wrapper.write(Types.INT, entity.javaId()); // entity id
                     wrapper.write(Types.BYTE, EntityEvent.PROTECTED_FROM_DEATH.getValue()); // entity event
+                }
+                case TREASURE_HUNT -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.DOLPHIN_LOOKING_FOR_TREASURE.getValue()); // entity event
+                }
+                case VIBRATION_DETECTED -> {
+                    //TODO: Not verified but highly likely
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.TENDRILS_SHIVER.getValue()); // entity event
+                }
+                case PRIME_TNTCART -> {
+                    //https://minecraft.wiki/w/Java_Edition_protocol/Entity_statuses#Minecart_TNT
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.EAT_GRASS.getValue()); // entity event
+
+                    entity.playSound(SharedTypes_Legacy_LevelSoundEvent.Fuse); //TODO could also be Ignite, needs checking
                 }
                 case GUARDIAN_MINING_FATIGUE -> {
                     // Handled in WorldEffectPackets under ParticleSoundGuardianGhost
