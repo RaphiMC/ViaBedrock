@@ -44,6 +44,7 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AnimateAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.model.*;
@@ -422,6 +423,9 @@ public class EntityPackets {
                 wrapper.cancel();
                 return;
             }
+
+            //https://minecraft.wiki/w/Bedrock_Edition_protocol/Entity_Events
+            //https://minecraft.wiki/w/Java_Edition_protocol/Entity_statuses
             switch (event) {
                 case HURT -> {
                     final CompoundTag damageTypeRegistry = gameSession.getJavaRegistries().getCompoundTag("minecraft:damage_type");
@@ -439,7 +443,6 @@ public class EntityPackets {
                     }
                 }
                 case DEATH -> {
-                    wrapper.cancel();
                     if (entity instanceof LivingEntity livingEntity) {
                         livingEntity.setHealth(0F);
                         livingEntity.sendAttribute("minecraft:health");
@@ -451,8 +454,110 @@ public class EntityPackets {
                         playerCombatKill.send(BedrockProtocol.class);
                     }
                     if (entity != entityTracker.getClientPlayer()) {
-                        entity.playSound(SharedTypes_Legacy_LevelSoundEvent.Death);
+                        wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+                        wrapper.write(Types.BYTE, EntityEvent.DEATH.getValue()); // entity event
                     }
+                }
+                case TAMING_FAILED -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.TAMING_FAILED.getValue()); // entity event
+                }
+                case TAMING_SUCCEEDED -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.TAMING_SUCCEEDED.getValue()); // entity event
+                }
+                case SHAKE_WETNESS -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SHAKE_WETNESS.getValue()); // entity event
+                }
+                case EAT_GRASS -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.EAT_GRASS.getValue()); // entity event
+                }
+                case SQUID_FLEEING -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SQUID_ANIM_SYNCH.getValue()); // entity event
+                }
+                case ZOMBIE_CONVERTING -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.ZOMBIE_CONVERTING.getValue()); // entity event
+                }
+                case START_OFFER_FLOWER -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.OFFER_FLOWER.getValue()); // entity event
+                }
+                case STOP_OFFER_FLOWER -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.STOP_OFFER_FLOWER.getValue()); // entity event
+                }
+                case LOVE_HEARTS -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.LOVE_HEARTS.getValue()); // entity event
+                }
+                case VILLAGER_ANGRY -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.VILLAGER_ANGRY.getValue()); // entity event
+                }
+                case VILLAGER_HAPPY -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.VILLAGER_HAPPY.getValue()); // entity event
+                }
+                case WITCH_HAT_MAGIC -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.WITCH_HAT_MAGIC.getValue()); // entity event
+                }
+                case FIREWORKS_EXPLODE -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.FIREWORKS_EXPLODE.getValue()); // entity event
+                }
+                case IN_LOVE_HEARTS -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.IN_LOVE_HEARTS.getValue()); // entity event
+                }
+                case SILVERFISH_MERGE_ANIM -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SILVERFISH_MERGE_ANIM.getValue()); // entity event
+                }
+                case GUARDIAN_ATTACK_SOUND -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.GUARDIAN_ATTACK_SOUND.getValue()); // entity event
+                }
+                case AIR_SUPPLY -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.DROWN_PARTICLES.getValue()); // entity event
+                }
+                case SHAKE -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SHAKE.getValue()); // entity event
+                }
+                case INSTANT_DEATH -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.POOF.getValue()); // entity event
+                }
+                case TALISMAN_ACTIVATE -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.PROTECTED_FROM_DEATH.getValue()); // entity event
+                }
+                case TREASURE_HUNT -> {
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.DOLPHIN_LOOKING_FOR_TREASURE.getValue()); // entity event
+                }
+                case VIBRATION_DETECTED -> {
+                    //TODO: Not verified but highly likely
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.TENDRILS_SHIVER.getValue()); // entity event
+                }
+                case PRIME_TNTCART -> {
+                    //https://minecraft.wiki/w/Java_Edition_protocol/Entity_statuses#Minecart_TNT
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.EAT_GRASS.getValue()); // entity event
+
+                    entity.playSound(SharedTypes_Legacy_LevelSoundEvent.Fuse); //TODO could also be Ignite, needs checking
+                }
+                case GUARDIAN_MINING_FATIGUE -> {
+                    // Handled in WorldEffectPackets under ParticleSoundGuardianGhost
+                    //TODO: Should it be moved here / also handled here?
+                    wrapper.cancel();
                 }
                 default -> {
                     wrapper.cancel();
