@@ -40,6 +40,8 @@ import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBiomeArray;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
+import net.raphimc.viabedrock.api.model.BedrockBlockState;
+import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -53,6 +55,7 @@ import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;
@@ -490,10 +493,44 @@ public class WorldPackets {
             final BlockPosition pos = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
             final int type = wrapper.read(BedrockTypes.VAR_INT); // event type
             final int data = wrapper.read(BedrockTypes.VAR_INT); // event data
+            final BedrockBlockState blockState = wrapper.user().get(ChunkTracker.class).getBlock(pos);
 
             wrapper.write(Types.BLOCK_POSITION1_14, pos); // position
-            wrapper.write(Types.UNSIGNED_BYTE, (short) (type & 0xFF)); // event type
-            wrapper.write(Types.UNSIGNED_BYTE, (short) (data & 0xFF)); // event data
+
+            //This is the only documentation I could find:
+            //https://github.com/CloudburstMC/Protocol/blob/3.0/bedrock-codec/src/main/java/org/cloudburstmc/protocol/bedrock/packet/BlockEventPacket.java#L9C1-L39C5
+            switch (blockState.namespacedIdentifier()) {
+                case "minecraft:note_block" -> {
+                    //TODO: Would keeping the instrument be better for viaversion?
+                    //In 1.13, the parameters are no longer used to determine what effect to use; instead, the information is obtained from the block state.
+                    wrapper.write(Types.UNSIGNED_BYTE, (short) 0);
+                    wrapper.write(Types.UNSIGNED_BYTE, (short) 0);
+                }
+                case "minecraft:chest" -> { //TODO: Handle all chest types (including shulker boxes [all colors])
+                    if (type == 1) { // open/close
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) 1); // event type
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) (data != 0 ? 1 : 0)); // event data
+                    } else {
+                        wrapper.cancel();
+                        //TODO: Log unknown chest event
+                    }
+                }
+                case "minecraft:end_gateway" -> {
+                    if (type == 1) { // teleport
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) 1); // event type
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) 0); // event data
+                    } else {
+                        wrapper.cancel();
+                        //TODO: Log unknown end gateway event
+                    }
+                }
+                default -> {
+                    wrapper.cancel();
+                    //TODO: Log unknown block event
+                    //These are some likely possibilities: https://minecraft.wiki/w/Java_Edition_protocol/Block_actions
+                }
+            }
+
             wrapper.write(Types.VAR_INT, 0); // block ID (Unused in the vanilla client)
         });
     }
