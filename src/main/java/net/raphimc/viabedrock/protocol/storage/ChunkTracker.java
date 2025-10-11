@@ -42,6 +42,7 @@ import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
+import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
@@ -160,6 +161,12 @@ public class ChunkTracker extends StoredObject {
     public BedrockChunkSection getChunkSection(final BlockPosition blockPosition) {
         return this.getChunkSection(blockPosition.x() >> 4, blockPosition.y() >> 4, blockPosition.z() >> 4);
     }
+
+    public BedrockBlockState getBlock(final BlockPosition blockPosition) {
+        final int blockStateId = this.getBlockState(blockPosition);
+        return (BedrockBlockState) this.user().get(BlockStateRewriter.class).blockState(blockStateId);
+    }
+
 
     public int getBlockState(final BlockPosition blockPosition) {
         return this.getBlockState(0, blockPosition);
