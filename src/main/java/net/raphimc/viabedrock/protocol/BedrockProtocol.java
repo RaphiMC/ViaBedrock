@@ -169,7 +169,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
                 final PacketWrapper playStatus = PacketWrapper.create(ClientboundBedrockPackets.PLAY_STATUS, wrapper.user());
                 playStatus.write(Types.INT, PlayStatus.LoginSuccess.getValue()); // status
                 playStatus.send(BedrockProtocol.class, false);
-                wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
+                wrapper.user().getProtocolInfo().setState(State.CONFIGURATION);
                 serverState = State.CONFIGURATION;
             }
             if (serverState != State.PLAY && !BEFORE_PLAY_STATE_WHITELIST.contains(packet)) { // Bedrock client ignores most packets before receiving the START_GAME packet
