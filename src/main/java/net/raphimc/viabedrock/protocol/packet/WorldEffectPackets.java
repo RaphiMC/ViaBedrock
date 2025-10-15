@@ -562,6 +562,54 @@ public class WorldEffectPackets {
                 }
             }
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.BLOCK_EVENT, ClientboundPackets1_21_9.BLOCK_EVENT, wrapper -> {
+            final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+            final BlockStateRewriter blockStateRewriter = wrapper.user().get(BlockStateRewriter.class);
+            final BlockPosition position = wrapper.passthroughAndMap(BedrockTypes.BLOCK_POSITION, Types.BLOCK_POSITION1_14); // position
+            final int type = wrapper.read(BedrockTypes.VAR_INT); // event type
+            final int data = wrapper.read(BedrockTypes.VAR_INT); // event data
+
+            final int blockState = chunkTracker.getBlockState(position);
+            switch (blockStateRewriter.tag(blockState)) {
+                case "chest", "trapped_chest", "ender_chest", "shulker_box" -> {
+                    if (type == 1) { // open / close
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) MathUtil.clamp(data, 0, 255)); // event data
+                    } else {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled chest block event: " + type + " " + data);
+                        wrapper.cancel();
+                        return;
+                    }
+                }
+                case "note_block" -> {
+                    final NoteBlockInstrument noteBlockInstrument = NoteBlockInstrument.getByValue(type);
+                    if (noteBlockInstrument != null) {
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) MathUtil.clamp(data, 0, 255)); // event data
+                    } else {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled note block block event: " + type + " " + data);
+                        wrapper.cancel();
+                        return;
+                    }
+                }
+                case "end_gateway" -> {
+                    if (type == 1) { // set cooldown
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) MathUtil.clamp(data, 0, 255)); // event data
+                    } else {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled end gateway block event: " + type + " " + data);
+                        wrapper.cancel();
+                        return;
+                    }
+                }
+                default -> {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled block event for " + blockState + ": " + type + " " + data);
+                    wrapper.cancel();
+                    return;
+                }
+            }
+            wrapper.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaBlocks().get(BedrockProtocol.MAPPINGS.getJavaBlockStates().inverse().get(blockStateRewriter.javaId(blockState)).namespacedIdentifier())); // block
+        });
     }
 
     private static SoundDefinitions.ConfiguredSound tryFindSound(final UserConnection user, final SharedTypes_Legacy_LevelSoundEvent soundEvent, final int data, final String entityIdentifier, final boolean isBabyMob) {
