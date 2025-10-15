@@ -517,6 +517,7 @@ public class WorldPackets {
                 } else {
                     wrapper.cancel();
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown Chest Action: " + type);
+                    return;
                 }
             } else if (blockState.blockStateTag().contains("end_gateway")) {
                 if (type == 1) { // teleport
@@ -525,10 +526,12 @@ public class WorldPackets {
                 } else {
                     wrapper.cancel();
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown End Gateway Action: " + type);
+                    return;
                 }
             } else {
                 wrapper.cancel();
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown Block Action: " + blockState.namespacedIdentifier());
+                return;
             }
 
             wrapper.write(Types.VAR_INT, 0); // block ID (Unused in the vanilla client)
