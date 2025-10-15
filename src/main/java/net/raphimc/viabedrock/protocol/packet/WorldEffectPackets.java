@@ -592,6 +592,16 @@ public class WorldEffectPackets {
                         return;
                     }
                 }
+                case "mob_spawner" -> {
+                    if (type == 1) { // set spawn delay
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
+                        wrapper.write(Types.UNSIGNED_BYTE, (short) MathUtil.clamp(data, 0, 255)); // event data
+                    } else {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled mob spawner block event: " + type + " " + data);
+                        wrapper.cancel();
+                        return;
+                    }
+                }
                 case "end_gateway" -> {
                     if (type == 1) { // set cooldown
                         wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
