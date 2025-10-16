@@ -96,7 +96,7 @@ public class ExperimentalFeatures {
                     clientPlayer.position(),
                     clickPosition,
                     null, //TODO
-                    null, //TODO
+                    inventoryTracker.getInventoryContainer().getSelectedHotbarItem().blockRuntimeId(),
                     ItemUseInventoryTransaction_TriggerType.PlayerInput,
                     ItemUseInventoryTransaction_PredictedResult.Success
             );
