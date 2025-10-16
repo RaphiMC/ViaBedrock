@@ -22,9 +22,12 @@ import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
 import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class InventoryActionDataType extends Type<InventoryActionData> {
+
+    private ItemRewriter itemRewriter;
 
     public InventoryActionDataType() {
         super(InventoryActionData.class);
@@ -45,8 +48,8 @@ public class InventoryActionDataType extends Type<InventoryActionData> {
     public void write(ByteBuf buffer, InventoryActionData value) {
         BedrockTypes.INVENTORY_SOURCE.write(buffer, value.source());
         BedrockTypes.VAR_INT.write(buffer, value.slot());
-        //TODO write fromItem
-        //TODO write toItem
+        itemRewriter.itemType().write(buffer, value.fromItem()); //TODO
+        itemRewriter.itemType().write(buffer, value.toItem()); //TODO
         BedrockTypes.VAR_INT.write(buffer, value.stackNetworkId());
     }
 }

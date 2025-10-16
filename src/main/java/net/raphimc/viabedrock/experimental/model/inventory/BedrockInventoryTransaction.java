@@ -45,7 +45,7 @@ public record BedrockInventoryTransaction(
          * Block definition of block being picked.
          * ItemUseInventoryTransaction only
          */
-        Object blockDefinition, //TODO: Find actual type
+        int blockRuntimeId, //TODO: Find actual type
         ItemUseInventoryTransaction_TriggerType transactionTriggerType,
         ItemUseInventoryTransaction_PredictedResult predictedResult
 

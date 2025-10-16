@@ -54,7 +54,7 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
         final Position3f clickPosition = BedrockTypes.POSITION_3F.read(buffer);
         final Position3f headPosition = BedrockTypes.POSITION_3F.read(buffer);
         final boolean usingNetIds = buffer.readBoolean();
-        final Object blockDefinition = null; //TODO: Find actual type
+        final int blockRuntimeId = BedrockTypes.VAR_INT.read(buffer); //TODO: Could potentially be unsigned needs double checking
         final ItemUseInventoryTransaction_TriggerType transactionTriggerType = ItemUseInventoryTransaction_TriggerType.getByValue(BedrockTypes.VAR_INT.read(buffer));
         final ItemUseInventoryTransaction_PredictedResult predictedResult = ItemUseInventoryTransaction_PredictedResult.getByValue(BedrockTypes.VAR_INT.read(buffer));
 
@@ -72,7 +72,7 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
                 playerPosition,
                 clickPosition,
                 headPosition,
-                blockDefinition,
+                blockRuntimeId,
                 transactionTriggerType,
                 predictedResult
         );
@@ -93,7 +93,7 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
         BedrockTypes.POSITION_3F.write(buffer, value.playerPosition());
         BedrockTypes.POSITION_3F.write(buffer, value.clickPosition());
         BedrockTypes.POSITION_3F.write(buffer, value.headPosition());
-        //TODO: Write block definition
+        BedrockTypes.VAR_INT.write(buffer, value.blockRuntimeId());
         buffer.writeBoolean(false); //TODO: usingNetIds
         BedrockTypes.VAR_INT.write(buffer, value.transactionTriggerType().getValue());
         BedrockTypes.VAR_INT.write(buffer, value.predictedResult().getValue());
