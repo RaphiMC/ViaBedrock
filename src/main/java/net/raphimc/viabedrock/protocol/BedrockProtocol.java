@@ -24,6 +24,7 @@ import com.viaversion.viaversion.api.protocol.packet.Direction;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
+import com.viaversion.viaversion.api.protocol.packet.mapping.PacketMappings;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.exception.CancelException;
 import com.viaversion.viaversion.exception.InformativeException;
@@ -37,6 +38,7 @@ import io.netty.buffer.ByteBufUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.protocol.StatelessTransitionProtocol;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.experimental.ExperimentalFeatures;
 import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayStatus;
@@ -102,6 +104,10 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         WorldEffectPackets.register(this);
         UnhandledPackets.register(this);
 
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            ExperimentalFeatures.registerPacketTranslators(this);
+        }
+
         // Fallback for unhandled packets (Temporary)
         for (ClientboundBedrockPackets packet : this.unmappedClientboundPacketType.getEnumConstants()) {
             if (!this.hasRegisteredClientbound(packet)) {
@@ -116,7 +122,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     }
 
     @Override
-    public void register(ViaProviders providers) {
+    public void register(final ViaProviders providers) {
         providers.require(NettyPipelineProvider.class);
         providers.register(ResourcePackProvider.class, ViaBedrock.getConfig().getPackCacheMode().createProvider());
         providers.register(BlobCacheProvider.class, ViaBedrock.getConfig().getBlobCacheMode().createProvider());
@@ -131,6 +137,10 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 2L);
         Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
         Via.getPlatform().runRepeatingSync(new InventoryTrackerTickTask(), 1L);
+
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            ExperimentalFeatures.registerTasks();
+        }
     }
 
     @Override
@@ -215,6 +225,16 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
             user.getChannel().flush();
             user.getChannel().close();
         }
+    }
+
+    // Only used for experimental features
+    public PacketMappings getClientboundMappings() {
+        return this.clientboundMappings;
+    }
+
+    // Only used for experimental features
+    public PacketMappings getServerboundMappings() {
+        return this.serverboundMappings;
     }
 
 }

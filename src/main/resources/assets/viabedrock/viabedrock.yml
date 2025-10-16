@@ -1,3 +1,5 @@
+# If true, enables experimental features. These features are almost certainly not fully working and may cause unexpected issues
+enable-experimental-features: false
 # Controls blob caching (Reduces network usage and loading time), Valid options: "disabled", "memory", "disk"
 blob-cache: "disk"
 # If enabled, starts the resource pack HTTP server and enables resource pack translation
