@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.types.inventory;
+package net.raphimc.viabedrock.experimental.types.inventory;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
-import net.raphimc.viabedrock.protocol.model.InventoryActionData;
-import net.raphimc.viabedrock.protocol.model.InventorySource;
-import net.raphimc.viabedrock.protocol.model.ItemEntry;
+import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
+import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class InventoryActionDataType extends Type<InventoryActionData> {

@@ -24,8 +24,6 @@ import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.Types1_16;
-import com.viaversion.viaversion.api.type.types.version.Types1_20;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.gson.JsonNull;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
@@ -39,7 +37,6 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ServerboundL
 import net.raphimc.viabedrock.protocol.data.enums.java.CustomChatCompletionsAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
-import net.raphimc.viabedrock.protocol.model.BedrockInventoryTransaction;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;

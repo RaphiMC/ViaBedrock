@@ -15,30 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.types.inventory;
+package net.raphimc.viabedrock.experimental.types.inventory;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.model.LegacySetItemSlotData;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySource_InventorySourceFlags;
+import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class LegacySetItemSlotDataType extends Type<LegacySetItemSlotData> {
+public class InventorySourcePacketType extends Type<InventorySource> {
 
-    public LegacySetItemSlotDataType() {
-        super(LegacySetItemSlotData.class);
+    public InventorySourcePacketType() {
+        super(InventorySource.class);
     }
 
     @Override
-    public LegacySetItemSlotData read(ByteBuf buffer) {
+    public InventorySource read(ByteBuf buffer) {
+        final InventorySourceType type = InventorySourceType.getByValue(BedrockTypes.VAR_INT.read(buffer));
         final int containerId = BedrockTypes.VAR_INT.read(buffer);
-        final byte[] slots = BedrockTypes.BYTE_ARRAY.read(buffer);
+        final InventorySource_InventorySourceFlags flag = InventorySource_InventorySourceFlags.getByValue(BedrockTypes.VAR_INT.read(buffer));
 
-        return new LegacySetItemSlotData(containerId, slots);
+        return new InventorySource(type, containerId, flag);
     }
 
     @Override
-    public void write(ByteBuf buffer, LegacySetItemSlotData value) {
+    public void write(ByteBuf buffer, InventorySource value) {
+        BedrockTypes.VAR_INT.write(buffer, value.type().getValue());
         BedrockTypes.VAR_INT.write(buffer, value.containerId());
-        BedrockTypes.BYTE_ARRAY.write(buffer, value.slots());
+        BedrockTypes.VAR_INT.write(buffer, value.flag().getValue());
     }
 }
