@@ -52,8 +52,10 @@ public class ExperimentalFeatures {
                 return;
             }
 
+
             final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
 
+            wrapper.clearPacket();
             wrapper.setPacketType(ServerboundBedrockPackets.INVENTORY_TRANSACTION);
 
             wrapper.write(BedrockTypes.VAR_INT, 0); // legacy request id
