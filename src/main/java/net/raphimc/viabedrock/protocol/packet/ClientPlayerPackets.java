@@ -586,7 +586,7 @@ public class ClientPlayerPackets {
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)]; // hand
             BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
-            BlockFace face = BlockFace.values()[wrapper.read(Types.VAR_INT)]; // face
+            BlockFace face = BlockFace.values()[wrapper.read(Types.VAR_INT)]; // face TODO: This is incorrect
             Position3f clickPosition = new Position3f(
                     wrapper.read(Types.FLOAT), // x
                     wrapper.read(Types.FLOAT), // y
