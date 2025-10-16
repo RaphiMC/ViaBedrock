@@ -39,6 +39,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ServerboundL
 import net.raphimc.viabedrock.protocol.data.enums.java.CustomChatCompletionsAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
+import net.raphimc.viabedrock.protocol.model.BedrockInventoryTransaction;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -143,7 +144,6 @@ public class PacketFactory {
         }
         loadingScreen.sendToServer(BedrockProtocol.class);
     }
-
     public static void writeJavaDisconnect(final PacketWrapper wrapper, final String reason) {
         switch (wrapper.getPacketType().state()) {
             case LOGIN -> wrapper.write(Types.COMPONENT, reason != null ? TextUtil.stringToGson(reason) : JsonNull.INSTANCE);

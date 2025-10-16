@@ -18,7 +18,9 @@
 package net.raphimc.viabedrock.protocol.model;
 
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ComplexInventoryTransaction_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseInventoryTransaction_PredictedResult;
 
 import java.util.List;
 
@@ -41,6 +43,9 @@ public record BedrockInventoryTransaction(
          * Block definition of block being picked.
          * ItemUseInventoryTransaction only
          */
-        Object blockDefinition //TODO: Find actual type
+        Object blockDefinition, //TODO: Find actual type
+        ItemUseInventoryTransaction_TriggerType transactionTriggerType,
+        ItemUseInventoryTransaction_PredictedResult predictedResult
+
 ) {
 }

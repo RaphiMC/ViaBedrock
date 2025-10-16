@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.packet;
 
+import com.viaversion.viaversion.api.minecraft.BlockFace;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
@@ -24,6 +25,7 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
+import com.viaversion.viaversion.scheduler.ScheduledTask;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
@@ -38,9 +40,11 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.PredictionType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
+import net.raphimc.viabedrock.protocol.model.BedrockInventoryTransaction;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
@@ -48,6 +52,7 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -575,6 +580,74 @@ public class ClientPlayerPackets {
             } else {
                 clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.MissedSwing);
             }
+        });
+        protocol.registerServerbound(ServerboundPackets1_21_6.USE_ITEM_ON, ServerboundBedrockPackets.PLAYER_ACTION, wrapper -> {
+            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)]; // hand
+            BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
+            BlockFace face = BlockFace.values()[wrapper.read(Types.VAR_INT)]; // face
+            Position3f clickPosition = new Position3f(
+                    wrapper.read(Types.FLOAT), // x
+                    wrapper.read(Types.FLOAT), // y
+                    wrapper.read(Types.FLOAT)  // z
+            );
+            boolean insideBlock = wrapper.read(Types.BOOLEAN); // inside block
+            boolean worldBorder = wrapper.read(Types.BOOLEAN); // world border (Seems to always be false, even when interacting with blocks around or outside the world border, or while the player is outside the border.)
+            int sequence = wrapper.read(Types.VAR_INT); // sequence number
+
+            if (hand != InteractionHand.MAIN_HAND) {
+                PacketFactory.sendJavaBlockChangedAck(wrapper.user(), sequence); // Prevent ghost blocks
+                wrapper.cancel();
+                return;
+            }
+
+            BlockPosition resultPos = position.getRelative(face);
+            if (insideBlock) {
+                resultPos = position;
+            }
+
+            //Block Place
+            wrapper.write(BedrockTypes.VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+            wrapper.write(BedrockTypes.VAR_INT, PlayerActionType.StartItemUseOn.getValue()); // action type
+            wrapper.write(BedrockTypes.POSITION_3I, position); // block position
+            wrapper.write(BedrockTypes.POSITION_3I, resultPos); // result position
+            wrapper.write(BedrockTypes.VAR_INT, face.ordinal()); // face
+
+            //Bedrock requires an inventory transaction to be sent
+            BedrockInventoryTransaction transaction = new BedrockInventoryTransaction(
+                    0,
+                    List.of(),
+                    List.of(),
+                    ComplexInventoryTransaction_Type.ItemUseTransaction,
+                    0,
+                    clientPlayer.runtimeId(), //TODO: Check
+                    position,
+                    face.ordinal(),
+                    inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                    inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
+                    clientPlayer.position(),
+                    clickPosition,
+                    null, //TODO
+                    null, //TODO
+                    ItemUseInventoryTransaction_TriggerType.PlayerInput,
+                    ItemUseInventoryTransaction_PredictedResult.Success
+            );
+            final PacketWrapper inventoryTransactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
+            inventoryTransactionPacket.write(BedrockTypes.INVENTORY_TRANSACTION, transaction);
+            inventoryTransactionPacket.scheduleSendToServer(BedrockProtocol.class);
+
+            //Bedrock requires a StopItemUse packet to be sent
+            final PacketWrapper stopItemUsePacket = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, wrapper.user());
+            stopItemUsePacket.write(BedrockTypes.VAR_LONG, clientPlayer.runtimeId());
+            stopItemUsePacket.write(BedrockTypes.VAR_INT, PlayerActionType.StopItemUseOn.getValue());
+            stopItemUsePacket.write(BedrockTypes.POSITION_3I, position);
+            stopItemUsePacket.write(BedrockTypes.POSITION_3I, new BlockPosition(0, 0, 0)); // result position (Origin is sent by the bedrock client)
+            stopItemUsePacket.write(BedrockTypes.VAR_INT, 0); // face (0 is sent by the bedrock client)
+            stopItemUsePacket.scheduleSendToServer(BedrockProtocol.class);
+
+            //Not necessarily required as bedrock sends a Block Update packet, but it should help with ghost blocks if the place fails
+            PacketFactory.sendJavaBlockChangedAck(wrapper.user(), sequence);
         });
     }
 

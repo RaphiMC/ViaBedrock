@@ -20,13 +20,18 @@ package net.raphimc.viabedrock.protocol.types.inventory;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ComplexInventoryTransaction_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseInventoryTransaction_PredictedResult;
 import net.raphimc.viabedrock.protocol.model.*;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.List;
 
 public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransaction> {
+
+    private ItemRewriter itemRewriter;
 
     public BedrockInventoryTransactionType() {
         super(BedrockInventoryTransaction.class);
@@ -43,12 +48,14 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
         final BlockPosition blockPosition = BedrockTypes.POSITION_3I.read(buffer);
         final int blockFace = BedrockTypes.VAR_INT.read(buffer);
         final int hotbarSlot = BedrockTypes.VAR_INT.read(buffer);
-        final BedrockItem itemInHand = null; //TODO
+        final BedrockItem itemInHand = itemRewriter.itemType().read(buffer); //TODO
         final Position3f playerPosition = BedrockTypes.POSITION_3F.read(buffer);
         final Position3f clickPosition = BedrockTypes.POSITION_3F.read(buffer);
         final Position3f headPosition = BedrockTypes.POSITION_3F.read(buffer);
+        final boolean usingNetIds = buffer.readBoolean();
         final Object blockDefinition = null; //TODO: Find actual type
-
+        final ItemUseInventoryTransaction_TriggerType transactionTriggerType = ItemUseInventoryTransaction_TriggerType.getByValue(BedrockTypes.VAR_INT.read(buffer));
+        final ItemUseInventoryTransaction_PredictedResult predictedResult = ItemUseInventoryTransaction_PredictedResult.getByValue(BedrockTypes.VAR_INT.read(buffer));
 
         return new BedrockInventoryTransaction(
                 legacyRequestId,
@@ -64,7 +71,9 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
                 playerPosition,
                 clickPosition,
                 headPosition,
-                blockDefinition
+                blockDefinition,
+                transactionTriggerType,
+                predictedResult
         );
     }
 
@@ -79,10 +88,13 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
         BedrockTypes.POSITION_3I.write(buffer, value.blockPosition());
         BedrockTypes.VAR_INT.write(buffer, value.blockFace());
         BedrockTypes.VAR_INT.write(buffer, value.hotbarSlot());
-        //TODO: Write item in hand
+        itemRewriter.itemType().write(buffer, value.itemInHand()); //TODO
         BedrockTypes.POSITION_3F.write(buffer, value.playerPosition());
         BedrockTypes.POSITION_3F.write(buffer, value.clickPosition());
         BedrockTypes.POSITION_3F.write(buffer, value.headPosition());
         //TODO: Write block definition
+        buffer.writeBoolean(false); //TODO: usingNetIds
+        BedrockTypes.VAR_INT.write(buffer, value.transactionTriggerType().getValue());
+        BedrockTypes.VAR_INT.write(buffer, value.predictedResult().getValue());
     }
 }
