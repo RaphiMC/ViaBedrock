@@ -340,6 +340,7 @@ public class ClientPlayerPackets {
                 }
                 case RELEASE_USE_ITEM -> {
                     // TODO: Implement RELEASE_USE_ITEM
+                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
                 }
                 case SWAP_ITEM_WITH_OFFHAND -> {
                 }
