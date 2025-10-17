@@ -40,7 +40,7 @@ public class ProtocolUtil {
                 }));
             }
         } else {
-            protocol.registerClientbound(type, handler);
+            protocol.registerClientbound(type, null, handler);
         }
     }
 
@@ -57,7 +57,7 @@ public class ProtocolUtil {
                 }));
             }
         } else {
-            protocol.registerServerbound(type, handler);
+            protocol.registerServerbound(type, null, handler);
         }
     }
 
@@ -76,7 +76,7 @@ public class ProtocolUtil {
                 }));
             }
         } else {
-            protocol.registerClientbound(type, handler);
+            protocol.registerClientbound(type, null, handler);
         }
     }
 
@@ -95,7 +95,7 @@ public class ProtocolUtil {
                 }));
             }
         } else {
-            protocol.registerServerbound(type, handler);
+            protocol.registerServerbound(type, null, handler);
         }
     }
 

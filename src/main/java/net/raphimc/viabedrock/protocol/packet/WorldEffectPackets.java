@@ -570,7 +570,13 @@ public class WorldEffectPackets {
             final int data = wrapper.read(BedrockTypes.VAR_INT); // event data
 
             final int blockState = chunkTracker.getBlockState(position);
-            switch (blockStateRewriter.tag(blockState)) {
+            final String tag = blockStateRewriter.tag(blockState);
+            if (tag == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled block event for " + blockState + ": " + type + " " + data);
+                wrapper.cancel();
+                return;
+            }
+            switch (tag) {
                 case "chest", "trapped_chest", "ender_chest", "shulker_box" -> {
                     if (type == 1) { // open / close
                         wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
