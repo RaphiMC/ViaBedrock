@@ -117,13 +117,6 @@ public class PacketFactory {
         levelParticles.send(BedrockProtocol.class);
     }
 
-    public static void sendJavaInventorySlot(final UserConnection user, final int slot, Item item) {
-        final PacketWrapper inventorySlot = PacketWrapper.create(ClientboundPackets1_21_9.SET_PLAYER_INVENTORY, user);
-        inventorySlot.write(Types.VAR_INT, slot);
-        inventorySlot.write(VersionedTypes.V1_21_9.item, item);
-        inventorySlot.send(BedrockProtocol.class);
-    }
-
     public static void sendBedrockContainerClose(final UserConnection user, final byte containerId, final ContainerType containerType) {
         final PacketWrapper containerClose = PacketWrapper.create(ServerboundBedrockPackets.CONTAINER_CLOSE, user);
         containerClose.write(Types.BYTE, containerId); // container id
@@ -141,6 +134,7 @@ public class PacketFactory {
         }
         loadingScreen.sendToServer(BedrockProtocol.class);
     }
+
     public static void writeJavaDisconnect(final PacketWrapper wrapper, final String reason) {
         switch (wrapper.getPacketType().state()) {
             case LOGIN -> wrapper.write(Types.COMPONENT, reason != null ? TextUtil.stringToGson(reason) : JsonNull.INSTANCE);
