@@ -189,9 +189,9 @@ public class ExperimentalFeatures {
             inventoryTransactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // slot
             inventoryTransactionPacket.write(itemRewriter.itemType(), inventoryTracker.getInventoryContainer().getSelectedHotbarItem()); // from item
             inventoryTransactionPacket.write(itemRewriter.itemType(), inventoryTracker.getInventoryContainer().getSelectedHotbarItem().copyAndDecrease()); // to item
-            inventoryTransactionPacket.write(BedrockTypes.VAR_INT, 0); // stack network id
 
             inventoryTransactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // action type
+            inventoryTransactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_TriggerType.PlayerInput.getValue()); // trigger type
             inventoryTransactionPacket.write(BedrockTypes.POSITION_3I, position); // block position
             inventoryTransactionPacket.write(BedrockTypes.VAR_INT, face.ordinal()); // block face
             inventoryTransactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // hotbar slot
@@ -199,7 +199,6 @@ public class ExperimentalFeatures {
             inventoryTransactionPacket.write(BedrockTypes.POSITION_3F, clientPlayer.position()); // player position
             inventoryTransactionPacket.write(BedrockTypes.POSITION_3F, clickPosition); // click position
             inventoryTransactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, inventoryTracker.getInventoryContainer().getSelectedHotbarItem().blockRuntimeId()); // block runtime id
-            inventoryTransactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_TriggerType.PlayerInput.getValue()); // trigger type
             inventoryTransactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_PredictedResult.Success.getValue()); // predicted result
 
             inventoryTransactionPacket.scheduleSendToServer(BedrockProtocol.class);
