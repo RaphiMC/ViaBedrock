@@ -17,11 +17,14 @@ To use ViaBedrock independently of any server or client software, you can downlo
 To use ViaBedrock as a Fabric mod, you can download the latest [ViaFabricPlus dev build](https://ci.viaversion.com/view/Platforms/job/ViaFabricPlus/).
 
 ## Features
+Here is an overview of the current and planned features in ViaBedrock.
+Some features are marked as experimental, which means they are almost certainly not fully stable/tested and may cause unexpected issues. To enable those features set `enable-experimental-features` to `true` in the config file.
+
 - [x] Pinging
 - [x] Joining
 - [x] Xbox Live Auth
 - [x] Chat / Commands
-- [x] Chunks (Including all formats)
+- [x] Chunks
 - [x] Chunk caching
 - [x] Block updates
 - [x] Block entities
@@ -39,6 +42,7 @@ To use ViaBedrock as a Fabric mod, you can download the latest [ViaFabricPlus de
 - [ ] Item data
 - [ ] Block breaking
 - [ ] Block placing
+- [x] Item use (Experimental)
 - [x] Respawning and dimension switching
 - [x] Form GUIs
 - [x] Scoreboard
