@@ -180,7 +180,7 @@ public class ExperimentalFeatures {
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, chunkTracker.getBlockState(position)); // block runtime id
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_PredictedResult.Success.getValue()); // predicted result
 
-            transactionPacket.scheduleSendToServer(BedrockProtocol.class);
+            transactionPacket.sendToServer(BedrockProtocol.class);
 
             // Bedrock send an stop item use on after the transaction packet
             final PacketWrapper stopItemUseOn = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, wrapper.user());
@@ -189,7 +189,7 @@ public class ExperimentalFeatures {
             stopItemUseOn.write(BedrockTypes.BLOCK_POSITION, position);
             stopItemUseOn.write(BedrockTypes.BLOCK_POSITION, new BlockPosition(0, 0, 0)); // result position (Origin is sent by the bedrock client)
             stopItemUseOn.write(BedrockTypes.VAR_INT, 0); // face (0 is sent by the bedrock client)
-            stopItemUseOn.scheduleSendToServer(BedrockProtocol.class);
+            stopItemUseOn.sendToServer(BedrockProtocol.class);
         });
 
     }
