@@ -138,8 +138,10 @@ public class ExperimentalFeatures {
             boolean insideBlock = wrapper.read(Types.BOOLEAN); // inside block
             wrapper.read(Types.BOOLEAN); // world border, this doesn't exist on Bedrock.
 
+            // Send back block changed ack with the sequence, this will help with ghost block.
             PacketFactory.sendJavaBlockChangedAck(wrapper.user(), wrapper.read(Types.VAR_INT));
 
+            // The player can only interact using the main hand on Bedrock!
             if (hand != InteractionHand.MAIN_HAND) {
                 return;
             }
@@ -164,9 +166,16 @@ public class ExperimentalFeatures {
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // slot
             transactionPacket.write(itemRewriter.itemType(), inventoryTracker.getInventoryContainer().getSelectedHotbarItem()); // from item
 
-            final BedrockItem predictedToItem = inventoryTracker.getInventoryContainer().getSelectedHotbarItem().copy();
-            predictedToItem.setAmount(predictedToItem.amount() - 1);
-            transactionPacket.write(itemRewriter.itemType(),predictedToItem); // to item
+            BedrockItem predictedToItem = inventoryTracker.getInventoryContainer().getSelectedHotbarItem().copy();
+            // This is not entirely correct, but at least it's more accurate than not sending actions or sending the original item data.
+            if (predictedToItem.blockRuntimeId() != 0) {
+                predictedToItem.setAmount(predictedToItem.amount() - 1);
+            }
+            if (predictedToItem.amount() <= 0) {
+                predictedToItem = BedrockItem.empty();
+            }
+
+            transactionPacket.write(itemRewriter.itemType(), predictedToItem); // to item
 
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_ActionType.Place.getValue()); // action type
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_TriggerType.PlayerInput.getValue()); // trigger type
@@ -182,7 +191,7 @@ public class ExperimentalFeatures {
 
             transactionPacket.sendToServer(BedrockProtocol.class);
 
-            // Bedrock send an stop item use on after the transaction packet
+            // Bedrock send a stop item use on after the transaction packet
             final PacketWrapper stopItemUseOn = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, wrapper.user());
             stopItemUseOn.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId());
             stopItemUseOn.write(BedrockTypes.VAR_INT, PlayerActionType.StopItemUseOn.getValue());
