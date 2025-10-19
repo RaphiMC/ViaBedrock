@@ -128,6 +128,7 @@ public class ExperimentalFeatures {
             final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)]; // hand
             BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
             BlockFace face = BlockFace.values()[wrapper.read(Types.VAR_INT)]; // face TODO: This is incorrect
+            face = BlockFace.TOP;
             Position3f clickPosition = new Position3f(
                     wrapper.read(Types.FLOAT), // x
                     wrapper.read(Types.FLOAT), // y
@@ -149,10 +150,10 @@ public class ExperimentalFeatures {
             }
 
             //Block Place
-            wrapper.write(BedrockTypes.VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
             wrapper.write(BedrockTypes.VAR_INT, PlayerActionType.StartItemUseOn.getValue()); // action type
-            wrapper.write(BedrockTypes.POSITION_3I, position); // block position
-            wrapper.write(BedrockTypes.POSITION_3I, resultPos); // result position
+            wrapper.write(BedrockTypes.BLOCK_POSITION, position); // block position
+            wrapper.write(BedrockTypes.BLOCK_POSITION, resultPos); // result position
             wrapper.write(BedrockTypes.VAR_INT, face.ordinal()); // face
 
             //Bedrock requires an inventory transaction to be sent
@@ -192,8 +193,8 @@ public class ExperimentalFeatures {
 
             inventoryTransactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // action type
             inventoryTransactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_TriggerType.PlayerInput.getValue()); // trigger type
-            inventoryTransactionPacket.write(BedrockTypes.POSITION_3I, position); // block position
-            inventoryTransactionPacket.write(BedrockTypes.VAR_INT, face.ordinal()); // block face
+            inventoryTransactionPacket.write(BedrockTypes.BLOCK_POSITION, position); // block position
+            inventoryTransactionPacket.write(BedrockTypes.VAR_INT, 1); // block face
             inventoryTransactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // hotbar slot
             inventoryTransactionPacket.write(itemRewriter.itemType(), inventoryTracker.getInventoryContainer().getSelectedHotbarItem()); // hand item
             inventoryTransactionPacket.write(BedrockTypes.POSITION_3F, clientPlayer.position()); // player position
@@ -203,12 +204,20 @@ public class ExperimentalFeatures {
 
             inventoryTransactionPacket.scheduleSendToServer(BedrockProtocol.class);
 
+            /*final PacketWrapper mobEquipPacket = PacketWrapper.create(ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper.user());
+            mobEquipPacket.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId());
+            mobEquipPacket.write(itemRewriter.itemType(), inventoryTracker.getInventoryContainer().getSelectedHotbarItem().copyAndDecrease());
+            mobEquipPacket.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // Slot
+            mobEquipPacket.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // Selected Slot
+            mobEquipPacket.write(Types.BYTE, (byte) 0); // Container ID
+            mobEquipPacket.scheduleSendToServer(BedrockProtocol.class);*/
+
             //Bedrock requires a StopItemUse packet to be sent
             final PacketWrapper stopItemUsePacket = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, wrapper.user());
-            stopItemUsePacket.write(BedrockTypes.VAR_LONG, clientPlayer.runtimeId());
+            stopItemUsePacket.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId());
             stopItemUsePacket.write(BedrockTypes.VAR_INT, PlayerActionType.StopItemUseOn.getValue());
-            stopItemUsePacket.write(BedrockTypes.POSITION_3I, position);
-            stopItemUsePacket.write(BedrockTypes.POSITION_3I, new BlockPosition(0, 0, 0)); // result position (Origin is sent by the bedrock client)
+            stopItemUsePacket.write(BedrockTypes.BLOCK_POSITION, position);
+            stopItemUsePacket.write(BedrockTypes.BLOCK_POSITION, new BlockPosition(0, 0, 0)); // result position (Origin is sent by the bedrock client)
             stopItemUsePacket.write(BedrockTypes.VAR_INT, 0); // face (0 is sent by the bedrock client)
             stopItemUsePacket.scheduleSendToServer(BedrockProtocol.class);
 
@@ -222,5 +231,3 @@ public class ExperimentalFeatures {
     }
 
 }
-
-//InventoryTransactionPacket(legacyRequestId=0, legacySlots=[], actions=[InventoryActionData(source=InventorySource(type=CONTAINER, containerId=0, flag=NONE), slot=3, fromItem=BaseItemData(definition=SimpleItemDefinition(identifier=minecraft:dirt, runtimeId=3, version=LEGACY, componentBased=false, componentData=null), damage=0, count=1, tag=null, canPlace=[], canBreak=[], blockingTicks=0, blockDefinition=UnknownDefinition[runtimeId=-2108756090], usingNetId=false, netId=0), toItem=BaseItemData(definition=SimpleItemDefinition(identifier=minecraft:air, runtimeId=0, version=LEGACY, componentBased=false, componentData=null), damage=0, count=0, tag=null, canPlace=[], canBreak=[], blockingTicks=0, blockDefinition=null, usingNetId=false, netId=0), stackNetworkId=0)], transactionType=ITEM_USE, actionType=0, runtimeEntityId=0, blockPosition=(11, 110, 0), blockFace=1, hotbarSlot=3, itemInHand=BaseItemData(definition=SimpleItemDefinition(identifier=minecraft:dirt, runtimeId=3, version=LEGACY, componentBased=false, componentData=null), damage=0, count=1, tag=null, canPlace=[], canBreak=[], blockingTicks=0, blockDefinition=UnknownDefinition[runtimeId=-2108756090], usingNetId=false, netId=0), playerPosition=(12.311914, 112.62001, -1.25097), clickPosition=(0.6086874, 1.0, 0.49341834), headPosition=null, usingNetIds=false, blockDefinition=UnknownDefinition[runtimeId=-2108756090], triggerType=PLAYER_INPUT, clientInteractPrediction=SUCCESS)
