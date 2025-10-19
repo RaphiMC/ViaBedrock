@@ -47,7 +47,7 @@ public class InventoryActionDataType extends Type<InventoryActionData> {
     @Override
     public void write(ByteBuf buffer, InventoryActionData value) {
         BedrockTypes.INVENTORY_SOURCE.write(buffer, value.source());
-        BedrockTypes.VAR_INT.write(buffer, value.slot());
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.slot());
         itemRewriter.itemType().write(buffer, value.fromItem()); //TODO
         itemRewriter.itemType().write(buffer, value.toItem()); //TODO
         BedrockTypes.VAR_INT.write(buffer, value.stackNetworkId());

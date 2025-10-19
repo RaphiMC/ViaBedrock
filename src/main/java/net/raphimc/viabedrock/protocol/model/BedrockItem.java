@@ -208,4 +208,9 @@ public class BedrockItem implements Item {
                 '}';
     }
 
+    //Experimental feature
+    public BedrockItem copyAndDecrease() {
+        return new BedrockItem(this.id, this.data, (byte) (this.amount - 1), this.tag != null ? this.tag.copy() : null, this.canPlace.clone(), this.canBreak.clone(), this.blockingTicks, this.blockRuntimeId, this.netId);
+    }
+
 }

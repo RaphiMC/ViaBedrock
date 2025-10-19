@@ -82,13 +82,13 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
     public void write(ByteBuf buffer, BedrockInventoryTransaction value) {
         BedrockTypes.VAR_INT.write(buffer, value.legacyRequestId());
         BedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, value.legacySlots().toArray(new LegacySetItemSlotData[0]));
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.transactionType().getValue());
         BedrockTypes.INVENTORY_ACTION_DATA.write(buffer, value.actions().toArray(new InventoryActionData[0]));
-        BedrockTypes.VAR_INT.write(buffer, value.transactionType().getValue());
-        BedrockTypes.VAR_INT.write(buffer, value.actionType());
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.actionType());
         BedrockTypes.VAR_LONG.write(buffer, value.runtimeEntityId());
         BedrockTypes.POSITION_3I.write(buffer, value.blockPosition());
         BedrockTypes.VAR_INT.write(buffer, value.blockFace());
-        BedrockTypes.VAR_INT.write(buffer, value.hotbarSlot());
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.hotbarSlot());
         itemRewriter.itemType().write(buffer, value.itemInHand()); //TODO
         BedrockTypes.POSITION_3F.write(buffer, value.playerPosition());
         BedrockTypes.POSITION_3F.write(buffer, value.clickPosition());
