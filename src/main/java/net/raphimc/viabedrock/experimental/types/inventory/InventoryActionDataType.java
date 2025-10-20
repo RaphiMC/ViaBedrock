@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.experimental.types.inventory;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.experimental.types.ExperimentalTypes;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
 import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
@@ -35,21 +36,21 @@ public class InventoryActionDataType extends Type<InventoryActionData> {
 
     @Override
     public InventoryActionData read(ByteBuf buffer) {
-        final InventorySource source = BedrockTypes.INVENTORY_SOURCE.read(buffer);
-        final int slot = BedrockTypes.VAR_INT.read(buffer);
+        final InventorySource source = ExperimentalTypes.INVENTORY_SOURCE.read(buffer);
+        final int slot = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final BedrockItem fromItem = null; //TODO
         final BedrockItem toItem = null; //TODO
-        final int stackNetworkId = BedrockTypes.VAR_INT.read(buffer);
+        //final int stackNetworkId = BedrockTypes.VAR_INT.read(buffer);
 
-        return new InventoryActionData(source, slot, fromItem, toItem, stackNetworkId);
+        return new InventoryActionData(source, slot, fromItem, toItem);
     }
 
     @Override
     public void write(ByteBuf buffer, InventoryActionData value) {
-        BedrockTypes.INVENTORY_SOURCE.write(buffer, value.source());
+        ExperimentalTypes.INVENTORY_SOURCE.write(buffer, value.source());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.slot());
         itemRewriter.itemType().write(buffer, value.fromItem()); //TODO
         itemRewriter.itemType().write(buffer, value.toItem()); //TODO
-        BedrockTypes.VAR_INT.write(buffer, value.stackNetworkId());
+        //BedrockTypes.VAR_INT.write(buffer, value.stackNetworkId());
     }
 }

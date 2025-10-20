@@ -19,5 +19,5 @@ package net.raphimc.viabedrock.experimental.model.inventory;
 
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
-public record InventoryActionData(InventorySource source, int slot, BedrockItem fromItem, BedrockItem toItem, int stackNetworkId) {
+public record InventoryActionData(InventorySource source, int slot, BedrockItem fromItem, BedrockItem toItem) {
 }

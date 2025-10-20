@@ -21,6 +21,7 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.experimental.model.inventory.*;
+import net.raphimc.viabedrock.experimental.types.ExperimentalTypes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ComplexInventoryTransaction_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseInventoryTransaction_PredictedResult;
@@ -41,12 +42,17 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
     @Override
     public BedrockInventoryTransaction read(ByteBuf buffer) {
         final int legacyRequestId = BedrockTypes.VAR_INT.read(buffer);
-        final List<LegacySetItemSlotData> legacySlots = List.of(BedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.read(buffer));
-        final List<InventoryActionData> actions = List.of(BedrockTypes.INVENTORY_ACTION_DATA.read(buffer));
-        final ComplexInventoryTransaction_Type transactionType = ComplexInventoryTransaction_Type.getByValue(BedrockTypes.VAR_INT.read(buffer));
+
+        List<LegacySetItemSlotData> legacySlots = List.of();
+        if (legacyRequestId != 0) {
+            legacySlots = List.of(ExperimentalTypes.LEGACY_SET_ITEM_SLOT_DATA.read(buffer));
+        }
+        final ComplexInventoryTransaction_Type transactionType = ComplexInventoryTransaction_Type.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        final List<InventoryActionData> actions = List.of(ExperimentalTypes.INVENTORY_ACTION_DATA.read(buffer));
         final int actionType = BedrockTypes.VAR_INT.read(buffer);
+        final ItemUseInventoryTransaction_TriggerType transactionTriggerType = ItemUseInventoryTransaction_TriggerType.getByValue(BedrockTypes.VAR_INT.read(buffer));
         final long runtimeEntityId = BedrockTypes.VAR_LONG.read(buffer);
-        final BlockPosition blockPosition = BedrockTypes.POSITION_3I.read(buffer);
+        final BlockPosition blockPosition = BedrockTypes.BLOCK_POSITION.read(buffer);
         final int blockFace = BedrockTypes.VAR_INT.read(buffer);
         final int hotbarSlot = BedrockTypes.VAR_INT.read(buffer);
         final BedrockItem itemInHand = itemRewriter.itemType().read(buffer); //TODO
@@ -55,7 +61,6 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
         final Position3f headPosition = BedrockTypes.POSITION_3F.read(buffer);
         final boolean usingNetIds = buffer.readBoolean();
         final int blockRuntimeId = BedrockTypes.VAR_INT.read(buffer); //TODO: Could potentially be unsigned needs double checking
-        final ItemUseInventoryTransaction_TriggerType transactionTriggerType = ItemUseInventoryTransaction_TriggerType.getByValue(BedrockTypes.VAR_INT.read(buffer));
         final ItemUseInventoryTransaction_PredictedResult predictedResult = ItemUseInventoryTransaction_PredictedResult.getByValue(BedrockTypes.VAR_INT.read(buffer));
 
         return new BedrockInventoryTransaction(
@@ -81,21 +86,23 @@ public class BedrockInventoryTransactionType extends Type<BedrockInventoryTransa
     @Override
     public void write(ByteBuf buffer, BedrockInventoryTransaction value) {
         BedrockTypes.VAR_INT.write(buffer, value.legacyRequestId());
-        BedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, value.legacySlots().toArray(new LegacySetItemSlotData[0]));
+        if (value.legacyRequestId() != 0) {
+            ExperimentalTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, value.legacySlots().toArray(new LegacySetItemSlotData[0]));
+        }
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.transactionType().getValue());
-        BedrockTypes.INVENTORY_ACTION_DATA.write(buffer, value.actions().toArray(new InventoryActionData[0]));
+        ExperimentalTypes.INVENTORY_ACTION_DATA.write(buffer, value.actions().toArray(new InventoryActionData[0]));
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.actionType());
-        BedrockTypes.VAR_LONG.write(buffer, value.runtimeEntityId());
-        BedrockTypes.POSITION_3I.write(buffer, value.blockPosition());
+        BedrockTypes.VAR_INT.write(buffer, value.transactionTriggerType().getValue());
+        //BedrockTypes.VAR_LONG.write(buffer, value.runtimeEntityId());
+        BedrockTypes.BLOCK_POSITION.write(buffer, value.blockPosition());
         BedrockTypes.VAR_INT.write(buffer, value.blockFace());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.hotbarSlot());
         itemRewriter.itemType().write(buffer, value.itemInHand()); //TODO
         BedrockTypes.POSITION_3F.write(buffer, value.playerPosition());
         BedrockTypes.POSITION_3F.write(buffer, value.clickPosition());
-        BedrockTypes.POSITION_3F.write(buffer, value.headPosition());
-        BedrockTypes.VAR_INT.write(buffer, value.blockRuntimeId());
-        buffer.writeBoolean(false); //TODO: usingNetIds
-        BedrockTypes.VAR_INT.write(buffer, value.transactionTriggerType().getValue());
-        BedrockTypes.VAR_INT.write(buffer, value.predictedResult().getValue());
+        //BedrockTypes.POSITION_3F.write(buffer, value.headPosition());
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.blockRuntimeId());
+        //buffer.writeBoolean(false); //TODO: usingNetIds
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.predictedResult().getValue());
     }
 }

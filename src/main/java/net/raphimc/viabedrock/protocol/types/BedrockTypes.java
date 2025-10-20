@@ -116,11 +116,4 @@ public class BedrockTypes {
     public static final Type<CommandData[]> COMMAND_DATA_ARRAY = new CommandDataArrayType();
     public static final Type<FullContainerName> FULL_CONTAINER_NAME = new FullContainerNameType();
     public static final Type<FullContainerName[]> FULL_CONTAINER_NAME_ARRAY = new ArrayType<>(FULL_CONTAINER_NAME, UNSIGNED_VAR_INT);
-
-    //TODO: Refactor to Experimental
-    public static final Type<BedrockInventoryTransaction> INVENTORY_TRANSACTION = new BedrockInventoryTransactionType();
-    public static final Type<LegacySetItemSlotData[]> LEGACY_SET_ITEM_SLOT_DATA = new ArrayType<>(new LegacySetItemSlotDataType(), UNSIGNED_VAR_INT);
-    public static final Type<InventorySource> INVENTORY_SOURCE = new InventorySourcePacketType();
-    public static final Type<InventoryActionData[]> INVENTORY_ACTION_DATA = new ArrayType<>(new InventoryActionDataType(), UNSIGNED_VAR_INT);
-
 }

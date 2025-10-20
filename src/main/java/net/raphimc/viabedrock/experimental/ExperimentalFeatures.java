@@ -23,6 +23,7 @@ import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPac
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
+import net.raphimc.viabedrock.experimental.types.ExperimentalTypes;
 import net.raphimc.viabedrock.experimental.util.ProtocolUtil;
 import com.viaversion.viaversion.api.minecraft.BlockFace;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
@@ -59,7 +60,6 @@ public class ExperimentalFeatures {
                 return;
             }
 
-
             final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
 
             wrapper.clearPacket();
@@ -68,7 +68,7 @@ public class ExperimentalFeatures {
             wrapper.write(BedrockTypes.VAR_INT, 0); // legacy request id
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemReleaseTransaction.getValue()); // transaction type
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
-            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // action type
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_ActionType.Place.getValue()); // action type
             wrapper.write(BedrockTypes.VAR_INT, (int) inventoryContainer.getSelectedHotbarSlot()); // selected hotbar slot
             wrapper.write(wrapper.user().get(ItemRewriter.class).itemType(), inventoryContainer.getSelectedHotbarItem()); // hand item
             wrapper.write(BedrockTypes.POSITION_3F, wrapper.user().get(EntityTracker.class).getClientPlayer().position()); // head position, the same as player position.
@@ -100,7 +100,7 @@ public class ExperimentalFeatures {
             // Actions are used to tell the server what item changed on the client-side, however this is never used on non-block interaction item use.
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
 
-            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 1); // action type
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_ActionType.Use.getValue()); // action type
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_TriggerType.Unknown.getValue()); // trigger type
 
             wrapper.write(BedrockTypes.BLOCK_POSITION, new BlockPosition(0, 0, 0)); // block position
@@ -129,7 +129,9 @@ public class ExperimentalFeatures {
             final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)]; // hand
 
             BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
-            BlockFace face = BlockFace.values()[wrapper.read(Types.VAR_INT)]; // face
+            int faceInt = wrapper.read(Types.UNSIGNED_BYTE); // face
+            BlockFace face = getBlockFace(faceInt);
+            //BlockFace face = BlockFace.values()[wrapper.read(Types.VAR_INT)]; // face
             Position3f clickPosition = new Position3f(
                     wrapper.read(Types.FLOAT), // x
                     wrapper.read(Types.FLOAT), // y
@@ -138,7 +140,7 @@ public class ExperimentalFeatures {
             boolean insideBlock = wrapper.read(Types.BOOLEAN); // inside block
             wrapper.read(Types.BOOLEAN); // world border, this doesn't exist on Bedrock.
 
-            // Send back block changed ack with the sequence, this will help with ghost block.
+            // Send back block changed ack with the sequence, this will help with ghost blocks.
             PacketFactory.sendJavaBlockChangedAck(wrapper.user(), wrapper.read(Types.VAR_INT));
 
             // The player can only interact using the main hand on Bedrock!
@@ -152,7 +154,7 @@ public class ExperimentalFeatures {
             startItemUseOn.write(BedrockTypes.VAR_INT, PlayerActionType.StartItemUseOn.getValue()); // action type
             startItemUseOn.write(BedrockTypes.BLOCK_POSITION, position); // block position
             startItemUseOn.write(BedrockTypes.BLOCK_POSITION, insideBlock ? position : position.getRelative(face)); // result position
-            startItemUseOn.write(BedrockTypes.VAR_INT, face.ordinal()); // face
+            startItemUseOn.write(BedrockTypes.VAR_INT, faceInt); // face
             startItemUseOn.sendToServer(BedrockProtocol.class);
 
             // This is the main packet that the bedrock client use to interact with block.
@@ -162,7 +164,7 @@ public class ExperimentalFeatures {
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, 1); // actions count
 
             // This the action to tell the server what item changed.
-            transactionPacket.write(BedrockTypes.INVENTORY_SOURCE, new InventorySource(InventorySourceType.ContainerInventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.NoFlag));
+            transactionPacket.write(ExperimentalTypes.INVENTORY_SOURCE, new InventorySource(InventorySourceType.ContainerInventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.NoFlag));
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // slot
             transactionPacket.write(itemRewriter.itemType(), inventoryTracker.getInventoryContainer().getSelectedHotbarItem()); // from item
 
@@ -180,7 +182,7 @@ public class ExperimentalFeatures {
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_ActionType.Place.getValue()); // action type
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_TriggerType.PlayerInput.getValue()); // trigger type
             transactionPacket.write(BedrockTypes.BLOCK_POSITION, position); // block position
-            transactionPacket.write(BedrockTypes.VAR_INT, face.ordinal()); // block face
+            transactionPacket.write(BedrockTypes.VAR_INT, faceInt); // block face
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // hotbar slot
             transactionPacket.write(itemRewriter.itemType(), inventoryTracker.getInventoryContainer().getSelectedHotbarItem()); // hand item
             transactionPacket.write(BedrockTypes.POSITION_3F, clientPlayer.position()); // player position
@@ -191,7 +193,7 @@ public class ExperimentalFeatures {
 
             transactionPacket.sendToServer(BedrockProtocol.class);
 
-            // Bedrock send a stop item use on after the transaction packet
+            // Bedrock sends a stop item use on after the transaction packet
             final PacketWrapper stopItemUseOn = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, wrapper.user());
             stopItemUseOn.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId());
             stopItemUseOn.write(BedrockTypes.VAR_INT, PlayerActionType.StopItemUseOn.getValue());
@@ -204,6 +206,22 @@ public class ExperimentalFeatures {
     }
 
     public static void registerTasks() {
+    }
+
+    //TODO: Viaversion should fix the BlockFace ordinals
+    private static BlockFace getBlockFace(int face) {
+        return switch (face) {
+            case 0 -> BlockFace.BOTTOM;
+            case 1 -> BlockFace.TOP;
+            case 2 -> BlockFace.NORTH;
+            case 3 -> BlockFace.SOUTH;
+            case 4 -> BlockFace.WEST;
+            case 5 -> BlockFace.EAST;
+            default -> {
+                ViaBedrock.getPlatform().getLogger().warning("Unknown block face: " + face);
+                yield BlockFace.TOP;
+            }
+        };
     }
 
 }
