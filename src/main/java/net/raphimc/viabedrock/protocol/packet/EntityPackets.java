@@ -454,8 +454,11 @@ public class EntityPackets {
                         playerCombatKill.send(BedrockProtocol.class);
                     }
                     if (entity != entityTracker.getClientPlayer()) {
-                        wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
-                        wrapper.write(Types.BYTE, EntityEvent.DEATH.getValue()); // entity event
+                        entity.playSound(SharedTypes_Legacy_LevelSoundEvent.Death);
+                        wrapper.write(Types.INT, entity.javaId()); // entity id
+                        wrapper.write(Types.BYTE, EntityEvent.POOF.getValue()); // entity event
+                    } else {
+                        wrapper.cancel();
                     }
                 }
                 case TAMING_FAILED -> {
@@ -477,10 +480,12 @@ public class EntityPackets {
                 case SQUID_FLEEING -> {
                     wrapper.write(Types.INT, entity.javaId()); // entity id
                     wrapper.write(Types.BYTE, EntityEvent.SQUID_ANIM_SYNCH.getValue()); // entity event
+                    //TODO: might need to send the particles here
                 }
                 case ZOMBIE_CONVERTING -> {
                     wrapper.write(Types.INT, entity.javaId()); // entity id
                     wrapper.write(Types.BYTE, EntityEvent.ZOMBIE_CONVERTING.getValue()); // entity event
+                    //TODO: Doesnt seem to make the zombie shake on java, needs testing
                 }
                 case START_OFFER_FLOWER -> {
                     wrapper.write(Types.INT, entity.javaId()); // entity id
@@ -543,12 +548,12 @@ public class EntityPackets {
                     wrapper.write(Types.BYTE, EntityEvent.DOLPHIN_LOOKING_FOR_TREASURE.getValue()); // entity event
                 }
                 case VIBRATION_DETECTED -> {
-                    //TODO: Not verified but highly likely
                     wrapper.write(Types.INT, entity.javaId()); // entity id
                     wrapper.write(Types.BYTE, EntityEvent.TENDRILS_SHIVER.getValue()); // entity event
                 }
                 case PRIME_TNTCART -> {
-                    //https://minecraft.wiki/w/Java_Edition_protocol/Entity_statuses#Minecart_TNT
+                    //TODO: this isnt working...
+                    //https://minecraft.wiki/w/Java_Edition_protocol/Entity_statuses#Minecart_TNT\
                     wrapper.write(Types.INT, entity.javaId()); // entity id
                     wrapper.write(Types.BYTE, EntityEvent.EAT_GRASS.getValue()); // entity event
 
