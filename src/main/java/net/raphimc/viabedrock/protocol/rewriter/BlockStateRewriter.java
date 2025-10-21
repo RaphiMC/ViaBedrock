@@ -163,7 +163,10 @@ public class BlockStateRewriter implements StorableObject {
 
         for (int i = 0; i < bedrockBlockStates.size(); i++) {
             final BedrockBlockState bedrockBlockState = bedrockBlockStates.get(i);
-            final int bedrockId = hashedRuntimeBlockIds ? bedrockBlockState.blockStateTag().getIntTag("network_id").asInt() : i;
+            int bedrockId = hashedRuntimeBlockIds ? bedrockBlockState.blockStateTag().getIntTag("network_id").asInt() : i;
+            if (hashedRuntimeBlockIds && this.blockStateMappings.containsValue(bedrockId)) {
+                bedrockId++; // Bedrock client increments the hash in case a collision occurs
+            }
 
             this.blockStateMappings.put(bedrockBlockState, bedrockId);
             this.validBlockStates.computeIfAbsent(bedrockBlockState.namespacedIdentifier(), k -> new IntLinkedOpenHashSet()).add(bedrockId);

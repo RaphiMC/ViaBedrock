@@ -82,6 +82,7 @@ public class BedrockMappingData extends MappingDataBase {
 
     // Block states
     private BlockStateUpgrader bedrockBlockStateUpgrader;
+    private BiMap<String, Integer> javaBlocks;
     private BiMap<BlockState, Integer> javaBlockStates;
     private Set<BedrockBlockState> bedrockBlockStates;
     private Map<BlockState, BlockState> bedrockToJavaBlockStates;
@@ -188,6 +189,12 @@ public class BedrockMappingData extends MappingDataBase {
         final Multimap<String, BedrockBlockState> bedrockBlockStatesByIdentifier;
         { // Block states
             this.bedrockBlockStateUpgrader = new BlockStateUpgrader();
+
+            final JsonArray javaBlocksJson = javaViaMappingJson.getAsJsonArray("blocks");
+            this.javaBlocks = HashBiMap.create(javaBlocksJson.size());
+            for (int i = 0; i < javaBlocksJson.size(); i++) {
+                this.javaBlocks.put(Key.namespaced(javaBlocksJson.get(i).getAsString()), i);
+            }
 
             final JsonArray javaBlockStatesJson = javaViaMappingJson.getAsJsonArray("blockstates");
             this.javaBlockStates = HashBiMap.create(javaBlockStatesJson.size());
@@ -953,6 +960,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public BlockStateUpgrader getBedrockBlockStateUpgrader() {
         return this.bedrockBlockStateUpgrader;
+    }
+
+    public BiMap<String, Integer> getJavaBlocks() {
+        return this.javaBlocks;
     }
 
     public BiMap<BlockState, Integer> getJavaBlockStates() {

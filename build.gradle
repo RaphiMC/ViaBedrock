@@ -52,16 +52,16 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.5.0"
+    compileOnly "com.viaversion:viaversion-common:5.5.1-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.5"
     compileOnly "com.google.guava:guava:33.5.0-jre"
-    compileOnly "io.netty:netty-handler:4.2.6.Final"
+    compileOnly "io.netty:netty-handler:4.2.7.Final"
     compileOnly "com.google.code.gson:gson:2.13.2"
 
-    api("io.netty:netty-codec-http:4.2.6.Final") {
+    api("io.netty:netty-codec-http:4.2.7.Final") {
         transitive = false
     }
-    api("io.netty:netty-codec-compression:4.2.6.Final") {
+    api("io.netty:netty-codec-compression:4.2.7.Final") {
         transitive = false
     }
     api "io.jsonwebtoken:jjwt-impl:0.13.0"
@@ -74,7 +74,7 @@ dependencies {
     api("net.lenni0451.mcstructs-bedrock:forms:2.0.1") {
         exclude group: "com.google.code.gson", module: "gson"
     }
-    api("com.viaversion.mcstructs:dialog:5-3.2.0-SNAPSHOT") {
+    api("com.viaversion.mcstructs:dialog:5-3.2.1-SNAPSHOT") {
         exclude group: "com.viaversion.mcstructs", module: "core"
         exclude group: "com.viaversion.mcstructs", module: "text"
         exclude group: "com.viaversion.mcstructs", module: "snbt"
