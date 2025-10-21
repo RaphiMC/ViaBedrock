@@ -64,9 +64,13 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacket_Action;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.data.enums.java.ClickType;
-import net.raphimc.viabedrock.protocol.model.*;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
@@ -76,7 +80,6 @@ import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.logging.Level;
 
 public class InventoryPackets {

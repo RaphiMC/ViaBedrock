@@ -20,12 +20,15 @@ package net.raphimc.viabedrock.experimental.types.inventory;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.experimental.model.inventory.*;
+import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
+import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
+import net.raphimc.viabedrock.experimental.model.inventory.LegacySetItemSlotData;
 import net.raphimc.viabedrock.experimental.types.ExperimentalTypes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ComplexInventoryTransaction_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseInventoryTransaction_PredictedResult;
-import net.raphimc.viabedrock.protocol.model.*;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
