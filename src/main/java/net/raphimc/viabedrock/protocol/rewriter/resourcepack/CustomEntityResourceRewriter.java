@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import org.cube.converter.converter.enums.RotationType;
 import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
 import org.cube.converter.model.impl.java.JavaItemModel;
 
@@ -54,7 +55,7 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
                 for (Map.Entry<String, String> textureEntry : entityDefinition.entityData().getTextures().entrySet()) {
                     final String javaTexturePath = this.getJavaTexturePath(textureEntry.getValue());
                     final String key = entityEntry.getKey() + "_" + modelEntry.getKey() + "_" + textureEntry.getKey();
-                    final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, true);
+                    final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.HACKY_POST_1_21_60);
                     resourcePacksStorage.getConverterData().put("ce_" + key + "_scale", itemModelData.getScale());
                     javaContent.putString("assets/viabedrock/models/" + this.getJavaModelName(key) + ".json", itemModelData.compile().toString());
                     modelsList.add(key);
