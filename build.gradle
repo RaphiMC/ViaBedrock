@@ -83,7 +83,7 @@ dependencies {
     api "com.vdurmont:semver4j:3.1.0"
     api "com.mojang:brigadier:1.3.10"
     api "org.lz4:lz4-pure-java:1.8.0"
-    api("com.github.oryxel1:CubeConverter:5e0fdc6cd2") {
+    api("com.github.oryxel1:CubeConverter:5b4fce77c4") {
         transitive = false
     }
     api("team.unnamed:mocha:3.0.1") {
