@@ -207,5 +207,4 @@ public class BedrockItem implements Item {
                 ", netId=" + netId +
                 '}';
     }
-
 }
