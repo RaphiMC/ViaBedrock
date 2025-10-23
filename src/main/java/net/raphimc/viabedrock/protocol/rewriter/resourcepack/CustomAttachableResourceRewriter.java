@@ -23,6 +23,7 @@ import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.api.model.resourcepack.AttachableDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import org.cube.converter.converter.enums.RotationType;
 import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
 import org.cube.converter.model.impl.java.JavaItemModel;
 
@@ -56,7 +57,7 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
                 if (!attachableDefinition.attachableData().getTextures().containsKey(modelEntry.getKey())) continue;
 
                 final String javaTexturePath = this.getJavaTexturePath(attachableDefinition.attachableData().getTextures().get(modelEntry.getKey()));
-                final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, false);
+                final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.POST_1_21_6);
                 final JsonObject itemModel = GsonUtil.getGson().fromJson(itemModelData.compile().toString(), JsonObject.class);
 
                 final JsonObject display = new JsonObject();
