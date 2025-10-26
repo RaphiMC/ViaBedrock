@@ -52,6 +52,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandEnumConstraints
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandParameterOption;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandPermissionLevel;
+import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 
 import java.util.*;
@@ -101,6 +102,23 @@ public class CommandsStorage extends StoredObject {
 
     public void writeCommandTree(final PacketWrapper wrapper) {
         this.buildCommandTree();
+
+        // TODO: Move this somewhere that makes more sense
+        // Update OP level
+        final EntityTracker entityTracker = this.user().get(EntityTracker.class);
+        final byte playerCommandPermission = entityTracker.getClientPlayer().abilities().commandPermission();
+        final PacketWrapper entityStatus = PacketWrapper.create(ClientboundPackets1_21_9.ENTITY_EVENT, this.user());
+        entityStatus.write(Types.INT, entityTracker.getClientPlayer().javaId());
+        entityStatus.write(Types.BYTE, switch (CommandPermissionLevel.getByValue(playerCommandPermission)) {
+            case Any -> EntityEvent.PERMISSION_LEVEL_ALL.getValue();
+            default -> EntityEvent.PERMISSION_LEVEL_OWNERS.getValue();
+            // TODO: "operator" on bedrock seems to be GameDirectors level which doesnt match java's default op level
+            /*case GameDirectors -> EntityEvent.PERMISSION_LEVEL_MODERATORS.getValue();
+            case Admin -> EntityEvent.PERMISSION_LEVEL_GAMEMASTERS.getValue();
+            case Host -> EntityEvent.PERMISSION_LEVEL_ADMINS.getValue();
+            case Owner, Internal -> EntityEvent.PERMISSION_LEVEL_OWNERS.getValue();*/
+        });
+        entityStatus.send(BedrockProtocol.class);
 
         final RootCommandNode<UserConnection> root = this.dispatcher.getRoot();
         final Map<CommandNode<UserConnection>, Integer> nodeIndices = this.getNodeIndices(root);

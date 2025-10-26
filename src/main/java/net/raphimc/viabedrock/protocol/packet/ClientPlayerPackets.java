@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.api.minecraft.GameMode;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
@@ -575,6 +576,18 @@ public class ClientPlayerPackets {
             } else {
                 clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.MissedSwing);
             }
+        });
+        protocol.registerServerbound(ServerboundPackets1_21_6.CHANGE_GAME_MODE, ServerboundBedrockPackets.SET_PLAYER_GAME_TYPE, wrapper -> {
+            GameMode gameMode = GameMode.getById(wrapper.read(Types.VAR_INT));
+            GameType gameType = switch (gameMode) {
+                case NOT_SET -> GameType.Undefined;
+                case CREATIVE -> GameType.Creative;
+                case SURVIVAL ->  GameType.Survival;
+                case ADVENTURE -> GameType.Adventure;
+                case SPECTATOR -> GameType.Spectator;
+            };
+
+            wrapper.write(BedrockTypes.VAR_INT, gameType.getValue());
         });
     }
 
