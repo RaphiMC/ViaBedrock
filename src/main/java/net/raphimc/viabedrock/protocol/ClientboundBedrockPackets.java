@@ -34,6 +34,7 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     ADD_ENTITY(MinecraftPacketIds.AddActor.getValue()),
     REMOVE_ENTITY(MinecraftPacketIds.RemoveActor.getValue()),
     ADD_ITEM_ENTITY(MinecraftPacketIds.AddItemActor.getValue()),
+    SERVER_PLAYER_POST_MOVE_POSITION(MinecraftPacketIds.ServerPlayerPostMovePosition.getValue()),
     TAKE_ITEM_ENTITY(MinecraftPacketIds.TakeItemActor.getValue()),
     MOVE_ENTITY_ABSOLUTE(MinecraftPacketIds.MoveAbsoluteActor.getValue()),
     MOVE_PLAYER(MinecraftPacketIds.MovePlayer.getValue()),
