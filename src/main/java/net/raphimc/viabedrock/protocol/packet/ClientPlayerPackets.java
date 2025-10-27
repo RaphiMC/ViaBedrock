@@ -555,6 +555,25 @@ public class ClientPlayerPackets {
                 clientPlayer.addAuthInputData(flying ? PlayerAuthInputPacket_InputData.StartFlying : PlayerAuthInputPacket_InputData.StopFlying);
             }
         });
+        protocol.registerServerbound(ServerboundPackets1_21_6.CHANGE_GAME_MODE, ServerboundBedrockPackets.SET_PLAYER_GAME_TYPE, new PacketHandlers() {
+            @Override
+            protected void register() {
+                handler(wrapper -> {
+                    final GameMode gameMode = GameMode.values()[wrapper.read(Types.VAR_INT)]; // game mode
+                    final GameType gameType = switch (gameMode) {
+                        case SURVIVAL ->  GameType.Survival;
+                        case CREATIVE -> GameType.Creative;
+                        case ADVENTURE -> GameType.Adventure;
+                        case SPECTATOR -> GameType.Spectator;
+                        default -> throw new IllegalStateException("Unhandled GameMode: " + gameMode);
+                    };
+                    wrapper.write(BedrockTypes.VAR_INT, gameType.getValue()); // game type
+                    wrapper.user().get(EntityTracker.class).getClientPlayer().setGameType(gameType);
+                });
+                handler(CLIENT_PLAYER_GAME_MODE_INFO_UPDATE);
+                handler(CLIENT_PLAYER_GAME_MODE_UPDATE);
+            }
+        });
         protocol.registerServerbound(ServerboundPackets1_21_6.SWING, ServerboundBedrockPackets.ANIMATE, wrapper -> {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
