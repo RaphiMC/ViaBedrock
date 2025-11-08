@@ -61,6 +61,10 @@ public enum SharedTypes_Legacy_ActorDamageCause {
 
     private final int value;
 
+    SharedTypes_Legacy_ActorDamageCause(final SharedTypes_Legacy_ActorDamageCause value) {
+        this(value.value);
+    }
+
     SharedTypes_Legacy_ActorDamageCause(final int value) {
         this.value = value;
     }

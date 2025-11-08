@@ -28,6 +28,10 @@ public enum CraftingType {
 
     private final int value;
 
+    CraftingType(final CraftingType value) {
+        this(value.value);
+    }
+
     CraftingType(final int value) {
         this.value = value;
     }

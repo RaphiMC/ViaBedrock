@@ -28,6 +28,10 @@ public enum CameraAimAssistPacketPayload_TargetMode {
 
     private final int value;
 
+    CameraAimAssistPacketPayload_TargetMode(final CameraAimAssistPacketPayload_TargetMode value) {
+        this(value.value);
+    }
+
     CameraAimAssistPacketPayload_TargetMode(final int value) {
         this.value = value;
     }

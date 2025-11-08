@@ -31,6 +31,10 @@ public enum SharedTypes_Legacy_Difficulty {
 
     private final int value;
 
+    SharedTypes_Legacy_Difficulty(final SharedTypes_Legacy_Difficulty value) {
+        this(value.value);
+    }
+
     SharedTypes_Legacy_Difficulty(final int value) {
         this.value = value;
     }

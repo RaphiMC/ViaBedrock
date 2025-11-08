@@ -554,6 +554,10 @@ public enum SharedTypes_Legacy_LevelSoundEvent {
 
     private final int value;
 
+    SharedTypes_Legacy_LevelSoundEvent(final SharedTypes_Legacy_LevelSoundEvent value) {
+        this(value.value);
+    }
+
     SharedTypes_Legacy_LevelSoundEvent(final int value) {
         this.value = value;
     }

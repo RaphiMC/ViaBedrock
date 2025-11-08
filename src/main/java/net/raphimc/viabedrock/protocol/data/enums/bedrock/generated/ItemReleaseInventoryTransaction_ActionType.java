@@ -34,6 +34,10 @@ public enum ItemReleaseInventoryTransaction_ActionType {
 
     private final int value;
 
+    ItemReleaseInventoryTransaction_ActionType(final ItemReleaseInventoryTransaction_ActionType value) {
+        this(value.value);
+    }
+
     ItemReleaseInventoryTransaction_ActionType(final int value) {
         this.value = value;
     }

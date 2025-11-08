@@ -33,6 +33,10 @@ public enum NpcRequestPacket_RequestType {
 
     private final int value;
 
+    NpcRequestPacket_RequestType(final NpcRequestPacket_RequestType value) {
+        this(value.value);
+    }
+
     NpcRequestPacket_RequestType(final int value) {
         this.value = value;
     }

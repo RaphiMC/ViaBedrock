@@ -28,6 +28,10 @@ public enum EmotePacket_Flags {
 
     private final int value;
 
+    EmotePacket_Flags(final EmotePacket_Flags value) {
+        this(value.value);
+    }
+
     EmotePacket_Flags(final int value) {
         this.value = value;
     }

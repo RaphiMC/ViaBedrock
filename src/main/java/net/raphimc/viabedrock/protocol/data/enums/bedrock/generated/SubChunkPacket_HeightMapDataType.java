@@ -31,6 +31,10 @@ public enum SubChunkPacket_HeightMapDataType {
 
     private final int value;
 
+    SubChunkPacket_HeightMapDataType(final SubChunkPacket_HeightMapDataType value) {
+        this(value.value);
+    }
+
     SubChunkPacket_HeightMapDataType(final int value) {
         this.value = value;
     }

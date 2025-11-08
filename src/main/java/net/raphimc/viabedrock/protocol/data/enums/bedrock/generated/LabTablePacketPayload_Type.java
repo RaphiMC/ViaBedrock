@@ -29,6 +29,10 @@ public enum LabTablePacketPayload_Type {
 
     private final int value;
 
+    LabTablePacketPayload_Type(final LabTablePacketPayload_Type value) {
+        this(value.value);
+    }
+
     LabTablePacketPayload_Type(final int value) {
         this.value = value;
     }

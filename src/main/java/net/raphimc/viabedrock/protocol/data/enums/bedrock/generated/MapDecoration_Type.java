@@ -32,11 +32,11 @@ public enum MapDecoration_Type {
     JungleTemple(22),
     WitchHut(23),
     TrialChambers(24),
-    Player(MarkerWhite.getValue()),
-    PlayerOffMap(SquareWhite.getValue()),
-    PlayerOffLimits(SmallSquareWhite.getValue()),
-    PlayerHidden(NoDraw.getValue()),
-    ItemFrame(MarkerGreen.getValue());
+    Player(MarkerWhite),
+    PlayerOffMap(SquareWhite),
+    PlayerOffLimits(SmallSquareWhite),
+    PlayerHidden(NoDraw),
+    ItemFrame(MarkerGreen);
 
     private static final Int2ObjectMap<MapDecoration_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
@@ -55,6 +55,10 @@ public enum MapDecoration_Type {
     }
 
     private final int value;
+
+    MapDecoration_Type(final MapDecoration_Type value) {
+        this(value.value);
+    }
 
     MapDecoration_Type(final int value) {
         this.value = value;

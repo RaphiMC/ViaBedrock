@@ -65,6 +65,10 @@ public enum SharedTypes_Legacy_ContainerType {
 
     private final int value;
 
+    SharedTypes_Legacy_ContainerType(final SharedTypes_Legacy_ContainerType value) {
+        this(value.value);
+    }
+
     SharedTypes_Legacy_ContainerType(final int value) {
         this.value = value;
     }

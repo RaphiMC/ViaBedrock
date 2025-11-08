@@ -179,6 +179,10 @@ public enum ActorType {
 
     private final int value;
 
+    ActorType(final ActorType value) {
+        this(value.value);
+    }
+
     ActorType(final int value) {
         this.value = value;
     }

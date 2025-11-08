@@ -29,6 +29,10 @@ public enum ItemVersion {
 
     private final int value;
 
+    ItemVersion(final ItemVersion value) {
+        this(value.value);
+    }
+
     ItemVersion(final int value) {
         this.value = value;
     }

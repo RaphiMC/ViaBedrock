@@ -30,6 +30,10 @@ public enum MobEffectPacketPayload_Event {
 
     private final int value;
 
+    MobEffectPacketPayload_Event(final MobEffectPacketPayload_Event value) {
+        this(value.value);
+    }
+
     MobEffectPacketPayload_Event(final int value) {
         this.value = value;
     }

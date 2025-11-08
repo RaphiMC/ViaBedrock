@@ -40,6 +40,7 @@ public enum ActorEvent {
     PRIME_TNTCART(31),
     PRIME_CREEPER(32),
     AIR_SUPPLY(33),
+    DEPRECATED_ADD_PLAYER_LEVELS(34),
     GUARDIAN_MINING_FATIGUE(35),
     AGENT_SWING_ARM(36),
     DRAGON_START_DEATH_ANIM(37),
@@ -52,6 +53,7 @@ public enum ActorEvent {
     LEASH_DESTROYED(63),
     CARAVAN_UPDATED(64),
     TALISMAN_ACTIVATE(65),
+    DEPRECATED_UPDATE_STRUCTURE_FEATURE(66),
     PLAYER_SPAWNED_MOB(67),
     PUKE(68),
     UPDATE_STACK_SIZE(69),
@@ -82,6 +84,10 @@ public enum ActorEvent {
     }
 
     private final int value;
+
+    ActorEvent(final ActorEvent value) {
+        this(value.value);
+    }
 
     ActorEvent(final int value) {
         this.value = value;

@@ -136,6 +136,10 @@ public enum ExpressionOp {
 
     private final int value;
 
+    ExpressionOp(final ExpressionOp value) {
+        this(value.value);
+    }
+
     ExpressionOp(final int value) {
         this.value = value;
     }

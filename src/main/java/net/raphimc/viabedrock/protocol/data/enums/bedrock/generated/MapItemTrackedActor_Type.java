@@ -29,6 +29,10 @@ public enum MapItemTrackedActor_Type {
 
     private final int value;
 
+    MapItemTrackedActor_Type(final MapItemTrackedActor_Type value) {
+        this(value.value);
+    }
+
     MapItemTrackedActor_Type(final int value) {
         this.value = value;
     }

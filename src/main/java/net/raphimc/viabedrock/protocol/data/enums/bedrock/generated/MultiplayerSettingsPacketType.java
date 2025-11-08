@@ -29,6 +29,10 @@ public enum MultiplayerSettingsPacketType {
 
     private final int value;
 
+    MultiplayerSettingsPacketType(final MultiplayerSettingsPacketType value) {
+        this(value.value);
+    }
+
     MultiplayerSettingsPacketType(final int value) {
         this.value = value;
     }

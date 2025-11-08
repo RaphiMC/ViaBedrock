@@ -32,6 +32,10 @@ public enum SharedTypes_v1_21_10_CoordinateEvaluationOrder {
 
     private final int value;
 
+    SharedTypes_v1_21_10_CoordinateEvaluationOrder(final SharedTypes_v1_21_10_CoordinateEvaluationOrder value) {
+        this(value.value);
+    }
+
     SharedTypes_v1_21_10_CoordinateEvaluationOrder(final int value) {
         this.value = value;
     }

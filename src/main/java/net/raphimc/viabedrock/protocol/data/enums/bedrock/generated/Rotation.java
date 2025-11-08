@@ -11,9 +11,9 @@ public enum Rotation {
     Rotate90(1),
     Rotate180(2),
     Rotate270(3),
-    Clockwise90(Rotate90.getValue()),
-    Clockwise180(Rotate180.getValue()),
-    CounterClockwise90(Rotate270.getValue());
+    Clockwise90(Rotate90),
+    Clockwise180(Rotate180),
+    CounterClockwise90(Rotate270);
 
     private static final Int2ObjectMap<Rotation> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
@@ -32,6 +32,10 @@ public enum Rotation {
     }
 
     private final int value;
+
+    Rotation(final Rotation value) {
+        this(value.value);
+    }
 
     Rotation(final int value) {
         this.value = value;

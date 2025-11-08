@@ -30,6 +30,10 @@ public enum PacketViolationSeverity {
 
     private final int value;
 
+    PacketViolationSeverity(final PacketViolationSeverity value) {
+        this(value.value);
+    }
+
     PacketViolationSeverity(final int value) {
         this.value = value;
     }

@@ -30,6 +30,10 @@ public enum SimulationType {
 
     private final int value;
 
+    SimulationType(final SimulationType value) {
+        this(value.value);
+    }
+
     SimulationType(final int value) {
         this.value = value;
     }

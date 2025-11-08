@@ -30,6 +30,10 @@ public enum ItemUseInventoryTransaction_ActionType {
 
     private final int value;
 
+    ItemUseInventoryTransaction_ActionType(final ItemUseInventoryTransaction_ActionType value) {
+        this(value.value);
+    }
+
     ItemUseInventoryTransaction_ActionType(final int value) {
         this.value = value;
     }

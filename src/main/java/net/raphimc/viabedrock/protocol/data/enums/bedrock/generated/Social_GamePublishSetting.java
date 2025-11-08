@@ -31,6 +31,10 @@ public enum Social_GamePublishSetting {
 
     private final int value;
 
+    Social_GamePublishSetting(final Social_GamePublishSetting value) {
+        this(value.value);
+    }
+
     Social_GamePublishSetting(final int value) {
         this.value = value;
     }

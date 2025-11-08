@@ -29,6 +29,10 @@ public enum PacketCompressionAlgorithm {
 
     private final int value;
 
+    PacketCompressionAlgorithm(final PacketCompressionAlgorithm value) {
+        this(value.value);
+    }
+
     PacketCompressionAlgorithm(final int value) {
         this.value = value;
     }

@@ -39,6 +39,10 @@ public enum HudElement {
 
     private final int value;
 
+    HudElement(final HudElement value) {
+        this(value.value);
+    }
+
     HudElement(final int value) {
         this.value = value;
     }

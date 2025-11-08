@@ -29,6 +29,10 @@ public enum StructureTemplateResponseType {
 
     private final int value;
 
+    StructureTemplateResponseType(final StructureTemplateResponseType value) {
+        this(value.value);
+    }
+
     StructureTemplateResponseType(final int value) {
         this.value = value;
     }

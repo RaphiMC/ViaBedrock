@@ -14,6 +14,8 @@ public enum ItemStackRequestActionType {
     Destroy(4),
     Consume(5),
     Create(6),
+    PlaceInItemContainer_DEPRECATED(7),
+    TakeFromItemContainer_DEPRECATED(8),
     ScreenLabTableCombine(9),
     ScreenBeaconPayment(10),
     ScreenHUDMineBlock(11),
@@ -23,6 +25,8 @@ public enum ItemStackRequestActionType {
     CraftRecipeOptional(15),
     CraftRepairAndDisenchant(16),
     CraftLoom(17),
+    CraftNonImplemented_DEPRECATEDASKTYLAING(18),
+    CraftResults_DEPRECATEDASKTYLAING(19),
     ifdef(20),
     TEST_INFRASTRUCTURE_ENABLED(21),
     Test(22),
@@ -45,6 +49,10 @@ public enum ItemStackRequestActionType {
     }
 
     private final int value;
+
+    ItemStackRequestActionType(final ItemStackRequestActionType value) {
+        this(value.value);
+    }
 
     ItemStackRequestActionType(final int value) {
         this.value = value;

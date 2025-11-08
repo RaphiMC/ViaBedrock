@@ -29,6 +29,10 @@ public enum NewInteractionModel {
 
     private final int value;
 
+    NewInteractionModel(final NewInteractionModel value) {
+        this(value.value);
+    }
+
     NewInteractionModel(final int value) {
         this.value = value;
     }

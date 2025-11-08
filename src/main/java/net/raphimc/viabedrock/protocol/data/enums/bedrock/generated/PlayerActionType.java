@@ -211,6 +211,10 @@ public enum PlayerActionType {
 
     private final int value;
 
+    PlayerActionType(final PlayerActionType value) {
+        this(value.value);
+    }
+
     PlayerActionType(final int value) {
         this.value = value;
     }

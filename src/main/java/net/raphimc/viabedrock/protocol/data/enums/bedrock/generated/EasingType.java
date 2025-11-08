@@ -58,6 +58,10 @@ public enum EasingType {
 
     private final int value;
 
+    EasingType(final EasingType value) {
+        this(value.value);
+    }
+
     EasingType(final int value) {
         this.value = value;
     }

@@ -29,6 +29,10 @@ public enum ItemUseOnActorInventoryTransaction_ActionType {
 
     private final int value;
 
+    ItemUseOnActorInventoryTransaction_ActionType(final ItemUseOnActorInventoryTransaction_ActionType value) {
+        this(value.value);
+    }
+
     ItemUseOnActorInventoryTransaction_ActionType(final int value) {
         this.value = value;
     }

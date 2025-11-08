@@ -30,6 +30,10 @@ public enum RecipeUnlockingRequirement_UnlockingContext {
 
     private final int value;
 
+    RecipeUnlockingRequirement_UnlockingContext(final RecipeUnlockingRequirement_UnlockingContext value) {
+        this(value.value);
+    }
+
     RecipeUnlockingRequirement_UnlockingContext(final int value) {
         this.value = value;
     }

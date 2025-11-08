@@ -32,6 +32,10 @@ public enum MinecraftEventing_TeleportationCause {
 
     private final int value;
 
+    MinecraftEventing_TeleportationCause(final MinecraftEventing_TeleportationCause value) {
+        this(value.value);
+    }
+
     MinecraftEventing_TeleportationCause(final int value) {
         this.value = value;
     }

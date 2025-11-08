@@ -49,6 +49,10 @@ public enum AnimatePacket_Action {
 
     private final int value;
 
+    AnimatePacket_Action(final AnimatePacket_Action value) {
+        this(value.value);
+    }
+
     AnimatePacket_Action(final int value) {
         this.value = value;
     }

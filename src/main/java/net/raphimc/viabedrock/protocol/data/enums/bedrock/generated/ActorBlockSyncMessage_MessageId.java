@@ -29,6 +29,10 @@ public enum ActorBlockSyncMessage_MessageId {
 
     private final int value;
 
+    ActorBlockSyncMessage_MessageId(final ActorBlockSyncMessage_MessageId value) {
+        this(value.value);
+    }
+
     ActorBlockSyncMessage_MessageId(final int value) {
         this.value = value;
     }

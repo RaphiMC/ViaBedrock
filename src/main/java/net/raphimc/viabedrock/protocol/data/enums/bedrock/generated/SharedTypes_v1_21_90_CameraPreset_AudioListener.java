@@ -28,6 +28,10 @@ public enum SharedTypes_v1_21_90_CameraPreset_AudioListener {
 
     private final int value;
 
+    SharedTypes_v1_21_90_CameraPreset_AudioListener(final SharedTypes_v1_21_90_CameraPreset_AudioListener value) {
+        this(value.value);
+    }
+
     SharedTypes_v1_21_90_CameraPreset_AudioListener(final int value) {
         this.value = value;
     }

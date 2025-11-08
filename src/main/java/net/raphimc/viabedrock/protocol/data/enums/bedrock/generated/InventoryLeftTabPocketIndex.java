@@ -33,6 +33,10 @@ public enum InventoryLeftTabPocketIndex {
 
     private final int value;
 
+    InventoryLeftTabPocketIndex(final InventoryLeftTabPocketIndex value) {
+        this(value.value);
+    }
+
     InventoryLeftTabPocketIndex(final int value) {
         this.value = value;
     }

@@ -35,6 +35,10 @@ public enum PackType {
 
     private final int value;
 
+    PackType(final PackType value) {
+        this(value.value);
+    }
+
     PackType(final int value) {
         this.value = value;
     }

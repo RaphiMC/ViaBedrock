@@ -28,6 +28,10 @@ public enum NpcDialoguePacketPayload_NpcDialogueActionType {
 
     private final int value;
 
+    NpcDialoguePacketPayload_NpcDialogueActionType(final NpcDialoguePacketPayload_NpcDialogueActionType value) {
+        this(value.value);
+    }
+
     NpcDialoguePacketPayload_NpcDialogueActionType(final int value) {
         this.value = value;
     }

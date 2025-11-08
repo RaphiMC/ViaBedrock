@@ -28,6 +28,10 @@ public enum SpawnBiomeType {
 
     private final int value;
 
+    SpawnBiomeType(final SpawnBiomeType value) {
+        this(value.value);
+    }
+
     SpawnBiomeType(final int value) {
         this.value = value;
     }

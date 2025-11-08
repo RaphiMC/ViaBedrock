@@ -31,6 +31,10 @@ public enum ControlScheme_Scheme {
 
     private final int value;
 
+    ControlScheme_Scheme(final ControlScheme_Scheme value) {
+        this(value.value);
+    }
+
     ControlScheme_Scheme(final int value) {
         this.value = value;
     }

@@ -33,6 +33,10 @@ public enum SharedTypes_v1_21_10_RandomDistributionType {
 
     private final int value;
 
+    SharedTypes_v1_21_10_RandomDistributionType(final SharedTypes_v1_21_10_RandomDistributionType value) {
+        this(value.value);
+    }
+
     SharedTypes_v1_21_10_RandomDistributionType(final int value) {
         this.value = value;
     }

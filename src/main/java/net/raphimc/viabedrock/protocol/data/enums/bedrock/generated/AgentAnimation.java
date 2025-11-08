@@ -28,6 +28,10 @@ public enum AgentAnimation {
 
     private final int value;
 
+    AgentAnimation(final AgentAnimation value) {
+        this(value.value);
+    }
+
     AgentAnimation(final int value) {
         this.value = value;
     }

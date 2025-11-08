@@ -38,6 +38,10 @@ public enum TextPacketType {
 
     private final int value;
 
+    TextPacketType(final TextPacketType value) {
+        this(value.value);
+    }
+
     TextPacketType(final int value) {
         this.value = value;
     }

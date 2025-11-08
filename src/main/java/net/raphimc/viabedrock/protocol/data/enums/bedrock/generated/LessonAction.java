@@ -29,6 +29,10 @@ public enum LessonAction {
 
     private final int value;
 
+    LessonAction(final LessonAction value) {
+        this(value.value);
+    }
+
     LessonAction(final int value) {
         this.value = value;
     }

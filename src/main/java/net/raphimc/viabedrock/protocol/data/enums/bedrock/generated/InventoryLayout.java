@@ -30,6 +30,10 @@ public enum InventoryLayout {
 
     private final int value;
 
+    InventoryLayout(final InventoryLayout value) {
+        this(value.value);
+    }
+
     InventoryLayout(final int value) {
         this.value = value;
     }

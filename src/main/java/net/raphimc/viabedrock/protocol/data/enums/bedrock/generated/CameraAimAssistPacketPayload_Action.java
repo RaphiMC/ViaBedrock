@@ -28,6 +28,10 @@ public enum CameraAimAssistPacketPayload_Action {
 
     private final int value;
 
+    CameraAimAssistPacketPayload_Action(final CameraAimAssistPacketPayload_Action value) {
+        this(value.value);
+    }
+
     CameraAimAssistPacketPayload_Action(final int value) {
         this.value = value;
     }

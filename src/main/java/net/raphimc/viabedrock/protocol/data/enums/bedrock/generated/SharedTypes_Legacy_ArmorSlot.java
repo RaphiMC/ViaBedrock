@@ -31,6 +31,10 @@ public enum SharedTypes_Legacy_ArmorSlot {
 
     private final int value;
 
+    SharedTypes_Legacy_ArmorSlot(final SharedTypes_Legacy_ArmorSlot value) {
+        this(value.value);
+    }
+
     SharedTypes_Legacy_ArmorSlot(final int value) {
         this.value = value;
     }

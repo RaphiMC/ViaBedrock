@@ -30,6 +30,10 @@ public enum CommandParameterOption {
 
     private final int value;
 
+    CommandParameterOption(final CommandParameterOption value) {
+        this(value.value);
+    }
+
     CommandParameterOption(final int value) {
         this.value = value;
     }

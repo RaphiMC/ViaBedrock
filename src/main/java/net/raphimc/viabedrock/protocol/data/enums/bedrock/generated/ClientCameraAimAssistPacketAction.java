@@ -34,6 +34,10 @@ public enum ClientCameraAimAssistPacketAction {
 
     private final int value;
 
+    ClientCameraAimAssistPacketAction(final ClientCameraAimAssistPacketAction value) {
+        this(value.value);
+    }
+
     ClientCameraAimAssistPacketAction(final int value) {
         this.value = value;
     }

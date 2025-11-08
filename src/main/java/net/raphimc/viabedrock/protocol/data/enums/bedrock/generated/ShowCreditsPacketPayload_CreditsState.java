@@ -28,6 +28,10 @@ public enum ShowCreditsPacketPayload_CreditsState {
 
     private final int value;
 
+    ShowCreditsPacketPayload_CreditsState(final ShowCreditsPacketPayload_CreditsState value) {
+        this(value.value);
+    }
+
     ShowCreditsPacketPayload_CreditsState(final int value) {
         this.value = value;
     }

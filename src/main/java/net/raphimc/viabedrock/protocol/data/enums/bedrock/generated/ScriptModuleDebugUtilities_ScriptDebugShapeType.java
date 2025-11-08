@@ -32,6 +32,10 @@ public enum ScriptModuleDebugUtilities_ScriptDebugShapeType {
 
     private final int value;
 
+    ScriptModuleDebugUtilities_ScriptDebugShapeType(final ScriptModuleDebugUtilities_ScriptDebugShapeType value) {
+        this(value.value);
+    }
+
     ScriptModuleDebugUtilities_ScriptDebugShapeType(final int value) {
         this.value = value;
     }

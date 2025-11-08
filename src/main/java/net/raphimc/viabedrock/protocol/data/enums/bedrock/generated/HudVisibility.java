@@ -28,6 +28,10 @@ public enum HudVisibility {
 
     private final int value;
 
+    HudVisibility(final HudVisibility value) {
+        this(value.value);
+    }
+
     HudVisibility(final int value) {
         this.value = value;
     }

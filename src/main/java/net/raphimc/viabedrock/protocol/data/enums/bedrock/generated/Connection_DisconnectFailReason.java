@@ -151,6 +151,10 @@ public enum Connection_DisconnectFailReason {
 
     private final int value;
 
+    Connection_DisconnectFailReason(final Connection_DisconnectFailReason value) {
+        this(value.value);
+    }
+
     Connection_DisconnectFailReason(final int value) {
         this.value = value;
     }

@@ -61,6 +61,10 @@ public enum ActorDamageCause {
 
     private final int value;
 
+    ActorDamageCause(final ActorDamageCause value) {
+        this(value.value);
+    }
+
     ActorDamageCause(final int value) {
         this.value = value;
     }

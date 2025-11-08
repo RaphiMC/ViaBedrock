@@ -39,6 +39,10 @@ public enum LabTableReactionType {
 
     private final int value;
 
+    LabTableReactionType(final LabTableReactionType value) {
+        this(value.value);
+    }
+
     LabTableReactionType(final int value) {
         this.value = value;
     }

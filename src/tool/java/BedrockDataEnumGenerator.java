@@ -43,7 +43,7 @@ public class BedrockDataEnumGenerator {
 
     private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/7d1acc3bc46deffd66e9723f1d84988606f522b0/html/enums.html";
     private static final String ENUMS_PACKAGE = "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated";
-    private static final List<String> IGNORED_FIELDS = Arrays.asList("count", "_count", "total", "all", "numenchantments", "numtagtypes", "abilitycount", "nummodes", "input_num", "total_operations", "total_operands", "numvalidversions", "num_categories");
+    private static final List<String> IGNORED_FIELDS = Arrays.asList("deprecated", "count", "_count", "total", "all", "numenchantments", "numtagtypes", "abilitycount", "nummodes", "input_num", "total_operations", "total_operands", "numvalidversions", "num_categories");
     private static final Map<String, String> VALUE_REPLACEMENTS = new HashMap<>();
     private static final Pattern NUMBER_PATTERN = Pattern.compile("^\\d+$");
 
@@ -74,7 +74,6 @@ public class BedrockDataEnumGenerator {
 
             final Map<String, EnumField> originalEnumFields = new LinkedHashMap<>(enumFields);
             enumFields.values().removeIf(field -> IGNORED_FIELDS.contains(field.name.toLowerCase(Locale.ROOT)));
-            enumFields.values().removeIf(field -> field.name.toLowerCase(Locale.ROOT).contains("deprecate"));
             enumFields.values().removeIf(field -> NUMBER_PATTERN.matcher(field.name).matches());
             for (EnumField field : enumFields.values()) {
                 if (VALUE_REPLACEMENTS.containsKey(field.value)) {
@@ -90,9 +89,7 @@ public class BedrockDataEnumGenerator {
                 }
             }
             for (EnumField field : enumFields.values()) {
-                if (enumFields.containsKey(field.value)) {
-                    field.value += ".getValue()";
-                } else if (originalEnumFields.containsKey(field.value) && !NUMBER_PATTERN.matcher(field.value).matches()) {
+                if (!enumFields.containsKey(field.value) && originalEnumFields.containsKey(field.value) && !NUMBER_PATTERN.matcher(field.value).matches()) {
                     field.value = originalEnumFields.get(field.value).value;
                 }
             }

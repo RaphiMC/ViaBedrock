@@ -32,6 +32,10 @@ public enum StructureBlockType {
 
     private final int value;
 
+    StructureBlockType(final StructureBlockType value) {
+        this(value.value);
+    }
+
     StructureBlockType(final int value) {
         this.value = value;
     }

@@ -36,6 +36,10 @@ public enum DataItemType {
 
     private final int value;
 
+    DataItemType(final DataItemType value) {
+        this(value.value);
+    }
+
     DataItemType(final int value) {
         this.value = value;
     }

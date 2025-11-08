@@ -30,6 +30,10 @@ public enum SimpleEventPacketPayload_Subtype {
 
     private final int value;
 
+    SimpleEventPacketPayload_Subtype(final SimpleEventPacketPayload_Subtype value) {
+        this(value.value);
+    }
+
     SimpleEventPacketPayload_Subtype(final int value) {
         this.value = value;
     }

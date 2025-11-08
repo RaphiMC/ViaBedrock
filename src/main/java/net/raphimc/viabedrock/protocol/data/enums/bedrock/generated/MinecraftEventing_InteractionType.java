@@ -42,6 +42,10 @@ public enum MinecraftEventing_InteractionType {
 
     private final int value;
 
+    MinecraftEventing_InteractionType(final MinecraftEventing_InteractionType value) {
+        this(value.value);
+    }
+
     MinecraftEventing_InteractionType(final int value) {
         this.value = value;
     }

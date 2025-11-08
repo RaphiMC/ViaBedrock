@@ -30,6 +30,10 @@ public enum GraphicsOverrideParameterType {
 
     private final int value;
 
+    GraphicsOverrideParameterType(final GraphicsOverrideParameterType value) {
+        this(value.value);
+    }
+
     GraphicsOverrideParameterType(final int value) {
         this.value = value;
     }

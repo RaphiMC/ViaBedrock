@@ -28,6 +28,10 @@ public enum ObjectiveSortOrder {
 
     private final int value;
 
+    ObjectiveSortOrder(final ObjectiveSortOrder value) {
+        this(value.value);
+    }
+
     ObjectiveSortOrder(final int value) {
         this.value = value;
     }

@@ -28,6 +28,10 @@ public enum CameraPreset_AudioListener {
 
     private final int value;
 
+    CameraPreset_AudioListener(final CameraPreset_AudioListener value) {
+        this(value.value);
+    }
+
     CameraPreset_AudioListener(final int value) {
         this.value = value;
     }

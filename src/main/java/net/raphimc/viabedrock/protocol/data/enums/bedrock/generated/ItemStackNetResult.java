@@ -94,6 +94,10 @@ public enum ItemStackNetResult {
 
     private final int value;
 
+    ItemStackNetResult(final ItemStackNetResult value) {
+        this(value.value);
+    }
+
     ItemStackNetResult(final int value) {
         this.value = value;
     }

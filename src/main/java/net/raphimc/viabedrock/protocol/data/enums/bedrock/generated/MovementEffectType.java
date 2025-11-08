@@ -28,6 +28,10 @@ public enum MovementEffectType {
 
     private final int value;
 
+    MovementEffectType(final MovementEffectType value) {
+        this(value.value);
+    }
+
     MovementEffectType(final int value) {
         this.value = value;
     }

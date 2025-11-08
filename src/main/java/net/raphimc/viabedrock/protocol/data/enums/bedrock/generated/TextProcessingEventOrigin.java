@@ -42,6 +42,10 @@ public enum TextProcessingEventOrigin {
 
     private final int value;
 
+    TextProcessingEventOrigin(final TextProcessingEventOrigin value) {
+        this(value.value);
+    }
+
     TextProcessingEventOrigin(final int value) {
         this.value = value;
     }

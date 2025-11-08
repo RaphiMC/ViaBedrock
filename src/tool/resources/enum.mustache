@@ -36,6 +36,10 @@ public enum {{enumName}} {
 
     private final int value;
 
+    {{enumName}}(final {{enumName}} value) {
+        this(value.value);
+    }
+
     {{enumName}}(final int value) {
         this.value = value;
     }

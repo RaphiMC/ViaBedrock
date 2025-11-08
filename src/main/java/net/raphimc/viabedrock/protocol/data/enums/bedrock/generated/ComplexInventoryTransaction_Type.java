@@ -47,6 +47,10 @@ public enum ComplexInventoryTransaction_Type {
 
     private final int value;
 
+    ComplexInventoryTransaction_Type(final ComplexInventoryTransaction_Type value) {
+        this(value.value);
+    }
+
     ComplexInventoryTransaction_Type(final int value) {
         this.value = value;
     }

@@ -31,6 +31,10 @@ public enum UnlockedRecipesPacketPayload_PacketType {
 
     private final int value;
 
+    UnlockedRecipesPacketPayload_PacketType(final UnlockedRecipesPacketPayload_PacketType value) {
+        this(value.value);
+    }
+
     UnlockedRecipesPacketPayload_PacketType(final int value) {
         this.value = value;
     }

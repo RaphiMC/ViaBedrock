@@ -28,6 +28,10 @@ public enum CameraAimAssist_TargetMode {
 
     private final int value;
 
+    CameraAimAssist_TargetMode(final CameraAimAssist_TargetMode value) {
+        this(value.value);
+    }
+
     CameraAimAssist_TargetMode(final int value) {
         this.value = value;
     }

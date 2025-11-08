@@ -29,6 +29,10 @@ public enum CodeBuilderStorageQueryOptions_Category {
 
     private final int value;
 
+    CodeBuilderStorageQueryOptions_Category(final CodeBuilderStorageQueryOptions_Category value) {
+        this(value.value);
+    }
+
     CodeBuilderStorageQueryOptions_Category(final int value) {
         this.value = value;
     }

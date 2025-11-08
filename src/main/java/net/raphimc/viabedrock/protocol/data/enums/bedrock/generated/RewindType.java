@@ -28,6 +28,10 @@ public enum RewindType {
 
     private final int value;
 
+    RewindType(final RewindType value) {
+        this(value.value);
+    }
+
     RewindType(final int value) {
         this.value = value;
     }

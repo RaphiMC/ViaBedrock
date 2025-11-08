@@ -32,6 +32,10 @@ public enum CreativeItemCategory {
 
     private final int value;
 
+    CreativeItemCategory(final CreativeItemCategory value) {
+        this(value.value);
+    }
+
     CreativeItemCategory(final int value) {
         this.value = value;
     }

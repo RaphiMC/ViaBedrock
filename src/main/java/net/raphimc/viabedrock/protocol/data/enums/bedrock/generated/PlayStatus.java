@@ -36,6 +36,10 @@ public enum PlayStatus {
 
     private final int value;
 
+    PlayStatus(final PlayStatus value) {
+        this(value.value);
+    }
+
     PlayStatus(final int value) {
         this.value = value;
     }

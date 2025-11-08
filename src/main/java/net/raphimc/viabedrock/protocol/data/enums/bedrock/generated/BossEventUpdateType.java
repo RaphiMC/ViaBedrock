@@ -35,6 +35,10 @@ public enum BossEventUpdateType {
 
     private final int value;
 
+    BossEventUpdateType(final BossEventUpdateType value) {
+        this(value.value);
+    }
+
     BossEventUpdateType(final int value) {
         this.value = value;
     }

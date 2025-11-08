@@ -38,6 +38,10 @@ public enum Tag_Type {
 
     private final int value;
 
+    Tag_Type(final Tag_Type value) {
+        this(value.value);
+    }
+
     Tag_Type(final int value) {
         this.value = value;
     }

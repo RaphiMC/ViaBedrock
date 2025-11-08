@@ -29,6 +29,10 @@ public enum UpdateType {
 
     private final int value;
 
+    UpdateType(final UpdateType value) {
+        this(value.value);
+    }
+
     UpdateType(final int value) {
         this.value = value;
     }

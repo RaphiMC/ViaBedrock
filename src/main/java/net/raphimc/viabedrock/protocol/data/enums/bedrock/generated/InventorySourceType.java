@@ -32,6 +32,10 @@ public enum InventorySourceType {
 
     private final int value;
 
+    InventorySourceType(final InventorySourceType value) {
+        this(value.value);
+    }
+
     InventorySourceType(final int value) {
         this.value = value;
     }
