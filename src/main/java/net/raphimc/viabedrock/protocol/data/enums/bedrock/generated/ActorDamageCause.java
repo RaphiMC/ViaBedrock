@@ -41,8 +41,7 @@ public enum ActorDamageCause {
     RamAttack(30),
     SonicBoom(31),
     Campfire(32),
-    SoulCampfire(33),
-    MaceSmash(34);
+    SoulCampfire(33);
 
     private static final Int2ObjectMap<ActorDamageCause> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

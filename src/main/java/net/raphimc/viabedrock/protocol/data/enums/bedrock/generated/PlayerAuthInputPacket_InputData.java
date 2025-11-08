@@ -246,14 +246,6 @@ public enum PlayerAuthInputPacket_InputData {
      */
     StartUsingItem(53),
     /**
-     * This is part of an experimental feature, servers should ignore it.
-     */
-    IsCameraRelativeMovementEnabled(54),
-    /**
-     * This is part of an experimental feature, servers should ignore it.
-     */
-    IsRotControlledByMoveDirection(55),
-    /**
      * Set on the tick that the client predicts a riptide spin attack starting, when PlayerActionType::StartSpinAttack is set in PlayerActionComponent.<br>
      * and ActorFlags::DAMAGENEARBYMOBS set true in SetActorDataPacket
      */

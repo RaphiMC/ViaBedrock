@@ -5,30 +5,35 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
-public enum ShowCreditsPacket_CreditsState {
+public enum InventoryLeftTabPocketIndex {
 
-    Start(0),
-    Finished(1);
+    None(0),
+    Survival(1),
+    RecipeNature(2),
+    RecipeItems(3),
+    RecipeEquipment(4),
+    RecipeConstruction(5),
+    RecipeSearch(6);
 
-    private static final Int2ObjectMap<ShowCreditsPacket_CreditsState> BY_VALUE = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<InventoryLeftTabPocketIndex> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
-        for (ShowCreditsPacket_CreditsState value : values()) {
+        for (InventoryLeftTabPocketIndex value : values()) {
             if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
         }
     }
 
-    public static ShowCreditsPacket_CreditsState getByValue(final int value) {
+    public static InventoryLeftTabPocketIndex getByValue(final int value) {
         return BY_VALUE.get(value);
     }
 
-    public static ShowCreditsPacket_CreditsState getByValue(final int value, final ShowCreditsPacket_CreditsState fallback) {
+    public static InventoryLeftTabPocketIndex getByValue(final int value, final InventoryLeftTabPocketIndex fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
     private final int value;
 
-    ShowCreditsPacket_CreditsState(final int value) {
+    InventoryLeftTabPocketIndex(final int value) {
         this.value = value;
     }
 

@@ -27,7 +27,9 @@ public enum AnimatePacket_Action {
     /**
      * Unused
      */
-    MagicCriticalHit(5);
+    MagicCriticalHit(5),
+    RowRight(128),
+    RowLeft(129);
 
     private static final Int2ObjectMap<AnimatePacket_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

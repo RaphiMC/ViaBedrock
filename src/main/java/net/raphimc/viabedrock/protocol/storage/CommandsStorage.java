@@ -219,7 +219,7 @@ public class CommandsStorage extends StoredObject {
                         if ((parameter.flags() & CommandParameterOption.HasSemanticConstraint.getValue()) != 0) {
                             final Map<String, Set<Byte>> enumDataValues = new HashMap<>(parameter.enumData().values());
                             enumDataValues.entrySet().removeIf(entry -> {
-                                if (!gameSession.areCommandsEnabled() && entry.getValue().contains(CommandEnumConstraints.CHEATS_ENABLED)) {
+                                if (entry.getValue().contains(CommandEnumConstraints.CHEATS_ENABLED) && !gameSession.areCommandsEnabled()) {
                                     return true;
                                 }
                                 if (entry.getValue().contains(CommandEnumConstraints.OPERATOR_PERMISSIONS) && playerCommandPermission < CommandPermissionLevel.GameDirectors.getValue()) {

@@ -139,7 +139,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, String> bedrockToJavaExperimentalFeatures;
     private BiMap<String, String> bedrockToJavaBannerPatterns;
     private BiMap<String, String> bedrockToJavaPaintings;
-    private Map<ActorDamageCause, String> bedrockToJavaDamageCauses;
+    private Map<SharedTypes_Legacy_ActorDamageCause, String> bedrockToJavaDamageCauses;
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolConstants.JAVA_VERSION.getName());
@@ -921,16 +921,16 @@ public class BedrockMappingData extends MappingDataBase {
 
             final CompoundTag javaDamageTypeRegistry = this.javaRegistries.getCompoundTag("minecraft:damage_type");
             final JsonObject bedrockToJavaDamageCauseMappingsJson = this.readJson("custom/damage_cause_mappings.json");
-            this.bedrockToJavaDamageCauses = new EnumMap<>(ActorDamageCause.class);
+            this.bedrockToJavaDamageCauses = new EnumMap<>(SharedTypes_Legacy_ActorDamageCause.class);
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaDamageCauseMappingsJson.entrySet()) {
-                final ActorDamageCause damageCause = ActorDamageCause.valueOf(entry.getKey());
+                final SharedTypes_Legacy_ActorDamageCause damageCause = SharedTypes_Legacy_ActorDamageCause.valueOf(entry.getKey());
                 final String javaIdentifier = entry.getValue().getAsString();
                 if (!javaDamageTypeRegistry.contains(javaIdentifier)) {
                     throw new RuntimeException("Unknown java damage cause: " + javaIdentifier);
                 }
                 this.bedrockToJavaDamageCauses.put(damageCause, javaIdentifier);
             }
-            for (ActorDamageCause actorDamageCause : ActorDamageCause.values()) {
+            for (SharedTypes_Legacy_ActorDamageCause actorDamageCause : SharedTypes_Legacy_ActorDamageCause.values()) {
                 if (!this.bedrockToJavaDamageCauses.containsKey(actorDamageCause)) {
                     throw new RuntimeException("Missing bedrock -> java damage cause mapping for " + actorDamageCause.name());
                 }
@@ -1142,7 +1142,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaPaintings;
     }
 
-    public Map<ActorDamageCause, String> getBedrockToJavaDamageCauses() {
+    public Map<SharedTypes_Legacy_ActorDamageCause, String> getBedrockToJavaDamageCauses() {
         return this.bedrockToJavaDamageCauses;
     }
 

@@ -7,9 +7,6 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PlayerActionType {
 
-    /**
-     * Unused
-     */
     Unknown(-1),
     /**
      * Sent in Player Auth Input Block Actions with position and facing
@@ -23,13 +20,7 @@ public enum PlayerActionType {
      * Sent in Player Auth Input Block Actions without additional data
      */
     StopDestroyBlock(2),
-    /**
-     * Unused
-     */
     GetUpdatedBlock(3),
-    /**
-     * Unused
-     */
     DropItem(4),
     /**
      * Sent in Player Action
@@ -105,14 +96,8 @@ public enum PlayerActionType {
      * Sent in Player Auth Input Block Actions with position and facing.
      */
     CrackBlock(18),
-    /**
-     * Unused
-     */
     ChangeSkin(19),
-    /**
-     * Sent in Player Action if ItemStackNetManager is disabled
-     */
-    DEPRECATED_UpdatedEnchantingSeed(20),
+    UpdatedEnchantingSeed(20),
     /**
      * Sent when the player wants to enter swimming mode like pressing control while moving forward in water.<br>
      * Server is expected to respond with SetActorDataPacket with ActorFlags::SWIMMING set to true if accepted or false if rejected, and a bounding box update.<br>
@@ -137,9 +122,6 @@ public enum PlayerActionType {
      * Sent in Player Action but will soon turn into a Player Auth Input InputData bit
      */
     StopSpinAttack(24),
-    /**
-     * Unused
-     */
     InteractWithBlock(25),
     /**
      * Sent in Player Auth Input Block Actions with position and facing.<br>
@@ -205,12 +187,10 @@ public enum PlayerActionType {
      * Corresponds to Player Auth Input InputData::StopFlying bit 43
      */
     StopFlying(35),
+    ClientAckServerData(36),
     /**
-     * Corresponds to Player Auth Input InputData::ClientAckServerData bit 44<br>
-     * Not sent when using server authoritative movement as specified in StartGamePacket<br>
-     * This is now deprecated because only server authoritative movement exist
+     * Used to inform the server that we are predicting using an item.
      */
-    DEPRECATED_ClientAckServerData(36),
     StartUsingItem(37);
 
     private static final Int2ObjectMap<PlayerActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

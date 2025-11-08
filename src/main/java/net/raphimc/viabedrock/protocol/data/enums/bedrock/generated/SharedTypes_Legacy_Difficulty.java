@@ -5,32 +5,33 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
-public enum MobEffectPacket_Event {
+public enum SharedTypes_Legacy_Difficulty {
 
-    Invalid(0),
-    Add(1),
-    Update(2),
-    Remove(3);
+    Peaceful(0),
+    Easy(1),
+    Normal(2),
+    Hard(3),
+    Unknown(5);
 
-    private static final Int2ObjectMap<MobEffectPacket_Event> BY_VALUE = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<SharedTypes_Legacy_Difficulty> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
-        for (MobEffectPacket_Event value : values()) {
+        for (SharedTypes_Legacy_Difficulty value : values()) {
             if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
         }
     }
 
-    public static MobEffectPacket_Event getByValue(final int value) {
+    public static SharedTypes_Legacy_Difficulty getByValue(final int value) {
         return BY_VALUE.get(value);
     }
 
-    public static MobEffectPacket_Event getByValue(final int value, final MobEffectPacket_Event fallback) {
+    public static SharedTypes_Legacy_Difficulty getByValue(final int value, final SharedTypes_Legacy_Difficulty fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
     private final int value;
 
-    MobEffectPacket_Event(final int value) {
+    SharedTypes_Legacy_Difficulty(final int value) {
         this.value = value;
     }
 

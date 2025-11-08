@@ -7,10 +7,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum UpdateType {
 
-    ClearOverrides(0),
-    RemoveOverride(1),
-    SetIntOverride(2),
-    SetFloatOverride(3);
+    None(0),
+    Neighbors(1),
+    Connections(2);
 
     private static final Int2ObjectMap<UpdateType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

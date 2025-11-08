@@ -7,18 +7,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ItemUseOnActorInventoryTransaction_ActionType {
 
-    /**
-     * Right click interact with actor.
-     */
     Interact(0),
-    /**
-     * Left click style attack of actor or elytra spin attack.<br>
-     * Server is expected to deal damage to the entity with visuals.
-     */
     Attack(1),
-    /**
-     * Unused
-     */
     ItemInteract(2);
 
     private static final Int2ObjectMap<ItemUseOnActorInventoryTransaction_ActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

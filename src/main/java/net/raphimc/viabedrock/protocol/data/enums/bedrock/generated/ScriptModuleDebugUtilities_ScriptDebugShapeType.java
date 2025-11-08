@@ -12,8 +12,7 @@ public enum ScriptModuleDebugUtilities_ScriptDebugShapeType {
     Sphere(2),
     Circle(3),
     Text(4),
-    Arrow(5),
-    NumShapeTypes(6);
+    Arrow(5);
 
     private static final Int2ObjectMap<ScriptModuleDebugUtilities_ScriptDebugShapeType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

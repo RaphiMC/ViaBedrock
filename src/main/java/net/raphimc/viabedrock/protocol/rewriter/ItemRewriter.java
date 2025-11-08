@@ -41,7 +41,7 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemDataVersion;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemVersion;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.rewriter.item.BundleItemRewriter;
@@ -81,7 +81,7 @@ public class ItemRewriter extends StoredObject {
         for (ItemEntry itemEntry : itemEntries) {
             this.items.inverse().remove(itemEntry.id());
             this.items.put(itemEntry.identifier(), itemEntry.id());
-            if (itemEntry.version() == ItemDataVersion.DATA_DRIVEN || (itemEntry.version() == ItemDataVersion.NONE && itemEntry.componentBased())) {
+            if (itemEntry.version() == ItemVersion.DataDriven || (itemEntry.version() == ItemVersion.None && itemEntry.componentBased())) {
                 this.componentItems.add(itemEntry.identifier());
             }
         }
