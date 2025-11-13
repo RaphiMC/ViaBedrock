@@ -26,6 +26,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ComplexInventoryTransaction_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemReleaseInventoryTransaction_ActionType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseInventoryTransaction_PredictedResult;
 import net.raphimc.viabedrock.protocol.data.enums.java.InteractionHand;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerActionAction;
@@ -61,7 +62,7 @@ public class ExperimentalFeatures {
             wrapper.write(BedrockTypes.VAR_INT, 0); // legacy request id
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemReleaseTransaction.getValue()); // transaction type
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
-            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // action type
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ItemReleaseInventoryTransaction_ActionType.Release.getValue()); // action type
             wrapper.write(BedrockTypes.VAR_INT, (int) inventoryContainer.getSelectedHotbarSlot()); // selected hotbar slot
             wrapper.write(wrapper.user().get(ItemRewriter.class).itemType(), inventoryContainer.getSelectedHotbarItem()); // hand item
             wrapper.write(BedrockTypes.POSITION_3F, wrapper.user().get(EntityTracker.class).getClientPlayer().position()); // head position, the same as player position.
@@ -93,7 +94,7 @@ public class ExperimentalFeatures {
             // Actions are used to tell the server what item changed on the client-side, however this is never used on non-block interaction item use.
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
 
-            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 1); // action type
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ItemReleaseInventoryTransaction_ActionType.Use.getValue()); // action type
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_TriggerType.Unknown.getValue()); // trigger type
 
             wrapper.write(BedrockTypes.BLOCK_POSITION, new BlockPosition(0, 0, 0)); // block position

@@ -29,6 +29,10 @@ public enum SoftEnumUpdateType {
 
     private final int value;
 
+    SoftEnumUpdateType(final SoftEnumUpdateType value) {
+        this(value.value);
+    }
+
     SoftEnumUpdateType(final int value) {
         this.value = value;
     }

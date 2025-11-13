@@ -44,6 +44,10 @@ public enum AgentActionType {
 
     private final int value;
 
+    AgentActionType(final AgentActionType value) {
+        this(value.value);
+    }
+
     AgentActionType(final int value) {
         this.value = value;
     }

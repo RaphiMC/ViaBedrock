@@ -185,7 +185,9 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     PLAYER_UPDATE_ENTITY_OVERRIDES(MinecraftPacketIds.PlayerUpdateEntityOverridesPacket.getValue()),
     PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue()),
     CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue()),
-    SERVER_SCRIPT_DEBUG_DRAWER(MinecraftPacketIds.ServerScriptDebugDrawerPacket.getValue());
+    DEBUG_DRAWER(MinecraftPacketIds.DebugDrawerPacket.getValue()),
+    DATA_STORE_SYNC(MinecraftPacketIds.DataStoreSync.getValue()),
+    GRAPHICS_OVERRIDE_PARAMETER(MinecraftPacketIds.GraphicsOverrideParameter.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

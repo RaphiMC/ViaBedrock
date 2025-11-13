@@ -28,6 +28,10 @@ public enum ScorePacketType {
 
     private final int value;
 
+    ScorePacketType(final ScorePacketType value) {
+        this(value.value);
+    }
+
     ScorePacketType(final int value) {
         this.value = value;
     }

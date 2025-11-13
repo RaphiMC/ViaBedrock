@@ -125,6 +125,10 @@ public enum ParticleType {
 
     private final int value;
 
+    ParticleType(final ParticleType value) {
+        this(value.value);
+    }
+
     ParticleType(final int value) {
         this.value = value;
     }

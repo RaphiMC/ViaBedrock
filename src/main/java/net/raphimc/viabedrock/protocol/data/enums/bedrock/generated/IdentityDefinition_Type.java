@@ -30,6 +30,10 @@ public enum IdentityDefinition_Type {
 
     private final int value;
 
+    IdentityDefinition_Type(final IdentityDefinition_Type value) {
+        this(value.value);
+    }
+
     IdentityDefinition_Type(final int value) {
         this.value = value;
     }

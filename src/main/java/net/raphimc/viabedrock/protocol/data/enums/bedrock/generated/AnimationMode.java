@@ -29,6 +29,10 @@ public enum AnimationMode {
 
     private final int value;
 
+    AnimationMode(final AnimationMode value) {
+        this(value.value);
+    }
+
     AnimationMode(final int value) {
         this.value = value;
     }

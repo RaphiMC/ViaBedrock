@@ -30,6 +30,10 @@ public enum StructureTemplateRequestOperation {
 
     private final int value;
 
+    StructureTemplateRequestOperation(final StructureTemplateRequestOperation value) {
+        this(value.value);
+    }
+
     StructureTemplateRequestOperation(final int value) {
         this.value = value;
     }

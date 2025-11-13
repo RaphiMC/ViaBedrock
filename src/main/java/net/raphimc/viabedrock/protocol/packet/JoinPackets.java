@@ -49,7 +49,6 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemDataVersion;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
@@ -420,7 +419,7 @@ public class JoinPackets {
                 itemDefinitions.remove(identifier);
             }
             for (ItemEntry itemEntry : itemEntries) {
-                if (itemEntry.componentData() != null && itemEntry.version() == ItemDataVersion.DATA_DRIVEN && itemRewriter.getComponentItems().contains(itemEntry.identifier())) {
+                if (itemEntry.componentData() != null && itemEntry.version() == ItemVersion.DataDriven && itemRewriter.getComponentItems().contains(itemEntry.identifier())) {
                     itemDefinitions.addFromNetworkTag(itemEntry.identifier(), itemEntry.componentData());
                 }
             }

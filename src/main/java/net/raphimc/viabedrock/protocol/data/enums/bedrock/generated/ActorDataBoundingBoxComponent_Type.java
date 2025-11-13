@@ -29,6 +29,10 @@ public enum ActorDataBoundingBoxComponent_Type {
 
     private final int value;
 
+    ActorDataBoundingBoxComponent_Type(final ActorDataBoundingBoxComponent_Type value) {
+        this(value.value);
+    }
+
     ActorDataBoundingBoxComponent_Type(final int value) {
         this.value = value;
     }

@@ -141,6 +141,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         final PacketWrapper animate = PacketWrapper.create(ServerboundBedrockPackets.ANIMATE, this.user);
         animate.write(BedrockTypes.VAR_INT, AnimatePacket_Action.Swing.getValue()); // action
         animate.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
+        animate.write(BedrockTypes.FLOAT_LE, 0F); // data
         animate.sendToServer(BedrockProtocol.class);
     }
 

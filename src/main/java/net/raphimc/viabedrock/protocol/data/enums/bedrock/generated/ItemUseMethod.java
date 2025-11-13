@@ -44,6 +44,10 @@ public enum ItemUseMethod {
 
     private final int value;
 
+    ItemUseMethod(final ItemUseMethod value) {
+        this(value.value);
+    }
+
     ItemUseMethod(final int value) {
         this.value = value;
     }

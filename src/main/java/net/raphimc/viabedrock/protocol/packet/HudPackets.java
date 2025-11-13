@@ -153,9 +153,9 @@ public class HudPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SET_TITLE, null, wrapper -> {
             final int rawType = wrapper.read(BedrockTypes.VAR_INT); // type
-            final SetTitlePacket_TitleType type = SetTitlePacket_TitleType.getByValue(rawType);
+            final SetTitlePacketPayload_TitleType type = SetTitlePacketPayload_TitleType.getByValue(rawType);
             if (type == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown SetTitlePacket_TitleType: " + rawType);
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown SetTitlePacketPayload_TitleType: " + rawType);
                 wrapper.cancel();
                 return;
             }
@@ -170,7 +170,7 @@ public class HudPackets {
             final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTexts().lookup();
             final String originalText = text;
             try {
-                if (type.getValue() >= SetTitlePacket_TitleType.TitleTextObject.getValue() && type.getValue() <= SetTitlePacket_TitleType.ActionbarTextObject.getValue()) {
+                if (type.getValue() >= SetTitlePacketPayload_TitleType.TitleTextObject.getValue() && type.getValue() <= SetTitlePacketPayload_TitleType.ActionbarTextObject.getValue()) {
                     final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(text);
                     rootComponent.forEach(c -> {
                         if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
@@ -181,7 +181,7 @@ public class HudPackets {
                 switch (type) {
                     case Clear, Reset -> {
                         wrapper.setPacketType(ClientboundPackets1_21_9.CLEAR_TITLES);
-                        wrapper.write(Types.BOOLEAN, type == SetTitlePacket_TitleType.Reset); // reset
+                        wrapper.write(Types.BOOLEAN, type == SetTitlePacketPayload_TitleType.Reset); // reset
                     }
                     case Title, TitleTextObject -> {
                         wrapper.setPacketType(ClientboundPackets1_21_9.SET_TITLE_TEXT);
@@ -201,7 +201,7 @@ public class HudPackets {
                         wrapper.write(Types.INT, stayTicks); // stay ticks
                         wrapper.write(Types.INT, fadeOutTicks); // fade out ticks
                     }
-                    default -> throw new IllegalStateException("Unhandled SetTitlePacket_TitleType: " + type);
+                    default -> throw new IllegalStateException("Unhandled SetTitlePacketPayload_TitleType: " + type);
                 }
             } catch (Throwable e) { // Bedrock client silently ignores errors
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalText + "'", e);

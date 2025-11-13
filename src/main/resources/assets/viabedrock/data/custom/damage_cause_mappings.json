@@ -1,5 +1,4 @@
 {
-  "None": "minecraft:generic",
   "Override": "minecraft:generic",
   "Contact": "minecraft:mob_attack",
   "EntityAttack": "minecraft:generic",

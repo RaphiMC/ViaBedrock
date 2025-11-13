@@ -30,6 +30,7 @@ public enum ActorDataIDs {
     OLD_SWELL(20),
     SWELL_DIR(21),
     CHARGE_AMOUNT(22),
+    DEPRECATED_CARRY_BLOCK_RUNTIME_ID(23),
     CLIENT_EVENT(24),
     USING_ITEM(25),
     PLAYER_FLAGS(26),
@@ -102,6 +103,7 @@ public enum ActorDataIDs {
     LAYING_AMOUNT(93),
     LAYING_AMOUNT_PREVIOUS(94),
     DATA_DURATION(95),
+    DATA_SPAWN_TIME_deprecated(96),
     DATA_CHANGE_RATE(97),
     DATA_CHANGE_ON_PICKUP(98),
     DATA_PICKUP_COUNT(99),
@@ -159,6 +161,10 @@ public enum ActorDataIDs {
     }
 
     private final int value;
+
+    ActorDataIDs(final ActorDataIDs value) {
+        this(value.value);
+    }
 
     ActorDataIDs(final int value) {
         this.value = value;

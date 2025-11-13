@@ -28,6 +28,10 @@ public enum SpawnPositionType {
 
     private final int value;
 
+    SpawnPositionType(final SpawnPositionType value) {
+        this(value.value);
+    }
+
     SpawnPositionType(final int value) {
         this.value = value;
     }

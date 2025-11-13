@@ -30,6 +30,10 @@ public enum AnimatedTextureType {
 
     private final int value;
 
+    AnimatedTextureType(final AnimatedTextureType value) {
+        this(value.value);
+    }
+
     AnimatedTextureType(final int value) {
         this.value = value;
     }

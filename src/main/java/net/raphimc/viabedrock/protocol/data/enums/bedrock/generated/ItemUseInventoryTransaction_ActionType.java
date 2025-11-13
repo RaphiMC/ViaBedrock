@@ -7,21 +7,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ItemUseInventoryTransaction_ActionType {
 
-    /**
-     * Right click item use on a surface like placing a block
-     */
     Place(0),
-    /**
-     * Start right click and hold style item use or potentially interact with nothing.<br>
-     * If it is a usable item like food the server is expected to send a SetActorDataPacket with ActorFlags::USINGITEM along with the transaction response.<br>
-     * While using an item, movement speed is slowed which will be reflected in the move vector in Player Auth Input.
-     */
     Use(1),
-    /**
-     * Block breaking like left click<br>
-     * When using server auth block breaking as specified in StartGamePacket this is never sent.<br>
-     * Instead, block actions are supplied in Player Auth Input.
-     */
     Destroy(2),
     UseAsAttack(3);
 
@@ -42,6 +29,10 @@ public enum ItemUseInventoryTransaction_ActionType {
     }
 
     private final int value;
+
+    ItemUseInventoryTransaction_ActionType(final ItemUseInventoryTransaction_ActionType value) {
+        this(value.value);
+    }
 
     ItemUseInventoryTransaction_ActionType(final int value) {
         this.value = value;

@@ -118,6 +118,10 @@ public enum CommandRegistry_HardNonTerminal {
 
     private final int value;
 
+    CommandRegistry_HardNonTerminal(final CommandRegistry_HardNonTerminal value) {
+        this(value.value);
+    }
+
     CommandRegistry_HardNonTerminal(final int value) {
         this.value = value;
     }

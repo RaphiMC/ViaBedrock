@@ -33,6 +33,10 @@ public enum GeneratorType {
 
     private final int value;
 
+    GeneratorType(final GeneratorType value) {
+        this(value.value);
+    }
+
     GeneratorType(final int value) {
         this.value = value;
     }

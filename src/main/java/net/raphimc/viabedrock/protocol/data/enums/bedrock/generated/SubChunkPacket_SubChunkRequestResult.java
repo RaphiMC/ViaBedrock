@@ -33,6 +33,10 @@ public enum SubChunkPacket_SubChunkRequestResult {
 
     private final int value;
 
+    SubChunkPacket_SubChunkRequestResult(final SubChunkPacket_SubChunkRequestResult value) {
+        this(value.value);
+    }
+
     SubChunkPacket_SubChunkRequestResult(final int value) {
         this.value = value;
     }

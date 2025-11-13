@@ -12,8 +12,7 @@ public enum CreativeItemCategory {
     Equipment(3),
     Items(4),
     ItemCommandOnly(5),
-    Undefined(6),
-    NUM_CATEGORIES(7);
+    Undefined(6);
 
     private static final Int2ObjectMap<CreativeItemCategory> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
@@ -32,6 +31,10 @@ public enum CreativeItemCategory {
     }
 
     private final int value;
+
+    CreativeItemCategory(final CreativeItemCategory value) {
+        this(value.value);
+    }
 
     CreativeItemCategory(final int value) {
         this.value = value;

@@ -30,6 +30,10 @@ public enum PlayerPermissionLevel {
 
     private final int value;
 
+    PlayerPermissionLevel(final PlayerPermissionLevel value) {
+        this(value.value);
+    }
+
     PlayerPermissionLevel(final int value) {
         this.value = value;
     }

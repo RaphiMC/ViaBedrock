@@ -29,6 +29,10 @@ public enum CommandBlockMode {
 
     private final int value;
 
+    CommandBlockMode(final CommandBlockMode value) {
+        this(value.value);
+    }
+
     CommandBlockMode(final int value) {
         this.value = value;
     }

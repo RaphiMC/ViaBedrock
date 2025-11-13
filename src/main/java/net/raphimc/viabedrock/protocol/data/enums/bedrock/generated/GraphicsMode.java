@@ -30,6 +30,10 @@ public enum GraphicsMode {
 
     private final int value;
 
+    GraphicsMode(final GraphicsMode value) {
+        this(value.value);
+    }
+
     GraphicsMode(final int value) {
         this.value = value;
     }

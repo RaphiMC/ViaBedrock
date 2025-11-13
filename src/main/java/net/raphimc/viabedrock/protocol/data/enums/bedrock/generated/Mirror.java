@@ -30,6 +30,10 @@ public enum Mirror {
 
     private final int value;
 
+    Mirror(final Mirror value) {
+        this(value.value);
+    }
+
     Mirror(final int value) {
         this.value = value;
     }

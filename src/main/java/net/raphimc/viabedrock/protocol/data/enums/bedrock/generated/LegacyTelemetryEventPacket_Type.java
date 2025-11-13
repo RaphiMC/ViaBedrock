@@ -19,6 +19,7 @@ public enum LegacyTelemetryEventPacket_Type {
     AgentCreated(9),
     PatternRemoved_OBSOLETE(10),
     SlashCommand(11),
+    Deprecated_FishBucketed(12),
     MobBorn(13),
     PetDied_OBSOLETE(14),
     POICauldronUsed(15),
@@ -56,6 +57,10 @@ public enum LegacyTelemetryEventPacket_Type {
     }
 
     private final int value;
+
+    LegacyTelemetryEventPacket_Type(final LegacyTelemetryEventPacket_Type value) {
+        this(value.value);
+    }
 
     LegacyTelemetryEventPacket_Type(final int value) {
         this.value = value;

@@ -52,6 +52,10 @@ public enum MinecraftEventing_POIBlockInteractionType {
 
     private final int value;
 
+    MinecraftEventing_POIBlockInteractionType(final MinecraftEventing_POIBlockInteractionType value) {
+        this(value.value);
+    }
+
     MinecraftEventing_POIBlockInteractionType(final int value) {
         this.value = value;
     }

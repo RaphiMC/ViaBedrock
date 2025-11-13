@@ -11,7 +11,7 @@ public enum InputMode {
     Mouse(1),
     Touch(2),
     GamePad(3),
-    MotionController(4);
+    MotionController_Deprecated(4);
 
     private static final Int2ObjectMap<InputMode> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
@@ -30,6 +30,10 @@ public enum InputMode {
     }
 
     private final int value;
+
+    InputMode(final InputMode value) {
+        this(value.value);
+    }
 
     InputMode(final int value) {
         this.value = value;

@@ -27,6 +27,10 @@ public enum CameraAimAssistPresetPacketOperation {
 
     private final int value;
 
+    CameraAimAssistPresetPacketOperation(final CameraAimAssistPresetPacketOperation value) {
+        this(value.value);
+    }
+
     CameraAimAssistPresetPacketOperation(final int value) {
         this.value = value;
     }

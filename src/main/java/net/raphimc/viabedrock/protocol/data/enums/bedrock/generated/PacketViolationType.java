@@ -28,6 +28,10 @@ public enum PacketViolationType {
 
     private final int value;
 
+    PacketViolationType(final PacketViolationType value) {
+        this(value.value);
+    }
+
     PacketViolationType(final int value) {
         this.value = value;
     }

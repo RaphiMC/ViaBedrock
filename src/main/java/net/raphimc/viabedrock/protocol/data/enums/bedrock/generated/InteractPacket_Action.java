@@ -31,6 +31,10 @@ public enum InteractPacket_Action {
 
     private final int value;
 
+    InteractPacket_Action(final InteractPacket_Action value) {
+        this(value.value);
+    }
+
     InteractPacket_Action(final int value) {
         this.value = value;
     }
