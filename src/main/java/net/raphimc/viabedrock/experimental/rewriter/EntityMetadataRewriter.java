@@ -62,7 +62,7 @@ public class EntityMetadataRewriter {
                 if (bedrockFlags.contains(ActorFlags.INVISIBLE)) {
                     javaBitMask |= (1 << 5);
                 }
-                
+
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SHARED_FLAGS), VersionedTypes.V26_2.entityDataTypes().byteType, javaBitMask));
 
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SILENT), VersionedTypes.V26_2.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.SILENT)));
