@@ -558,7 +558,7 @@ public class EntityPackets {
                     wrapper.write(Types.INT, entity.javaId()); // entity id
                     wrapper.write(Types.BYTE, EntityEvent.TENDRILS_SHIVER.getValue()); // entity event
                 }
-                case START_ATTACKING -> { // Sent to sync ravager attack animation
+                case START_ATTACKING -> { // Sent to sync ravager and evoker attack animations TODO: doesnt play the evoker arm wave anim
                     wrapper.write(Types.INT, entity.javaId()); // entity id
                     wrapper.write(Types.BYTE, EntityEvent.START_ATTACKING.getValue()); // entity event
                 }
