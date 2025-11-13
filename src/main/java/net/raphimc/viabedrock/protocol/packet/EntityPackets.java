@@ -567,6 +567,10 @@ public class EntityPackets {
                     //TODO: Should it be moved here / also handled here?
                     wrapper.cancel();
                 }
+                case SHAKE_WETNESS_STOP -> { // Sent to sync wolf shake animation
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.CANCEL_SHAKE_WETNESS.getValue()); // entity event
+                }
                 case FISHHOOK_TEASE, // Java plays this animation without an event
                      FEED, // Sent when an animal is fed, java does not have an equivalent animation
                      STOP_ATTACKING, // Not used in java and doesnt seem to be sent in bedrock
@@ -578,7 +582,9 @@ public class EntityPackets {
                      BALLOON_POP, // Education edition feature TODO: double check
                      SPAWN_ALIVE, // TODO: Seems to get called when you respawn, not sure what it does
                      UPDATE_STACK_SIZE, // Sent to sync stack size updates for items on the ground TODO: find the java equivalent (might not be needed)
-                     BABY_AGE // Sent to display "aging" particles when a baby is fed TODO: find java equivalent
+                     BABY_AGE, // Sent to display "aging" particles when a baby is fed TODO: find java equivalent
+                     DEPRECATED_ADD_PLAYER_LEVELS, // Deprecated
+                     DEPRECATED_UPDATE_STRUCTURE_FEATURE // Deprecated
                         -> wrapper.cancel();
                 default -> {
                     wrapper.cancel();
