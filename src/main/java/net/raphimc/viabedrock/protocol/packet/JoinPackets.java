@@ -59,6 +59,7 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -120,17 +121,17 @@ public class JoinPackets {
                     }
 
                     if (status == PlayStatus.LoginSuccess) {
-                        final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
+                        final AuthData authData = wrapper.user().get(AuthData.class);
+                        final ProtocolInfo info = wrapper.user().getProtocolInfo();
+                        info.setUsername(authData.getDisplayName());
+                        info.setUuid(UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + authData.getXuid()).getBytes(StandardCharsets.UTF_8)));
+
                         wrapper.setPacketType(ClientboundLoginPackets.LOGIN_FINISHED);
-                        wrapper.write(Types.UUID, authChainData.getIdentity()); // uuid
-                        wrapper.write(Types.STRING, authChainData.getDisplayName()); // username
+                        wrapper.write(Types.UUID, info.getUuid()); // uuid
+                        wrapper.write(Types.STRING, info.getUsername()); // username
                         wrapper.write(Types.PROFILE_PROPERTY_ARRAY, new GameProfile.Property[0]); // properties
 
-                        final ProtocolInfo info = wrapper.user().getProtocolInfo();
-                        info.setUsername(authChainData.getDisplayName());
-                        info.setUuid(authChainData.getIdentity());
                         ClientboundBaseProtocol1_7.onLoginSuccess(wrapper.user());
-
                         sendClientCacheStatus(wrapper.user());
                     } else {
                         wrapper.setPacketType(ClientboundLoginPackets.LOGIN_DISCONNECT);

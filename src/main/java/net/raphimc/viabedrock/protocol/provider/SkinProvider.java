@@ -31,7 +31,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GraphicsMode
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InputMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.UIProfile;
 import net.raphimc.viabedrock.protocol.model.SkinData;
-import net.raphimc.viabedrock.protocol.storage.AuthChainData;
+import net.raphimc.viabedrock.protocol.storage.AuthData;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
@@ -45,56 +45,71 @@ public class SkinProvider implements Provider {
 
     public Map<String, Object> getClientPlayerSkin(final UserConnection user) {
         final HandshakeStorage handshakeStorage = user.get(HandshakeStorage.class);
-        final AuthChainData authChainData = user.get(AuthChainData.class);
-
-        final ResourcePack.Content skinPackContent = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks().get("vanilla_skin_pack").content();
-        final BufferedImage skin = skinPackContent.getImage("steve.png").getImage();
-        final JsonObject skinGeometry = skinPackContent.getSortedJson("geometry.json");
-
+        final AuthData authData = user.get(AuthData.class);
         final Map<String, Object> claims = new HashMap<>();
-        claims.put("SkinId", "Custom" + authChainData.getDeviceId());
-        claims.put("SkinResourcePatch", Base64.getEncoder().encodeToString("{\"geometry\":{\"default\":\"geometry.humanoid.custom\"}}".getBytes(StandardCharsets.UTF_8)));
-        claims.put("SkinImageWidth", skin.getWidth());
-        claims.put("SkinImageHeight", skin.getHeight());
-        claims.put("SkinData", Base64.getEncoder().encodeToString(ImageType.getImageData(skin)));
-        claims.put("AnimatedImageData", new ArrayList<>());
-        claims.put("CapeImageHeight", 0);
-        claims.put("CapeImageWidth", 0);
-        claims.put("CapeData", "");
-        claims.put("CapeId", "");
-        claims.put("SkinGeometryData", Base64.getEncoder().encodeToString(skinGeometry.toString().getBytes(StandardCharsets.UTF_8)));
-        claims.put("SkinGeometryDataEngineVersion", Base64.getEncoder().encodeToString("0.0.0".getBytes(StandardCharsets.UTF_8)));
-        claims.put("SkinAnimationData", "");
-        claims.put("ArmSize", "wide");
-        claims.put("SkinColor", "#0");
-        claims.put("PersonaPieces", new ArrayList<>());
-        claims.put("PieceTintColors", new ArrayList<>());
-        claims.put("PremiumSkin", false);
-        claims.put("PersonaSkin", false);
-        claims.put("CapeOnClassicSkin", false);
-        claims.put("ClientRandomId", ThreadLocalRandom.current().nextLong()); // ?
-        claims.put("SelfSignedId", UUID.randomUUID().toString()); // ?
-        claims.put("CurrentInputMode", InputMode.Mouse.getValue());
-        claims.put("DefaultInputMode", InputMode.Mouse.getValue());
-        claims.put("GuiScale", -1);
-        claims.put("UIProfile", UIProfile.Classic.getValue());
-        claims.put("DeviceId", authChainData.getDeviceId().toString());
-        claims.put("DeviceModel", "");
-        claims.put("DeviceOS", BuildPlatform.Google.getValue());
-        claims.put("LanguageCode", "en_US");
-        claims.put("MaxViewDistance", 96);
-        claims.put("MemoryTier", MemoryTier.SuperHigh.ordinal());
-        claims.put("GraphicsMode", GraphicsMode.Fancy.getValue());
-        claims.put("PlatformType", 0);
-        claims.put("PlatformOfflineId", "");
-        claims.put("PlatformOnlineId", "");
-        claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);
-        claims.put("ServerAddress", handshakeStorage.hostname() + ":" + handshakeStorage.port());
-        claims.put("ThirdPartyName", user.getProtocolInfo().getUsername());
-        claims.put("IsEditorMode", false);
-        claims.put("TrustedSkin", false);
-        claims.put("OverrideSkin", false);
-        claims.put("CompatibleWithClientSideChunkGen", false);
+
+        { // Skin claims
+            final ResourcePack.Content skinPackContent = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks().get("vanilla_skin_pack").content();
+            final BufferedImage skin = skinPackContent.getImage("steve.png").getImage();
+            final JsonObject skinGeometry = skinPackContent.getSortedJson("geometry.json");
+
+            claims.put("SkinId", UUID.randomUUID().toString());
+            claims.put("SkinData", Base64.getEncoder().encodeToString(ImageType.getImageData(skin)));
+            claims.put("SkinImageWidth", skin.getWidth());
+            claims.put("SkinImageHeight", skin.getHeight());
+            claims.put("SkinGeometryData", Base64.getEncoder().encodeToString(skinGeometry.toString().getBytes(StandardCharsets.UTF_8)));
+            claims.put("SkinGeometryDataEngineVersion", Base64.getEncoder().encodeToString("0.0.0".getBytes(StandardCharsets.UTF_8)));
+            claims.put("SkinResourcePatch", Base64.getEncoder().encodeToString("{\"geometry\":{\"default\":\"geometry.humanoid.custom\"}}".getBytes(StandardCharsets.UTF_8)));
+            claims.put("SkinAnimationData", "");
+            claims.put("SkinColor", "#0");
+            claims.put("PremiumSkin", false);
+            claims.put("PersonaSkin", false);
+            claims.put("TrustedSkin", false);
+            claims.put("OverrideSkin", false);
+            claims.put("ArmSize", "wide");
+            claims.put("AnimatedImageData", new ArrayList<>());
+            claims.put("PersonaPieces", new ArrayList<>());
+            claims.put("PieceTintColors", new ArrayList<>());
+        }
+        { // Cape claims
+            claims.put("CapeId", "");
+            claims.put("CapeData", "");
+            claims.put("CapeImageWidth", 0);
+            claims.put("CapeImageHeight", 0);
+            claims.put("CapeOnClassicSkin", false);
+        }
+        { // Session claims
+            claims.put("ServerAddress", handshakeStorage.hostname() + ":" + handshakeStorage.port());
+            claims.put("ThirdPartyName", user.getProtocolInfo().getUsername());
+        }
+        { // Client claims
+            claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);
+            claims.put("LanguageCode", "en_US");
+            claims.put("GraphicsMode", GraphicsMode.Fancy.getValue());
+            claims.put("GuiScale", -1);
+            claims.put("UIProfile", UIProfile.Classic.getValue());
+            claims.put("ClientRandomId", ThreadLocalRandom.current().nextLong()); // ?
+            claims.put("SelfSignedId", UUID.randomUUID().toString()); // ?
+            claims.put("IsEditorMode", false);
+        }
+        { // Device claims
+            claims.put("DeviceId", authData.getDeviceId().toString().replace("-", ""));
+            claims.put("DeviceModel", "");
+            claims.put("DeviceOS", BuildPlatform.Google.getValue());
+            claims.put("CurrentInputMode", InputMode.Mouse.getValue());
+            claims.put("DefaultInputMode", InputMode.Touch.getValue());
+        }
+        { // Hardware claims
+            claims.put("MemoryTier", MemoryTier.SuperHigh.ordinal());
+            claims.put("MaxViewDistance", 96);
+            claims.put("CompatibleWithClientSideChunkGen", false);
+        }
+        { // Platform claims
+            claims.put("PlatformType", 0);
+            claims.put("PlatformOfflineId", "");
+            claims.put("PlatformOnlineId", "");
+        }
+
         return claims;
     }
 

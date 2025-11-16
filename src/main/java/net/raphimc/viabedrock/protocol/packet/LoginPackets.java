@@ -39,7 +39,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.AuthenticationType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompressionAlgorithm;
 import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
-import net.raphimc.viabedrock.protocol.storage.AuthChainData;
+import net.raphimc.viabedrock.protocol.storage.AuthData;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -83,7 +83,7 @@ public class LoginPackets {
             wrapper.cancel();
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
-            final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
+            final AuthData authData = wrapper.user().get(AuthData.class);
 
             final int threshold = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression threshold
             final PacketCompressionAlgorithm algorithm = PacketCompressionAlgorithm.getByValue(wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE), PacketCompressionAlgorithm.None); // compression algorithm
@@ -97,33 +97,33 @@ public class LoginPackets {
 
             final JsonObject certificateChainObj = new JsonObject();
             final JsonArray chain = new JsonArray();
-            if (authChainData.getSelfSignedJwt() != null) {
-                chain.add(new JsonPrimitive(authChainData.getSelfSignedJwt()));
+            if (authData.getSelfSignedJwt() != null) {
+                chain.add(new JsonPrimitive(authData.getSelfSignedJwt()));
             }
-            if (authChainData.getMojangJwt() != null) {
-                chain.add(new JsonPrimitive(authChainData.getMojangJwt()));
+            if (authData.getMojangJwt() != null) {
+                chain.add(new JsonPrimitive(authData.getMojangJwt()));
             }
-            if (authChainData.getIdentityJwt() != null) {
-                chain.add(new JsonPrimitive(authChainData.getIdentityJwt()));
+            if (authData.getIdentityJwt() != null) {
+                chain.add(new JsonPrimitive(authData.getIdentityJwt()));
             }
             certificateChainObj.add("chain", chain);
 
             final JsonObject authInfoObj = new JsonObject();
-            authInfoObj.addProperty("AuthenticationType", authChainData.getMojangJwt() != null ? AuthenticationType.Full.ordinal() : AuthenticationType.SelfSigned.ordinal());
+            authInfoObj.addProperty("AuthenticationType", authData.getMojangJwt() != null ? AuthenticationType.Full.ordinal() : AuthenticationType.SelfSigned.ordinal());
             authInfoObj.addProperty("Certificate", certificateChainObj.toString());
             authInfoObj.addProperty("Token", "");
             final String authInfo = authInfoObj.toString();
 
             final PacketWrapper login = PacketWrapper.create(ServerboundBedrockPackets.LOGIN, wrapper.user());
             login.write(Types.INT, handshakeStorage.protocolVersion()); // protocol version
-            login.write(BedrockTypes.UNSIGNED_VAR_INT, authInfo.length() + authChainData.getSkinJwt().length() + Integer.BYTES * 2); // length
+            login.write(BedrockTypes.UNSIGNED_VAR_INT, authInfo.length() + authData.getSkinJwt().length() + Integer.BYTES * 2); // length
             login.write(BedrockTypes.ASCII_STRING, authInfo); // auth info
-            login.write(BedrockTypes.ASCII_STRING, authChainData.getSkinJwt()); // client properties
+            login.write(BedrockTypes.ASCII_STRING, authData.getSkinJwt()); // client properties
             login.sendToServer(BedrockProtocol.class);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE, null, wrapper -> {
             wrapper.cancel();
-            final AuthChainData authChainData = wrapper.user().get(AuthChainData.class);
+            final AuthData authData = wrapper.user().get(AuthData.class);
 
             final Jws<Claims> jwt = Jwts.parser()
                     .clockSkewSeconds(CLOCK_SKEW)
@@ -138,7 +138,7 @@ public class LoginPackets {
 
             try {
                 final byte[] salt = Base64.getDecoder().decode(jwt.getPayload().get("salt", String.class));
-                final SecretKey secretKey = ecdhKeyExchange(authChainData.getPrivateKey(), publicKeyFromBase64((String) jwt.getHeader().get("x5u")), salt);
+                final SecretKey secretKey = ecdhKeyExchange((ECPrivateKey) authData.getSessionKeyPair().getPrivate(), publicKeyFromBase64((String) jwt.getHeader().get("x5u")), salt);
                 Via.getManager().getProviders().get(NettyPipelineProvider.class).enableEncryption(wrapper.user(), secretKey);
             } catch (Throwable e) {
                 throw new RuntimeException("Could not enable encryption", e);
@@ -180,9 +180,9 @@ public class LoginPackets {
             wrapper.write(Types.INT, handshakeStorage.protocolVersion()); // protocol version
 
             try {
-                validateAndFillAuthChainData(wrapper.user());
+                validateAndFillAuthData(wrapper.user());
             } catch (Throwable e) {
-                throw new RuntimeException("Could not validate and fill auth chain data", e);
+                throw new RuntimeException("Could not validate and fill auth data", e);
             }
         });
         protocol.registerServerboundTransition(ServerboundLoginPackets.LOGIN_ACKNOWLEDGED, null, PacketWrapper::cancel);
@@ -196,21 +196,20 @@ public class LoginPackets {
         }
     }
 
-    private static void validateAndFillAuthChainData(final UserConnection user) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        if (user.has(AuthChainData.class)) { // Externally supplied chain data
-            final AuthChainData authChainData = user.get(AuthChainData.class);
+    private static void validateAndFillAuthData(final UserConnection user) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+        if (user.has(AuthData.class)) { // Externally supplied auth data
+            final AuthData authData = user.get(AuthData.class);
 
-            final PublicKey publicKey = authChainData.getPublicKey();
-            final PrivateKey privateKey = authChainData.getPrivateKey();
-            final String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+            final KeyPair sessionKeyPair = authData.getSessionKeyPair();
+            final String encodedPublicKey = Base64.getEncoder().encodeToString(sessionKeyPair.getPublic().getEncoded());
 
-            final Jws<Claims> mojangJwt = Jwts.parser().clockSkewSeconds(CLOCK_SKEW).verifyWith(MOJANG_PUBLIC_KEY).json(GSON_DESERIALIZER).build().parseSignedClaims(authChainData.getMojangJwt());
+            final Jws<Claims> mojangJwt = Jwts.parser().clockSkewSeconds(CLOCK_SKEW).verifyWith(MOJANG_PUBLIC_KEY).json(GSON_DESERIALIZER).build().parseSignedClaims(authData.getMojangJwt());
             final ECPublicKey mojangJwtPublicKey = publicKeyFromBase64(mojangJwt.getPayload().get("identityPublicKey", String.class));
-            final Jws<Claims> identityJwt = Jwts.parser().clockSkewSeconds(CLOCK_SKEW).verifyWith(mojangJwtPublicKey).build().parseSignedClaims(authChainData.getIdentityJwt());
+            final Jws<Claims> identityJwt = Jwts.parser().clockSkewSeconds(CLOCK_SKEW).verifyWith(mojangJwtPublicKey).build().parseSignedClaims(authData.getIdentityJwt());
 
-            if (authChainData.getSelfSignedJwt() == null) {
+            if (authData.getSelfSignedJwt() == null) {
                 final String selfSignedJwt = Jwts.builder()
-                        .signWith(privateKey, Jwts.SIG.ES384)
+                        .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
                         .header().add("x5u", encodedPublicKey).and()
                         .claim("certificateAuthority", true)
                         .claim("identityPublicKey", mojangJwt.getHeader().get("x5u"))
@@ -218,29 +217,26 @@ public class LoginPackets {
                         .notBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
                         .compact();
 
-                authChainData.setSelfSignedJwt(selfSignedJwt);
+                authData.setSelfSignedJwt(selfSignedJwt);
             }
-            if (authChainData.getSkinJwt() == null) {
+            if (authData.getSkinJwt() == null) {
                 final String skinData = Jwts.builder()
-                        .signWith(privateKey, Jwts.SIG.ES384)
+                        .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
                         .header().add("x5u", encodedPublicKey).and()
                         .claims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(user))
                         .compact();
 
-                authChainData.setSkinJwt(skinData);
+                authData.setSkinJwt(skinData);
             }
 
             final Map<String, Object> extraData = identityJwt.getPayload().get("extraData", Map.class);
-            authChainData.setXuid((String) extraData.get("XUID"));
-            authChainData.setIdentity(UUID.fromString((String) extraData.get("identity")));
-            authChainData.setDisplayName((String) extraData.get("displayName"));
+            authData.setDisplayName((String) extraData.get("displayName"));
+            authData.setXuid((String) extraData.get("XUID"));
         } else {
             final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
             keyPairGenerator.initialize(new ECGenParameterSpec("secp384r1"));
             final KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            final ECPublicKey publicKey = (ECPublicKey) keyPair.getPublic();
-            final ECPrivateKey privateKey = (ECPrivateKey) keyPair.getPrivate();
-            final String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+            final String encodedPublicKey = Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
 
             final String displayName = user.getProtocolInfo().getUsername();
             final UUID offlineUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + displayName).getBytes(StandardCharsets.UTF_8));
@@ -253,7 +249,7 @@ public class LoginPackets {
             extraData.put("sandboxId", "RETAIL");
 
             final String identityJwt = Jwts.builder()
-                    .signWith(privateKey, Jwts.SIG.ES384)
+                    .signWith(keyPair.getPrivate(), Jwts.SIG.ES384)
                     .header().add("x5u", encodedPublicKey).and()
                     .claim("identityPublicKey", encodedPublicKey)
                     .claim("randomNonce", ThreadLocalRandom.current().nextLong())
@@ -264,19 +260,18 @@ public class LoginPackets {
                     .notBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
                     .compact();
 
-            final AuthChainData authChainData = new AuthChainData(null, identityJwt, publicKey, privateKey, UUID.randomUUID());
-            authChainData.setXuid((String) extraData.get("XUID"));
-            authChainData.setIdentity(UUID.fromString((String) extraData.get("identity")));
-            authChainData.setDisplayName((String) extraData.get("displayName"));
-            user.put(authChainData);
+            final AuthData authData = new AuthData(null, identityJwt, null, keyPair, UUID.randomUUID());
+            authData.setDisplayName((String) extraData.get("displayName"));
+            authData.setXuid((String) extraData.get("XUID"));
+            user.put(authData);
 
             final String skinData = Jwts.builder()
-                    .signWith(privateKey, Jwts.SIG.ES384)
+                    .signWith(keyPair.getPrivate(), Jwts.SIG.ES384)
                     .header().add("x5u", encodedPublicKey).and()
                     .claims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(user))
                     .compact();
 
-            authChainData.setSkinJwt(skinData);
+            authData.setSkinJwt(skinData);
         }
     }
 
