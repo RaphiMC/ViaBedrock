@@ -29,7 +29,7 @@ import net.raphimc.viabedrock.experimental.types.inventory.LegacySetItemSlotData
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 
-public class ExperimentalTypes {
+public class ExperimentalBedrockTypes {
 
     public static final Type<BedrockInventoryTransaction> INVENTORY_TRANSACTION = new BedrockInventoryTransactionType();
     public static final Type<LegacySetItemSlotData[]> LEGACY_SET_ITEM_SLOT_DATA = new ArrayType<>(new LegacySetItemSlotDataType(), BedrockTypes.UNSIGNED_VAR_INT);

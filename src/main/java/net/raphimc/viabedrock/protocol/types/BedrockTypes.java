@@ -108,4 +108,5 @@ public class BedrockTypes {
     public static final Type<CommandData[]> COMMAND_DATA_ARRAY = new CommandDataArrayType();
     public static final Type<FullContainerName> FULL_CONTAINER_NAME = new FullContainerNameType();
     public static final Type<FullContainerName[]> FULL_CONTAINER_NAME_ARRAY = new ArrayType<>(FULL_CONTAINER_NAME, UNSIGNED_VAR_INT);
+
 }
