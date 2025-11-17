@@ -41,10 +41,11 @@ import java.util.regex.Pattern;
 
 public class BedrockDataEnumGenerator {
 
-    private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/2a42b85946a308d830984f54ea20349aa2beaeed/html/enums.html";
+    private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/7d1acc3bc46deffd66e9723f1d84988606f522b0/html/enums.html";
     private static final String ENUMS_PACKAGE = "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated";
-    private static final List<String> IGNORED_FIELDS = Arrays.asList("count", "_count", "total", "all", "numenchantments", "numtagtypes", "abilitycount", "nummodes", "input_num", "9800", "total_operations", "total_operands");
+    private static final List<String> IGNORED_FIELDS = Arrays.asList("deprecated", "count", "_count", "total", "all", "numenchantments", "numtagtypes", "abilitycount", "nummodes", "input_num", "total_operations", "total_operands", "numvalidversions", "num_categories");
     private static final Map<String, String> VALUE_REPLACEMENTS = new HashMap<>();
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("^\\d+$");
 
     static {
         VALUE_REPLACEMENTS.put("std::numeric_limits::max()", "Integer.MAX_VALUE");
@@ -55,6 +56,60 @@ public class BedrockDataEnumGenerator {
     }
 
     public static void main(String[] args) throws Throwable {
+        final Map<String, List<EnumField>> enums = new HashMap<>();
+        final Document doc = Jsoup.parse(new URL(ENUMS_URL), 10_000);
+        for (Element element : doc.selectXpath("/html/body/table/tbody/tr")) {
+            final Elements tableElements = element.select("td");
+            if (tableElements.isEmpty()) continue;
+
+            final String enumName = tableElements.get(0).ownText();
+            final Map<String, EnumField> enumFields = new LinkedHashMap<>();
+            for (Element fieldTableRowElement : tableElements.get(1).selectXpath("table/tbody/tr")) {
+                final Elements valueElements = fieldTableRowElement.select("td");
+                final String fieldName = valueElements.get(0).ownText();
+                final String fieldValue = valueElements.get(1).ownText();
+                final List<String> fieldComments = Arrays.stream(valueElements.get(2).wholeOwnText().split("\n")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+                enumFields.put(fieldName, new EnumField(fieldName, fieldValue, fieldComments));
+            }
+
+            final Map<String, EnumField> originalEnumFields = new LinkedHashMap<>(enumFields);
+            enumFields.values().removeIf(field -> IGNORED_FIELDS.contains(field.name.toLowerCase(Locale.ROOT)));
+            enumFields.values().removeIf(field -> NUMBER_PATTERN.matcher(field.name).matches());
+            for (EnumField field : enumFields.values()) {
+                if (VALUE_REPLACEMENTS.containsKey(field.value)) {
+                    field.value = VALUE_REPLACEMENTS.get(field.value);
+                }
+            }
+            final Map<String, EnumField> valueToFieldMap = new HashMap<>();
+            for (EnumField field : enumFields.values()) {
+                if (valueToFieldMap.containsKey(field.value)) {
+                    field.value = valueToFieldMap.get(field.value).name;
+                } else {
+                    valueToFieldMap.put(field.value, field);
+                }
+            }
+            for (EnumField field : enumFields.values()) {
+                if (!enumFields.containsKey(field.value) && originalEnumFields.containsKey(field.value) && !NUMBER_PATTERN.matcher(field.value).matches()) {
+                    field.value = originalEnumFields.get(field.value).value;
+                }
+            }
+            enums.put(enumName, new ArrayList<>(enumFields.values()));
+        }
+
+        // Mojang seems to have pushed an outdated version of this enum. Those values exist in 1.21.50, but not in 1.21.60
+        final List<EnumField> levelEventEnum = enums.get("LevelEvent");
+        levelEventEnum.add(new EnumField("ParticleCreakingHeartTrail", "9816"));
+
+        // Add missing values
+        final List<EnumField> animatePacketActionEnum = enums.get("AnimatePacket::Action");
+        animatePacketActionEnum.add(new EnumField("RowRight", "128"));
+        animatePacketActionEnum.add(new EnumField("RowLeft", "129"));
+
+        // Fix wrong values
+        final List<EnumField> packetCompressionAlgorithmEnum = enums.get("PacketCompressionAlgorithm");
+        packetCompressionAlgorithmEnum.removeIf(field -> field.name.equals("None"));
+        packetCompressionAlgorithmEnum.add(new EnumField("None", "0xFF"));
+
         final File sourceDir = new File("../src/main/java");
         final File enumsDir = new File(sourceDir, ENUMS_PACKAGE.replace(".", "/"));
         if (enumsDir.isDirectory()) {
@@ -73,75 +128,6 @@ public class BedrockDataEnumGenerator {
             });
         }
         enumsDir.mkdirs();
-
-        final Map<String, List<EnumField>> enums = new HashMap<>();
-        final Document doc = Jsoup.parse(new URL(ENUMS_URL), 10_000);
-        for (Element element : doc.selectXpath("/html/body/table/tbody/tr")) {
-            final Elements tableElements = element.select("td");
-            if (tableElements.isEmpty()) continue;
-
-            final String enumName = tableElements.get(0).ownText();
-            final List<EnumField> enumFields = new ArrayList<>();
-            final Set<String> enumFieldNames = new HashSet<>();
-            final Map<String, String> enumValues = new HashMap<>();
-            for (Element fieldTableRowElement : tableElements.get(1).selectXpath("table/tbody/tr")) {
-                final Elements valueElements = fieldTableRowElement.select("td");
-                final String fieldName = valueElements.get(0).ownText();
-                final String fieldValue = valueElements.get(1).ownText();
-                final List<String> fieldComments = Arrays.stream(valueElements.get(2).wholeOwnText().split("\n")).map(String::trim).filter(s -> !s.isEmpty()).toList();
-                enumFields.add(new EnumField(fieldName, fieldValue, fieldComments));
-                enumFieldNames.add(fieldName);
-                enumValues.put(fieldName, fieldValue);
-            }
-            enums.put(enumName, enumFields);
-
-            enumFields.removeIf(field -> IGNORED_FIELDS.contains(field.name.toLowerCase(Locale.ROOT)));
-            enumFields.removeIf(field -> field.name.toLowerCase(Locale.ROOT).contains("deprecated"));
-            for (EnumField field : enumFields) {
-                if (VALUE_REPLACEMENTS.containsKey(field.value)) {
-                    field.value = VALUE_REPLACEMENTS.get(field.value);
-                }
-
-                final String[] splitChars = {"|", "-"};
-                for (String splitChar : splitChars) {
-                    if (field.value.contains(splitChar) && !field.value.startsWith(splitChar)) {
-                        final String[] split = field.value.split(Pattern.quote(splitChar));
-                        for (int i = 0; i < split.length; i++) {
-                            String part = split[i].trim();
-                            if (enumValues.containsKey(part)) {
-                                if (enumFieldNames.contains(part) && !IGNORED_FIELDS.contains(part.toLowerCase(Locale.ROOT))) {
-                                    part += ".getValue()";
-                                } else {
-                                    part = enumValues.get(part);
-                                }
-                            }
-                            split[i] = part;
-                        }
-                        field.value = String.join(" " + splitChar + " ", split);
-                    }
-                }
-                if (enumValues.containsKey(field.value)) {
-                    if (enumFieldNames.contains(field.value) && !IGNORED_FIELDS.contains(field.value.toLowerCase(Locale.ROOT))) {
-                        field.value += ".getValue()";
-                    } else {
-                        field.value = enumValues.get(field.value);
-                    }
-                }
-            }
-        }
-
-        // Mojang seems to have pushed an outdated version of this enum. Those values exist in 1.21.50, but not in 1.21.60
-        final List<EnumField> actorDamageCauseEnum = enums.get("ActorDamageCause");
-        actorDamageCauseEnum.add(new EnumField("MaceSmash", "34"));
-
-        // Mojang seems to have pushed an outdated version of this enum. Those values exist in 1.21.50, but not in 1.21.60
-        final List<EnumField> levelEventEnum = enums.get("LevelEvent");
-        levelEventEnum.add(new EnumField("ParticleCreakingHeartTrail", "9816"));
-
-        // Fix wrong values
-        final List<EnumField> packetCompressionAlgorithmEnum = enums.get("PacketCompressionAlgorithm");
-        packetCompressionAlgorithmEnum.removeIf(field -> field.name.equals("None"));
-        packetCompressionAlgorithmEnum.add(new EnumField("None", "0xFF"));
 
         final MustacheEngine mustacheEngine = MustacheEngineBuilder.newBuilder()
                 .addTemplateLocator(ClassPathTemplateLocator.builder().setSuffix("mustache").build())

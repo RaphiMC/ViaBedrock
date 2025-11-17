@@ -35,6 +35,10 @@ public enum ContainerID {
 
     private final int value;
 
+    ContainerID(final ContainerID value) {
+        this(value.value);
+    }
+
     ContainerID(final int value) {
         this.value = value;
     }

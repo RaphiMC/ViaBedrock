@@ -38,7 +38,6 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.PredictionType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
 import net.raphimc.viabedrock.protocol.model.Position2f;
@@ -159,10 +158,10 @@ public class ClientPlayerPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.CORRECT_PLAYER_MOVE_PREDICTION, ClientboundPackets1_21_9.PLAYER_POSITION, wrapper -> {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
-            final byte rawPredictionType = wrapper.read(Types.BYTE); // prediction type
-            final PredictionType predictionType = PredictionType.getByValue(rawPredictionType);
-            if (predictionType == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown PredictionType: " + rawPredictionType);
+            final byte rawRewindType = wrapper.read(Types.BYTE); // rewind type
+            final RewindType rewindType = RewindType.getByValue(rawRewindType);
+            if (rewindType == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown RewindType: " + rawRewindType);
                 return;
             }
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
@@ -171,7 +170,7 @@ public class ClientPlayerPackets {
             if (wrapper.read(Types.BOOLEAN)) {
                 wrapper.read(BedrockTypes.FLOAT_LE); // vehicle angular velocity
             }
-            switch (predictionType) {
+            switch (rewindType) {
                 case Player -> {
                     final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                     final boolean onGround = wrapper.read(Types.BOOLEAN); // on ground
@@ -186,7 +185,7 @@ public class ClientPlayerPackets {
                     clientPlayer.writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
                 }
                 case Vehicle -> wrapper.cancel();
-                default -> throw new IllegalStateException("Unhandled PredictionType: " + predictionType);
+                default -> throw new IllegalStateException("Unhandled RewindType: " + rewindType);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SET_PLAYER_GAME_TYPE, null, new PacketHandlers() {
@@ -555,6 +554,25 @@ public class ClientPlayerPackets {
                 clientPlayer.addAuthInputData(flying ? PlayerAuthInputPacket_InputData.StartFlying : PlayerAuthInputPacket_InputData.StopFlying);
             }
         });
+        protocol.registerServerbound(ServerboundPackets1_21_6.CHANGE_GAME_MODE, ServerboundBedrockPackets.SET_PLAYER_GAME_TYPE, new PacketHandlers() {
+            @Override
+            protected void register() {
+                handler(wrapper -> {
+                    final GameMode gameMode = GameMode.values()[wrapper.read(Types.VAR_INT)]; // game mode
+                    final GameType gameType = switch (gameMode) {
+                        case SURVIVAL ->  GameType.Survival;
+                        case CREATIVE -> GameType.Creative;
+                        case ADVENTURE -> GameType.Adventure;
+                        case SPECTATOR -> GameType.Spectator;
+                        default -> throw new IllegalStateException("Unhandled GameMode: " + gameMode);
+                    };
+                    wrapper.write(BedrockTypes.VAR_INT, gameType.getValue()); // game type
+                    wrapper.user().get(EntityTracker.class).getClientPlayer().setGameType(gameType);
+                });
+                handler(CLIENT_PLAYER_GAME_MODE_INFO_UPDATE);
+                handler(CLIENT_PLAYER_GAME_MODE_UPDATE);
+            }
+        });
         protocol.registerServerbound(ServerboundPackets1_21_6.SWING, ServerboundBedrockPackets.ANIMATE, wrapper -> {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
@@ -566,6 +584,7 @@ public class ClientPlayerPackets {
 
             wrapper.write(BedrockTypes.VAR_INT, AnimatePacket_Action.Swing.getValue()); // action
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+            wrapper.write(BedrockTypes.FLOAT_LE, 0F); // data
 
             if (clientPlayer.blockBreakingInfo() != null) {
                 if (!gameSession.isBlockBreakingServerAuthoritative()) {

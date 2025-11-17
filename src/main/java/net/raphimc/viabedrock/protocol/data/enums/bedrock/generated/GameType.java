@@ -13,7 +13,7 @@ public enum GameType {
     Adventure(2),
     Default(5),
     Spectator(6),
-    WorldDefault(Survival.getValue());
+    WorldDefault(Survival);
 
     private static final Int2ObjectMap<GameType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
@@ -32,6 +32,10 @@ public enum GameType {
     }
 
     private final int value;
+
+    GameType(final GameType value) {
+        this(value.value);
+    }
 
     GameType(final int value) {
         this.value = value;

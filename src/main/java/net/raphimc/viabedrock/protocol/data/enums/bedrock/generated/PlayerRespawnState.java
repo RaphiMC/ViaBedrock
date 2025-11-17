@@ -29,6 +29,10 @@ public enum PlayerRespawnState {
 
     private final int value;
 
+    PlayerRespawnState(final PlayerRespawnState value) {
+        this(value.value);
+    }
+
     PlayerRespawnState(final int value) {
         this.value = value;
     }

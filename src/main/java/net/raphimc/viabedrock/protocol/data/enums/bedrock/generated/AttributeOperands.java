@@ -30,6 +30,10 @@ public enum AttributeOperands {
 
     private final int value;
 
+    AttributeOperands(final AttributeOperands value) {
+        this(value.value);
+    }
+
     AttributeOperands(final int value) {
         this.value = value;
     }

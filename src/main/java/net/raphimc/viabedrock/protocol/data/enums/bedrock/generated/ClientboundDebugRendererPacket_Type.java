@@ -29,6 +29,10 @@ public enum ClientboundDebugRendererPacket_Type {
 
     private final int value;
 
+    ClientboundDebugRendererPacket_Type(final ClientboundDebugRendererPacket_Type value) {
+        this(value.value);
+    }
+
     ClientboundDebugRendererPacket_Type(final int value) {
         this.value = value;
     }

@@ -29,6 +29,10 @@ public enum PositionTrackingDBServerBroadcastPacket_Action {
 
     private final int value;
 
+    PositionTrackingDBServerBroadcastPacket_Action(final PositionTrackingDBServerBroadcastPacket_Action value) {
+        this(value.value);
+    }
+
     PositionTrackingDBServerBroadcastPacket_Action(final int value) {
         this.value = value;
     }

@@ -30,6 +30,10 @@ public enum CodeBuilderStorageQueryOptions_Operation {
 
     private final int value;
 
+    CodeBuilderStorageQueryOptions_Operation(final CodeBuilderStorageQueryOptions_Operation value) {
+        this(value.value);
+    }
+
     CodeBuilderStorageQueryOptions_Operation(final int value) {
         this.value = value;
     }

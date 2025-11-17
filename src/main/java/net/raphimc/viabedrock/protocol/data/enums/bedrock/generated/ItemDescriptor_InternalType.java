@@ -32,6 +32,10 @@ public enum ItemDescriptor_InternalType {
 
     private final int value;
 
+    ItemDescriptor_InternalType(final ItemDescriptor_InternalType value) {
+        this(value.value);
+    }
+
     ItemDescriptor_InternalType(final int value) {
         this.value = value;
     }

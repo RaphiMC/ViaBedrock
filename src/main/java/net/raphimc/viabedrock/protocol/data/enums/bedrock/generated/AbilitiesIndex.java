@@ -47,6 +47,10 @@ public enum AbilitiesIndex {
 
     private final int value;
 
+    AbilitiesIndex(final AbilitiesIndex value) {
+        this(value.value);
+    }
+
     AbilitiesIndex(final int value) {
         this.value = value;
     }

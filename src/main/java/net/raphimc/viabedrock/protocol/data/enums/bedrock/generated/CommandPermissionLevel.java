@@ -32,6 +32,10 @@ public enum CommandPermissionLevel {
 
     private final int value;
 
+    CommandPermissionLevel(final CommandPermissionLevel value) {
+        this(value.value);
+    }
+
     CommandPermissionLevel(final int value) {
         this.value = value;
     }

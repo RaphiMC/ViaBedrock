@@ -28,6 +28,10 @@ public enum InventorySource_InventorySourceFlags {
 
     private final int value;
 
+    InventorySource_InventorySourceFlags(final InventorySource_InventorySourceFlags value) {
+        this(value.value);
+    }
+
     InventorySource_InventorySourceFlags(final int value) {
         this.value = value;
     }

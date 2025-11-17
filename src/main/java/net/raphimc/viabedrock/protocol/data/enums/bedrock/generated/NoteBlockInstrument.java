@@ -48,6 +48,10 @@ public enum NoteBlockInstrument {
 
     private final int value;
 
+    NoteBlockInstrument(final NoteBlockInstrument value) {
+        this(value.value);
+    }
+
     NoteBlockInstrument(final int value) {
         this.value = value;
     }

@@ -117,6 +117,9 @@ public enum ActorFlags {
     SONIC_BOOM(107),
     HAS_DASH_COOLDOWN(108),
     PUSH_TOWARDS_CLOSEST_SPACE(109),
+    DEPRECATED_1(110),
+    DEPRECATED_2(111),
+    DEPRECATED_3(112),
     SEARCHING(113),
     CRAWLING(114),
     TIMER_FLAG_1(115),
@@ -148,6 +151,10 @@ public enum ActorFlags {
     }
 
     private final int value;
+
+    ActorFlags(final ActorFlags value) {
+        this(value.value);
+    }
 
     ActorFlags(final int value) {
         this.value = value;

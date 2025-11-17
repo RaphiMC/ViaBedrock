@@ -32,6 +32,10 @@ public enum CodeBuilderExecutionState_CodeStatus {
 
     private final int value;
 
+    CodeBuilderExecutionState_CodeStatus(final CodeBuilderExecutionState_CodeStatus value) {
+        this(value.value);
+    }
+
     CodeBuilderExecutionState_CodeStatus(final int value) {
         this.value = value;
     }

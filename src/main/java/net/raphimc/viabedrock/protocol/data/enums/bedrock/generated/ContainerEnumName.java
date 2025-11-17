@@ -90,6 +90,10 @@ public enum ContainerEnumName {
 
     private final int value;
 
+    ContainerEnumName(final ContainerEnumName value) {
+        this(value.value);
+    }
+
     ContainerEnumName(final int value) {
         this.value = value;
     }

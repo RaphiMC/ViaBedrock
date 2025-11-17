@@ -28,6 +28,10 @@ public enum PlayerLocationPacket_Type {
 
     private final int value;
 
+    PlayerLocationPacket_Type(final PlayerLocationPacket_Type value) {
+        this(value.value);
+    }
+
     PlayerLocationPacket_Type(final int value) {
         this.value = value;
     }

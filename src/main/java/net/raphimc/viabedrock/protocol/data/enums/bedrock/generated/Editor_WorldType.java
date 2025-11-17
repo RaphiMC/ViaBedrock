@@ -30,6 +30,10 @@ public enum Editor_WorldType {
 
     private final int value;
 
+    Editor_WorldType(final Editor_WorldType value) {
+        this(value.value);
+    }
+
     Editor_WorldType(final int value) {
         this.value = value;
     }

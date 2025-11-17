@@ -29,6 +29,10 @@ public enum ActorLinkType {
 
     private final int value;
 
+    ActorLinkType(final ActorLinkType value) {
+        this(value.value);
+    }
+
     ActorLinkType(final int value) {
         this.value = value;
     }

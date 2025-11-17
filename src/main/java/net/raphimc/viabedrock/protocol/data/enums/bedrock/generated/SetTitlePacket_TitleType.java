@@ -35,6 +35,10 @@ public enum SetTitlePacket_TitleType {
 
     private final int value;
 
+    SetTitlePacket_TitleType(final SetTitlePacket_TitleType value) {
+        this(value.value);
+    }
+
     SetTitlePacket_TitleType(final int value) {
         this.value = value;
     }

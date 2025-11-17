@@ -28,6 +28,10 @@ public enum ItemUseInventoryTransaction_PredictedResult {
 
     private final int value;
 
+    ItemUseInventoryTransaction_PredictedResult(final ItemUseInventoryTransaction_PredictedResult value) {
+        this(value.value);
+    }
+
     ItemUseInventoryTransaction_PredictedResult(final int value) {
         this.value = value;
     }

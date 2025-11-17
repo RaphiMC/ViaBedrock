@@ -29,6 +29,10 @@ public enum RequestAbilityPacket_Type {
 
     private final int value;
 
+    RequestAbilityPacket_Type(final RequestAbilityPacket_Type value) {
+        this(value.value);
+    }
+
     RequestAbilityPacket_Type(final int value) {
         this.value = value;
     }

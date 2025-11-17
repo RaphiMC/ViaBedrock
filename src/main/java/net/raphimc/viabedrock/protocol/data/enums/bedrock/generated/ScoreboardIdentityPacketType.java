@@ -28,6 +28,10 @@ public enum ScoreboardIdentityPacketType {
 
     private final int value;
 
+    ScoreboardIdentityPacketType(final ScoreboardIdentityPacketType value) {
+        this(value.value);
+    }
+
     ScoreboardIdentityPacketType(final int value) {
         this.value = value;
     }

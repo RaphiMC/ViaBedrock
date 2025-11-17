@@ -58,7 +58,7 @@ public class FlowerPotBlockEntityRewriter implements BlockEntityRewriter.Rewrite
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + legacyBlockStateId);
                 return defaultJavaBlockEntity;
             }
-        } else if (bedrockTag.get("PlantBlock") instanceof CompoundTag plantBlockTag) {
+        } else if (bedrockTag.get("PlantBlock") instanceof CompoundTag plantBlockTag && !plantBlockTag.isEmpty()) {
             bedrockBlockState = blockStateRewriter.bedrockId(plantBlockTag);
             if (bedrockBlockState == -1) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + plantBlockTag);

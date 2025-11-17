@@ -26,6 +26,7 @@ import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPac
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
@@ -140,6 +141,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         final PacketWrapper animate = PacketWrapper.create(ServerboundBedrockPackets.ANIMATE, this.user);
         animate.write(BedrockTypes.VAR_INT, AnimatePacket_Action.Swing.getValue()); // action
         animate.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
+        animate.write(BedrockTypes.FLOAT_LE, 0F); // data
         animate.sendToServer(BedrockProtocol.class);
     }
 
@@ -272,11 +274,19 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void setAbilities(final PlayerAbilities abilities, final PacketWrapper javaAbilities) {
         final PlayerAbilities prevAbilities = this.abilities;
         super.setAbilities(abilities);
+
         if (abilities.commandPermission() != prevAbilities.commandPermission()) {
             final CommandsStorage commandsStorage = this.user.get(CommandsStorage.class);
             if (commandsStorage != null) {
                 commandsStorage.updateCommandTree();
             }
+        }
+
+        final PlayerPermissionLevel playerPermission = PlayerPermissionLevel.getByValue(abilities.playerPermission());
+        if (playerPermission == PlayerPermissionLevel.Operator || (playerPermission == PlayerPermissionLevel.Custom && abilities.getBooleanValue(AbilitiesIndex.OperatorCommands))) {
+            PacketFactory.sendJavaEntityEvent(this.user, this, EntityEvent.PERMISSION_LEVEL_OWNERS);
+        } else {
+            PacketFactory.sendJavaEntityEvent(this.user, this, EntityEvent.PERMISSION_LEVEL_ALL);
         }
 
         byte flags = 0;

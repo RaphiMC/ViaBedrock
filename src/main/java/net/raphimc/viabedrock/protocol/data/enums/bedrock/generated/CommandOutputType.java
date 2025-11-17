@@ -31,6 +31,10 @@ public enum CommandOutputType {
 
     private final int value;
 
+    CommandOutputType(final CommandOutputType value) {
+        this(value.value);
+    }
+
     CommandOutputType(final int value) {
         this.value = value;
     }

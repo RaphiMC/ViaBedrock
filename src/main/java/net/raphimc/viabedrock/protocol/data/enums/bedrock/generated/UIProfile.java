@@ -29,6 +29,10 @@ public enum UIProfile {
 
     private final int value;
 
+    UIProfile(final UIProfile value) {
+        this(value.value);
+    }
+
     UIProfile(final int value) {
         this.value = value;
     }

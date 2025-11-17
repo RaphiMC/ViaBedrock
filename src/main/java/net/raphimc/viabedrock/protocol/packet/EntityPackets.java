@@ -425,7 +425,7 @@ public class EntityPackets {
             switch (event) {
                 case HURT -> {
                     final CompoundTag damageTypeRegistry = gameSession.getJavaRegistries().getCompoundTag("minecraft:damage_type");
-                    final ActorDamageCause damageCause = ActorDamageCause.getByValue(data, ActorDamageCause.None);
+                    final SharedTypes_Legacy_ActorDamageCause damageCause = SharedTypes_Legacy_ActorDamageCause.getByValue(data, SharedTypes_Legacy_ActorDamageCause.Override);
                     final CompoundTag damageTypeEntry = damageTypeRegistry.getCompoundTag(BedrockProtocol.MAPPINGS.getBedrockToJavaDamageCauses().get(damageCause));
 
                     wrapper.setPacketType(ClientboundPackets1_21_9.DAMAGE_EVENT);
@@ -516,7 +516,7 @@ public class EntityPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOB_EFFECT, ClientboundPackets1_21_9.UPDATE_MOB_EFFECT, wrapper -> {
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
-            final MobEffectPacket_Event event = MobEffectPacket_Event.getByValue(wrapper.read(Types.BYTE), MobEffectPacket_Event.Invalid); // event id
+            final MobEffectPacketPayload_Event event = MobEffectPacketPayload_Event.getByValue(wrapper.read(Types.BYTE), MobEffectPacketPayload_Event.Invalid); // event id
             final int effectId = wrapper.read(BedrockTypes.VAR_INT); // effect id
             final int amplifier = wrapper.read(BedrockTypes.VAR_INT); // amplifier
             final boolean showParticles = wrapper.read(Types.BOOLEAN); // show particles
@@ -541,12 +541,13 @@ public class EntityPackets {
                     wrapper.setPacketType(ClientboundPackets1_21_9.REMOVE_MOB_EFFECT);
                     livingEntity.removeEffect(bedrockIdentifier, wrapper);
                 }
-                default -> throw new IllegalStateException("Unhandled MobEffectPacket_Event: " + event);
+                default -> throw new IllegalStateException("Unhandled MobEffectPacketPayload_Event: " + event);
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.ANIMATE, ClientboundPackets1_21_9.ANIMATE, wrapper -> {
             final AnimatePacket_Action action = AnimatePacket_Action.getByValue(wrapper.read(BedrockTypes.VAR_INT), AnimatePacket_Action.NoAction); // action
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            wrapper.read(BedrockTypes.FLOAT_LE); // data
 
             final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(runtimeEntityId);
             if (entity == null) {
@@ -556,7 +557,7 @@ public class EntityPackets {
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.UNSIGNED_BYTE, (short) (switch (action) {
-                case NoAction -> {
+                case NoAction, RowLeft, RowRight -> {
                     wrapper.cancel();
                     yield AnimateAction.SWING_MAIN_HAND; // any action
                 }

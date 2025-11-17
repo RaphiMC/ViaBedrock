@@ -65,6 +65,10 @@ public enum ContainerType {
 
     private final int value;
 
+    ContainerType(final ContainerType value) {
+        this(value.value);
+    }
+
     ContainerType(final int value) {
         this.value = value;
     }

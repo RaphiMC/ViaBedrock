@@ -30,6 +30,10 @@ public enum ResourcePackResponse {
 
     private final int value;
 
+    ResourcePackResponse(final ResourcePackResponse value) {
+        this(value.value);
+    }
+
     ResourcePackResponse(final int value) {
         this.value = value;
     }

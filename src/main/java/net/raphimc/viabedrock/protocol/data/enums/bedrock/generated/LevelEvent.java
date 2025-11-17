@@ -157,6 +157,10 @@ public enum LevelEvent {
 
     private final int value;
 
+    LevelEvent(final LevelEvent value) {
+        this(value.value);
+    }
+
     LevelEvent(final int value) {
         this.value = value;
     }

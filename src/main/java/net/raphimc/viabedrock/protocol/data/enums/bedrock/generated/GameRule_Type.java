@@ -30,6 +30,10 @@ public enum GameRule_Type {
 
     private final int value;
 
+    GameRule_Type(final GameRule_Type value) {
+        this(value.value);
+    }
+
     GameRule_Type(final int value) {
         this.value = value;
     }
