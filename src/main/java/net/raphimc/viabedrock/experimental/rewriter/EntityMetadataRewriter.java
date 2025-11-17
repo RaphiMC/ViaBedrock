@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.experimental.rewriter;
 
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -33,7 +34,7 @@ public class EntityMetadataRewriter {
     // Called in Entity#translateEntityData if experimental features are enabled
     public static boolean rewrite(final Entity entity, final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
 
-        EntityData javaData = switch (id) {
+        switch (id) {
             case RESERVED_0, RESERVED_092 -> { // Entity flags mask
                 Set<ActorFlags> bedrockFlags = entity.entityFlags();
                 byte javaBitMask = 0; // https://minecraft.wiki/w/Java_Edition_protocol/Entity_metadata#Entity
@@ -59,24 +60,127 @@ public class EntityMetadataRewriter {
                 //TODO: Handle the other flags properly?
                 //ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled movement bitmask bits for entity " + entity.type() + ": " + Long.toBinaryString(remaining));
 
-                yield new EntityData(entity.getJavaEntityDataIndex("SHARED_FLAGS"), VersionedTypes.V1_21_9.entityDataTypes().byteType, javaBitMask);
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("SHARED_FLAGS"), VersionedTypes.V1_21_9.entityDataTypes().byteType, javaBitMask));
+
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("SILENT"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.SILENT)));
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("NO_GRAVITY"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, !bedrockFlags.contains(ActorFlags.HAS_GRAVITY)));
+
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_9.MOB)) {
+                    byte mobBitMask = 0;
+                    if (bedrockFlags.contains(ActorFlags.NOAI)) {
+                        mobBitMask |= 0x01;
+                    }
+
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("MOB_FLAGS"), VersionedTypes.V1_21_9.entityDataTypes().byteType, mobBitMask));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.ALLAY)) {
+                    boolean dancing = bedrockFlags.contains(ActorFlags.DANCING);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("DANCING"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, dancing));
+                }
+
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_9.ABSTRACT_AGEABLE)) {
+                    boolean isBaby = bedrockFlags.contains(ActorFlags.BABY);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("BABY"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isBaby));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.AXOLOTL)) {
+                    boolean playingDead = bedrockFlags.contains(ActorFlags.PLAYING_DEAD);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("PLAYING_DEAD"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, playingDead));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.BEE)) {
+                    byte beeBitMask = 0;
+                    if (bedrockFlags.contains(ActorFlags.ANGRY)) {
+                        beeBitMask |= 0x02;
+                    }
+
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("FLAGS"), VersionedTypes.V1_21_9.entityDataTypes().byteType, beeBitMask));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.OCELOT)) {
+                    boolean isTrusting = bedrockFlags.contains(ActorFlags.TRUSTING);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TRUSTING"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isTrusting));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.SHEEP)) {
+                    byte sheepBitMask = 0;
+                    if (bedrockFlags.contains(ActorFlags.SHEARED)) {
+                        sheepBitMask |= 0x10;
+                    }
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("WOOL"), VersionedTypes.V1_21_9.entityDataTypes().byteType, sheepBitMask));
+                }
+
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_9.TAMABLE_ANIMAL)) {
+                    byte tamableBitMask = 0;
+                    if (bedrockFlags.contains(ActorFlags.SITTING)) {
+                        tamableBitMask |= 0x01;
+                    }
+                    if (bedrockFlags.contains(ActorFlags.TAMED)) {
+                        tamableBitMask |= 0x04;
+                    }
+
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("FLAGS"), VersionedTypes.V1_21_9.entityDataTypes().byteType, tamableBitMask));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.BOGGED)) {
+                    boolean isSheared = bedrockFlags.contains(ActorFlags.SHEARED);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("SHEARED"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isSheared));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.CREEPER)) {
+                    boolean charged = bedrockFlags.contains(ActorFlags.CHARGED);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("IS_POWERED"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, charged));
+
+                    boolean ignited = bedrockFlags.contains(ActorFlags.IGNITED);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("IS_IGNITED"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, ignited));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.ZOGLIN)) {
+                    boolean isBaby = bedrockFlags.contains(ActorFlags.BABY);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("BABY"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isBaby));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.ZOMBIE)) {
+                    boolean isBaby = bedrockFlags.contains(ActorFlags.BABY);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("BABY"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isBaby));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.PIGLIN)) {
+                    boolean isBaby = bedrockFlags.contains(ActorFlags.BABY);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("BABY"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isBaby));
+
+                    boolean isDancing = bedrockFlags.contains(ActorFlags.DANCING);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("IS_DANCING"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isDancing));
+                }
+
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_9.ABSTRACT_RAIDER)) {
+                    boolean isCelebrating = bedrockFlags.contains(ActorFlags.CELEBRATING);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("IS_CELEBRATING"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isCelebrating));
+                }
+
+
+            }
+            case FUSE_TIME -> {
+                int fuseTime = (int) entityData.getValue();
+                if (entity.javaType().is(EntityTypes1_21_9.TNT)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("FUSE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, fuseTime));
+                } else {
+                    //ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received FUSE_TIME for non-TNT entity " + entity.type());
+                }
             }
             case AIR_SUPPLY -> { // Air supply is stored as a short in Bedrock, but an int in Java (Bedrock also has a max air supply value we ignore for now)
                 short airSupply = (short) entityData.getValue();
-                yield new EntityData(entity.getJavaEntityDataIndex("AIR_SUPPLY"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, (int) airSupply);
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("AIR_SUPPLY"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, (int) airSupply));
             }
-            case POSE_INDEX -> null; // TODO: Armour stand pose index
-            default -> null;
-        };
-
-        if (javaData == null) {
-            // Log unhandled rewrites for debugging
-            ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Rewriting entity data for " + id + " (" + entityData + ") -> " + entity.type());
-            return false;
-        } else {
-            javaEntityData.add(javaData);
-            return true;
+            case POSE_INDEX -> {
+                break; // TODO: Armour stand pose index
+            }
+            default -> {
+                return false;
+            }
         }
-    }
 
+        return true;
+    }
 }
