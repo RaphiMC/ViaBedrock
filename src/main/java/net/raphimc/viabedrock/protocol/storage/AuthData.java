@@ -19,34 +19,27 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StorableObject;
 
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
+import java.security.KeyPair;
 import java.util.UUID;
 
-public class AuthChainData implements StorableObject {
+public class AuthData implements StorableObject {
 
     private final String mojangJwt;
     private final String identityJwt;
-    private final ECPublicKey publicKey;
-    private final ECPrivateKey privateKey;
+    private final String multiplayerToken;
+    private final KeyPair sessionKeyPair;
     private final UUID deviceId;
 
     private String selfSignedJwt;
     private String skinJwt;
     private String displayName;
-    private UUID identity;
     private String xuid;
 
-    public AuthChainData(final String mojangJwt, final String identityJwt, final ECPublicKey publicKey, final ECPrivateKey privateKey, final UUID deviceId) {
-        this(mojangJwt, identityJwt, publicKey, privateKey, deviceId, null);
-    }
-
-    @Deprecated(forRemoval = true)
-    public AuthChainData(final String mojangJwt, final String identityJwt, final ECPublicKey publicKey, final ECPrivateKey privateKey, final UUID deviceId, final String playFabId) {
+    public AuthData(final String mojangJwt, final String identityJwt, final String multiplayerToken, final KeyPair sessionKeyPair, final UUID deviceId) {
         this.mojangJwt = mojangJwt;
         this.identityJwt = identityJwt;
-        this.publicKey = publicKey;
-        this.privateKey = privateKey;
+        this.multiplayerToken = multiplayerToken;
+        this.sessionKeyPair = sessionKeyPair;
         this.deviceId = deviceId;
     }
 
@@ -58,12 +51,12 @@ public class AuthChainData implements StorableObject {
         return this.identityJwt;
     }
 
-    public ECPublicKey getPublicKey() {
-        return this.publicKey;
+    public String getMultiplayerToken() {
+        return this.multiplayerToken;
     }
 
-    public ECPrivateKey getPrivateKey() {
-        return this.privateKey;
+    public KeyPair getSessionKeyPair() {
+        return this.sessionKeyPair;
     }
 
     public UUID getDeviceId() {
@@ -92,14 +85,6 @@ public class AuthChainData implements StorableObject {
 
     public void setDisplayName(final String displayName) {
         this.displayName = displayName;
-    }
-
-    public UUID getIdentity() {
-        return this.identity;
-    }
-
-    public void setIdentity(final UUID identity) {
-        this.identity = identity;
     }
 
     public String getXuid() {
