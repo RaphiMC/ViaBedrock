@@ -24,9 +24,11 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorFlags;
+import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class EntityMetadataRewriter {
@@ -161,6 +163,21 @@ public class EntityMetadataRewriter {
 
 
             }
+            case VARIANT -> {
+                int variant = (int) entityData.getValue();
+                ViaBedrock.getPlatform().getLogger().warning("Received VARIANT metadata with value " + variant + " for entity " + entity.type() + ".");
+            }
+            case OWNER -> {
+                //TODO: Entity tracker
+                /*EntityTracker entityTracker = null;
+                long ownerId = (long) entityData.getValue(); //TODO: Check if its a Uid or Rid
+                UUID uuid = entityTracker.getEntityByUid(ownerId).javaUuid();
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_9.TAMABLE_ANIMAL)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("OWNERUUID"), VersionedTypes.V1_21_9.entityDataTypes().optionalUUIDType, uuid));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received OWNER for non-TAMEABLE_ANIMAL entity " + entity.type());
+                }*/
+            }
             case FUSE_TIME -> {
                 int fuseTime = (int) entityData.getValue();
                 if (entity.javaType().is(EntityTypes1_21_9.TNT)) {
@@ -175,6 +192,14 @@ public class EntityMetadataRewriter {
             }
             case POSE_INDEX -> {
                 break; // TODO: Armour stand pose index
+            }
+            case SCORE -> {
+                int score = (int) entityData.getValue();
+                if (entity.javaType().is(EntityTypes1_21_9.PLAYER)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("SCORE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, score));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received SCORE for non-PLAYER entity " + entity.type());
+                }
             }
             default -> {
                 return false;
