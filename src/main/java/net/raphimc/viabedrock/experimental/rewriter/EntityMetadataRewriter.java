@@ -166,7 +166,6 @@ public class EntityMetadataRewriter {
             }
             case VARIANT -> {
                 int variant = (int) entityData.getValue();
-                ViaBedrock.getPlatform().getLogger().warning("Received VARIANT metadata with value " + variant + " for entity " + entity.type() + ".");
 
                 switch (entity.javaType()) {
                     case WOLF -> {
@@ -186,6 +185,26 @@ public class EntityMetadataRewriter {
                             }
                         };
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().wolfVariantType, javaVariant));
+                    }
+                    case HORSE -> {
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TYPE_VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, variant));
+                    }
+                    case FROG -> {
+                        int javaVariant = switch (variant) {
+                            case 0 -> 1; // TEMPERATE
+                            case 1 -> 2; // COLD
+                            case 2 -> 0; // WARM
+                            default -> {
+                                ViaBedrock.getPlatform().getLogger().warning("Unknown frog variant " + variant + " for entity " + entity.type() + ", defaulting to TEMPERATE.");
+                                yield 1;
+                            }
+                        };
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().frogVariantType, javaVariant));
+                    }
+                    default -> {
+                        if (variant != 0) { // For some reason bedrock seems to send variant 0 for many entities that don't have variants
+                            ViaBedrock.getPlatform().getLogger().warning("Received non-zero VARIANT " + variant + " for unsupported entity " + entity.type());
+                        }
                     }
                 }
 
