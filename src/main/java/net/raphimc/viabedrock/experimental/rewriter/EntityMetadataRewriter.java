@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.experimental.rewriter;
 
+import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
@@ -56,9 +57,6 @@ public class EntityMetadataRewriter {
                 if (bedrockFlags.contains(ActorFlags.INVISIBLE)) {
                     javaBitMask |= (1 << 5);
                 }
-
-                //TODO: Handle the other flags properly?
-                //ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unhandled movement bitmask bits for entity " + entity.type() + ": " + Long.toBinaryString(remaining));
 
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("SHARED_FLAGS"), VersionedTypes.V1_21_9.entityDataTypes().byteType, javaBitMask));
 
@@ -159,7 +157,6 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("IS_CELEBRATING"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isCelebrating));
                 }
 
-
             }
             case VARIANT -> {
                 int variant = (int) entityData.getValue();
@@ -211,9 +208,6 @@ public class EntityMetadataRewriter {
                 }
 
             }
-            case MARK_VARIANT -> {
-                ViaBedrock.getPlatform().getLogger().warning("MARK_VARIANT " + entity.type() + " - " + entityData.getValue());
-            }
             case OWNER -> {
                 //TODO: Entity tracker
                 /*EntityTracker entityTracker = null;
@@ -240,14 +234,6 @@ public class EntityMetadataRewriter {
             case POSE_INDEX -> {
                 break; // TODO: Armour stand pose index
             }
-            case SCORE -> {
-                /*int score = (int) entityData.getValue();
-                if (entity.javaType().is(EntityTypes1_21_9.PLAYER)) {
-                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("SCORE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, score));
-                } else {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received SCORE for non-PLAYER entity " + entity.type());
-                }*/
-            }
             case PUFFED_STATE -> {
                 byte puffedState = (byte) entityData.getValue();
                 int javaPuffedState = (int) puffedState;
@@ -263,6 +249,16 @@ public class EntityMetadataRewriter {
                 // Java freezing strength is from 0-140 whereas Bedrock is from 0.0-1.0
                 int javaStrength = Math.round(freezingStrength * 140f);
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TICKS_FROZEN"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaStrength));
+            }
+            case GOAT_HORN_COUNT -> {
+                if (entity.javaType().is(EntityTypes1_21_9.GOAT)) {
+                    // In bedrock the goat always loses its right horn first, whereas in java its random
+                    int hornCount = (int) entityData.getValue();
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("HAS_LEFT_HORN"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, hornCount != 0));
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("HAS_RIGHT_HORN"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, hornCount == 2));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received GOAT_HORN_COUNT for non-GOAT entity " + entity.type());
+                }
             }
             default -> {
                 return false;
