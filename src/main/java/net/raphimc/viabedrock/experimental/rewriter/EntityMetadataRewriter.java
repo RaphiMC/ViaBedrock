@@ -17,7 +17,6 @@
  */
 package net.raphimc.viabedrock.experimental.rewriter;
 
-import com.viaversion.viaversion.api.minecraft.WolfVariant;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
@@ -25,11 +24,9 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorFlags;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Level;
 
 public class EntityMetadataRewriter {
@@ -201,6 +198,11 @@ public class EntityMetadataRewriter {
                         };
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().frogVariantType, javaVariant));
                     }
+                    case TROPICAL_FISH -> {
+                        //TODO: Remap tropical fish variants properly
+                        //javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TYPE_VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, variant));
+                    }
+                    case PUFFERFISH -> {} // For some reason bedrock sends the puffed state here as well as in the PUFFED_STATE Actor ID so we ignore this one
                     default -> {
                         if (variant != 0) { // For some reason bedrock seems to send variant 0 for many entities that don't have variants
                             ViaBedrock.getPlatform().getLogger().warning("Received non-zero VARIANT " + variant + " for unsupported entity " + entity.type());
@@ -242,6 +244,15 @@ public class EntityMetadataRewriter {
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received SCORE for non-PLAYER entity " + entity.type());
                 }*/
+            }
+            case PUFFED_STATE -> {
+                byte puffedState = (byte) entityData.getValue();
+                int javaPuffedState = (int) puffedState;
+                if (entity.javaType().is(EntityTypes1_21_9.PUFFERFISH)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("PUFF_STATE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaPuffedState));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received PUFFED_STATE for non-PUFFERFISH entity " + entity.type());
+                }
             }
             default -> {
                 return false;
