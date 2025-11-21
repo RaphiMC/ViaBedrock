@@ -133,6 +133,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         }
 
         Via.getPlatform().runRepeatingSync(new KeepAliveTask(), 20L);
+        Via.getPlatform().runRepeatingSync(new BreakingTickTask(), 1L);
         Via.getPlatform().runRepeatingSync(new ChunkTrackerTickTask(), 2L);
         Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 2L);
         Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
@@ -153,6 +154,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         user.put(new PlayerListStorage());
         user.put(new ScoreboardTracker());
         user.put(new InventoryTracker(user));
+        user.put(new BreakingTracker(user));
     }
 
     @Override
