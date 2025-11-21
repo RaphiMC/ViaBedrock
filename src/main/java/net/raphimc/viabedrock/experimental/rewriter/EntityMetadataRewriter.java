@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.experimental.rewriter;
 
+import com.viaversion.viaversion.api.minecraft.WolfVariant;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
@@ -166,6 +167,28 @@ public class EntityMetadataRewriter {
             case VARIANT -> {
                 int variant = (int) entityData.getValue();
                 ViaBedrock.getPlatform().getLogger().warning("Received VARIANT metadata with value " + variant + " for entity " + entity.type() + ".");
+
+                switch (entity.javaType()) {
+                    case WOLF -> {
+                        int javaVariant = switch (variant) {
+                            case 0 -> 4; // PALE
+                            case 1 -> 7; // ASHEN
+                            case 2 -> 6; // BLACK
+                            case 3 -> 2; // CHESTNUT
+                            case 4 -> 1; // RUSTY
+                            case 5 -> 8; // SNOWY
+                            case 6 -> 0; // SPOTTED
+                            case 7 -> 3; // STRIPED
+                            case 8 -> 5; // WOODS
+                            default -> {
+                                ViaBedrock.getPlatform().getLogger().warning("Unknown wolf variant " + variant + " for entity " + entity.type() + ", defaulting to PALE.");
+                                yield 4;
+                            }
+                        };
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().wolfVariantType, javaVariant));
+                    }
+                }
+
             }
             case OWNER -> {
                 //TODO: Entity tracker
@@ -194,12 +217,12 @@ public class EntityMetadataRewriter {
                 break; // TODO: Armour stand pose index
             }
             case SCORE -> {
-                int score = (int) entityData.getValue();
+                /*int score = (int) entityData.getValue();
                 if (entity.javaType().is(EntityTypes1_21_9.PLAYER)) {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("SCORE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, score));
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received SCORE for non-PLAYER entity " + entity.type());
-                }
+                }*/
             }
             default -> {
                 return false;
