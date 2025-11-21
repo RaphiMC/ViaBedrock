@@ -211,6 +211,9 @@ public class EntityMetadataRewriter {
                 }
 
             }
+            case MARK_VARIANT -> {
+                ViaBedrock.getPlatform().getLogger().warning("MARK_VARIANT " + entity.type() + " - " + entityData.getValue());
+            }
             case OWNER -> {
                 //TODO: Entity tracker
                 /*EntityTracker entityTracker = null;
@@ -253,6 +256,13 @@ public class EntityMetadataRewriter {
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received PUFFED_STATE for non-PUFFERFISH entity " + entity.type());
                 }
+            }
+            case FREEZING_EFFECT_STRENGTH -> {
+                float freezingStrength = (float) entityData.getValue();
+
+                // Java freezing strength is from 0-140 whereas Bedrock is from 0.0-1.0
+                int javaStrength = Math.round(freezingStrength * 140f);
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TICKS_FROZEN"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaStrength));
             }
             default -> {
                 return false;
