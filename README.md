@@ -41,7 +41,7 @@ Some features are marked as experimental, which means they are almost certainly 
 - [ ] Server-Authoritative Inventory
 - [ ] Item data
 - [ ] Block breaking
-- [ ] Block placing
+- [x] Block placing (Experimental)
 - [x] Item use (Experimental)
 - [x] Respawning and dimension switching
 - [x] Form GUIs
