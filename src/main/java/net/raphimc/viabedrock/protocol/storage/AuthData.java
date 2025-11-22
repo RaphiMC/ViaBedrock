@@ -20,6 +20,8 @@ package net.raphimc.viabedrock.protocol.storage;
 import com.viaversion.viaversion.api.connection.StorableObject;
 
 import java.security.KeyPair;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class AuthData implements StorableObject {
@@ -93,6 +95,20 @@ public class AuthData implements StorableObject {
 
     public void setXuid(final String xuid) {
         this.xuid = xuid;
+    }
+
+    public List<String> getCertificateChain() {
+        final List<String> chain = new ArrayList<>();
+        if (this.selfSignedJwt != null) {
+            chain.add(this.selfSignedJwt);
+        }
+        if (this.mojangJwt != null) {
+            chain.add(this.mojangJwt);
+        }
+        if (this.identityJwt != null) {
+            chain.add(this.identityJwt);
+        }
+        return chain;
     }
 
 }
