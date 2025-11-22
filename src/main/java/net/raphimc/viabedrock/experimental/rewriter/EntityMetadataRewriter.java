@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.experimental.rewriter;
 
 import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.minecraft.Particle;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
@@ -25,8 +26,11 @@ import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ParticleType;
 
 import java.util.List;
 import java.util.Set;
@@ -323,6 +327,29 @@ public class EntityMetadataRewriter {
             case ATTACHED, ATTACH_POS -> { // Not needed in java
                 if (!entity.javaType().is(EntityTypes1_21_9.SHULKER)) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received ATTACH for non-SHULKER entity " + entity.type());
+                }
+            }
+            case DATA_RADIUS -> {
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_9.AREA_EFFECT_CLOUD)) {
+                    float radius = (float) entityData.getValue();
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("RADIUS"), VersionedTypes.V1_21_9.entityDataTypes().floatType, radius));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received DATA_RADIUS for non-AREA_EFFECT_CLOUD entity " + entity.type());
+                }
+            }
+            case DATA_WAITING -> {
+                if (entity.javaType().is(EntityTypes1_21_9.AREA_EFFECT_CLOUD)) {
+                    boolean isWaiting = (boolean) entityData.getValue();
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("WAITING"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isWaiting));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received DATA_WAITING for non-AREA_EFFECT_CLOUD entity " + entity.type());
+                }
+            }
+            case DATA_PARTICLE -> {
+                if (entity.javaType().is(EntityTypes1_21_9.AREA_EFFECT_CLOUD)) {
+                    int particle_id_or_colour = (int) entityData.getValue(); //TODO: not sure what this is exactly
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received DATA_PARTICLE for non-AREA_EFFECT_CLOUD entity " + entity.type());
                 }
             }
             default -> {
