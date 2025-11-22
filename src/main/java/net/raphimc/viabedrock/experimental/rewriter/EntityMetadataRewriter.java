@@ -311,6 +311,20 @@ public class EntityMetadataRewriter {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received ATTACH_FACE for non-SHULKER entity " + entity.type());
                 }
             }
+            case PEEK_ID -> {
+                if (entity.javaType().is(EntityTypes1_21_9.SHULKER)) {
+                    int peekId = (int) entityData.getValue();
+                    byte peek = (byte) peekId;
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("PEEK"), VersionedTypes.V1_21_9.entityDataTypes().byteType, peek));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received PEEK_ID for non-SHULKER entity " + entity.type());
+                }
+            }
+            case ATTACHED, ATTACH_POS -> { // Not needed in java
+                if (!entity.javaType().is(EntityTypes1_21_9.SHULKER)) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received ATTACH for non-SHULKER entity " + entity.type());
+                }
+            }
             default -> {
                 return false;
             }
