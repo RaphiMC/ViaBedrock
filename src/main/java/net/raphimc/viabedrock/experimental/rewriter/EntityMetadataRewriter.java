@@ -20,7 +20,9 @@ package net.raphimc.viabedrock.experimental.rewriter;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
+import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
@@ -107,6 +109,34 @@ public class EntityMetadataRewriter {
                         sheepBitMask |= 0x10;
                     }
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("WOOL"), VersionedTypes.V1_21_9.entityDataTypes().byteType, sheepBitMask));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.SNIFFER)) {
+                    int sniffingState = 0;
+                    if (bedrockFlags.contains(ActorFlags.IDLING)) {
+                        sniffingState = 0;
+                    } else if (false) {
+                        //TODO: FEELING_HAPPY
+                        sniffingState = 1;
+                    } else if (false) {
+                        //TODO: SCENTING
+                        sniffingState = 2;
+                    } else if (bedrockFlags.contains(ActorFlags.SNIFFING)) {
+                        sniffingState = 3;
+                    } else if (bedrockFlags.contains(ActorFlags.SEARCHING)) {
+                        sniffingState = 4;
+                    } else if (bedrockFlags.contains(ActorFlags.DIGGING)) {
+                        sniffingState = 5;
+                    } else if (false) {
+                        //TODO: RISING
+                        sniffingState = 6;
+                    } else {
+                        sniffingState = 0;
+                        //TODO: Currently spams a bit but thats probably because we are missing states
+                        //ViaBedrock.getPlatform().getLogger().warning("Unknown sniffer state for entity " + entity.type() + ", defaulting to IDLING.");
+                    }
+
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("STATE"), VersionedTypes.V1_21_9.entityDataTypes().snifferState, sniffingState));
                 }
 
                 if (entity.javaType().isOrHasParent(EntityTypes1_21_9.TAMABLE_ANIMAL)) {
@@ -200,6 +230,10 @@ public class EntityMetadataRewriter {
                         //javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TYPE_VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, variant));
                     }
                     case PUFFERFISH -> {} // For some reason bedrock sends the puffed state here as well as in the PUFFED_STATE Actor ID so we ignore this one
+                    case SHULKER -> {
+                        byte color = (byte) variant;
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("COLOR"), VersionedTypes.V1_21_9.entityDataTypes().byteType, color));
+                    }
                     default -> {
                         if (variant != 0) { // For some reason bedrock seems to send variant 0 for many entities that don't have variants
                             ViaBedrock.getPlatform().getLogger().warning("Received non-zero VARIANT " + variant + " for unsupported entity " + entity.type());
@@ -258,6 +292,23 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("HAS_RIGHT_HORN"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, hornCount == 2));
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received GOAT_HORN_COUNT for non-GOAT entity " + entity.type());
+                }
+            }
+            case EATING_COUNTER -> {
+                int eatingCounter = (int) entityData.getValue();
+                if (entity.javaType().is(EntityTypes1_21_9.PANDA)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("EAT_COUNTER"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, eatingCounter));
+                } else if (eatingCounter != 0) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received EATING_COUNTER for non-PANDA entity " + entity.type() + " with non-zero value " + eatingCounter);
+                }
+            }
+            case ATTACH_FACE -> {
+                if (entity.javaType().is(EntityTypes1_21_9.SHULKER)) {
+                    byte attachFace = (byte) entityData.getValue();
+                    int javaAttachFace = attachFace;
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("ATTACH_FACE"), VersionedTypes.V1_21_9.entityDataTypes().directionType, javaAttachFace));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received ATTACH_FACE for non-SHULKER entity " + entity.type());
                 }
             }
             default -> {
