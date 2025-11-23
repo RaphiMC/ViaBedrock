@@ -229,7 +229,7 @@ public class Entity {
 
     protected boolean translateEntityData(final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
         if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-            return EntityMetadataRewriter.rewrite(this, id, entityData, javaEntityData);
+            return EntityMetadataRewriter.rewrite(user, this, id, entityData, javaEntityData);
         }
 
         return false;

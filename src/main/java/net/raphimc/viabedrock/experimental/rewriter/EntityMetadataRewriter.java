@@ -17,29 +17,26 @@
  */
 package net.raphimc.viabedrock.experimental.rewriter;
 
-import com.viaversion.viaversion.api.Via;
-import com.viaversion.viaversion.api.minecraft.Particle;
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorFlags;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ParticleType;
+import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class EntityMetadataRewriter {
 
     // Called in Entity#translateEntityData if experimental features are enabled
-    public static boolean rewrite(final Entity entity, final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
+    public static boolean rewrite(final UserConnection user, final Entity entity, final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
+        EntityTracker entityTracker = user.get(EntityTracker.class);
 
         switch (id) {
             case RESERVED_0, RESERVED_092 -> { // Entity flags mask
@@ -247,15 +244,20 @@ public class EntityMetadataRewriter {
 
             }
             case OWNER -> {
-                //TODO: Entity tracker
-                /*EntityTracker entityTracker = null;
-                long ownerId = (long) entityData.getValue(); //TODO: Check if its a Uid or Rid
-                UUID uuid = entityTracker.getEntityByUid(ownerId).javaUuid();
+                long ownerId = (long) entityData.getValue();
+                if (ownerId == -1) {
+                    break; // No owner
+                }
+                Entity ownerEntity = entityTracker.getEntityByUid(ownerId);
+                if (ownerEntity == null) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not find owner entity with id " + ownerId + " for entity " + entity.type());
+                    break;
+                }
                 if (entity.javaType().isOrHasParent(EntityTypes1_21_9.TAMABLE_ANIMAL)) {
-                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("OWNERUUID"), VersionedTypes.V1_21_9.entityDataTypes().optionalUUIDType, uuid));
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("OWNERUUID"), VersionedTypes.V1_21_9.entityDataTypes().optionalUUIDType, ownerEntity.javaUuid()));
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received OWNER for non-TAMEABLE_ANIMAL entity " + entity.type());
-                }*/
+                }
             }
             case FUSE_TIME -> {
                 int fuseTime = (int) entityData.getValue();
@@ -361,25 +363,68 @@ public class EntityMetadataRewriter {
                 }
             }
             case TARGET_A -> {
-                //TODO: Entity tracker
-                //Wither
-                ViaBedrock.getPlatform().getLogger().warning("Received TARGET_A entity " + entity.type() + " - " + entityData.getValue());
+                if (entity.javaType().is(EntityTypes1_21_9.WITHER)) {
+                    long targetAId = (long) entityData.getValue();
+                    if (targetAId == -1) {
+                        break; // No target
+                    }
+                    Entity targetAEntity = entityTracker.getEntityByUid(targetAId);
+                    if (targetAEntity == null) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not find TARGET_A entity with id " + targetAId + " for entity " + entity.type());
+                        break;
+                    }
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TARGET_A"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, targetAEntity.javaId()));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received TARGET_A for non-WITHER entity " + entity.type());
+                }
             }
             case TARGET_B -> {
-                //TODO: Entity tracker
-                //Wither
-                ViaBedrock.getPlatform().getLogger().warning("Received TARGET_B entity " + entity.type() + " - " + entityData.getValue());
+                if (entity.javaType().is(EntityTypes1_21_9.WITHER)) {
+                    long targetBId = (long) entityData.getValue();
+                    if (targetBId == -1) {
+                        break; // No target
+                    }
+                    Entity targetBEntity = entityTracker.getEntityByUid(targetBId);
+                    if (targetBEntity == null) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not find TARGET_B entity with id " + targetBId + " for entity " + entity.type());
+                        break;
+                    }
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TARGET_B"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, targetBEntity.javaId()));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received TARGET_B for non-WITHER entity " + entity.type());
+                }
             }
             case TARGET_C -> {
-                //TODO: Entity tracker
-                //Wither
-                ViaBedrock.getPlatform().getLogger().warning("Received TARGET_C entity " + entity.type() + " - " + entityData.getValue());
+                if (entity.javaType().is(EntityTypes1_21_9.WITHER)) {
+                    long targetCId = (long) entityData.getValue();
+                    if (targetCId == -1) {
+                        break; // No target
+                    }
+                    Entity targetCEntity = entityTracker.getEntityByUid(targetCId);
+                    if (targetCEntity == null) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not find TARGET_C entity with id " + targetCId + " for entity " + entity.type());
+                        break;
+                    }
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TARGET_C"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, targetCEntity.javaId()));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received TARGET_C for non-WITHER entity " + entity.type());
+                }
             }
             case TARGET -> {
-                //TODO: Entity tracker
-                //Guardian (also seems to be zero for all other entities)
-                ViaBedrock.getPlatform().getLogger().warning("Received TARGET entity " + entity.type() + " - " + entityData.getValue());
-
+                long targetId = (long) entityData.getValue();
+                if (entity.javaType().is(EntityTypes1_21_9.GUARDIAN)) {
+                    if (targetId == 0) {
+                        break; // No target
+                    }
+                    Entity targetEntity = entityTracker.getEntityByUid(targetId);
+                    if (targetEntity == null) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not find TARGET entity with id " + targetId + " for entity " + entity.type());
+                        break;
+                    }
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("ATTACK_TARGET"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, targetEntity.javaId()));
+                } else if (targetId != 0)  {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received TARGET for non-GUARDIAN entity " + entity.type() + " with non-zero value " + targetId);
+                }
             }
             case AGENT, BALLOON_ANCHOR -> {} // Education edition only, ignore
             default -> {
