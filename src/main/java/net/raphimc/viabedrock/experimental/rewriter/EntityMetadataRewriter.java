@@ -235,6 +235,20 @@ public class EntityMetadataRewriter {
                         byte color = (byte) variant;
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("COLOR"), VersionedTypes.V1_21_9.entityDataTypes().byteType, color));
                     }
+                    case AXOLOTL -> {
+                        int javaVariant = switch (variant) {
+                            case 0 -> 0; // LUCY
+                            case 1 -> 3; // CYAN
+                            case 2 -> 2; // GOLD
+                            case 3 -> 1; // WILD
+                            case 4 -> 4; // BLUE
+                            default -> {
+                                ViaBedrock.getPlatform().getLogger().warning("Unknown axolotl variant " + variant + " for entity " + entity.type() + ", defaulting to LUCY.");
+                                yield 2;
+                            }
+                        };
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaVariant));
+                    }
                     default -> {
                         if (variant != 0) { // For some reason bedrock seems to send variant 0 for many entities that don't have variants
                             ViaBedrock.getPlatform().getLogger().warning("Received non-zero VARIANT " + variant + " for unsupported entity " + entity.type());
