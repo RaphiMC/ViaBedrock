@@ -352,6 +352,26 @@ public class EntityMetadataRewriter {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received DATA_PARTICLE for non-AREA_EFFECT_CLOUD entity " + entity.type());
                 }
             }
+            case INV -> {
+                if (entity.javaType().is(EntityTypes1_21_9.WITHER)) {
+                    int invulnerabilityTicks = (int) entityData.getValue();
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("INV"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, invulnerabilityTicks));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received INV for non-WITHER entity " + entity.type());
+                }
+            }
+            case TARGET_A -> {
+                //TODO: Entity tracker
+                ViaBedrock.getPlatform().getLogger().warning("Received TARGET_A entity " + entity.type() + " - " + entityData.getValue());
+            }
+            case TARGET_B -> {
+                //TODO: Entity tracker
+                ViaBedrock.getPlatform().getLogger().warning("Received TARGET_B entity " + entity.type() + " - " + entityData.getValue());
+            }
+            case TARGET_C -> {
+                //TODO: Entity tracker
+                ViaBedrock.getPlatform().getLogger().warning("Received TARGET_C entity " + entity.type() + " - " + entityData.getValue());
+            }
             default -> {
                 return false;
             }
