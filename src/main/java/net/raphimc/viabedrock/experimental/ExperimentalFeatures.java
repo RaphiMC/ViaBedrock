@@ -26,7 +26,10 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
+import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
 import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
+import net.raphimc.viabedrock.experimental.model.inventory.InventoryTransactionData;
 import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
 import net.raphimc.viabedrock.experimental.util.ProtocolUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -45,6 +48,7 @@ import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -167,14 +171,6 @@ public class ExperimentalFeatures {
 
             // This is the main packet that the bedrock client use to interact with block.The rest of the
             final PacketWrapper transactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
-            transactionPacket.write(BedrockTypes.VAR_INT, 0); // legacy request id
-            transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemUseTransaction.getValue()); // transaction type
-            transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, 1); // actions count
-
-            // This the action to tell the server what item changed.
-            transactionPacket.write(ExperimentalBedrockTypes.INVENTORY_SOURCE, new InventorySource(InventorySourceType.ContainerInventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.NoFlag));
-            transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // slot
-            transactionPacket.write(itemRewriter.itemType(), inventoryTracker.getInventoryContainer().getSelectedHotbarItem()); // from item
 
             BedrockItem predictedToItem = inventoryTracker.getInventoryContainer().getSelectedHotbarItem().copy();
             // This is not entirely correct, but at least it's more accurate than not sending actions or sending the original item data.
@@ -184,6 +180,46 @@ public class ExperimentalFeatures {
             if (predictedToItem.amount() <= 0) {
                 predictedToItem = BedrockItem.empty();
             }
+
+            //Example of using the new model
+            /*BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+                    0, // legacy request id
+                    null,
+                    List.of(
+                            new InventoryActionData(
+                                    new InventorySource(InventorySourceType.ContainerInventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.NoFlag),
+                                    inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                                    inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
+                                    predictedToItem
+                            )
+                    ),
+                    ComplexInventoryTransaction_Type.ItemUseTransaction,
+                    new InventoryTransactionData.UseItemTransactionData(
+                            0, // Legacy request id
+                            null,
+                            null,
+                            ItemUseInventoryTransaction_ActionType.Place,
+                            ItemUseInventoryTransaction_TriggerType.PlayerInput,
+                            position,
+                            faceInt,
+                            (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                            inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
+                            clientPlayer.position(),
+                            clickPosition,
+                            chunkTracker.getBlockState(position),
+                            ItemUseInventoryTransaction_PredictedResult.Success
+                    )
+            );
+            transactionPacket.write(ExperimentalBedrockTypes.INVENTORY_TRANSACTION_PACKET, inventoryTransaction);*/
+
+            transactionPacket.write(BedrockTypes.VAR_INT, 0); // legacy request id
+            transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemUseTransaction.getValue()); // transaction type
+            transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, 1); // actions count
+
+            // This the action to tell the server what item changed.
+            transactionPacket.write(ExperimentalBedrockTypes.INVENTORY_SOURCE, new InventorySource(InventorySourceType.ContainerInventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.NoFlag));
+            transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // slot
+            transactionPacket.write(itemRewriter.itemType(), inventoryTracker.getInventoryContainer().getSelectedHotbarItem()); // from item
 
             transactionPacket.write(itemRewriter.itemType(), predictedToItem); // to item
 
