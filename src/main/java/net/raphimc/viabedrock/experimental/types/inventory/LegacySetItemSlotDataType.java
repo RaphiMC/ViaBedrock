@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.experimental.types.inventory;
 
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.experimental.model.inventory.LegacySetItemSlotData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -30,7 +31,7 @@ public class LegacySetItemSlotDataType extends Type<LegacySetItemSlotData> {
 
     @Override
     public LegacySetItemSlotData read(ByteBuf buffer) {
-        final int containerId = BedrockTypes.VAR_INT.read(buffer);
+        final byte containerId = buffer.readByte();
         final byte[] slots = BedrockTypes.BYTE_ARRAY.read(buffer);
 
         return new LegacySetItemSlotData(containerId, slots);
@@ -38,7 +39,7 @@ public class LegacySetItemSlotDataType extends Type<LegacySetItemSlotData> {
 
     @Override
     public void write(ByteBuf buffer, LegacySetItemSlotData value) {
-        BedrockTypes.VAR_INT.write(buffer, value.containerId());
+        buffer.writeByte(value.containerId());
         BedrockTypes.BYTE_ARRAY.write(buffer, value.slots());
     }
 }

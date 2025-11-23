@@ -17,37 +17,15 @@
  */
 package net.raphimc.viabedrock.experimental.model.inventory;
 
-import com.viaversion.viaversion.api.minecraft.BlockPosition;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ComplexInventoryTransaction_Type;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseInventoryTransaction_PredictedResult;
-import net.raphimc.viabedrock.protocol.model.BedrockItem;
-import net.raphimc.viabedrock.protocol.model.Position3f;
 
 import java.util.List;
 
-//All of this is taken from on https://github.com/CloudburstMC/Protocol/
 public record BedrockInventoryTransaction(
         int legacyRequestId,
         List<LegacySetItemSlotData> legacySlots,
         List<InventoryActionData> actions,
         ComplexInventoryTransaction_Type transactionType,
-        int actionType,
-        long runtimeEntityId,
-        BlockPosition blockPosition,
-        int blockFace,
-        int hotbarSlot,
-        BedrockItem itemInHand,
-        Position3f playerPosition,
-        Position3f clickPosition,
-        Position3f headPosition,
-        /**
-         * Block definition of block being picked.
-         * ItemUseInventoryTransaction only
-         */
-        int blockRuntimeId, //TODO: Find actual type
-        ItemUseInventoryTransaction_TriggerType transactionTriggerType,
-        ItemUseInventoryTransaction_PredictedResult predictedResult
-
+        InventoryTransactionData transactionData
 ) {
 }

@@ -17,5 +17,5 @@
  */
 package net.raphimc.viabedrock.experimental.model.inventory;
 
-public record LegacySetItemSlotData(int containerId, byte[] slots) {
+public record LegacySetItemSlotData(byte containerId, byte[] slots) {
 }
