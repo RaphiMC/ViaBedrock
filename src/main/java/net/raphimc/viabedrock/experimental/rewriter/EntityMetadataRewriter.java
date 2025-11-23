@@ -134,7 +134,7 @@ public class EntityMetadataRewriter {
                     } else {
                         sniffingState = 0;
                         //TODO: Currently spams a bit but thats probably because we are missing states
-                        //ViaBedrock.getPlatform().getLogger().warning("Unknown sniffer state for entity " + entity.type() + ", defaulting to IDLING.");
+                        //ViaBedrock.getPlatform().getLogger().warning("Unknown sniffer state, defaulting to IDLING.");
                     }
 
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("STATE"), VersionedTypes.V1_21_9.entityDataTypes().snifferState, sniffingState));
@@ -205,7 +205,7 @@ public class EntityMetadataRewriter {
                             case 7 -> 3; // STRIPED
                             case 8 -> 5; // WOODS
                             default -> {
-                                ViaBedrock.getPlatform().getLogger().warning("Unknown wolf variant " + variant + " for entity " + entity.type() + ", defaulting to PALE.");
+                                ViaBedrock.getPlatform().getLogger().warning("Unknown wolf variant " + variant + ", defaulting to PALE.");
                                 yield 4;
                             }
                         };
@@ -220,7 +220,7 @@ public class EntityMetadataRewriter {
                             case 1 -> 2; // COLD
                             case 2 -> 0; // WARM
                             default -> {
-                                ViaBedrock.getPlatform().getLogger().warning("Unknown frog variant " + variant + " for entity " + entity.type() + ", defaulting to TEMPERATE.");
+                                ViaBedrock.getPlatform().getLogger().warning("Unknown frog variant " + variant + ", defaulting to TEMPERATE.");
                                 yield 1;
                             }
                         };
@@ -243,7 +243,7 @@ public class EntityMetadataRewriter {
                             case 3 -> 1; // WILD
                             case 4 -> 4; // BLUE
                             default -> {
-                                ViaBedrock.getPlatform().getLogger().warning("Unknown axolotl variant " + variant + " for entity " + entity.type() + ", defaulting to LUCY.");
+                                ViaBedrock.getPlatform().getLogger().warning("Unknown axolotl variant " + variant + ", defaulting to LUCY.");
                                 yield 2;
                             }
                         };
