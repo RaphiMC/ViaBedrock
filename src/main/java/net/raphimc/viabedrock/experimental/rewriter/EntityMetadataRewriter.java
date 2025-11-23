@@ -294,7 +294,7 @@ public class EntityMetadataRewriter {
                             case 3 -> 1; // WILD
                             case 4 -> 4; // BLUE
                             default -> {
-                                ViaBedrock.getPlatform().getLogger().warning("Unknown axolotl variant " + variant + " for entity " + entity.type() + ", defaulting to LUCY.");
+                                ViaBedrock.getPlatform().getLogger().warning("Unknown axolotl variant " + variant + ", defaulting to LUCY.");
                                 yield 2;
                             }
                         };
