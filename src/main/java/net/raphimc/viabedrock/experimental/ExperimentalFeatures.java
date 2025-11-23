@@ -31,8 +31,10 @@ import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
 import net.raphimc.viabedrock.experimental.util.ProtocolUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
+import net.raphimc.viabedrock.protocol.data.enums.java.GameMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.InteractionHand;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerActionAction;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
@@ -42,6 +44,8 @@ import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+
+import java.util.logging.Level;
 
 /**
  * This class is used to register experimental features that are not yet stable/tested enough to be included in the main protocol.
@@ -130,8 +134,12 @@ public class ExperimentalFeatures {
 
             BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
             int faceInt = wrapper.read(Types.UNSIGNED_BYTE); // face
-            BlockFace face = getBlockFace(faceInt);
-            //BlockFace face = BlockFace.values()[wrapper.read(Types.VAR_INT)]; // face
+            Direction direction = Direction.getFromVerticalId(faceInt);
+            if (direction == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown block face id: " + faceInt);
+                return;
+            }
+            BlockFace face = direction.blockFace();
             Position3f clickPosition = new Position3f(
                     wrapper.read(Types.FLOAT), // x
                     wrapper.read(Types.FLOAT), // y
@@ -170,7 +178,7 @@ public class ExperimentalFeatures {
 
             BedrockItem predictedToItem = inventoryTracker.getInventoryContainer().getSelectedHotbarItem().copy();
             // This is not entirely correct, but at least it's more accurate than not sending actions or sending the original item data.
-            if (predictedToItem.blockRuntimeId() != 0) {
+            if (predictedToItem.blockRuntimeId() != 0 && clientPlayer.javaGameMode() != GameMode.CREATIVE) {
                 predictedToItem.setAmount(predictedToItem.amount() - 1);
             }
             if (predictedToItem.amount() <= 0) {
@@ -183,7 +191,7 @@ public class ExperimentalFeatures {
             transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseInventoryTransaction_TriggerType.PlayerInput.getValue()); // trigger type
             transactionPacket.write(BedrockTypes.BLOCK_POSITION, position); // block position
             transactionPacket.write(BedrockTypes.VAR_INT, faceInt); // block face
-            transactionPacket.write(BedrockTypes.UNSIGNED_VAR_INT, (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // hotbar slot
+            transactionPacket.write(BedrockTypes.VAR_INT, (int) inventoryTracker.getInventoryContainer().getSelectedHotbarSlot()); // hotbar slot
             transactionPacket.write(itemRewriter.itemType(), inventoryTracker.getInventoryContainer().getSelectedHotbarItem()); // hand item
             transactionPacket.write(BedrockTypes.POSITION_3F, clientPlayer.position()); // player position
             transactionPacket.write(BedrockTypes.POSITION_3F, clickPosition); // click position
@@ -207,21 +215,4 @@ public class ExperimentalFeatures {
 
     public static void registerTasks() {
     }
-
-    //TODO: Viaversion should fix the BlockFace ordinals
-    private static BlockFace getBlockFace(int face) {
-        return switch (face) {
-            case 0 -> BlockFace.BOTTOM;
-            case 1 -> BlockFace.TOP;
-            case 2 -> BlockFace.NORTH;
-            case 3 -> BlockFace.SOUTH;
-            case 4 -> BlockFace.WEST;
-            case 5 -> BlockFace.EAST;
-            default -> {
-                ViaBedrock.getPlatform().getLogger().warning("Unknown block face: " + face);
-                yield BlockFace.TOP;
-            }
-        };
-    }
-
 }
