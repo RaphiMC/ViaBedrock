@@ -362,16 +362,26 @@ public class EntityMetadataRewriter {
             }
             case TARGET_A -> {
                 //TODO: Entity tracker
+                //Wither
                 ViaBedrock.getPlatform().getLogger().warning("Received TARGET_A entity " + entity.type() + " - " + entityData.getValue());
             }
             case TARGET_B -> {
                 //TODO: Entity tracker
+                //Wither
                 ViaBedrock.getPlatform().getLogger().warning("Received TARGET_B entity " + entity.type() + " - " + entityData.getValue());
             }
             case TARGET_C -> {
                 //TODO: Entity tracker
+                //Wither
                 ViaBedrock.getPlatform().getLogger().warning("Received TARGET_C entity " + entity.type() + " - " + entityData.getValue());
             }
+            case TARGET -> {
+                //TODO: Entity tracker
+                //Guardian (also seems to be zero for all other entities)
+                ViaBedrock.getPlatform().getLogger().warning("Received TARGET entity " + entity.type() + " - " + entityData.getValue());
+
+            }
+            case AGENT, BALLOON_ANCHOR -> {} // Education edition only, ignore
             default -> {
                 return false;
             }
