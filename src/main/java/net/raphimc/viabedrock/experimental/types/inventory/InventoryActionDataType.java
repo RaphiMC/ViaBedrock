@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.experimental.types.inventory;
 
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
@@ -28,27 +29,37 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class InventoryActionDataType extends Type<InventoryActionData> {
 
-    private ItemRewriter itemRewriter;
+    private final UserConnection user;
 
-    public InventoryActionDataType() {
+    public InventoryActionDataType(final UserConnection user) {
         super(InventoryActionData.class);
+
+        this.user = user;
     }
 
     @Override
     public InventoryActionData read(ByteBuf buffer) {
+        ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+        if (itemRewriter == null) {
+            throw new IllegalStateException("ItemRewriter not found for user " + user);
+        }
         final InventorySource source = ExperimentalBedrockTypes.INVENTORY_SOURCE.read(buffer);
         final int slot = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-        final BedrockItem fromItem = itemRewriter.itemType().read(buffer); //TODO
-        final BedrockItem toItem = itemRewriter.itemType().read(buffer); //TODO
+        final BedrockItem fromItem = itemRewriter.itemType().read(buffer);
+        final BedrockItem toItem = itemRewriter.itemType().read(buffer);
 
         return new InventoryActionData(source, slot, fromItem, toItem);
     }
 
     @Override
     public void write(ByteBuf buffer, InventoryActionData value) {
+        ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+        if (itemRewriter == null) {
+            throw new IllegalStateException("ItemRewriter not found for user " + user);
+        }
         ExperimentalBedrockTypes.INVENTORY_SOURCE.write(buffer, value.source());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.slot());
-        itemRewriter.itemType().write(buffer, value.fromItem()); //TODO
-        itemRewriter.itemType().write(buffer, value.toItem()); //TODO
+        itemRewriter.itemType().write(buffer, value.fromItem());
+        itemRewriter.itemType().write(buffer, value.toItem());
     }
 }

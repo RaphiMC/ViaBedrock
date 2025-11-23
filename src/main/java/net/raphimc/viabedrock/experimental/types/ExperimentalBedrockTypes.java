@@ -27,7 +27,5 @@ public class ExperimentalBedrockTypes {
 
     public static final Type<LegacySetItemSlotData[]> LEGACY_SET_ITEM_SLOT_DATA = new ArrayType<>(new LegacySetItemSlotDataType(), BedrockTypes.UNSIGNED_VAR_INT);
     public static final Type<InventorySource> INVENTORY_SOURCE = new InventorySourcePacketType();
-    public static final Type<InventoryActionData[]> INVENTORY_ACTION_DATA = new ArrayType<>(new InventoryActionDataType(), BedrockTypes.UNSIGNED_VAR_INT);
-    public static final Type<BedrockInventoryTransaction> INVENTORY_TRANSACTION_PACKET = new InventoryTransactionPacketType();
 
 }

@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.experimental.types.inventory;
 
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
@@ -33,34 +34,38 @@ import java.util.List;
 
 public class InventoryTransactionPacketType extends Type<BedrockInventoryTransaction> {
 
-    private ItemRewriter itemRewriter; //TODO
+    private final UserConnection user;
+    private final Type<InventoryActionData[]> inventoryActionDataType;
 
-    public InventoryTransactionPacketType() {
+    public InventoryTransactionPacketType(final UserConnection user, Type<InventoryActionData[]> inventoryActionDataType) {
         super(BedrockInventoryTransaction.class);
+        this.user = user;
+        this.inventoryActionDataType = inventoryActionDataType;
     }
 
     @Override
     public BedrockInventoryTransaction read(ByteBuf buffer) {
+        ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+        if (itemRewriter == null) {
+            throw new IllegalStateException("ItemRewriter not found for user " + user);
+        }
         int legacyRequestId = BedrockTypes.VAR_INT.read(buffer);
         LegacySetItemSlotData[] legacySlots = new LegacySetItemSlotData[0];
         if (legacyRequestId != 0) {
             legacySlots = ExperimentalBedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.read(buffer);
         }
         ComplexInventoryTransaction_Type type = ComplexInventoryTransaction_Type.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
-        InventoryActionData[] actions = ExperimentalBedrockTypes.INVENTORY_ACTION_DATA.read(buffer);
+        InventoryActionData[] actions = inventoryActionDataType.read(buffer);
         InventoryTransactionData transactionData = switch (type) {
             case NormalTransaction ->  new InventoryTransactionData.NormalTransactionData();
             case InventoryMismatch -> new InventoryTransactionData.MismatchTransactionData();
             case ItemUseTransaction -> new InventoryTransactionData.UseItemTransactionData(
-                    BedrockTypes.VAR_INT.read(buffer),
-                    ExperimentalBedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.read(buffer),
-                    ExperimentalBedrockTypes.INVENTORY_ACTION_DATA.read(buffer),
                     ItemUseInventoryTransaction_ActionType.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer)),
                     ItemUseInventoryTransaction_TriggerType.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer)),
                     BedrockTypes.BLOCK_POSITION.read(buffer),
                     BedrockTypes.VAR_INT.read(buffer),
                     BedrockTypes.VAR_INT.read(buffer),
-                    itemRewriter.itemType().read(buffer), //TODO
+                    itemRewriter.itemType().read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer),
                     BedrockTypes.UNSIGNED_VAR_INT.read(buffer),
@@ -70,14 +75,14 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
                     BedrockTypes.VAR_LONG.read(buffer),
                     ItemUseOnActorInventoryTransaction_ActionType.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer)),
                     BedrockTypes.VAR_INT.read(buffer),
-                    itemRewriter.itemType().read(buffer), //TODO
+                    itemRewriter.itemType().read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer)
             );
             case ItemReleaseTransaction -> new InventoryTransactionData.ReleaseItemTransactionData(
                     ItemReleaseInventoryTransaction_ActionType.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer)),
                     BedrockTypes.VAR_INT.read(buffer),
-                    itemRewriter.itemType().read(buffer), //TODO
+                    itemRewriter.itemType().read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer)
             );
         };
@@ -87,27 +92,28 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
 
     @Override
     public void write(ByteBuf buffer, BedrockInventoryTransaction bedrockInventoryTransaction) {
+        ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+        if (itemRewriter == null) {
+            throw new IllegalStateException("ItemRewriter not found for user " + user);
+        }
         BedrockTypes.VAR_INT.write(buffer, bedrockInventoryTransaction.legacyRequestId());
         if (bedrockInventoryTransaction.legacyRequestId() != 0) {
             ExperimentalBedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, bedrockInventoryTransaction.legacySlots().toArray(new LegacySetItemSlotData[0]));
         }
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, bedrockInventoryTransaction.transactionType().getValue());
-        ExperimentalBedrockTypes.INVENTORY_ACTION_DATA.write(buffer, bedrockInventoryTransaction.actions().toArray(new InventoryActionData[0]));
+        inventoryActionDataType.write(buffer, bedrockInventoryTransaction.actions().toArray(new InventoryActionData[0]));
         switch (bedrockInventoryTransaction.transactionType()) {
             case NormalTransaction, InventoryMismatch -> {
                 // No additional data to write
             }
             case ItemUseTransaction -> {
                 InventoryTransactionData.UseItemTransactionData data = (InventoryTransactionData.UseItemTransactionData) bedrockInventoryTransaction.transactionData();
-                BedrockTypes.VAR_INT.write(buffer, data.legacyRequestId());
-                ExperimentalBedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, data.legacySetItemSlots());
-                ExperimentalBedrockTypes.INVENTORY_ACTION_DATA.write(buffer, data.actions());
                 BedrockTypes.UNSIGNED_VAR_INT.write(buffer, data.actionType().getValue());
                 BedrockTypes.UNSIGNED_VAR_INT.write(buffer, data.triggerType().getValue());
                 BedrockTypes.BLOCK_POSITION.write(buffer, data.blockPosition());
                 BedrockTypes.VAR_INT.write(buffer, data.face());
                 BedrockTypes.VAR_INT.write(buffer, data.hotbarSlot());
-                itemRewriter.itemType().write(buffer, data.itemInHand()); //TODO
+                itemRewriter.itemType().write(buffer, data.itemInHand());
                 BedrockTypes.POSITION_3F.write(buffer, data.playerPosition());
                 BedrockTypes.POSITION_3F.write(buffer, data.clickPosition());
                 BedrockTypes.UNSIGNED_VAR_INT.write(buffer, data.blockRuntimeId());
@@ -118,7 +124,7 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
                 BedrockTypes.VAR_LONG.write(buffer, data.entityRuntimeId());
                 BedrockTypes.UNSIGNED_VAR_INT.write(buffer, data.actionType().getValue());
                 BedrockTypes.VAR_INT.write(buffer, data.hotbarSlot());
-                itemRewriter.itemType().write(buffer, data.itemInHand()); //TODO
+                itemRewriter.itemType().write(buffer, data.itemInHand());
                 BedrockTypes.POSITION_3F.write(buffer, data.playerPosition());
                 BedrockTypes.POSITION_3F.write(buffer, data.clickPosition());
             }
@@ -126,7 +132,7 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
                 InventoryTransactionData.ReleaseItemTransactionData data = (InventoryTransactionData.ReleaseItemTransactionData) bedrockInventoryTransaction.transactionData();
                 BedrockTypes.UNSIGNED_VAR_INT.write(buffer, data.actionType().getValue());
                 BedrockTypes.VAR_INT.write(buffer, data.hotbarSlot());
-                itemRewriter.itemType().write(buffer, data.itemInHand()); //TODO
+                itemRewriter.itemType().write(buffer, data.itemInHand());
                 BedrockTypes.POSITION_3F.write(buffer, data.headPosition());
             }
         }

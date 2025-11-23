@@ -37,9 +37,6 @@ public interface InventoryTransactionData {
 
     // UseItemTransactionData represents an inventory transaction data object sent when the client uses an item on a block.
     record UseItemTransactionData(
-            int legacyRequestId,
-            LegacySetItemSlotData[] legacySetItemSlots,
-            InventoryActionData[] actions,
             ItemUseInventoryTransaction_ActionType actionType,
             ItemUseInventoryTransaction_TriggerType triggerType,
             BlockPosition blockPosition,
