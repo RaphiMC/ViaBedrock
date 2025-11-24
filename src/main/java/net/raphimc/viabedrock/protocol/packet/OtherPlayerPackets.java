@@ -18,15 +18,20 @@
 package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.GameProfile;
 import com.viaversion.viaversion.api.minecraft.Vector3d;
+import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
+import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
+import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.entity.PlayerEntity;
@@ -36,6 +41,7 @@ import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GameType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerPositionModeComponent_PositionMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.EquipmentSlot;
@@ -43,12 +49,16 @@ import net.raphimc.viabedrock.protocol.data.enums.java.PlayerInfoUpdateAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
+import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.blockentity.SignBlockEntityRewriter;
+import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -195,6 +205,100 @@ public class OtherPlayerPackets {
                 wrapper.cancel();
             }
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.OPEN_SIGN, ClientboundPackets1_21_9.OPEN_SIGN_EDITOR, wrapper -> {
+            BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
+            boolean front = wrapper.read(Types.BOOLEAN); // front
+
+            wrapper.write(Types.BLOCK_POSITION1_14, position);
+            wrapper.write(Types.BOOLEAN, front);
+        });
+        protocol.registerServerbound(ServerboundPackets1_21_6.SIGN_UPDATE, null, wrapper -> {
+            wrapper.cancel();
+            ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+
+            BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // position
+            boolean front = wrapper.read(Types.BOOLEAN); // front
+            String[] lines = new String[4];
+            for (int i = 0; i < 4; i++) {
+                lines[i] = wrapper.read(Types.STRING); // line
+            }
+
+            BedrockBlockEntity blockEntity = chunkTracker.getBlockEntity(position);
+
+            if (blockEntity != null) {
+                String combinedText = Arrays.stream(lines).reduce((a, b) -> a + "\n" + b).orElse("");
+                blockEntity.tag().getCompoundTag(front ? "FrontText" : "BackText").getStringTag("Text").setValue(combinedText);
+
+                PacketWrapper blockEntityUpdate = PacketWrapper.create(ServerboundBedrockPackets.BLOCK_ENTITY_DATA, wrapper.user());
+
+                blockEntityUpdate.write(BedrockTypes.BLOCK_POSITION, position); // position
+                blockEntityUpdate.write(BedrockTypes.NETWORK_TAG, blockEntity.tag()); // tag
+
+                blockEntityUpdate.sendToServer(BedrockProtocol.class);
+            }
+        });
     }
 
 }
+
+/*
+[18:39:49:339] [SERVER BOUND] - BlockEntityDataPacket(blockPosition=(21, 103, -21), data={
+        "BackText": {
+        "FilteredText": "",
+        "HideGlowOutline": 0b,
+        "IgnoreLighting": 0b,
+        "PersistFormatting": 1b,
+        "SignTextColor": -16777216i,
+        "Text": "",
+        "TextOwner": ""
+        },
+        "FrontText": {
+        "FilteredText": "",
+        "HideGlowOutline": 0b,
+        "IgnoreLighting": 0b,
+        "PersistFormatting": 1b,
+        "SignTextColor": -16777216i,
+        "Text": "hhhhhyyy
+        ",
+        "TextOwner": ""
+        },
+        "IsWaxed": 0b,
+        "LockedForEditingBy": -12884901823l,
+        "id": "Sign",
+        "isMovable": 1b,
+        "x": 21i,
+        "y": 103i,
+        "z": -21i
+})
+        [18:39:49:426] [CLIENT BOUND] - UpdateBlockPacket(flags=[NEIGHBORS, NETWORK, PRIORITY], blockPosition=(21, 103, -21), definition=UnknownDefinition[runtimeId=-1041411415], dataLayer=0)
+        [18:39:49:427] [CLIENT BOUND] - BlockEntityDataPacket(blockPosition=(21, 103, -21), data={
+        "BackText": {
+        "FilteredText": "",
+        "HideGlowOutline": 0b,
+        "IgnoreLighting": 0b,
+        "PersistFormatting": 1b,
+        "SignTextColor": -16777216i,
+        "Text": "",
+        "TextOwner": ""
+        },
+        "FrontText": {
+        "FilteredText": "",
+        "HideGlowOutline": 0b,
+        "IgnoreLighting": 0b,
+        "PersistFormatting": 1b,
+        "SignTextColor": -16777216i,
+        "Text": "hhhhhyyy
+        ",
+        "TextOwner": "2535427074588952"
+        },
+        "IsWaxed": 0b,
+        "LockedForEditingBy": -1l,
+        "id": "Sign",
+        "isMovable": 1b,
+        "x": 21i,
+        "y": 103i,
+        "z": -21i
+})
+        [18:39:50:166] [CLIENT BOUND] - CurrentStructureFeaturePacket(currentStructureFeature=)
+
+ */
