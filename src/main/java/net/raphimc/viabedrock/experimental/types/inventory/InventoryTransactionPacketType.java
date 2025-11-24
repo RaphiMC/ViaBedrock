@@ -101,7 +101,11 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
             ExperimentalBedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, bedrockInventoryTransaction.legacySlots().toArray(new LegacySetItemSlotData[0]));
         }
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, bedrockInventoryTransaction.transactionType().getValue());
-        inventoryActionDataType.write(buffer, bedrockInventoryTransaction.actions().toArray(new InventoryActionData[0]));
+        if (bedrockInventoryTransaction.actions() != null) { //TODO: Make actions list Optional
+            inventoryActionDataType.write(buffer, bedrockInventoryTransaction.actions().toArray(new InventoryActionData[0]));
+        } else {
+            inventoryActionDataType.write(buffer, new InventoryActionData[0]);
+        }
         switch (bedrockInventoryTransaction.transactionType()) {
             case NormalTransaction, InventoryMismatch -> {
                 // No additional data to write
