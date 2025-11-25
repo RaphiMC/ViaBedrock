@@ -59,6 +59,7 @@ import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.container.ChestContainer;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
+import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -474,6 +475,35 @@ public class InventoryPackets {
         protocol.registerServerbound(ServerboundPackets1_21_6.SET_CARRIED_ITEM, ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper -> {
             final short slot = wrapper.read(Types.SHORT); // slot
             wrapper.user().get(InventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
+        });
+        //TODO: Check what happens when you pickblock when something is in the slot
+        //TODO: Inventory transactions?
+        protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_ENTITY, ServerboundBedrockPackets.ENTITY_PICK_REQUEST, wrapper -> {
+            EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+
+            int javaId = wrapper.read(Types.VAR_INT); // entity id
+            boolean withData = wrapper.read(Types.BOOLEAN); // with data
+
+            Entity entity = entityTracker.getEntityByJid(javaId);
+            if (entity == null) {
+                wrapper.cancel();
+                return;
+            }
+
+            wrapper.write(BedrockTypes.VAR_LONG, entity.uniqueId());
+            wrapper.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot());
+            wrapper.write(Types.BOOLEAN, withData);
+        });
+        protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_BLOCK, ServerboundBedrockPackets.BLOCK_PICK_REQUEST, wrapper -> {
+            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+
+            BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // position
+            boolean withData = wrapper.read(Types.BOOLEAN); // with data
+
+            wrapper.write(BedrockTypes.BLOCK_POSITION, position);
+            wrapper.write(Types.BOOLEAN, withData);
+            wrapper.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot());
         });
     }
 
