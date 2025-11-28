@@ -42,7 +42,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class PacketFactory {
     public static void sendJavaBlockDestroyProgress(final UserConnection user, final int id, final BlockPosition position, final int stage) {
-        final PacketWrapper blockDestruction = PacketWrapper.create(ClientboundPackets1_21_6.BLOCK_DESTRUCTION, user);
+        final PacketWrapper blockDestruction = PacketWrapper.create(ClientboundPackets1_21_9.BLOCK_DESTRUCTION, user);
         blockDestruction.write(Types.VAR_INT, id); // id
         blockDestruction.write(Types.BLOCK_POSITION1_14, position); // position
         blockDestruction.write(Types.VAR_INT, stage); // destroy stage
