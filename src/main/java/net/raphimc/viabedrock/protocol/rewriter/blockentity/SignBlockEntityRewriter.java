@@ -33,26 +33,103 @@ import java.util.List;
 
 public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
+    private static final String[] TEXT_CONTAINER_KEYS = {"FrontText", "BackText"};
+
+    public static void upgradeData(final CompoundTag data) {
+        if (data.get("Text1") instanceof StringTag) {
+            final StringBuilder textBuilder = new StringBuilder();
+            for (int i = 1; i <= 4; i++) {
+                if (!textBuilder.isEmpty()) {
+                    textBuilder.append("\n§r");
+                }
+                textBuilder.append(data.getString("Text" + i, ""));
+            }
+
+            final CompoundTag frontText = new CompoundTag();
+            frontText.putString("Text", textBuilder.toString());
+            frontText.putByte("IgnoreLighting", (byte) 0);
+            frontText.putByte("PersistFormatting", (byte) 1);
+
+            data.clear();
+            data.put("FrontText", frontText);
+        } else if (data.get("Text") instanceof StringTag) {
+            if (!(data.get("TextIgnoreLegacyBugResolved") instanceof ByteTag textIgnoreLegacyBugResolvedTag && textIgnoreLegacyBugResolvedTag.asByte() != 0)) {
+                data.putByte("HideGlowOutline", (byte) 1);
+            }
+
+            final CompoundTag frontText = data.copy();
+            data.keySet().removeIf(key -> !key.equals("IsWaxed") && !key.equals("LockedForEditingBy"));
+            data.put("FrontText", frontText);
+        }
+    }
+
+    public static void sanitizeData(final CompoundTag data) {
+        for (String textContainerKey : TEXT_CONTAINER_KEYS) {
+            if (!(data.get(textContainerKey) instanceof CompoundTag)) {
+                final CompoundTag textContainer = new CompoundTag();
+                textContainer.putByte("IgnoreLighting", (byte) 0);
+                textContainer.putByte("PersistFormatting", (byte) 1);
+                data.put(textContainerKey, textContainer);
+            }
+            final CompoundTag textContainer = data.getCompoundTag(textContainerKey);
+            final CompoundTag sanitizedTextContainer = new CompoundTag();
+            if (textContainer.get("FilteredText") instanceof StringTag filteredText) {
+                sanitizedTextContainer.put("FilteredText", filteredText);
+            } else {
+                sanitizedTextContainer.putString("FilteredText", "");
+            }
+            if (textContainer.get("HideGlowOutline") instanceof ByteTag hideGlowOutline) {
+                sanitizedTextContainer.put("HideGlowOutline", hideGlowOutline);
+            } else {
+                sanitizedTextContainer.putByte("HideGlowOutline", (byte) 0);
+            }
+            if (textContainer.get("IgnoreLighting") instanceof ByteTag ignoreLighting) {
+                sanitizedTextContainer.put("IgnoreLighting", ignoreLighting);
+            } else {
+                sanitizedTextContainer.putByte("IgnoreLighting", (byte) 1);
+            }
+            if (textContainer.get("PersistFormatting") instanceof ByteTag persistFormatting) {
+                sanitizedTextContainer.put("PersistFormatting", persistFormatting);
+            } else {
+                sanitizedTextContainer.putByte("PersistFormatting", (byte) 0);
+            }
+            if (textContainer.get("SignTextColor") instanceof IntTag signTextColor) {
+                sanitizedTextContainer.put("SignTextColor", signTextColor);
+            } else {
+                sanitizedTextContainer.putInt("SignTextColor", DyeColor.BLACK.signColor());
+            }
+            if (textContainer.get("Text") instanceof StringTag text) {
+                sanitizedTextContainer.put("Text", text);
+            } else {
+                sanitizedTextContainer.putString("Text", "");
+            }
+            if (textContainer.get("TextOwner") instanceof StringTag textOwner) {
+                sanitizedTextContainer.put("TextOwner", textOwner);
+            } else {
+                sanitizedTextContainer.putString("TextOwner", "");
+            }
+            data.put(textContainerKey, sanitizedTextContainer);
+        }
+        if (!(data.get("IsWaxed") instanceof ByteTag)) {
+            data.putByte("IsWaxed", (byte) 0);
+        }
+        if (!(data.get("LockedForEditingBy") instanceof LongTag)) {
+            data.putLong("LockedForEditingBy", -1L);
+        }
+    }
+
     @Override
     public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
-        final CompoundTag bedrockTag = bedrockBlockEntity.tag();
+        final CompoundTag bedrockTag = bedrockBlockEntity.tag().copy();
+        upgradeData(bedrockTag);
         final CompoundTag javaTag = new CompoundTag();
 
-        if (bedrockTag.get("Text") instanceof StringTag) {
-            final boolean textIgnoreLegacyBugResolved = bedrockTag.get("TextIgnoreLegacyBugResolved") instanceof ByteTag textIgnoreLegacyBugResolvedTag && textIgnoreLegacyBugResolvedTag.asByte() != 0;
-            bedrockTag.putByte("HideGlowOutline", textIgnoreLegacyBugResolved ? (byte) 0 : (byte) 1);
-
-            javaTag.put("front_text", this.translateText(bedrockTag));
-
-        } else {
-            if (bedrockTag.get("FrontText") instanceof CompoundTag frontText) {
-                javaTag.put("front_text", this.translateText(frontText));
-            }
-            if (bedrockTag.get("BackText") instanceof CompoundTag backText) {
-                javaTag.put("back_text", this.translateText(backText));
-            }
+        if (bedrockTag.get("FrontText") instanceof CompoundTag frontText) {
+            javaTag.put("front_text", this.translateText(frontText));
         }
-
+        if (bedrockTag.get("BackText") instanceof CompoundTag backText) {
+            javaTag.put("back_text", this.translateText(backText));
+        }
         this.copy(bedrockTag, javaTag, "IsWaxed", "is_waxed", ByteTag.class);
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
@@ -61,20 +138,7 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
     private CompoundTag translateText(final CompoundTag bedrockText) {
         final CompoundTag javaText = new CompoundTag();
 
-        StringBuilder textBuilder = new StringBuilder();
-        if (bedrockText.get("Text") instanceof StringTag textTag) {
-            textBuilder = new StringBuilder(textTag.getValue());
-        } else {
-            for (int i = 1; i <= 4; i++) {
-                final String text = bedrockText.getString("Text" + i, "");
-                if (text.isEmpty()) continue;
-
-                if (!textBuilder.isEmpty()) textBuilder.append('\n');
-                textBuilder.append(text);
-            }
-        }
-        final String text = textBuilder.toString();
-
+        final String text = bedrockText.getString("Text", "");
         final List<TextComponent> components = new ArrayList<>();
         if (bedrockText.get("PersistFormatting") instanceof ByteTag persistFormatting && persistFormatting.asByte() != 0) {
             for (String line : BedrockTextUtils.split(text, "\n")) {
@@ -97,14 +161,10 @@ public class SignBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             if (((signTextColor >> 24) & 0xFF) < 100) { // Bedrock client can't properly render very transparent text
                 components.clear();
             }
-            final DyeColor dyeColor = DyeColor.getClosestDyeColor(signTextColor);
-            javaText.putString("color", dyeColor.name().toLowerCase());
-
+            javaText.putString("color", DyeColor.getClosestDyeColor(signTextColor).name().toLowerCase());
             for (TextComponent component : components) {
                 component.forEach(c -> c.getStyle().setColor(signTextColor));
             }
-        } else {
-            javaText.putString("color", DyeColor.LIGHT_GRAY.name().toLowerCase());
         }
 
         final ListTag<CompoundTag> messages = new ListTag<>(CompoundTag.class);
