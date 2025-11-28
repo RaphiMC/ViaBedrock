@@ -28,6 +28,10 @@ public enum CameraShakeAction {
 
     private final int value;
 
+    CameraShakeAction(final CameraShakeAction value) {
+        this(value.value);
+    }
+
     CameraShakeAction(final int value) {
         this.value = value;
     }

@@ -29,6 +29,10 @@ public enum ServerboundLoadingScreenPacketType {
 
     private final int value;
 
+    ServerboundLoadingScreenPacketType(final ServerboundLoadingScreenPacketType value) {
+        this(value.value);
+    }
+
     ServerboundLoadingScreenPacketType(final int value) {
         this.value = value;
     }

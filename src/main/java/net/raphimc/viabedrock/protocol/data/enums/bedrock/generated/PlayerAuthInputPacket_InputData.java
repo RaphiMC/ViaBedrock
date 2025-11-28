@@ -16,6 +16,10 @@ public enum PlayerAuthInputPacket_InputData {
      */
     Descend(1),
     /**
+     * Unused
+     */
+    NorthJump_DEPRECATED(2),
+    /**
      * If jump input is down. Doesn't necessarily mean the player is jumping.
      */
     JumpDown(3),
@@ -246,13 +250,13 @@ public enum PlayerAuthInputPacket_InputData {
      */
     StartUsingItem(53),
     /**
-     * This is part of an experimental feature, servers should ignore it.
+     * Unused
      */
-    IsCameraRelativeMovementEnabled(54),
+    IsCameraRelativeMovementEnabled_DEPRECATED(54),
     /**
-     * This is part of an experimental feature, servers should ignore it.
+     * Unused
      */
-    IsRotControlledByMoveDirection(55),
+    IsRotControlledByMoveDirection_DEPRECATED(55),
     /**
      * Set on the tick that the client predicts a riptide spin attack starting, when PlayerActionType::StartSpinAttack is set in PlayerActionComponent.<br>
      * and ActorFlags::DAMAGENEARBYMOBS set true in SetActorDataPacket
@@ -315,6 +319,10 @@ public enum PlayerAuthInputPacket_InputData {
     }
 
     private final int value;
+
+    PlayerAuthInputPacket_InputData(final PlayerAuthInputPacket_InputData value) {
+        this(value.value);
+    }
 
     PlayerAuthInputPacket_InputData(final int value) {
         this.value = value;

@@ -75,8 +75,10 @@ public class BedrockTypes {
     public static final Type<BlockPosition> POSITION_3I = new Position3iType();
     public static final Type<Position3f> POSITION_3F = new Position3fType();
     public static final Type<Position2f> POSITION_2F = new Position2fType();
-    public static final Type<GameRule> GAME_RULE = new GameRuleType();
+    public static final Type<GameRule> GAME_RULE = new GameRuleType(false);
     public static final Type<GameRule[]> GAME_RULE_ARRAY = new ArrayType<>(GAME_RULE, UNSIGNED_VAR_INT);
+    public static final Type<GameRule> VAR_INT_GAME_RULE = new GameRuleType(true);
+    public static final Type<GameRule[]> VAR_INT_GAME_RULE_ARRAY = new ArrayType<>(VAR_INT_GAME_RULE, UNSIGNED_VAR_INT);
     public static final Type<Experiment> EXPERIMENT = new ExperimentType();
     public static final Type<Experiment[]> EXPERIMENT_ARRAY = new ArrayType<>(EXPERIMENT, UNSIGNED_INT_LE);
     public static final Type<EducationUriResource> EDUCATION_URI_RESOURCE = new EducationUriResourceType();

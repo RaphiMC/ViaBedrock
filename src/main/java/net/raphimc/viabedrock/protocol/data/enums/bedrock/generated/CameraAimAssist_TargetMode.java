@@ -7,8 +7,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum CameraAimAssist_TargetMode {
 
-    Angle(0),
-    Distance(1);
+    angle(0),
+    distance(1);
 
     private static final Int2ObjectMap<CameraAimAssist_TargetMode> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
@@ -27,6 +27,10 @@ public enum CameraAimAssist_TargetMode {
     }
 
     private final int value;
+
+    CameraAimAssist_TargetMode(final CameraAimAssist_TargetMode value) {
+        this(value.value);
+    }
 
     CameraAimAssist_TargetMode(final int value) {
         this.value = value;

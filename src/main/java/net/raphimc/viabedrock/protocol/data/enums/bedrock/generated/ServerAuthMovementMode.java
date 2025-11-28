@@ -7,6 +7,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ServerAuthMovementMode {
 
+    LegacyClientAuthoritativeV1_Deprecated(0),
     /**
      * Referred to in the rest of the documentation as 'Client Authoritative'.<br>
      * This mode is the current default with previews coming soon for migrating to server authoritative<br>
@@ -53,6 +54,10 @@ public enum ServerAuthMovementMode {
     }
 
     private final int value;
+
+    ServerAuthMovementMode(final ServerAuthMovementMode value) {
+        this(value.value);
+    }
 
     ServerAuthMovementMode(final int value) {
         this.value = value;

@@ -31,6 +31,10 @@ public enum AttributeModifierOperation {
 
     private final int value;
 
+    AttributeModifierOperation(final AttributeModifierOperation value) {
+        this(value.value);
+    }
+
     AttributeModifierOperation(final int value) {
         this.value = value;
     }

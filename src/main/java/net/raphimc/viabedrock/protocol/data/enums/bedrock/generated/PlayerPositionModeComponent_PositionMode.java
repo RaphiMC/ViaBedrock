@@ -30,6 +30,10 @@ public enum PlayerPositionModeComponent_PositionMode {
 
     private final int value;
 
+    PlayerPositionModeComponent_PositionMode(final PlayerPositionModeComponent_PositionMode value) {
+        this(value.value);
+    }
+
     PlayerPositionModeComponent_PositionMode(final int value) {
         this.value = value;
     }

@@ -32,6 +32,10 @@ public enum SerializedAbilitiesData_SerializedAbilitiesLayer {
 
     private final int value;
 
+    SerializedAbilitiesData_SerializedAbilitiesLayer(final SerializedAbilitiesData_SerializedAbilitiesLayer value) {
+        this(value.value);
+    }
+
     SerializedAbilitiesData_SerializedAbilitiesLayer(final int value) {
         this.value = value;
     }

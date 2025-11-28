@@ -56,6 +56,17 @@ public class MathUtil {
         return start + progress * (end - start);
     }
 
+    public static float wrapDegrees(float degrees) {
+        degrees = degrees % 360F;
+        if (degrees >= 180F) {
+            degrees -= 360F;
+        }
+        if (degrees < -180F) {
+            degrees += 360F;
+        }
+        return degrees;
+    }
+
     public static int getOrFallback(final int value, final int min, final int max, final int fallback) {
         return value < min || value > max ? fallback : value;
     }

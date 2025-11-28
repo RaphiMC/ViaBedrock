@@ -30,6 +30,10 @@ public enum LegacyTelemetryEventPacket_AgentResult {
 
     private final int value;
 
+    LegacyTelemetryEventPacket_AgentResult(final LegacyTelemetryEventPacket_AgentResult value) {
+        this(value.value);
+    }
+
     LegacyTelemetryEventPacket_AgentResult(final int value) {
         this.value = value;
     }

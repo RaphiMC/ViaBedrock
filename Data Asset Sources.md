@@ -16,7 +16,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/61a1ddd3fd7b0ba336ff851002888d83e66e66a5/core/src/main/resources/bedrock/block_palette.1_21_100.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/71803c0ca86d68af9adf0c74d98b6b54a441fb2a/core/src/main/resources/bedrock/block_palette.1_21_110.nbt)
 
 ### data/bedrock/block_sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
@@ -61,7 +61,7 @@ This file has been dumped from a vanilla server using a fabric mod.
 This file has been dumped from a vanilla server using a fabric mod.
 
 ### data/java/via_mappings.json
-[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/8d904bb05b67bd66cdf4a282b2666abddea5cfff/mappings/mapping-1.21.7.json)
+[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/a805a6b2f1e7e448abaf3df5c8b9cd143d3db8d5/mappings/mapping-1.21.9.json)
 
 ### block_state_upgrade_schema/*
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)

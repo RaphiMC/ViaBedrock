@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.model;
 
 import com.viaversion.nbt.tag.CompoundTag;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemDataVersion;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemVersion;
 
-public record ItemEntry(String identifier, int id, boolean componentBased, ItemDataVersion version, CompoundTag componentData) {
+public record ItemEntry(String identifier, int id, boolean componentBased, ItemVersion version, CompoundTag componentData) {
 }

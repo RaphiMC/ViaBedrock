@@ -31,6 +31,10 @@ public enum Difficulty {
 
     private final int value;
 
+    Difficulty(final Difficulty value) {
+        this(value.value);
+    }
+
     Difficulty(final int value) {
         this.value = value;
     }

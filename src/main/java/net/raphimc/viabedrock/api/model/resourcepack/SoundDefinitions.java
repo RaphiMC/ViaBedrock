@@ -107,6 +107,10 @@ public class SoundDefinitions {
     private void parseEvents(final JsonObject sounds, final boolean namespace, final Map<String, EventSounds> soundMap) {
         for (Map.Entry<String, JsonElement> entry : sounds.entrySet()) {
             final JsonObject entity = entry.getValue().getAsJsonObject();
+            if (!entity.has("events")) {
+                continue;
+            }
+
             final JsonElement volume = entity.has("volume") ? entity.get("volume") : null;
             final JsonElement pitch = entity.has("pitch") ? entity.get("pitch") : null;
             final Map<String, ConfiguredSound> eventSounds = new HashMap<>();

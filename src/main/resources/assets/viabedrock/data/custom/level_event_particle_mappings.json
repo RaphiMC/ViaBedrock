@@ -93,7 +93,15 @@
   },
   "MobAppearance": null,
   "EndRod": "minecraft:end_rod",
-  "DragonBreath": "minecraft:dragon_breath",
+  "DragonBreath": {
+    "particle": "minecraft:dragon_breath",
+    "arguments": [
+      {
+        "type": "float",
+        "value": 1
+      }
+    ]
+  },
   "Spit": "minecraft:spit",
   "Totem": "minecraft:totem_of_undying",
   "Food": "minecraft:item",
@@ -122,8 +130,24 @@
   },
   "CampfireSmoke": "minecraft:campfire_cosy_smoke",
   "CampfireSmokeTall": "minecraft:campfire_signal_smoke",
-  "DragonBreathFire": "minecraft:dragon_breath",
-  "DragonBreathTrail": "minecraft:dragon_breath",
+  "DragonBreathFire": {
+    "particle": "minecraft:dragon_breath",
+    "arguments": [
+      {
+        "type": "float",
+        "value": 1
+      }
+    ]
+  },
+  "DragonBreathTrail": {
+    "particle": "minecraft:dragon_breath",
+    "arguments": [
+      {
+        "type": "float",
+        "value": 1
+      }
+    ]
+  },
   "BlueFlame": "minecraft:soul_fire_flame",
   "Soul": "minecraft:soul",
   "ObsidianTear": "minecraft:dripping_obsidian_tear",
@@ -254,5 +278,6 @@
         "value": 25
       }
     ]
-  }
+  },
+  "GreenFlame": "minecraft:copper_fire_flame"
 }

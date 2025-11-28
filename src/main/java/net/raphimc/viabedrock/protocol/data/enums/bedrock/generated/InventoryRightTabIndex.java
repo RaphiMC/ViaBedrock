@@ -30,6 +30,10 @@ public enum InventoryRightTabIndex {
 
     private final int value;
 
+    InventoryRightTabIndex(final InventoryRightTabIndex value) {
+        this(value.value);
+    }
+
     InventoryRightTabIndex(final int value) {
         this.value = value;
     }

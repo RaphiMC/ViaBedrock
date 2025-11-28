@@ -58,6 +58,10 @@ public enum LegacyTelemetryEventPacket_Type {
 
     private final int value;
 
+    LegacyTelemetryEventPacket_Type(final LegacyTelemetryEventPacket_Type value) {
+        this(value.value);
+    }
+
     LegacyTelemetryEventPacket_Type(final int value) {
         this.value = value;
     }

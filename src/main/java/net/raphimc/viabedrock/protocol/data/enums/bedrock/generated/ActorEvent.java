@@ -40,7 +40,7 @@ public enum ActorEvent {
     PRIME_TNTCART(31),
     PRIME_CREEPER(32),
     AIR_SUPPLY(33),
-    ADD_PLAYER_LEVELS(34),
+    DEPRECATED_ADD_PLAYER_LEVELS(34),
     GUARDIAN_MINING_FATIGUE(35),
     AGENT_SWING_ARM(36),
     DRAGON_START_DEATH_ANIM(37),
@@ -64,7 +64,8 @@ public enum ActorEvent {
     FINISHED_CHARGING_ITEM(74),
     ACTOR_GROW_UP(76),
     VIBRATION_DETECTED(77),
-    DRINK_MILK(78);
+    DRINK_MILK(78),
+    SHAKE_WETNESS_STOP(79);
 
     private static final Int2ObjectMap<ActorEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
@@ -83,6 +84,10 @@ public enum ActorEvent {
     }
 
     private final int value;
+
+    ActorEvent(final ActorEvent value) {
+        this(value.value);
+    }
 
     ActorEvent(final int value) {
         this.value = value;

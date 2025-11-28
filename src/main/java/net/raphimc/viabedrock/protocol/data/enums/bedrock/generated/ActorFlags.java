@@ -129,9 +129,10 @@ public enum ActorFlags {
     RENDERS_WHEN_INVISIBLE(119),
     ROTATION_AXIS_ALIGNED(120),
     COLLIDABLE(121),
-    WASD_AIR_CONTROLLED(122),
+    WASD_FREE_CAMERA_CONTROLLED(122),
     DOES_SERVER_AUTH_ONLY_DISMOUNT(123),
-    BODY_ROTATION_ALWAYS_FOLLOWS_HEAD(124);
+    BODY_ROTATION_ALWAYS_FOLLOWS_HEAD(124),
+    CAN_USE_VERTICAL_MOVEMENT_ACTION(125);
 
     private static final Int2ObjectMap<ActorFlags> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
@@ -150,6 +151,10 @@ public enum ActorFlags {
     }
 
     private final int value;
+
+    ActorFlags(final ActorFlags value) {
+        this(value.value);
+    }
 
     ActorFlags(final int value) {
         this.value = value;

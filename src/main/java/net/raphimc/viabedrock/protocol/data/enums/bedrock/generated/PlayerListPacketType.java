@@ -28,6 +28,10 @@ public enum PlayerListPacketType {
 
     private final int value;
 
+    PlayerListPacketType(final PlayerListPacketType value) {
+        this(value.value);
+    }
+
     PlayerListPacketType(final int value) {
         this.value = value;
     }

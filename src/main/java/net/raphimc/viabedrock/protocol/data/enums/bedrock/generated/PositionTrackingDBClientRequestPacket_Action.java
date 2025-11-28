@@ -27,6 +27,10 @@ public enum PositionTrackingDBClientRequestPacket_Action {
 
     private final int value;
 
+    PositionTrackingDBClientRequestPacket_Action(final PositionTrackingDBClientRequestPacket_Action value) {
+        this(value.value);
+    }
+
     PositionTrackingDBClientRequestPacket_Action(final int value) {
         this.value = value;
     }

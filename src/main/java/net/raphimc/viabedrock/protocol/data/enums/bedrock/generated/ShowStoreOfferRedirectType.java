@@ -29,6 +29,10 @@ public enum ShowStoreOfferRedirectType {
 
     private final int value;
 
+    ShowStoreOfferRedirectType(final ShowStoreOfferRedirectType value) {
+        this(value.value);
+    }
+
     ShowStoreOfferRedirectType(final int value) {
         this.value = value;
     }

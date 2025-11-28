@@ -28,6 +28,10 @@ public enum StructureRedstoneSaveMode {
 
     private final int value;
 
+    StructureRedstoneSaveMode(final StructureRedstoneSaveMode value) {
+        this(value.value);
+    }
+
     StructureRedstoneSaveMode(final int value) {
         this.value = value;
     }

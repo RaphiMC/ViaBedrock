@@ -24,19 +24,21 @@ import com.viaversion.viaversion.api.protocol.packet.Direction;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
+import com.viaversion.viaversion.api.protocol.packet.mapping.PacketMappings;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.exception.CancelException;
 import com.viaversion.viaversion.exception.InformativeException;
 import com.viaversion.viaversion.protocol.packet.PacketWrapperImpl;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundConfigurationPackets1_21_6;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ClientboundPackets1_21_6;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundConfigurationPackets1_21_9;
+import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.protocol.StatelessTransitionProtocol;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.experimental.ExperimentalFeatures;
 import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayStatus;
@@ -51,7 +53,7 @@ import net.raphimc.viabedrock.protocol.task.*;
 import java.util.EnumSet;
 import java.util.logging.Level;
 
-public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedrockPackets, ClientboundPackets1_21_6, ServerboundBedrockPackets, ServerboundPackets1_21_6> {
+public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedrockPackets, ClientboundPackets1_21_9, ServerboundBedrockPackets, ServerboundPackets1_21_6> {
 
     public static final BedrockMappingData MAPPINGS = new BedrockMappingData();
 
@@ -80,7 +82,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     }
 
     public BedrockProtocol() {
-        super(ClientboundBedrockPackets.class, ClientboundPackets1_21_6.class, ServerboundBedrockPackets.class, ServerboundPackets1_21_6.class);
+        super(ClientboundBedrockPackets.class, ClientboundPackets1_21_9.class, ServerboundBedrockPackets.class, ServerboundPackets1_21_6.class);
     }
 
     @Override
@@ -102,6 +104,10 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         WorldEffectPackets.register(this);
         UnhandledPackets.register(this);
 
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            ExperimentalFeatures.registerPacketTranslators(this);
+        }
+
         // Fallback for unhandled packets (Temporary)
         for (ClientboundBedrockPackets packet : this.unmappedClientboundPacketType.getEnumConstants()) {
             if (!this.hasRegisteredClientbound(packet)) {
@@ -116,7 +122,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     }
 
     @Override
-    public void register(ViaProviders providers) {
+    public void register(final ViaProviders providers) {
         providers.require(NettyPipelineProvider.class);
         providers.register(ResourcePackProvider.class, ViaBedrock.getConfig().getPackCacheMode().createProvider());
         providers.register(BlobCacheProvider.class, ViaBedrock.getConfig().getBlobCacheMode().createProvider());
@@ -132,6 +138,10 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         Via.getPlatform().runRepeatingSync(new BlobCacheTickTask(), 2L);
         Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
         Via.getPlatform().runRepeatingSync(new InventoryTrackerTickTask(), 1L);
+
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            ExperimentalFeatures.registerTasks();
+        }
     }
 
     @Override
@@ -145,6 +155,10 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         user.put(new ScoreboardTracker());
         user.put(new InventoryTracker(user));
         user.put(new BreakingTracker(user));
+
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            ExperimentalFeatures.registerStorages(user);
+        }
     }
 
     @Override
@@ -171,7 +185,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
                 final PacketWrapper playStatus = PacketWrapper.create(ClientboundBedrockPackets.PLAY_STATUS, wrapper.user());
                 playStatus.write(Types.INT, PlayStatus.LoginSuccess.getValue()); // status
                 playStatus.send(BedrockProtocol.class, false);
-                wrapper.user().getProtocolInfo().setServerState(State.CONFIGURATION);
+                wrapper.user().getProtocolInfo().setState(State.CONFIGURATION);
                 serverState = State.CONFIGURATION;
             }
             if (serverState != State.PLAY && !BEFORE_PLAY_STATE_WHITELIST.contains(packet)) { // Bedrock client ignores most packets before receiving the START_GAME packet
@@ -187,7 +201,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         }*/
         super.transform(direction, state, wrapper);
         /*if (direction == Direction.CLIENTBOUND) {
-            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_21_6.values()[wrapper.getId()] + ", wrapper = " + wrapper);
+            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_21_9.values()[wrapper.getId()] + ", wrapper = " + wrapper);
         } else {
             System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ServerboundBedrockPackets.getPacket(wrapper.getId()) + ", wrapper = " + wrapper);
         }*/
@@ -202,8 +216,8 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
 
         final PacketType disconnectPacketType = switch (user.getProtocolInfo().getServerState()) {
             case LOGIN -> ClientboundLoginPackets.LOGIN_DISCONNECT;
-            case CONFIGURATION -> ClientboundConfigurationPackets1_21_6.DISCONNECT;
-            case PLAY -> ClientboundPackets1_21_6.DISCONNECT;
+            case CONFIGURATION -> ClientboundConfigurationPackets1_21_9.DISCONNECT;
+            case PLAY -> ClientboundPackets1_21_9.DISCONNECT;
             default -> throw new IllegalStateException("Unexpected state: " + user.getProtocolInfo().getServerState());
         };
         try {
@@ -217,6 +231,16 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
             user.getChannel().flush();
             user.getChannel().close();
         }
+    }
+
+    // Only used for experimental features
+    public PacketMappings getClientboundMappings() {
+        return this.clientboundMappings;
+    }
+
+    // Only used for experimental features
+    public PacketMappings getServerboundMappings() {
+        return this.serverboundMappings;
     }
 
 }

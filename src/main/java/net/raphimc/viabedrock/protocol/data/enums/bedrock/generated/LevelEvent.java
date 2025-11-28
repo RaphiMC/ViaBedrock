@@ -129,7 +129,6 @@ public enum LevelEvent {
     ParticlesTrialSpawnerDetectionCharged(3615),
     ParticlesTrialSpawnerBecomeCharged(3616),
     AllPlayersSleeping(3617),
-    deprecated(3618),
     SleepingPlayers(9801),
     JumpPrevented(9810),
     AnimationVaultActivate(9811),
@@ -157,6 +156,10 @@ public enum LevelEvent {
     }
 
     private final int value;
+
+    LevelEvent(final LevelEvent value) {
+        this(value.value);
+    }
 
     LevelEvent(final int value) {
         this.value = value;

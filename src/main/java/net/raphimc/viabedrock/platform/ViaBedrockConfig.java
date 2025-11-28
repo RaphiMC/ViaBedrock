@@ -27,6 +27,11 @@ import java.util.function.Supplier;
 public interface ViaBedrockConfig extends Config {
 
     /**
+     * @return If true, enables experimental features. These features are almost certainly not fully stable/tested and may cause unexpected issues
+     */
+    boolean shouldEnableExperimentalFeatures();
+
+    /**
      * @return The blob cache mode to use.
      */
     BlobCacheMode getBlobCacheMode();

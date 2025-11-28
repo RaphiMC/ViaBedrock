@@ -29,6 +29,10 @@ public enum PhotoType {
 
     private final int value;
 
+    PhotoType(final PhotoType value) {
+        this(value.value);
+    }
+
     PhotoType(final int value) {
         this.value = value;
     }

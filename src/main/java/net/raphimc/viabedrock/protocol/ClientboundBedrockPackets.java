@@ -34,6 +34,7 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     ADD_ENTITY(MinecraftPacketIds.AddActor.getValue()),
     REMOVE_ENTITY(MinecraftPacketIds.RemoveActor.getValue()),
     ADD_ITEM_ENTITY(MinecraftPacketIds.AddItemActor.getValue()),
+    SERVER_PLAYER_POST_MOVE_POSITION(MinecraftPacketIds.ServerPlayerPostMovePosition.getValue()),
     TAKE_ITEM_ENTITY(MinecraftPacketIds.TakeItemActor.getValue()),
     MOVE_ENTITY_ABSOLUTE(MinecraftPacketIds.MoveAbsoluteActor.getValue()),
     MOVE_PLAYER(MinecraftPacketIds.MovePlayer.getValue()),
@@ -184,7 +185,9 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     PLAYER_UPDATE_ENTITY_OVERRIDES(MinecraftPacketIds.PlayerUpdateEntityOverridesPacket.getValue()),
     PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue()),
     CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue()),
-    SERVER_SCRIPT_DEBUG_DRAWER(MinecraftPacketIds.ServerScriptDebugDrawerPacket.getValue());
+    DEBUG_DRAWER(MinecraftPacketIds.DebugDrawerPacket.getValue()),
+    DATA_STORE_SYNC(MinecraftPacketIds.DataStoreSync.getValue()),
+    GRAPHICS_OVERRIDE_PARAMETER(MinecraftPacketIds.GraphicsOverrideParameter.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

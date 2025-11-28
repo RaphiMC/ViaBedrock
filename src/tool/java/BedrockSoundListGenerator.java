@@ -83,7 +83,9 @@ public class BedrockSoundListGenerator {
             Map.entry("break_pot", SharedTypes_Legacy_LevelSoundEvent.BreakDecoratedPot),
             Map.entry("shatter_pot", SharedTypes_Legacy_LevelSoundEvent.ShatterDecoratedPot),
             Map.entry("charge.sculk", SharedTypes_Legacy_LevelSoundEvent.SculkCharge),
-            Map.entry("ambient.weather.the_end_light_flash", SharedTypes_Legacy_LevelSoundEvent.TheEndLightFlash)
+            Map.entry("ambient.weather.the_end_light_flash", SharedTypes_Legacy_LevelSoundEvent.TheEndLightFlash),
+            Map.entry("single_swap", SharedTypes_Legacy_LevelSoundEvent.SingleItemSwap),
+            Map.entry("multi_swap", SharedTypes_Legacy_LevelSoundEvent.MultiItemSwap)
     );
 
     private static final Set<String> CANCELLED_SOUNDS = Set.of(
@@ -122,7 +124,6 @@ public class BedrockSoundListGenerator {
             SharedTypes_Legacy_LevelSoundEvent.Scared,
             SharedTypes_Legacy_LevelSoundEvent.JumpPrevent,
             SharedTypes_Legacy_LevelSoundEvent.Bump,
-            SharedTypes_Legacy_LevelSoundEvent.EquipCopper,
             SharedTypes_Legacy_LevelSoundEvent.Undefined,
             // Edu sounds
             SharedTypes_Legacy_LevelSoundEvent.ElemConstructOpen,

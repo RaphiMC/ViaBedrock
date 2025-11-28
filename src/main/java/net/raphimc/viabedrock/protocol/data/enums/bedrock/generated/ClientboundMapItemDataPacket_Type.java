@@ -30,6 +30,10 @@ public enum ClientboundMapItemDataPacket_Type {
 
     private final int value;
 
+    ClientboundMapItemDataPacket_Type(final ClientboundMapItemDataPacket_Type value) {
+        this(value.value);
+    }
+
     ClientboundMapItemDataPacket_Type(final int value) {
         this.value = value;
     }

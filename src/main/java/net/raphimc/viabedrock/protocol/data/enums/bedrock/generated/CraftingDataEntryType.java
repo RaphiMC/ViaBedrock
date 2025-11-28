@@ -36,6 +36,10 @@ public enum CraftingDataEntryType {
 
     private final int value;
 
+    CraftingDataEntryType(final CraftingDataEntryType value) {
+        this(value.value);
+    }
+
     CraftingDataEntryType(final int value) {
         this.value = value;
     }

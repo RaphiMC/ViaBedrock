@@ -42,6 +42,10 @@ public enum CommandOriginType {
 
     private final int value;
 
+    CommandOriginType(final CommandOriginType value) {
+        this(value.value);
+    }
+
     CommandOriginType(final int value) {
         this.value = value;
     }

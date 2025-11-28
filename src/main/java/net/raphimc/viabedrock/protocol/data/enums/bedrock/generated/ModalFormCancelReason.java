@@ -28,6 +28,10 @@ public enum ModalFormCancelReason {
 
     private final int value;
 
+    ModalFormCancelReason(final ModalFormCancelReason value) {
+        this(value.value);
+    }
+
     ModalFormCancelReason(final int value) {
         this.value = value;
     }

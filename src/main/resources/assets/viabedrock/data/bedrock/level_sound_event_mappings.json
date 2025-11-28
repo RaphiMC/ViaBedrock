@@ -2,6 +2,12 @@
   "Activate": {
     "entity:minecraft:creaking": {
       "sound": "mob.creaking.activate"
+    },
+    "block:shelf": {
+      "sound": "block.shelf.activate"
+    },
+    "block:copper_golem_statue": {
+      "sound": "mob.copper_golem.becoming_statue"
     }
   },
   "AddChest": {
@@ -1830,6 +1836,9 @@
         1.0
       ]
     },
+    "block:copper_golem_statue": {
+      "sound": "block.copper_golem_statue.break"
+    },
     "block:calcite": {
       "sound": "break.calcite"
     },
@@ -2021,6 +2030,9 @@
         0.8,
         1.0
       ]
+    },
+    "block:shelf": {
+      "sound": "block.shelf.break"
     }
   },
   "BreakBlock": {
@@ -2429,12 +2441,54 @@
         0.9,
         1.0
       ]
+    },
+    "block:copper_chest_weathered": {
+      "sound": "block.copper_chest.weathered.closed",
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
+    "block:copper_chest": {
+      "sound": "block.copper_chest.closed",
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
+    "block:copper_chest_oxidized": {
+      "sound": "block.copper_chest.oxidized.closed",
+      "pitch": [
+        0.9,
+        1.0
+      ]
     }
   },
   "ChestOpen": {
     "": {
       "sound": "random.chestopen",
       "volume": 0.5,
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
+    "block:copper_chest_weathered": {
+      "sound": "block.copper_chest.weathered.open",
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
+    "block:copper_chest": {
+      "sound": "block.copper_chest.open",
+      "pitch": [
+        0.9,
+        1.0
+      ]
+    },
+    "block:copper_chest_oxidized": {
+      "sound": "block.copper_chest.oxidized.open",
       "pitch": [
         0.9,
         1.0
@@ -2651,8 +2705,14 @@
     }
   },
   "Deactivate": {
+    "entity:minecraft:copper_golem": {
+      "sound": "mob.copper_golem.becoming_statue"
+    },
     "entity:minecraft:creaking": {
       "sound": "mob.creaking.deactivate"
+    },
+    "block:shelf": {
+      "sound": "block.shelf.deactivate"
     }
   },
   "Death": {
@@ -2757,6 +2817,9 @@
         0.8,
         1.2
       ]
+    },
+    "entity:minecraft:copper_golem": {
+      "sound": "mob.copper_golem.death"
     },
     "entity:minecraft:drowned": {
       "sound": "mob.drowned.death",
@@ -4969,7 +5032,11 @@
       "sound": "armor.equip_chain"
     }
   },
-  "EquipCopper": null,
+  "EquipCopper": {
+    "": {
+      "sound": "armor.equip_copper"
+    }
+  },
   "EquipDiamond": {
     "": {
       "sound": "armor.equip_diamond"
@@ -5315,6 +5382,9 @@
     "block:mud": {
       "sound": "block.mud.fall",
       "volume": 0.4
+    },
+    "block:copper_golem_statue": {
+      "sound": "block.copper_golem_statue.hit"
     },
     "block:calcite": {
       "sound": "fall.calcite"
@@ -7365,6 +7435,9 @@
       "volume": 0.1,
       "pitch": 0.5
     },
+    "block:copper_golem_statue": {
+      "sound": "block.copper_golem_statue.hit"
+    },
     "block:calcite": {
       "sound": "hit.calcite"
     },
@@ -7644,6 +7717,9 @@
         0.8,
         1.2
       ]
+    },
+    "entity:minecraft:copper_golem": {
+      "sound": "mob.copper_golem.hurt"
     },
     "entity:minecraft:drowned": {
       "sound": "mob.drowned.hurt",
@@ -8298,262 +8374,262 @@
   },
   "ImitateBlaze": {
     "entity:minecraft:parrot": {
-      "sound": "mob.blaze.breathe",
+      "sound": "mob.imitate.blaze",
       "volume": 0.4,
       "pitch": 1.8
     }
   },
   "ImitateBogged": {
     "entity:minecraft:parrot": {
-      "sound": "mob.bogged.ambient",
+      "sound": "mob.imitate.bogged",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
   "ImitateBreeze": {
     "entity:minecraft:parrot": {
-      "sound": "mob.breeze.idle_ground",
+      "sound": "mob.imitate.breeze",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
   "ImitateCaveSpider": {
     "entity:minecraft:parrot": {
-      "sound": "mob.spider.say",
+      "sound": "mob.imitate.spider",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
   "ImitateCreaking": {
     "entity:minecraft:parrot": {
-      "sound": "mob.parrot.imitate_creaking"
+      "sound": "mob.imitate.creaking"
     }
   },
   "ImitateCreeper": {
     "entity:minecraft:parrot": {
-      "sound": "random.fuse",
+      "sound": "imitate.fuse",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
   "ImitateDrowned": {
     "entity:minecraft:parrot": {
-      "sound": "mob.drowned.say",
+      "sound": "mob.imitate.drowned",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
   "ImitateElderGuardian": {
     "entity:minecraft:parrot": {
-      "sound": "mob.guardian.land_idle",
+      "sound": "mob.imitate.guardian",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
   "ImitateEnderDragon": {
     "entity:minecraft:parrot": {
-      "sound": "mob.enderdragon.growl",
+      "sound": "mob.imitate.enderdragon",
       "volume": 0.2,
       "pitch": 1.8
     }
   },
   "ImitateEnderman": {
     "entity:minecraft:parrot": {
-      "sound": "mob.endermen.idle",
+      "sound": "mob.imitate.endermen",
       "volume": 0.5,
       "pitch": 1.7
     }
   },
   "ImitateEndermite": {
     "entity:minecraft:parrot": {
-      "sound": "mob.endermite.say",
+      "sound": "mob.imitate.endermite",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
   "ImitateEvocationIllager": {
     "entity:minecraft:parrot": {
-      "sound": "mob.evocation_illager.ambient",
+      "sound": "mob.imitate.evocation_illager",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
   "ImitateGhast": {
     "entity:minecraft:parrot": {
-      "sound": "mob.ghast.moan",
+      "sound": "mob.imitate.ghast",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
   "ImitateGuardian": {
     "entity:minecraft:parrot": {
-      "sound": "mob.guardian.ambient",
+      "sound": "mob.imitate.guardian",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
   "ImitateHappyGhast": {
     "entity:minecraft:parrot": {
-      "sound": "mob.happy_ghast.ambient",
+      "sound": "mob.imitate.happy_ghast",
       "pitch": 1.7
     }
   },
   "ImitateHusk": {
     "entity:minecraft:parrot": {
-      "sound": "mob.husk.ambient",
+      "sound": "mob.imitate.husk",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
   "ImitateMagmaCube": {
     "entity:minecraft:parrot": {
-      "sound": "mob.magmacube.big",
+      "sound": "mob.imitate.magmacube",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
   "ImitatePhantom": {
     "entity:minecraft:parrot": {
-      "sound": "mob.phantom.idle",
+      "sound": "mob.imitate.phantom",
       "volume": 0.7,
       "pitch": 1.5
     }
   },
   "ImitatePillager": {
     "entity:minecraft:parrot": {
-      "sound": "mob.pillager.idle",
+      "sound": "mob.imitate.pillager",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
   "ImitatePolarBear": {
     "entity:minecraft:parrot": {
-      "sound": "mob.polarbear.idle",
+      "sound": "mob.imitate.polarbear",
       "volume": 0.7,
       "pitch": 0.8
     }
   },
   "ImitateRavager": {
     "entity:minecraft:parrot": {
-      "sound": "mob.ravager.ambient",
+      "sound": "mob.imitate.ravager",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
   "ImitateShulker": {
     "entity:minecraft:parrot": {
-      "sound": "mob.shulker.ambient",
+      "sound": "mob.imitate.shulker",
       "volume": 0.4,
       "pitch": 1.7
     }
   },
   "ImitateSilverfish": {
     "entity:minecraft:parrot": {
-      "sound": "mob.silverfish.say",
+      "sound": "mob.imitate.silverfish",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
   "ImitateSkeleton": {
     "entity:minecraft:parrot": {
-      "sound": "mob.skeleton.say",
+      "sound": "mob.imitate.skeleton",
       "pitch": 1.7
     }
   },
   "ImitateSlime": {
     "entity:minecraft:parrot": {
-      "sound": "mob.slime.big",
+      "sound": "mob.imitate.slime",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
   "ImitateSpider": {
     "entity:minecraft:parrot": {
-      "sound": "mob.spider.say",
+      "sound": "mob.imitate.spider",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
   "ImitateStray": {
     "entity:minecraft:parrot": {
-      "sound": "mob.stray.ambient",
+      "sound": "mob.imitate.stray",
       "volume": 0.6,
       "pitch": 1.6
     }
   },
   "ImitateVex": {
     "entity:minecraft:parrot": {
-      "sound": "mob.vex.ambient",
+      "sound": "mob.imitate.vex",
       "volume": 0.8,
       "pitch": 1.6
     }
   },
   "ImitateVindicationIllager": {
     "entity:minecraft:parrot": {
-      "sound": "mob.vindicator.idle",
+      "sound": "mob.imitate.vindicator",
       "volume": 0.6,
       "pitch": 1.7
     }
   },
   "ImitateWarden": {
     "entity:minecraft:parrot": {
-      "sound": "mob.warden.clicking",
+      "sound": "mob.imitate.warden",
       "volume": 0.8,
       "pitch": 1.8
     }
   },
   "ImitateWitch": {
     "entity:minecraft:parrot": {
-      "sound": "mob.witch.ambient",
+      "sound": "mob.imitate.witch",
       "volume": 0.5,
       "pitch": 1.8
     }
   },
   "ImitateWither": {
     "entity:minecraft:parrot": {
-      "sound": "mob.wither.ambient",
+      "sound": "mob.imitate.wither",
       "volume": 0.2,
       "pitch": 1.8
     }
   },
   "ImitateWitherSkeleton": {
     "entity:minecraft:parrot": {
-      "sound": "entity.wither_skeleton.ambient",
+      "sound": "mob.imitate.wither_skeleton",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
   "ImitateWolf": {
     "entity:minecraft:parrot": {
-      "sound": "mob.wolf.bark",
+      "sound": "mob.imitate.wolf",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
   "ImitateZoglin": {
     "entity:minecraft:parrot": {
-      "sound": "mob.zoglin.idle",
+      "sound": "mob.imitate.zoglin",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
   "ImitateZombie": {
     "entity:minecraft:parrot": {
-      "sound": "mob.zombie.say",
+      "sound": "mob.imitate.zombie",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
   "ImitateZombiePigman": {
     "entity:minecraft:parrot": {
-      "sound": "mob.zombiepig.zpig",
+      "sound": "mob.imitate.zombiepig",
       "volume": 0.4,
       "pitch": 1.8
     }
   },
   "ImitateZombieVillager": {
     "entity:minecraft:parrot": {
-      "sound": "mob.zombie_villager.say",
+      "sound": "mob.imitate.zombie_villager",
       "volume": 0.6,
       "pitch": 1.8
     }
@@ -10084,6 +10160,11 @@
       "sound": "mob.mooshroom.convert"
     }
   },
+  "MultiItemSwap": {
+    "block:shelf": {
+      "sound": "block.shelf.multi_swap"
+    }
+  },
   "NearbyClose": {
     "entity:minecraft:warden": {
       "sound": "mob.warden.nearby_close",
@@ -10660,6 +10741,9 @@
         1.0
       ]
     },
+    "block:copper_golem_statue": {
+      "sound": "block.copper_golem_statue.place"
+    },
     "block:calcite": {
       "sound": "place.calcite"
     },
@@ -10857,6 +10941,11 @@
       "sound": "block.dried_ghast.place_in_water",
       "volume": 0.8,
       "pitch": 0.96
+    }
+  },
+  "PlaceItem": {
+    "block:shelf": {
+      "sound": "block.shelf.place_item"
     }
   },
   "PlaceLeashKnot": {
@@ -12072,6 +12161,11 @@
       ]
     }
   },
+  "SingleItemSwap": {
+    "block:shelf": {
+      "sound": "block.shelf.single_swap"
+    }
+  },
   "Sleep": {
     "entity:minecraft:fox": {
       "sound": "mob.fox.sleep",
@@ -12159,6 +12253,9 @@
   "Spawn": {
     "entity:minecraft:wither": {
       "sound": "mob.wither.spawn"
+    },
+    "entity:minecraft:copper_golem": {
+      "sound": "mob.copper_golem.spawn"
     },
     "entity:minecraft:npc": {
       "sound": "mob.villager.idle",
@@ -12792,6 +12889,9 @@
       "sound": "step.nylium",
       "volume": 0.15
     },
+    "entity:minecraft:copper_golem": {
+      "sound": "mob.copper_golem.step"
+    },
     "block:web": {
       "sound": "step.web"
     },
@@ -13240,6 +13340,9 @@
     "entity:minecraft:strider": {
       "sound": "mob.strider.step",
       "volume": 0.25
+    },
+    "block:copper_golem_statue": {
+      "sound": "block.copper_golem_statue.hit"
     },
     "block:calcite": {
       "sound": "step.calcite"

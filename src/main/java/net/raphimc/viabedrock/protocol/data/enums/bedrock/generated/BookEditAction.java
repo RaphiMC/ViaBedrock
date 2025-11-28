@@ -31,6 +31,10 @@ public enum BookEditAction {
 
     private final int value;
 
+    BookEditAction(final BookEditAction value) {
+        this(value.value);
+    }
+
     BookEditAction(final int value) {
         this.value = value;
     }

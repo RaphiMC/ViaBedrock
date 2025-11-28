@@ -68,6 +68,10 @@ public enum Enchant_Type {
 
     private final int value;
 
+    Enchant_Type(final Enchant_Type value) {
+        this(value.value);
+    }
+
     Enchant_Type(final int value) {
         this.value = value;
     }

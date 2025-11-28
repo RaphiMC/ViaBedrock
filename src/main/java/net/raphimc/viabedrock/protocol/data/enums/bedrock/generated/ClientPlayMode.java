@@ -10,12 +10,12 @@ public enum ClientPlayMode {
     Normal(0),
     Teaser(1),
     Screen(2),
-    Viewer(3),
-    Reality(4),
-    Placement(5),
-    LivingRoom(6),
+    Viewer_Deprecated(3),
+    Reality_Deprecated(4),
+    Placement_Deprecated(5),
+    LivingRoom_Deprecated(6),
     ExitLevel(7),
-    ExitLevelLivingRoom(8);
+    ExitLevelLivingRoom_Deprecated(8);
 
     private static final Int2ObjectMap<ClientPlayMode> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
@@ -34,6 +34,10 @@ public enum ClientPlayMode {
     }
 
     private final int value;
+
+    ClientPlayMode(final ClientPlayMode value) {
+        this(value.value);
+    }
 
     ClientPlayMode(final int value) {
         this.value = value;

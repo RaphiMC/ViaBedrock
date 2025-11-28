@@ -28,6 +28,10 @@ public enum AnimationExpression {
 
     private final int value;
 
+    AnimationExpression(final AnimationExpression value) {
+        this(value.value);
+    }
+
     AnimationExpression(final int value) {
         this.value = value;
     }

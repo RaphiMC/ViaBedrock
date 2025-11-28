@@ -21,7 +21,7 @@ import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.util.Key;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemDataVersion;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemVersion;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -36,7 +36,7 @@ public class ItemEntryType extends Type<ItemEntry> {
         final String identifier = Key.namespaced(BedrockTypes.STRING.read(buffer));
         final int id = buffer.readShortLE();
         final boolean componentBased = buffer.readBoolean();
-        final ItemDataVersion version = ItemDataVersion.getByValue(BedrockTypes.VAR_INT.read(buffer), ItemDataVersion.NONE);
+        final ItemVersion version = ItemVersion.getByValue(BedrockTypes.VAR_INT.read(buffer), ItemVersion.None);
         final CompoundTag componentData = (CompoundTag) BedrockTypes.NETWORK_TAG.read(buffer);
 
         return new ItemEntry(identifier, id, componentBased, version, componentData);

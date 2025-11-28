@@ -29,6 +29,10 @@ public enum ChatRestrictionLevel {
 
     private final int value;
 
+    ChatRestrictionLevel(final ChatRestrictionLevel value) {
+        this(value.value);
+    }
+
     ChatRestrictionLevel(final int value) {
         this.value = value;
     }
