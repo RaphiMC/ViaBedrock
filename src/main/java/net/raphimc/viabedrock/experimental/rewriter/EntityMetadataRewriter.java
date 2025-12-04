@@ -140,6 +140,11 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("STATE"), VersionedTypes.V1_21_9.entityDataTypes().snifferState, sniffingState));
                 }
 
+                if (entity.javaType().is(EntityTypes1_21_9.TURTLE)) { //TODO: Test
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("HAS_EGG"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.IS_PREGNANT)));
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("LAYING_EGG"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.LAYING_EGG)));
+                }
+
                 if (entity.javaType().isOrHasParent(EntityTypes1_21_9.TAMABLE_ANIMAL)) {
                     byte tamableBitMask = 0;
                     if (bedrockFlags.contains(ActorFlags.SITTING)) {
@@ -150,6 +155,10 @@ public class EntityMetadataRewriter {
                     }
 
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("FLAGS"), VersionedTypes.V1_21_9.entityDataTypes().byteType, tamableBitMask));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_9.CAT)) { //TODO: Test
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("IS_LYING"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.LAYING_DOWN)));
                 }
 
                 if (entity.javaType().is(EntityTypes1_21_9.BOGGED)) {
@@ -183,7 +192,7 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("IS_DANCING"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isDancing));
                 }
 
-                if (entity.javaType().isOrHasParent(EntityTypes1_21_9.ABSTRACT_RAIDER)) {
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_9.ABSTRACT_RAIDER)) { //TODO: Test
                     boolean isCelebrating = bedrockFlags.contains(ActorFlags.CELEBRATING);
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("IS_CELEBRATING"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, isCelebrating));
                 }
