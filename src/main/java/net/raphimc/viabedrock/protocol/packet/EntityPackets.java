@@ -580,6 +580,13 @@ public class EntityPackets {
                     //TODO: Allow java entity data to be set
                     //TODO: Test
                 }
+                case PUKE -> {
+                    wrapper.cancel();
+
+                    EntityData entityData = new EntityData(entity.getJavaEntityDataIndex("PHASE"),  VersionedTypes.V1_21_9.entityDataTypes().varIntType, 5); // Breath attack phase
+                    //TODO: Allow java entity data to be set
+                    //TODO: Check this is correct and test if it works
+                }
                 case FISHHOOK_TEASE, // Java plays this animation without an event
                      FEED, // Sent when an animal is fed, java does not have an equivalent animation
                      STOP_ATTACKING, // Not used in java and doesnt seem to be sent in bedrock
