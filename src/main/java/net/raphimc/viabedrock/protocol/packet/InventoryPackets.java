@@ -476,8 +476,9 @@ public class InventoryPackets {
             final short slot = wrapper.read(Types.SHORT); // slot
             wrapper.user().get(InventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
         });
-        //TODO: Check what happens when you pickblock when something is in the slot
-        //TODO: Inventory transactions?
+        //TODO: Server is receiving the packet fine but doesn't seem to return anything
+        // I am unable to test this on latest rn but from my testing on 1.21.114.1 the server should send a PICK_ITEM_FROM_BLOCK packet back
+        // With no extra packets from the client
         protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_ENTITY, ServerboundBedrockPackets.ENTITY_PICK_REQUEST, wrapper -> {
             EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
@@ -492,7 +493,7 @@ public class InventoryPackets {
             }
 
             wrapper.write(BedrockTypes.VAR_LONG, entity.uniqueId());
-            wrapper.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot());
+            wrapper.write(Types.BYTE, (byte) 9); // WTF bedrock (this is what the vanilla client sends)
             wrapper.write(Types.BOOLEAN, withData);
         });
         protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_BLOCK, ServerboundBedrockPackets.BLOCK_PICK_REQUEST, wrapper -> {
@@ -503,7 +504,16 @@ public class InventoryPackets {
 
             wrapper.write(BedrockTypes.BLOCK_POSITION, position);
             wrapper.write(Types.BOOLEAN, withData);
-            wrapper.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot());
+            wrapper.write(Types.BYTE, (byte) 9); // WTF bedrock (this is what the vanilla client sends)
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.GUI_DATA_PICK_ITEM, ClientboundPackets1_21_9.SET_HELD_SLOT, wrapper -> {
+            // Apparently this packet is broken in the vanilla client but idk so ill implement it
+            // Bedrock seems to send a hotbar packet afterwards to actually change the slot
+            wrapper.read(BedrockTypes.STRING); // Name
+            wrapper.read(BedrockTypes.STRING); // Effects
+            int hotbarSlot = wrapper.read(BedrockTypes.VAR_INT); // Hotbar Slot
+
+            wrapper.write(Types.VAR_INT, hotbarSlot); // slot
         });
     }
 
