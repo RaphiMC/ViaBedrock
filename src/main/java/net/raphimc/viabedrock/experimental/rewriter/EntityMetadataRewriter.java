@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.experimental.rewriter;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.EulerAngle;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
@@ -29,7 +30,6 @@ import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Level;
 
 public class EntityMetadataRewriter {
@@ -301,8 +301,151 @@ public class EntityMetadataRewriter {
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("AIR_SUPPLY"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, (int) airSupply));
             }
             case POSE_INDEX -> {
-                break; // TODO: Armour stand pose index
+                if (!entity.javaType().is(EntityTypes1_21_9.ARMOR_STAND)) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received POSE_INDEX for non-ARMOR_STAND entity " + entity.type());
+                    break;
+                }
+
+                byte javaBitMask = 0;
+                javaBitMask |= 0x04; // Has arms
+
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("CLIENT_FLAGS"), VersionedTypes.V1_21_9.entityDataTypes().byteType, javaBitMask));
+
+                int poseIndex = (int) entityData.getValue();
+
+                EulerAngle headPose;
+                EulerAngle bodyPose;
+                EulerAngle leftArmPose;
+                EulerAngle rightArmPose;
+                EulerAngle leftLegPose;
+                EulerAngle rightLegPose;
+
+                //Poses from https://github.com/lpsmods/armor-stand-poses/blob/1.21/datapack/datapack/data/poses/function/armor_stand/defaults.mcfunction
+                switch (poseIndex) {
+                    case 0 -> { // DEFAULT
+                        headPose = new EulerAngle(0f, 0f, 0f);
+                        bodyPose = new EulerAngle(0f, 0f, 0f);
+                        leftArmPose = new EulerAngle(-10f, 0f, -10f);
+                        rightArmPose = new EulerAngle(-15f, 0f, 10f);
+                        leftLegPose = new EulerAngle(-1f, 0f, -1f);
+                        rightLegPose = new EulerAngle(1f, 0f, 1f);
+                    }
+                    case 1 -> { // NONE
+                        headPose = new EulerAngle(0f, 0f, 0f);
+                        bodyPose = new EulerAngle(0f, 0f, 0f);
+                        leftArmPose = new EulerAngle(0f, 0f, 0f);
+                        rightArmPose = new EulerAngle(0f, 0f, 0f);
+                        leftLegPose = new EulerAngle(0f, 0f, 0f);
+                        rightLegPose = new EulerAngle(0f, 0f, 0f);
+                    }
+                    case 2 -> { // SOLEMN
+                        headPose = new EulerAngle(15f, 0f, 0f);
+                        bodyPose = new EulerAngle(0f, 0f, 2f);
+                        leftArmPose = new EulerAngle(-30f, 15f, 15f);
+                        rightArmPose = new EulerAngle(-60f, -20f, -10f);
+                        leftLegPose = new EulerAngle(-1f, 0f, -1f);
+                        rightLegPose = new EulerAngle(1f, 0f, 1f);
+                    }
+                    case 3 -> { // ATHENA
+                        headPose = new EulerAngle(-5f, 0f, 0f);
+                        bodyPose = new EulerAngle(0f, 0f, 2f);
+                        leftArmPose = new EulerAngle(10f, 0f, -5f);
+                        rightArmPose = new EulerAngle(-60f, 20f, -10f);
+                        leftLegPose = new EulerAngle(-3f, -3f, -3f);
+                        rightLegPose = new EulerAngle(3f, 3f, 3f);
+                    }
+                    case 4 -> { // BRANDISH
+                        headPose = new EulerAngle(-15f, 0f, 0f);
+                        bodyPose = new EulerAngle(0f, 0f, -2f);
+                        leftArmPose = new EulerAngle(20f, 0f, -10f);
+                        rightArmPose = new EulerAngle(-110f, 50f, 0f);
+                        leftLegPose = new EulerAngle(5f, -3f, -3f);
+                        rightLegPose = new EulerAngle(-5f, 3f, 3f);
+                    }
+                    case 5 -> { // HONOR
+                        headPose = new EulerAngle(-15f, 0f, 0f);
+                        bodyPose = new EulerAngle(0f, 0f, 0f);
+                        leftArmPose = new EulerAngle(-110f, 35f, 0f);
+                        rightArmPose = new EulerAngle(-110f, -35f, 0f);
+                        leftLegPose = new EulerAngle(5f, -3f, -3f);
+                        rightLegPose = new EulerAngle(-5f, 3f, 3f);
+                    }
+                    case 6 -> { // ENTERTAIN
+                        headPose = new EulerAngle(-15f, 0f, 0f);
+                        bodyPose = new EulerAngle(0f, 0f, 0f);
+                        leftArmPose = new EulerAngle(-110f, -35f, 0f);
+                        rightArmPose = new EulerAngle(-110f, 35f, 0f);
+                        leftLegPose = new EulerAngle(5f, -3f, -3f);
+                        rightLegPose = new EulerAngle(-5f, 3f, 3f);
+                    }
+                    case 7 -> { // SALUTE
+                        headPose = new EulerAngle(0f, 0f, 0f);
+                        bodyPose = new EulerAngle(0f, 0f, 0f);
+                        leftArmPose = new EulerAngle(10f, 0f, -5f);
+                        rightArmPose = new EulerAngle(-70f, -40f, 0f);
+                        leftLegPose = new EulerAngle(-1f, 0f, -1f);
+                        rightLegPose = new EulerAngle(1f, 0f, 1f);
+                    }
+                    case 8 -> { // RIPOSTE
+                        headPose = new EulerAngle(16f, 20f, 0f);
+                        bodyPose = new EulerAngle(0f, 0f, 0f);
+                        leftArmPose = new EulerAngle(4f, 8f, 237f);
+                        rightArmPose = new EulerAngle(246f, 0f, 89f);
+                        leftLegPose = new EulerAngle(-14f, -18f, -16f);
+                        rightLegPose = new EulerAngle(8f, 20f, 4f);
+                    }
+                    case 9 -> { // ZOMBIE
+                        headPose = new EulerAngle(-10f, 0f, -5f);
+                        bodyPose = new EulerAngle(0f, 0f, 0f);
+                        leftArmPose = new EulerAngle(-105f, 0f, 0f);
+                        rightArmPose = new EulerAngle(-100f, 0f, 0f);
+                        leftLegPose = new EulerAngle(7f, 0f, 0f);
+                        rightLegPose = new EulerAngle(-46f, 0f, 0f);
+                    }
+                    case 10 -> { // CAN_CAN_A
+                        headPose = new EulerAngle(-5f, 18f, 0f);
+                        bodyPose = new EulerAngle(0f, 22f, 0f);
+                        leftArmPose = new EulerAngle(8f, 0f, -114f);
+                        rightArmPose = new EulerAngle(0f, 84f, 111f);
+                        leftLegPose = new EulerAngle(-111f, 55f, 0f);
+                        rightLegPose = new EulerAngle(0f, 23f, -13f);
+                    }
+                    case 11 -> { // CAN_CAN_B
+                        headPose = new EulerAngle(-10f, -20f, 0f);
+                        bodyPose = new EulerAngle(0f, -18f, 0f);
+                        leftArmPose = new EulerAngle(0f, 0f, -112f);
+                        rightArmPose = new EulerAngle(8f, 90f, 111f);
+                        leftLegPose = new EulerAngle(0f, 0f, 13f);
+                        rightLegPose = new EulerAngle(-119f, -42f, 0f);
+                    }
+                    case 12 -> { // HERO
+                        headPose = new EulerAngle(-4f, 67f, 0f);
+                        bodyPose = new EulerAngle(0f, 8f, 0f);
+                        leftArmPose = new EulerAngle(16f, 32f, -8f);
+                        rightArmPose = new EulerAngle(-99f, 63f, 0f);
+                        leftLegPose = new EulerAngle(0f, -75f, -8f);
+                        rightLegPose = new EulerAngle(4f, 63f, 8f);
+                    }
+                    default -> {
+                        // Fallback to none
+                        headPose = new EulerAngle(0f, 0f, 0f);
+                        bodyPose = new EulerAngle(0f, 0f, 0f);
+                        leftArmPose = new EulerAngle(0f, 0f, 0f);
+                        rightArmPose = new EulerAngle(0f, 0f, 0f);
+                        leftLegPose = new EulerAngle(0f, 0f, 0f);
+                        rightLegPose = new EulerAngle(0f, 0f, 0f);
+                        ViaBedrock.getPlatform().getLogger().warning("Unknown armor stand pose index " + poseIndex + ", defaulting to NONE.");
+                    }
+                }
+
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("HEAD_POSE"), VersionedTypes.V1_21_9.entityDataTypes().rotationsType, headPose));
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("BODY_POSE"), VersionedTypes.V1_21_9.entityDataTypes().rotationsType, bodyPose));
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("LEFT_ARM_POSE"), VersionedTypes.V1_21_9.entityDataTypes().rotationsType, leftArmPose));
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("RIGHT_ARM_POSE"), VersionedTypes.V1_21_9.entityDataTypes().rotationsType, rightArmPose));
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("LEFT_LEG_POSE"), VersionedTypes.V1_21_9.entityDataTypes().rotationsType, leftLegPose));
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("RIGHT_LEG_POSE"), VersionedTypes.V1_21_9.entityDataTypes().rotationsType, rightLegPose));
             }
+
             case PUFFED_STATE -> {
                 byte puffedState = (byte) entityData.getValue();
                 int javaPuffedState = (int) puffedState;
