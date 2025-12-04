@@ -26,6 +26,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.UnsignedByteType;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
 import com.viaversion.viaversion.libs.mcstructs.converter.impl.v1_21_5.NbtConverter_v1_21_5;
@@ -476,12 +477,8 @@ public class InventoryPackets {
             final short slot = wrapper.read(Types.SHORT); // slot
             wrapper.user().get(InventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
         });
-        //TODO: Server is receiving the packet fine but doesn't seem to return anything
-        // I am unable to test this on latest rn but from my testing on 1.21.114.1 the server should send a PICK_ITEM_FROM_BLOCK packet back
-        // With no extra packets from the client
         protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_ENTITY, ServerboundBedrockPackets.ENTITY_PICK_REQUEST, wrapper -> {
             EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
-            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
 
             int javaId = wrapper.read(Types.VAR_INT); // entity id
             boolean withData = wrapper.read(Types.BOOLEAN); // with data
@@ -492,26 +489,24 @@ public class InventoryPackets {
                 return;
             }
 
-            wrapper.write(BedrockTypes.VAR_LONG, entity.uniqueId());
-            wrapper.write(Types.BYTE, (byte) 9); // WTF bedrock (this is what the vanilla client sends)
+            wrapper.write(BedrockTypes.LONG_LE, entity.uniqueId());
+            wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // Supposed to be the amount of empty slots in the hotbar but vanilla client always sends 9
             wrapper.write(Types.BOOLEAN, withData);
         });
         protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_BLOCK, ServerboundBedrockPackets.BLOCK_PICK_REQUEST, wrapper -> {
-            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-
             BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // position
             boolean withData = wrapper.read(Types.BOOLEAN); // with data
 
-            wrapper.write(BedrockTypes.BLOCK_POSITION, position);
+            wrapper.write(BedrockTypes.POSITION_3I, position);
             wrapper.write(Types.BOOLEAN, withData);
-            wrapper.write(Types.BYTE, (byte) 9); // WTF bedrock (this is what the vanilla client sends)
+            wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // Supposed to be the amount of empty slots in the hotbar but vanilla client always sends 9
         });
         protocol.registerClientbound(ClientboundBedrockPackets.GUI_DATA_PICK_ITEM, ClientboundPackets1_21_9.SET_HELD_SLOT, wrapper -> {
             // Apparently this packet is broken in the vanilla client but idk so ill implement it
             // Bedrock seems to send a hotbar packet afterwards to actually change the slot
             wrapper.read(BedrockTypes.STRING); // Name
             wrapper.read(BedrockTypes.STRING); // Effects
-            int hotbarSlot = wrapper.read(BedrockTypes.VAR_INT); // Hotbar Slot
+            int hotbarSlot = wrapper.read(BedrockTypes.INT_LE); // Hotbar Slot
 
             wrapper.write(Types.VAR_INT, hotbarSlot); // slot
         });
