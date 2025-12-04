@@ -24,6 +24,8 @@ import com.viaversion.viaversion.api.minecraft.PaintingVariant;
 import com.viaversion.viaversion.api.minecraft.Vector3d;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityDataType;
+import com.viaversion.viaversion.api.minecraft.entitydata.types.EntityDataTypes1_21_9;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
@@ -570,6 +572,13 @@ public class EntityPackets {
                 case SHAKE_WETNESS_STOP -> { // Sent to sync wolf shake animation
                     wrapper.write(Types.INT, entity.javaId()); // entity id
                     wrapper.write(Types.BYTE, EntityEvent.CANCEL_SHAKE_WETNESS.getValue()); // entity event
+                }
+                case DRAGON_START_DEATH_ANIM -> {
+                    wrapper.cancel();
+
+                    EntityData entityData = new EntityData(entity.getJavaEntityDataIndex("PHASE"),  VersionedTypes.V1_21_9.entityDataTypes().varIntType, 9); // DYING phase
+                    //TODO: Allow java entity data to be set
+                    //TODO: Test
                 }
                 case FISHHOOK_TEASE, // Java plays this animation without an event
                      FEED, // Sent when an animal is fed, java does not have an equivalent animation
