@@ -499,7 +499,7 @@ public class EntityPackets {
                 case LOVE_HEARTS -> { // Sent when an animal was bred, also sent when villagers are breeding
                     wrapper.write(Types.INT, entity.javaId()); // entity id
                     // Java splits these events and bedrock has cases for both but only seems to use one???
-                    if (entityTracker.getEntityByRid(entity.runtimeId()).type().equals("minecraft:villager_v2")) {
+                    if (entityTracker.getEntityByRid(entity.runtimeId()).javaType().is(EntityTypes1_21_9.VILLAGER)) {
                         wrapper.write(Types.BYTE, EntityEvent.LOVE_HEARTS.getValue()); // entity event
                     } else {
                         wrapper.write(Types.BYTE, EntityEvent.IN_LOVE_HEARTS.getValue()); // entity event
