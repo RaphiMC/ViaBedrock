@@ -257,6 +257,21 @@ public class EntityMetadataRewriter {
                 }
 
             }
+            case COLOR_INDEX -> {
+                byte colorIndex = (byte) entityData.getValue();
+                int javaColorIndex = colorIndex;
+
+                switch (entity.javaType()) {
+                    case WOLF, CAT -> {
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("COLLAR_COLOR"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaColorIndex));
+                    }
+                    default -> {
+                        if (colorIndex != 0) { // For some reason bedrock seems to send color index 0 for many entities that don't have colors
+                            ViaBedrock.getPlatform().getLogger().warning("Received non-zero COLOR_INDEX " + colorIndex + " for unsupported entity " + entity.type());
+                        }
+                    }
+                }
+            }
             case OWNER -> {
                 long ownerId = (long) entityData.getValue();
                 if (ownerId == -1) {
