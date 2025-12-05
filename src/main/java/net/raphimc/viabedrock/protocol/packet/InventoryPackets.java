@@ -476,6 +476,11 @@ public class InventoryPackets {
             final short slot = wrapper.read(Types.SHORT); // slot
             wrapper.user().get(InventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
         });
+        protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_BLOCK, ServerboundBedrockPackets.BLOCK_PICK_REQUEST, wrapper -> {
+            wrapper.passthroughAndMap(Types.BLOCK_POSITION1_14, BedrockTypes.POSITION_3I); // position
+            wrapper.passthrough(Types.BOOLEAN); // include data
+            wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // number of empty hotbar slots (vanilla client always sends 9)
+        });
         protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_ENTITY, ServerboundBedrockPackets.ENTITY_PICK_REQUEST, wrapper -> {
             final int entityId = wrapper.read(Types.VAR_INT); // entity id
             final boolean includeData = wrapper.read(Types.BOOLEAN); // include data
@@ -489,23 +494,6 @@ public class InventoryPackets {
             wrapper.write(BedrockTypes.LONG_LE, entity.uniqueId()); // unique entity id
             wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // number of empty hotbar slots (vanilla client always sends 9)
             wrapper.write(Types.BOOLEAN, includeData); // include data
-        });
-        protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_BLOCK, ServerboundBedrockPackets.BLOCK_PICK_REQUEST, wrapper -> {
-            wrapper.passthroughAndMap(Types.BLOCK_POSITION1_14, BedrockTypes.POSITION_3I); // position
-            wrapper.passthrough(Types.BOOLEAN); // include data
-            wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // number of empty hotbar slots (vanilla client always sends 9)
-        });
-        protocol.registerClientbound(ClientboundBedrockPackets.GUI_DATA_PICK_ITEM, ClientboundPackets1_21_9.SYSTEM_CHAT, wrapper -> {
-            final String itemName = wrapper.read(BedrockTypes.STRING); // item name
-            final String itemEffects = wrapper.read(BedrockTypes.STRING); // item effects
-            wrapper.read(BedrockTypes.INT_LE); // hotbar slot (Unused by the vanilla client)
-
-            if (!itemEffects.isEmpty()) {
-                wrapper.write(Types.TAG, TextUtil.stringToNbt(itemName + "\n" + itemEffects)); // message
-            } else {
-                wrapper.write(Types.TAG, TextUtil.stringToNbt(itemName)); // message
-            }
-            wrapper.write(Types.BOOLEAN, true); // overlay
         });
     }
 
