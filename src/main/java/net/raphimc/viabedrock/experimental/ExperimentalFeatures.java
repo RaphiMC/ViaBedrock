@@ -70,7 +70,7 @@ public class ExperimentalFeatures {
             wrapper.passthrough(Types.VAR_INT); // sequence number
 
             if (action == PlayerActionAction.RELEASE_USE_ITEM) {
-                final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
+                final InventoryContainer inventoryContainer = inventoryTracker.getInventoryContainer();
 
                 wrapper.clearPacket();
                 wrapper.setPacketType(ServerboundBedrockPackets.INVENTORY_TRANSACTION);
