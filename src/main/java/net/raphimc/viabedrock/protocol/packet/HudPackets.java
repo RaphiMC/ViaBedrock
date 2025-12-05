@@ -423,6 +423,18 @@ public class HudPackets {
                 playerCombatKill.send(BedrockProtocol.class);
             }
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.GUI_DATA_PICK_ITEM, ClientboundPackets1_21_9.SYSTEM_CHAT, wrapper -> {
+            final String itemName = wrapper.read(BedrockTypes.STRING); // item name
+            final String itemEffects = wrapper.read(BedrockTypes.STRING); // item effects
+            wrapper.read(BedrockTypes.INT_LE); // hotbar slot (Unused by the vanilla client)
+
+            if (!itemEffects.isEmpty()) {
+                wrapper.write(Types.TAG, TextUtil.stringToNbt(itemName + "\n" + itemEffects)); // message
+            } else {
+                wrapper.write(Types.TAG, TextUtil.stringToNbt(itemName)); // message
+            }
+            wrapper.write(Types.BOOLEAN, true); // overlay
+        });
     }
 
 }
