@@ -33,12 +33,6 @@ import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
-import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
-import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
-import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
-import net.raphimc.viabedrock.experimental.model.inventory.InventoryTransactionData;
-import net.raphimc.viabedrock.experimental.rewriter.InventoryTransactionRewriter;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -46,7 +40,6 @@ import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
-import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
@@ -54,7 +47,6 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -299,7 +291,6 @@ public class ClientPlayerPackets {
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final PlayerActionAction action = PlayerActionAction.values()[wrapper.read(Types.VAR_INT)]; // action
             final BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
             final Direction direction = Direction.values()[wrapper.read(Types.UNSIGNED_BYTE)]; // face
@@ -350,74 +341,10 @@ public class ClientPlayerPackets {
                     PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, 0);
                 }
                 case DROP_ALL_ITEMS, DROP_ITEM -> {
-                    final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
-                    final BedrockItem currentItem = inventoryTracker.getInventoryContainer().getSelectedHotbarItem();
-
-                    if (currentItem.isEmpty()) {
-                        break;
+                    // TODO: Currently implemented as experimental feature
+                    if (!ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+                        PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
                     }
-
-                    BedrockItem predictedAmount = currentItem.copy();
-                    if (action == PlayerActionAction.DROP_ITEM) {
-                        predictedAmount.setAmount(1); // Drop a single item
-                    }
-
-                    BedrockItem predictedToItem = currentItem.copy();
-                    if (action == PlayerActionAction.DROP_ITEM) {
-                        if (predictedToItem.amount() > 1)
-                            predictedToItem.setAmount(currentItem.amount() - 1);
-                        else
-                            predictedToItem = BedrockItem.empty();
-                    } else {
-                        predictedToItem = BedrockItem.empty();
-                    }
-
-                    final PacketWrapper transactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
-
-                    BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
-                            0,
-                            null,
-                            List.of(
-                                    new InventoryActionData(
-                                            new InventorySource(InventorySourceType.WorldInteraction, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySource_InventorySourceFlags.NoFlag),
-                                            0,
-                                            BedrockItem.empty(),
-                                            predictedAmount
-                                    ),
-                                    new InventoryActionData(
-                                            new InventorySource(InventorySourceType.ContainerInventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.NoFlag),
-                                            inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
-                                            currentItem,
-                                            predictedToItem
-                                    )
-                            ),
-
-                            ComplexInventoryTransaction_Type.NormalTransaction,
-                            new InventoryTransactionData.NormalTransactionData()
-                    );
-
-                    transactionPacket.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
-
-                    transactionPacket.sendToServer(BedrockProtocol.class);
-
-                    //TODO: I think vanilla client also sends these and im not sure what their purposes are but it works without them
-                    /*final PacketWrapper interactPacket = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
-
-                    interactPacket.write(Types.BYTE, (byte) InteractPacket_Action.InteractUpdate.getValue());
-                    interactPacket.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId());
-                    interactPacket.write(BedrockTypes.POSITION_3F, new Position3f(0, 0, 0));
-
-                    interactPacket.sendToServer(BedrockProtocol.class);
-
-                    final PacketWrapper mobEquipPacket = PacketWrapper.create(ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper.user());
-
-                    mobEquipPacket.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId());
-                    mobEquipPacket.write(itemRewriter.itemType(), predictedToItem);
-                    mobEquipPacket.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot());
-                    mobEquipPacket.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot());
-                    mobEquipPacket.write(Types.BYTE, (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue());
-
-                    mobEquipPacket.sendToServer(BedrockProtocol.class);*/
                 }
                 case RELEASE_USE_ITEM -> {
                     // TODO: Implement RELEASE_USE_ITEM
