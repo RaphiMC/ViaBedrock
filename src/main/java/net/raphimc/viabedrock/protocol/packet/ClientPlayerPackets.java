@@ -290,7 +290,6 @@ public class ClientPlayerPackets {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
-            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final PlayerActionAction action = PlayerActionAction.values()[wrapper.read(Types.VAR_INT)]; // action
             final BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
             final Direction direction = Direction.values()[wrapper.read(Types.UNSIGNED_BYTE)]; // face
@@ -341,10 +340,8 @@ public class ClientPlayerPackets {
                     PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, 0);
                 }
                 case DROP_ALL_ITEMS, DROP_ITEM -> {
-                    // TODO: Currently implemented as experimental feature
-                    if (!ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-                        PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
-                    }
+                    // TODO: Implement DROP_ALL_ITEMS, DROP_ITEM (Currently experimental)
+                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
                 }
                 case RELEASE_USE_ITEM -> {
                     // TODO: Implement RELEASE_USE_ITEM
