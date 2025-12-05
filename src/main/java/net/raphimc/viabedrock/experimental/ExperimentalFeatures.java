@@ -106,10 +106,11 @@ public class ExperimentalFeatures {
 
                 BedrockItem predictedToItem = currentItem.copy();
                 if (action == PlayerActionAction.DROP_ITEM) {
-                    if (predictedToItem.amount() > 1)
+                    if (predictedToItem.amount() > 1) {
                         predictedToItem.setAmount(currentItem.amount() - 1);
-                    else
+                    } else {
                         predictedToItem = BedrockItem.empty();
+                    }
                 } else {
                     predictedToItem = BedrockItem.empty();
                 }
