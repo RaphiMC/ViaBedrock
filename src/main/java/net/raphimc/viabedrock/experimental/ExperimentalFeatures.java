@@ -62,37 +62,108 @@ public class ExperimentalFeatures {
     public static void registerPacketTranslators(final BedrockProtocol protocol) {
         ProtocolUtil.prependServerbound(protocol, ServerboundPackets1_21_6.PLAYER_ACTION, wrapper -> {
             final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
 
             final PlayerActionAction action = PlayerActionAction.values()[wrapper.passthrough(Types.VAR_INT)]; // action
             wrapper.passthrough(Types.BLOCK_POSITION1_14); // block position
             wrapper.passthrough(Types.UNSIGNED_BYTE); // face
             wrapper.passthrough(Types.VAR_INT); // sequence number
 
-            if (action != PlayerActionAction.RELEASE_USE_ITEM) {
-                return;
+            if (action == PlayerActionAction.RELEASE_USE_ITEM) {
+                final InventoryContainer inventoryContainer = inventoryTracker.getInventoryContainer();
+
+                wrapper.clearPacket();
+                wrapper.setPacketType(ServerboundBedrockPackets.INVENTORY_TRANSACTION);
+
+                BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+                        0, // legacy request id
+                        null,
+                        null,
+                        ComplexInventoryTransaction_Type.ItemReleaseTransaction,
+                        new InventoryTransactionData.ReleaseItemTransactionData(
+                                ItemReleaseInventoryTransaction_ActionType.Release,
+                                inventoryContainer.getSelectedHotbarSlot(),
+                                inventoryContainer.getSelectedHotbarItem(),
+                                wrapper.user().get(EntityTracker.class).getClientPlayer().position()
+                        )
+                );
+                wrapper.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
+
+                wrapper.sendToServer(BedrockProtocol.class);
+                wrapper.cancel();
+            } else if (action == PlayerActionAction.DROP_ITEM || action == PlayerActionAction.DROP_ALL_ITEMS) {
+                final BedrockItem currentItem = inventoryTracker.getInventoryContainer().getSelectedHotbarItem();
+
+                wrapper.cancel();
+                if (currentItem.isEmpty()) {
+                    return;
+                }
+
+                BedrockItem predictedAmount = currentItem.copy();
+                if (action == PlayerActionAction.DROP_ITEM) {
+                    predictedAmount.setAmount(1); // Drop a single item
+                }
+
+                BedrockItem predictedToItem = currentItem.copy();
+                if (action == PlayerActionAction.DROP_ITEM) {
+                    if (predictedToItem.amount() > 1) {
+                        predictedToItem.setAmount(currentItem.amount() - 1);
+                    } else {
+                        predictedToItem = BedrockItem.empty();
+                    }
+                } else {
+                    predictedToItem = BedrockItem.empty();
+                }
+
+                final PacketWrapper transactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
+
+                BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+                        0,
+                        null,
+                        List.of(
+                                new InventoryActionData(
+                                        new InventorySource(InventorySourceType.WorldInteraction, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySource_InventorySourceFlags.NoFlag),
+                                        0,
+                                        BedrockItem.empty(),
+                                        predictedAmount
+                                ),
+                                new InventoryActionData(
+                                        new InventorySource(InventorySourceType.ContainerInventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.NoFlag),
+                                        inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                                        currentItem,
+                                        predictedToItem
+                                )
+                        ),
+
+                        ComplexInventoryTransaction_Type.NormalTransaction,
+                        new InventoryTransactionData.NormalTransactionData()
+                );
+
+                transactionPacket.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
+
+                transactionPacket.sendToServer(BedrockProtocol.class);
+
+                //TODO: I think vanilla client also sends these and im not sure what their purposes are but it works without them
+                    /*final PacketWrapper interactPacket = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
+
+                    interactPacket.write(Types.BYTE, (byte) InteractPacket_Action.InteractUpdate.getValue());
+                    interactPacket.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId());
+                    interactPacket.write(BedrockTypes.POSITION_3F, new Position3f(0, 0, 0));
+
+                    interactPacket.sendToServer(BedrockProtocol.class);
+
+                    final PacketWrapper mobEquipPacket = PacketWrapper.create(ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper.user());
+
+                    mobEquipPacket.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId());
+                    mobEquipPacket.write(itemRewriter.itemType(), predictedToItem);
+                    mobEquipPacket.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot());
+                    mobEquipPacket.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot());
+                    mobEquipPacket.write(Types.BYTE, (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue());
+
+                    mobEquipPacket.sendToServer(BedrockProtocol.class);*/
             }
 
-            final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
 
-            wrapper.clearPacket();
-            wrapper.setPacketType(ServerboundBedrockPackets.INVENTORY_TRANSACTION);
-
-            BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
-                    0, // legacy request id
-                    null,
-                    null,
-                    ComplexInventoryTransaction_Type.ItemReleaseTransaction,
-                    new InventoryTransactionData.ReleaseItemTransactionData(
-                            ItemReleaseInventoryTransaction_ActionType.Release,
-                            inventoryContainer.getSelectedHotbarSlot(),
-                            inventoryContainer.getSelectedHotbarItem(),
-                            wrapper.user().get(EntityTracker.class).getClientPlayer().position()
-                    )
-            );
-            wrapper.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
-
-            wrapper.sendToServer(BedrockProtocol.class);
-            wrapper.cancel();
         });
 
         // TODO: Track when the player start using item and send the StartUsingItem input data to the server.

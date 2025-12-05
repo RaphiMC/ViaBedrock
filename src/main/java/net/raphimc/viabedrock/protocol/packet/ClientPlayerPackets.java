@@ -340,7 +340,7 @@ public class ClientPlayerPackets {
                     PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, 0);
                 }
                 case DROP_ALL_ITEMS, DROP_ITEM -> {
-                    // TODO: Implement DROP_ALL_ITEMS, DROP_ITEM
+                    // TODO: Implement DROP_ALL_ITEMS, DROP_ITEM (Currently experimental)
                     PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
                 }
                 case RELEASE_USE_ITEM -> {
