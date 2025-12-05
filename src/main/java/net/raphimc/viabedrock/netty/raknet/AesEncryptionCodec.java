@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.netty;
+package net.raphimc.viabedrock.netty.raknet;
 
 import com.google.common.primitives.Longs;
 import io.netty.buffer.ByteBuf;
@@ -78,10 +78,10 @@ public class AesEncryptionCodec extends ByteToMessageCodec<ByteBuf> {
         this.inCipher.update(inBuffer, outBuffer);
         final ByteBuf output = in.readRetainedSlice(in.readableBytes() - 8);
 
-        final byte[] hash = new byte[8];
-        in.readBytes(hash);
+        final byte[] receivedHash = new byte[8];
+        in.readBytes(receivedHash);
         final byte[] expectedHash = this.generateHash(output, this.receivedPacketCounter++);
-        if (!Arrays.equals(expectedHash, hash)) {
+        if (!MessageDigest.isEqual(receivedHash, expectedHash)) {
             throw new CorruptedFrameException("Invalid encrypted packet");
         }
 
