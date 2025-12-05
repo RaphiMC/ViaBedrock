@@ -26,7 +26,6 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.UnsignedByteType;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
 import com.viaversion.viaversion.libs.mcstructs.converter.impl.v1_21_5.NbtConverter_v1_21_5;
@@ -478,37 +477,35 @@ public class InventoryPackets {
             wrapper.user().get(InventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
         });
         protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_ENTITY, ServerboundBedrockPackets.ENTITY_PICK_REQUEST, wrapper -> {
-            EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            final int entityId = wrapper.read(Types.VAR_INT); // entity id
+            final boolean includeData = wrapper.read(Types.BOOLEAN); // include data
 
-            int javaId = wrapper.read(Types.VAR_INT); // entity id
-            boolean withData = wrapper.read(Types.BOOLEAN); // with data
-
-            Entity entity = entityTracker.getEntityByJid(javaId);
+            final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByJid(entityId);
             if (entity == null) {
                 wrapper.cancel();
                 return;
             }
 
-            wrapper.write(BedrockTypes.LONG_LE, entity.uniqueId());
-            wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // Supposed to be the amount of empty slots in the hotbar but vanilla client always sends 9
-            wrapper.write(Types.BOOLEAN, withData);
+            wrapper.write(BedrockTypes.LONG_LE, entity.uniqueId()); // unique entity id
+            wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // number of empty hotbar slots (vanilla client always sends 9)
+            wrapper.write(Types.BOOLEAN, includeData); // include data
         });
         protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_BLOCK, ServerboundBedrockPackets.BLOCK_PICK_REQUEST, wrapper -> {
-            BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // position
-            boolean withData = wrapper.read(Types.BOOLEAN); // with data
-
-            wrapper.write(BedrockTypes.POSITION_3I, position);
-            wrapper.write(Types.BOOLEAN, withData);
-            wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // Supposed to be the amount of empty slots in the hotbar but vanilla client always sends 9
+            wrapper.passthroughAndMap(Types.BLOCK_POSITION1_14, BedrockTypes.POSITION_3I); // position
+            wrapper.passthrough(Types.BOOLEAN); // include data
+            wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // number of empty hotbar slots (vanilla client always sends 9)
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.GUI_DATA_PICK_ITEM, ClientboundPackets1_21_9.SET_HELD_SLOT, wrapper -> {
-            // Apparently this packet is broken in the vanilla client but idk so ill implement it
-            // Bedrock seems to send a hotbar packet afterwards to actually change the slot
-            wrapper.read(BedrockTypes.STRING); // Name
-            wrapper.read(BedrockTypes.STRING); // Effects
-            int hotbarSlot = wrapper.read(BedrockTypes.INT_LE); // Hotbar Slot
+        protocol.registerClientbound(ClientboundBedrockPackets.GUI_DATA_PICK_ITEM, ClientboundPackets1_21_9.SYSTEM_CHAT, wrapper -> {
+            final String itemName = wrapper.read(BedrockTypes.STRING); // item name
+            final String itemEffects = wrapper.read(BedrockTypes.STRING); // item effects
+            wrapper.read(BedrockTypes.INT_LE); // hotbar slot (Unused by the vanilla client)
 
-            wrapper.write(Types.VAR_INT, hotbarSlot); // slot
+            if (!itemEffects.isEmpty()) {
+                wrapper.write(Types.TAG, TextUtil.stringToNbt(itemName + "\n" + itemEffects)); // message
+            } else {
+                wrapper.write(Types.TAG, TextUtil.stringToNbt(itemName)); // message
+            }
+            wrapper.write(Types.BOOLEAN, true); // overlay
         });
     }
 
