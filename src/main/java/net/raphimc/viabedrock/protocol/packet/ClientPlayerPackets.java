@@ -244,6 +244,13 @@ public class ClientPlayerPackets {
             wrapper.read(Types.BOOLEAN); // show name tags
             wrapper.read(Types.BOOLEAN); // auto jump
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.OPEN_SIGN, ClientboundPackets1_21_9.OPEN_SIGN_EDITOR, new PacketHandlers() {
+            @Override
+            protected void register() {
+                map(BedrockTypes.BLOCK_POSITION, Types.BLOCK_POSITION1_14); // position
+                map(Types.BOOLEAN); // front
+            }
+        });
 
         protocol.registerServerbound(ServerboundPackets1_21_6.CLIENT_COMMAND, ServerboundBedrockPackets.RESPAWN, wrapper -> {
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
@@ -333,7 +340,7 @@ public class ClientPlayerPackets {
                     PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, 0);
                 }
                 case DROP_ALL_ITEMS, DROP_ITEM -> {
-                    // TODO: Implement DROP_ALL_ITEMS, DROP_ITEM
+                    // TODO: Implement DROP_ALL_ITEMS, DROP_ITEM (Currently experimental)
                     PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
                 }
                 case RELEASE_USE_ITEM -> {

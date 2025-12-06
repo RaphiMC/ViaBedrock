@@ -40,7 +40,6 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         super.handlerRemoved(ctx);
-
         this.protocolCompression.end();
     }
 
@@ -55,20 +54,20 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
         if (compressionAlgorithm instanceof NoopCompression) {
             out.writeByte(PacketCompressionAlgorithm.None.getValue());
             out.writeBytes(in);
-            return;
-        }
-        final ByteBuf compressedData = ctx.alloc().buffer();
-        in.markReaderIndex();
-        compressionAlgorithm.compress(in, compressedData);
-        if (compressedData.readableBytes() < inputSize) {
-            out.writeByte(compressionAlgorithm.getAlgorithm().getValue());
-            out.writeBytes(compressedData);
         } else {
-            in.resetReaderIndex();
-            out.writeByte(PacketCompressionAlgorithm.None.getValue());
-            out.writeBytes(in);
+            in.markReaderIndex();
+            final ByteBuf compressedData = ctx.alloc().buffer();
+            compressionAlgorithm.compress(in, compressedData);
+            if (compressedData.readableBytes() < inputSize) {
+                out.writeByte(compressionAlgorithm.getAlgorithm().getValue());
+                out.writeBytes(compressedData);
+            } else {
+                in.resetReaderIndex();
+                out.writeByte(PacketCompressionAlgorithm.None.getValue());
+                out.writeBytes(in);
+            }
+            compressedData.release();
         }
-        compressedData.release();
     }
 
     @Override
@@ -86,11 +85,11 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
         final CompressionAlgorithm compressionAlgorithm = this.protocolCompression.getCompressionAlgorithm(algorithm);
         if (compressionAlgorithm instanceof NoopCompression) {
             out.add(in.retain());
-            return;
+        } else {
+            final ByteBuf uncompressedData = ctx.alloc().buffer();
+            compressionAlgorithm.decompress(in, uncompressedData); // Bedrock client would drop packets with invalid data, but this would be too insane to do
+            out.add(uncompressedData);
         }
-        final ByteBuf uncompressedData = ctx.alloc().buffer();
-        compressionAlgorithm.decompress(in, uncompressedData); // Bedrock client would drop packets with invalid data, but this would be too insane to do
-        out.add(uncompressedData);
     }
 
 }

@@ -28,6 +28,7 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
+import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
 import com.viaversion.viaversion.util.MathUtil;
 import io.netty.buffer.ByteBuf;
@@ -44,6 +45,7 @@ import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ServerboundLoadingScreenPacketType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SpawnPositionType;
@@ -53,6 +55,8 @@ import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.blockentity.SignBlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;
@@ -485,6 +489,40 @@ public class WorldPackets {
             final long bedrockTime = wrapper.read(BedrockTypes.VAR_INT); // time of day
             wrapper.write(Types.LONG, bedrockTime >= 0 ? bedrockTime % 24000L : 24000 + (bedrockTime % 24000L)); // time of day
             wrapper.write(Types.BOOLEAN, wrapper.user().get(GameRulesStorage.class).<Boolean>getGameRule("doDayLightCycle")); // do day light cycle
+        });
+
+        protocol.registerServerbound(ServerboundPackets1_21_6.SIGN_UPDATE, ServerboundBedrockPackets.BLOCK_ENTITY_DATA, wrapper -> {
+            final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+            final BlockStateRewriter blockStateRewriter = wrapper.user().get(BlockStateRewriter.class);
+            final BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // position
+            final boolean front = wrapper.read(Types.BOOLEAN); // front
+            final List<String> lines = new ArrayList<>(4);
+            for (int i = 0; i < 4; i++) {
+                lines.add(wrapper.read(Types.STRING)); // line
+            }
+
+            final String tag = blockStateRewriter.tag(chunkTracker.getBlockState(position));
+            final BedrockBlockEntity signBlockEntity = (BlockStateRewriter.TAG_HANGING_SIGN.equals(tag) || BlockStateRewriter.TAG_SIGN.equals(tag)) ? chunkTracker.getBlockEntity(position) : null;
+            final CompoundTag signTag = signBlockEntity != null ? signBlockEntity.tag() : new CompoundTag();
+            SignBlockEntityRewriter.upgradeData(signTag);
+            SignBlockEntityRewriter.sanitizeData(signTag);
+            if (BlockStateRewriter.TAG_SIGN.equals(tag)) {
+                signTag.putString("id", "Sign");
+            } else if (BlockStateRewriter.TAG_HANGING_SIGN.equals(tag)) {
+                signTag.putString("id", "HangingSign");
+            }
+            signTag.putInt("x", position.x());
+            signTag.putInt("y", position.y());
+            signTag.putInt("z", position.z());
+
+            while (!lines.isEmpty() && lines.get(lines.size() - 1).isEmpty()) { // Remove trailing empty lines
+                lines.remove(lines.size() - 1);
+            }
+            final String text = lines.stream().reduce((a, b) -> a + '\n' + b).orElse("");
+            signTag.getCompoundTag(front ? "FrontText" : "BackText").putString("Text", text);
+
+            wrapper.write(BedrockTypes.BLOCK_POSITION, position); // position
+            wrapper.write(BedrockTypes.NETWORK_TAG, signTag.copy()); // block entity tag
         });
     }
 
