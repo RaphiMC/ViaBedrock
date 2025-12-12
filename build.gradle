@@ -55,13 +55,13 @@ dependencies {
     compileOnly "com.viaversion:viaversion-common:5.5.2-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.5"
     compileOnly "com.google.guava:guava:33.5.0-jre"
-    compileOnly "io.netty:netty-handler:4.2.7.Final"
+    compileOnly "io.netty:netty-handler:4.2.8.Final"
     compileOnly "com.google.code.gson:gson:2.13.2"
 
-    api("io.netty:netty-codec-http:4.2.7.Final") {
+    api("io.netty:netty-codec-http:4.2.8.Final") {
         transitive = false
     }
-    api("io.netty:netty-codec-compression:4.2.7.Final") {
+    api("io.netty:netty-codec-compression:4.2.8.Final") {
         transitive = false
     }
     api "io.jsonwebtoken:jjwt-impl:0.13.0"
