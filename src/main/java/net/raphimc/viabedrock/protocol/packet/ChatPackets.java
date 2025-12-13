@@ -258,7 +258,7 @@ public class ChatPackets {
                 create(Types.BOOLEAN, false); // needs translation
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(EntityTracker.class).getClientPlayer().name())); // source name
                 map(Types.STRING, BedrockTypes.STRING); // message
-                handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(AuthChainData.class).getXuid())); // xuid
+                handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(AuthData.class).getXuid())); // xuid
                 create(BedrockTypes.STRING, ""); // platform online id
                 create(BedrockTypes.STRING, ""); // filtered message
                 handler(PacketWrapper::clearInputBuffer);

@@ -83,10 +83,11 @@ public class ResourcePackHttpServer {
                                     }
 
                                     try {
-                                        final long start = System.currentTimeMillis();
+                                        final long start = System.nanoTime();
                                         final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage);
                                         final byte[] data = javaContent.toZip();
-                                        ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Converted packs in " + (System.currentTimeMillis() - start) + "ms");
+                                        final long end = System.nanoTime();
+                                        ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Converted packs in " + ((end - start) / 1_000_000L) + "ms");
 
                                         final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
                                         response.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);

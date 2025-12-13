@@ -87,7 +87,6 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
 
     @Override
     protected void registerPackets() {
-        StatusPackets.register(this);
         LoginPackets.register(this);
         ConfigurationPackets.register(this);
         PlayPackets.register(this);
@@ -153,6 +152,10 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         user.put(new PlayerListStorage());
         user.put(new ScoreboardTracker());
         user.put(new InventoryTracker(user));
+
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            ExperimentalFeatures.registerStorages(user);
+        }
     }
 
     @Override
@@ -166,7 +169,12 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
 
     @Override
     public void transform(Direction direction, State state, PacketWrapper wrapper) throws InformativeException, CancelException {
-        if (direction == Direction.CLIENTBOUND && state != State.STATUS) {
+        if (state == State.STATUS) { // Status doesn't exist in the Bedrock protocol and is instead handled by the transport layer
+            super.transform(direction, state, wrapper);
+            return;
+        }
+
+        if (direction == Direction.CLIENTBOUND) {
             State serverState = wrapper.user().getProtocolInfo().getServerState();
             final ClientboundBedrockPackets packet = ClientboundBedrockPackets.getPacket(wrapper.getId());
             if (packet == null) {

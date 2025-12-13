@@ -25,7 +25,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.List;
 
-public class PacketEncapsulationCodec extends ByteToMessageCodec<ByteBuf> {
+public class PacketCodec extends ByteToMessageCodec<ByteBuf> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
@@ -41,15 +41,14 @@ public class PacketEncapsulationCodec extends ByteToMessageCodec<ByteBuf> {
         final int packetId = header & 1023;
         final int senderId = (header >> 10) & 3;
         final int recipientId = (header >> 12) & 3;
-
         if (senderId != 0) {
             throw new UnsupportedOperationException("Sender ID " + senderId + " is not supported");
         }
 
-        final ByteBuf packet = ctx.alloc().buffer();
-        Types.VAR_INT.writePrimitive(packet, packetId);
-        packet.writeBytes(in);
-        out.add(packet);
+        final ByteBuf packetBuffer = ctx.alloc().buffer();
+        Types.VAR_INT.writePrimitive(packetBuffer, packetId);
+        packetBuffer.writeBytes(in);
+        out.add(packetBuffer);
     }
 
 }

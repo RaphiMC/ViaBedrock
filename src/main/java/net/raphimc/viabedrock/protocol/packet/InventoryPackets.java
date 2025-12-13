@@ -59,6 +59,7 @@ import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.container.ChestContainer;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
+import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -474,6 +475,25 @@ public class InventoryPackets {
         protocol.registerServerbound(ServerboundPackets1_21_6.SET_CARRIED_ITEM, ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper -> {
             final short slot = wrapper.read(Types.SHORT); // slot
             wrapper.user().get(InventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
+        });
+        protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_BLOCK, ServerboundBedrockPackets.BLOCK_PICK_REQUEST, wrapper -> {
+            wrapper.passthroughAndMap(Types.BLOCK_POSITION1_14, BedrockTypes.POSITION_3I); // position
+            wrapper.passthrough(Types.BOOLEAN); // include data
+            wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // number of empty hotbar slots (vanilla client always sends 9)
+        });
+        protocol.registerServerbound(ServerboundPackets1_21_6.PICK_ITEM_FROM_ENTITY, ServerboundBedrockPackets.ENTITY_PICK_REQUEST, wrapper -> {
+            final int entityId = wrapper.read(Types.VAR_INT); // entity id
+            final boolean includeData = wrapper.read(Types.BOOLEAN); // include data
+
+            final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByJid(entityId);
+            if (entity == null) {
+                wrapper.cancel();
+                return;
+            }
+
+            wrapper.write(BedrockTypes.LONG_LE, entity.uniqueId()); // unique entity id
+            wrapper.write(Types.UNSIGNED_BYTE, (short) 9); // number of empty hotbar slots (vanilla client always sends 9)
+            wrapper.write(Types.BOOLEAN, includeData); // include data
         });
     }
 
