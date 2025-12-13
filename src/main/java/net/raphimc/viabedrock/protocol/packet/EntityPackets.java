@@ -587,26 +587,40 @@ public class EntityPackets {
                     //TODO: Allow java entity data to be set
                     //TODO: Check this is correct and test if it works
                 }
-                case FISHHOOK_TEASE, // Java plays this animation without an event
+                case NONE, // TODO: Whats the point of this????
+                     JUMP, // TODO: What calls this?
+                     FISHHOOK_TEASE, // TODO: Sync
+                     FISHHOOK_BUBBLE, // TODO: Sync
+                     FISHHOOK_FISHPOS, // TODO: Sync
+                     FISHHOOK_HOOKTIME, // TODO: Sync
+                     PLAY_AMBIENT, // TODO: Why the fuck is this an entity event? Does it ever actually get used????????
+                     DRINK_POTION, // TODO: Find java equivalent
+                     THROW_POTION, // TODO: Find java equivalent
+                     PRIME_TNTCART, // TODO: Find java equivalent
+                     PRIME_CREEPER, // TODO: Find java equivalent
+                     GROUND_DUST, // TODO: What calls this?
                      FEED, // Sent when an animal is fed, java does not have an equivalent animation
+                     BABY_AGE, // Sent to display "aging" particles when a baby is fed TODO: find java equivalent
+                     NOTIFY_TRADE, // TODO: Find java equivalent
                      STOP_ATTACKING, // Not used in java and doesnt seem to be sent in bedrock
                      FINISHED_CHARGING_ITEM, // Sent when a crossbow finishes charging (might also be other senders) TODO: Add this
                      PLAYER_SPAWNED_MOB, //Sent when a player uses a spawn egg, idk what this is for
                      LEASH_DESTROYED, // TODO: Leash handling
+                     CARAVAN_UPDATED, // TODO: Leash handling
                      AGENT_SWING_ARM, // Education edition feature
                      SUMMON_AGENT, // Education edition feature
                      BALLOON_POP, // Education edition feature TODO: double check
                      SPAWN_ALIVE, // TODO: Seems to get called when you respawn, not sure what it does
                      UPDATE_STACK_SIZE, // Sent to sync stack size updates for items on the ground TODO: find the java equivalent (might not be needed)
-                     BABY_AGE, // Sent to display "aging" particles when a baby is fed TODO: find java equivalent
+                     START_SWIMMING, // TODO: What calls this?
+                     ACTOR_GROW_UP, // TODO: Find java equivalent
+                     DRINK_MILK, //TODO: Find java equivalent
                      DEPRECATED_ADD_PLAYER_LEVELS, // Deprecated
                      DEPRECATED_UPDATE_STRUCTURE_FEATURE // Deprecated
                         -> wrapper.cancel();
                 default -> {
                     wrapper.cancel();
-                    // TODO: Handle remaining events
-                    ViaBedrock.getPlatform().getLogger().warning("Unhandled ActorEvent: " + event);
-                    // throw new IllegalStateException("Unhandled ActorEvent: " + event);
+                    throw new IllegalStateException("Unhandled ActorEvent: " + event);
                 }
             }
         });
