@@ -272,6 +272,14 @@ public class EntityMetadataRewriter {
                     case SLIME, MAGMA_CUBE -> {
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("SIZE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, variant));
                     }
+                    case RABBIT -> { // TODO: Test when I can
+                        int javaVariant = variant;
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TYPE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaVariant));
+                    }
+                    case PARROT -> { // TODO: Test when I can
+                        int javaVariant = variant;
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaVariant));
+                    }
                     default -> {
                         if (variant != 0) { // For some reason bedrock seems to send variant 0 for many entities that don't have variants
                             ViaBedrock.getPlatform().getLogger().warning("Received non-zero VARIANT " + variant + " for unsupported entity " + entity.type());
@@ -287,6 +295,11 @@ public class EntityMetadataRewriter {
                 switch (entity.javaType()) {
                     case WOLF, CAT -> {
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("COLLAR_COLOR"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaColorIndex));
+                    }
+                    case SHEEP -> { // TODO: This seems to get overwritten by the entity flags sheared value, need to combine both
+                        byte sheepBitMask = 0;
+                        sheepBitMask |= javaColorIndex & 0x0F; // Lower 4 bits for color
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("WOOL"), VersionedTypes.V1_21_9.entityDataTypes().byteType, sheepBitMask));
                     }
                     default -> {
                         if (colorIndex != 0) { // For some reason bedrock seems to send color index 0 for many entities that don't have colors
