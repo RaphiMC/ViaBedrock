@@ -258,6 +258,17 @@ public class EntityMetadataRewriter {
                         };
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaVariant));
                     }
+                    case MOOSHROOM -> {
+                        int javaVariant = switch (variant) {
+                            case 0 -> 0; // RED
+                            case 1 -> 1; // BROWN
+                            default -> {
+                                ViaBedrock.getPlatform().getLogger().warning("Unknown mooshroom variant " + variant + ", defaulting to RED.");
+                                yield 0;
+                            }
+                        };
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TYPE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaVariant));
+                    }
                     default -> {
                         if (variant != 0) { // For some reason bedrock seems to send variant 0 for many entities that don't have variants
                             ViaBedrock.getPlatform().getLogger().warning("Received non-zero VARIANT " + variant + " for unsupported entity " + entity.type());
