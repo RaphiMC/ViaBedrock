@@ -269,6 +269,9 @@ public class EntityMetadataRewriter {
                         };
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TYPE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaVariant));
                     }
+                    case SLIME, MAGMA_CUBE -> {
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("SIZE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, variant));
+                    }
                     default -> {
                         if (variant != 0) { // For some reason bedrock seems to send variant 0 for many entities that don't have variants
                             ViaBedrock.getPlatform().getLogger().warning("Received non-zero VARIANT " + variant + " for unsupported entity " + entity.type());
