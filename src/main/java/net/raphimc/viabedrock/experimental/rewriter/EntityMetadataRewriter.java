@@ -145,6 +145,10 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("LAYING_EGG"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.LAYING_EGG)));
                 }
 
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_9.ABSTRACT_CHESTED_HORSE)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("CHEST"), VersionedTypes.V1_21_9.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.CHESTED)));
+                }
+
                 if (entity.javaType().isOrHasParent(EntityTypes1_21_9.TAMABLE_ANIMAL)) {
                     byte tamableBitMask = 0;
                     if (bedrockFlags.contains(ActorFlags.SITTING)) {
@@ -298,7 +302,7 @@ public class EntityMetadataRewriter {
                     }
                     case SHEEP -> { // TODO: This seems to get overwritten by the entity flags sheared value, need to combine both
                         byte sheepBitMask = 0;
-                        sheepBitMask |= javaColorIndex & 0x0F; // Lower 4 bits for color
+                        sheepBitMask |= (byte) (javaColorIndex & 0x0F); // Lower 4 bits for color
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("WOOL"), VersionedTypes.V1_21_9.entityDataTypes().byteType, sheepBitMask));
                     }
                     default -> {
