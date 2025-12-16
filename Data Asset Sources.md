@@ -46,7 +46,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
 
 ### data/java/effects.json
-[minecraft.wiki](https://minecraft.wiki/w/Effect)
+This file has been dumped using a fabric mod.
 
 ### data/java/entity_data.json
 This file has been dumped using a fabric mod.

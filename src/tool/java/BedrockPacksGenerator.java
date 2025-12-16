@@ -38,7 +38,7 @@ public class BedrockPacksGenerator {
             """;
 
     public static void main(String[] args) throws Throwable {
-        final File clientDataDir = new File("C:\\Users\\User\\Desktop\\data");
+        final File clientDataDir = new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data");
         final File resourcePacksDir = new File(clientDataDir, "resource_packs");
         final File outputDir = new File("bedrock_packs");
         outputDir.mkdirs();
