@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 
 public class BedrockDataEnumGenerator {
 
-    private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/7d1acc3bc46deffd66e9723f1d84988606f522b0/html/enums.html";
+    private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/2842b5c80249dc3a125b6892031cfc2fb1e4c1bd/html/enums.html";
     private static final String ENUMS_PACKAGE = "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated";
     private static final List<String> IGNORED_FIELDS = Arrays.asList("deprecated", "count", "_count", "total", "all", "numenchantments", "numtagtypes", "abilitycount", "nummodes", "input_num", "total_operations", "total_operands", "numvalidversions", "num_categories");
     private static final Map<String, String> VALUE_REPLACEMENTS = new HashMap<>();
@@ -99,11 +99,6 @@ public class BedrockDataEnumGenerator {
         // Mojang seems to have pushed an outdated version of this enum. Those values exist in 1.21.50, but not in 1.21.60
         final List<EnumField> levelEventEnum = enums.get("LevelEvent");
         levelEventEnum.add(new EnumField("ParticleCreakingHeartTrail", "9816"));
-
-        // Add missing values
-        final List<EnumField> animatePacketActionEnum = enums.get("AnimatePacket::Action");
-        animatePacketActionEnum.add(new EnumField("RowRight", "128"));
-        animatePacketActionEnum.add(new EnumField("RowLeft", "129"));
 
         // Fix wrong values
         final List<EnumField> packetCompressionAlgorithmEnum = enums.get("PacketCompressionAlgorithm");

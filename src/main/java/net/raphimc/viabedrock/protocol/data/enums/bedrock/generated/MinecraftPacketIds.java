@@ -220,8 +220,9 @@ public enum MinecraftPacketIds {
     ClientboundControlSchemeSetPacket(327),
     DebugDrawerPacket(328),
     ServerboundPackSettingChange(329),
-    DataStoreSync(330),
-    GraphicsOverrideParameter(331);
+    ClientboundDataStore(330),
+    GraphicsOverrideParameter(331),
+    ServerboundDataStore(332);
 
     private static final Int2ObjectMap<MinecraftPacketIds> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

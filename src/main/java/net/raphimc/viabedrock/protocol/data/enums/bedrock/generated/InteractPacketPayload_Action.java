@@ -5,36 +5,37 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
-public enum UpdateType {
+public enum InteractPacketPayload_Action {
 
-    ClearOverrides(0),
-    RemoveOverride(1),
-    SetIntOverride(2),
-    SetFloatOverride(3);
+    Invalid(0),
+    StopRiding(3),
+    InteractUpdate(4),
+    NpcOpen(5),
+    OpenInventory(6);
 
-    private static final Int2ObjectMap<UpdateType> BY_VALUE = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<InteractPacketPayload_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
-        for (UpdateType value : values()) {
+        for (InteractPacketPayload_Action value : values()) {
             if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
         }
     }
 
-    public static UpdateType getByValue(final int value) {
+    public static InteractPacketPayload_Action getByValue(final int value) {
         return BY_VALUE.get(value);
     }
 
-    public static UpdateType getByValue(final int value, final UpdateType fallback) {
+    public static InteractPacketPayload_Action getByValue(final int value, final InteractPacketPayload_Action fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
     private final int value;
 
-    UpdateType(final UpdateType value) {
+    InteractPacketPayload_Action(final InteractPacketPayload_Action value) {
         this(value.value);
     }
 
-    UpdateType(final int value) {
+    InteractPacketPayload_Action(final int value) {
         this.value = value;
     }
 

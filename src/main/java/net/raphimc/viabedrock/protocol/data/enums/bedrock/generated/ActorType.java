@@ -159,7 +159,11 @@ public enum ActorType {
     OminousItemSpawner(145),
     Creaking(2962),
     HappyGhast(5011),
-    CopperGolem(916);
+    CopperGolem(916),
+    Nautilus(9109),
+    ZombieNautilus(76694),
+    Parched(1117079),
+    CamelHusk(68504);
 
     private static final Int2ObjectMap<ActorType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

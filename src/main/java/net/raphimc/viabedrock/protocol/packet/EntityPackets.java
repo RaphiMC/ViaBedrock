@@ -545,7 +545,7 @@ public class EntityPackets {
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.ANIMATE, ClientboundPackets1_21_9.ANIMATE, wrapper -> {
-            final AnimatePacket_Action action = AnimatePacket_Action.getByValue(wrapper.read(BedrockTypes.VAR_INT), AnimatePacket_Action.NoAction); // action
+            final AnimatePacketPayload_Action action = AnimatePacketPayload_Action.getByValue(wrapper.read(BedrockTypes.VAR_INT), AnimatePacketPayload_Action.NoAction); // action
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
             wrapper.read(BedrockTypes.FLOAT_LE); // data
 
@@ -557,7 +557,7 @@ public class EntityPackets {
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.UNSIGNED_BYTE, (short) (switch (action) {
-                case NoAction, RowLeft, RowRight -> {
+                case NoAction -> {
                     wrapper.cancel();
                     yield AnimateAction.SWING_MAIN_HAND; // any action
                 }
