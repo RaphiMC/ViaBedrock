@@ -88,7 +88,8 @@ public class ResourcePacksStorage extends StoredObject {
             "vanilla_1.21.90",
             "vanilla_1.21.100",
             "vanilla_1.21.110",
-            "vanilla_1.21.120"
+            "vanilla_1.21.120",
+            "vanilla_1.21.130"
     );
 
     private final Map<UUID, ResourcePack> packs = new HashMap<>();

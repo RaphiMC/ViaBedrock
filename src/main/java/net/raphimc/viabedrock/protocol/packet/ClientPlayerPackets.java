@@ -348,7 +348,7 @@ public class ClientPlayerPackets {
                     // TODO: Implement RELEASE_USE_ITEM
                     PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
                 }
-                case SWAP_ITEM_WITH_OFFHAND -> {
+                case SWAP_ITEM_WITH_OFFHAND, STAB -> {
                 }
                 default -> throw new IllegalStateException("Unhandled PlayerActionAction: " + action);
             }
