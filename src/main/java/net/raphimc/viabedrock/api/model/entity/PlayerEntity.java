@@ -29,8 +29,8 @@ import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerTeamAction;
-import net.raphimc.viabedrock.protocol.data.enums.java.TeamCollisionRule;
-import net.raphimc.viabedrock.protocol.data.enums.java.TeamVisibility;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.TeamCollisionRule;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.TeamVisibility;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 

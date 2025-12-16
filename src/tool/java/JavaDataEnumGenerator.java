@@ -45,7 +45,7 @@ import java.util.zip.ZipInputStream;
 public class JavaDataEnumGenerator {
 
     private static final String META_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
-    private static final String VERSION_ID = "1.21.11-pre1";
+    private static final String VERSION_ID = "1.21.11";
     private static final String ENUMS_PACKAGE = "net.raphimc.viabedrock.protocol.data.enums.java.generated";
 
     public static void main(String[] args) throws Throwable {

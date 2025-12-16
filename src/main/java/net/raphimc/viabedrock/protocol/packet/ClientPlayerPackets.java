@@ -40,6 +40,7 @@ import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.*;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
@@ -567,7 +568,7 @@ public class ClientPlayerPackets {
                 handler(wrapper -> {
                     final GameMode gameMode = GameMode.values()[wrapper.read(Types.VAR_INT)]; // game mode
                     final GameType gameType = switch (gameMode) {
-                        case SURVIVAL ->  GameType.Survival;
+                        case SURVIVAL -> GameType.Survival;
                         case CREATIVE -> GameType.Creative;
                         case ADVENTURE -> GameType.Adventure;
                         case SPECTATOR -> GameType.Spectator;
