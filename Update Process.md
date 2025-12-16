@@ -4,7 +4,7 @@ This file lists the steps necessary to update ViaBedrock.
 
 1. Update ProtocolConstants class
 2. Add new vanilla packs to `ResourcePacksStorage#VANILLA_PACK_NAMES`
-3. Update and run BedrockDataEnumGenerator to generate the bedrock data enums
+3. Update and run BedrockDataEnumGenerator and JavaDataEnumGenerator to generate the data enums
 4. Update data assets (See `Data Asset Sources.md`) and BedrockMappingData
 5. Update hardcoded blockstates: Search all files for `new BlockState("`
 6. Update data in the `protocol/data` package

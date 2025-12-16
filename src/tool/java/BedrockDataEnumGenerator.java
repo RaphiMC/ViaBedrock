@@ -134,7 +134,7 @@ public class BedrockDataEnumGenerator {
                 .setProperty(EngineConfigurationKey.SKIP_VALUE_ESCAPING, true)
                 .addResolver(new MapResolver())
                 .build();
-        final Mustache enumTemplate = mustacheEngine.getMustache("enum");
+        final Mustache enumTemplate = mustacheEngine.getMustache("bedrock_enum");
 
         for (Map.Entry<String, List<EnumField>> entry : enums.entrySet()) {
             final String enumPackage;
