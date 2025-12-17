@@ -129,5 +129,9 @@
   "minecraft:zombie_horse": "minecraft:zombie_horse",
   "minecraft:zombie_pigman": "minecraft:zombified_piglin",
   "minecraft:zombie_villager": "minecraft:zombie_villager",
-  "minecraft:zombie_villager_v2": "minecraft:zombie_villager"
+  "minecraft:zombie_villager_v2": "minecraft:zombie_villager",
+  "minecraft:nautilus": "minecraft:nautilus",
+  "minecraft:zombie_nautilus": "minecraft:zombie_nautilus",
+  "minecraft:parched": "minecraft:parched",
+  "minecraft:camel_husk": "minecraft:camel_husk"
 }

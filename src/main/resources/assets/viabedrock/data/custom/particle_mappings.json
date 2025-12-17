@@ -630,5 +630,6 @@
         "value": -1
       }
     ]
-  }
+  },
+  "minecraft:nautilus_bubbles_particle": "minecraft:bubble"
 }
