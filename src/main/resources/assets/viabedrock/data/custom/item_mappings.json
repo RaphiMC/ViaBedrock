@@ -1934,6 +1934,13 @@
       }
     }
   },
+  "minecraft:camel_husk_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:camel_husk_spawn_egg"
+      }
+    }
+  },
   "minecraft:camel_spawn_egg": {
     "meta": {
       "": {
@@ -2908,6 +2915,13 @@
       }
     }
   },
+  "minecraft:copper_nautilus_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:copper_nautilus_armor"
+      }
+    }
+  },
   "minecraft:copper_nugget": {
     "meta": {
       "": {
@@ -2933,6 +2947,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:copper_shovel"
+      }
+    }
+  },
+  "minecraft:copper_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:copper_spear"
       }
     }
   },
@@ -4012,6 +4033,13 @@
       }
     }
   },
+  "minecraft:diamond_nautilus_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:diamond_nautilus_armor"
+      }
+    }
+  },
   "minecraft:diamond_ore": {
     "block": {
       "minecraft:diamond_ore": {
@@ -4030,6 +4058,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:diamond_shovel"
+      }
+    }
+  },
+  "minecraft:diamond_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:diamond_spear"
       }
     }
   },
@@ -6248,6 +6283,13 @@
       }
     }
   },
+  "minecraft:golden_nautilus_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:golden_nautilus_armor"
+      }
+    }
+  },
   "minecraft:golden_pickaxe": {
     "meta": {
       "": {
@@ -6266,6 +6308,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:golden_shovel"
+      }
+    }
+  },
+  "minecraft:golden_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:golden_spear"
       }
     }
   },
@@ -7209,6 +7258,13 @@
       }
     }
   },
+  "minecraft:iron_nautilus_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:iron_nautilus_armor"
+      }
+    }
+  },
   "minecraft:iron_nugget": {
     "meta": {
       "": {
@@ -7234,6 +7290,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:iron_shovel"
+      }
+    }
+  },
+  "minecraft:iron_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:iron_spear"
       }
     }
   },
@@ -9275,6 +9338,13 @@
       }
     }
   },
+  "minecraft:nautilus_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:nautilus_spawn_egg"
+      }
+    }
+  },
   "minecraft:nether_brick": {
     "block": {
       "minecraft:nether_brick": {
@@ -9402,6 +9472,13 @@
       }
     }
   },
+  "minecraft:netherite_horse_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:netherite_horse_armor"
+      }
+    }
+  },
   "minecraft:netherite_ingot": {
     "meta": {
       "": {
@@ -9413,6 +9490,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:netherite_leggings"
+      }
+    }
+  },
+  "minecraft:netherite_nautilus_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:netherite_nautilus_armor"
       }
     }
   },
@@ -9434,6 +9518,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:netherite_shovel"
+      }
+    }
+  },
+  "minecraft:netherite_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:netherite_spear"
       }
     }
   },
@@ -10080,6 +10171,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:paper"
+      }
+    }
+  },
+  "minecraft:parched_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:parched_spawn_egg"
       }
     }
   },
@@ -12947,6 +13045,13 @@
       }
     }
   },
+  "minecraft:stone_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:stone_spear"
+      }
+    }
+  },
   "minecraft:stone_stairs": {
     "block": {
       "minecraft:stone_stairs": {
@@ -14723,6 +14828,13 @@
       }
     }
   },
+  "minecraft:wooden_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:wooden_spear"
+      }
+    }
+  },
   "minecraft:wooden_sword": {
     "meta": {
       "": {
@@ -14871,6 +14983,13 @@
       }
     }
   },
+  "minecraft:zombie_nautilus_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:zombie_nautilus_spawn_egg"
+      }
+    }
+  },
   "minecraft:zombie_pigman_spawn_egg": {
     "meta": {
       "": {
@@ -14889,125 +15008,6 @@
     "meta": {
       "": {
         "java_id": "minecraft:zombie_villager_spawn_egg"
-      }
-    }
-  },
-  "minecraft:wooden_spear": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:wooden_spear"
-      }
-    }
-  },
-  "minecraft:stone_spear": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:stone_spear"
-      }
-    }
-  },
-  "minecraft:copper_spear": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:copper_spear"
-      }
-    }
-  },
-  "minecraft:iron_spear": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:iron_spear"
-      }
-    }
-  },
-  "minecraft:golden_spear": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:golden_spear"
-      }
-    }
-  },
-  "minecraft:diamond_spear": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:diamond_spear"
-      }
-    }
-  },
-  "minecraft:netherite_spear": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:netherite_spear"
-      }
-    }
-  },
-  "minecraft:camel_husk_spawn_egg": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:camel_husk_spawn_egg"
-      }
-    }
-  },
-  "minecraft:netherite_horse_armor": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:netherite_horse_armor"
-      }
-    }
-  },
-  "minecraft:nautilus_spawn_egg": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:nautilus_spawn_egg"
-      }
-    }
-  },
-  "minecraft:zombie_nautilus_spawn_egg": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:zombie_nautilus_spawn_egg"
-      }
-    }
-  },
-  "minecraft:parched_spawn_egg": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:parched_spawn_egg"
-      }
-    }
-  },
-  "minecraft:copper_nautilus_armor": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:copper_nautilus_armor"
-      }
-    }
-  },
-  "minecraft:iron_nautilus_armor": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:iron_nautilus_armor"
-      }
-    }
-  },
-  "minecraft:golden_nautilus_armor": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:golden_nautilus_armor"
-      }
-    }
-  },
-  "minecraft:diamond_nautilus_armor": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:diamond_nautilus_armor"
-      }
-    }
-  },
-  "minecraft:netherite_nautilus_armor": {
-    "meta": {
-      "": {
-        "java_id": "minecraft:netherite_nautilus_armor"
       }
     }
   }

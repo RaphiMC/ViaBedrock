@@ -376,6 +376,7 @@
   },
   "minecraft:mobspell_lingering": null,
   "minecraft:mycelium_dust_particle": "minecraft:mycelium",
+  "minecraft:nautilus_bubbles_particle": "minecraft:bubble",
   "minecraft:nectar_drip_particle": "minecraft:falling_nectar",
   "minecraft:note_particle": "minecraft:note",
   "minecraft:obsidian_glow_dust_particle": "minecraft:dripping_obsidian_tear",
@@ -630,6 +631,5 @@
         "value": -1
       }
     ]
-  },
-  "minecraft:nautilus_bubbles_particle": "minecraft:bubble"
+  }
 }
