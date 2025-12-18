@@ -1613,7 +1613,7 @@
   "mob.nautilus.hurt": "minecraft:entity.nautilus.hurt",
   "mob.nautilus.death": "minecraft:entity.nautilus.death",
   "mob.nautilus.nautilus_saddle": "minecraft:item.nautilus_saddle_equip",
-  "mob.nautilus.armor_unequip": "minecraft:item.armor.equip_nautilus",
+  "mob.nautilus.armor_unequip": "minecraft:item.armor.unequip_nautilus",
   "game.player.attack.critical": "minecraft:entity.player.attack.crit",
   "mob.zombie_nautilus.ambient": "minecraft:entity.zombie_nautilus.ambient",
   "mob.zombie_nautilus.eat": "minecraft:entity.zombie_nautilus.eat",
