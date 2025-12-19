@@ -358,7 +358,6 @@ public class InventoryPackets {
 
                 if (armorSlot == null || armorSlot == SharedTypes_Legacy_ArmorSlot.Body) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ArmorSlot: " + armorSlot);
-                    wrapper.cancel();
                     continue;
                 }
 
