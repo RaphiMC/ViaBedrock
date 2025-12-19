@@ -31,7 +31,6 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
-import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
@@ -127,9 +126,9 @@ public class InventoryContainer extends Container {
     private void onSelectedHotbarSlotChanged(final BedrockItem oldItem, final BedrockItem newItem, final PacketWrapper mobEquipment) {
         if (oldItem.isDifferent(newItem)) {
             final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, this.user);
-            interact.write(Types.BYTE, (byte) InteractPacket_Action.InteractUpdate.getValue()); // action
+            interact.write(Types.UNSIGNED_BYTE, (short) InteractPacket_Action.InteractUpdate.getValue()); // action
             interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target runtime entity id
-            interact.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // mouse position
+            interact.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // position
             interact.sendToServer(BedrockProtocol.class);
         }
 

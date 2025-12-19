@@ -15,16 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.model;
+package net.raphimc.viabedrock.protocol.data.enums.java;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandOriginType;
+public enum UpdateMobEffectFlag {
 
-import java.util.UUID;
+    AMBIENT,
+    VISIBLE,
+    SHOW_ICON,
+    BLEND;
 
-public record CommandOriginData(CommandOriginType type, UUID uuid, String requestId, long uniquePlayerId) {
-
-    public CommandOriginData(final CommandOriginType type, final UUID uuid, final String requestId) {
-        this(type, uuid, requestId, 0);
+    public byte getBit() {
+        return (byte) (1 << this.ordinal());
     }
 
 }

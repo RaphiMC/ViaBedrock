@@ -27,6 +27,7 @@ import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPa
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.AbilitiesIndex;
+import net.raphimc.viabedrock.protocol.data.enums.java.UpdateMobEffectFlag;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.EntityEffect;
 
@@ -115,7 +116,10 @@ public class LivingEntity extends Entity {
         javaEffect.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEffects().get(BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(effect.identifier()))); // effect id
         javaEffect.write(Types.VAR_INT, effect.amplifier()); // amplifier
         javaEffect.write(Types.VAR_INT, effect.duration().get() != -1 ? Math.max(effect.duration().get(), 0) : -1); // duration
-        javaEffect.write(Types.BYTE, (byte) (effect.showParticles() ? 2 : 0)); // flags
+        byte flags = 0;
+        if (effect.ambient()) flags |= UpdateMobEffectFlag.AMBIENT.getBit();
+        if (effect.showParticles()) flags |= UpdateMobEffectFlag.VISIBLE.getBit();
+        javaEffect.write(Types.BYTE, flags); // flags
     }
 
     public final void removeEffect(final String identifier, final PacketWrapper javaEffect) {

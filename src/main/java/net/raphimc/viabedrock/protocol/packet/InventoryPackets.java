@@ -367,8 +367,9 @@ public class InventoryPackets {
                 if (containerId == ContainerID.CONTAINER_ID_INVENTORY.getValue()) {
                     // Bedrock client can send multiple OpenInventory requests if the server doesn't respond, so this is fine here
                     final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
-                    interact.write(Types.BYTE, (byte) InteractPacket_Action.OpenInventory.getValue()); // action
+                    interact.write(Types.UNSIGNED_BYTE, (short) InteractPacket_Action.OpenInventory.getValue()); // action
                     interact.write(BedrockTypes.UNSIGNED_VAR_LONG, wrapper.user().get(EntityTracker.class).getClientPlayer().runtimeId()); // target runtime entity id
+                    interact.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // position
                     interact.sendToServer(BedrockProtocol.class);
                     PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
                 }

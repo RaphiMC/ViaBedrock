@@ -29,6 +29,24 @@ public enum CommandOutputType {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
+    public static CommandOutputType getByValue(final String value) {
+        for (CommandOutputType type : values()) {
+            if (type.name().equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    public static CommandOutputType getByValue(final String value, final CommandOutputType fallback) {
+        for (CommandOutputType type : values()) {
+            if (type.name().equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        return fallback;
+    }
+
     private final int value;
 
     CommandOutputType(final CommandOutputType value) {

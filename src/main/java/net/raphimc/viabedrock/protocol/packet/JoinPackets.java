@@ -155,9 +155,9 @@ public class JoinPackets {
                         if (clientPlayer.isInitiallySpawned()) return;
 
                         final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
-                        interact.write(Types.BYTE, (byte) InteractPacket_Action.InteractUpdate.getValue()); // action
+                        interact.write(Types.UNSIGNED_BYTE, (short) InteractPacket_Action.InteractUpdate.getValue()); // action
                         interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target runtime entity id
-                        interact.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // mouse position
+                        interact.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // position
                         interact.sendToServer(BedrockProtocol.class);
 
                         clientPlayer.setRotation(new Position3f(clientPlayer.rotation().x(), clientPlayer.rotation().y(), clientPlayer.rotation().y()));
@@ -200,7 +200,7 @@ public class JoinPackets {
                     if (resourcePacksStorage == null || !resourcePacksStorage.hasFinishedLoading()) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Pack negotiation not completed before joining game. Skipping resource pack loading");
                         resourcePacksStorage = new ResourcePacksStorage(wrapper.user());
-                        resourcePacksStorage.setPackStack(new UUID[0], new UUID[0]);
+                        resourcePacksStorage.setPackStack(new UUID[0]);
                         wrapper.user().put(resourcePacksStorage);
                     }
 
@@ -285,7 +285,6 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.UUID); // world template id
                     wrapper.read(Types.BOOLEAN); // client side generation
                     final boolean hashedRuntimeBlockIds = wrapper.read(Types.BOOLEAN); // use hashed block runtime ids
-                    wrapper.read(Types.BOOLEAN); // enable tick death systems
                     wrapper.read(Types.BOOLEAN); // server authoritative sounds
 
                     if (editorWorldType == Editor_WorldType.EditorProject) {

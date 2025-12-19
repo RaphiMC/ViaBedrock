@@ -60,6 +60,7 @@ public class BedrockTypes {
     public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
     public static final Type<String> ASCII_STRING = new AsciiStringType();
     public static final Type<String> STRING = new StringType();
+    public static final Type<String> OPTIONAL_STRING = new StringType.OptionalStringType();
     public static final Type<String[]> SHORT_LE_STRING_ARRAY = new ArrayType<>(STRING, SHORT_LE);
     public static final Type<String[]> STRING_ARRAY = new ArrayType<>(STRING, UNSIGNED_VAR_INT);
     public static final Type<String> UTF8_STRING = new Utf8StringType();
@@ -74,6 +75,7 @@ public class BedrockTypes {
     public static final Type<BlockPosition> BLOCK_POSITION = new BlockPositionType();
     public static final Type<BlockPosition> POSITION_3I = new Position3iType();
     public static final Type<Position3f> POSITION_3F = new Position3fType();
+    public static final Type<Position3f> OPTIONAL_POSITION_3F = new Position3fType.OptionalPosition3fType();
     public static final Type<Position2f> POSITION_2F = new Position2fType();
     public static final Type<GameRule> GAME_RULE = new GameRuleType(false);
     public static final Type<GameRule[]> GAME_RULE_ARRAY = new ArrayType<>(GAME_RULE, UNSIGNED_VAR_INT);

@@ -522,6 +522,7 @@ public class EntityPackets {
             final boolean showParticles = wrapper.read(Types.BOOLEAN); // show particles
             final int duration = wrapper.read(BedrockTypes.VAR_INT); // duration
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // tick
+            final boolean ambient = wrapper.read(Types.BOOLEAN); // ambient
 
             final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(runtimeEntityId);
             if (!(entity instanceof LivingEntity livingEntity) || effectId == 0) {
@@ -533,7 +534,7 @@ public class EntityPackets {
             if (bedrockIdentifier == null) { // Bedrock client crashes
                 throw new IllegalStateException("Unknown bedrock effect: " + effectId);
             }
-            final EntityEffect effect = new EntityEffect(bedrockIdentifier, amplifier, duration, showParticles);
+            final EntityEffect effect = new EntityEffect(bedrockIdentifier, amplifier, duration, showParticles, ambient);
             switch (event) {
                 case Invalid -> wrapper.cancel();
                 case Add, Update -> livingEntity.updateEffect(effect, wrapper);
@@ -545,9 +546,10 @@ public class EntityPackets {
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.ANIMATE, ClientboundPackets1_21_11.ANIMATE, wrapper -> {
-            final AnimatePacketPayload_Action action = AnimatePacketPayload_Action.getByValue(wrapper.read(BedrockTypes.VAR_INT), AnimatePacketPayload_Action.NoAction); // action
+            final AnimatePacketPayload_Action action = AnimatePacketPayload_Action.getByValue(wrapper.read(Types.UNSIGNED_BYTE), AnimatePacketPayload_Action.NoAction); // action
             final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
             wrapper.read(BedrockTypes.FLOAT_LE); // data
+            wrapper.read(BedrockTypes.OPTIONAL_STRING); // swing source
 
             final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(runtimeEntityId);
             if (entity == null) {

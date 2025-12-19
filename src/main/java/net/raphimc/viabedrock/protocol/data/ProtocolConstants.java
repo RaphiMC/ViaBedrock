@@ -35,7 +35,7 @@ public class ProtocolConstants {
     public static final int BEDROCK_PROTOCOL_VERSION = 898;
     public static final int BEDROCK_RAKNET_PROTOCOL_VERSION = 11;
     public static final int BEDROCK_DEFAULT_PORT = 19132;
-    public static final int BEDROCK_COMMAND_VERSION = 48;
+    public static final String BEDROCK_COMMAND_VERSION = "latest";
     public static final byte BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS = 28;
 
     public static final int LAST_BLOCK_ITEM_ID = 255;
