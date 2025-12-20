@@ -175,7 +175,7 @@ public class BedrockSoundListGenerator {
     */
 
     public static void main(String[] args) throws Throwable {
-        final ResourcePacksStorage resourcePacksStorage = Util.getClientResourcePacks(new File("C:\\Users\\User\\Desktop\\data"));
+        final ResourcePacksStorage resourcePacksStorage = Util.getClientResourcePacks(new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
 
         final JsonObject soundList = new JsonObject();
         final Set<String> soundsWithoutCategory = new HashSet<>();
@@ -207,6 +207,10 @@ public class BedrockSoundListGenerator {
         if (soundsWithoutCategory.contains("record.lava_chicken")) {
             soundsWithoutCategory.remove("record.lava_chicken");
             soundList.addProperty("record.lava_chicken", "record");
+        }
+        if (soundsWithoutCategory.contains("game.player.attack.critical")) {
+            soundsWithoutCategory.remove("game.player.attack.critical");
+            soundList.addProperty("game.player.attack.critical", "player");
         }
         // Check if there are any sounds without a category
         for (String s : soundsWithoutCategory) {
@@ -300,6 +304,8 @@ public class BedrockSoundListGenerator {
 
         if (s.startsWith("block.")) {
             s = s.replace("block.", "");
+        } else if (s.startsWith("item.enchant.")) {
+            s = s.replace("item.enchant.", "");
         } else if (s.startsWith("item.")) {
             s = s.replace("item.", "");
         } else if (s.startsWith("armor.")) {

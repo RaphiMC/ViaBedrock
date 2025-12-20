@@ -30,6 +30,24 @@ public enum CommandPermissionLevel {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
+    public static CommandPermissionLevel getByValue(final String value) {
+        for (CommandPermissionLevel level : values()) {
+            if (level.name().equalsIgnoreCase(value)) {
+                return level;
+            }
+        }
+        return null;
+    }
+
+    public static CommandPermissionLevel getByValue(final String value, final CommandPermissionLevel fallback) {
+        for (CommandPermissionLevel level : values()) {
+            if (level.name().equalsIgnoreCase(value)) {
+                return level;
+            }
+        }
+        return fallback;
+    }
+
     private final int value;
 
     CommandPermissionLevel(final CommandPermissionLevel value) {

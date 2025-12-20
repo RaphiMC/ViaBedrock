@@ -534,7 +534,19 @@ public enum SharedTypes_Legacy_LevelSoundEvent {
     PlaceItem(563),
     SingleItemSwap(564),
     MultiItemSwap(565),
-    Undefined(566);
+    Lunge1(566),
+    Lunge2(567),
+    Lunge3(568),
+    AttackCritical(569),
+    SpearAttackHit(570),
+    SpearAttackMiss(571),
+    WoodenSpearAttackHit(572),
+    WoodenSpearAttackMiss(573),
+    ImitateParched(574),
+    ImitateCamelHusk(575),
+    SpearUse(576),
+    WoodenSpearUse(577),
+    Undefined(578);
 
     private static final Int2ObjectMap<SharedTypes_Legacy_LevelSoundEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 

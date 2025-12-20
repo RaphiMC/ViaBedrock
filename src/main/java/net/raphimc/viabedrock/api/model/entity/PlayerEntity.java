@@ -18,19 +18,19 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.mcstructs.text.TextFormatting;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerTeamAction;
-import net.raphimc.viabedrock.protocol.data.enums.java.TeamCollisionRule;
-import net.raphimc.viabedrock.protocol.data.enums.java.TeamVisibility;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.TeamCollisionRule;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.TeamVisibility;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 
@@ -43,13 +43,13 @@ public class PlayerEntity extends LivingEntity {
     protected PlayerAbilities abilities;
 
     public PlayerEntity(final UserConnection user, final long runtimeId, final int javaId, final UUID javaUuid, final PlayerAbilities abilities) {
-        super(user, abilities.uniqueEntityId(), runtimeId, "minecraft:player", javaId, javaUuid, EntityTypes1_21_9.PLAYER);
+        super(user, abilities.uniqueEntityId(), runtimeId, "minecraft:player", javaId, javaUuid, EntityTypes1_21_11.PLAYER);
 
         this.abilities = abilities;
     }
 
     public final void createTeam() {
-        final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21_9.SET_PLAYER_TEAM, this.user);
+        final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21_11.SET_PLAYER_TEAM, this.user);
         setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
         setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.ADD.ordinal()); // mode
         setPlayerTeam.write(Types.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
@@ -66,7 +66,7 @@ public class PlayerEntity extends LivingEntity {
     public final void updateName(final String name) {
         this.setName(name);
 
-        final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21_9.SET_PLAYER_TEAM, this.user);
+        final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21_11.SET_PLAYER_TEAM, this.user);
         setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
         setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.CHANGE.ordinal()); // mode
         setPlayerTeam.write(Types.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
@@ -83,7 +83,7 @@ public class PlayerEntity extends LivingEntity {
     public void remove() {
         super.remove();
 
-        final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21_9.SET_PLAYER_TEAM, this.user);
+        final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21_11.SET_PLAYER_TEAM, this.user);
         setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
         setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.REMOVE.ordinal()); // mode
         setPlayerTeam.send(BedrockProtocol.class);
@@ -106,7 +106,7 @@ public class PlayerEntity extends LivingEntity {
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         return switch (attribute.name()) {
             case "minecraft:absorption" -> {
-                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("PLAYER_ABSORPTION"), VersionedTypes.V1_21_9.entityDataTypes.floatType, attribute.computeClampedValue()));
+                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("PLAYER_ABSORPTION"), VersionedTypes.V1_21_11.entityDataTypes.floatType, attribute.computeClampedValue()));
                 javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:max_absorption")); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.maxValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count

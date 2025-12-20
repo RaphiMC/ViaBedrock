@@ -41,7 +41,7 @@ public class ResourcePackConverterTest {
 
         final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage(null);
         resourcePacksStorage.addPack(resourcePack);
-        resourcePacksStorage.setPackStack(new UUID[]{resourcePack.packId()}, new UUID[0]);
+        resourcePacksStorage.setPackStack(new UUID[]{resourcePack.packId()});
         System.out.println("Preparation took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();

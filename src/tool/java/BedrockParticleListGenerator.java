@@ -30,7 +30,7 @@ import java.util.Map;
 public class BedrockParticleListGenerator {
 
     public static void main(String[] args) throws Throwable {
-        final ResourcePacksStorage resourcePacksStorage = Util.getClientResourcePacks(new File("C:\\Users\\User\\Desktop\\data"));
+        final ResourcePacksStorage resourcePacksStorage = Util.getClientResourcePacks(new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
 
         final List<String> particleList = new ArrayList<>();
         for (Map.Entry<String, ParticleDefinitions.ParticleDefinition> entry : resourcePacksStorage.getParticles().particles().entrySet()) {

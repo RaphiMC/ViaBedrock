@@ -17,13 +17,15 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public enum HeightmapType {
+public enum UpdateMobEffectFlag {
 
-    WORLD_SURFACE_WG,
-    WORLD_SURFACE,
-    OCEAN_FLOOR_WG,
-    OCEAN_FLOOR,
-    MOTION_BLOCKING,
-    MOTION_BLOCKING_NO_LEAVES,
+    AMBIENT,
+    VISIBLE,
+    SHOW_ICON,
+    BLEND;
+
+    public byte getBit() {
+        return (byte) (1 << this.ordinal());
+    }
 
 }

@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
@@ -40,6 +40,7 @@ import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.*;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
@@ -47,6 +48,7 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -56,7 +58,7 @@ public class ClientPlayerPackets {
     private static final PacketHandler CLIENT_PLAYER_GAME_MODE_INFO_UPDATE = wrapper -> {
         final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
 
-        final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21_9.PLAYER_INFO_UPDATE, wrapper.user());
+        final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21_11.PLAYER_INFO_UPDATE, wrapper.user());
         playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_4, BitSets.create(8, PlayerInfoUpdateAction.UPDATE_GAME_MODE)); // actions
         playerInfoUpdate.write(Types.VAR_INT, 1); // length
         playerInfoUpdate.write(Types.UUID, clientPlayer.javaUuid()); // uuid
@@ -70,7 +72,7 @@ public class ClientPlayerPackets {
     };
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.RESPAWN, ClientboundPackets1_21_9.RESPAWN, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.RESPAWN, ClientboundPackets1_21_11.RESPAWN, wrapper -> {
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final byte rawState = wrapper.read(Types.BYTE); // state
             final PlayerRespawnState state = PlayerRespawnState.getByValue(rawState);
@@ -155,7 +157,7 @@ public class ClientPlayerPackets {
                 }
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.CORRECT_PLAYER_MOVE_PREDICTION, ClientboundPackets1_21_9.PLAYER_POSITION, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.CORRECT_PLAYER_MOVE_PREDICTION, ClientboundPackets1_21_11.PLAYER_POSITION, wrapper -> {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
             final byte rawRewindType = wrapper.read(Types.BYTE); // rewind type
@@ -211,7 +213,7 @@ public class ClientPlayerPackets {
                 handler(CLIENT_PLAYER_GAME_MODE_UPDATE);
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_PLAYER_GAME_TYPE, ClientboundPackets1_21_9.PLAYER_INFO_UPDATE, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_PLAYER_GAME_TYPE, ClientboundPackets1_21_11.PLAYER_INFO_UPDATE, wrapper -> {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             final PlayerListStorage playerList = wrapper.user().get(PlayerListStorage.class);
@@ -244,7 +246,7 @@ public class ClientPlayerPackets {
             wrapper.read(Types.BOOLEAN); // show name tags
             wrapper.read(Types.BOOLEAN); // auto jump
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.OPEN_SIGN, ClientboundPackets1_21_9.OPEN_SIGN_EDITOR, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.OPEN_SIGN, ClientboundPackets1_21_11.OPEN_SIGN_EDITOR, new PacketHandlers() {
             @Override
             protected void register() {
                 map(BedrockTypes.BLOCK_POSITION, Types.BLOCK_POSITION1_14); // position
@@ -347,7 +349,7 @@ public class ClientPlayerPackets {
                     // TODO: Implement RELEASE_USE_ITEM
                     PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
                 }
-                case SWAP_ITEM_WITH_OFFHAND -> {
+                case SWAP_ITEM_WITH_OFFHAND, STAB -> {
                 }
                 default -> throw new IllegalStateException("Unhandled PlayerActionAction: " + action);
             }
@@ -567,7 +569,7 @@ public class ClientPlayerPackets {
                 handler(wrapper -> {
                     final GameMode gameMode = GameMode.values()[wrapper.read(Types.VAR_INT)]; // game mode
                     final GameType gameType = switch (gameMode) {
-                        case SURVIVAL ->  GameType.Survival;
+                        case SURVIVAL -> GameType.Survival;
                         case CREATIVE -> GameType.Creative;
                         case ADVENTURE -> GameType.Adventure;
                         case SPECTATOR -> GameType.Spectator;
@@ -589,9 +591,10 @@ public class ClientPlayerPackets {
                 return;
             }
 
-            wrapper.write(BedrockTypes.VAR_INT, AnimatePacket_Action.Swing.getValue()); // action
+            wrapper.write(Types.UNSIGNED_BYTE, (short) AnimatePacketPayload_Action.Swing.getValue()); // action
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
             wrapper.write(BedrockTypes.FLOAT_LE, 0F); // data
+            wrapper.write(BedrockTypes.OPTIONAL_STRING, ActorSwingSource.Attack.name().toLowerCase(Locale.ROOT)); // swing source // TODO: 1.21.130
 
             if (clientPlayer.blockBreakingInfo() != null) {
                 if (!gameSession.isBlockBreakingServerAuthoritative()) {

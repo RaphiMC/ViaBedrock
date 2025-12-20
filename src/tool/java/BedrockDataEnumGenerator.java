@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 
 public class BedrockDataEnumGenerator {
 
-    private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/7d1acc3bc46deffd66e9723f1d84988606f522b0/html/enums.html";
+    private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/2842b5c80249dc3a125b6892031cfc2fb1e4c1bd/html/enums.html";
     private static final String ENUMS_PACKAGE = "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated";
     private static final List<String> IGNORED_FIELDS = Arrays.asList("deprecated", "count", "_count", "total", "all", "numenchantments", "numtagtypes", "abilitycount", "nummodes", "input_num", "total_operations", "total_operands", "numvalidversions", "num_categories");
     private static final Map<String, String> VALUE_REPLACEMENTS = new HashMap<>();
@@ -100,11 +100,6 @@ public class BedrockDataEnumGenerator {
         final List<EnumField> levelEventEnum = enums.get("LevelEvent");
         levelEventEnum.add(new EnumField("ParticleCreakingHeartTrail", "9816"));
 
-        // Add missing values
-        final List<EnumField> animatePacketActionEnum = enums.get("AnimatePacket::Action");
-        animatePacketActionEnum.add(new EnumField("RowRight", "128"));
-        animatePacketActionEnum.add(new EnumField("RowLeft", "129"));
-
         // Fix wrong values
         final List<EnumField> packetCompressionAlgorithmEnum = enums.get("PacketCompressionAlgorithm");
         packetCompressionAlgorithmEnum.removeIf(field -> field.name.equals("None"));
@@ -134,7 +129,7 @@ public class BedrockDataEnumGenerator {
                 .setProperty(EngineConfigurationKey.SKIP_VALUE_ESCAPING, true)
                 .addResolver(new MapResolver())
                 .build();
-        final Mustache enumTemplate = mustacheEngine.getMustache("enum");
+        final Mustache enumTemplate = mustacheEngine.getMustache("bedrock_enum");
 
         for (Map.Entry<String, List<EnumField>> entry : enums.entrySet()) {
             final String enumPackage;

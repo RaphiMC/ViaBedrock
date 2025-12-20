@@ -40,6 +40,24 @@ public enum CommandOriginType {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
+    public static CommandOriginType getByValue(final String value) {
+        for (CommandOriginType type : values()) {
+            if (type.name().equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    public static CommandOriginType getByValue(final String value, final CommandOriginType fallback) {
+        for (CommandOriginType type : values()) {
+            if (type.name().equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        return fallback;
+    }
+
     private final int value;
 
     CommandOriginType(final CommandOriginType value) {
