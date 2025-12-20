@@ -1,15 +1,6 @@
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PackType;
-import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.util.UUID;
-
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +15,17 @@ import java.util.UUID;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package net.raphimc.viabedrock.test;
+
+import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PackType;
+import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
+import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.util.UUID;
+
 public class ResourcePackConverterTest {
 
     public static void main(String[] args) throws Throwable {

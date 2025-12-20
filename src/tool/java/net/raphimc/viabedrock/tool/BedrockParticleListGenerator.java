@@ -15,11 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package net.raphimc.viabedrock.tool;
 
 import com.viaversion.viaversion.libs.gson.Gson;
 import net.raphimc.viabedrock.api.model.resourcepack.ParticleDefinitions;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-import util.Util;
+import net.raphimc.viabedrock.util.Util;
 
 import java.io.File;
 import java.nio.file.Files;
