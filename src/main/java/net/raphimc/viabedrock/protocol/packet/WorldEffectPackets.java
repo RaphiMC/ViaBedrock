@@ -113,7 +113,7 @@ public class WorldEffectPackets {
                 wrapper.cancel();
                 return;
             }
-            wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
+            wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final String effectIdentifier = wrapper.read(BedrockTypes.STRING); // effect name
             if (wrapper.read(Types.BOOLEAN)) { // has molang variables
@@ -150,7 +150,7 @@ public class WorldEffectPackets {
             final String entityIdentifier = wrapper.read(BedrockTypes.STRING); // entity identifier
             final boolean isBabyMob = wrapper.read(Types.BOOLEAN); // is baby mob
             final boolean isGlobal = wrapper.read(Types.BOOLEAN); // is global sound
-            wrapper.read(BedrockTypes.LONG_LE); // unique entity id
+            wrapper.read(BedrockTypes.LONG_LE); // entity unique id
 
             final boolean globalSound = isGlobal || Float.isNaN(position.x()) || Float.isNaN(position.y()) || Float.isNaN(position.z());
             SoundDefinitions.ConfiguredSound configuredSound;

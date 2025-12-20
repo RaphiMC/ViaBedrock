@@ -25,10 +25,10 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte commandPermission, Map<SerializedAbilitiesData_SerializedAbilitiesLayer, AbilitiesLayer> abilityLayers) {
+public record PlayerAbilities(long entityUniqueId, byte playerPermission, byte commandPermission, Map<SerializedAbilitiesData_SerializedAbilitiesLayer, AbilitiesLayer> abilityLayers) {
 
-    public PlayerAbilities(final long uniqueEntityId, final byte playerPermission, final byte commandPermission) {
-        this(uniqueEntityId, playerPermission, commandPermission, new EnumMap<>(SerializedAbilitiesData_SerializedAbilitiesLayer.class));
+    public PlayerAbilities(final long entityUniqueId, final byte playerPermission, final byte commandPermission) {
+        this(entityUniqueId, playerPermission, commandPermission, new EnumMap<>(SerializedAbilitiesData_SerializedAbilitiesLayer.class));
 
         final Set<AbilitiesIndex> abilitiesSet = EnumSet.allOf(AbilitiesIndex.class);
         abilitiesSet.remove(AbilitiesIndex.Invalid);

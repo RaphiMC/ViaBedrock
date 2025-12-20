@@ -384,7 +384,7 @@ public class WorldPackets {
             protected void register() {
                 map(BedrockTypes.BLOCK_POSITION, Types.BLOCK_POSITION1_14); // position
                 handler(UPDATE_BLOCK_HANDLER);
-                read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+                read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
                 read(BedrockTypes.UNSIGNED_VAR_LONG); // block sync type
             }
         });

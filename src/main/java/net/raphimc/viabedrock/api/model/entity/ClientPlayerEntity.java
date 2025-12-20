@@ -130,7 +130,7 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     public void sendPlayerActionPacketToServer(final PlayerActionType action, final BlockPosition blockPosition, final int direction) {
         final PacketWrapper playerAction = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, this.user);
-        playerAction.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
+        playerAction.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // entity runtime id
         playerAction.write(BedrockTypes.VAR_INT, action.getValue()); // action
         playerAction.write(BedrockTypes.BLOCK_POSITION, blockPosition); // block position
         playerAction.write(BedrockTypes.BLOCK_POSITION, new BlockPosition(0, 0, 0)); // result position
@@ -141,7 +141,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     public void sendSwingPacketToServer() {
         final PacketWrapper animate = PacketWrapper.create(ServerboundBedrockPackets.ANIMATE, this.user);
         animate.write(Types.UNSIGNED_BYTE, (short) AnimatePacketPayload_Action.Swing.getValue()); // action
-        animate.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // runtime entity id
+        animate.write(BedrockTypes.UNSIGNED_VAR_LONG, this.runtimeId); // entity runtime id
         animate.write(BedrockTypes.FLOAT_LE, 0F); // data
         animate.write(BedrockTypes.OPTIONAL_STRING, ActorSwingSource.Attack.name().toLowerCase(Locale.ROOT)); // swing source // TODO: 1.21.130
         animate.sendToServer(BedrockProtocol.class);

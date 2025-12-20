@@ -69,7 +69,7 @@ public class HudPackets {
                 case Add -> {
                     final int length = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // length
                     final UUID[] uuids = new UUID[length];
-                    final long[] uniqueEntityIds = new long[length];
+                    final long[] entityUniqueIds = new long[length];
                     final String[] names = new String[length];
                     wrapper.write(Types.PROFILE_ACTIONS_ENUM1_21_4, BitSets.create(8, PlayerInfoUpdateAction.ADD_PLAYER, PlayerInfoUpdateAction.UPDATE_LISTED, PlayerInfoUpdateAction.UPDATE_DISPLAY_NAME)); // actions
                     wrapper.write(Types.VAR_INT, length); // length
@@ -77,7 +77,7 @@ public class HudPackets {
                         uuids[i] = wrapper.read(BedrockTypes.UUID); // uuid
                         wrapper.write(Types.UUID, uuids[i]); // uuid
                         wrapper.write(Types.STRING, StringUtil.encodeUUID(uuids[i])); // username
-                        uniqueEntityIds[i] = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
+                        entityUniqueIds[i] = wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
                         names[i] = wrapper.read(BedrockTypes.STRING); // username
                         final String xuid = wrapper.read(BedrockTypes.STRING); // xuid
                         final String platformOnlineId = wrapper.read(BedrockTypes.STRING); // platform online id
@@ -110,13 +110,13 @@ public class HudPackets {
                     final List<UUID> toRemoveUUIDs = new ArrayList<>();
                     final List<String> toRemoveNames = new ArrayList<>();
                     for (int i = 0; i < uuids.length; i++) {
-                        final Pair<Long, String> entry = playerListStorage.addPlayer(uuids[i], uniqueEntityIds[i], names[i]);
+                        final Pair<Long, String> entry = playerListStorage.addPlayer(uuids[i], entityUniqueIds[i], names[i]);
                         if (entry != null) {
                             toRemoveUUIDs.add(uuids[i]);
                             toRemoveNames.add(entry.value());
                         }
 
-                        final Pair<ScoreboardObjective, ScoreboardEntry> scoreboardEntry = scoreboardTracker.getEntryForPlayer(uniqueEntityIds[i]);
+                        final Pair<ScoreboardObjective, ScoreboardEntry> scoreboardEntry = scoreboardTracker.getEntryForPlayer(entityUniqueIds[i]);
                         if (scoreboardEntry != null) {
                             scoreboardEntry.key().updateEntry(wrapper.user(), scoreboardEntry.value());
                         }
@@ -268,15 +268,15 @@ public class HudPackets {
                     case Change -> {
                         final byte rawType = wrapper.read(Types.BYTE); // type
                         final IdentityDefinition_Type type = IdentityDefinition_Type.getByValue(rawType, IdentityDefinition_Type.Invalid);
-                        Long uniqueEntityId = null;
+                        Long entityUniqueId = null;
                         String fakePlayerName = null;
                         switch (type) {
-                            case Player, Entity -> uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
+                            case Player, Entity -> entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
                             case FakePlayer -> fakePlayerName = wrapper.read(BedrockTypes.STRING); // fake player name
                             case Invalid -> throw new IllegalStateException("Invalid IdentityDefinition_Type: " + rawType); // Bedrock client disconnects if the type is not valid
                             default -> throw new IllegalStateException("Unhandled IdentityDefinition_Type: " + rawType);
                         }
-                        entry = new ScoreboardEntry(score, type, uniqueEntityId, fakePlayerName);
+                        entry = new ScoreboardEntry(score, type, entityUniqueId, fakePlayerName);
                     }
                     case Remove -> entry = null;
                     default -> throw new IllegalStateException("Unhandled ScorePacketType: " + action);
@@ -317,12 +317,12 @@ public class HudPackets {
                 final Pair<ScoreboardObjective, ScoreboardEntry> entry = scoreboardTracker.getEntry(scoreboardId);
                 switch (action) {
                     case Update -> {
-                        final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
+                        final long entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
                         if (entry == null) continue;
                         final ScoreboardEntry scoreboardEntry = entry.value();
 
-                        if (scoreboardEntry.uniqueEntityId() == null) {
-                            scoreboardEntry.updateTarget(IdentityDefinition_Type.Player, uniqueEntityId, scoreboardEntry.fakePlayerName());
+                        if (scoreboardEntry.entityUniqueId() == null) {
+                            scoreboardEntry.updateTarget(IdentityDefinition_Type.Player, entityUniqueId, scoreboardEntry.fakePlayerName());
                             entry.key().updateEntry(wrapper.user(), scoreboardEntry);
                         }
                     }
@@ -349,7 +349,7 @@ public class HudPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.BOSS_EVENT, ClientboundPackets1_21_11.BOSS_EVENT, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
-            final long bossUniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // boss unique entity id
+            final long bossEntityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // boss entity unique id
             final int rawUpdateType = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // update type
             final BossEventUpdateType updateType = BossEventUpdateType.getByValue(rawUpdateType);
             if (updateType == null) {
@@ -358,7 +358,7 @@ public class HudPackets {
                 return;
             }
 
-            final Entity entity = entityTracker.getEntityByUid(bossUniqueEntityId);
+            final Entity entity = entityTracker.getEntityByUid(bossEntityUniqueId);
             if (entity == null) {
                 wrapper.cancel();
                 return;

@@ -127,12 +127,12 @@ public class InventoryContainer extends Container {
         if (oldItem.isDifferent(newItem)) {
             final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, this.user);
             interact.write(Types.UNSIGNED_BYTE, (short) InteractPacket_Action.InteractUpdate.getValue()); // action
-            interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target runtime entity id
+            interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target entity runtime id
             interact.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // position
             interact.sendToServer(BedrockProtocol.class);
         }
 
-        mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // runtime entity id
+        mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // entity runtime id
         mobEquipment.write(this.user.get(ItemRewriter.class).itemType(), newItem); // item
         mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // slot
         mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // selected slot

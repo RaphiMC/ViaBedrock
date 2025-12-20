@@ -156,7 +156,7 @@ public class JoinPackets {
 
                         final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
                         interact.write(Types.UNSIGNED_BYTE, (short) InteractPacket_Action.InteractUpdate.getValue()); // action
-                        interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target runtime entity id
+                        interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target entity runtime id
                         interact.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // position
                         interact.sendToServer(BedrockProtocol.class);
 
@@ -165,7 +165,7 @@ public class JoinPackets {
 
                         PacketFactory.sendBedrockLoadingScreen(wrapper.user(), ServerboundLoadingScreenPacketType.EndLoadingScreen, null);
                         final PacketWrapper setLocalPlayerAsInitialized = PacketWrapper.create(ServerboundBedrockPackets.SET_LOCAL_PLAYER_AS_INITIALIZED, wrapper.user());
-                        setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+                        setLocalPlayerAsInitialized.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // entity runtime id
                         setLocalPlayerAsInitialized.sendToServer(BedrockProtocol.class);
 
                         PacketFactory.sendJavaGameEvent(wrapper.user(), GameEventType.LEVEL_CHUNKS_LOAD_START, 0F);
@@ -204,8 +204,8 @@ public class JoinPackets {
                         wrapper.user().put(resourcePacksStorage);
                     }
 
-                    final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
-                    final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+                    final long entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
+                    final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
                     final GameType playerGameType = GameType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GameType.Undefined); // player game type
                     final Position3f playerPosition = wrapper.read(BedrockTypes.POSITION_3F); // player position
                     final Position2f playerRotation = wrapper.read(BedrockTypes.POSITION_2F); // player rotation
@@ -333,8 +333,8 @@ public class JoinPackets {
                     gameSession.setInventoryServerAuthoritative(inventoryServerAuthoritative);
                     gameSession.setBlockBreakingServerAuthoritative(blockBreakingServerAuthoritative);
 
-                    final PlayerAbilities playerAbilities = new PlayerAbilities(uniqueEntityId, (byte) playerPermission, (byte) CommandPermissionLevel.Any.getValue());
-                    final ClientPlayerEntity clientPlayer = new ClientPlayerEntity(wrapper.user(), runtimeEntityId, wrapper.user().getProtocolInfo().getUuid(), playerAbilities);
+                    final PlayerAbilities playerAbilities = new PlayerAbilities(entityUniqueId, (byte) playerPermission, (byte) CommandPermissionLevel.Any.getValue());
+                    final ClientPlayerEntity clientPlayer = new ClientPlayerEntity(wrapper.user(), entityRuntimeId, wrapper.user().getProtocolInfo().getUuid(), playerAbilities);
                     clientPlayer.setPosition(new Position3f(playerPosition.x(), playerPosition.y() + clientPlayer.eyeOffset(), playerPosition.z()));
                     clientPlayer.setRotation(new Position3f(playerRotation.x(), playerRotation.y(), 0F));
                     clientPlayer.setOnGround(false);

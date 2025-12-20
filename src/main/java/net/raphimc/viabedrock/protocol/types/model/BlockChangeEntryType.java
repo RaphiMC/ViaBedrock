@@ -34,10 +34,10 @@ public class BlockChangeEntryType extends Type<BlockChangeEntry> {
         final BlockPosition position = BedrockTypes.BLOCK_POSITION.read(buffer);
         final int blockState = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final int flags = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-        final long messageUniqueEntityId = BedrockTypes.UNSIGNED_VAR_LONG.read(buffer);
+        final long messageEntityUniqueId = BedrockTypes.UNSIGNED_VAR_LONG.read(buffer);
         final int messageType = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
 
-        return new BlockChangeEntry(position, blockState, flags, messageUniqueEntityId, messageType);
+        return new BlockChangeEntry(position, blockState, flags, messageEntityUniqueId, messageType);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class BlockChangeEntryType extends Type<BlockChangeEntry> {
         BedrockTypes.BLOCK_POSITION.write(buffer, value.position());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.blockState());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.flags());
-        BedrockTypes.UNSIGNED_VAR_LONG.write(buffer, value.messageUniqueEntityId());
+        BedrockTypes.UNSIGNED_VAR_LONG.write(buffer, value.messageEntityUniqueId());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.messageType());
     }
 

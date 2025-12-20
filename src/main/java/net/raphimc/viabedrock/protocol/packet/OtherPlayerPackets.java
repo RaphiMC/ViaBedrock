@@ -62,7 +62,7 @@ public class OtherPlayerPackets {
 
             final UUID uuid = wrapper.read(BedrockTypes.UUID); // uuid
             final String username = wrapper.read(BedrockTypes.STRING); // username
-            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
             final String platformOnlineId = wrapper.read(BedrockTypes.STRING); // platform online id
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
@@ -74,7 +74,7 @@ public class OtherPlayerPackets {
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
             final EntityLink[] entityLinks = wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
 
-            final PlayerEntity entity = entityTracker.addEntity(new PlayerEntity(wrapper.user(), runtimeEntityId, entityTracker.getNextJavaEntityId(), uuid, abilities));
+            final PlayerEntity entity = entityTracker.addEntity(new PlayerEntity(wrapper.user(), entityRuntimeId, entityTracker.getNextJavaEntityId(), uuid, abilities));
             entity.setPosition(position);
             entity.setRotation(rotation);
             entity.updateName(username);
@@ -117,19 +117,19 @@ public class OtherPlayerPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.MOVE_PLAYER, ClientboundPackets1_21_11.ENTITY_POSITION_SYNC, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
-            final long runtimeEntityId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f rotation = wrapper.read(BedrockTypes.POSITION_3F); // rotation
             final PlayerPositionModeComponent_PositionMode mode = PlayerPositionModeComponent_PositionMode.getByValue(wrapper.read(Types.BYTE), PlayerPositionModeComponent_PositionMode.OnlyHeadRot); // mode
             final boolean onGround = wrapper.read(Types.BOOLEAN); // on ground
-            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // riding runtime entity id
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // riding entity runtime id
             if (mode == PlayerPositionModeComponent_PositionMode.Teleport) {
                 wrapper.read(BedrockTypes.INT_LE); // teleportation cause
                 wrapper.read(BedrockTypes.INT_LE); // entity type
             }
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // tick
 
-            final Entity entity = entityTracker.getEntityByRid(runtimeEntityId);
+            final Entity entity = entityTracker.getEntityByRid(entityRuntimeId);
             if (entity == null) {
                 wrapper.cancel();
                 return;
@@ -185,7 +185,7 @@ public class OtherPlayerPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, ClientboundPackets1_21_11.PLAYER_ABILITIES, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
-            final Entity entity = entityTracker.getEntityByUid(abilities.uniqueEntityId());
+            final Entity entity = entityTracker.getEntityByUid(abilities.entityUniqueId());
             if (entity instanceof ClientPlayerEntity clientPlayer) {
                 clientPlayer.setAbilities(abilities, wrapper);
             } else if (entity instanceof PlayerEntity player) {

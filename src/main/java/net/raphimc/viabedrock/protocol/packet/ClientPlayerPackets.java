@@ -81,7 +81,7 @@ public class ClientPlayerPackets {
                 wrapper.cancel();
                 return;
             }
-            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
 
             switch (state) {
                 case ReadyToSpawn -> {
@@ -99,7 +99,7 @@ public class ClientPlayerPackets {
                             inventoryTracker.getOffhandContainer().clearItems();
                             inventoryTracker.getArmorContainer().clearItems();
                             inventoryTracker.getHudContainer().clearItems();
-                            // TODO: InventoryTransactionPacket(legacyRequestId=0, legacySlots=[], actions=[], transactionType=INVENTORY_MISMATCH, actionType=0, runtimeEntityId=0, blockPosition=null, blockFace=0, hotbarSlot=0, itemInHand=null, playerPosition=null, clickPosition=null, headPosition=null, usingNetIds=false, blockDefinition=null)
+                            // TODO: InventoryTransactionPacket(legacyRequestId=0, legacySlots=[], actions=[], transactionType=INVENTORY_MISMATCH, actionType=0, entityRuntimeId=0, blockPosition=null, blockFace=0, hotbarSlot=0, itemInHand=null, playerPosition=null, clickPosition=null, headPosition=null, usingNetIds=false, blockDefinition=null)
                         }
                         clientPlayer.clearEffects();
 
@@ -135,7 +135,7 @@ public class ClientPlayerPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_ACTION, null, wrapper -> {
             wrapper.cancel();
-            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // runtime entity id
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
             final int rawAction = wrapper.read(BedrockTypes.VAR_INT); // action
             final PlayerActionType action = PlayerActionType.getByValue(rawAction);
             if (action == null) {
@@ -219,10 +219,10 @@ public class ClientPlayerPackets {
             final PlayerListStorage playerList = wrapper.user().get(PlayerListStorage.class);
 
             final GameType gameType = GameType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GameType.Undefined); // game type
-            final long uniqueEntityId = wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
+            final long entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // tick
 
-            final Pair<UUID, String> playerListEntry = playerList.getPlayer(uniqueEntityId);
+            final Pair<UUID, String> playerListEntry = playerList.getPlayer(entityUniqueId);
             if (playerListEntry == null) {
                 wrapper.cancel();
                 return;
@@ -262,7 +262,7 @@ public class ClientPlayerPackets {
                 case PERFORM_RESPAWN -> {
                     wrapper.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // position
                     wrapper.write(Types.BYTE, (byte) PlayerRespawnState.ClientReadyToSpawn.getValue()); // state
-                    wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+                    wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // entity runtime id
                 }
                 case REQUEST_STATS -> wrapper.cancel();
                 default -> throw new IllegalStateException("Unhandled ClientCommandAction: " + action);
@@ -372,7 +372,7 @@ public class ClientPlayerPackets {
             wrapper.write(BedrockTypes.VAR_INT, 0); // legacy request id
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemUseOnEntityTransaction.getValue()); // transaction type
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
-            wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entity.runtimeId()); // runtime entity id
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entity.runtimeId()); // entity runtime id
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, (switch (action) {
                 case INTERACT, INTERACT_AT -> ItemUseOnActorInventoryTransaction_ActionType.Interact;
                 case ATTACK -> ItemUseOnActorInventoryTransaction_ActionType.Attack;
@@ -592,7 +592,7 @@ public class ClientPlayerPackets {
             }
 
             wrapper.write(Types.UNSIGNED_BYTE, (short) AnimatePacketPayload_Action.Swing.getValue()); // action
-            wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // runtime entity id
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId()); // entity runtime id
             wrapper.write(BedrockTypes.FLOAT_LE, 0F); // data
             wrapper.write(BedrockTypes.OPTIONAL_STRING, ActorSwingSource.Attack.name().toLowerCase(Locale.ROOT)); // swing source // TODO: 1.21.130
 
