@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.java.generated;
 
 public enum HeightmapType {
@@ -10,5 +9,6 @@ public enum HeightmapType {
     OCEAN_FLOOR,
     MOTION_BLOCKING,
     MOTION_BLOCKING_NO_LEAVES,
+    ;
 
 }

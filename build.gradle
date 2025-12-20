@@ -81,7 +81,6 @@ dependencies {
         transitive = false
     }
 
-    toolImplementation "org.trimou:trimou-core:2.5.1.Final"
     toolImplementation "org.jsoup:jsoup:1.21.2"
     toolImplementation "org.ow2.asm:asm-tree:9.9"
 }

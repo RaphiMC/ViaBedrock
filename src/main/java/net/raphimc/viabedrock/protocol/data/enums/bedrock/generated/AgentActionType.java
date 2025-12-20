@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -24,13 +23,16 @@ public enum AgentActionType {
     PlaceBlock(15),
     Till(16),
     TransferItemTo(17),
-    Turn(18);
+    Turn(18),
+    ;
 
     private static final Int2ObjectMap<AgentActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (AgentActionType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -40,6 +42,24 @@ public enum AgentActionType {
 
     public static AgentActionType getByValue(final int value, final AgentActionType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static AgentActionType getByName(final String name) {
+        for (AgentActionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static AgentActionType getByName(final String name, final AgentActionType fallback) {
+        for (AgentActionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

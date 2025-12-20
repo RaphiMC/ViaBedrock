@@ -19,25 +19,19 @@
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.raphimc.viabedrock.codegen.CodeGen;
+import net.raphimc.viabedrock.codegen.model.member.impl.Field;
+import net.raphimc.viabedrock.codegen.model.type.impl.Enum;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
-import org.trimou.Mustache;
-import org.trimou.engine.MustacheEngine;
-import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.EngineConfigurationKey;
-import org.trimou.engine.locator.ClassPathTemplateLocator;
-import org.trimou.engine.resolver.MapResolver;
+import org.objectweb.asm.tree.FieldNode;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -46,7 +40,6 @@ public class JavaDataEnumGenerator {
 
     private static final String META_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
     private static final String VERSION_ID = "1.21.11";
-    private static final String ENUMS_PACKAGE = "net.raphimc.viabedrock.protocol.data.enums.java.generated";
 
     public static void main(String[] args) throws Throwable {
         final JsonObject metaObj = JsonParser.parseReader(new InputStreamReader(new URL(META_URL).openStream())).getAsJsonObject();
@@ -76,75 +69,36 @@ public class JavaDataEnumGenerator {
             classNodes.put(classNode.name.replace('/', '.'), classNode);
         }
 
-        final Map<String, List<EnumField>> enums = new HashMap<>();
-        enums.put("BossEventOperationType", extractFromEnum(classNodes.get("net.minecraft.network.protocol.game.ClientboundBossEventPacket$OperationType")));
-        enums.put("ClickType", extractFromEnum(classNodes.get("net.minecraft.world.inventory.ClickType")));
-        enums.put("ClientCommandAction", extractFromEnum(classNodes.get("net.minecraft.network.protocol.game.ServerboundClientCommandPacket$Action")));
-        enums.put("CustomChatCompletionsAction", extractFromEnum(classNodes.get("net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacket$Action")));
-        enums.put("EquipmentSlot", extractFromEnum(classNodes.get("net.minecraft.world.entity.EquipmentSlot")));
-        enums.put("GameMode", extractFromEnum(classNodes.get("net.minecraft.world.level.GameType")));
-        enums.put("HeightmapType", extractFromEnum(classNodes.get("net.minecraft.world.level.levelgen.Heightmap$Types")));
-        enums.put("InteractActionType", extractFromEnum(classNodes.get("net.minecraft.network.protocol.game.ServerboundInteractPacket$ActionType")));
-        enums.put("ObjectiveCriteriaRenderType", extractFromEnum(classNodes.get("net.minecraft.world.scores.criteria.ObjectiveCriteria$RenderType")));
-        enums.put("PlayerActionAction", extractFromEnum(classNodes.get("net.minecraft.network.protocol.game.ServerboundPlayerActionPacket$Action")));
-        enums.put("PlayerCommandAction", extractFromEnum(classNodes.get("net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket$Action")));
-        enums.put("PlayerInfoUpdateAction", extractFromEnum(classNodes.get("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action")));
-        enums.put("ResourcePackAction", extractFromEnum(classNodes.get("net.minecraft.network.protocol.common.ServerboundResourcePackPacket$Action")));
-        enums.put("SoundSource", extractFromEnum(classNodes.get("net.minecraft.sounds.SoundSource")));
-        enums.put("TeamCollisionRule", extractFromEnum(classNodes.get("net.minecraft.world.scores.Team$CollisionRule")));
-        enums.put("TeamVisibility", extractFromEnum(classNodes.get("net.minecraft.world.scores.Team$Visibility")));
+        final CodeGen codeGen = new CodeGen(new File("../src/main/java"), "net.raphimc.viabedrock.protocol.data.enums.java.generated");
 
-        final File sourceDir = new File("../src/main/java");
-        final File enumsDir = new File(sourceDir, ENUMS_PACKAGE.replace(".", "/"));
-        if (enumsDir.isDirectory()) {
-            Files.walkFileTree(enumsDir.toPath(), new SimpleFileVisitor<>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
-                    return FileVisitResult.CONTINUE;
-                }
+        codeGen.addType(extractFromEnum("BossEventOperationType", classNodes.get("net.minecraft.network.protocol.game.ClientboundBossEventPacket$OperationType")));
+        codeGen.addType(extractFromEnum("ClickType", classNodes.get("net.minecraft.world.inventory.ClickType")));
+        codeGen.addType(extractFromEnum("ClientCommandAction", classNodes.get("net.minecraft.network.protocol.game.ServerboundClientCommandPacket$Action")));
+        codeGen.addType(extractFromEnum("CustomChatCompletionsAction", classNodes.get("net.minecraft.network.protocol.game.ClientboundCustomChatCompletionsPacket$Action")));
+        codeGen.addType(extractFromEnum("EquipmentSlot", classNodes.get("net.minecraft.world.entity.EquipmentSlot")));
+        codeGen.addType(extractFromEnum("GameMode", classNodes.get("net.minecraft.world.level.GameType")));
+        codeGen.addType(extractFromEnum("HeightmapType", classNodes.get("net.minecraft.world.level.levelgen.Heightmap$Types")));
+        codeGen.addType(extractFromEnum("InteractActionType", classNodes.get("net.minecraft.network.protocol.game.ServerboundInteractPacket$ActionType")));
+        codeGen.addType(extractFromEnum("ObjectiveCriteriaRenderType", classNodes.get("net.minecraft.world.scores.criteria.ObjectiveCriteria$RenderType")));
+        codeGen.addType(extractFromEnum("PlayerActionAction", classNodes.get("net.minecraft.network.protocol.game.ServerboundPlayerActionPacket$Action")));
+        codeGen.addType(extractFromEnum("PlayerCommandAction", classNodes.get("net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket$Action")));
+        codeGen.addType(extractFromEnum("PlayerInfoUpdateAction", classNodes.get("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Action")));
+        codeGen.addType(extractFromEnum("ResourcePackAction", classNodes.get("net.minecraft.network.protocol.common.ServerboundResourcePackPacket$Action")));
+        codeGen.addType(extractFromEnum("SoundSource", classNodes.get("net.minecraft.sounds.SoundSource")));
+        codeGen.addType(extractFromEnum("TeamCollisionRule", classNodes.get("net.minecraft.world.scores.Team$CollisionRule")));
+        codeGen.addType(extractFromEnum("TeamVisibility", classNodes.get("net.minecraft.world.scores.Team$Visibility")));
 
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    Files.delete(dir);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        }
-        enumsDir.mkdirs();
+        codeGen.generate();
+    }
 
-        final MustacheEngine mustacheEngine = MustacheEngineBuilder.newBuilder()
-                .addTemplateLocator(ClassPathTemplateLocator.builder().setSuffix("mustache").build())
-                .setProperty(EngineConfigurationKey.SKIP_VALUE_ESCAPING, true)
-                .addResolver(new MapResolver())
-                .build();
-        final Mustache enumTemplate = mustacheEngine.getMustache("java_enum");
-
-        for (Map.Entry<String, List<EnumField>> entry : enums.entrySet()) {
-            final String enumPackage = ENUMS_PACKAGE;
-            final String enumName = entry.getKey();
-            final File enumDir = new File(sourceDir, enumPackage.replace(".", "/"));
-            enumDir.mkdirs();
-            final File enumFile = new File(enumDir, enumName + ".java");
-
-            final Map<String, Object> variables = new HashMap<>();
-            variables.put("packageName", enumPackage);
-            variables.put("enumName", enumName);
-            variables.put("values", entry.getValue());
-            try (final FileWriter writer = new FileWriter(enumFile)) {
-                enumTemplate.render(writer, variables);
+    private static Enum extractFromEnum(final String enumName, final ClassNode classNode) {
+        final Enum genEnum = new Enum(enumName);
+        for (FieldNode fieldNode : classNode.fields) {
+            if ((fieldNode.access & Opcodes.ACC_ENUM) != 0) {
+                genEnum.enumFields().add(new Field(fieldNode.name));
             }
         }
-    }
-
-    private static List<EnumField> extractFromEnum(final ClassNode classNode) {
-        return classNode.fields.stream()
-                .filter(f -> (f.access & Opcodes.ACC_ENUM) != 0)
-                .map(f -> new EnumField(f.name))
-                .toList();
-    }
-
-    private record EnumField(String name) {
+        return genEnum;
     }
 
 }

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.java.generated;
 
 public enum PlayerCommandAction {
@@ -11,5 +10,6 @@ public enum PlayerCommandAction {
     STOP_RIDING_JUMP,
     OPEN_INVENTORY,
     START_FALL_FLYING,
+    ;
 
 }

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -8,13 +7,16 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 public enum ItemUseInventoryTransaction_PredictedResult {
 
     Failure(0),
-    Success(1);
+    Success(1),
+    ;
 
     private static final Int2ObjectMap<ItemUseInventoryTransaction_PredictedResult> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ItemUseInventoryTransaction_PredictedResult value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -24,6 +26,24 @@ public enum ItemUseInventoryTransaction_PredictedResult {
 
     public static ItemUseInventoryTransaction_PredictedResult getByValue(final int value, final ItemUseInventoryTransaction_PredictedResult fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ItemUseInventoryTransaction_PredictedResult getByName(final String name) {
+        for (ItemUseInventoryTransaction_PredictedResult value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ItemUseInventoryTransaction_PredictedResult getByName(final String name, final ItemUseInventoryTransaction_PredictedResult fallback) {
+        for (ItemUseInventoryTransaction_PredictedResult value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

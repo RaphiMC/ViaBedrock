@@ -102,7 +102,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
             final String name = BedrockTypes.STRING.read(buffer); // name
             final String description = BedrockTypes.STRING.read(buffer); // description
             final int flags = buffer.readUnsignedShortLE(); // flags
-            final byte permission = (byte) CommandPermissionLevel.getByValue(BedrockTypes.STRING.read(buffer)).getValue(); // permission
+            final byte permission = (byte) CommandPermissionLevel.getByName(BedrockTypes.STRING.read(buffer)).getValue(); // permission
             final int aliasIndex = buffer.readIntLE(); // alias
             final boolean validAliasPointer = aliasIndex >= 0 && aliasIndex < enumPalette.length;
             final CommandData.EnumData alias;

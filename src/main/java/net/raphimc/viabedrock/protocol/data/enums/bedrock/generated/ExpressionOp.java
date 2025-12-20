@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -85,13 +84,16 @@ public enum ExpressionOp {
     Return(74),
     Comma(75),
     This(76),
-    Internal_NonEvaluatedArray(77);
+    Internal_NonEvaluatedArray(77),
+    ;
 
     private static final Int2ObjectMap<ExpressionOp> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ExpressionOp value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -101,6 +103,24 @@ public enum ExpressionOp {
 
     public static ExpressionOp getByValue(final int value, final ExpressionOp fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ExpressionOp getByName(final String name) {
+        for (ExpressionOp value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ExpressionOp getByName(final String name, final ExpressionOp fallback) {
+        for (ExpressionOp value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

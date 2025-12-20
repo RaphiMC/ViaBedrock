@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.java.generated;
 
 public enum PlayerInfoUpdateAction {
@@ -12,5 +11,6 @@ public enum PlayerInfoUpdateAction {
     UPDATE_DISPLAY_NAME,
     UPDATE_LIST_ORDER,
     UPDATE_HAT,
+    ;
 
 }

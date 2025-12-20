@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -163,13 +162,16 @@ public enum ActorType {
     Nautilus(9109),
     ZombieNautilus(76694),
     Parched(1117079),
-    CamelHusk(68504);
+    CamelHusk(68504),
+    ;
 
     private static final Int2ObjectMap<ActorType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ActorType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -179,6 +181,24 @@ public enum ActorType {
 
     public static ActorType getByValue(final int value, final ActorType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ActorType getByName(final String name) {
+        for (ActorType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ActorType getByName(final String name, final ActorType fallback) {
+        for (ActorType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

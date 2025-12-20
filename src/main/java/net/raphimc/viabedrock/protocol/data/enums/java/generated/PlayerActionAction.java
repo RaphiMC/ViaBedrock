@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.java.generated;
 
 public enum PlayerActionAction {
@@ -12,5 +11,6 @@ public enum PlayerActionAction {
     RELEASE_USE_ITEM,
     SWAP_ITEM_WITH_OFFHAND,
     STAB,
+    ;
 
 }

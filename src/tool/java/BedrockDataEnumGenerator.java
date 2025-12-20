@@ -16,26 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import net.raphimc.viabedrock.codegen.CodeGen;
+import net.raphimc.viabedrock.codegen.model.Javadoc;
+import net.raphimc.viabedrock.codegen.model.member.impl.Field;
+import net.raphimc.viabedrock.codegen.model.type.impl.Enum;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.trimou.Mustache;
-import org.trimou.engine.MustacheEngine;
-import org.trimou.engine.MustacheEngineBuilder;
-import org.trimou.engine.config.EngineConfigurationKey;
-import org.trimou.engine.locator.ClassPathTemplateLocator;
-import org.trimou.engine.resolver.MapResolver;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -105,54 +96,76 @@ public class BedrockDataEnumGenerator {
         packetCompressionAlgorithmEnum.removeIf(field -> field.name.equals("None"));
         packetCompressionAlgorithmEnum.add(new EnumField("None", "0xFF"));
 
-        final File sourceDir = new File("../src/main/java");
-        final File enumsDir = new File(sourceDir, ENUMS_PACKAGE.replace(".", "/"));
-        if (enumsDir.isDirectory()) {
-            Files.walkFileTree(enumsDir.toPath(), new SimpleFileVisitor<>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
-                    return FileVisitResult.CONTINUE;
-                }
+        final CodeGen codeGen = new CodeGen(new File("../src/main/java"), "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated");
 
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    Files.delete(dir);
-                    return FileVisitResult.CONTINUE;
-                }
+        for (Map.Entry<String, List<EnumField>> enumEntry : enums.entrySet()) {
+            String rawEnumName = enumEntry.getKey().replace("::", "_");
+            if (Character.isLowerCase(rawEnumName.charAt(0))) {
+                rawEnumName = Character.toUpperCase(rawEnumName.charAt(0)) + rawEnumName.substring(1);
+            }
+            final String enumName = rawEnumName;
+            final Enum genEnum = new Enum(enumName);
+            genEnum.imports().add("com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap");
+            genEnum.imports().add("com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap");
+
+            genEnum.members().add(new Field("private static final", "Int2ObjectMap<" + enumName + ">", "BY_VALUE", "new Int2ObjectOpenHashMap<>()"));
+            genEnum.members().addStaticBlock(staticBlock -> {
+                staticBlock.code().addForEach(enumName + " value", "values()", forEach -> {
+                    forEach.code().addIf("!BY_VALUE.containsKey(value.value)", _if -> {
+                        _if.code().add("BY_VALUE.put(value.value, value);");
+                    });
+                });
             });
-        }
-        enumsDir.mkdirs();
 
-        final MustacheEngine mustacheEngine = MustacheEngineBuilder.newBuilder()
-                .addTemplateLocator(ClassPathTemplateLocator.builder().setSuffix("mustache").build())
-                .setProperty(EngineConfigurationKey.SKIP_VALUE_ESCAPING, true)
-                .addResolver(new MapResolver())
-                .build();
-        final Mustache enumTemplate = mustacheEngine.getMustache("bedrock_enum");
+            genEnum.members().addMethod("public static", enumName, "getByValue", method -> {
+                method.parameters().add(new Field("final", "int", "value"));
+                method.code().add("return BY_VALUE.get(value);");
+            });
+            genEnum.members().addMethod("public static", enumName, "getByValue", method -> {
+                method.parameters().add(new Field("final", "int", "value"));
+                method.parameters().add(new Field("final", enumName, "fallback"));
+                method.code().add("return BY_VALUE.getOrDefault(value, fallback);");
+            });
+            genEnum.members().addMethod("public static", enumName, "getByName", method -> {
+                method.parameters().add(new Field("final", "String", "name"));
+                method.code().addForEach(enumName + " value", "values()", forEach -> {
+                    forEach.code().addIf("value.name().equalsIgnoreCase(name)", _if -> {
+                        _if.code().add("return value;");
+                    });
+                });
+                method.code().add("return null;");
+            });
+            genEnum.members().addMethod("public static", enumName, "getByName", method -> {
+                method.parameters().add(new Field("final", "String", "name"));
+                method.parameters().add(new Field("final", enumName, "fallback"));
+                method.code().addForEach(enumName + " value", "values()", forEach -> {
+                    forEach.code().addIf("value.name().equalsIgnoreCase(name)", _if -> {
+                        _if.code().add("return value;");
+                    });
+                });
+                method.code().add("return fallback;");
+            });
 
-        for (Map.Entry<String, List<EnumField>> entry : enums.entrySet()) {
-            final String enumPackage;
-            final String enumName;
-            if (Character.isLowerCase(entry.getKey().charAt(0)) && entry.getKey().contains("::")) {
-                enumPackage = ENUMS_PACKAGE + "." + entry.getKey().substring(0, entry.getKey().indexOf("::"));
-                enumName = entry.getKey().substring(entry.getKey().indexOf("::") + 2);
-            } else {
-                enumPackage = ENUMS_PACKAGE;
-                enumName = entry.getKey().replace("::", "_");
+            genEnum.members().add(new Field("private final", "int", "value"));
+
+            genEnum.members().addMethod(null, null, enumName, constructor -> {
+                constructor.parameters().add(new Field("final", enumName, "value"));
+                constructor.code().add("this(value.value);");
+            });
+            genEnum.members().addMethod(null, null, enumName, constructor -> {
+                constructor.parameters().add(new Field("final", "int", "value"));
+                constructor.code().add("this.value = value;");
+            });
+
+            genEnum.members().addMethod("public", "int", "getValue", method -> method.code().add("return this.value;"));
+
+            for (EnumField enumField : enumEntry.getValue()) {
+                genEnum.enumFields().add(new Field(enumField.getName(), null, null, enumField.getValue(), new Javadoc(enumField.getComments())));
             }
-            final File enumDir = new File(sourceDir, enumPackage.replace(".", "/"));
-            enumDir.mkdirs();
-            final File enumFile = new File(enumDir, enumName + ".java");
-
-            final Map<String, Object> variables = new HashMap<>();
-            variables.put("packageName", enumPackage);
-            variables.put("enumName", enumName);
-            variables.put("values", entry.getValue());
-            try (final FileWriter writer = new FileWriter(enumFile)) {
-                enumTemplate.render(writer, variables);
-            }
+            codeGen.addType(genEnum);
         }
+
+        codeGen.generate();
     }
 
     private static class EnumField {

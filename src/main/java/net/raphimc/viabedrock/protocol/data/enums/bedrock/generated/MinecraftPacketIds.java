@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -128,7 +127,6 @@ public enum MinecraftPacketIds {
     MapCreateLockedCopy(131),
     StructureTemplateDataExportRequest(132),
     StructureTemplateDataExportResponse(133),
-    UNUSED_PLS_USE_ME(134),
     ClientCacheBlobStatusPacket(135),
     ClientCacheMissResponsePacket(136),
     EducationSettingsPacket(137),
@@ -222,13 +220,16 @@ public enum MinecraftPacketIds {
     ServerboundPackSettingChange(329),
     ClientboundDataStore(330),
     GraphicsOverrideParameter(331),
-    ServerboundDataStore(332);
+    ServerboundDataStore(332),
+    ;
 
     private static final Int2ObjectMap<MinecraftPacketIds> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (MinecraftPacketIds value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -240,7 +241,29 @@ public enum MinecraftPacketIds {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
+    public static MinecraftPacketIds getByName(final String name) {
+        for (MinecraftPacketIds value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static MinecraftPacketIds getByName(final String name, final MinecraftPacketIds fallback) {
+        for (MinecraftPacketIds value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
+    }
+
     private final int value;
+
+    MinecraftPacketIds(final MinecraftPacketIds value) {
+        this(value.value);
+    }
 
     MinecraftPacketIds(final int value) {
         this.value = value;

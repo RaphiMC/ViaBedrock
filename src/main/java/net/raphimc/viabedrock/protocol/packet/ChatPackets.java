@@ -178,7 +178,7 @@ public class ChatPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_21_11.SYSTEM_CHAT, wrapper -> {
             final CommandOriginData originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN_DATA); // origin
             final String rawType = wrapper.read(BedrockTypes.STRING); // type
-            final CommandOutputType type = CommandOutputType.getByValue(rawType); // type
+            final CommandOutputType type = CommandOutputType.getByName(rawType); // type
             if (type == null) { // Bedrock client disconnects if the type is not valid
                 throw new IllegalStateException("Unknown CommandOutputType: " + rawType);
             }

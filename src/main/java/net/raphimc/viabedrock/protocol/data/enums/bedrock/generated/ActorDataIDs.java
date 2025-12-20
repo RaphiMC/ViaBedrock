@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -142,13 +141,16 @@ public enum ActorDataIDs {
     FILTERED_NAME(132),
     ENTER_BED_POSITION(133),
     SEAT_THIRD_PERSON_CAMERA_RADIUS(134),
-    SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING(135);
+    SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING(135),
+    ;
 
     private static final Int2ObjectMap<ActorDataIDs> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ActorDataIDs value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -158,6 +160,24 @@ public enum ActorDataIDs {
 
     public static ActorDataIDs getByValue(final int value, final ActorDataIDs fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ActorDataIDs getByName(final String name) {
+        for (ActorDataIDs value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ActorDataIDs getByName(final String name, final ActorDataIDs fallback) {
+        for (ActorDataIDs value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

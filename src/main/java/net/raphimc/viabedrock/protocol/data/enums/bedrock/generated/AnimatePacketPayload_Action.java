@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -11,13 +10,16 @@ public enum AnimatePacketPayload_Action {
     Swing(1),
     WakeUp(3),
     CriticalHit(4),
-    MagicCriticalHit(5);
+    MagicCriticalHit(5),
+    ;
 
     private static final Int2ObjectMap<AnimatePacketPayload_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (AnimatePacketPayload_Action value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -27,6 +29,24 @@ public enum AnimatePacketPayload_Action {
 
     public static AnimatePacketPayload_Action getByValue(final int value, final AnimatePacketPayload_Action fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static AnimatePacketPayload_Action getByName(final String name) {
+        for (AnimatePacketPayload_Action value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static AnimatePacketPayload_Action getByName(final String name, final AnimatePacketPayload_Action fallback) {
+        for (AnimatePacketPayload_Action value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

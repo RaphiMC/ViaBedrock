@@ -35,7 +35,7 @@ public class CommandOriginDataType extends Type<CommandOriginData> {
     @Override
     public CommandOriginData read(ByteBuf buffer) {
         final String rawType = BedrockTypes.STRING.read(buffer);
-        final CommandOriginType type = CommandOriginType.getByValue(rawType);
+        final CommandOriginType type = CommandOriginType.getByName(rawType);
         if (type == null) { // Bedrock client disconnects if the type is not valid
             throw new IllegalStateException("Unknown CommandOriginType: " + rawType);
         }

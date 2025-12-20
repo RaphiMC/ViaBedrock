@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -11,13 +10,16 @@ public enum CommandOutputType {
     LastOutput(1),
     Silent(2),
     AllOutput(3),
-    DataSet(4);
+    DataSet(4),
+    ;
 
     private static final Int2ObjectMap<CommandOutputType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (CommandOutputType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -29,19 +31,19 @@ public enum CommandOutputType {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
-    public static CommandOutputType getByValue(final String value) {
-        for (CommandOutputType type : values()) {
-            if (type.name().equalsIgnoreCase(value)) {
-                return type;
+    public static CommandOutputType getByName(final String name) {
+        for (CommandOutputType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
             }
         }
         return null;
     }
 
-    public static CommandOutputType getByValue(final String value, final CommandOutputType fallback) {
-        for (CommandOutputType type : values()) {
-            if (type.name().equalsIgnoreCase(value)) {
-                return type;
+    public static CommandOutputType getByName(final String name, final CommandOutputType fallback) {
+        for (CommandOutputType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
             }
         }
         return fallback;

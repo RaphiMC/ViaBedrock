@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -38,13 +37,16 @@ public enum LegacyTelemetryEventPacketPayload_Type {
     StriderRiddenInLavaInOverworld(28),
     SneakCloseToSculkSensor(29),
     CarefulRestoration(30),
-    ItemUsed(31);
+    ItemUsed(31),
+    ;
 
     private static final Int2ObjectMap<LegacyTelemetryEventPacketPayload_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (LegacyTelemetryEventPacketPayload_Type value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -54,6 +56,24 @@ public enum LegacyTelemetryEventPacketPayload_Type {
 
     public static LegacyTelemetryEventPacketPayload_Type getByValue(final int value, final LegacyTelemetryEventPacketPayload_Type fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static LegacyTelemetryEventPacketPayload_Type getByName(final String name) {
+        for (LegacyTelemetryEventPacketPayload_Type value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static LegacyTelemetryEventPacketPayload_Type getByName(final String name, final LegacyTelemetryEventPacketPayload_Type fallback) {
+        for (LegacyTelemetryEventPacketPayload_Type value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

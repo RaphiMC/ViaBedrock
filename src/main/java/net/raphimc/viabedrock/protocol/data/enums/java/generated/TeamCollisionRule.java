@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.java.generated;
 
 public enum TeamCollisionRule {
@@ -8,5 +7,6 @@ public enum TeamCollisionRule {
     NEVER,
     PUSH_OTHER_TEAMS,
     PUSH_OWN_TEAM,
+    ;
 
 }

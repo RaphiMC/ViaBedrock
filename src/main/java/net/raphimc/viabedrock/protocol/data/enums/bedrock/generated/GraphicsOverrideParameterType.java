@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -46,13 +45,16 @@ public enum GraphicsOverrideParameterType {
     /**
      * Sent to set the sun glare shape
      */
-    SunGlareShape(9);
+    SunGlareShape(9),
+    ;
 
     private static final Int2ObjectMap<GraphicsOverrideParameterType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (GraphicsOverrideParameterType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -62,6 +64,24 @@ public enum GraphicsOverrideParameterType {
 
     public static GraphicsOverrideParameterType getByValue(final int value, final GraphicsOverrideParameterType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static GraphicsOverrideParameterType getByName(final String name) {
+        for (GraphicsOverrideParameterType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static GraphicsOverrideParameterType getByName(final String name, final GraphicsOverrideParameterType fallback) {
+        for (GraphicsOverrideParameterType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;
