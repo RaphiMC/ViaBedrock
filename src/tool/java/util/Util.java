@@ -44,7 +44,7 @@ public class Util {
             packStack.add(resourcePack.packId());
         }
 
-        resourcePacksStorage.setPackStack(packStack.toArray(new UUID[0]), new UUID[0]);
+        resourcePacksStorage.setPackStack(packStack.toArray(new UUID[0]));
         System.out.println("Preparation took " + (System.currentTimeMillis() - start) + "ms");
         return resourcePacksStorage;
     }
