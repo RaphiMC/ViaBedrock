@@ -45,7 +45,6 @@ import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AnimateAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
-import net.raphimc.viabedrock.protocol.data.enums.java.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.model.*;
@@ -500,7 +499,7 @@ public class EntityPackets {
                 case LOVE_HEARTS -> { // Sent when an animal was bred, also sent when villagers are breeding
                     wrapper.write(Types.INT, entity.javaId()); // entity id
                     // Java splits these events and bedrock has cases for both but only seems to use one???
-                    if (entityTracker.getEntityByRid(entity.runtimeId()).javaType().is(EntityTypes1_21_9.VILLAGER)) {
+                    if (entityTracker.getEntityByRid(entity.runtimeId()).javaType().is(EntityTypes1_21_11.VILLAGER)) {
                         wrapper.write(Types.BYTE, EntityEvent.LOVE_HEARTS.getValue()); // entity event
                     } else {
                         wrapper.write(Types.BYTE, EntityEvent.IN_LOVE_HEARTS.getValue()); // entity event
@@ -614,6 +613,7 @@ public class EntityPackets {
                      START_SWIMMING, // TODO: What calls this?
                      ACTOR_GROW_UP, // TODO: Find java equivalent
                      DRINK_MILK, //TODO: Find java equivalent
+                     KINETIC_DAMAGE_DEALT, //TODO: Find java equivalent
                      DEPRECATED_ADD_PLAYER_LEVELS, // Deprecated
                      DEPRECATED_UPDATE_STRUCTURE_FEATURE // Deprecated
                         -> wrapper.cancel();
