@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -65,13 +64,17 @@ public enum ActorEvent {
     ACTOR_GROW_UP(76),
     VIBRATION_DETECTED(77),
     DRINK_MILK(78),
-    SHAKE_WETNESS_STOP(79);
+    SHAKE_WETNESS_STOP(79),
+    KINETIC_DAMAGE_DEALT(80),
+    ;
 
     private static final Int2ObjectMap<ActorEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ActorEvent value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -81,6 +84,24 @@ public enum ActorEvent {
 
     public static ActorEvent getByValue(final int value, final ActorEvent fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ActorEvent getByName(final String name) {
+        for (ActorEvent value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ActorEvent getByName(final String name, final ActorEvent fallback) {
+        for (ActorEvent value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

@@ -19,8 +19,8 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.google.common.collect.Sets;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandPermissionLevel;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandRegistry_HardNonTerminal;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -46,15 +46,6 @@ public class CommandDataArrayType extends Type<CommandData[]> {
         final String[] subCommandLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // sub command literals
         final String[] postFixLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // post fix literals
 
-        final Type<? extends Number> indexType;
-        if (enumLiterals.length <= 256) {
-            indexType = Types.UNSIGNED_BYTE;
-        } else if (enumLiterals.length <= 65536) {
-            indexType = BedrockTypes.UNSIGNED_SHORT_LE;
-        } else {
-            indexType = BedrockTypes.UNSIGNED_INT_LE;
-        }
-
         final CommandData.EnumData[] enumPalette = new CommandData.EnumData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];
         final Map<String, CommandData.EnumData> enumPaletteMap = new HashMap<>(enumPalette.length);
         for (int i = 0; i < enumPalette.length; i++) {
@@ -62,9 +53,9 @@ public class CommandDataArrayType extends Type<CommandData[]> {
             final int count = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // values count
             final Set<String> values = new HashSet<>(count);
             for (int j = 0; j < count; j++) {
-                final int index = indexType.read(buffer).intValue(); // value
+                final long index = buffer.readUnsignedIntLE(); // value
                 if (index >= 0 && index < enumLiterals.length) {
-                    values.add(enumLiterals[index]);
+                    values.add(enumLiterals[(int) index]);
                 } else {
                     values.add("default");
                 }
@@ -87,8 +78,8 @@ public class CommandDataArrayType extends Type<CommandData[]> {
             final int count = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // values count
             final Map<String, Integer> values = new HashMap<>(count);
             for (int j = 0; j < count; j++) {
-                final int index = buffer.readUnsignedShortLE(); // value
-                final int type = buffer.readUnsignedShortLE(); // type
+                final int index = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // value
+                final int type = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // type
                 if (index >= 0 && index < subCommandLiterals.length) {
                     values.put(subCommandLiterals[index], type);
                 }
@@ -111,7 +102,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
             final String name = BedrockTypes.STRING.read(buffer); // name
             final String description = BedrockTypes.STRING.read(buffer); // description
             final int flags = buffer.readUnsignedShortLE(); // flags
-            final byte permission = buffer.readByte(); // permission
+            final byte permission = (byte) CommandPermissionLevel.getByName(BedrockTypes.STRING.read(buffer)).getValue(); // permission
             final int aliasIndex = buffer.readIntLE(); // alias
             final boolean validAliasPointer = aliasIndex >= 0 && aliasIndex < enumPalette.length;
             final CommandData.EnumData alias;
@@ -123,7 +114,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
 
             final int subCommandCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
             for (int j = 0; j < subCommandCount; j++) {
-                buffer.readUnsignedShortLE(); // subcommand index?
+                buffer.readUnsignedIntLE(); // subcommand index?
             }
 
             final CommandData.OverloadData[] overloads = new CommandData.OverloadData[BedrockTypes.UNSIGNED_VAR_INT.read(buffer)];

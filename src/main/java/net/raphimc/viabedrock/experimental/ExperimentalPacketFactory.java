@@ -29,7 +29,7 @@ public class ExperimentalPacketFactory {
 
     public static void sendBedrockPlayerAction(final UserConnection user, long entityId, PlayerActionType actionType, BlockPosition position, BlockPosition resultPosition, int face) {
         final PacketWrapper startItemUseOn = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, user);
-        startItemUseOn.write(BedrockTypes.UNSIGNED_VAR_LONG, entityId); // runtime entity id
+        startItemUseOn.write(BedrockTypes.UNSIGNED_VAR_LONG, entityId); // entity runtime id
         startItemUseOn.write(BedrockTypes.VAR_INT, actionType.getValue()); // action type
         startItemUseOn.write(BedrockTypes.BLOCK_POSITION, position); // block position
         startItemUseOn.write(BedrockTypes.BLOCK_POSITION, resultPosition); // result position

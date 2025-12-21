@@ -21,10 +21,10 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandOrigi
 
 import java.util.UUID;
 
-public record CommandOriginData(CommandOriginType type, UUID uuid, String requestId, long event) {
+public record CommandOriginData(CommandOriginType type, UUID uuid, String requestId, long uniquePlayerId) {
 
     public CommandOriginData(final CommandOriginType type, final UUID uuid, final String requestId) {
-        this(type, uuid, requestId, -1);
+        this(type, uuid, requestId, 0);
     }
 
 }

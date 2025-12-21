@@ -23,6 +23,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandOrigi
 import net.raphimc.viabedrock.protocol.model.CommandOriginData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.Locale;
 import java.util.UUID;
 
 public class CommandOriginDataType extends Type<CommandOriginData> {
@@ -33,27 +34,25 @@ public class CommandOriginDataType extends Type<CommandOriginData> {
 
     @Override
     public CommandOriginData read(ByteBuf buffer) {
-        final CommandOriginType type = CommandOriginType.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer), CommandOriginType.ExecuteContext);
-        final UUID uuid = BedrockTypes.UUID.read(buffer);
-        final String requestId = BedrockTypes.STRING.read(buffer);
-
-        long event = -1;
-        if (type == CommandOriginType.DevConsole || type == CommandOriginType.Test) {
-            event = BedrockTypes.VAR_LONG.read(buffer);
+        final String rawType = BedrockTypes.STRING.read(buffer);
+        final CommandOriginType type = CommandOriginType.getByName(rawType);
+        if (type == null) { // Bedrock client disconnects if the type is not valid
+            throw new IllegalStateException("Unknown CommandOriginType: " + rawType);
         }
 
-        return new CommandOriginData(type, uuid, requestId, event);
+        final UUID uuid = BedrockTypes.UUID.read(buffer);
+        final String requestId = BedrockTypes.STRING.read(buffer);
+        final long uniquePlayerId = buffer.readLongLE();
+
+        return new CommandOriginData(type, uuid, requestId, uniquePlayerId);
     }
 
     @Override
     public void write(ByteBuf buffer, CommandOriginData value) {
-        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.type().getValue());
+        BedrockTypes.STRING.write(buffer, value.type().name().toLowerCase(Locale.ROOT));
         BedrockTypes.UUID.write(buffer, value.uuid());
         BedrockTypes.STRING.write(buffer, value.requestId());
-
-        if (value.type() == CommandOriginType.DevConsole || value.type() == CommandOriginType.Test) {
-            BedrockTypes.VAR_LONG.write(buffer, value.event());
-        }
+        buffer.writeLongLE(value.uniquePlayerId());
     }
 
 }

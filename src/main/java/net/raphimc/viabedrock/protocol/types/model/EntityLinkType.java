@@ -35,8 +35,8 @@ public class EntityLinkType extends Type<EntityLink> {
 
     @Override
     public void write(ByteBuf buffer, EntityLink value) {
-        BedrockTypes.VAR_LONG.write(buffer, value.fromUniqueEntityId());
-        BedrockTypes.VAR_LONG.write(buffer, value.toUniqueEntityId());
+        BedrockTypes.VAR_LONG.write(buffer, value.fromEntityUniqueId());
+        BedrockTypes.VAR_LONG.write(buffer, value.toEntityUniqueId());
         buffer.writeByte(value.type());
         buffer.writeBoolean(value.immediate());
         buffer.writeBoolean(value.riderInitiated());

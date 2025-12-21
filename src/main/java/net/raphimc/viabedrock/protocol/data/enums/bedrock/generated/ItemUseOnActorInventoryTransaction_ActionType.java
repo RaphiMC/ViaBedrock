@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -9,13 +8,16 @@ public enum ItemUseOnActorInventoryTransaction_ActionType {
 
     Interact(0),
     Attack(1),
-    ItemInteract(2);
+    ItemInteract(2),
+    ;
 
     private static final Int2ObjectMap<ItemUseOnActorInventoryTransaction_ActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ItemUseOnActorInventoryTransaction_ActionType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -25,6 +27,24 @@ public enum ItemUseOnActorInventoryTransaction_ActionType {
 
     public static ItemUseOnActorInventoryTransaction_ActionType getByValue(final int value, final ItemUseOnActorInventoryTransaction_ActionType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ItemUseOnActorInventoryTransaction_ActionType getByName(final String name) {
+        for (ItemUseOnActorInventoryTransaction_ActionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ItemUseOnActorInventoryTransaction_ActionType getByName(final String name, final ItemUseOnActorInventoryTransaction_ActionType fallback) {
+        for (ItemUseOnActorInventoryTransaction_ActionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;
