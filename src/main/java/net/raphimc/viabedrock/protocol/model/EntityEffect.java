@@ -19,10 +19,10 @@ package net.raphimc.viabedrock.protocol.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public record EntityEffect(String identifier, int amplifier, AtomicInteger duration, boolean showParticles) {
+public record EntityEffect(String identifier, int amplifier, AtomicInteger duration, boolean showParticles, boolean ambient) {
 
-    public EntityEffect(final String identifier, final int amplifier, final int duration, final boolean showParticles) {
-        this(identifier, amplifier, new AtomicInteger(duration), showParticles);
+    public EntityEffect(final String identifier, final int amplifier, final int duration, final boolean showParticles, final boolean ambient) {
+        this(identifier, amplifier, new AtomicInteger(duration), showParticles, ambient);
     }
 
 }

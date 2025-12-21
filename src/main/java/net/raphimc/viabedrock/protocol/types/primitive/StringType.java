@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.types.primitive;
 
+import com.viaversion.viaversion.api.type.OptionalType;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -37,6 +38,14 @@ public class StringType extends Type<String> {
     @Override
     public void write(ByteBuf buffer, String value) {
         BedrockTypes.BYTE_ARRAY.write(buffer, value.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static final class OptionalStringType extends OptionalType<String> {
+
+        public OptionalStringType() {
+            super(BedrockTypes.STRING);
+        }
+
     }
 
 }

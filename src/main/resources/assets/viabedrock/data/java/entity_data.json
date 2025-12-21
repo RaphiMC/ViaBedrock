@@ -25,6 +25,9 @@
     "CUSTOM_DISPLAY_BLOCK",
     "DISPLAY_OFFSET"
   ],
+  "ABSTRACT_NAUTILUS": [
+    "DASH"
+  ],
   "ABSTRACT_PIGLIN": [
     "IMMUNE_TO_ZOMBIFICATION"
   ],
@@ -72,7 +75,7 @@
   ],
   "BEE": [
     "FLAGS",
-    "REMAINING_ANGER_TIME"
+    "ANGER_END_TIME"
   ],
   "BLAZE": [
     "FLAGS"
@@ -408,7 +411,7 @@
   "WOLF": [
     "INTERESTED",
     "COLLAR_COLOR",
-    "REMAINING_ANGER_TIME",
+    "ANGER_END_TIME",
     "VARIANT",
     "SOUND_VARIANT"
   ],
@@ -419,6 +422,9 @@
     "BABY",
     "SPECIAL_TYPE",
     "DROWNED_CONVERSION"
+  ],
+  "ZOMBIE_NAUTILUS": [
+    "VARIANT"
   ],
   "ZOMBIE_VILLAGER": [
     "CONVERTING",

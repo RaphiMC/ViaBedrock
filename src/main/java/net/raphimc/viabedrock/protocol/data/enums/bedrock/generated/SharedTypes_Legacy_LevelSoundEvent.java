@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -534,13 +533,28 @@ public enum SharedTypes_Legacy_LevelSoundEvent {
     PlaceItem(563),
     SingleItemSwap(564),
     MultiItemSwap(565),
-    Undefined(566);
+    Lunge1(566),
+    Lunge2(567),
+    Lunge3(568),
+    AttackCritical(569),
+    SpearAttackHit(570),
+    SpearAttackMiss(571),
+    WoodenSpearAttackHit(572),
+    WoodenSpearAttackMiss(573),
+    ImitateParched(574),
+    ImitateCamelHusk(575),
+    SpearUse(576),
+    WoodenSpearUse(577),
+    Undefined(578),
+    ;
 
     private static final Int2ObjectMap<SharedTypes_Legacy_LevelSoundEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (SharedTypes_Legacy_LevelSoundEvent value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -550,6 +564,24 @@ public enum SharedTypes_Legacy_LevelSoundEvent {
 
     public static SharedTypes_Legacy_LevelSoundEvent getByValue(final int value, final SharedTypes_Legacy_LevelSoundEvent fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static SharedTypes_Legacy_LevelSoundEvent getByName(final String name) {
+        for (SharedTypes_Legacy_LevelSoundEvent value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static SharedTypes_Legacy_LevelSoundEvent getByName(final String name, final SharedTypes_Legacy_LevelSoundEvent fallback) {
+        for (SharedTypes_Legacy_LevelSoundEvent value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

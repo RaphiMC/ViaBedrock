@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -8,13 +7,16 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 public enum InventorySource_InventorySourceFlags {
 
     NoFlag(0),
-    WorldInteraction_Random(1);
+    WorldInteraction_Random(1),
+    ;
 
     private static final Int2ObjectMap<InventorySource_InventorySourceFlags> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (InventorySource_InventorySourceFlags value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -24,6 +26,24 @@ public enum InventorySource_InventorySourceFlags {
 
     public static InventorySource_InventorySourceFlags getByValue(final int value, final InventorySource_InventorySourceFlags fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static InventorySource_InventorySourceFlags getByName(final String name) {
+        for (InventorySource_InventorySourceFlags value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static InventorySource_InventorySourceFlags getByName(final String name, final InventorySource_InventorySourceFlags fallback) {
+        for (InventorySource_InventorySourceFlags value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

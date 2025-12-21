@@ -45,7 +45,7 @@ public class OffhandContainer extends InventorySubContainer {
         super.onSlotChanged(slot, oldItem, newItem);
         if (slot == 0) {
             final PacketWrapper mobEquipment = PacketWrapper.create(ServerboundBedrockPackets.MOB_EQUIPMENT, this.user);
-            mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // runtime entity id
+            mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // entity runtime id
             mobEquipment.write(this.user.get(ItemRewriter.class).itemType(), newItem); // item
             mobEquipment.write(Types.BYTE, (byte) 1); // slot
             mobEquipment.write(Types.BYTE, (byte) 0); // selected slot

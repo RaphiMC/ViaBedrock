@@ -88,7 +88,8 @@ public class ResourcePacksStorage extends StoredObject {
             "vanilla_1.21.90",
             "vanilla_1.21.100",
             "vanilla_1.21.110",
-            "vanilla_1.21.120"
+            "vanilla_1.21.120",
+            "vanilla_1.21.130"
     );
 
     private final Map<UUID, ResourcePack> packs = new HashMap<>();
@@ -178,9 +179,8 @@ public class ResourcePacksStorage extends StoredObject {
         this.packs.put(pack.packId(), pack);
     }
 
-    public void setPackStack(final UUID[] resourcePackStack, final UUID[] behaviourPackStack) {
+    public void setPackStack(final UUID[] resourcePackStack) {
         this.packStackTopToBottom.clear();
-        Arrays.stream(behaviourPackStack).map(this.packs::get).filter(Objects::nonNull).forEach(this.packStackTopToBottom::add);
         Arrays.stream(resourcePackStack).map(this.packs::get).filter(Objects::nonNull).forEach(this.packStackTopToBottom::add);
         if (BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks() != null) { // null if ran from ResourcePackConverterTest
             for (int i = VANILLA_PACK_NAMES.size() - 1; i >= 0; i--) {

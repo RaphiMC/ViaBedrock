@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -9,13 +8,16 @@ public enum CodeBuilderStorageQueryOptions_Category {
 
     None(0),
     CodeStatus(1),
-    Instantiation(2);
+    Instantiation(2),
+    ;
 
     private static final Int2ObjectMap<CodeBuilderStorageQueryOptions_Category> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (CodeBuilderStorageQueryOptions_Category value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -25,6 +27,24 @@ public enum CodeBuilderStorageQueryOptions_Category {
 
     public static CodeBuilderStorageQueryOptions_Category getByValue(final int value, final CodeBuilderStorageQueryOptions_Category fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static CodeBuilderStorageQueryOptions_Category getByName(final String name) {
+        for (CodeBuilderStorageQueryOptions_Category value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static CodeBuilderStorageQueryOptions_Category getByName(final String name, final CodeBuilderStorageQueryOptions_Category fallback) {
+        for (CodeBuilderStorageQueryOptions_Category value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

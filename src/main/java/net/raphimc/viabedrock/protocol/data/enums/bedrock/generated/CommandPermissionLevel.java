@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -12,13 +11,16 @@ public enum CommandPermissionLevel {
     Admin(2),
     Host(3),
     Owner(4),
-    Internal(5);
+    Internal(5),
+    ;
 
     private static final Int2ObjectMap<CommandPermissionLevel> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (CommandPermissionLevel value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -28,6 +30,24 @@ public enum CommandPermissionLevel {
 
     public static CommandPermissionLevel getByValue(final int value, final CommandPermissionLevel fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static CommandPermissionLevel getByName(final String name) {
+        for (CommandPermissionLevel value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static CommandPermissionLevel getByName(final String name, final CommandPermissionLevel fallback) {
+        for (CommandPermissionLevel value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

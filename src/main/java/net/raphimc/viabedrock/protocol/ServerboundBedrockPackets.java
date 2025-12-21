@@ -102,7 +102,8 @@ public enum ServerboundBedrockPackets implements ServerboundPacketType {
     MOVEMENT_PREDICTION_SYNC(MinecraftPacketIds.ClientMovementPredictionSyncPacket.getValue()),
     UPDATE_CLIENT_OPTIONS(MinecraftPacketIds.UpdateClientOptions.getValue()),
     PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue()),
-    PACK_SETTING_CHANGE(MinecraftPacketIds.ServerboundPackSettingChange.getValue());
+    PACK_SETTING_CHANGE(MinecraftPacketIds.ServerboundPackSettingChange.getValue()),
+    DATA_STORE(MinecraftPacketIds.ServerboundDataStore.getValue());
 
     private static final ServerboundBedrockPackets[] REGISTRY = new ServerboundBedrockPackets[512];
 

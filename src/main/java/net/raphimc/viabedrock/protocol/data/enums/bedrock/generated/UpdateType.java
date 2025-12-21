@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -7,15 +6,19 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum UpdateType {
 
-    None(0),
-    Neighbors(1),
-    Connections(2);
+    ClearOverrides(0),
+    RemoveOverride(1),
+    SetIntOverride(2),
+    SetFloatOverride(3),
+    ;
 
     private static final Int2ObjectMap<UpdateType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (UpdateType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -25,6 +28,24 @@ public enum UpdateType {
 
     public static UpdateType getByValue(final int value, final UpdateType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static UpdateType getByName(final String name) {
+        for (UpdateType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static UpdateType getByName(final String name, final UpdateType fallback) {
+        for (UpdateType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;
