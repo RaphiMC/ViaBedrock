@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -22,13 +21,16 @@ public enum TextProcessingEventOrigin {
     KickCommand(11),
     TitleCommand(12),
     SummonCommand(13),
-    ServerForm(14);
+    ServerForm(14),
+    ;
 
     private static final Int2ObjectMap<TextProcessingEventOrigin> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (TextProcessingEventOrigin value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -38,6 +40,24 @@ public enum TextProcessingEventOrigin {
 
     public static TextProcessingEventOrigin getByValue(final int value, final TextProcessingEventOrigin fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static TextProcessingEventOrigin getByName(final String name) {
+        for (TextProcessingEventOrigin value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static TextProcessingEventOrigin getByName(final String name, final TextProcessingEventOrigin fallback) {
+        for (TextProcessingEventOrigin value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

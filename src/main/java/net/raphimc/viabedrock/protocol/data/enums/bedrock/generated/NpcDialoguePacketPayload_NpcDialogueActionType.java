@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -8,13 +7,16 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 public enum NpcDialoguePacketPayload_NpcDialogueActionType {
 
     Open(0),
-    Close(1);
+    Close(1),
+    ;
 
     private static final Int2ObjectMap<NpcDialoguePacketPayload_NpcDialogueActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (NpcDialoguePacketPayload_NpcDialogueActionType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -24,6 +26,24 @@ public enum NpcDialoguePacketPayload_NpcDialogueActionType {
 
     public static NpcDialoguePacketPayload_NpcDialogueActionType getByValue(final int value, final NpcDialoguePacketPayload_NpcDialogueActionType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static NpcDialoguePacketPayload_NpcDialogueActionType getByName(final String name) {
+        for (NpcDialoguePacketPayload_NpcDialogueActionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static NpcDialoguePacketPayload_NpcDialogueActionType getByName(final String name, final NpcDialoguePacketPayload_NpcDialogueActionType fallback) {
+        for (NpcDialoguePacketPayload_NpcDialogueActionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -15,13 +14,16 @@ public enum SetTitlePacketPayload_TitleType {
     Times(5),
     TitleTextObject(6),
     SubtitleTextObject(7),
-    ActionbarTextObject(8);
+    ActionbarTextObject(8),
+    ;
 
     private static final Int2ObjectMap<SetTitlePacketPayload_TitleType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (SetTitlePacketPayload_TitleType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -31,6 +33,24 @@ public enum SetTitlePacketPayload_TitleType {
 
     public static SetTitlePacketPayload_TitleType getByValue(final int value, final SetTitlePacketPayload_TitleType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static SetTitlePacketPayload_TitleType getByName(final String name) {
+        for (SetTitlePacketPayload_TitleType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static SetTitlePacketPayload_TitleType getByName(final String name, final SetTitlePacketPayload_TitleType fallback) {
+        for (SetTitlePacketPayload_TitleType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

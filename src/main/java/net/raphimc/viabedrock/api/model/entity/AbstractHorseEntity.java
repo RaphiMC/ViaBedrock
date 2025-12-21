@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AbstractHorseEntity extends MobEntity {
 
-    public AbstractHorseEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_9 javaType) {
+    public AbstractHorseEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_11 javaType) {
         super(user, uniqueId, runtimeId, type, javaId, javaUuid, javaType);
     }
 

@@ -36,7 +36,7 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PackType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ResourcePackResponse;
-import net.raphimc.viabedrock.protocol.data.enums.java.ResourcePackAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.ResourcePackAction;
 import net.raphimc.viabedrock.protocol.model.Experiment;
 import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
@@ -180,7 +180,6 @@ public class ResourcePackPackets {
             }
 
             wrapper.read(Types.BOOLEAN); // must accept
-            final Triple<UUID, String, String>[] behaviourPacks = wrapper.read(BedrockTypes.PACK_ID_AND_VERSION_AND_NAME_ARRAY); // behaviour packs
             final Triple<UUID, String, String>[] resourcePacks = wrapper.read(BedrockTypes.PACK_ID_AND_VERSION_AND_NAME_ARRAY); // resource packs
             wrapper.read(BedrockTypes.STRING); // game version
             final Experiment[] experiments = wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
@@ -193,15 +192,11 @@ public class ResourcePackPackets {
                 }
             }
 
-            final UUID[] behaviourPackIds = new UUID[behaviourPacks.length];
-            for (int i = 0; i < behaviourPacks.length; i++) {
-                behaviourPackIds[i] = behaviourPacks[i].first();
-            }
             final UUID[] resourcePackIds = new UUID[resourcePacks.length];
             for (int i = 0; i < resourcePacks.length; i++) {
                 resourcePackIds[i] = resourcePacks[i].first();
             }
-            resourcePacksStorage.setPackStack(resourcePackIds, behaviourPackIds);
+            resourcePacksStorage.setPackStack(resourcePackIds);
 
             if (!resourcePacksStorage.isJavaClientWaitingForPack()) {
                 final PacketWrapper resourcePackClientResponse = wrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);

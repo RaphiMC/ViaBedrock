@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -8,13 +7,16 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 public enum CameraAimAssistPacketPayload_Action {
 
     Set(0),
-    Clear(1);
+    Clear(1),
+    ;
 
     private static final Int2ObjectMap<CameraAimAssistPacketPayload_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (CameraAimAssistPacketPayload_Action value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -24,6 +26,24 @@ public enum CameraAimAssistPacketPayload_Action {
 
     public static CameraAimAssistPacketPayload_Action getByValue(final int value, final CameraAimAssistPacketPayload_Action fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static CameraAimAssistPacketPayload_Action getByName(final String name) {
+        for (CameraAimAssistPacketPayload_Action value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static CameraAimAssistPacketPayload_Action getByName(final String name, final CameraAimAssistPacketPayload_Action fallback) {
+        for (CameraAimAssistPacketPayload_Action value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

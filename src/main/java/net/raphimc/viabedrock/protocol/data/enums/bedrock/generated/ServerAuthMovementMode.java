@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -35,13 +34,16 @@ public enum ServerAuthMovementMode {
      * For packets relating to a player or client predicted vehicle, the tick value should be that of the most recently processed PlayerAuthInputPacket from the player.<br>
      * Specifying zero is also acceptable although may result in minor visual flickering as it may confuse client predicted actions.
      */
-    ServerAuthoritativeV3(2);
+    ServerAuthoritativeV3(2),
+    ;
 
     private static final Int2ObjectMap<ServerAuthMovementMode> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ServerAuthMovementMode value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -51,6 +53,24 @@ public enum ServerAuthMovementMode {
 
     public static ServerAuthMovementMode getByValue(final int value, final ServerAuthMovementMode fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ServerAuthMovementMode getByName(final String name) {
+        for (ServerAuthMovementMode value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ServerAuthMovementMode getByName(final String name, final ServerAuthMovementMode fallback) {
+        for (ServerAuthMovementMode value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

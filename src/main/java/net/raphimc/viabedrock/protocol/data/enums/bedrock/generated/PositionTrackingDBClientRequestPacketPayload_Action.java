@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -7,13 +6,16 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PositionTrackingDBClientRequestPacketPayload_Action {
 
-    Query(0);
+    Query(0),
+    ;
 
     private static final Int2ObjectMap<PositionTrackingDBClientRequestPacketPayload_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (PositionTrackingDBClientRequestPacketPayload_Action value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -23,6 +25,24 @@ public enum PositionTrackingDBClientRequestPacketPayload_Action {
 
     public static PositionTrackingDBClientRequestPacketPayload_Action getByValue(final int value, final PositionTrackingDBClientRequestPacketPayload_Action fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static PositionTrackingDBClientRequestPacketPayload_Action getByName(final String name) {
+        for (PositionTrackingDBClientRequestPacketPayload_Action value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static PositionTrackingDBClientRequestPacketPayload_Action getByName(final String name, final PositionTrackingDBClientRequestPacketPayload_Action fallback) {
+        for (PositionTrackingDBClientRequestPacketPayload_Action value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

@@ -55,7 +55,7 @@ public class BundleItemRewriter implements ItemRewriter.NbtRewriter {
             javaItems[i] = javaItems[javaItems.length - i - 1];
             javaItems[javaItems.length - i - 1] = temp;
         }
-        javaItem.dataContainer().set(VersionedTypes.V1_21_9.structuredDataKeys.bundleContents, javaItems);
+        javaItem.dataContainer().set(VersionedTypes.V1_21_11.structuredDataKeys.bundleContents, javaItems);
     }
 
 }

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -105,13 +104,16 @@ public enum ParticleType {
     PaleOakLeaves(95),
     EyeblossomOpen(96),
     EyeblossomClose(97),
-    GreenFlame(98);
+    GreenFlame(98),
+    ;
 
     private static final Int2ObjectMap<ParticleType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ParticleType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -121,6 +123,24 @@ public enum ParticleType {
 
     public static ParticleType getByValue(final int value, final ParticleType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ParticleType getByName(final String name) {
+        for (ParticleType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ParticleType getByName(final String name, final ParticleType fallback) {
+        for (ParticleType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

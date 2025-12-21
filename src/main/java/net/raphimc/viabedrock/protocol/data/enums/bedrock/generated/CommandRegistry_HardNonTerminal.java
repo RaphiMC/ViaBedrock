@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -98,13 +97,16 @@ public enum CommandRegistry_HardNonTerminal {
     CodeBuilderArg(0x100058),
     CodeBuilderArgs(0x100059),
     CodeBuilderSelectParam(0x10005a),
-    CodeBuilderSelector(0x10005b);
+    CodeBuilderSelector(0x10005b),
+    ;
 
     private static final Int2ObjectMap<CommandRegistry_HardNonTerminal> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (CommandRegistry_HardNonTerminal value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -114,6 +116,24 @@ public enum CommandRegistry_HardNonTerminal {
 
     public static CommandRegistry_HardNonTerminal getByValue(final int value, final CommandRegistry_HardNonTerminal fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static CommandRegistry_HardNonTerminal getByName(final String name) {
+        for (CommandRegistry_HardNonTerminal value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static CommandRegistry_HardNonTerminal getByName(final String name, final CommandRegistry_HardNonTerminal fallback) {
+        for (CommandRegistry_HardNonTerminal value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

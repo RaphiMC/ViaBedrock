@@ -56,9 +56,9 @@ public class ScoreboardTracker implements StorableObject {
         return null;
     }
 
-    public Pair<ScoreboardObjective, ScoreboardEntry> getEntryForPlayer(final long uniqueEntityId) {
+    public Pair<ScoreboardObjective, ScoreboardEntry> getEntryForPlayer(final long entityUniqueId) {
         for (final ScoreboardObjective objective : this.objectives.values()) {
-            final ScoreboardEntry entry = objective.getEntryForPlayer(uniqueEntityId);
+            final ScoreboardEntry entry = objective.getEntryForPlayer(entityUniqueId);
             if (entry != null) {
                 return new Pair<>(objective, entry);
             }
