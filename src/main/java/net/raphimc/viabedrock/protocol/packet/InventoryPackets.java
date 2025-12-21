@@ -375,7 +375,7 @@ public class InventoryPackets {
                 newItem.tag().putInt("Damage", damage);
                 inventoryTracker.getArmorContainer().setItem(armorSlot.getValue(), newItem);
 
-                PacketWrapper itemPacket = PacketWrapper.create(ClientboundPackets1_21_9.CONTAINER_SET_SLOT, wrapper.user());
+                PacketWrapper itemPacket = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_SLOT, wrapper.user());
                 itemPacket.write(Types.VAR_INT, (int) inventoryTracker.getArmorContainer().javaContainerId()); // container id
                 itemPacket.write(Types.VAR_INT, 0); // revision
                 itemPacket.write(Types.SHORT, (short) inventoryTracker.getArmorContainer().javaSlot(armorSlot.getValue())); // slot
