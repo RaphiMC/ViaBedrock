@@ -50,7 +50,7 @@ public class ViaBedrock {
             }
         }
         if (config.shouldEnableExperimentalFeatures()) {
-            platform.getLogger().log(Level.WARNING, "Experimental features are enabled. These features might not fully stable/tested and may cause issues.");
+            platform.getLogger().log(Level.WARNING, "Experimental features are enabled. These features might not be fully stable/tested and may cause issues.");
         }
     }
 

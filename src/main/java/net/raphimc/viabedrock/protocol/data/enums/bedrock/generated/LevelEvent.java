@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -137,13 +136,16 @@ public enum LevelEvent {
     AnimationSpawnCobweb(9814),
     ParticleSmashAttackGroundDust(9815),
     ParticleLegacyEvent(0x4000),
-    ParticleCreakingHeartTrail(9816);
+    ParticleCreakingHeartTrail(9816),
+    ;
 
     private static final Int2ObjectMap<LevelEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (LevelEvent value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -153,6 +155,24 @@ public enum LevelEvent {
 
     public static LevelEvent getByValue(final int value, final LevelEvent fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static LevelEvent getByName(final String name) {
+        for (LevelEvent value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static LevelEvent getByName(final String name, final LevelEvent fallback) {
+        for (LevelEvent value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

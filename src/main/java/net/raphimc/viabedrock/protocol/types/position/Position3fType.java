@@ -17,9 +17,11 @@
  */
 package net.raphimc.viabedrock.protocol.types.position;
 
+import com.viaversion.viaversion.api.type.OptionalType;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class Position3fType extends Type<Position3f> {
 
@@ -41,6 +43,14 @@ public class Position3fType extends Type<Position3f> {
         buffer.writeFloatLE(value.x());
         buffer.writeFloatLE(value.y());
         buffer.writeFloatLE(value.z());
+    }
+
+    public static final class OptionalPosition3fType extends OptionalType<Position3f> {
+
+        public OptionalPosition3fType() {
+            super(BedrockTypes.POSITION_3F);
+        }
+
     }
 
 }

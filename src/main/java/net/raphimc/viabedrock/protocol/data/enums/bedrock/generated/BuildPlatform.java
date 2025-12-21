@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -21,13 +20,16 @@ public enum BuildPlatform {
     Xbox(13),
     WindowsPhone_Deprecated(14),
     Linux(15),
-    Unknown(-1);
+    Unknown(-1),
+    ;
 
     private static final Int2ObjectMap<BuildPlatform> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (BuildPlatform value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -37,6 +39,24 @@ public enum BuildPlatform {
 
     public static BuildPlatform getByValue(final int value, final BuildPlatform fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static BuildPlatform getByName(final String name) {
+        for (BuildPlatform value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static BuildPlatform getByName(final String name, final BuildPlatform fallback) {
+        for (BuildPlatform value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

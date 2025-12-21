@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.model.scoreboard;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ObjectiveSortOrder;
@@ -54,9 +54,9 @@ public class ScoreboardObjective {
         return null;
     }
 
-    public ScoreboardEntry getEntryForPlayer(final long uniqueEntityId) {
+    public ScoreboardEntry getEntryForPlayer(final long entityUniqueId) {
         for (ScoreboardEntry value : this.entries.values()) {
-            if (value.uniqueEntityId() != null && value.type() == IdentityDefinition_Type.Player && uniqueEntityId == value.uniqueEntityId()) {
+            if (value.entityUniqueId() != null && value.type() == IdentityDefinition_Type.Player && entityUniqueId == value.entityUniqueId()) {
                 return value;
             }
         }
@@ -85,7 +85,7 @@ public class ScoreboardObjective {
     }
 
     private void updateEntry0(final UserConnection user, final ScoreboardEntry entry) {
-        final PacketWrapper setScore = PacketWrapper.create(ClientboundPackets1_21_9.SET_SCORE, user);
+        final PacketWrapper setScore = PacketWrapper.create(ClientboundPackets1_21_11.SET_SCORE, user);
         setScore.write(Types.STRING, entry.javaName()); // player name
         setScore.write(Types.STRING, this.name); // objective name
         setScore.write(Types.VAR_INT, this.sortOrder == ObjectiveSortOrder.Ascending ? -entry.score() : entry.score()); // score
@@ -95,7 +95,7 @@ public class ScoreboardObjective {
     }
 
     private void removeEntry0(final UserConnection user, final ScoreboardEntry entry) {
-        final PacketWrapper resetScore = PacketWrapper.create(ClientboundPackets1_21_9.RESET_SCORE, user);
+        final PacketWrapper resetScore = PacketWrapper.create(ClientboundPackets1_21_11.RESET_SCORE, user);
         resetScore.write(Types.STRING, entry.javaName()); // player name
         resetScore.write(Types.OPTIONAL_STRING, this.name); // objective name
         resetScore.send(BedrockProtocol.class);

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -86,43 +85,15 @@ public enum ExpressionOp {
     Comma(75),
     This(76),
     Internal_NonEvaluatedArray(77),
-    InverseLerp(78),
-    EaseInQuad(79),
-    EaseOutQuad(80),
-    EaseInOutQuad(81),
-    EaseInCubic(82),
-    EaseOutCubic(83),
-    EaseInOutCubic(84),
-    EaseInQuart(85),
-    EaseOutQuart(86),
-    EaseInOutQuart(87),
-    EaseInQuint(88),
-    EaseOutQuint(89),
-    EaseInOutQuint(90),
-    EaseInSine(91),
-    EaseOutSine(92),
-    EaseInOutSine(93),
-    EaseInExpo(94),
-    EaseOutExpo(95),
-    EaseInOutExpo(96),
-    EaseInCirc(97),
-    EaseOutCirc(98),
-    EaseInOutCirc(99),
-    EaseInBounce(100),
-    EaseOutBounce(101),
-    EaseInOutBounce(102),
-    EaseInBack(103),
-    EaseOutBack(104),
-    EaseInOutBack(105),
-    EaseInElastic(106),
-    EaseOutElastic(107),
-    EaseInOutElastic(108);
+    ;
 
     private static final Int2ObjectMap<ExpressionOp> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ExpressionOp value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -132,6 +103,24 @@ public enum ExpressionOp {
 
     public static ExpressionOp getByValue(final int value, final ExpressionOp fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ExpressionOp getByName(final String name) {
+        for (ExpressionOp value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ExpressionOp getByName(final String name, final ExpressionOp fallback) {
+        for (ExpressionOp value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -31,7 +31,6 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
-import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
@@ -102,7 +101,7 @@ public class InventoryContainer extends Container {
     }
 
     public void sendSelectedHotbarSlotToClient() {
-        final PacketWrapper setHeldSlot = PacketWrapper.create(ClientboundPackets1_21_9.SET_HELD_SLOT, this.user);
+        final PacketWrapper setHeldSlot = PacketWrapper.create(ClientboundPackets1_21_11.SET_HELD_SLOT, this.user);
         setHeldSlot.write(Types.VAR_INT, (int) this.selectedHotbarSlot);
         setHeldSlot.send(BedrockProtocol.class);
     }
@@ -127,13 +126,13 @@ public class InventoryContainer extends Container {
     private void onSelectedHotbarSlotChanged(final BedrockItem oldItem, final BedrockItem newItem, final PacketWrapper mobEquipment) {
         if (oldItem.isDifferent(newItem)) {
             final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, this.user);
-            interact.write(Types.BYTE, (byte) InteractPacket_Action.InteractUpdate.getValue()); // action
-            interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target runtime entity id
-            interact.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // mouse position
+            interact.write(Types.UNSIGNED_BYTE, (short) InteractPacket_Action.InteractUpdate.getValue()); // action
+            interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target entity runtime id
+            interact.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // position
             interact.sendToServer(BedrockProtocol.class);
         }
 
-        mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // runtime entity id
+        mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // entity runtime id
         mobEquipment.write(this.user.get(ItemRewriter.class).itemType(), newItem); // item
         mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // slot
         mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // selected slot

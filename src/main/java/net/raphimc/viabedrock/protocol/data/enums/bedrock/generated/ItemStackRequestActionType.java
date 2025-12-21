@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -30,13 +29,16 @@ public enum ItemStackRequestActionType {
     ifdef(20),
     TEST_INFRASTRUCTURE_ENABLED(21),
     Test(22),
-    endif(23);
+    endif(23),
+    ;
 
     private static final Int2ObjectMap<ItemStackRequestActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ItemStackRequestActionType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -46,6 +48,24 @@ public enum ItemStackRequestActionType {
 
     public static ItemStackRequestActionType getByValue(final int value, final ItemStackRequestActionType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ItemStackRequestActionType getByName(final String name) {
+        for (ItemStackRequestActionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ItemStackRequestActionType getByName(final String name, final ItemStackRequestActionType fallback) {
+        for (ItemStackRequestActionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;
