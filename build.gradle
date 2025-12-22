@@ -82,5 +82,5 @@ dependencies {
     }
 
     toolImplementation "org.jsoup:jsoup:1.21.2"
-    toolImplementation "org.ow2.asm:asm-tree:9.9"
+    toolImplementation "org.ow2.asm:asm-tree:9.9.1"
 }
