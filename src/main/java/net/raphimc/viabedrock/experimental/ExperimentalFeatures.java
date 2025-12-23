@@ -24,16 +24,16 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
-import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
-import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
-import net.raphimc.viabedrock.experimental.model.inventory.InventoryTransactionData;
+import net.raphimc.viabedrock.experimental.model.inventory.*;
 import net.raphimc.viabedrock.experimental.rewriter.InventoryTransactionRewriter;
+import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
 import net.raphimc.viabedrock.experimental.util.ProtocolUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
@@ -297,7 +297,27 @@ public class ExperimentalFeatures {
                     0
             );
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.ITEM_STACK_RESPONSE, wrapper -> {
+            wrapper.cancel();
+            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            ItemStackResponseInfo[] infoList = wrapper.read(ExperimentalBedrockTypes.ITEM_STACK_RESPONSES);
 
+            for (ItemStackResponseInfo info : infoList) {
+                if (!info.successful()) continue; // TODO: Handle
+
+                List<ItemStackResponseContainerInfo> containers = info.containers();
+                for (ItemStackResponseContainerInfo containerInfo : containers) {
+                    // TODO: We only get given the FullContainerName, we need to match it to a container ID
+                    Container container = null;
+                    for (ItemStackResponseSlotInfo slotInfo : containerInfo.slots()) {
+                        container.setItem(slotInfo.slot(), new BedrockItem(slotInfo.itemId(), (short) 0, slotInfo.amount()));
+                        // TODO:  Handle custom name and durability
+                    }
+
+                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);  // Update the container content on Java side
+                }
+            }
+        });
     }
 
     public static void registerTasks() {

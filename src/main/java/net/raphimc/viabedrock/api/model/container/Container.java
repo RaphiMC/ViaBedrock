@@ -62,6 +62,9 @@ public abstract class Container {
     }
 
     public boolean handleClick(final int revision, final short slot, final byte button, final ClickType action) {
+
+
+
         return false;
     }
 
