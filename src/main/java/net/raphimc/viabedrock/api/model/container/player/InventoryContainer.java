@@ -27,10 +27,12 @@ import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPa
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
@@ -47,6 +49,15 @@ public class InventoryContainer extends Container {
     public InventoryContainer(final UserConnection user, final byte containerId, final BlockPosition position, final InventoryContainer inventoryContainer) {
         super(user, containerId, inventoryContainer.type, inventoryContainer.title, position, inventoryContainer.items, inventoryContainer.validBlockTags);
         this.selectedHotbarSlot = inventoryContainer.selectedHotbarSlot;
+    }
+
+    @Override
+    public FullContainerName getFullContainerName(int slot) {
+        if (slot < 9) {
+            return new FullContainerName(ContainerEnumName.HotbarContainer, null);
+        }
+
+        return new FullContainerName(ContainerEnumName.InventoryContainer, null);
     }
 
     @Override
@@ -84,6 +95,15 @@ public class InventoryContainer extends Container {
             return 36 + slot;
         } else {
             return super.javaSlot(slot);
+        }
+    }
+
+    @Override
+    public int bedrockSlot(final int slot) {
+        if (slot >= 36 && slot < 45) {
+            return slot - 36;
+        } else {
+            return super.bedrockSlot(slot);
         }
     }
 

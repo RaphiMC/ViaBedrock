@@ -21,6 +21,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class ChestContainer extends Container {
 
@@ -28,4 +29,8 @@ public class ChestContainer extends Container {
         super(user, containerId, ContainerType.CONTAINER, title, position, size, "chest", "trapped_chest");
     }
 
+    @Override
+    public FullContainerName getFullContainerName(int slot) {
+        return null; // TODO
+    }
 }

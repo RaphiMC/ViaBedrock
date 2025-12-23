@@ -297,7 +297,7 @@ public class ExperimentalFeatures {
                     0
             );
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.ITEM_STACK_RESPONSE, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.ITEM_STACK_RESPONSE, null, wrapper -> {
             wrapper.cancel();
             InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             ItemStackResponseInfo[] infoList = wrapper.read(ExperimentalBedrockTypes.ITEM_STACK_RESPONSES);

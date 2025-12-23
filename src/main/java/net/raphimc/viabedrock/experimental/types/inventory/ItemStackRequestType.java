@@ -48,6 +48,6 @@ public class ItemStackRequestType extends Type<ItemStackRequestInfo> {
         BedrockTypes.VAR_INT.write(buffer, value.requestId());
         ExperimentalBedrockTypes.ITEM_STACK_REQUEST_ACTIONS.write(buffer, value.actions().toArray(new ItemStackRequestAction[0]));
         BedrockTypes.STRING_ARRAY.write(buffer, value.toFilter().toArray(new String[0]));
-        BedrockTypes.VAR_INT.write(buffer, value.origin().getValue());
+        BedrockTypes.INT_LE.write(buffer, value.origin().getValue());
     }
 }

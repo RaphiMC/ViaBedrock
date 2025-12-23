@@ -18,8 +18,10 @@
 package net.raphimc.viabedrock.api.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class ArmorContainer extends InventorySubContainer {
 
@@ -28,8 +30,18 @@ public class ArmorContainer extends InventorySubContainer {
     }
 
     @Override
+    public FullContainerName getFullContainerName(int slot) {
+        return new FullContainerName(ContainerEnumName.ArmorContainer, null);
+    }
+
+    @Override
     public int javaSlot(final int slot) {
         return 5 + slot;
+    }
+
+    @Override
+    public int bedrockSlot(final int slot) {
+        return slot - 5;
     }
 
 }

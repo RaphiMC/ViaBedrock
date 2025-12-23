@@ -45,7 +45,6 @@ public abstract class Container {
     protected final UserConnection user;
     protected final byte containerId;
     protected final ContainerType type;
-    protected final FullContainerName fullContainerName = null; // TODO
     protected final TextComponent title;
     protected final BlockPosition position;
     protected final BedrockItem[] items;
@@ -71,12 +70,17 @@ public abstract class Container {
         this.validBlockTags = validBlockTags;
     }
 
-    public boolean handleClick(final int revision, final short slot, final byte button, final ClickType action) {
+    public abstract FullContainerName getFullContainerName(int slot);
+
+    public boolean handleClick(final int revision, final short javaSlot, final byte button, final ClickType action) {
         if (!ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
             return false;
         }
 
+        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Handling click for container " + this.type + " (ID: " + this.containerId + ") at slot " + javaSlot + " with action " + action + " and button " + button);
+
         InventoryTracker inventoryTracker = this.user.get(InventoryTracker.class);
+        int slot = this.bedrockSlot(javaSlot);
 
         ItemStackRequestAction itemAction = switch (action) {
             case PICKUP -> {
@@ -125,7 +129,7 @@ public abstract class Container {
 
                     yield new ItemStackRequestAction.TakeAction(
                         amountToTake,
-                        new ItemStackRequestSlotInfo(this.fullContainerName, (byte) slot, item.netId()),
+                        new ItemStackRequestSlotInfo(this.getFullContainerName(slot), (byte) slot, item.netId()),
                         new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, item.netId())
                     );
                 } else {
@@ -139,7 +143,7 @@ public abstract class Container {
                         yield new ItemStackRequestAction.PlaceAction(
                             amountToPlace,
                             new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, cursorItem.netId()),
-                            new ItemStackRequestSlotInfo(this.fullContainerName, (byte) slot, cursorItem.netId())
+                            new ItemStackRequestSlotInfo(this.getFullContainerName(slot), (byte) slot, cursorItem.netId())
                         );
                     } else {
                         // Swap item
@@ -152,7 +156,7 @@ public abstract class Container {
 
                         yield new ItemStackRequestAction.SwapAction(
                             new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, cursorItem.netId()),
-                            new ItemStackRequestSlotInfo(this.fullContainerName, (byte) slot, item.netId())
+                            new ItemStackRequestSlotInfo(this.getFullContainerName(slot), (byte) slot, item.netId())
                         );
                     }
                 }
@@ -226,6 +230,10 @@ public abstract class Container {
 
     public int javaSlot(final int slot) {
         return slot;
+    }
+
+    public int bedrockSlot(final int javaSlot) {
+        return javaSlot;
     }
 
     public byte javaContainerId() {

@@ -21,11 +21,17 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class HudContainer extends InventoryRedirectContainer {
 
     public HudContainer(final UserConnection user) {
         super(user, (byte) ContainerID.CONTAINER_ID_PLAYER_ONLY_UI.getValue(), ContainerType.HUD, 54);
+    }
+
+    @Override
+    public FullContainerName getFullContainerName(int slot) {
+        return null; // TODO
     }
 
     @Override
@@ -43,6 +49,15 @@ public class HudContainer extends InventoryRedirectContainer {
             return slot - 27;
         } else {
             return super.javaSlot(slot);
+        }
+    }
+
+    @Override
+    public int bedrockSlot(final int slot) {
+        if (slot >= 1 && slot <= 4) {
+            return slot + 27;
+        } else {
+            return super.bedrockSlot(slot);
         }
     }
 
