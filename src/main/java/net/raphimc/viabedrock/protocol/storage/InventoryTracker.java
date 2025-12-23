@@ -60,6 +60,8 @@ public class InventoryTracker extends StoredObject {
     private Container pendingCloseContainer = null;
     private IntObjectPair<Form> currentForm = null;
 
+    private BedrockItem cursorItemTracker = BedrockItem.empty();
+
     public InventoryTracker(final UserConnection user) {
         super(user);
     }
@@ -151,6 +153,8 @@ public class InventoryTracker extends StoredObject {
                 this.forceCloseCurrentContainer();
             }
         }
+
+        // TODO: Drop Cursor item if no container is open
     }
 
     public boolean isContainerOpen() {
@@ -204,6 +208,14 @@ public class InventoryTracker extends StoredObject {
         this.markPendingClose(this.currentContainer);
         PacketFactory.sendJavaContainerClose(this.user(), this.pendingCloseContainer.javaContainerId());
         PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.containerId(), ContainerType.NONE);
+    }
+
+    public void setCursorItem(final BedrockItem cursorItem) {
+        this.cursorItemTracker = cursorItem;
+    }
+
+    public BedrockItem getCursorItem() {
+        return this.cursorItemTracker;
     }
 
 }

@@ -22,12 +22,21 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemStackRequestActionType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
+import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -36,6 +45,7 @@ public abstract class Container {
     protected final UserConnection user;
     protected final byte containerId;
     protected final ContainerType type;
+    protected final FullContainerName fullContainerName = null; // TODO
     protected final TextComponent title;
     protected final BlockPosition position;
     protected final BedrockItem[] items;
@@ -62,10 +72,110 @@ public abstract class Container {
     }
 
     public boolean handleClick(final int revision, final short slot, final byte button, final ClickType action) {
+        if (!ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            return false;
+        }
 
+        InventoryTracker inventoryTracker = this.user.get(InventoryTracker.class);
 
+        ItemStackRequestAction itemAction = switch (action) {
+            case PICKUP -> {
+                BedrockItem cursorItem = inventoryTracker.getCursorItem();
 
-        return false;
+                if (slot == -999) {
+                    // Drop item
+                    if (cursorItem.isEmpty()) {
+                        yield null;
+                    }
+
+                    int amountToDrop = button == 0 ? cursorItem.amount() : 1;
+
+                    BedrockItem finalCursorItem = cursorItem.copy();
+                    if (amountToDrop >= cursorItem.amount()) {
+                        finalCursorItem = BedrockItem.empty();
+                    } else {
+                        finalCursorItem.setAmount(cursorItem.amount() - amountToDrop);
+                    }
+                    inventoryTracker.setCursorItem(finalCursorItem);
+
+                    yield new ItemStackRequestAction.DropAction(
+                        amountToDrop,
+                        new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, cursorItem.netId()),
+                        false
+                    );
+                } else if (slot < 0 || slot >= this.items.length) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle click for " + this.type + ", but slot was out of bounds (" + slot + ")");
+                    yield null;
+                }
+
+                BedrockItem item = this.getItem(slot);
+
+                if (cursorItem.isEmpty()) {
+                    // Take item
+                    int amountToTake = button == 0 ? item.amount() : (item.amount() + 1) / 2;
+
+                    inventoryTracker.setCursorItem(item.copy());
+                    BedrockItem finalContainerItem = item.copy();
+                    if (amountToTake >= item.amount()) {
+                        finalContainerItem = BedrockItem.empty();
+                    } else {
+                        finalContainerItem.setAmount(item.amount() - amountToTake);
+                    }
+                    this.setItem(slot, finalContainerItem);
+
+                    yield new ItemStackRequestAction.TakeAction(
+                        amountToTake,
+                        new ItemStackRequestSlotInfo(this.fullContainerName, (byte) slot, item.netId()),
+                        new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, item.netId())
+                    );
+                } else {
+                    if (item.isEmpty()) {
+                        // Place item TODO: There are more conditions for placing items (e.g. stackability)
+                        int amountToPlace = button == 0 ? cursorItem.amount() : 1;
+
+                        this.setItem(slot, inventoryTracker.getCursorItem().copy());
+                        inventoryTracker.setCursorItem(BedrockItem.empty());
+
+                        yield new ItemStackRequestAction.PlaceAction(
+                            amountToPlace,
+                            new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, cursorItem.netId()),
+                            new ItemStackRequestSlotInfo(this.fullContainerName, (byte) slot, cursorItem.netId())
+                        );
+                    } else {
+                        // Swap item
+
+                        BedrockItem cursorCopy = cursorItem.copy();
+                        BedrockItem itemCopy = item.copy();
+
+                        this.setItem(slot, cursorCopy);
+                        inventoryTracker.setCursorItem(itemCopy);
+
+                        yield new ItemStackRequestAction.SwapAction(
+                            new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, cursorItem.netId()),
+                            new ItemStackRequestSlotInfo(this.fullContainerName, (byte) slot, item.netId())
+                        );
+                    }
+                }
+            }
+            default -> null;
+        };
+
+        if (itemAction == null) {
+            return false;
+        }
+
+        ItemStackRequestInfo request = new ItemStackRequestInfo(
+                revision,
+                List.of(
+                        itemAction
+                ),
+                List.of(),
+                TextProcessingEventOrigin.unknown
+        );
+
+        ExperimentalPacketFactory.sendBedrockInventoryRequest(this.user, new ItemStackRequestInfo[] {request});
+
+        return true;
     }
 
     public void clearItems() {

@@ -20,10 +20,14 @@ package net.raphimc.viabedrock.experimental;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
+import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerActionType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+
+import java.util.List;
 
 public class ExperimentalPacketFactory {
 
@@ -35,6 +39,12 @@ public class ExperimentalPacketFactory {
         startItemUseOn.write(BedrockTypes.BLOCK_POSITION, resultPosition); // result position
         startItemUseOn.write(BedrockTypes.VAR_INT, face); // face
         startItemUseOn.sendToServer(BedrockProtocol.class);
+    }
+
+    public static void sendBedrockInventoryRequest(final UserConnection user, ItemStackRequestInfo[] info) {
+        final PacketWrapper inventoryRequest = PacketWrapper.create(ServerboundBedrockPackets.ITEM_STACK_REQUEST, user);
+        inventoryRequest.write(ExperimentalBedrockTypes.ITEM_STACK_REQUESTS, info);
+        inventoryRequest.sendToServer(BedrockProtocol.class);
     }
 
 }

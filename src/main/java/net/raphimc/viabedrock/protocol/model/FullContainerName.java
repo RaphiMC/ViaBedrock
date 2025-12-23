@@ -22,5 +22,6 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnu
 public record FullContainerName(ContainerEnumName name, Integer dynamicId) {
 
     public static final FullContainerName EMPTY = new FullContainerName(ContainerEnumName.AnvilInputContainer, null);
+    public static final FullContainerName CURSOR = new FullContainerName(ContainerEnumName.CursorContainer, null);
 
 }
