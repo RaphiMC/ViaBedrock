@@ -128,7 +128,7 @@ public abstract class Container {
                     yield new ItemStackRequestAction.TakeAction(
                         amountToTake,
                         new ItemStackRequestSlotInfo(this.getFullContainerName(slot), (byte) slot, item.netId()),
-                        new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, item.netId())
+                        new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, 0)
                     );
                 } else {
                     if (item.isEmpty()) {
@@ -141,7 +141,7 @@ public abstract class Container {
                         yield new ItemStackRequestAction.PlaceAction(
                             amountToPlace,
                             new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, cursorItem.netId()),
-                            new ItemStackRequestSlotInfo(this.getFullContainerName(slot), (byte) slot, cursorItem.netId())
+                            new ItemStackRequestSlotInfo(this.getFullContainerName(slot), (byte) slot, 0)
                         );
                     } else {
                         // Swap item

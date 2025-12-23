@@ -17,7 +17,9 @@
  */
 package net.raphimc.viabedrock.experimental.model.inventory;
 
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemStackNetResult;
+
 import java.util.List;
 
-public record ItemStackResponseInfo(boolean successful, int requestId, List<ItemStackResponseContainerInfo> containers) {
+public record ItemStackResponseInfo(ItemStackNetResult result, int requestId, List<ItemStackResponseContainerInfo> containers) {
 }

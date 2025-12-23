@@ -304,7 +304,10 @@ public class ExperimentalFeatures {
 
             // Resync the inventory content based on the response
             for (ItemStackResponseInfo info : infoList) {
-                if (!info.successful()) continue; // TODO: Handle
+                if (info.result() != ItemStackNetResult.Success) {
+                    ViaBedrock.getPlatform().getLogger().warning("Received unsuccessful item stack response: " + info.result());
+                    continue; // TODO: Handle
+                }
 
                 List<ItemStackResponseContainerInfo> containers = info.containers();
                 for (ItemStackResponseContainerInfo containerInfo : containers) {

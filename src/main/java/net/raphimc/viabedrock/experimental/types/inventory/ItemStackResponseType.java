@@ -22,6 +22,7 @@ import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackResponseContainerInfo;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackResponseInfo;
 import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemStackNetResult;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.List;
@@ -34,24 +35,24 @@ public class ItemStackResponseType extends Type<ItemStackResponseInfo> {
 
     @Override
     public ItemStackResponseInfo read(ByteBuf buffer) {
-        boolean successful = buffer.readByte() == 0;
+        ItemStackNetResult result =  ItemStackNetResult.getByValue(buffer.readByte());
         int requestId = BedrockTypes.VAR_INT.read(buffer);
 
-        if (!successful) {
-            return new ItemStackResponseInfo(successful, requestId, null);
+        if (result != ItemStackNetResult.Success) {
+            return new ItemStackResponseInfo(result, requestId, null);
         }
 
         List<ItemStackResponseContainerInfo> containers = List.of(ExperimentalBedrockTypes.ITEM_STACK_RESPONSE_CONTAINERS.read(buffer));
 
-        return new ItemStackResponseInfo(successful, requestId, containers);
+        return new ItemStackResponseInfo(result, requestId, containers);
     }
 
     @Override
     public void write(ByteBuf buffer, ItemStackResponseInfo value) {
-        buffer.writeByte(value.successful() ? 0 : 1);
+        buffer.writeByte(value.result().getValue());
         BedrockTypes.VAR_INT.write(buffer, value.requestId());
 
-        if (!value.successful()) {
+        if (value.result() != ItemStackNetResult.Success) {
             return;
         }
 
