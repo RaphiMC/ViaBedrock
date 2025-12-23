@@ -302,19 +302,20 @@ public class ExperimentalFeatures {
             InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             ItemStackResponseInfo[] infoList = wrapper.read(ExperimentalBedrockTypes.ITEM_STACK_RESPONSES);
 
+            // Resync the inventory content based on the response
             for (ItemStackResponseInfo info : infoList) {
                 if (!info.successful()) continue; // TODO: Handle
 
                 List<ItemStackResponseContainerInfo> containers = info.containers();
                 for (ItemStackResponseContainerInfo containerInfo : containers) {
                     // TODO: We only get given the FullContainerName, we need to match it to a container ID
-                    Container container = null;
-                    for (ItemStackResponseSlotInfo slotInfo : containerInfo.slots()) {
-                        container.setItem(slotInfo.slot(), new BedrockItem(slotInfo.itemId(), (short) 0, slotInfo.amount()));
+                    //Container container = null;
+                    //for (ItemStackResponseSlotInfo slotInfo : containerInfo.slots()) {
+                        //container.setItem(slotInfo.slot(), new BedrockItem(slotInfo.itemId(), (short) 0, slotInfo.amount()));
                         // TODO:  Handle custom name and durability
-                    }
+                    //}
 
-                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);  // Update the container content on Java side
+                    //PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);  // Update the container content on Java side
                 }
             }
         });

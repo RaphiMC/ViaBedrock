@@ -77,8 +77,6 @@ public abstract class Container {
             return false;
         }
 
-        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Handling click for container " + this.type + " (ID: " + this.containerId + ") at slot " + javaSlot + " with action " + action + " and button " + button);
-
         InventoryTracker inventoryTracker = this.user.get(InventoryTracker.class);
         int slot = this.bedrockSlot(javaSlot);
 
@@ -169,7 +167,7 @@ public abstract class Container {
         }
 
         ItemStackRequestInfo request = new ItemStackRequestInfo(
-                revision,
+                -1, // TODO: Track request IDs
                 List.of(
                         itemAction
                 ),
