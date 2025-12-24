@@ -78,11 +78,16 @@ public class ExperimentalContainer {
                             false
                     );
                 } else if (slot < 0 || slot >= container.getItems().length) {
+                    // TODO: Doesnt handle the Chest + Inventory combo properly, should probably be fixed in the bedrockSlot method
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle click for " + container.type() + ", but slot was out of bounds (" + slot + ")");
                     yield null;
                 }
 
                 BedrockItem item = container.getItem(slot);
+                if (item.isEmpty() && cursorItem.isEmpty()) {
+                    // Nothing to do
+                    yield null;
+                }
 
                 if (cursorItem.isEmpty()) {
                     // Take item

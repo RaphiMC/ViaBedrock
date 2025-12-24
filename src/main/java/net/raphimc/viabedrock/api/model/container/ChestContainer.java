@@ -20,7 +20,9 @@ package net.raphimc.viabedrock.api.model.container;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class ChestContainer extends Container {
@@ -31,6 +33,6 @@ public class ChestContainer extends Container {
 
     @Override
     public FullContainerName getFullContainerName(int slot) {
-        return null; // TODO
+        return new FullContainerName(ContainerEnumName.LevelEntityContainer, null);
     }
 }
