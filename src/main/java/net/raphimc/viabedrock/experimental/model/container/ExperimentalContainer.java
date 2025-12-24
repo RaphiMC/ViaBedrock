@@ -92,7 +92,9 @@ public class ExperimentalContainer {
                     // Take item
                     int amountToTake = button == 0 ? item.amount() : (item.amount() + 1) / 2;
 
-                    inventoryTracker.getHudContainer().setItem(0, item.copy());
+                    BedrockItem finalCursorItem = item.copy();
+                    finalCursorItem.setAmount(amountToTake);
+                    inventoryTracker.getHudContainer().setItem(0, finalCursorItem);
                     BedrockItem finalContainerItem = item.copy();
                     if (amountToTake >= item.amount()) {
                         finalContainerItem = BedrockItem.empty();
@@ -103,7 +105,7 @@ public class ExperimentalContainer {
 
                     yield new ItemStackRequestAction.TakeAction(
                             amountToTake,
-                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId()),
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, finalCursorItem.netId()),
                             new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, 0)
                     );
                 } else {
@@ -131,7 +133,7 @@ public class ExperimentalContainer {
 
                         yield new ItemStackRequestAction.PlaceAction(
                                 amountToPlace,
-                                new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, cursorItem.netId()),
+                                new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, finalContainerItem.netId()),
                                 new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, 0)
                         );
                     } else {
