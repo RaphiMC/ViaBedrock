@@ -26,10 +26,7 @@ import net.lenni0451.mcstructs_bedrock.forms.Form;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.dynamic.BundleContainer;
-import net.raphimc.viabedrock.api.model.container.player.ArmorContainer;
-import net.raphimc.viabedrock.api.model.container.player.HudContainer;
-import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
-import net.raphimc.viabedrock.api.model.container.player.OffhandContainer;
+import net.raphimc.viabedrock.api.model.container.player.*;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -54,13 +51,12 @@ public class InventoryTracker extends StoredObject {
     private final OffhandContainer offhandContainer = new OffhandContainer(this.user());
     private final ArmorContainer armorContainer = new ArmorContainer(this.user());
     private final HudContainer hudContainer = new HudContainer(this.user());
+    private final CursorContainer cursorContainer = new CursorContainer(this.user());
     private final Map<FullContainerName, BundleContainer> dynamicContainerRegistry = new HashMap<>();
 
     private Container currentContainer = null;
     private Container pendingCloseContainer = null;
     private IntObjectPair<Form> currentForm = null;
-
-    private BedrockItem cursorItemTracker = BedrockItem.empty();
 
     public InventoryTracker(final UserConnection user) {
         super(user);
@@ -71,6 +67,7 @@ public class InventoryTracker extends StoredObject {
         if (containerId == this.offhandContainer.containerId()) return this.offhandContainer;
         if (containerId == this.armorContainer.containerId()) return this.armorContainer;
         if (containerId == this.hudContainer.containerId()) return this.hudContainer;
+        if (containerId == this.cursorContainer.containerId()) return this.cursorContainer;
         if (containerId == ContainerID.CONTAINER_ID_REGISTRY.getValue() && containerName.name() == ContainerEnumName.DynamicContainer) {
             final String itemTag = BedrockProtocol.MAPPINGS.getBedrockItemTags().getOrDefault(this.user().get(ItemRewriter.class).getItems().inverse().get(storageItem.identifier()), "");
             if (!storageItem.isEmpty() && itemTag.equals("bundle")) {
@@ -210,12 +207,8 @@ public class InventoryTracker extends StoredObject {
         PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.containerId(), ContainerType.NONE);
     }
 
-    public void setCursorItem(final BedrockItem cursorItem) {
-        this.cursorItemTracker = cursorItem;
-    }
-
-    public BedrockItem getCursorItem() {
-        return this.cursorItemTracker;
+    public CursorContainer getCursorContainer() {
+        return this.cursorContainer;
     }
 
 }

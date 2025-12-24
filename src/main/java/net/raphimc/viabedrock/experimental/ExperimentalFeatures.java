@@ -30,6 +30,8 @@ import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.experimental.model.inventory.*;
 import net.raphimc.viabedrock.experimental.rewriter.InventoryTransactionRewriter;
+import net.raphimc.viabedrock.experimental.storage.InventoryRequestStorage;
+import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
 import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
 import net.raphimc.viabedrock.experimental.util.ProtocolUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -42,6 +44,7 @@ import net.raphimc.viabedrock.protocol.data.enums.java.InteractionHand;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.GameMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.PlayerActionAction;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
@@ -300,26 +303,54 @@ public class ExperimentalFeatures {
         protocol.registerClientbound(ClientboundBedrockPackets.ITEM_STACK_RESPONSE, null, wrapper -> {
             wrapper.cancel();
             InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            InventoryRequestTracker inventoryRequestTracker = wrapper.user().get(InventoryRequestTracker.class);
             ItemStackResponseInfo[] infoList = wrapper.read(ExperimentalBedrockTypes.ITEM_STACK_RESPONSES);
 
             // Resync the inventory content based on the response
             for (ItemStackResponseInfo info : infoList) {
+
+                InventoryRequestStorage requestInfo = inventoryRequestTracker.getRequest(info.requestId());
+                if (requestInfo == null) {
+                    ViaBedrock.getPlatform().getLogger().warning("Received item stack response for unknown request ID: " + info.requestId());
+                    continue;
+                }
+                inventoryRequestTracker.removeRequest(info.requestId());
+
                 if (info.result() != ItemStackNetResult.Success) {
                     ViaBedrock.getPlatform().getLogger().warning("Received unsuccessful item stack response: " + info.result());
-                    continue; // TODO: Handle
+                    for (Container container : requestInfo.prevContainers()) {
+                        PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);  // Resync the container content on Java side
+                    }
+                    continue;
                 }
 
-                List<ItemStackResponseContainerInfo> containers = info.containers();
-                for (ItemStackResponseContainerInfo containerInfo : containers) {
-                    // TODO: We only get given the FullContainerName, we need to match it to a container ID
-                    //Container container = null;
-                    //for (ItemStackResponseSlotInfo slotInfo : containerInfo.slots()) {
-                        //container.setItem(slotInfo.slot(), new BedrockItem(slotInfo.itemId(), (short) 0, slotInfo.amount()));
+                //TODO: Check that the items match the request, if not resync the container
+                /*for (ItemStackResponseContainerInfo containerInfo : info.containers()) {
+                    boolean mismatched = false;
+                    for (ItemStackResponseSlotInfo slotInfo : containerInfo.slots()) {
+
+                        if (containerInfo.containerName() != container.getFullContainerName(slotInfo.slot())) {
+                            ViaBedrock.getPlatform().getLogger().warning("Received item stack response with mismatched container name: " + containerInfo.containerName() + " != " + container.getFullContainerName(slotInfo.slot()));
+                            continue;
+                        } else if (slotInfo.slot() < 0 || slotInfo.slot() >= container.getItems().length) {
+                            ViaBedrock.getPlatform().getLogger().warning("Received item stack response with out of bounds slot: " + slotInfo.slot());
+                            continue;
+                        }
+
+                        // Check if the item matches the expected item
+                        BedrockItem expectedItem = container.getItem(slotInfo.slot());
+                        if (expectedItem.netId() != slotInfo.itemId() || expectedItem.amount() != slotInfo.amount()) {
+                            ViaBedrock.getPlatform().getLogger().warning("Received item stack response with mismatch: expected " + expectedItem + " but got itemId=" + slotInfo.itemId() + ", amount=" + slotInfo.amount());
+                            container.setItem(slotInfo.slot(), new BedrockItem(slotInfo.itemId(), (short) 0, slotInfo.amount()));
+                            mismatched = true;
+                        }
                         // TODO:  Handle custom name and durability
-                    //}
+                    }
 
-                    //PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);  // Update the container content on Java side
-                }
+                    if (mismatched) {
+                        PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);  // Resync the container content on Java side
+                    }
+                }*/
             }
         });
     }
@@ -329,5 +360,6 @@ public class ExperimentalFeatures {
 
     public static void registerStorages(final UserConnection user) {
         user.put(new InventoryTransactionRewriter(user));
+        user.put(new InventoryRequestTracker(user));
     }
 }
