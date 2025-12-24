@@ -22,4 +22,4 @@ import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
 
 import java.util.List;
 
-public record InventoryRequestStorage(ItemStackRequestInfo requestInfo, int javaRevision, List<Container> prevContainers) { }
+public record InventoryRequestStorage(ItemStackRequestInfo requestInfo, int javaRevision, Container prevCursorContainer, List<Container> prevContainers) { }

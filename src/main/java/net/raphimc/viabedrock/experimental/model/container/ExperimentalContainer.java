@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.experimental.model.container;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
@@ -30,7 +29,6 @@ import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
-import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 import java.util.ArrayList;
@@ -48,13 +46,14 @@ public class ExperimentalContainer {
          *  a better solution would be to store the specific changes made in the request. From my testing this doesnt seem to happen though
         */
         List<Container> prevContainers = new ArrayList<>(); // Store previous state of all involved containers to be able to rollback if needed
-        prevContainers.add(container); // Store previous state of the container
-        prevContainers.add(inventoryTracker.getCursorContainer()); // Store previous state of the cursor TODO: might not be possible to rollback cursor on java
+        prevContainers.add(container.copy()); // Store previous state of the container
         // TODO: because bedrock is cringe, when doing shift clicks we need to add the container we are moving items to as well (e.g. Armour container)
+
+        Container prevCursorContainer = inventoryTracker.getHudContainer().copy(); // Store previous state of the cursor item
 
         ItemStackRequestAction itemAction = switch (action) {
             case PICKUP -> {
-                BedrockItem cursorItem = inventoryTracker.getCursorContainer().getCursorItem();
+                BedrockItem cursorItem = inventoryTracker.getHudContainer().getItem(0);
 
                 if (slot == -999) {
                     // Drop item
@@ -70,11 +69,11 @@ public class ExperimentalContainer {
                     } else {
                         finalCursorItem.setAmount(cursorItem.amount() - amountToDrop);
                     }
-                    inventoryTracker.getCursorContainer().setItem(finalCursorItem);
+                    inventoryTracker.getHudContainer().setItem(0, finalCursorItem);
 
                     yield new ItemStackRequestAction.DropAction(
                             amountToDrop,
-                            new ItemStackRequestSlotInfo(inventoryTracker.getCursorContainer().getFullContainerName(), (byte) 0, cursorItem.netId()),
+                            new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, cursorItem.netId()),
                             false
                     );
                 } else if (slot < 0 || slot >= container.getItems().length) {
@@ -93,7 +92,7 @@ public class ExperimentalContainer {
                     // Take item
                     int amountToTake = button == 0 ? item.amount() : (item.amount() + 1) / 2;
 
-                    inventoryTracker.getCursorContainer().setItem(item.copy());
+                    inventoryTracker.getHudContainer().setItem(0, item.copy());
                     BedrockItem finalContainerItem = item.copy();
                     if (amountToTake >= item.amount()) {
                         finalContainerItem = BedrockItem.empty();
@@ -105,7 +104,7 @@ public class ExperimentalContainer {
                     yield new ItemStackRequestAction.TakeAction(
                             amountToTake,
                             new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId()),
-                            new ItemStackRequestSlotInfo(inventoryTracker.getCursorContainer().getFullContainerName(), (byte) 0, 0)
+                            new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, 0)
                     );
                 } else {
                     if (item.isEmpty() || (!item.isDifferent(cursorItem) && item.amount() < 64)) { // TODO: Mostly accounts for stackability but not fully (shouldnt be an issue with server side inventory)
@@ -128,11 +127,11 @@ public class ExperimentalContainer {
                         } else {
                             finalCursorItem.setAmount(cursorItem.amount() - amountToPlace);
                         }
-                        inventoryTracker.getCursorContainer().setItem(finalCursorItem);
+                        inventoryTracker.getHudContainer().setItem(0, finalCursorItem);
 
                         yield new ItemStackRequestAction.PlaceAction(
                                 amountToPlace,
-                                new ItemStackRequestSlotInfo(inventoryTracker.getCursorContainer().getFullContainerName(), (byte) 0, cursorItem.netId()),
+                                new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, cursorItem.netId()),
                                 new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, 0)
                         );
                     } else {
@@ -142,16 +141,21 @@ public class ExperimentalContainer {
                         BedrockItem itemCopy = item.copy();
 
                         container.setItem(slot, cursorCopy);
-                        inventoryTracker.getCursorContainer().setItem(itemCopy);
+                        inventoryTracker.getHudContainer().setItem(0, itemCopy);
 
                         yield new ItemStackRequestAction.SwapAction(
-                                new ItemStackRequestSlotInfo(inventoryTracker.getCursorContainer().getFullContainerName(), (byte) 0, cursorItem.netId()),
+                                new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, cursorItem.netId()),
                                 new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId())
                         );
                     }
                 }
             }
             case THROW -> {
+                if (slot < 0 || slot >= container.getItems().length) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle throw for " + container.type() + ", but slot was out of bounds (" + slot + ")");
+                    yield null;
+                }
+
                 BedrockItem item = container.getItem(slot);
 
                 if (item.isEmpty()) {
@@ -190,7 +194,7 @@ public class ExperimentalContainer {
                 TextProcessingEventOrigin.unknown
         );
 
-        inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevContainers)); // Store the request to track it later
+        inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevCursorContainer, prevContainers)); // Store the request to track it later
         ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[] {request});
 
         return true;

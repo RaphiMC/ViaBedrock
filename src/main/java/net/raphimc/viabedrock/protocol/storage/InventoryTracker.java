@@ -51,7 +51,6 @@ public class InventoryTracker extends StoredObject {
     private final OffhandContainer offhandContainer = new OffhandContainer(this.user());
     private final ArmorContainer armorContainer = new ArmorContainer(this.user());
     private final HudContainer hudContainer = new HudContainer(this.user());
-    private final CursorContainer cursorContainer = new CursorContainer(this.user());
     private final Map<FullContainerName, BundleContainer> dynamicContainerRegistry = new HashMap<>();
 
     private Container currentContainer = null;
@@ -67,7 +66,6 @@ public class InventoryTracker extends StoredObject {
         if (containerId == this.offhandContainer.containerId()) return this.offhandContainer;
         if (containerId == this.armorContainer.containerId()) return this.armorContainer;
         if (containerId == this.hudContainer.containerId()) return this.hudContainer;
-        if (containerId == this.cursorContainer.containerId()) return this.cursorContainer;
         if (containerId == ContainerID.CONTAINER_ID_REGISTRY.getValue() && containerName.name() == ContainerEnumName.DynamicContainer) {
             final String itemTag = BedrockProtocol.MAPPINGS.getBedrockItemTags().getOrDefault(this.user().get(ItemRewriter.class).getItems().inverse().get(storageItem.identifier()), "");
             if (!storageItem.isEmpty() && itemTag.equals("bundle")) {
@@ -111,6 +109,7 @@ public class InventoryTracker extends StoredObject {
         if (serverInitiated) {
             PacketFactory.sendBedrockContainerClose(this.user(), this.currentContainer.containerId(), ContainerType.NONE);
         }
+        this.hudContainer.setItem(0, BedrockItem.empty()); // TODO: Drop cursor item if needed
         this.currentContainer = null;
         this.pendingCloseContainer = null;
     }
@@ -205,10 +204,6 @@ public class InventoryTracker extends StoredObject {
         this.markPendingClose(this.currentContainer);
         PacketFactory.sendJavaContainerClose(this.user(), this.pendingCloseContainer.javaContainerId());
         PacketFactory.sendBedrockContainerClose(this.user(), this.pendingCloseContainer.containerId(), ContainerType.NONE);
-    }
-
-    public CursorContainer getCursorContainer() {
-        return this.cursorContainer;
     }
 
 }

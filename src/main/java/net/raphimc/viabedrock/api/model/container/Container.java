@@ -169,4 +169,14 @@ public abstract class Container {
     protected void onSlotChanged(final int slot, final BedrockItem oldItem, final BedrockItem newItem) {
     }
 
+    public Container copy() { // TODO: This probably isnt the best way to do this
+        BedrockItem[] itemsCopy = Arrays.copyOf(this.items, this.items.length);
+        return new Container(this.user, this.containerId, this.type, this.title, this.position, itemsCopy, this.validBlockTags) {
+            @Override
+            public FullContainerName getFullContainerName(int slot) {
+                return Container.this.getFullContainerName(slot);
+            }
+        };
+    }
+
 }
