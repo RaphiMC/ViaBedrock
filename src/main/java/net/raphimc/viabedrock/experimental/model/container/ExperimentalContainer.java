@@ -74,7 +74,7 @@ public class ExperimentalContainer {
 
                     yield new ItemStackRequestAction.DropAction(
                             amountToDrop,
-                            new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, cursorItem.netId()),
+                            new ItemStackRequestSlotInfo(inventoryTracker.getCursorContainer().getFullContainerName(), (byte) 0, cursorItem.netId()),
                             false
                     );
                 } else if (slot < 0 || slot >= container.getItems().length) {
@@ -100,7 +100,7 @@ public class ExperimentalContainer {
                     yield new ItemStackRequestAction.TakeAction(
                             amountToTake,
                             new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId()),
-                            new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, 0)
+                            new ItemStackRequestSlotInfo(inventoryTracker.getCursorContainer().getFullContainerName(), (byte) 0, 0)
                     );
                 } else {
                     if (item.isEmpty() || (!item.isDifferent(cursorItem) && item.amount() < 64)) { // TODO: Mostly accounts for stackability but not fully (shouldnt be an issue with server side inventory)
@@ -127,7 +127,7 @@ public class ExperimentalContainer {
 
                         yield new ItemStackRequestAction.PlaceAction(
                                 amountToPlace,
-                                new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, cursorItem.netId()),
+                                new ItemStackRequestSlotInfo(inventoryTracker.getCursorContainer().getFullContainerName(), (byte) 0, cursorItem.netId()),
                                 new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, 0)
                         );
                     } else {
@@ -140,7 +140,7 @@ public class ExperimentalContainer {
                         inventoryTracker.getCursorContainer().setItem(itemCopy);
 
                         yield new ItemStackRequestAction.SwapAction(
-                                new ItemStackRequestSlotInfo(FullContainerName.CURSOR, (byte) 0, cursorItem.netId()),
+                                new ItemStackRequestSlotInfo(inventoryTracker.getCursorContainer().getFullContainerName(), (byte) 0, cursorItem.netId()),
                                 new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId())
                         );
                     }

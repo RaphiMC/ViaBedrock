@@ -30,6 +30,10 @@ public class CursorContainer extends InventorySubContainer {
         super(user, (byte) ContainerID.CONTAINER_ID_NONE.getValue(), ContainerType.NONE, 1);
     }
 
+    public FullContainerName getFullContainerName() {
+        return this.getFullContainerName(0);
+    }
+
     @Override
     public FullContainerName getFullContainerName(int slot) {
         return new FullContainerName(ContainerEnumName.CursorContainer, null);

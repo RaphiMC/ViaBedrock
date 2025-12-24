@@ -27,8 +27,6 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerActionType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.List;
-
 public class ExperimentalPacketFactory {
 
     public static void sendBedrockPlayerAction(final UserConnection user, long entityId, PlayerActionType actionType, BlockPosition position, BlockPosition resultPosition, int face) {
