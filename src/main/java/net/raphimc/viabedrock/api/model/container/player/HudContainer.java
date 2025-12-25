@@ -32,10 +32,14 @@ public class HudContainer extends InventoryRedirectContainer {
 
     @Override
     public FullContainerName getFullContainerName(int slot) {
+        // TODO: Crafting output slot
         if (slot == 0) {
             return new FullContainerName(ContainerEnumName.CursorContainer, null);
+        } else if (slot >= 28 && slot <= 31) {
+            return new FullContainerName(ContainerEnumName.CraftingInputContainer, null);
+        } else {
+            return new FullContainerName(ContainerEnumName.CursorContainer, null); // TODO: This should not happen
         }
-        return new FullContainerName(ContainerEnumName.CursorContainer, null); // TODO: This is wrong
     }
 
     @Override

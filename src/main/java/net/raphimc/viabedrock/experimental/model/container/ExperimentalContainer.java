@@ -152,6 +152,48 @@ public class ExperimentalContainer {
                     }
                 }
             }
+            case SWAP -> {
+                if (button < 0 || button > 8) {
+                    // TODO: Handle offhand
+                    yield null;
+                }
+
+                Container hotbarContainer = inventoryTracker.getInventoryContainer();
+
+                if (slot < 0 || slot >= container.getItems().length) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle swap for " + container.type() + ", but slot was out of bounds (" + slot + ")");
+                    yield null;
+                }
+
+                BedrockItem item = container.getItem(slot).copy();
+                BedrockItem hotbarItem = hotbarContainer.getItem(button).copy();
+
+                if (item.isEmpty() && hotbarItem.isEmpty()) {
+                    yield null;
+                }
+
+                container.setItem(slot, hotbarItem);
+                hotbarContainer.setItem(button, item);
+
+                if (hotbarItem.isEmpty()) {
+                    yield new ItemStackRequestAction.PlaceAction(
+                            item.amount(),
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId()),
+                            new ItemStackRequestSlotInfo(hotbarContainer.getFullContainerName(button), button, 0)
+                    );
+                } else if (item.isEmpty()) {
+                    yield new ItemStackRequestAction.PlaceAction(
+                            hotbarItem.amount(),
+                            new ItemStackRequestSlotInfo(hotbarContainer.getFullContainerName(button), button, hotbarItem.netId()),
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, 0)
+                    );
+                } else {
+                    yield new ItemStackRequestAction.SwapAction(
+                            new ItemStackRequestSlotInfo(hotbarContainer.getFullContainerName(button), (byte) button, hotbarItem.netId()),
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId())
+                    );
+                }
+            }
             case THROW -> {
                 if (slot < 0 || slot >= container.getItems().length) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle throw for " + container.type() + ", but slot was out of bounds (" + slot + ")");

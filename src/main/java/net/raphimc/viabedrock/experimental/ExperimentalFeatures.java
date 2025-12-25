@@ -23,6 +23,7 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
@@ -49,6 +50,7 @@ import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -318,6 +320,7 @@ public class ExperimentalFeatures {
 
                 if (info.result() != ItemStackNetResult.Success) {
                     ViaBedrock.getPlatform().getLogger().warning("Received unsuccessful item stack response: " + info.result());
+                    inventoryTracker.getHudContainer().setItems(requestInfo.prevCursorContainer().getItems().clone());
                     for (Container container : requestInfo.prevContainers()) {
                         Container newContainer = inventoryTracker.getContainerClientbound(container.containerId(), container.getFullContainerName(0), null);
                         newContainer.setItems(container.getItems().clone());
@@ -354,6 +357,15 @@ public class ExperimentalFeatures {
                     }
                 }*/
             }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_SET_DATA, ClientboundPackets1_21_11.CONTAINER_SET_DATA, wrapper -> {
+            byte containerId = wrapper.read(Types.BYTE);
+            int id = wrapper.read(BedrockTypes.VAR_INT);
+            int value = wrapper.read(BedrockTypes.VAR_INT);
+
+            // TODO: Container Screens need implementing
+            wrapper.cancel();
+            ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet: containerId=" + containerId + ", id=" + id + ", value=" + value);
         });
     }
 

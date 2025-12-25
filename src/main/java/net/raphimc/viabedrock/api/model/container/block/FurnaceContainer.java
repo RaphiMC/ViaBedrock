@@ -15,24 +15,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container;
+package net.raphimc.viabedrock.api.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public class ChestContainer extends Container {
+import java.util.logging.Level;
 
-    public ChestContainer(final UserConnection user, final byte containerId, final TextComponent title, final BlockPosition position, final int size) {
-        super(user, containerId, ContainerType.CONTAINER, title, position, size, "chest", "trapped_chest");
+public class FurnaceContainer extends Container {
+
+    public FurnaceContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
+        super(user, containerId, ContainerType.FURNACE, title, position, 3, "furnace");
+    }
+
+    public FurnaceContainer(UserConnection user, byte containerId, ContainerType type, TextComponent title, BlockPosition position, String... validBlockTags) {
+        super(user, containerId, type, title, position, 3, validBlockTags);
     }
 
     @Override
     public FullContainerName getFullContainerName(int slot) {
-        return new FullContainerName(ContainerEnumName.LevelEntityContainer, null);
+        return switch (slot) {
+            case 0 -> new FullContainerName(ContainerEnumName.FurnaceIngredientContainer, null);
+            case 1 -> new FullContainerName(ContainerEnumName.FurnaceFuelContainer, null);
+            case 2 -> new FullContainerName(ContainerEnumName.FurnaceResultContainer, null);
+            default -> {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid slot " + slot + " for furnace container");
+                yield new FullContainerName(ContainerEnumName.LevelEntityContainer, null);
+            }
+        };
     }
+
 }
