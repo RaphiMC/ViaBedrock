@@ -224,7 +224,7 @@ public class ExperimentalContainer {
                         // Try to move the item to the container
                         int remaining = item.amount();
                         int emptySlot = -1;
-                        // TODO: Check hotbar first
+                        // TODO: Prioritize stacking over empty slots
                         for (int i = 0; i < container.getItems().length; i++) {
                             BedrockItem containerItem = container.getItem(i);
                             if (containerItem.isEmpty()) {
@@ -273,6 +273,8 @@ public class ExperimentalContainer {
                     }
 
                     // Try to move the item to the inventory
+                    // TODO: Check hotbar first
+                    // TODO: Prioritize stacking over empty slots
                     int remaining = item.amount();
                     int emptySlot = -1;
                     for (int i = 0; i < inventoryContainer.getItems().length; i++) {
