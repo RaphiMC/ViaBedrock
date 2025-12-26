@@ -379,30 +379,13 @@ public class ExperimentalFeatures {
                 return;
             }
 
-            short javaId = -1;
-            if (container.type() == ContainerType.FURNACE || container.type() == ContainerType.BLAST_FURNACE || container.type() == ContainerType.SMOKER) {
-                javaId = switch (id) {
-                    case 0 -> 2; // Progress arrow
-                    case 1 -> 0; // Fuel progress
-                    case 2 -> 1; // Max fuel progress
-                    case 3 -> 3; // Max progress arrow
-                    default -> {
-                        ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet with unknown id: containerId=" + containerId + ", id=" + id + ", value=" + value);
-                        yield -1; // Unknown
-                    }
-                };
-                 if (javaId == 3) {
-                    //TODO: This doesnt seem to be sent by bedrock except once at the start of opening the furnace
-                    value = 200; // Java furnace progress max is always 200 ticks (Bedrock seems to always send 0 here)
-                }
-            } else {
-                ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet for unsupported container type: " + container.type());
-            }
-
+            short javaId = container.translateContainerData(id);
             if (javaId == -1) {
+                ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet with unknown id: containerId=" + containerId + ", id=" + id + ", value=" + value);
                 wrapper.cancel();
                 return;
             }
+
             wrapper.write(Types.VAR_INT, windowId);
             wrapper.write(Types.SHORT, javaId);
             wrapper.write(Types.SHORT, (short) value);

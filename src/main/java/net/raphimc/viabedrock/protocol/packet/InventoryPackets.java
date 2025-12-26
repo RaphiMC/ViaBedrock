@@ -56,11 +56,8 @@ import net.lenni0451.mcstructs_bedrock.forms.types.ModalForm;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTextUtils;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
-import net.raphimc.viabedrock.api.model.container.block.BlastFurnaceContainer;
-import net.raphimc.viabedrock.api.model.container.block.ChestContainer;
+import net.raphimc.viabedrock.api.model.container.block.*;
 import net.raphimc.viabedrock.api.model.container.Container;
-import net.raphimc.viabedrock.api.model.container.block.FurnaceContainer;
-import net.raphimc.viabedrock.api.model.container.block.SmokerContainer;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
@@ -131,6 +128,7 @@ public class InventoryPackets {
                 case FURNACE -> container = new FurnaceContainer(wrapper.user(), containerId, title, position);
                 case BLAST_FURNACE -> container = new BlastFurnaceContainer(wrapper.user(), containerId, title, position);
                 case SMOKER -> container = new SmokerContainer(wrapper.user(), containerId, title, position);
+                case BREWING_STAND -> container = new BrewingStandContainer(wrapper.user(), containerId, title, position);
                 case NONE, CAULDRON, JUKEBOX, ARMOR, HAND, HUD, DECORATED_POT -> { // Bedrock client can't open these containers
                     wrapper.cancel();
                     return;

@@ -51,4 +51,20 @@ public class FurnaceContainer extends Container {
         };
     }
 
+    @Override
+    public short translateContainerData(int containerData) {
+        /*if (javaId == 3) { // TODO: Handle this properly
+            //TODO: This doesnt seem to be sent by bedrock except once at the start of opening the furnace
+            value = 200; // Java furnace progress max is always 200 ticks (Bedrock seems to always send 0 here)
+        }*/
+
+        return switch (containerData) {
+            case 0 -> 2; // Progress arrow
+            case 1 -> 0; // Fuel progress
+            case 2 -> 1; // Max fuel progress
+            case 3 -> 3; // Max progress arrow
+            default -> -1; // Unknown
+        };
+    }
+
 }

@@ -179,4 +179,8 @@ public abstract class Container {
         };
     }
 
+    public short translateContainerData(int containerData) {
+        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "translateContainerData not implemented for container type: " + this.type);
+        return -1;
+    }
 }

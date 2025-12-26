@@ -205,7 +205,7 @@ public class ExperimentalContainer {
             case QUICK_MOVE -> {
                 // TODO: VERRRY EXPERIMENTAL
                 // TODO: Inventory -> Hotbar/Armor/Offhand
-                // TODO: Container Limited Slots (e.g. Furnace Fuel/Input/Output)
+                // TODO: Container Limited Slots (e.g. Furnace Fuel/Input/Output) Note: this might not be needed as the server will reject invalid moves anyway
                 Container inventoryContainer = inventoryTracker.getInventoryContainer();
                 prevContainers.add(inventoryContainer.copy()); // Store previous state of the inventory container
                 if (slot < 0 || slot >= container.getItems().length) {
