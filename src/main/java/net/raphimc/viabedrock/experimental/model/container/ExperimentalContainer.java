@@ -202,6 +202,119 @@ public class ExperimentalContainer {
                     );
                 }
             }
+            case QUICK_MOVE -> {
+                // TODO: VERRRY EXPERIMENTAL
+                // TODO: Inventory -> Hotbar/Armor/Offhand
+                // TODO: Container Limited Slots (e.g. Furnace Fuel/Input/Output)
+                Container inventoryContainer = inventoryTracker.getInventoryContainer();
+                prevContainers.add(inventoryContainer.copy()); // Store previous state of the inventory container
+                if (slot < 0 || slot >= container.getItems().length) {
+                    int invSlot = inventoryContainer.bedrockSlot(javaSlot - container.getItems().length + 9); // Map to inventory slot
+                    if (invSlot < 0 || invSlot >= inventoryContainer.getItems().length) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle quick move for " + container.type() + ", but slot was out of bounds (" + slot + ")");
+                        yield null;
+                    } else {
+                        // Moving from inventory to container
+
+                        BedrockItem item = inventoryContainer.getItem(invSlot).copy();
+                        if (item.isEmpty()) {
+                            yield null;
+                        }
+
+                        // Try to move the item to the container
+                        int remaining = item.amount();
+                        int emptySlot = -1;
+                        // TODO: Check hotbar first
+                        for (int i = 0; i < container.getItems().length; i++) {
+                            BedrockItem containerItem = container.getItem(i);
+                            if (containerItem.isEmpty()) {
+                                // Empty slot, move item here
+                                BedrockItem toMove = item.copy();
+                                toMove.setAmount(remaining);
+                                container.setItem(i, toMove);
+                                emptySlot = i;
+                                remaining = 0;
+                                break;
+                            } else if (!containerItem.isDifferent(item) && containerItem.amount() < 64) {
+                                // TODO: This needs proper implementation
+                                // Same item, try to stack
+                                int space = 64 - containerItem.amount();
+                                int toTransfer = Math.min(space, remaining);
+                                containerItem.setAmount(containerItem.amount() + toTransfer);
+                                container.setItem(i, containerItem);
+                                remaining -= toTransfer;
+                                if (remaining <= 0) {
+                                    break;
+                                } else {
+                                    // Add a new Place Action to the list for the partial transfer
+                                }
+                            }
+                        }
+
+                        BedrockItem finalInventoryItem = item.copy();
+                        if (remaining <= 0) {
+                            finalInventoryItem = BedrockItem.empty();
+                        } else {
+                            finalInventoryItem.setAmount(remaining);
+                        }
+                        inventoryContainer.setItem(invSlot, finalInventoryItem);
+                        yield new ItemStackRequestAction.PlaceAction(
+                                item.amount() - remaining,
+                                new ItemStackRequestSlotInfo(inventoryContainer.getFullContainerName(invSlot), (byte) invSlot, item.netId()),
+                                new ItemStackRequestSlotInfo(container.getFullContainerName(emptySlot), (byte) emptySlot, 0)
+                        );
+                    }
+                } else {
+                    // Moving from container to inventory
+                    BedrockItem item = container.getItem(slot);
+
+                    if (item.isEmpty()) {
+                        yield null;
+                    }
+
+                    // Try to move the item to the inventory
+                    int remaining = item.amount();
+                    int emptySlot = -1;
+                    for (int i = 0; i < inventoryContainer.getItems().length; i++) {
+                        BedrockItem invItem = inventoryContainer.getItem(i);
+                        if (invItem.isEmpty()) {
+                            // Empty slot, move item here
+                            BedrockItem toMove = item.copy();
+                            toMove.setAmount(remaining);
+                            inventoryContainer.setItem(i, toMove);
+                            emptySlot = i;
+                            remaining = 0;
+                            break;
+                        } else if (!invItem.isDifferent(item) && invItem.amount() < 64) {
+                            // TODO: This needs proper implementation
+                            // Same item, try to stack
+                            int space = 64 - invItem.amount();
+                            int toTransfer = Math.min(space, remaining);
+                            invItem.setAmount(invItem.amount() + toTransfer);
+                            inventoryContainer.setItem(i, invItem);
+                            remaining -= toTransfer;
+                            if (remaining <= 0) {
+                                break;
+                            } else {
+                                // Add a new Place Action to the list for the partial transfer
+                            }
+                        }
+                    }
+
+                    BedrockItem finalContainerItem = item.copy();
+                    if (remaining <= 0) {
+                        finalContainerItem = BedrockItem.empty();
+                    } else {
+                        finalContainerItem.setAmount(remaining);
+                    }
+                    container.setItem(slot, finalContainerItem);
+                    yield new ItemStackRequestAction.PlaceAction(
+                            item.amount() - remaining,
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId()),
+                            new ItemStackRequestSlotInfo(inventoryContainer.getFullContainerName(emptySlot), (byte) emptySlot, 0)
+                    );
+                }
+            }
             case THROW -> {
                 if (slot < 0 || slot >= container.getItems().length) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle throw for " + container.type() + ", but slot was out of bounds (" + slot + ")");
