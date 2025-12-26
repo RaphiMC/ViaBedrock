@@ -363,9 +363,49 @@ public class ExperimentalFeatures {
             int id = wrapper.read(BedrockTypes.VAR_INT);
             int value = wrapper.read(BedrockTypes.VAR_INT);
 
-            // TODO: Container Screens need implementing
-            wrapper.cancel();
-            ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet: containerId=" + containerId + ", id=" + id + ", value=" + value);
+            Container container = wrapper.user().get(InventoryTracker.class).getContainerClientbound(containerId, null, null);
+            if (container == null) {
+                // TODO: This throws every time we open a container
+                // Unknown container, ignore
+                wrapper.cancel();
+                ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet for unknown container: containerId=" + containerId + ", id=" + id + ", value=" + value);
+                return;
+            }
+            int windowId = container.javaContainerId();
+            if (windowId == -1) {
+                // Unknown container, ignore
+                wrapper.cancel();
+                ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet for unknown container: containerId=" + containerId + ", id=" + id + ", value=" + value);
+                return;
+            }
+
+            short javaId = -1;
+            if (container.type() == ContainerType.FURNACE || container.type() == ContainerType.BLAST_FURNACE || container.type() == ContainerType.SMOKER) {
+                javaId = switch (id) {
+                    case 0 -> 2; // Progress arrow
+                    case 1 -> 0; // Fuel progress
+                    case 2 -> 1; // Max fuel progress
+                    case 3 -> 3; // Max progress arrow
+                    default -> {
+                        ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet with unknown id: containerId=" + containerId + ", id=" + id + ", value=" + value);
+                        yield -1; // Unknown
+                    }
+                };
+                 if (javaId == 3) {
+                    //TODO: This doesnt seem to be sent by bedrock except once at the start of opening the furnace
+                    value = 200; // Java furnace progress max is always 200 ticks (Bedrock seems to always send 0 here)
+                }
+            } else {
+                ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet for unsupported container type: " + container.type());
+            }
+
+            if (javaId == -1) {
+                wrapper.cancel();
+                return;
+            }
+            wrapper.write(Types.VAR_INT, windowId);
+            wrapper.write(Types.SHORT, javaId);
+            wrapper.write(Types.SHORT, (short) value);
         });
     }
 
