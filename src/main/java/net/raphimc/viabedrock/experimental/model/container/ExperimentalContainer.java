@@ -37,7 +37,7 @@ import java.util.logging.Level;
 
 public class ExperimentalContainer {
 
-    public static boolean handleClick(final UserConnection user, final Container container, final int revision, final short javaSlot, final byte button, final ClickType action) {
+    public static boolean handleClick(final UserConnection user, Container container, final int revision, final short javaSlot, final byte button, final ClickType action) {
         InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
         InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
         int slot = container.bedrockSlot(javaSlot);
@@ -77,9 +77,17 @@ public class ExperimentalContainer {
                             false
                     );
                 } else if (slot < 0 || slot >= container.getItems().length) {
-                    // TODO: Doesnt handle the Chest + Inventory combo properly, should probably be fixed in the bedrockSlot method
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle click for " + container.type() + ", but slot was out of bounds (" + slot + ")");
-                    yield null;
+                    Container inventoryContainer = inventoryTracker.getInventoryContainer();
+                    int invSlot = inventoryContainer.bedrockSlot(javaSlot - container.getItems().length + 9); // Map to inventory slot
+                    if (invSlot < 0 || invSlot >= inventoryContainer.getItems().length) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle click for " + container.type() + ", but slot was out of bounds (" + slot + ")");
+                        yield null;
+                    } else {
+                        slot = invSlot;
+                        container = inventoryContainer;
+
+                        prevContainers.add(container.copy()); // Store previous state of the inventory container
+                    }
                 }
 
                 BedrockItem item = container.getItem(slot);
