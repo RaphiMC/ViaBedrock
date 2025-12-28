@@ -26,10 +26,7 @@ import net.lenni0451.mcstructs_bedrock.forms.Form;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.dynamic.BundleContainer;
-import net.raphimc.viabedrock.api.model.container.player.ArmorContainer;
-import net.raphimc.viabedrock.api.model.container.player.HudContainer;
-import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
-import net.raphimc.viabedrock.api.model.container.player.OffhandContainer;
+import net.raphimc.viabedrock.api.model.container.player.*;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -112,6 +109,7 @@ public class InventoryTracker extends StoredObject {
         if (serverInitiated) {
             PacketFactory.sendBedrockContainerClose(this.user(), this.currentContainer.containerId(), ContainerType.NONE);
         }
+        this.hudContainer.setItem(0, BedrockItem.empty()); // TODO: Drop cursor item if needed
         this.currentContainer = null;
         this.pendingCloseContainer = null;
     }
@@ -151,6 +149,8 @@ public class InventoryTracker extends StoredObject {
                 this.forceCloseCurrentContainer();
             }
         }
+
+        // TODO: Drop Cursor item if no container is open
     }
 
     public boolean isContainerOpen() {

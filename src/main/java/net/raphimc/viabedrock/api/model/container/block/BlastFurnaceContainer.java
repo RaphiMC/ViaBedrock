@@ -15,33 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.player;
+package net.raphimc.viabedrock.api.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public class ArmorContainer extends InventorySubContainer {
+public class BlastFurnaceContainer extends FurnaceContainer {
 
-    public ArmorContainer(final UserConnection user) {
-        super(user, (byte) ContainerID.CONTAINER_ID_ARMOR.getValue(), ContainerType.ARMOR, 4);
+    public BlastFurnaceContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
+        super(user, containerId, ContainerType.BLAST_FURNACE, title, position, "blast_furnace");
     }
 
     @Override
     public FullContainerName getFullContainerName(int slot) {
-        return new FullContainerName(ContainerEnumName.ArmorContainer, null);
-    }
-
-    @Override
-    public int javaSlot(final int slot) {
-        return 5 + slot;
-    }
-
-    @Override
-    public int bedrockSlot(final int slot) {
-        return slot - 5;
+        if (slot == 0) {
+            return new FullContainerName(ContainerEnumName.BlastFurnaceIngredientContainer, null);
+        } else {
+            return super.getFullContainerName(slot);
+        }
     }
 
 }

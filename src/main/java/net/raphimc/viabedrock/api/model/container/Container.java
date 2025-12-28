@@ -22,12 +22,22 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemStackRequestActionType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
+import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -61,7 +71,12 @@ public abstract class Container {
         this.validBlockTags = validBlockTags;
     }
 
-    public boolean handleClick(final int revision, final short slot, final byte button, final ClickType action) {
+    public abstract FullContainerName getFullContainerName(int slot);
+
+    public boolean handleClick(final int revision, final short javaSlot, final byte button, final ClickType action) {
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            return ExperimentalContainer.handleClick(this.user, this, revision, javaSlot, button, action);
+        }
         return false;
     }
 
@@ -115,6 +130,10 @@ public abstract class Container {
         return slot;
     }
 
+    public int bedrockSlot(final int javaSlot) {
+        return javaSlot;
+    }
+
     public byte javaContainerId() {
         return this.containerId();
     }
@@ -150,4 +169,18 @@ public abstract class Container {
     protected void onSlotChanged(final int slot, final BedrockItem oldItem, final BedrockItem newItem) {
     }
 
+    public Container copy() { // TODO: This probably isnt the best way to do this
+        BedrockItem[] itemsCopy = Arrays.copyOf(this.items, this.items.length);
+        return new Container(this.user, this.containerId, this.type, this.title, this.position, itemsCopy, this.validBlockTags) {
+            @Override
+            public FullContainerName getFullContainerName(int slot) {
+                return Container.this.getFullContainerName(slot);
+            }
+        };
+    }
+
+    public short translateContainerData(int containerData) {
+        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "translateContainerData not implemented for container type: " + this.type);
+        return -1;
+    }
 }

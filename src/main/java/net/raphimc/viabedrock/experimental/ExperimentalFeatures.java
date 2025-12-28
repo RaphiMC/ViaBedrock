@@ -23,17 +23,20 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
-import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
-import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
-import net.raphimc.viabedrock.experimental.model.inventory.InventoryTransactionData;
+import net.raphimc.viabedrock.experimental.model.inventory.*;
 import net.raphimc.viabedrock.experimental.rewriter.InventoryTransactionRewriter;
+import net.raphimc.viabedrock.experimental.storage.InventoryRequestStorage;
+import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
+import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
 import net.raphimc.viabedrock.experimental.util.ProtocolUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
@@ -42,10 +45,12 @@ import net.raphimc.viabedrock.protocol.data.enums.java.InteractionHand;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.GameMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.PlayerActionAction;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -297,7 +302,94 @@ public class ExperimentalFeatures {
                     0
             );
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.ITEM_STACK_RESPONSE, null, wrapper -> {
+            wrapper.cancel();
+            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            InventoryRequestTracker inventoryRequestTracker = wrapper.user().get(InventoryRequestTracker.class);
+            ItemStackResponseInfo[] infoList = wrapper.read(ExperimentalBedrockTypes.ITEM_STACK_RESPONSES);
 
+            // Resync the inventory content based on the response
+            for (ItemStackResponseInfo info : infoList) {
+
+                InventoryRequestStorage requestInfo = inventoryRequestTracker.getRequest(info.requestId());
+                if (requestInfo == null) {
+                    ViaBedrock.getPlatform().getLogger().warning("Received item stack response for unknown request ID: " + info.requestId());
+                    continue;
+                }
+                inventoryRequestTracker.removeRequest(info.requestId());
+
+                if (info.result() != ItemStackNetResult.Success) {
+                    ViaBedrock.getPlatform().getLogger().warning("Received unsuccessful item stack response: " + info.result());
+                    inventoryTracker.getHudContainer().setItems(requestInfo.prevCursorContainer().getItems().clone());
+                    for (Container container : requestInfo.prevContainers()) {
+                        Container newContainer = inventoryTracker.getContainerClientbound(container.containerId(), container.getFullContainerName(0), null);
+                        newContainer.setItems(container.getItems().clone());
+                        PacketFactory.sendJavaContainerSetContent(wrapper.user(), newContainer);  // Resync the container content on Java side
+                    }
+                    continue;
+                }
+
+                //TODO: Check that the items match the request, if not resync the container
+                /*for (ItemStackResponseContainerInfo containerInfo : info.containers()) {
+                    boolean mismatched = false;
+                    for (ItemStackResponseSlotInfo slotInfo : containerInfo.slots()) {
+
+                        if (containerInfo.containerName() != container.getFullContainerName(slotInfo.slot())) {
+                            ViaBedrock.getPlatform().getLogger().warning("Received item stack response with mismatched container name: " + containerInfo.containerName() + " != " + container.getFullContainerName(slotInfo.slot()));
+                            continue;
+                        } else if (slotInfo.slot() < 0 || slotInfo.slot() >= container.getItems().length) {
+                            ViaBedrock.getPlatform().getLogger().warning("Received item stack response with out of bounds slot: " + slotInfo.slot());
+                            continue;
+                        }
+
+                        // Check if the item matches the expected item
+                        BedrockItem expectedItem = container.getItem(slotInfo.slot());
+                        if (expectedItem.netId() != slotInfo.itemId() || expectedItem.amount() != slotInfo.amount()) {
+                            ViaBedrock.getPlatform().getLogger().warning("Received item stack response with mismatch: expected " + expectedItem + " but got itemId=" + slotInfo.itemId() + ", amount=" + slotInfo.amount());
+                            container.setItem(slotInfo.slot(), new BedrockItem(slotInfo.itemId(), (short) 0, slotInfo.amount()));
+                            mismatched = true;
+                        }
+                        // TODO:  Handle custom name and durability
+                    }
+
+                    if (mismatched) {
+                        PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);  // Resync the container content on Java side
+                    }
+                }*/
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_SET_DATA, ClientboundPackets1_21_11.CONTAINER_SET_DATA, wrapper -> {
+            byte containerId = wrapper.read(Types.BYTE);
+            int id = wrapper.read(BedrockTypes.VAR_INT);
+            int value = wrapper.read(BedrockTypes.VAR_INT);
+
+            Container container = wrapper.user().get(InventoryTracker.class).getContainerClientbound(containerId, null, null);
+            if (container == null) {
+                // TODO: This throws every time we open a container
+                // Unknown container, ignore
+                wrapper.cancel();
+                ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet for unknown container: containerId=" + containerId + ", id=" + id + ", value=" + value);
+                return;
+            }
+            int windowId = container.javaContainerId();
+            if (windowId == -1) {
+                // Unknown container, ignore
+                wrapper.cancel();
+                ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet for unknown container: containerId=" + containerId + ", id=" + id + ", value=" + value);
+                return;
+            }
+
+            short javaId = container.translateContainerData(id);
+            if (javaId == -1) {
+                ViaBedrock.getPlatform().getLogger().warning("Received ContainerSetData packet with unknown id: containerId=" + containerId + ", id=" + id + ", value=" + value);
+                wrapper.cancel();
+                return;
+            }
+
+            wrapper.write(Types.VAR_INT, windowId);
+            wrapper.write(Types.SHORT, javaId);
+            wrapper.write(Types.SHORT, (short) value);
+        });
     }
 
     public static void registerTasks() {
@@ -305,5 +397,6 @@ public class ExperimentalFeatures {
 
     public static void registerStorages(final UserConnection user) {
         user.put(new InventoryTransactionRewriter(user));
+        user.put(new InventoryRequestTracker(user));
     }
 }

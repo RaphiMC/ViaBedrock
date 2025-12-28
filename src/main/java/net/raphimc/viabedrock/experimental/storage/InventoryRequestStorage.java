@@ -15,17 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container;
+package net.raphimc.viabedrock.experimental.storage;
 
-import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.BlockPosition;
-import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
 
-public class ChestContainer extends Container {
+import java.util.List;
 
-    public ChestContainer(final UserConnection user, final byte containerId, final TextComponent title, final BlockPosition position, final int size) {
-        super(user, containerId, ContainerType.CONTAINER, title, position, size, "chest", "trapped_chest");
-    }
-
-}
+public record InventoryRequestStorage(ItemStackRequestInfo requestInfo, int javaRevision, Container prevCursorContainer, List<Container> prevContainers) { }

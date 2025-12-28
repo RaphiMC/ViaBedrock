@@ -40,6 +40,11 @@ public class BundleContainer extends Container {
     }
 
     @Override
+    public FullContainerName getFullContainerName(int slot) {
+        return this.containerName;
+    }
+
+    @Override
     public Item getJavaItem(final int slot) {
         final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
@@ -82,6 +87,16 @@ public class BundleContainer extends Container {
         }
 
         return holdingContainer.key().javaSlot(holdingContainer.value());
+    }
+
+    @Override
+    public int bedrockSlot(final int slot) {
+        final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
+        if (holdingContainer == null) {
+            throw new IllegalStateException("Could not find bundle in any container");
+        }
+
+        return holdingContainer.key().bedrockSlot(holdingContainer.value());
     }
 
     @Override

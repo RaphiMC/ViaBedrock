@@ -28,4 +28,12 @@ public class ExperimentalBedrockTypes {
     public static final Type<LegacySetItemSlotData[]> LEGACY_SET_ITEM_SLOT_DATA = new ArrayType<>(new LegacySetItemSlotDataType(), BedrockTypes.UNSIGNED_VAR_INT);
     public static final Type<InventorySource> INVENTORY_SOURCE = new InventorySourcePacketType();
 
+    public static final Type<ItemStackRequestInfo[]> ITEM_STACK_REQUESTS = new ArrayType<>(new ItemStackRequestType(), BedrockTypes.UNSIGNED_VAR_INT);
+    public static final Type<ItemStackRequestAction[]> ITEM_STACK_REQUEST_ACTIONS = new ArrayType<>(new ItemStackActionType(), BedrockTypes.UNSIGNED_VAR_INT);
+    public static final Type<ItemStackRequestSlotInfo> ITEM_STACK_REQUEST_SLOT = new ItemStackSlotRequestType();
+
+    public static final Type<ItemStackResponseInfo[]> ITEM_STACK_RESPONSES = new ArrayType<>(new ItemStackResponseType(), BedrockTypes.UNSIGNED_VAR_INT);
+    public static final Type<ItemStackResponseContainerInfo[]> ITEM_STACK_RESPONSE_CONTAINERS = new ArrayType<>(new ItemStackContainerResponseType(), BedrockTypes.UNSIGNED_VAR_INT);
+    public static final Type<ItemStackResponseSlotInfo[]> ITEM_STACK_RESPONSE_SLOTS = new ArrayType<>(new ItemStackSlotResponseType(), BedrockTypes.UNSIGNED_VAR_INT);
+
 }
