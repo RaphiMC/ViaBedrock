@@ -86,6 +86,7 @@ public class AnvilContainer extends Container {
                 //TODO: This is experimental code...
                 InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
                 InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
+
                 List<Container> prevContainers = new ArrayList<>();
                 prevContainers.add(this.copy());
                 prevContainers.add(inventoryTracker.getInventoryContainer().copy());
