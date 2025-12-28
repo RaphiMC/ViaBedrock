@@ -50,6 +50,7 @@ import net.raphimc.viabedrock.protocol.data.enums.java.generated.GameMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.PlayerActionAction;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
@@ -324,56 +325,28 @@ public class ExperimentalFeatures {
         });
 
         protocol.registerClientbound(ClientboundBedrockPackets.CRAFTING_DATA, null, wrapper -> {
+            //TODO: Make this async
             wrapper.cancel();
             CraftingDataTracker craftingDataTracker = wrapper.user().get(CraftingDataTracker.class);
+            ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
 
             List<CraftingDataStorage> recipes = new ArrayList<>();
             final int craftingDataSize = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
             for (int i = 0; i < craftingDataSize; i++) {
-                final int test = wrapper.read(BedrockTypes.VAR_INT);
-                ViaBedrock.getPlatform().getLogger().warning("Reading experimental recipe type id: " + test);
-                final RecipeType recipeType = RecipeType.getByValue(test);
+                final RecipeType recipeType = RecipeType.getByValue(wrapper.read(BedrockTypes.VAR_INT));
                 switch (recipeType) {
                     case SHAPELESS, USER_DATA_SHAPELESS, SHAPELESS_CHEMISTRY -> {
                         final String recipeId = wrapper.read(BedrockTypes.STRING);
-                        final List<RecipeIngredient> ingredients = new ArrayList<>();
-                        final int ingredientCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-                        for (int j = 0; j < ingredientCount; j++) {
-                            // Read ingredient item stacks
-                            ingredients.add(new RecipeIngredient(
-                                    wrapper.read(Types.BYTE),
-                                    wrapper.read(BedrockTypes.VAR_INT)
-                            ));
-                        }
-                        final List<NetworkBedrockItem> results = new ArrayList<>();
-                        final int resultCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-                        for (int j = 0; j < resultCount; j++) {
-                            final int itemId = wrapper.read(BedrockTypes.VAR_INT);
-                            if (itemId == 0 || itemId == -1) {
-                                results.add(NetworkBedrockItem.EMPTY);
-                                continue;
-                            }
-
-                            final Integer stackSize = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE);
-                            final int itemAuxData = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-                            final int runtimeId = wrapper.read(BedrockTypes.VAR_INT);
-                            final String userDataBuffer = wrapper.read(BedrockTypes.STRING);
-
-                            results.add(new NetworkBedrockItem(itemId, stackSize.shortValue(), itemAuxData, runtimeId, userDataBuffer));
-                        }
+                        final List<ItemDescriptor> ingredients = List.of(wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTORS));
+                        final List<BedrockItem> results = List.of(wrapper.read(itemRewriter.itemInstanceArrayType()));
                         final UUID recipeUuid = wrapper.read(BedrockTypes.UUID);
                         final String recipeTag = wrapper.read(BedrockTypes.STRING);
                         final int priority = wrapper.read(BedrockTypes.VAR_INT);
 
                         // TODO: Sync unlocking recipes
                         final byte unlock = wrapper.read(Types.BYTE);
-                        if (unlock != 0) {
-                            final int unlockCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-                            for (int j = 0; j < unlockCount; j++) {
-                                //Recipe Ingredient
-                                wrapper.read(Types.BYTE);
-                                wrapper.read(BedrockTypes.VAR_INT);
-                            }
+                        if (unlock == 0) {
+                            wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTORS);
                         }
 
                         final int netId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
@@ -389,32 +362,14 @@ public class ExperimentalFeatures {
                         final String recipeId = wrapper.read(BedrockTypes.STRING);
                         final int width = wrapper.read(BedrockTypes.VAR_INT);
                         final int height = wrapper.read(BedrockTypes.VAR_INT);
-                        final RecipeIngredient[][] ingredients = new RecipeIngredient[height][width];
+                        final ItemDescriptor[][] ingredients = new ItemDescriptor[height][width];
                         for (int row = 0; row < height; row++) {
                             for (int col = 0; col < width; col++) {
-                                ingredients[row][col] = new RecipeIngredient(
-                                        wrapper.read(Types.BYTE),
-                                        wrapper.read(BedrockTypes.VAR_INT)
-                                );
+                                ingredients[row][col] = wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTOR_TYPE);
                             }
                         }
 
-                        final List<NetworkBedrockItem> results = new ArrayList<>();
-                        final int resultCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-                        for (int j = 0; j < resultCount; j++) {
-                            final int itemId = wrapper.read(BedrockTypes.VAR_INT);
-                            if (itemId == 0 || itemId == -1) {
-                                results.add(NetworkBedrockItem.EMPTY);
-                                continue;
-                            }
-
-                            final Integer stackSize = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE);
-                            final int itemAuxData = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-                            final int runtimeId = wrapper.read(BedrockTypes.VAR_INT);
-                            final String userDataBuffer = wrapper.read(BedrockTypes.STRING);
-
-                            results.add(new NetworkBedrockItem(itemId, stackSize.shortValue(), itemAuxData, runtimeId, userDataBuffer));
-                        }
+                        final List<BedrockItem> results = List.of(wrapper.read(itemRewriter.itemInstanceArrayType()));
                         final UUID recipeUuid = wrapper.read(BedrockTypes.UUID);
                         final String recipeTag = wrapper.read(BedrockTypes.STRING);
                         final int priority = wrapper.read(BedrockTypes.VAR_INT);
@@ -422,13 +377,8 @@ public class ExperimentalFeatures {
 
                         // TODO: Sync unlocking recipes
                         final byte unlock = wrapper.read(Types.BYTE);
-                        if (unlock != 0) {
-                            final int unlockCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-                            for (int j = 0; j < unlockCount; j++) {
-                                //Recipe Ingredient
-                                wrapper.read(Types.BYTE);
-                                wrapper.read(BedrockTypes.VAR_INT);
-                            }
+                        if (unlock == 0) {
+                            wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTORS);
                         }
 
                         final int netId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
@@ -447,15 +397,7 @@ public class ExperimentalFeatures {
                             final int itemAuxData = wrapper.read(BedrockTypes.VAR_INT);
                         }
 
-                        final int itemId = wrapper.read(BedrockTypes.VAR_INT);
-                        if (itemId == 0 || itemId == -1) {
-                            //NetworkBedrockItem.EMPTY
-                        } else {
-                            final Integer stackSize = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE);
-                            final int itemAuxData = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-                            final int runtimeId = wrapper.read(BedrockTypes.VAR_INT);
-                            final String userDataBuffer = wrapper.read(BedrockTypes.STRING);
-                        }
+                        BedrockItem result = wrapper.read(itemRewriter.itemInstanceType());
 
                         final String recipeTag = wrapper.read(BedrockTypes.STRING);
                     }
@@ -465,38 +407,14 @@ public class ExperimentalFeatures {
                     }
                     case SMITHING_TRANSFORM, SMITHING_TRIM -> {
                         final String recipeId = wrapper.read(BedrockTypes.STRING);
-                        final RecipeIngredient template = new RecipeIngredient(
-                                wrapper.read(Types.BYTE),
-                                wrapper.read(BedrockTypes.VAR_INT)
-                        );
-                        final RecipeIngredient base = new RecipeIngredient(
-                                wrapper.read(Types.BYTE),
-                                wrapper.read(BedrockTypes.VAR_INT)
-                        );
-                        final RecipeIngredient addition = new RecipeIngredient(
-                                wrapper.read(Types.BYTE),
-                                wrapper.read(BedrockTypes.VAR_INT)
-                        );
-                        NetworkBedrockItem result;
+                        final ItemDescriptor template = wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTOR_TYPE);
+                        final ItemDescriptor base = wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTOR_TYPE);
+                        final ItemDescriptor addition = wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTOR_TYPE);
+                        BedrockItem result = BedrockItem.empty();
                         if (recipeType == RecipeType.SMITHING_TRANSFORM) {
-                            final int itemId = wrapper.read(BedrockTypes.VAR_INT);
-                            if (itemId == 0 || itemId == -1) {
-                                result = NetworkBedrockItem.EMPTY;
-                            } else {
-                                result = new NetworkBedrockItem(
-                                        itemId,
-                                        wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE).shortValue(),
-                                        wrapper.read(BedrockTypes.UNSIGNED_VAR_INT),
-                                        wrapper.read(BedrockTypes.VAR_INT),
-                                        wrapper.read(BedrockTypes.STRING)
-                                );
-                            }
-                        } else {
-                            result = NetworkBedrockItem.EMPTY; // Trim recipes do not have result item
+                            result = wrapper.read(itemRewriter.itemInstanceType());
                         }
-
                         final String recipeTag = wrapper.read(BedrockTypes.STRING);
-
                         final int netId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
 
                         CraftingDataStorage recipe = new CraftingDataStorage(

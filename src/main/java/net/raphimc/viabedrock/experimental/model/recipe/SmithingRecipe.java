@@ -17,16 +17,18 @@
  */
 package net.raphimc.viabedrock.experimental.model.recipe;
 
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
+
 import java.util.UUID;
 
 public class SmithingRecipe extends Recipe {
 
-    private final RecipeIngredient template;
-    private final RecipeIngredient baseIngredient;
-    private final RecipeIngredient additionIngredient;
-    private final NetworkBedrockItem result;
+    private final ItemDescriptor template;
+    private final ItemDescriptor baseIngredient;
+    private final ItemDescriptor additionIngredient;
+    private final BedrockItem result;
 
-    public SmithingRecipe(String uniqueId, UUID recipeId, String recipeTag, int priority, RecipeIngredient template, RecipeIngredient baseIngredient, RecipeIngredient additionIngredient, NetworkBedrockItem result) {
+    public SmithingRecipe(String uniqueId, UUID recipeId, String recipeTag, int priority, ItemDescriptor template, ItemDescriptor baseIngredient, ItemDescriptor additionIngredient, BedrockItem result) {
         super(uniqueId, recipeId, recipeTag, priority);
         this.template = template;
         this.baseIngredient = baseIngredient;

@@ -17,15 +17,17 @@
  */
 package net.raphimc.viabedrock.experimental.model.recipe;
 
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
+
 import java.util.List;
 import java.util.UUID;
 
 public class ShapelessRecipe extends Recipe {
 
-    private final List<RecipeIngredient> ingredients;
-    private final List<NetworkBedrockItem> results;
+    private final List<ItemDescriptor> ingredients;
+    private final List<BedrockItem> results;
 
-    public ShapelessRecipe(String uniqueId, UUID recipeId, String recipeTag, int priority, List<RecipeIngredient> ingredients, List<NetworkBedrockItem> results) {
+    public ShapelessRecipe(String uniqueId, UUID recipeId, String recipeTag, int priority, List<ItemDescriptor> ingredients, List<BedrockItem> results) {
         super(uniqueId, recipeId, recipeTag, priority);
         this.ingredients = ingredients;
         this.results = results;

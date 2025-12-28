@@ -17,16 +17,18 @@
  */
 package net.raphimc.viabedrock.experimental.model.recipe;
 
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
+
 import java.util.List;
 import java.util.UUID;
 
 public class ShapedRecipe extends Recipe {
 
-    private final RecipeIngredient[][] pattern; // TODO: Better representation?
-    private final List<NetworkBedrockItem> results;
+    private final ItemDescriptor[][] pattern; // TODO: Better representation?
+    private final List<BedrockItem> results;
     private final boolean mirrored;
 
-    public ShapedRecipe(String uniqueId, UUID recipeId, String recipeTag, int priority, RecipeIngredient[][] pattern, List<NetworkBedrockItem> results, boolean mirrored) {
+    public ShapedRecipe(String uniqueId, UUID recipeId, String recipeTag, int priority, ItemDescriptor[][] pattern, List<BedrockItem> results, boolean mirrored) {
         super(uniqueId, recipeId, recipeTag, priority);
         this.pattern = pattern;
         this.results = results;
