@@ -80,6 +80,10 @@ public abstract class Container {
         return false;
     }
 
+    public boolean handleButtonClick(final int button) {
+        return false;
+    }
+
     public void clearItems() {
         for (int i = 0; i < this.items.length; i++) {
             this.items[i] = BedrockItem.empty();

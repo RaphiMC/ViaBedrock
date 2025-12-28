@@ -26,6 +26,7 @@ import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPac
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.api.model.container.block.AnvilContainer;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
@@ -302,6 +303,21 @@ public class ExperimentalFeatures {
                     0
             );
         });
+        protocol.registerServerbound(ServerboundPackets1_21_6.SET_BEACON, null, wrapper -> {
+            wrapper.cancel();
+            final int primaryPower = wrapper.read(Types.OPTIONAL_VAR_INT);
+            final int secondaryPower = wrapper.read(Types.OPTIONAL_VAR_INT);
+            // TODO
+        });
+        protocol.registerServerbound(ServerboundPackets1_21_6.RENAME_ITEM, null, wrapper -> {
+            wrapper.cancel();
+            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            final String newName = wrapper.read(Types.STRING);
+
+            if (inventoryTracker.isContainerOpen() && inventoryTracker.getCurrentContainer() instanceof AnvilContainer anvilContainer) {
+                anvilContainer.setRenameText(newName);
+            }
+        });
         protocol.registerClientbound(ClientboundBedrockPackets.ITEM_STACK_RESPONSE, null, wrapper -> {
             wrapper.cancel();
             InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
@@ -389,6 +405,10 @@ public class ExperimentalFeatures {
             wrapper.write(Types.VAR_INT, windowId);
             wrapper.write(Types.SHORT, javaId);
             wrapper.write(Types.SHORT, (short) value);
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_ENCHANT_OPTIONS, ClientboundPackets1_21_11.CONTAINER_SET_DATA, wrapper -> {
+            wrapper.cancel();
+            // TODO
         });
     }
 
