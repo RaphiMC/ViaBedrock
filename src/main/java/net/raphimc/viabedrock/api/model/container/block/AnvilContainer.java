@@ -22,9 +22,21 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
+import net.raphimc.viabedrock.experimental.storage.InventoryRequestStorage;
+import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
+import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AnvilContainer extends Container {
 
@@ -67,6 +79,64 @@ public class AnvilContainer extends Container {
         };
     }
 
+    @Override
+    public boolean handleClick(final int revision, final short javaSlot, final byte button, final ClickType action) {
+        if (javaSlot == 2) {
+            if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+                //TODO: This is experimental code...
+                InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
+                InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
+                List<Container> prevContainers = new ArrayList<>();
+                prevContainers.add(this.copy());
+                prevContainers.add(inventoryTracker.getInventoryContainer().copy());
+                Container prevCursorContainer = inventoryTracker.getHudContainer().copy();
+
+                List<ItemStackRequestAction> actions = List.of(
+                        new ItemStackRequestAction.CraftRecipeOptionalAction(0, 0), //TODO: This needs more debugging
+                        new ItemStackRequestAction.ConsumeAction(1,/*Probably needs an algo*/ new ItemStackRequestSlotInfo(
+                                new FullContainerName(ContainerEnumName.AnvilMaterialContainer, null),
+                                (byte) 2,
+                                this.getItem(1).netId()
+                        )),
+                        new ItemStackRequestAction.ConsumeAction(1, new ItemStackRequestSlotInfo(
+                                new FullContainerName(ContainerEnumName.AnvilInputContainer, null),
+                                (byte) 1,
+                                this.getItem(0).netId()
+                        )),
+                        new ItemStackRequestAction.PlaceAction(1,/*Probably needs an algo*/ new ItemStackRequestSlotInfo(
+                                new FullContainerName(ContainerEnumName.CreatedOutputContainer, null),
+                                (byte) 50,
+                                this.getItem(2).netId()
+                        ), new ItemStackRequestSlotInfo(
+                                new FullContainerName(ContainerEnumName.CombinedHotbarAndInventoryContainer, null),
+                                (byte) 1, // TODO: Might need an algo to find a free slot
+                                0 // Will be filled by the server
+                        ))
+                );
+
+                List<String> filterStrings = new ArrayList<>();
+                TextProcessingEventOrigin origin = TextProcessingEventOrigin.unknown;
+                if (!this.getRenameText().isEmpty()) {
+                    filterStrings.add(this.getRenameText());
+                    origin = TextProcessingEventOrigin.AnvilText;
+                }
+
+                ItemStackRequestInfo request = new ItemStackRequestInfo(
+                        inventoryRequestTracker.nextRequestId(),
+                        actions,
+                        filterStrings,
+                        origin
+                );
+
+                inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevCursorContainer, prevContainers)); // Store the request to track it later
+                ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[] {request});
+            } else {
+                return false;
+            }
+        }
+        return super.handleClick(revision, javaSlot, button, action);
+    }
+
     public String getRenameText() {
         return renameText;
     }
@@ -76,3 +146,6 @@ public class AnvilContainer extends Container {
     }
 
 }
+
+//[13:36:45:931] [SERVER BOUND] - ItemStackRequestPacket(requests=[ItemStackRequest(requestId=-57, actions=[CraftRecipeOptionalAction(recipeNetworkId=0, filteredStringIndex=0), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=ANVIL_MATERIAL, slot=2, stackNetworkId=83, containerName=FullContainerName(container=ANVIL_MATERIAL, dynamicId=null))), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=ANVIL_INPUT, slot=1, stackNetworkId=79, containerName=FullContainerName(container=ANVIL_INPUT, dynamicId=null))), PlaceAction(count=1, source=ItemStackRequestSlotData(container=CREATED_OUTPUT, slot=50, stackNetworkId=-57, containerName=FullContainerName(container=CREATED_OUTPUT, dynamicId=null)), destination=ItemStackRequestSlotData(container=HOTBAR_AND_INVENTORY, slot=1, stackNetworkId=0, containerName=FullContainerName(container=HOTBAR_AND_INVENTORY, dynamicId=null)))], filterStrings=[Diamond Swordaaaa], textProcessingEventOrigin=ANVIL_TEXT)])
+//[13:36:45:985] [CLIENT BOUND] - ItemStackResponsePacket(entries=[ItemStackResponse(result=OK, requestId=-57, containers=[ItemStackResponseContainer(container=ANVIL_MATERIAL, items=[ItemStackResponseSlot(slot=2, hotbarSlot=2, count=0, stackNetworkId=0, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=ANVIL_MATERIAL, dynamicId=null)), ItemStackResponseContainer(container=ANVIL_INPUT, items=[ItemStackResponseSlot(slot=1, hotbarSlot=1, count=0, stackNetworkId=0, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=ANVIL_INPUT, dynamicId=null)), ItemStackResponseContainer(container=HOTBAR_AND_INVENTORY, items=[ItemStackResponseSlot(slot=1, hotbarSlot=1, count=1, stackNetworkId=84, customName=Diamond Swordaaaa, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=HOTBAR_AND_INVENTORY, dynamicId=null))])])
