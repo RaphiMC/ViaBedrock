@@ -33,4 +33,17 @@ public abstract class Recipe {
         this.priority = priority;
     }
 
+    public  String getUniqueId() {
+        return uniqueId;
+    }
+    public UUID getRecipeId() {
+        return recipeId;
+    }
+    public String getRecipeTag() {
+        return recipeTag;
+    }
+    public int getPriority() {
+        return priority;
+    }
+
 }

@@ -135,8 +135,8 @@ public class InventoryTracker extends StoredObject {
             final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
             final int blockState = chunkTracker.getBlockState(this.currentContainer.position());
             final String tag = blockStateRewriter.tag(blockState);
-            if (!this.currentContainer.isValidBlockTag(tag)) {
-                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + this.currentContainer.type() + " because block state is not valid for container type: " + blockState);
+            if (tag != null && !this.currentContainer.isValidBlockTag(tag)) { // TODO: tag != null is temporary, remove when all tags are mapped
+                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Closing " + this.currentContainer.type() + " because block state is not valid for container type: " + blockState + " (tag: " + tag + ")");
                 this.forceCloseCurrentContainer();
                 return;
             }

@@ -325,7 +325,6 @@ public class ExperimentalFeatures {
         });
 
         protocol.registerClientbound(ClientboundBedrockPackets.CRAFTING_DATA, null, wrapper -> {
-            //TODO: Make this async
             wrapper.cancel();
             CraftingDataTracker craftingDataTracker = wrapper.user().get(CraftingDataTracker.class);
             ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);

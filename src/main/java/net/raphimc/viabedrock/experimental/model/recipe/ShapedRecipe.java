@@ -34,4 +34,17 @@ public class ShapedRecipe extends Recipe {
         this.results = results;
         this.mirrored = mirrored;
     }
+
+    public ItemDescriptor[][] getPattern() {
+        return pattern;
+    }
+
+    public List<BedrockItem> getResults() {
+        return results;
+    }
+
+    public boolean isMirrored() {
+        return mirrored;
+    }
+
 }

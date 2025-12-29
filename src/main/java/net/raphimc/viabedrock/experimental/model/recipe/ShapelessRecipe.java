@@ -33,4 +33,12 @@ public class ShapelessRecipe extends Recipe {
         this.results = results;
     }
 
+    public List<ItemDescriptor> getIngredients() {
+        return ingredients;
+    }
+
+    public List<BedrockItem> getResults() {
+        return results;
+    }
+
 }
