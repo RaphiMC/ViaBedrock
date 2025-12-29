@@ -43,7 +43,7 @@ public class AnvilContainer extends Container {
     private String renameText = "";
 
     public AnvilContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.ANVIL, title, position, 3, "anvil");
+        super(user, containerId, ContainerType.ANVIL, title, position, 3, "anvil", "chipped_anvil", "damaged_anvil");
     }
 
     @Override

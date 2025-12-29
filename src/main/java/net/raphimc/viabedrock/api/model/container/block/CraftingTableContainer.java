@@ -51,7 +51,7 @@ import java.util.logging.Level;
 public class CraftingTableContainer extends Container {
 
     public CraftingTableContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.WORKBENCH, title, position, 10, "crafting_table");
+        super(user, containerId, ContainerType.WORKBENCH, title, position, 10, "crafting_table", "workbench");
     }
 
     @Override
