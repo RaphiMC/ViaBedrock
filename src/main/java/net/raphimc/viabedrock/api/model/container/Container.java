@@ -98,23 +98,23 @@ public abstract class Container {
         return this.user.get(ItemRewriter.class).javaItems(this.items);
     }
 
-    public BedrockItem getItem(final int slot) {
-        return this.items[slot];
+    public BedrockItem getItem(final int javaSlot) {
+        return this.items[javaSlot];
     }
 
     public BedrockItem[] getItems() {
         return Arrays.copyOf(this.items, this.items.length);
     }
 
-    public boolean setItem(final int slot, final BedrockItem item) {
-        if (slot < 0 || slot >= this.items.length) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set item for " + this.type + ", but slot was out of bounds (" + slot + ")");
+    public boolean setItem(final int javaSlot, final BedrockItem item) {
+        if (javaSlot < 0 || javaSlot >= this.items.length) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set item for " + this.type + ", but slot was out of bounds (" + javaSlot + ")");
             return false;
         }
 
-        final BedrockItem oldItem = this.items[slot];
-        this.items[slot] = item;
-        this.onSlotChanged(slot, oldItem, item);
+        final BedrockItem oldItem = this.items[javaSlot];
+        this.items[javaSlot] = item;
+        this.onSlotChanged(javaSlot, oldItem, item);
         return true;
     }
 
@@ -130,8 +130,8 @@ public abstract class Container {
         return true;
     }
 
-    public int javaSlot(final int slot) {
-        return slot;
+    public int javaSlot(final int bedrockSlot) {
+        return bedrockSlot;
     }
 
     public int bedrockSlot(final int javaSlot) {
@@ -170,7 +170,7 @@ public abstract class Container {
         }
     }
 
-    protected void onSlotChanged(final int slot, final BedrockItem oldItem, final BedrockItem newItem) {
+    protected void onSlotChanged(final int javaSlot, final BedrockItem oldItem, final BedrockItem newItem) {
     }
 
     public Container copy() { // TODO: This probably isnt the best way to do this

@@ -40,7 +40,8 @@ public class ExperimentalContainer {
     public static boolean handleClick(final UserConnection user, Container container, final int revision, final short javaSlot, final byte button, final ClickType action) {
         InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
         InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
-        int slot = container.bedrockSlot(javaSlot);
+        int clickSlot = container.bedrockSlot(javaSlot);
+        int slot = javaSlot;
 
         /* TODO: Could potentially lead to a race condition if we receive a inventory update before the response for the request,
          *  a better solution would be to store the specific changes made in the request. From my testing this doesnt seem to happen though
@@ -84,6 +85,7 @@ public class ExperimentalContainer {
                         yield null;
                     } else {
                         slot = invSlot;
+                        clickSlot = invSlot;
                         container = inventoryContainer;
 
                         prevContainers.add(container.copy()); // Store previous state of the inventory container
@@ -113,7 +115,7 @@ public class ExperimentalContainer {
 
                     yield new ItemStackRequestAction.TakeAction(
                             amountToTake,
-                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, finalCursorItem.netId()),
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, finalCursorItem.netId()),
                             new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, 0)
                     );
                 } else {
@@ -142,7 +144,7 @@ public class ExperimentalContainer {
                         yield new ItemStackRequestAction.PlaceAction(
                                 amountToPlace,
                                 new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, finalContainerItem.netId()),
-                                new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, 0)
+                                new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, 0)
                         );
                     } else {
                         // Swap item
@@ -155,7 +157,7 @@ public class ExperimentalContainer {
 
                         yield new ItemStackRequestAction.SwapAction(
                                 new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, cursorItem.netId()),
-                                new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId())
+                                new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, item.netId())
                         );
                     }
                 }
@@ -186,19 +188,19 @@ public class ExperimentalContainer {
                 if (hotbarItem.isEmpty()) {
                     yield new ItemStackRequestAction.PlaceAction(
                             item.amount(),
-                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId()),
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, item.netId()),
                             new ItemStackRequestSlotInfo(hotbarContainer.getFullContainerName(button), button, 0)
                     );
                 } else if (item.isEmpty()) {
                     yield new ItemStackRequestAction.PlaceAction(
                             hotbarItem.amount(),
                             new ItemStackRequestSlotInfo(hotbarContainer.getFullContainerName(button), button, hotbarItem.netId()),
-                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, 0)
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, 0)
                     );
                 } else {
                     yield new ItemStackRequestAction.SwapAction(
                             new ItemStackRequestSlotInfo(hotbarContainer.getFullContainerName(button), (byte) button, hotbarItem.netId()),
-                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId())
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, item.netId())
                     );
                 }
             }
@@ -341,7 +343,7 @@ public class ExperimentalContainer {
 
                 yield new ItemStackRequestAction.DropAction(
                         amountToDrop,
-                        new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId()),
+                        new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, item.netId()),
                         false
                 );
             }

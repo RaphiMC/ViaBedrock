@@ -67,47 +67,21 @@ public class CraftingTableContainer extends Container {
     }
 
     @Override
-    public int javaSlot(final int slot) {
-        return switch (slot) {
-            case 32, 33, 34, 35, 36, 37, 38, 39, 40 -> slot - 31;
+    public int javaSlot(final int bedrockSlot) {
+        return switch (bedrockSlot) {
+            case 32, 33, 34, 35, 36, 37, 38, 39, 40 -> bedrockSlot - 31;
             case 50 -> 0;
-            default -> super.javaSlot(slot);
+            default -> super.javaSlot(bedrockSlot);
         };
     }
 
     @Override
-    public int bedrockSlot(final int slot) {
-        return switch (slot) {
-            case 1, 2, 3, 4, 5, 6, 7, 8, 9 -> slot + 31;
+    public int bedrockSlot(final int javaSlot) {
+        return switch (javaSlot) {
+            case 1, 2, 3, 4, 5, 6, 7, 8, 9 -> javaSlot + 31;
             case 0 -> 50;
-            default -> super.bedrockSlot(slot);
+            default -> super.bedrockSlot(javaSlot);
         };
-    }
-
-    @Override
-    public BedrockItem getItem(final int slot) {
-        // Swap to java slot as bedrock is goofy
-        final int javaSlot = this.javaSlot(slot);
-        if (javaSlot < 0 || javaSlot >= this.items.length) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to get item for " + this.type + ", but slot was out of bounds (" + slot + ")");
-            return BedrockItem.empty();
-        }
-        return this.items[javaSlot];
-    }
-
-    @Override
-    public boolean setItem(final int slot, final BedrockItem item) {
-        // Swap to java slot as bedrock is goofy
-        final int javaSlot = this.javaSlot(slot);
-        if (javaSlot < 0 || javaSlot >= this.items.length) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set item for " + this.type + ", but slot was out of bounds (" + slot + ")");
-            return false;
-        }
-
-        final BedrockItem oldItem = this.items[javaSlot];
-        this.items[javaSlot] = item;
-        this.onSlotChanged(javaSlot, oldItem, item);
-        return true;
     }
 
     @Override

@@ -200,7 +200,7 @@ public class InventoryPackets {
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);
-            if (container != null && container.setItem(slot, item)) {
+            if (container != null && container.setItem(container.javaSlot(slot), item)) {
                 if (container.type() == ContainerType.HUD && slot == 0) { // cursor item
                     wrapper.setPacketType(ClientboundPackets1_21_11.SET_CURSOR_ITEM);
                 } else {
