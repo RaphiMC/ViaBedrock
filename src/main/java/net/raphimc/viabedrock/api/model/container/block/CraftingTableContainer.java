@@ -40,6 +40,8 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessi
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
+import net.raphimc.viabedrock.protocol.model.ItemEntry;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 import java.util.ArrayList;
@@ -86,19 +88,17 @@ public class CraftingTableContainer extends Container {
 
     @Override
     public boolean handleClick(final int revision, final short javaSlot, final byte button, final ClickType action) {
-        //TODO: slot < 0 || slot >= container.getItems().length fails in ExperimentalContainer.handleClick
         if (javaSlot == 0) {
             if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
                 //TODO: This is experimental code...
                 InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
                 InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
+                ItemRewriter itemRewriter = user.get(ItemRewriter.class);
 
                 List<Container> prevContainers = new ArrayList<>();
                 prevContainers.add(this.copy());
                 prevContainers.add(inventoryTracker.getInventoryContainer().copy());
                 Container prevCursorContainer = inventoryTracker.getHudContainer().copy();
-
-                ViaBedrock.getPlatform().getLogger().warning("Items: " + Arrays.toString(this.items));
 
                 final CraftingDataStorage craftingDataStorage = this.getRecipeData();
                 if (craftingDataStorage == null) {
@@ -118,18 +118,18 @@ public class CraftingTableContainer extends Container {
                 if (craftableAmount <= 0) {
                     return false;
                 }
-                craftableAmount = button == 0 ? 1 : craftableAmount; // Left click = stack/max, right click = half, shift click = max to inventory
+                int bedrockSlot = this.bedrockSlot(javaSlot);
+                craftableAmount = button == 0 ? 1 : craftableAmount; // Left click = 1, right click = max, shift click = max to inventory
 
-                List<ItemStackRequestAction> actions = new ArrayList<>(
-                        Collections.singleton(new ItemStackRequestAction.CraftRecipeAction(craftingDataStorage.networkId(), craftableAmount))
-                        //new ItemStackRequestAction.CraftResultsDeprecatedAction(this.getResultItems(javaSlot, craftableAmount)) TODO: Deprecated action, hopefully removed in the future
-                );
+                List<ItemStackRequestAction> actions = new ArrayList<>();
+                actions.add(new ItemStackRequestAction.CraftRecipeAction(craftingDataStorage.networkId(), craftableAmount));
+                //actions.add(new ItemStackRequestAction.CraftResultsDeprecatedAction(resultItems, 1)); //TODO: Deprecated action, hopefully removed in the future
 
                 for (int i = 1; i <= 9; i++) {
                     int inputSlot = i + 31; // Crafting grid slots in bedrock
-                    int available = this.getItem(i).amount();
-                    if (available > 0) {
-                        int toConsume = Math.min(available, craftableAmount);
+                    BedrockItem item = this.getItem(i);
+                    if (!item.isEmpty() && item.amount() > 0) {
+                        int toConsume = Math.min(item.amount(), craftableAmount);
                         actions.add(new ItemStackRequestAction.ConsumeAction(
                                 toConsume,
                                 new ItemStackRequestSlotInfo(
@@ -141,13 +141,14 @@ public class CraftingTableContainer extends Container {
                     }
                 }
 
+                int nextRequestId = inventoryRequestTracker.nextRequestId();
                 actions.add(
                         new ItemStackRequestAction.TakeAction(
                                 craftableAmount * resultItems.get(0).amount(), // Total amount to take
                                 new ItemStackRequestSlotInfo(
-                                        this.getFullContainerName(javaSlot),
-                                        (byte) javaSlot,
-                                        resultItems.get(0).netId()
+                                        this.getFullContainerName(bedrockSlot),
+                                        (byte) bedrockSlot,
+                                        nextRequestId // TODO
                                 ),
                                 new ItemStackRequestSlotInfo(
                                         new FullContainerName(ContainerEnumName.CursorContainer, null),
@@ -158,7 +159,7 @@ public class CraftingTableContainer extends Container {
                 );
 
                 ItemStackRequestInfo request = new ItemStackRequestInfo(
-                        inventoryRequestTracker.nextRequestId(),
+                        nextRequestId,
                         actions,
                         List.of(),
                         TextProcessingEventOrigin.unknown
@@ -166,23 +167,26 @@ public class CraftingTableContainer extends Container {
 
                 inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevCursorContainer, prevContainers)); // Store the request to track it later
                 ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[] {request});
+                return true;
             } else {
                 // Prevent interacting with the output slot
                 return false;
             }
+        } else {
+            return super.handleClick(revision, javaSlot, button, action);
         }
-        return super.handleClick(revision, javaSlot, button, action);
     }
 
     // TODO: Move this method somewhere else
     private CraftingDataStorage getRecipeData() {
         CraftingDataTracker craftingDataTracker = user.get(CraftingDataTracker.class);
+        // TODO: Store in seperate lists based on tag/type for faster lookup
         for (CraftingDataStorage craftingData : craftingDataTracker.getCraftingDataList()) {
             switch (craftingData.type()) {
                 case SHAPELESS -> {
                     ShapelessRecipe shapelessRecipe = (ShapelessRecipe) craftingData.recipe();
                     // Check if the recipe matches the current crafting grid
-                    if (shapelessRecipe != null) {
+                    if (shapelessRecipe != null && shapelessRecipe.getRecipeTag().equals("crafting_table")) {
                         boolean allFound = true;
                         for (ItemDescriptor descriptor : shapelessRecipe.getIngredients()) {
                             switch (descriptor.getType()) {
@@ -228,7 +232,7 @@ public class CraftingTableContainer extends Container {
                             }
                         }
                         if (allFound) {
-                            ViaBedrock.getPlatform().getLogger().warning("Shapeless recipe matched: " + shapelessRecipe);
+                            ViaBedrock.getPlatform().getLogger().warning("Shapeless recipe matched: " + shapelessRecipe.getUniqueId());
                             return craftingData;
                         }
                     }
@@ -248,5 +252,5 @@ public class CraftingTableContainer extends Container {
 
 }
 
-// [15:13:59:567] [SERVER BOUND] - ItemStackRequestPacket(requests=[ItemStackRequest(requestId=-177, actions=[CraftRecipeAction(recipeNetworkId=119, numberOfRequestedCrafts=1), CraftResultsDeprecatedAction(resultItems=[BaseItemData(definition=SimpleItemDefinition(identifier=minecraft:oak_stairs, runtimeId=53, version=LEGACY, componentBased=false, componentData=null), damage=0, count=4, tag=null, canPlace=[], canBreak=[], blockingTicks=0, blockDefinition=UnknownDefinition[runtimeId=-1054044407], usingNetId=false, netId=0)], timesCrafted=1), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=CRAFTING_INPUT, slot=34, stackNetworkId=51, containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null))), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=CRAFTING_INPUT, slot=36, stackNetworkId=56, containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null))), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=CRAFTING_INPUT, slot=37, stackNetworkId=55, containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null))), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=CRAFTING_INPUT, slot=38, stackNetworkId=60, containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null))), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=CRAFTING_INPUT, slot=39, stackNetworkId=58, containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null))), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=CRAFTING_INPUT, slot=40, stackNetworkId=59, containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null))), TakeAction(count=4, source=ItemStackRequestSlotData(container=CREATED_OUTPUT, slot=50, stackNetworkId=-177, containerName=FullContainerName(container=CREATED_OUTPUT, dynamicId=null)), destination=ItemStackRequestSlotData(container=CURSOR, slot=0, stackNetworkId=0, containerName=FullContainerName(container=CURSOR, dynamicId=null)))], filterStrings=[], textProcessingEventOrigin=null)])
-// [15:13:59:583] [CLIENT BOUND] - ItemStackResponsePacket(entries=[ItemStackResponse(result=OK, requestId=-177, containers=[ItemStackResponseContainer(container=CRAFTING_INPUT, items=[ItemStackResponseSlot(slot=34, hotbarSlot=34, count=8, stackNetworkId=51, customName=, durabilityCorrection=0, filteredCustomName=), ItemStackResponseSlot(slot=36, hotbarSlot=36, count=8, stackNetworkId=56, customName=, durabilityCorrection=0, filteredCustomName=), ItemStackResponseSlot(slot=37, hotbarSlot=37, count=8, stackNetworkId=55, customName=, durabilityCorrection=0, filteredCustomName=), ItemStackResponseSlot(slot=38, hotbarSlot=38, count=8, stackNetworkId=60, customName=, durabilityCorrection=0, filteredCustomName=), ItemStackResponseSlot(slot=39, hotbarSlot=39, count=8, stackNetworkId=58, customName=, durabilityCorrection=0, filteredCustomName=), ItemStackResponseSlot(slot=40, hotbarSlot=40, count=8, stackNetworkId=59, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null)), ItemStackResponseContainer(container=CURSOR, items=[ItemStackResponseSlot(slot=0, hotbarSlot=0, count=4, stackNetworkId=61, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=CURSOR, dynamicId=null))])])
+//[14:12:50:464] [SERVER BOUND] - ItemStackRequestPacket(requests=[ItemStackRequest(requestId=-7, actions=[CraftRecipeAction(recipeNetworkId=1136, numberOfRequestedCrafts=1), CraftResultsDeprecatedAction(resultItems=[BaseItemData(definition=SimpleItemDefinition(identifier=minecraft:blue_dye, runtimeId=431, version=LEGACY, componentBased=false, componentData=null), damage=0, count=1, tag=null, canPlace=[], canBreak=[], blockingTicks=0, blockDefinition=UnknownDefinition[runtimeId=0], usingNetId=false, netId=0)], timesCrafted=1), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=CRAFTING_INPUT, slot=36, stackNetworkId=56, containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null))), TakeAction(count=1, source=ItemStackRequestSlotData(container=CREATED_OUTPUT, slot=50, stackNetworkId=-7, containerName=FullContainerName(container=CREATED_OUTPUT, dynamicId=null)), destination=ItemStackRequestSlotData(container=CURSOR, slot=0, stackNetworkId=0, containerName=FullContainerName(container=CURSOR, dynamicId=null)))], filterStrings=[], textProcessingEventOrigin=null)])
+//[14:12:50:512] [CLIENT BOUND] - ItemStackResponsePacket(entries=[ItemStackResponse(result=OK, requestId=-7, containers=[ItemStackResponseContainer(container=CRAFTING_INPUT, items=[ItemStackResponseSlot(slot=36, hotbarSlot=36, count=63, stackNetworkId=56, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null)), ItemStackResponseContainer(container=CURSOR, items=[ItemStackResponseSlot(slot=0, hotbarSlot=0, count=1, stackNetworkId=71, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=CURSOR, dynamicId=null))])])

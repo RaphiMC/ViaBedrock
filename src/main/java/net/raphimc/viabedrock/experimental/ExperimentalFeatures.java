@@ -343,9 +343,11 @@ public class ExperimentalFeatures {
                         final int priority = wrapper.read(BedrockTypes.VAR_INT);
 
                         // TODO: Sync unlocking recipes
-                        final byte unlock = wrapper.read(Types.BYTE);
-                        if (unlock == 0) {
-                            wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTORS);
+                        if (recipeType == RecipeType.SHAPELESS || recipeType == RecipeType.USER_DATA_SHAPELESS) {
+                            final byte unlock = wrapper.read(Types.BYTE);
+                            if (unlock == 0) {
+                                wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTORS);
+                            }
                         }
 
                         final int netId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
@@ -375,9 +377,11 @@ public class ExperimentalFeatures {
                         final boolean assumeSymmetric = wrapper.read(Types.BOOLEAN);
 
                         // TODO: Sync unlocking recipes
-                        final byte unlock = wrapper.read(Types.BYTE);
-                        if (unlock == 0) {
-                            wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTORS);
+                        if (recipeType == RecipeType.SHAPED) {
+                            final byte unlock = wrapper.read(Types.BYTE);
+                            if (unlock == 0) {
+                                wrapper.read(ExperimentalBedrockTypes.ITEM_DESCRIPTORS);
+                            }
                         }
 
                         final int netId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
