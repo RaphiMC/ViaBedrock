@@ -81,6 +81,6 @@ dependencies {
         transitive = false
     }
 
-    toolImplementation "org.jsoup:jsoup:1.21.2"
+    toolImplementation "org.jsoup:jsoup:1.22.1"
     toolImplementation "org.ow2.asm:asm-tree:9.9.1"
 }
