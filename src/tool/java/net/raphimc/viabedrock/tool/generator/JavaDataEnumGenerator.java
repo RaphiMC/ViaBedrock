@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.tool;
+package net.raphimc.viabedrock.tool.generator;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -39,11 +39,11 @@ import java.util.zip.ZipInputStream;
 
 public class JavaDataEnumGenerator {
 
-    private static final String META_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
+    private static final String MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
     private static final String VERSION_ID = "1.21.11";
 
     public static void main(String[] args) throws Throwable {
-        final JsonObject metaObj = JsonParser.parseReader(new InputStreamReader(new URL(META_URL).openStream())).getAsJsonObject();
+        final JsonObject metaObj = JsonParser.parseReader(new InputStreamReader(new URL(MANIFEST_URL).openStream())).getAsJsonObject();
         final String versionUrl = metaObj.getAsJsonArray("versions").asList().stream()
                 .map(JsonElement::getAsJsonObject)
                 .filter(e -> e.get("id").getAsString().equals(VERSION_ID))
