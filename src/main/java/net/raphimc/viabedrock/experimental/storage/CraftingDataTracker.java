@@ -15,17 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container;
+package net.raphimc.viabedrock.experimental.storage;
 
+import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.BlockPosition;
-import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 
-public class ChestContainer extends Container {
+import java.util.ArrayList;
+import java.util.List;
 
-    public ChestContainer(final UserConnection user, final byte containerId, final TextComponent title, final BlockPosition position, final int size) {
-        super(user, containerId, ContainerType.CONTAINER, title, position, size, "chest", "trapped_chest");
+public class CraftingDataTracker extends StoredObject {
+
+    private List<CraftingDataStorage> craftingDataList = new ArrayList<>();
+
+    public CraftingDataTracker(UserConnection user) {
+        super(user);
     }
 
+    public List<CraftingDataStorage> getCraftingDataList() {
+        return craftingDataList;
+    }
+
+    public void updateCraftingDataList(List<CraftingDataStorage> craftingDataList) {
+        this.craftingDataList = craftingDataList;
+    }
 }

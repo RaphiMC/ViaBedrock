@@ -15,33 +15,50 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.player;
+package net.raphimc.viabedrock.api.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public class ArmorContainer extends InventorySubContainer {
+public class EnchantmentContainer extends Container {
 
-    public ArmorContainer(final UserConnection user) {
-        super(user, (byte) ContainerID.CONTAINER_ID_ARMOR.getValue(), ContainerType.ARMOR, 4);
+    public EnchantmentContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
+        super(user, containerId, ContainerType.ENCHANTMENT, title, position, 2, "enchanting_table", "enchantment_table"); // TODO verify block tags
     }
 
     @Override
     public FullContainerName getFullContainerName(int slot) {
-        return new FullContainerName(ContainerEnumName.ArmorContainer, null);
+        return switch (slot) {
+            case 14 -> new FullContainerName(ContainerEnumName.EnchantingInputContainer, null);
+            case 15 -> new FullContainerName(ContainerEnumName.EnchantingMaterialContainer, null);
+            default -> {
+                ViaBedrock.getPlatform().getLogger().warning("Invalid slot " + slot);
+                yield FullContainerName.EMPTY;
+            }
+        };
     }
 
     @Override
     public int javaSlot(final int slot) {
-        return 5 + slot;
+        return switch (slot) {
+            case 14 -> 0;
+            case 15 -> 1;
+            default -> super.javaSlot(slot);
+        };
     }
 
     @Override
     public int bedrockSlot(final int slot) {
-        return slot - 5;
+        return switch (slot) {
+            case 0 -> 14;
+            case 1 -> 15;
+            default -> super.bedrockSlot(slot);
+        };
     }
-
 }

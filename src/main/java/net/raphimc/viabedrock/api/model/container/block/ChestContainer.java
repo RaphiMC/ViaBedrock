@@ -15,33 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.player;
+package net.raphimc.viabedrock.api.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public class ArmorContainer extends InventorySubContainer {
+public class ChestContainer extends Container {
 
-    public ArmorContainer(final UserConnection user) {
-        super(user, (byte) ContainerID.CONTAINER_ID_ARMOR.getValue(), ContainerType.ARMOR, 4);
+    public ChestContainer(final UserConnection user, final byte containerId, final TextComponent title, final BlockPosition position, final int size) {
+        super(user, containerId, ContainerType.CONTAINER, title, position, size, "chest", "trapped_chest");
     }
 
     @Override
     public FullContainerName getFullContainerName(int slot) {
-        return new FullContainerName(ContainerEnumName.ArmorContainer, null);
+        return new FullContainerName(ContainerEnumName.LevelEntityContainer, null);
     }
-
-    @Override
-    public int javaSlot(final int slot) {
-        return 5 + slot;
-    }
-
-    @Override
-    public int bedrockSlot(final int slot) {
-        return slot - 5;
-    }
-
 }

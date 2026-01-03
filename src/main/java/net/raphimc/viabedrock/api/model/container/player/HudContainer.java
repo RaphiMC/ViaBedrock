@@ -18,14 +18,28 @@
 package net.raphimc.viabedrock.api.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class HudContainer extends InventoryRedirectContainer {
 
     public HudContainer(final UserConnection user) {
         super(user, (byte) ContainerID.CONTAINER_ID_PLAYER_ONLY_UI.getValue(), ContainerType.HUD, 54);
+    }
+
+    @Override
+    public FullContainerName getFullContainerName(int slot) {
+        // TODO: Crafting output slot
+        if (slot == 0) {
+            return new FullContainerName(ContainerEnumName.CursorContainer, null);
+        } else if (slot >= 28 && slot <= 31) {
+            return new FullContainerName(ContainerEnumName.CraftingInputContainer, null);
+        } else {
+            return new FullContainerName(ContainerEnumName.CursorContainer, null); // TODO: This should not happen
+        }
     }
 
     @Override
@@ -43,6 +57,15 @@ public class HudContainer extends InventoryRedirectContainer {
             return slot - 27;
         } else {
             return super.javaSlot(slot);
+        }
+    }
+
+    @Override
+    public int bedrockSlot(final int slot) {
+        if (slot >= 1 && slot <= 4) {
+            return slot + 27;
+        } else {
+            return super.bedrockSlot(slot);
         }
     }
 
