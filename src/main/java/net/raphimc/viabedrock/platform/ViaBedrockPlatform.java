@@ -31,7 +31,10 @@ import java.util.logging.Logger;
 public interface ViaBedrockPlatform {
 
     default void init(final File configFile) {
-        final ViaBedrockConfig config = new ViaBedrockConfig(configFile, this.getLogger());
+        this.init(new ViaBedrockConfig(configFile, this.getLogger()));
+    }
+
+    default void init(final net.raphimc.viabedrock.platform.ViaBedrockConfig config) {
         config.reload();
         Via.getManager().getConfigurationProvider().register(config);
         ViaBedrock.init(this, config);
