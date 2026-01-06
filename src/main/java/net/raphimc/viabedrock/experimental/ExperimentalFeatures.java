@@ -471,6 +471,7 @@ public class ExperimentalFeatures {
                     continue;
                 }
 
+                //TODO: This is required for crafting so that the cursor item is updated properly
                 //TODO: Check that the items match the request, if not resync the container
                 /*for (ItemStackResponseContainerInfo containerInfo : info.containers()) {
                     boolean mismatched = false;

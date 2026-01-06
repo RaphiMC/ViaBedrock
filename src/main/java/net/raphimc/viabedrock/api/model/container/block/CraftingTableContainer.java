@@ -22,6 +22,7 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
@@ -167,6 +168,12 @@ public class CraftingTableContainer extends Container {
 
                 inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevCursorContainer, prevContainers)); // Store the request to track it later
                 ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[] {request});
+
+                inventoryTracker.getHudContainer().setItem(0, resultItems.get(0)); // Update cursor to the crafted item
+                this.setItems(BedrockItem.emptyArray(10)); // Clear crafting grid and output
+                // TODO: We should probably remove this line as it could cause issues but it would make inventory more laggy
+                PacketFactory.sendJavaContainerSetContent(user, this);
+
                 return true;
             } else {
                 // Prevent interacting with the output slot
@@ -232,7 +239,7 @@ public class CraftingTableContainer extends Container {
                             }
                         }
                         if (allFound) {
-                            ViaBedrock.getPlatform().getLogger().warning("Shapeless recipe matched: " + shapelessRecipe.getUniqueId());
+                            ViaBedrock.getPlatform().getLogger().warning("Shapeless recipe matched: " + shapelessRecipe.getUniqueId() + " (id: " + craftingData.networkId() + ")");
                             return craftingData;
                         }
                     }

@@ -92,7 +92,7 @@ public class ItemStackActionType extends Type<ItemStackRequestAction> {
             case CraftRecipe -> {
                 ItemStackRequestAction.CraftRecipeAction craftRecipeAction = (ItemStackRequestAction.CraftRecipeAction) value;
 
-                BedrockTypes.VAR_INT.write(buffer, craftRecipeAction.recipeNetworkId());
+                BedrockTypes.UNSIGNED_VAR_INT.write(buffer, craftRecipeAction.recipeNetworkId());
                 buffer.writeByte(craftRecipeAction.numberOfRequestedCrafts());
             }
             case CraftRecipeAuto -> {
@@ -106,7 +106,7 @@ public class ItemStackActionType extends Type<ItemStackRequestAction> {
             case CraftCreative -> {
                 ItemStackRequestAction.CraftCreativeAction craftCreativeAction = (ItemStackRequestAction.CraftCreativeAction) value;
 
-                BedrockTypes.VAR_INT.write(buffer, craftCreativeAction.creativeItemNetworkId());
+                BedrockTypes.UNSIGNED_VAR_INT.write(buffer, craftCreativeAction.creativeItemNetworkId());
                 buffer.writeByte(craftCreativeAction.numberOfRequestedCrafts());
             }
             case CraftRecipeOptional -> {
