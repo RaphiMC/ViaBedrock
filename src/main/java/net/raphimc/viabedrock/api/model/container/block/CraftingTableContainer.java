@@ -171,7 +171,6 @@ public class CraftingTableContainer extends Container {
 
                 inventoryTracker.getHudContainer().setItem(0, resultItems.get(0)); // Update cursor to the crafted item
                 this.setItems(BedrockItem.emptyArray(10)); // Clear crafting grid and output
-                // TODO: We should probably remove this line as it could cause issues but it would make inventory more laggy
                 PacketFactory.sendJavaContainerSetContent(user, this);
 
                 return true;

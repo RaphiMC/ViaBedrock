@@ -34,12 +34,12 @@ public class ItemStackSlotResponseType extends Type<ItemStackResponseSlotInfo> {
         byte requestedSlot = buffer.readByte();
         byte slot = buffer.readByte();
         byte amount = buffer.readByte();
-        int itemId = BedrockTypes.VAR_INT.read(buffer);
+        int itemNetId = BedrockTypes.VAR_INT.read(buffer);
         String customName = BedrockTypes.STRING.read(buffer);
         String filteredCustomName = BedrockTypes.STRING.read(buffer);
         int durability = BedrockTypes.VAR_INT.read(buffer);
 
-        return new ItemStackResponseSlotInfo(requestedSlot, slot, amount, itemId, customName, filteredCustomName, durability);
+        return new ItemStackResponseSlotInfo(requestedSlot, slot, amount, itemNetId, customName, filteredCustomName, durability);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ItemStackSlotResponseType extends Type<ItemStackResponseSlotInfo> {
         buffer.writeByte(value.requestedSlot());
         buffer.writeByte(value.slot());
         buffer.writeByte(value.amount());
-        BedrockTypes.VAR_INT.write(buffer, value.itemId());
+        BedrockTypes.VAR_INT.write(buffer, value.itemNetId());
         BedrockTypes.STRING.write(buffer, value.customName());
         BedrockTypes.STRING.write(buffer, value.filteredCustomName());
         BedrockTypes.VAR_INT.write(buffer, value.durability());

@@ -17,5 +17,5 @@
  */
 package net.raphimc.viabedrock.experimental.model.inventory;
 
-public record ItemStackResponseSlotInfo(byte requestedSlot, byte slot, byte amount, int itemId, String customName, String filteredCustomName, int durability) {
+public record ItemStackResponseSlotInfo(byte requestedSlot, byte slot, byte amount, int itemNetId, String customName, String filteredCustomName, int durability) {
 }
