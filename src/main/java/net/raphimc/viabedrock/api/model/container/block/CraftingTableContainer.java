@@ -60,7 +60,8 @@ public class CraftingTableContainer extends Container {
     @Override
     public FullContainerName getFullContainerName(int slot) {
         return switch (slot) {
-            case 32, 33, 34, 35, 36, 37, 38, 39, 40 -> new FullContainerName(ContainerEnumName.CraftingInputContainer, null);
+            case 32, 33, 34, 35, 36, 37, 38, 39, 40 ->
+                    new FullContainerName(ContainerEnumName.CraftingInputContainer, null);
             case 50 -> new FullContainerName(ContainerEnumName.CreatedOutputContainer, null);
             default -> {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid slot " + slot + " in CraftingTableContainer");
@@ -167,10 +168,10 @@ public class CraftingTableContainer extends Container {
                 );
 
                 inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevCursorContainer, prevContainers)); // Store the request to track it later
-                ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[] {request});
+                ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[]{request});
 
                 inventoryTracker.getHudContainer().setItem(0, resultItems.get(0)); // Update cursor to the crafted item
-                this.setItems(BedrockItem.emptyArray(10)); // Clear crafting grid and output
+                this.setItems(BedrockItem.emptyArray(10)); // TODO: Clear crafting grid and output (Handle amount to remove)
                 PacketFactory.sendJavaContainerSetContent(user, this);
 
                 return true;
@@ -179,6 +180,7 @@ public class CraftingTableContainer extends Container {
                 return false;
             }
         } else {
+            //TODO: Handle output recipe showing properly (idk if java handles this client side)
             return super.handleClick(revision, javaSlot, button, action);
         }
     }
@@ -187,18 +189,20 @@ public class CraftingTableContainer extends Container {
     private CraftingDataStorage getRecipeData() {
         CraftingDataTracker craftingDataTracker = user.get(CraftingDataTracker.class);
         // TODO: Store in seperate lists based on tag/type for faster lookup
+        // TODO: Does item.identifier() match bedrock ItemId
         for (CraftingDataStorage craftingData : craftingDataTracker.getCraftingDataList()) {
-            switch (craftingData.type()) {
-                case SHAPELESS -> {
-                    ShapelessRecipe shapelessRecipe = (ShapelessRecipe) craftingData.recipe();
-                    // Check if the recipe matches the current crafting grid
-                    if (shapelessRecipe != null && shapelessRecipe.getRecipeTag().equals("crafting_table")) {
+            if (craftingData.recipe() != null && craftingData.recipe().getRecipeTag().equals("crafting_table")) {
+                switch (craftingData.type()) {
+                    case SHAPELESS -> {
+                        // TODO: Handle extra items in crafting grid that are not part of the recipe
+                        ShapelessRecipe shapelessRecipe = (ShapelessRecipe) craftingData.recipe();
+                        // Check if the recipe matches the current crafting grid
                         boolean allFound = true;
                         for (ItemDescriptor descriptor : shapelessRecipe.getIngredients()) {
                             switch (descriptor.getType()) {
                                 case DEFAULT -> {
                                     int itemId = ((ItemDescriptor.DefaultDescriptor) descriptor).itemId();
-                                    if (itemId == -1) {
+                                    if (itemId == -1 || itemId == 0) {
                                         continue;
                                     }
                                     boolean found = false;
@@ -236,19 +240,73 @@ public class CraftingTableContainer extends Container {
                                     break;
                                 }
                             }
-                        }
-                        if (allFound) {
-                            ViaBedrock.getPlatform().getLogger().warning("Shapeless recipe matched: " + shapelessRecipe.getUniqueId() + " (id: " + craftingData.networkId() + ")");
-                            return craftingData;
+
+                            if (allFound) {
+                                ViaBedrock.getPlatform().getLogger().warning("Shapeless recipe matched: " + shapelessRecipe.getUniqueId() + " (id: " + craftingData.networkId() + ")");
+                                return craftingData;
+                            }
                         }
                     }
-                }
-                case SHAPED -> {
-                    ShapedRecipe shapedRecipe = (ShapedRecipe) craftingData.recipe();
+                    case SHAPED -> {
+                        ShapedRecipe shapedRecipe = (ShapedRecipe) craftingData.recipe();
+                        boolean allFound = true;
+                        for (int i = 0; i < 9; i++) {
+                            BedrockItem item = this.getItem(i); // Crafting grid slots
+                            ItemDescriptor descriptor = shapedRecipe.getPattern()[i / 3][i % 3];
+                            switch (descriptor.getType()) {
+                                case DEFAULT -> {
+                                    int itemId = ((ItemDescriptor.DefaultDescriptor) descriptor).itemId();
+                                    if (itemId == -1 || itemId == 0) {
+                                        if (!item.isEmpty()) {
+                                            allFound = false;
+                                        }
+                                    } else {
+                                        if (item.identifier() != itemId) {
+                                            // Item does not match
+                                            allFound = false;
+                                        }
+                                    }
+                                }
+                                case ITEM_TAG -> {
+                                    String tag = ((ItemDescriptor.ItemTagDescriptor) descriptor).itemTag();
+                                    //ViaBedrock.getPlatform().getLogger().warning("Checking for item tag in shaped recipe: " + tag);
+                                    if (item.isEmpty() || item.tag() == null || !item.tag().contains(tag)) {
+                                        // Item does not match
+                                        allFound = false;
+                                    }
+                                }
+                                case INVALID -> {
+                                    if (!item.isEmpty()) {
+                                        allFound = false;
+                                    }
+                                }
+                                case COMPLEX_ALIAS -> {
+                                    // TODO: Not supported yet
+                                    allFound = false;
+                                }
+                                default -> {
+                                    ViaBedrock.getPlatform().getLogger().warning("Unknown ingredient type in shaped recipe: " + descriptor.getType());
+                                    allFound = false;
+                                }
+                            }
+                            if (!allFound) {
+                                break;
+                            }
+                        }
+                        if (allFound) {
+                            ViaBedrock.getPlatform().getLogger().warning("Shaped recipe matched: " + shapedRecipe.getUniqueId() + " (id: " + craftingData.networkId() + ")");
+                            return craftingData;
+                        }
 
-                }
-                default -> {
-                    continue;
+                    }
+                    case USER_DATA_SHAPELESS -> {
+                        // TODO: Not supported yet
+                        continue;
+                    }
+                    default -> {
+                        ViaBedrock.getPlatform().getLogger().warning("Unknown recipe type for crafting: " + craftingData.type() + " in recipe " + craftingData.recipe().getUniqueId());
+                        continue;
+                    }
                 }
             }
         }
@@ -257,6 +315,3 @@ public class CraftingTableContainer extends Container {
 
 
 }
-
-//[14:12:50:464] [SERVER BOUND] - ItemStackRequestPacket(requests=[ItemStackRequest(requestId=-7, actions=[CraftRecipeAction(recipeNetworkId=1136, numberOfRequestedCrafts=1), CraftResultsDeprecatedAction(resultItems=[BaseItemData(definition=SimpleItemDefinition(identifier=minecraft:blue_dye, runtimeId=431, version=LEGACY, componentBased=false, componentData=null), damage=0, count=1, tag=null, canPlace=[], canBreak=[], blockingTicks=0, blockDefinition=UnknownDefinition[runtimeId=0], usingNetId=false, netId=0)], timesCrafted=1), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=CRAFTING_INPUT, slot=36, stackNetworkId=56, containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null))), TakeAction(count=1, source=ItemStackRequestSlotData(container=CREATED_OUTPUT, slot=50, stackNetworkId=-7, containerName=FullContainerName(container=CREATED_OUTPUT, dynamicId=null)), destination=ItemStackRequestSlotData(container=CURSOR, slot=0, stackNetworkId=0, containerName=FullContainerName(container=CURSOR, dynamicId=null)))], filterStrings=[], textProcessingEventOrigin=null)])
-//[14:12:50:512] [CLIENT BOUND] - ItemStackResponsePacket(entries=[ItemStackResponse(result=OK, requestId=-7, containers=[ItemStackResponseContainer(container=CRAFTING_INPUT, items=[ItemStackResponseSlot(slot=36, hotbarSlot=36, count=63, stackNetworkId=56, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=CRAFTING_INPUT, dynamicId=null)), ItemStackResponseContainer(container=CURSOR, items=[ItemStackResponseSlot(slot=0, hotbarSlot=0, count=1, stackNetworkId=71, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=CURSOR, dynamicId=null))])])

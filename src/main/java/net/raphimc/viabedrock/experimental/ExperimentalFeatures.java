@@ -473,7 +473,7 @@ public class ExperimentalFeatures {
                 }
 
                 //TODO: This is required for crafting so that the cursor item net id is updated properly
-                //TODO: Check that the items match the request, if not resync the container
+                //TODO: Check that the items match the request, if not resync the container (We probably should do this anyway to be safe)
                 List<Container> mismatchedContainers = new ArrayList<>();
                 for (ItemStackResponseContainerInfo containerInfo : info.containers()) {
                     for (ItemStackResponseSlotInfo slotInfo : containerInfo.slots()) {
@@ -492,6 +492,7 @@ public class ExperimentalFeatures {
 
                         // Check if the item matches the expected item
                         BedrockItem expectedItem = container.getItem(javaSlot);
+                        if (expectedItem.isEmpty()) continue; //TODO
                         if (expectedItem.netId() == null || expectedItem.netId() != slotInfo.itemNetId() || expectedItem.amount() != slotInfo.amount()) {
                             ViaBedrock.getPlatform().getLogger().warning("Received item stack response with mismatch: expected " + expectedItem + " but got itemId=" + slotInfo.itemNetId() + ", amount=" + slotInfo.amount());
                             BedrockItem newItem = expectedItem.copy();

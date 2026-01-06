@@ -37,6 +37,7 @@ import java.util.logging.Level;
 
 public class ExperimentalContainer {
 
+    // TODO!!!!!!!!!!!!!!!! Hotbar is broken in inventory
     public static boolean handleClick(final UserConnection user, Container container, final int revision, final short javaSlot, final byte button, final ClickType action) {
         InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
         InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
