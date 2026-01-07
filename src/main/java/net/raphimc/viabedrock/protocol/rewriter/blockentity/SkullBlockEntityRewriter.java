@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     static {
         for (BedrockBlockState bedrockBlockState : BedrockProtocol.MAPPINGS.getBedrockBlockStates()) {
-            if ("skull".equals(BedrockProtocol.MAPPINGS.getBedrockBlockTags().get(bedrockBlockState.namespacedIdentifier()))) {
+            if ("skull".equals(BedrockProtocol.MAPPINGS.getBedrockCustomBlockTags().get(bedrockBlockState.namespacedIdentifier()))) {
                 final BlockState javaBlockState = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates().get(bedrockBlockState);
                 if (bedrockBlockState.properties().get("facing_direction").equals("1") && javaBlockState.properties().get("rotation").equals("0")) {
                     final int id = BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(javaBlockState, -1);

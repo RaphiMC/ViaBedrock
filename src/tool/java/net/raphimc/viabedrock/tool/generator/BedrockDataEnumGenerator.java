@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.tool;
+package net.raphimc.viabedrock.tool.generator;
 
 import net.raphimc.viabedrock.codegen.CodeGen;
 import net.raphimc.viabedrock.codegen.model.Javadoc;
@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 public class BedrockDataEnumGenerator {
 
     private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/2842b5c80249dc3a125b6892031cfc2fb1e4c1bd/html/enums.html";
-    private static final String ENUMS_PACKAGE = "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated";
     private static final List<String> IGNORED_FIELDS = Arrays.asList("deprecated", "count", "_count", "total", "all", "numenchantments", "numtagtypes", "abilitycount", "nummodes", "input_num", "total_operations", "total_operands", "numvalidversions", "num_categories");
     private static final Map<String, String> VALUE_REPLACEMENTS = new HashMap<>();
     private static final Pattern NUMBER_PATTERN = Pattern.compile("^\\d+$");

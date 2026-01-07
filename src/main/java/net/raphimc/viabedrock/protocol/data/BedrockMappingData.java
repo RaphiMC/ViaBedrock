@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,8 +86,8 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<BlockState, Integer> javaBlockStates;
     private Set<BedrockBlockState> bedrockBlockStates;
     private Map<BlockState, BlockState> bedrockToJavaBlockStates;
-    private Map<String, String> bedrockBlockTags;
-    private Map<String, Map<String, Set<String>>> bedrockBlockTraits;
+    private Map<String, String> bedrockCustomBlockTags;
+    private Map<String, Map<String, Map<String, Set<String>>>> bedrockBlockTraits;
     private BiMap<String, Integer> bedrockLegacyBlocks;
     private Int2ObjectMap<BedrockBlockState> bedrockLegacyBlockStates;
     private IntSet javaPreWaterloggedBlockStates;
@@ -105,7 +105,8 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> javaItems;
     private Set<String> bedrockBlockItems;
     private Set<String> bedrockMetaItems;
-    private Map<String, String> bedrockItemTags;
+    private Map<String, Set<String>> bedrockItemTags;
+    private Map<String, String> bedrockCustomItemTags;
     private Map<String, Map<BlockState, JavaItemMapping>> bedrockToJavaBlockItems;
     private Map<String, Map<Integer, JavaItemMapping>> bedrockToJavaMetaItems;
     private Map<ContainerType, Integer> bedrockToJavaContainers;
@@ -228,17 +229,17 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            final JsonObject bedrockBlockTagsJson = this.readJson("custom/block_tags.json");
-            this.bedrockBlockTags = new HashMap<>();
-            for (Map.Entry<String, JsonElement> entry : bedrockBlockTagsJson.entrySet()) {
+            final JsonObject bedrockCustomBlockTagsJson = this.readJson("custom/block_tags.json");
+            this.bedrockCustomBlockTags = new HashMap<>();
+            for (Map.Entry<String, JsonElement> entry : bedrockCustomBlockTagsJson.entrySet()) {
                 final String tagName = entry.getKey();
-                for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
-                    final String bedrockIdentifier = tagValueJson.getAsString();
+                for (JsonElement itemIdentifierJson : entry.getValue().getAsJsonArray()) {
+                    final String bedrockIdentifier = itemIdentifierJson.getAsString();
                     if (!bedrockBlockStatesByIdentifier.containsKey(bedrockIdentifier)) {
                         throw new RuntimeException("Unknown bedrock block: " + bedrockIdentifier);
                     }
-                    if (this.bedrockBlockTags.put(bedrockIdentifier, tagName) != null) {
-                        throw new RuntimeException("Duplicate bedrock block tag for " + bedrockIdentifier);
+                    if (this.bedrockCustomBlockTags.put(bedrockIdentifier, tagName) != null) {
+                        throw new RuntimeException("Duplicate bedrock custom block tag for " + bedrockIdentifier);
                     }
                 }
             }
@@ -247,20 +248,31 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockBlockTraits = new HashMap<>(bedrockBlockTraitsJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockBlockTraitsJson.entrySet()) {
                 final String traitName = entry.getKey();
-                final JsonObject traitStatesJson = entry.getValue().getAsJsonObject();
-                final Map<String, Set<String>> traitStates = new HashMap<>(traitStatesJson.size());
-                for (Map.Entry<String, JsonElement> traitStatesEntry : traitStatesJson.entrySet()) {
-                    final JsonArray statesJson = traitStatesEntry.getValue().getAsJsonArray();
-                    final Set<String> states = new LinkedHashSet<>(statesJson.size());
-                    for (JsonElement stateJson : statesJson) {
-                        if (!states.add(stateJson.getAsString())) {
-                            throw new RuntimeException("Duplicate bedrock block trait state for " + traitName + ": " + stateJson.getAsString());
+                final JsonObject enabledStatesJson = entry.getValue().getAsJsonObject();
+                final Map<String, Map<String, Set<String>>> traitStateProperties = new HashMap<>(enabledStatesJson.size());
+                for (Map.Entry<String, JsonElement> enabledStatesEntry : enabledStatesJson.entrySet()) {
+                    final String enabledStateName = enabledStatesEntry.getKey();
+                    final JsonObject propertiesJson = enabledStatesEntry.getValue().getAsJsonObject();
+                    final Map<String, Set<String>> properties = new HashMap<>(propertiesJson.size());
+                    for (Map.Entry<String, JsonElement> propertiesEntry : propertiesJson.entrySet()) {
+                        final String propertyName = propertiesEntry.getKey();
+                        final JsonArray valuesJson = propertiesEntry.getValue().getAsJsonArray();
+                        final Set<String> values = new LinkedHashSet<>(valuesJson.size());
+                        for (JsonElement valueJson : valuesJson) {
+                            if (!values.add(valueJson.getAsString())) {
+                                throw new RuntimeException("Duplicate value for property " + propertyName + " in enabled state " + enabledStateName + " of trait " + traitName);
+                            }
+                        }
+                        if (properties.put(propertyName, values) != null) {
+                            throw new RuntimeException("Duplicate property " + propertyName + " in enabled state " + enabledStateName + " of trait " + traitName);
                         }
                     }
-                    traitStates.put(traitStatesEntry.getKey(), states);
+                    if (traitStateProperties.put(enabledStateName, properties) != null) {
+                        throw new RuntimeException("Duplicate enabled state " + enabledStateName + " for trait " + traitName);
+                    }
                 }
-                if (this.bedrockBlockTraits.put(traitName, traitStates) != null) {
-                    throw new RuntimeException("Duplicate bedrock block trait for " + traitName);
+                if (this.bedrockBlockTraits.put(traitName, traitStateProperties) != null) {
+                    throw new RuntimeException("Duplicate bedrock block trait " + traitName);
                 }
             }
 
@@ -380,17 +392,35 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            final JsonObject bedrockItemTagsJson = this.readJson("custom/item_tags.json");
+            final JsonObject bedrockItemTagsJson = this.readJson("bedrock/item_tags.json");
             this.bedrockItemTags = new HashMap<>();
             for (Map.Entry<String, JsonElement> entry : bedrockItemTagsJson.entrySet()) {
                 final String tagName = entry.getKey();
-                for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
-                    final String bedrockIdentifier = tagValueJson.getAsString();
+                for (JsonElement itemIdentifierJson : entry.getValue().getAsJsonArray()) {
+                    final String bedrockIdentifier = itemIdentifierJson.getAsString();
                     if (!bedrockItems.contains(bedrockIdentifier)) {
                         throw new RuntimeException("Unknown bedrock item: " + bedrockIdentifier);
                     }
-                    if (this.bedrockItemTags.put(bedrockIdentifier, tagName) != null) {
-                        throw new RuntimeException("Duplicate bedrock item tag for " + bedrockIdentifier);
+                    if (!this.bedrockItemTags.containsKey(bedrockIdentifier)) {
+                        this.bedrockItemTags.put(bedrockIdentifier, new HashSet<>());
+                    }
+                    if (!this.bedrockItemTags.get(bedrockIdentifier).add(tagName)) {
+                        throw new RuntimeException("Duplicate bedrock item tag "+ tagName + " for " + bedrockIdentifier);
+                    }
+                }
+            }
+
+            final JsonObject bedrockCustomItemTagsJson = this.readJson("custom/item_tags.json");
+            this.bedrockCustomItemTags = new HashMap<>();
+            for (Map.Entry<String, JsonElement> entry : bedrockCustomItemTagsJson.entrySet()) {
+                final String tagName = entry.getKey();
+                for (JsonElement itemIdentifierJson : entry.getValue().getAsJsonArray()) {
+                    final String bedrockIdentifier = itemIdentifierJson.getAsString();
+                    if (!bedrockItems.contains(bedrockIdentifier)) {
+                        throw new RuntimeException("Unknown bedrock item: " + bedrockIdentifier);
+                    }
+                    if (this.bedrockCustomItemTags.put(bedrockIdentifier, tagName) != null) {
+                        throw new RuntimeException("Duplicate bedrock custom item tag for " + bedrockIdentifier);
                     }
                 }
             }
@@ -978,11 +1008,11 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaBlockStates;
     }
 
-    public Map<String, String> getBedrockBlockTags() {
-        return this.bedrockBlockTags;
+    public Map<String, String> getBedrockCustomBlockTags() {
+        return this.bedrockCustomBlockTags;
     }
 
-    public Map<String, Map<String, Set<String>>> getBedrockBlockTraits() {
+    public Map<String, Map<String, Map<String, Set<String>>>> getBedrockBlockTraits() {
         return this.bedrockBlockTraits;
     }
 
@@ -1038,8 +1068,12 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockMetaItems;
     }
 
-    public Map<String, String> getBedrockItemTags() {
+    public Map<String, Set<String>> getBedrockItemTags() {
         return this.bedrockItemTags;
+    }
+
+    public Map<String, String> getBedrockCustomItemTags() {
+        return this.bedrockCustomItemTags;
     }
 
     public Map<String, Map<BlockState, JavaItemMapping>> getBedrockToJavaBlockItems() {

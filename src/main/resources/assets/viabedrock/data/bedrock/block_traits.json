@@ -1,32 +1,75 @@
 {
+  "minecraft:connection": {
+    "minecraft:cardinal_connections": {
+      "minecraft:connection_north": [
+        "false",
+        "true"
+      ],
+      "minecraft:connection_east": [
+        "false",
+        "true"
+      ],
+      "minecraft:connection_south": [
+        "false",
+        "true"
+      ],
+      "minecraft:connection_west": [
+        "false",
+        "true"
+      ]
+    }
+  },
   "minecraft:placement_direction": {
-    "minecraft:cardinal_direction": [
-      "south",
-      "north",
-      "west",
-      "east"
-    ],
-    "minecraft:facing_direction": [
-      "down",
-      "up",
-      "south",
-      "north",
-      "west",
-      "east"
-    ]
+    "minecraft:cardinal_direction": {
+      "minecraft:cardinal_direction": [
+        "north",
+        "south",
+        "east",
+        "west"
+      ]
+    },
+    "minecraft:corner_and_cardinal_direction": {
+      "minecraft:cardinal_direction": [
+        "north",
+        "south",
+        "east",
+        "west"
+      ],
+      "minecraft:corner": [
+        "none",
+        "inner_left",
+        "inner_right",
+        "outer_left",
+        "outer_right"
+      ]
+    },
+    "minecraft:facing_direction": {
+      "minecraft:facing_direction": [
+        "down",
+        "up",
+        "north",
+        "south",
+        "east",
+        "west"
+      ]
+    }
   },
   "minecraft:placement_position": {
-    "minecraft:block_face": [
-      "down",
-      "up",
-      "south",
-      "north",
-      "west",
-      "east"
-    ],
-    "minecraft:vertical_half": [
-      "bottom",
-      "top"
-    ]
+    "minecraft:block_face": {
+      "minecraft:block_face": [
+        "down",
+        "up",
+        "north",
+        "south",
+        "east",
+        "west"
+      ]
+    },
+    "minecraft:vertical_half": {
+      "minecraft:vertical_half": [
+        "bottom",
+        "top"
+      ]
+    }
   }
 }
