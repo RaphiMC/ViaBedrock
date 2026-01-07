@@ -35,6 +35,7 @@ import net.raphimc.viabedrock.experimental.storage.CraftingDataStorage;
 import net.raphimc.viabedrock.experimental.storage.CraftingDataTracker;
 import net.raphimc.viabedrock.experimental.storage.InventoryRequestStorage;
 import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
@@ -45,10 +46,7 @@ import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 public class CraftingTableContainer extends Container {
@@ -228,11 +226,11 @@ public class CraftingTableContainer extends Container {
     }
 
     private boolean matchShapedRecipe(ShapedRecipe recipe) {
-        int width = recipe.getPattern().length;
-        int height = recipe.getPattern()[0].length;
+        int height = recipe.getPattern().length;
+        int width = recipe.getPattern()[0].length;
 
-        for (int startX = 0; startX <= 3 - width; startX++) {
-            for (int startY = 0; startY <= 3 - height; startY++) {
+        for (int startY = 0; startY <= 3 - height; startY++) {
+            for (int startX = 0; startX <= 3 - width; startX++) {
                 if (checkPattern(recipe, startX, startY) && noExtraItemsOutsidePattern(startX, startY, width, height)) {
                     return true;
                 }
@@ -260,9 +258,15 @@ public class CraftingTableContainer extends Container {
                 yield ((itemId == -1 || itemId == 0) && item.isEmpty()) || (!item.isEmpty() && item.identifier() == itemId);
             }
             case ITEM_TAG -> {
-                //TODO
+                if (item.isEmpty()) yield false;
+                ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+                String itemName = itemRewriter.getItems().inverse().get(item.identifier());
+                Set<String> tags = BedrockProtocol.MAPPINGS.getBedrockItemTags().get(itemName);
+
+                if (tags == null || tags.isEmpty()) yield false;
+
                 String tag = ((ItemDescriptor.ItemTagDescriptor) descriptor).itemTag();
-                yield !item.isEmpty() && item.tag() != null && item.tag().contains(tag);
+                yield tags.contains(tag);
             }
             case INVALID -> item.isEmpty();
             default -> false;
@@ -279,12 +283,12 @@ public class CraftingTableContainer extends Container {
     }
 
     private boolean checkPattern(ShapedRecipe recipe, int startX, int startY) {
-        int width = recipe.getPattern().length;
-        int height = recipe.getPattern()[0].length;
+        int height = recipe.getPattern().length;
+        int width = recipe.getPattern()[0].length;
 
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                ItemDescriptor descriptor = recipe.getPattern()[x][y];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                ItemDescriptor descriptor = recipe.getPattern()[y][x];
                 BedrockItem item = this.getItem((startY + y) * 3 + (startX + x) + 1);
                 if (!matchesDescriptor(descriptor, item)) {
                     return false;
