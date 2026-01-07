@@ -19,6 +19,11 @@ package net.raphimc.viabedrock.experimental.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,5 +42,25 @@ public class CraftingDataTracker extends StoredObject {
 
     public void updateCraftingDataList(List<CraftingDataStorage> craftingDataList) {
         this.craftingDataList = craftingDataList;
+    }
+
+    public void sendJavaRecipeBook(final UserConnection user) {
+        if (craftingDataList.isEmpty()) {
+            ViaBedrock.getPlatform().getLogger().warning("No crafting data available to send Java recipe book.");
+            return;
+        }
+
+        PacketWrapper packet = PacketWrapper.create(ClientboundPackets1_21_11.RECIPE_BOOK_ADD, user);
+        packet.write(Types.VAR_INT, craftingDataList.size()); // Number of recipes
+        for (CraftingDataStorage craftingData : craftingDataList) {
+            packet.write(Types.VAR_INT, craftingData.networkId()); // Recipe ID
+            craftingData.recipe().writeJavaRecipeData(packet, user);
+            packet.write(Types.VAR_INT, craftingData.networkId()); //TODO: Group Id
+            packet.write(Types.VAR_INT, 1); // TODO: Category ID
+            packet.write(Types.BOOLEAN, false); // Optional Ingredients list
+            packet.write(Types.BYTE, (byte) 0x00); // Recipe Flags (0x01: show notification; 0x02: highlight as new)
+        }
+        packet.write(Types.BOOLEAN, false); //  Replace or Add
+        packet.send(BedrockProtocol.class);
     }
 }

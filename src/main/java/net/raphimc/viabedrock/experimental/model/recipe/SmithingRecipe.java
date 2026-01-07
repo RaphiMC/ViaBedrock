@@ -17,6 +17,9 @@
  */
 package net.raphimc.viabedrock.experimental.model.recipe;
 
+import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 import java.util.UUID;
@@ -34,6 +37,16 @@ public class SmithingRecipe extends Recipe {
         this.baseIngredient = baseIngredient;
         this.additionIngredient = additionIngredient;
         this.result = result;
+    }
+
+    @Override
+    public void writeJavaRecipeData(final PacketWrapper packet, final UserConnection user) {
+        packet.write(Types.VAR_INT, 4); // Smithing recipe type
+        template.writeJavaIngredientData(packet, user);
+        baseIngredient.writeJavaIngredientData(packet, user);
+        additionIngredient.writeJavaIngredientData(packet, user);
+        new ItemDescriptor.DefaultDescriptor(result.identifier(), 0).writeJavaIngredientData(packet, user); //TODO: what is auxValue
+        new ItemDescriptor.InvalidDescriptor().writeJavaIngredientData(packet, user); //TODO: Crafting Station
     }
 
     @Override

@@ -18,7 +18,10 @@
 package net.raphimc.viabedrock.experimental.model.recipe;
 
 import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.RegistryEntry;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 import java.util.List;
@@ -43,6 +46,16 @@ public class ShapelessRecipe extends Recipe {
         return results;
     }
 
+    @Override
+    public void writeJavaRecipeData(final PacketWrapper packet, final UserConnection user) {
+        packet.write(Types.VAR_INT, 0); // Recipe Display Type
+        packet.write(Types.VAR_INT, this.getIngredients().size()); // Ingredient Count
+        for (ItemDescriptor ingredient : this.getIngredients()) {
+            ingredient.writeJavaIngredientData(packet, user); // Write each ingredient
+        }
+        new ItemDescriptor.DefaultDescriptor(results.get(0).identifier(), 0).writeJavaIngredientData(packet, user); //TODO: what is auxValue
+        new ItemDescriptor.InvalidDescriptor().writeJavaIngredientData(packet, user); //TODO: Crafting Station
+    }
 
     @Override
     public String toString() {

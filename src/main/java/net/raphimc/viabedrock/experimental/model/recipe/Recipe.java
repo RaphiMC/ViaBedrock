@@ -17,7 +17,8 @@
  */
 package net.raphimc.viabedrock.experimental.model.recipe;
 
-import com.viaversion.viaversion.api.minecraft.RegistryEntry;
+import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 
 import java.util.UUID;
 
@@ -47,6 +48,8 @@ public abstract class Recipe {
     public int getPriority() {
         return priority;
     }
+
+    public abstract void writeJavaRecipeData(final PacketWrapper packet, final UserConnection user);
 
     @Override
     public String toString() {

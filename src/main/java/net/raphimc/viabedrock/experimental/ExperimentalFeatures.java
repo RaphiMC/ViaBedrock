@@ -435,6 +435,8 @@ public class ExperimentalFeatures {
             }
             craftingDataTracker.updateCraftingDataList(recipes);
 
+            craftingDataTracker.sendJavaRecipeBook(wrapper.user()); //TODO: Cursed
+
             wrapper.clearPacket();
 
             // TODO: Potion Mixes

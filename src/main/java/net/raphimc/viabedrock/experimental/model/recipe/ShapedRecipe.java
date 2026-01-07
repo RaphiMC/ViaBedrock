@@ -17,6 +17,9 @@
  */
 package net.raphimc.viabedrock.experimental.model.recipe;
 
+import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 import java.util.Arrays;
@@ -46,6 +49,21 @@ public class ShapedRecipe extends Recipe {
 
     public boolean isMirrored() {
         return mirrored;
+    }
+
+    @Override
+    public void writeJavaRecipeData(final PacketWrapper packet, final UserConnection user) {
+        packet.write(Types.VAR_INT, 1); // Shaped recipe type
+        packet.write(Types.VAR_INT, pattern[0].length); // Width
+        packet.write(Types.VAR_INT, pattern.length); // Height
+        packet.write(Types.VAR_INT, pattern[0].length * pattern.length); // Number of ingredients
+        for (ItemDescriptor[] row : pattern) {
+            for (ItemDescriptor descriptor : row) {
+                descriptor.writeJavaIngredientData(packet, user);
+            }
+        }
+        new ItemDescriptor.DefaultDescriptor(results.get(0).identifier(), 0).writeJavaIngredientData(packet, user); //TODO: what is auxValue
+        new ItemDescriptor.InvalidDescriptor().writeJavaIngredientData(packet, user); //TODO: Crafting Station
     }
 
     @Override
