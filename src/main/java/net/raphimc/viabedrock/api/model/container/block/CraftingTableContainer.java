@@ -185,133 +185,129 @@ public class CraftingTableContainer extends Container {
         }
     }
 
-    // TODO: Move this method somewhere else
     private CraftingDataStorage getRecipeData() {
         CraftingDataTracker craftingDataTracker = user.get(CraftingDataTracker.class);
-        // TODO: Store in seperate lists based on tag/type for faster lookup
-        // TODO: Does item.identifier() match bedrock ItemId
+
         for (CraftingDataStorage craftingData : craftingDataTracker.getCraftingDataList()) {
-            if (craftingData.recipe() != null && craftingData.recipe().getRecipeTag().equals("crafting_table")) {
-                switch (craftingData.type()) {
-                    case SHAPELESS -> {
-                        // TODO: Handle extra items in crafting grid that are not part of the recipe
-                        ShapelessRecipe shapelessRecipe = (ShapelessRecipe) craftingData.recipe();
-                        // Check if the recipe matches the current crafting grid
-                        boolean allFound = true;
-                        for (ItemDescriptor descriptor : shapelessRecipe.getIngredients()) {
-                            switch (descriptor.getType()) {
-                                case DEFAULT -> {
-                                    int itemId = ((ItemDescriptor.DefaultDescriptor) descriptor).itemId();
-                                    if (itemId == -1 || itemId == 0) {
-                                        continue;
-                                    }
-                                    boolean found = false;
-                                    for (int slot = 1; slot <= 9; slot++) {
-                                        BedrockItem item = this.getItem(slot); // Crafting grid slots
-                                        if (!item.isEmpty() && item.identifier() == itemId) {
-                                            found = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!found) {
-                                        allFound = false;
-                                        break;
-                                    }
-                                }
-                                case ITEM_TAG -> {
-                                    String tag = ((ItemDescriptor.ItemTagDescriptor) descriptor).itemTag();
-                                    //ViaBedrock.getPlatform().getLogger().warning("Checking for item tag in shapeless recipe: " + tag);
-                                    boolean found = false;
-                                    for (int slot = 1; slot <= 9; slot++) {
-                                        BedrockItem item = this.getItem(slot); // Crafting grid slots
-                                        if (!item.isEmpty() && item.tag() != null && item.tag().contains(tag)) {
-                                            found = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!found) {
-                                        allFound = false;
-                                        break;
-                                    }
-                                }
-                                default -> {
-                                    ViaBedrock.getPlatform().getLogger().warning("Unknown ingredient type in shapeless recipe: " + descriptor.getType());
-                                    allFound = false;
-                                    break;
-                                }
-                            }
+            if (craftingData.recipe() == null || !craftingData.recipe().getRecipeTag().equals("crafting_table")) {
+                continue;
+            }
 
-                            if (allFound) {
-                                ViaBedrock.getPlatform().getLogger().warning("Shapeless recipe matched: " + shapelessRecipe.getUniqueId() + " (id: " + craftingData.networkId() + ")");
-                                return craftingData;
-                            }
-                        }
+            switch (craftingData.type()) {
+                case SHAPELESS -> {
+                    if (matchShapelessRecipe((ShapelessRecipe) craftingData.recipe())) {
+                        return craftingData;
                     }
-                    case SHAPED -> {
-                        ShapedRecipe shapedRecipe = (ShapedRecipe) craftingData.recipe();
-                        boolean allFound = true;
-                        for (int i = 0; i < 9; i++) {
-                            BedrockItem item = this.getItem(i); // Crafting grid slots
-                            ItemDescriptor descriptor = shapedRecipe.getPattern()[i / 3][i % 3];
-                            switch (descriptor.getType()) {
-                                case DEFAULT -> {
-                                    int itemId = ((ItemDescriptor.DefaultDescriptor) descriptor).itemId();
-                                    if (itemId == -1 || itemId == 0) {
-                                        if (!item.isEmpty()) {
-                                            allFound = false;
-                                        }
-                                    } else {
-                                        if (item.identifier() != itemId) {
-                                            // Item does not match
-                                            allFound = false;
-                                        }
-                                    }
-                                }
-                                case ITEM_TAG -> {
-                                    String tag = ((ItemDescriptor.ItemTagDescriptor) descriptor).itemTag();
-                                    //ViaBedrock.getPlatform().getLogger().warning("Checking for item tag in shaped recipe: " + tag);
-                                    if (item.isEmpty() || item.tag() == null || !item.tag().contains(tag)) {
-                                        // Item does not match
-                                        allFound = false;
-                                    }
-                                }
-                                case INVALID -> {
-                                    if (!item.isEmpty()) {
-                                        allFound = false;
-                                    }
-                                }
-                                case COMPLEX_ALIAS -> {
-                                    // TODO: Not supported yet
-                                    allFound = false;
-                                }
-                                default -> {
-                                    ViaBedrock.getPlatform().getLogger().warning("Unknown ingredient type in shaped recipe: " + descriptor.getType());
-                                    allFound = false;
-                                }
-                            }
-                            if (!allFound) {
-                                break;
-                            }
-                        }
-                        if (allFound) {
-                            ViaBedrock.getPlatform().getLogger().warning("Shaped recipe matched: " + shapedRecipe.getUniqueId() + " (id: " + craftingData.networkId() + ")");
-                            return craftingData;
-                        }
-
+                }
+                case SHAPED -> {
+                    if (matchShapedRecipe((ShapedRecipe) craftingData.recipe())) {
+                        return craftingData;
                     }
-                    case USER_DATA_SHAPELESS -> {
-                        // TODO: Not supported yet
-                        continue;
-                    }
-                    default -> {
-                        ViaBedrock.getPlatform().getLogger().warning("Unknown recipe type for crafting: " + craftingData.type() + " in recipe " + craftingData.recipe().getUniqueId());
-                        continue;
-                    }
+                }
+                case USER_DATA_SHAPELESS -> {
+                    // TODO: Not supported yet
+                }
+                default -> {
+                    ViaBedrock.getPlatform().getLogger().warning(
+                            "Unknown recipe type for crafting: " + craftingData.type() + " in recipe " + craftingData.recipe().getUniqueId()
+                    );
                 }
             }
         }
         return null;
     }
+
+    private boolean matchShapelessRecipe(ShapelessRecipe recipe) {
+        boolean[] used = new boolean[10];
+        for (ItemDescriptor descriptor : recipe.getIngredients()) {
+            if (!findMatchingSlot(descriptor, used)) {
+                return false;
+            }
+        }
+        return noExtraItems(used);
+    }
+
+    private boolean matchShapedRecipe(ShapedRecipe recipe) {
+        int width = recipe.getPattern().length;
+        int height = recipe.getPattern()[0].length;
+
+        for (int startX = 0; startX <= 3 - width; startX++) {
+            for (int startY = 0; startY <= 3 - height; startY++) {
+                if (checkPattern(recipe, startX, startY) && noExtraItemsOutsidePattern(startX, startY, width, height)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean findMatchingSlot(ItemDescriptor descriptor, boolean[] used) {
+        for (int slot = 1; slot <= 9; slot++) {
+            if (used[slot]) continue;
+            BedrockItem item = this.getItem(slot);
+            if (matchesDescriptor(descriptor, item)) {
+                used[slot] = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean matchesDescriptor(ItemDescriptor descriptor, BedrockItem item) {
+        return switch (descriptor.getType()) {
+            case DEFAULT -> {
+                int itemId = ((ItemDescriptor.DefaultDescriptor) descriptor).itemId();
+                yield ((itemId == -1 || itemId == 0) && item.isEmpty()) || (!item.isEmpty() && item.identifier() == itemId);
+            }
+            case ITEM_TAG -> {
+                //TODO
+                String tag = ((ItemDescriptor.ItemTagDescriptor) descriptor).itemTag();
+                yield !item.isEmpty() && item.tag() != null && item.tag().contains(tag);
+            }
+            case INVALID -> item.isEmpty();
+            default -> false;
+        };
+    }
+
+    private boolean noExtraItems(boolean[] used) {
+        for (int slot = 1; slot <= 9; slot++) {
+            if (!used[slot] && !this.getItem(slot).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkPattern(ShapedRecipe recipe, int startX, int startY) {
+        int width = recipe.getPattern().length;
+        int height = recipe.getPattern()[0].length;
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                ItemDescriptor descriptor = recipe.getPattern()[x][y];
+                BedrockItem item = this.getItem((startY + y) * 3 + (startX + x) + 1);
+                if (!matchesDescriptor(descriptor, item)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean noExtraItemsOutsidePattern(int startX, int startY, int width, int height) {
+        for (int gx = 0; gx < 3; gx++) {
+            for (int gy = 0; gy < 3; gy++) {
+                if (gx >= startX && gx < startX + width && gy >= startY && gy < startY + height) {
+                    continue;
+                }
+                if (!this.getItem(gy * 3 + gx + 1).isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 
 
 }

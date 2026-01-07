@@ -17,6 +17,8 @@
  */
 package net.raphimc.viabedrock.experimental.model.recipe;
 
+import com.viaversion.viaversion.api.minecraft.RegistryEntry;
+
 import java.util.UUID;
 
 public abstract class Recipe {
@@ -44,6 +46,16 @@ public abstract class Recipe {
     }
     public int getPriority() {
         return priority;
+    }
+
+    @Override
+    public String toString() {
+        return "Recipe{" +
+                "uniqueId='" + uniqueId + '\'' +
+                ", recipeId=" + recipeId +
+                ", recipeTag='" + recipeTag + '\'' +
+                ", priority=" + priority +
+                '}';
     }
 
 }

@@ -17,6 +17,8 @@
  */
 package net.raphimc.viabedrock.experimental.model.recipe;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.viaversion.api.minecraft.RegistryEntry;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 import java.util.List;
@@ -39,6 +41,19 @@ public class ShapelessRecipe extends Recipe {
 
     public List<BedrockItem> getResults() {
         return results;
+    }
+
+
+    @Override
+    public String toString() {
+        return "ShapelessRecipe{" +
+                "uniqueId='" + getUniqueId() + '\'' +
+                ", recipeId=" + getRecipeId() +
+                ", recipeTag='" + getRecipeTag() + '\'' +
+                ", priority=" + getPriority() +
+                ", ingredients=" + ingredients +
+                ", results=" + results +
+                '}';
     }
 
 }

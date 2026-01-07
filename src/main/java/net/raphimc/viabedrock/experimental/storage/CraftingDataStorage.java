@@ -19,5 +19,15 @@ package net.raphimc.viabedrock.experimental.storage;
 
 import net.raphimc.viabedrock.experimental.model.recipe.Recipe;
 import net.raphimc.viabedrock.experimental.model.recipe.RecipeType;
+import org.jspecify.annotations.NonNull;
 
-public record CraftingDataStorage(RecipeType type, int networkId, Recipe recipe) {}
+public record CraftingDataStorage(RecipeType type, int networkId, Recipe recipe) {
+    @Override
+    public @NonNull String toString() {
+        return "CraftingDataStorage{" +
+                "type=" + type +
+                ", networkId=" + networkId +
+                ", recipe=" + recipe.toString() +
+                '}';
+    }
+}

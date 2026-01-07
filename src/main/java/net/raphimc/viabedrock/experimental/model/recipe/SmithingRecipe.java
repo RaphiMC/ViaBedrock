@@ -36,4 +36,14 @@ public class SmithingRecipe extends Recipe {
         this.result = result;
     }
 
+    @Override
+    public String toString() {
+        return "SmithingRecipe{" +
+                "template=" + template +
+                ", baseIngredient=" + baseIngredient +
+                ", additionIngredient=" + additionIngredient +
+                ", result=" + result +
+                "} " + super.toString();
+    }
+
 }

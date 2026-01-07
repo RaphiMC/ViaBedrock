@@ -494,7 +494,6 @@ public class ExperimentalFeatures {
                         BedrockItem expectedItem = container.getItem(javaSlot);
                         if (expectedItem.isEmpty()) continue; //TODO
                         if (expectedItem.netId() == null || expectedItem.netId() != slotInfo.itemNetId() || expectedItem.amount() != slotInfo.amount()) {
-                            ViaBedrock.getPlatform().getLogger().warning("Received item stack response with mismatch: expected " + expectedItem + " but got itemId=" + slotInfo.itemNetId() + ", amount=" + slotInfo.amount());
                             BedrockItem newItem = expectedItem.copy();
                             newItem.setNetId(slotInfo.itemNetId());
                             newItem.setAmount(slotInfo.amount());

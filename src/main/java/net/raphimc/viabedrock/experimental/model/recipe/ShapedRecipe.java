@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.experimental.model.recipe;
 
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,6 +46,15 @@ public class ShapedRecipe extends Recipe {
 
     public boolean isMirrored() {
         return mirrored;
+    }
+
+    @Override
+    public String toString() {
+        return "ShapedRecipe{" +
+                "pattern=" + Arrays.deepToString(pattern) +
+                ", results=" + results +
+                ", mirrored=" + mirrored +
+                "} " + super.toString();
     }
 
 }
