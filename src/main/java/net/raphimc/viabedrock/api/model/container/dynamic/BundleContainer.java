@@ -139,7 +139,7 @@ public class BundleContainer extends Container {
             final BedrockItem item = items[i];
             if (item.isEmpty() || item.tag() == null) continue;
 
-            final String itemTag = BedrockProtocol.MAPPINGS.getBedrockItemTags().getOrDefault(itemRewriter.getItems().inverse().get(item.identifier()), "");
+            final String itemTag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().getOrDefault(itemRewriter.getItems().inverse().get(item.identifier()), "");
             if (!itemTag.equals("bundle")) continue;
 
             final IntTag bundleIdTag = item.tag().getIntTag("bundle_id");

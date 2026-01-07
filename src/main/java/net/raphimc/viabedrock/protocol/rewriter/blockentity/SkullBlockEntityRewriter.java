@@ -40,7 +40,7 @@ public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     static {
         for (BedrockBlockState bedrockBlockState : BedrockProtocol.MAPPINGS.getBedrockBlockStates()) {
-            if ("skull".equals(BedrockProtocol.MAPPINGS.getBedrockBlockTags().get(bedrockBlockState.namespacedIdentifier()))) {
+            if ("skull".equals(BedrockProtocol.MAPPINGS.getBedrockCustomBlockTags().get(bedrockBlockState.namespacedIdentifier()))) {
                 final BlockState javaBlockState = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates().get(bedrockBlockState);
                 if (bedrockBlockState.properties().get("facing_direction").equals("1") && javaBlockState.properties().get("rotation").equals("0")) {
                     final int id = BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(javaBlockState, -1);

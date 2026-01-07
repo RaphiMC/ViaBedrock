@@ -206,7 +206,7 @@ public class ItemRewriter extends StoredObject {
             }
         }
 
-        final String tag = BedrockProtocol.MAPPINGS.getBedrockItemTags().get(identifier);
+        final String tag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(identifier);
         if (ITEM_NBT_REWRITERS.containsKey(tag)) {
             ITEM_NBT_REWRITERS.get(tag).toJava(this.user(), bedrockItem, javaItem);
         }

@@ -35,6 +35,9 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 ### data/bedrock/game_rules.json
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
+### data/bedrock/item_tags.json
+[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/e9097a1f87cea40354ad59fad43e28fc097d800f/item_tags.json)
+
 ### data/bedrock/level_sound_event_mappings.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
 
