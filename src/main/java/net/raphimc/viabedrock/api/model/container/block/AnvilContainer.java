@@ -32,6 +32,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnu
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
@@ -87,47 +88,62 @@ public class AnvilContainer extends Container {
                 InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
                 InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
 
+                int requestId = inventoryRequestTracker.nextRequestId();
+
                 List<Container> prevContainers = new ArrayList<>();
                 prevContainers.add(this.copy());
                 prevContainers.add(inventoryTracker.getInventoryContainer().copy());
                 Container prevCursorContainer = inventoryTracker.getHudContainer().copy();
 
-                List<ItemStackRequestAction> actions = List.of(
-                        new ItemStackRequestAction.CraftRecipeOptionalAction(0, 0), //TODO: This needs more debugging
-                        new ItemStackRequestAction.ConsumeAction(1,/*Probably needs an algo*/ new ItemStackRequestSlotInfo(
-                                new FullContainerName(ContainerEnumName.AnvilMaterialContainer, null),
-                                (byte) 2,
-                                this.getItem(1).netId()
-                        )),
-                        new ItemStackRequestAction.ConsumeAction(1, new ItemStackRequestSlotInfo(
+                BedrockItem resultItem = this.getItem(0);
+
+                List<ItemStackRequestAction> actions = new ArrayList<>();
+                actions.add(new ItemStackRequestAction.CraftRecipeOptionalAction(0, 0)); //TODO: This needs more debugging
+
+                // TODO: Recipe Check
+                if (!this.getItem(1).isEmpty()) {
+                    actions.add(new ItemStackRequestAction.ConsumeAction(1,/*Probably needs an algo*/ new ItemStackRequestSlotInfo(
+                            new FullContainerName(ContainerEnumName.AnvilMaterialContainer, null),
+                            (byte) 2,
+                            this.getItem(1).netId()
+                    )));
+                }
+
+                actions.add(new ItemStackRequestAction.ConsumeAction(1, new ItemStackRequestSlotInfo(
                                 new FullContainerName(ContainerEnumName.AnvilInputContainer, null),
                                 (byte) 1,
                                 this.getItem(0).netId()
-                        )),
-                        new ItemStackRequestAction.PlaceAction(1,/*Probably needs an algo*/ new ItemStackRequestSlotInfo(
+                        )));
+                actions.add(new ItemStackRequestAction.PlaceAction(1,/*Probably needs an algo*/ new ItemStackRequestSlotInfo(
                                 new FullContainerName(ContainerEnumName.CreatedOutputContainer, null),
                                 (byte) 50,
-                                this.getItem(2).netId()
-                        ), new ItemStackRequestSlotInfo(
-                                new FullContainerName(ContainerEnumName.CombinedHotbarAndInventoryContainer, null),
-                                (byte) 1, // TODO: Might need an algo to find a free slot
-                                0 // Will be filled by the server
-                        ))
-                );
+                                requestId
+                            ), new ItemStackRequestSlotInfo( // TODO: Shift click
+                                    new FullContainerName(ContainerEnumName.CursorContainer, null),
+                                    (byte) 0,
+                                    0 // Will be filled by the server
+                            )));
 
                 List<String> filterStrings = new ArrayList<>();
                 TextProcessingEventOrigin origin = TextProcessingEventOrigin.unknown;
                 if (!this.getRenameText().isEmpty()) {
                     filterStrings.add(this.getRenameText());
                     origin = TextProcessingEventOrigin.AnvilText;
+
+                    //TODO: Set the renamed item name
+                    //resultItem.
                 }
 
                 ItemStackRequestInfo request = new ItemStackRequestInfo(
-                        inventoryRequestTracker.nextRequestId(),
+                        requestId,
                         actions,
                         filterStrings,
                         origin
                 );
+
+                this.setItem(0, BedrockItem.empty()); // Clear the input item
+                this.setItem(1, BedrockItem.empty()); // Clear the material item (TODO: May need an algo)
+                inventoryTracker.getHudContainer().setItem(0, resultItem);
 
                 inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevCursorContainer, prevContainers)); // Store the request to track it later
                 ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[] {request});
