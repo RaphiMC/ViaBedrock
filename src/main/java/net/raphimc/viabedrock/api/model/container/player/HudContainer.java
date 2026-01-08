@@ -18,11 +18,39 @@
 package net.raphimc.viabedrock.api.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
+import net.raphimc.viabedrock.experimental.model.recipe.ItemDescriptor;
+import net.raphimc.viabedrock.experimental.model.recipe.ShapedRecipe;
+import net.raphimc.viabedrock.experimental.model.recipe.ShapelessRecipe;
+import net.raphimc.viabedrock.experimental.storage.CraftingDataStorage;
+import net.raphimc.viabedrock.experimental.storage.CraftingDataTracker;
+import net.raphimc.viabedrock.experimental.storage.InventoryRequestStorage;
+import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
+import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 
 public class HudContainer extends InventoryRedirectContainer {
 
@@ -37,15 +65,18 @@ public class HudContainer extends InventoryRedirectContainer {
             return new FullContainerName(ContainerEnumName.CursorContainer, null);
         } else if (slot >= 28 && slot <= 31) {
             return new FullContainerName(ContainerEnumName.CraftingInputContainer, null);
+        } else if (slot == 50) {
+            return new FullContainerName(ContainerEnumName.CraftingOutputPreviewContainer, null);
         } else {
             return new FullContainerName(ContainerEnumName.CursorContainer, null); // TODO: This should not happen
         }
     }
 
     @Override
-    public boolean setItem(final int slot, final BedrockItem item) {
-        if (super.setItem(slot, item)) {
-            return slot == 0 || (slot >= 28 && slot <= 31);
+    public boolean setItem(final int javaSlot, final BedrockItem item) {
+        if (super.setItem(javaSlot, item)) {
+            int bedrockSlot = this.bedrockSlot(javaSlot);
+            return bedrockSlot == 0 || (bedrockSlot >= 28 && bedrockSlot <= 31) || bedrockSlot == 50;
         } else {
             return false;
         }
@@ -68,5 +99,7 @@ public class HudContainer extends InventoryRedirectContainer {
             return super.bedrockSlot(slot);
         }
     }
+
+    // TODO: Crafting (Currently clashes with hotbar)
 
 }

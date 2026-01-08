@@ -56,6 +56,7 @@ import net.lenni0451.mcstructs_bedrock.forms.types.ModalForm;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTextUtils;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
+import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.container.block.*;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
@@ -117,6 +118,12 @@ public class InventoryPackets {
                 title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(customNameTag.getValue()));
             }
 
+            int size = 27;
+            if (blockEntity != null && blockEntity.tag().getString("id").equals("Chest") && blockEntity.tag().contains("pairlead")) {
+                // Double chest
+                size = 54;
+            }
+
             final Container container;
             switch (type) {
                 case INVENTORY -> {
@@ -124,7 +131,7 @@ public class InventoryPackets {
                     wrapper.cancel();
                     return;
                 }
-                case CONTAINER -> container = new ChestContainer(wrapper.user(), containerId, title, position, 27);
+                case CONTAINER -> container = new ChestContainer(wrapper.user(), containerId, title, position, size);
                 case FURNACE -> container = new FurnaceContainer(wrapper.user(), containerId, title, position);
                 case BLAST_FURNACE -> container = new BlastFurnaceContainer(wrapper.user(), containerId, title, position);
                 case SMOKER -> container = new SmokerContainer(wrapper.user(), containerId, title, position);
@@ -148,7 +155,12 @@ public class InventoryPackets {
             inventoryTracker.setCurrentContainer(container);
 
             wrapper.write(Types.VAR_INT, (int) containerId); // container id
-            wrapper.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(type)); // type
+            if (blockEntity != null && blockEntity.tag().getString("id").equals("Chest") && blockEntity.tag().contains("pairlead")) {
+                //TODO: Temporary fix
+                wrapper.write(Types.VAR_INT, 5); // generic_9x6
+            } else {
+                wrapper.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(type)); // type
+            }
             wrapper.write(Types.TAG, TextUtil.textComponentToNbt(title)); // title
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_21_11.CONTAINER_CLOSE, new PacketHandlers() {
