@@ -140,10 +140,10 @@ public class CraftingTableContainer extends Container {
         prevContainers.add(inventoryTracker.getInventoryContainer().copy());
         Container prevCursorContainer = inventoryTracker.getHudContainer().copy();
 
-        int craftableAmount = 1;//this.getCraftableAmount(craftingDataStorage);
+        int craftableAmount = 1;
 
         int bedrockSlot = this.bedrockSlot(javaSlot);
-        craftableAmount = button == 0 ? 1 : craftableAmount; // Left click = 1, right click = max, shift click = max to inventory
+        // TODO: shift click = max to inventory
 
         List<ItemStackRequestAction> actions = new ArrayList<>();
         actions.add(new ItemStackRequestAction.CraftRecipeAction(craftingDataStorage.networkId(), craftableAmount));
