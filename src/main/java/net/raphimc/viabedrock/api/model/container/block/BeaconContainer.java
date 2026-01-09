@@ -24,6 +24,7 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
@@ -36,7 +37,9 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnu
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.BlockProperties;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
+import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 import java.util.ArrayList;
@@ -54,6 +57,37 @@ public class BeaconContainer extends Container {
         // TODO: Dynamically set this based on the beacon's current level
         propertiesPacket.write(Types.SHORT, (short) 4); // Property Value (0-4)
         propertiesPacket.scheduleSend(BedrockProtocol.class);
+
+        ChunkTracker chunkTracker = user.get(ChunkTracker.class);
+        BedrockBlockEntity bedrockBlockEntity = chunkTracker.getBlockEntity(position);
+        if (bedrockBlockEntity != null) {
+            int primaryEffect = bedrockBlockEntity.tag().getInt("primary", 0);
+            int secondaryEffect = bedrockBlockEntity.tag().getInt("secondary", 0);
+
+            //TODO: This is kinda cooked, refactor later
+            final String bedrockIdentifierPrimary = BedrockProtocol.MAPPINGS.getBedrockEffects().inverse().get(primaryEffect);
+            final String bedrockIdentifierSecondary = BedrockProtocol.MAPPINGS.getBedrockEffects().inverse().get(secondaryEffect);
+
+            final String javaIdentifierPrimary = BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(bedrockIdentifierPrimary);
+            final String javaIdentifierSecondary = BedrockProtocol.MAPPINGS.getBedrockToJavaEffects().get(bedrockIdentifierSecondary);
+
+            final int javaIdPrimary = javaIdentifierPrimary == null ? -1 : BedrockProtocol.MAPPINGS.getJavaEffects().get(javaIdentifierPrimary);
+            final int javaIdSecondary = javaIdentifierSecondary == null ? -1 : BedrockProtocol.MAPPINGS.getJavaEffects().get(javaIdentifierSecondary);
+
+            ViaBedrock.getPlatform().getLogger().info("Beacon effects - Primary: " + javaIdPrimary + " Secondary: " + javaIdSecondary);
+
+            PacketWrapper propertiesPacket2 = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_DATA, user);
+            propertiesPacket2.write(Types.VAR_INT, (int) containerId);
+            propertiesPacket2.write(Types.SHORT, (short) 1); // Property ID (First potion effect )
+            propertiesPacket2.write(Types.SHORT, (short) javaIdPrimary); // Property Value
+            propertiesPacket2.scheduleSend(BedrockProtocol.class);
+
+            PacketWrapper propertiesPacket3 = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_DATA, user);
+            propertiesPacket3.write(Types.VAR_INT, (int) containerId);
+            propertiesPacket3.write(Types.SHORT, (short) 2); // Property ID (Second potion effect )
+            propertiesPacket3.write(Types.SHORT, (short) javaIdSecondary); // Property Value
+            propertiesPacket3.scheduleSend(BedrockProtocol.class);
+        }
     }
 
     @Override
