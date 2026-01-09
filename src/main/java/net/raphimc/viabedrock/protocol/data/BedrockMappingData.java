@@ -124,6 +124,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> javaEffects;
     private BiMap<String, Integer> bedrockEffects;
     private Map<String, String> bedrockToJavaEffects;
+    private Map<String, String> javaToBedrockEffects; //TODO: I dont know how bimaps work
 
     // World Effects
     private BiMap<String, Integer> javaSounds;
@@ -695,6 +696,11 @@ public class BedrockMappingData extends MappingDataBase {
                     throw new IllegalStateException("Missing bedrock -> java effect mapping for " + bedrockIdentifier);
                 }
             }
+
+            Map<String, String> inverse = new java.util.HashMap<>(bedrockToJavaEffects.size());
+            bedrockToJavaEffects.forEach((k, v) -> inverse.put(v, k));
+            this.javaToBedrockEffects = inverse;
+
         }
 
         { // World Effects
@@ -1126,6 +1132,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<String, String> getBedrockToJavaEffects() {
         return this.bedrockToJavaEffects;
+    }
+
+    public Map<String, String> getJavaToBedrockEffects() {
+        return this.javaToBedrockEffects;
     }
 
     public BiMap<String, Integer> getJavaSounds() {

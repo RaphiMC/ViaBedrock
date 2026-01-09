@@ -27,6 +27,7 @@ import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPa
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.block.AnvilContainer;
+import net.raphimc.viabedrock.api.model.container.block.BeaconContainer;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
@@ -311,9 +312,24 @@ public class ExperimentalFeatures {
         });
         protocol.registerServerbound(ServerboundPackets1_21_6.SET_BEACON, null, wrapper -> {
             wrapper.cancel();
-            final int primaryPower = wrapper.read(Types.OPTIONAL_VAR_INT);
-            final int secondaryPower = wrapper.read(Types.OPTIONAL_VAR_INT);
-            // TODO
+            if (!ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) return;
+
+            int primaryPower = -1;
+            int secondaryPower = -1;
+
+            final boolean hasPrimary = wrapper.read(Types.BOOLEAN);
+            if (hasPrimary) {
+                primaryPower = wrapper.read(Types.VAR_INT);
+            }
+            final boolean hasSecondary = wrapper.read(Types.BOOLEAN);
+            if (hasSecondary) {
+                secondaryPower = wrapper.read(Types.VAR_INT);
+            }
+
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            if (inventoryTracker.isContainerOpen() && inventoryTracker.getCurrentContainer() instanceof BeaconContainer beaconContainer) {
+                beaconContainer.updateEffects(primaryPower, secondaryPower);
+            }
         });
         protocol.registerServerbound(ServerboundPackets1_21_6.RENAME_ITEM, null, wrapper -> {
             wrapper.cancel();
@@ -468,6 +484,7 @@ public class ExperimentalFeatures {
                     inventoryTracker.getHudContainer().setItems(requestInfo.prevCursorContainer().getItems().clone());
                     for (Container container : requestInfo.prevContainers()) {
                         Container newContainer = inventoryTracker.getContainerClientbound(container.containerId(), container.getFullContainerName(0), null);
+                        if (newContainer == null) continue;
                         newContainer.setItems(container.getItems().clone());
                         PacketFactory.sendJavaContainerSetContent(wrapper.user(), newContainer);  // Resync the container content on Java side
                     }
