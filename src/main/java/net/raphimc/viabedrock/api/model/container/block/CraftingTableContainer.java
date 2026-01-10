@@ -65,10 +65,7 @@ public class CraftingTableContainer extends Container {
             case 32, 33, 34, 35, 36, 37, 38, 39, 40 ->
                     new FullContainerName(ContainerEnumName.CraftingInputContainer, null);
             case 50 -> new FullContainerName(ContainerEnumName.CreatedOutputContainer, null);
-            default -> {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid slot " + slot + " in CraftingTableContainer");
-                yield FullContainerName.EMPTY;
-            }
+            default -> throw new IllegalArgumentException("Invalid slot for Crafting Container: " + slot);
         };
     }
 

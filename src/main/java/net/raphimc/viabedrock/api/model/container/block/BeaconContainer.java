@@ -93,7 +93,7 @@ public class BeaconContainer extends Container {
     @Override
     public FullContainerName getFullContainerName(int slot) {
         if (slot != 27) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid slot: " + slot);
+            throw new IllegalArgumentException("Invalid slot for Beacon Container: " + slot);
         }
         return new FullContainerName(ContainerEnumName.BeaconPaymentContainer, null);
     }

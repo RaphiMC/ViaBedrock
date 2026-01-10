@@ -34,57 +34,32 @@ public class BrewingStandContainer extends Container {
 
     @Override
     public FullContainerName getFullContainerName(int slot) {
-        switch (slot) {
-            case 0 -> {
-                return new FullContainerName(ContainerEnumName.BrewingStandFuelContainer, null);
-            }
-            case 1, 2, 3 -> {
-                return new FullContainerName(ContainerEnumName.BrewingStandResultContainer, null);
-            }
-            case 4 -> {
-                return new FullContainerName(ContainerEnumName.BrewingStandInputContainer, null);
-            }
-            default -> {
-                ViaBedrock.getPlatform().getLogger().warning("Invalid slot: " + slot);
-                return new FullContainerName(ContainerEnumName.BrewingStandResultContainer, null);
-            }
-        }
+        return switch (slot) {
+            case 0 -> new FullContainerName(ContainerEnumName.BrewingStandFuelContainer, null);
+            case 1, 2, 3 -> new FullContainerName(ContainerEnumName.BrewingStandResultContainer, null);
+            case 4 -> new FullContainerName(ContainerEnumName.BrewingStandInputContainer, null);
+            default -> throw new IllegalArgumentException("Invalid slot for Brewing Container: " + slot);
+        };
     }
 
     @Override
     public int javaSlot(final int slot) {
-        switch (slot) {
-            case 0 -> {
-                return 3;
-            }
-            case 1, 2, 3 -> {
-                return slot - 1;
-            }
-            case 4 -> {
-                return 4;
-            }
-            default -> {
-                return super.javaSlot(slot);
-            }
-        }
+        return switch (slot) {
+            case 0 -> 3;
+            case 1, 2, 3 -> slot - 1;
+            case 4 -> 4;
+            default -> super.javaSlot(slot);
+        };
     }
 
     @Override
     public int bedrockSlot(final int slot) {
-        switch (slot) {
-            case 3 -> {
-                return 0;
-            }
-            case 0, 1, 2 -> {
-                return slot + 1;
-            }
-            case 4 -> {
-                return 4;
-            }
-            default -> {
-                return super.bedrockSlot(slot);
-            }
-        }
+        return switch (slot) {
+            case 3 -> 0;
+            case 0, 1, 2 -> slot + 1;
+            case 4 -> 4;
+            default -> super.bedrockSlot(slot);
+        };
     }
 
     @Override

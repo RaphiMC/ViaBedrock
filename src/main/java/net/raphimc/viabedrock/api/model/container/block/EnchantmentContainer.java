@@ -37,10 +37,7 @@ public class EnchantmentContainer extends Container {
         return switch (slot) {
             case 14 -> new FullContainerName(ContainerEnumName.EnchantingInputContainer, null);
             case 15 -> new FullContainerName(ContainerEnumName.EnchantingMaterialContainer, null);
-            default -> {
-                ViaBedrock.getPlatform().getLogger().warning("Invalid slot " + slot);
-                yield FullContainerName.EMPTY;
-            }
+            default -> throw new IllegalArgumentException("Invalid slot for Enchantment Container: " + slot);
         };
     }
 

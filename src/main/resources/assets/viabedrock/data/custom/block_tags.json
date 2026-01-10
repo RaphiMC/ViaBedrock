@@ -245,6 +245,9 @@
     "minecraft:wither_skeleton_skull",
     "minecraft:zombie_head"
   ],
+  "smithing_table": [
+    "minecraft:smithing_table"
+  ],
   "smoker": [
     "minecraft:smoker",
     "minecraft:lit_smoker"

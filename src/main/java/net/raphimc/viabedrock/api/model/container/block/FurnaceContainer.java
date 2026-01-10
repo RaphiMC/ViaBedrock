@@ -44,10 +44,7 @@ public class FurnaceContainer extends Container {
             case 0 -> new FullContainerName(ContainerEnumName.FurnaceIngredientContainer, null);
             case 1 -> new FullContainerName(ContainerEnumName.FurnaceFuelContainer, null);
             case 2 -> new FullContainerName(ContainerEnumName.FurnaceResultContainer, null);
-            default -> {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid slot " + slot + " for furnace container");
-                yield new FullContainerName(ContainerEnumName.LevelEntityContainer, null);
-            }
+            default -> throw new IllegalArgumentException("Invalid slot for Furnace Container: " + slot);
         };
     }
 

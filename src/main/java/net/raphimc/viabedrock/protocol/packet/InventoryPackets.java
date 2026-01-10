@@ -139,6 +139,7 @@ public class InventoryPackets {
                 case BEACON -> container = new BeaconContainer(wrapper.user(), containerId, title, position);
                 //case ENCHANTMENT -> container = new EnchantmentContainer(wrapper.user(),  containerId, title, position);
                 case ANVIL -> container = new AnvilContainer(wrapper.user(), containerId, title, position);
+                case SMITHING_TABLE -> container = new SmithingContainer(wrapper.user(), containerId, type, title, position);
                 case DISPENSER, DROPPER -> container = new Generic3x3Container(wrapper.user(), containerId, type, title, position);
                 case WORKBENCH -> container = new CraftingTableContainer(wrapper.user(), containerId, title, position);
                 case NONE, CAULDRON, JUKEBOX, ARMOR, HAND, HUD, DECORATED_POT -> { // Bedrock client can't open these containers

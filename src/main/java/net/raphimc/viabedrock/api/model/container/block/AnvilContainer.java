@@ -53,10 +53,7 @@ public class AnvilContainer extends Container {
             case 1 -> new FullContainerName(ContainerEnumName.AnvilInputContainer, null);
             case 2 -> new FullContainerName(ContainerEnumName.AnvilMaterialContainer, null);
             case 50 -> new FullContainerName(ContainerEnumName.CreatedOutputContainer, null);
-            default -> {
-                ViaBedrock.getPlatform().getLogger().warning("Invalid slot " + slot);
-                yield FullContainerName.EMPTY;
-            }
+            default -> throw new IllegalArgumentException("Invalid slot for Anvil Container: " + slot);
         };
     }
 
