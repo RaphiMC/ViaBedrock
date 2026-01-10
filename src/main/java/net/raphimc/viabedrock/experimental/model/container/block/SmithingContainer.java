@@ -15,17 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.block;
+package net.raphimc.viabedrock.experimental.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public class SmithingContainer extends Container {
+public class SmithingContainer extends ExperimentalContainer {
 
     public SmithingContainer(UserConnection user, byte containerId, ContainerType type, TextComponent title, BlockPosition position) {
         super(user, containerId, type, title, position, 3, "smithing_table");

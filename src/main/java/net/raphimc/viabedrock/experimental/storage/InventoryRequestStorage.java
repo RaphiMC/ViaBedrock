@@ -17,9 +17,9 @@
  */
 package net.raphimc.viabedrock.experimental.storage;
 
-import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
 
 import java.util.List;
 
-public record InventoryRequestStorage(ItemStackRequestInfo requestInfo, int javaRevision, Container prevCursorContainer, List<Container> prevContainers) { }
+public record InventoryRequestStorage(ItemStackRequestInfo requestInfo, int javaRevision, ExperimentalContainer prevCursorContainer, List<ExperimentalContainer> prevContainers) { }

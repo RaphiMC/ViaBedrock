@@ -15,21 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.player;
+package net.raphimc.viabedrock.experimental.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
+import com.viaversion.viaversion.api.minecraft.item.Item;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
+import net.raphimc.viabedrock.experimental.storage.ExperimentalInventoryTracker;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 
-public class ArmorContainer extends InventorySubContainer {
+public abstract class InventoryRedirectContainer extends ExperimentalContainer {
 
-    public ArmorContainer(final UserConnection user) {
-        super(user, (byte) ContainerID.CONTAINER_ID_ARMOR.getValue(), ContainerType.ARMOR, 4);
+    public InventoryRedirectContainer(final UserConnection user, final byte containerId, final ContainerType type, final int size) {
+        super(user, containerId, type, null, null, size);
     }
 
     @Override
-    public int javaSlot(final int slot) {
-        return 5 + slot;
+    public Item[] getJavaItems() {
+        return this.user.get(ExperimentalInventoryTracker.class).getInventoryContainer().getJavaItems();
+    }
+
+    @Override
+    public byte javaContainerId() {
+        return this.user.get(ExperimentalInventoryTracker.class).getInventoryContainer().javaContainerId();
+    }
+
+    protected Item[] getActualJavaItems() {
+        return super.getJavaItems();
     }
 
 }

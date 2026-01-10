@@ -15,47 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.block;
+package net.raphimc.viabedrock.experimental.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public class EnchantmentContainer extends Container {
+public class BlastFurnaceContainer extends FurnaceContainer {
 
-    public EnchantmentContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.ENCHANTMENT, title, position, 2, "enchanting_table", "enchantment_table"); // TODO verify block tags
+    public BlastFurnaceContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
+        super(user, containerId, ContainerType.BLAST_FURNACE, title, position, "blast_furnace");
     }
 
     @Override
     public FullContainerName getFullContainerName(int slot) {
-        return switch (slot) {
-            case 14 -> new FullContainerName(ContainerEnumName.EnchantingInputContainer, null);
-            case 15 -> new FullContainerName(ContainerEnumName.EnchantingMaterialContainer, null);
-            default -> throw new IllegalArgumentException("Invalid slot for Enchantment Container: " + slot);
-        };
+        if (slot == 0) {
+            return new FullContainerName(ContainerEnumName.BlastFurnaceIngredientContainer, null);
+        } else {
+            return super.getFullContainerName(slot);
+        }
     }
 
-    @Override
-    public int javaSlot(final int slot) {
-        return switch (slot) {
-            case 14 -> 0;
-            case 15 -> 1;
-            default -> super.javaSlot(slot);
-        };
-    }
-
-    @Override
-    public int bedrockSlot(final int slot) {
-        return switch (slot) {
-            case 0 -> 14;
-            case 1 -> 15;
-            default -> super.bedrockSlot(slot);
-        };
-    }
 }

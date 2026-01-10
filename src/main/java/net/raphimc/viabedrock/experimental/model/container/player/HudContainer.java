@@ -15,12 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.player;
+package net.raphimc.viabedrock.experimental.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class HudContainer extends InventoryRedirectContainer {
 
@@ -29,9 +31,24 @@ public class HudContainer extends InventoryRedirectContainer {
     }
 
     @Override
-    public boolean setItem(final int slot, final BedrockItem item) {
-        if (super.setItem(slot, item)) {
-            return slot == 0 || (slot >= 28 && slot <= 31);
+    public FullContainerName getFullContainerName(int slot) {
+        // TODO: Crafting output slot
+        if (slot == 0) {
+            return new FullContainerName(ContainerEnumName.CursorContainer, null);
+        } else if (slot >= 28 && slot <= 31) {
+            return new FullContainerName(ContainerEnumName.CraftingInputContainer, null);
+        } else if (slot == 50) {
+            return new FullContainerName(ContainerEnumName.CraftingOutputPreviewContainer, null);
+        } else {
+            return new FullContainerName(ContainerEnumName.CursorContainer, null); // TODO: This should not happen
+        }
+    }
+
+    @Override
+    public boolean setItem(final int javaSlot, final BedrockItem item) {
+        if (super.setItem(javaSlot, item)) {
+            int bedrockSlot = this.bedrockSlot(javaSlot);
+            return bedrockSlot == 0 || (bedrockSlot >= 28 && bedrockSlot <= 31) || bedrockSlot == 50;
         } else {
             return false;
         }
@@ -45,5 +62,16 @@ public class HudContainer extends InventoryRedirectContainer {
             return super.javaSlot(slot);
         }
     }
+
+    @Override
+    public int bedrockSlot(final int slot) {
+        if (slot >= 1 && slot <= 4) {
+            return slot + 27;
+        } else {
+            return super.bedrockSlot(slot);
+        }
+    }
+
+    // TODO: Crafting (Currently clashes with hotbar)
 
 }

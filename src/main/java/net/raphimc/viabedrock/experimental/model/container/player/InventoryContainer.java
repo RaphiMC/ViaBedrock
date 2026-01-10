@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.player;
+package net.raphimc.viabedrock.experimental.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
@@ -24,19 +24,21 @@ import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
-import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
+import net.raphimc.viabedrock.experimental.storage.ExperimentalInventoryTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class InventoryContainer extends Container {
+public class InventoryContainer extends ExperimentalContainer {
 
     private byte selectedHotbarSlot = 0;
 
@@ -50,12 +52,21 @@ public class InventoryContainer extends Container {
     }
 
     @Override
+    public FullContainerName getFullContainerName(int slot) {
+        if (slot < 9) {
+            return new FullContainerName(ContainerEnumName.HotbarContainer, null);
+        }
+
+        return new FullContainerName(ContainerEnumName.InventoryContainer, null);
+    }
+
+    @Override
     public Item[] getJavaItems() {
-        final InventoryTracker inventoryTracker = this.user.get(InventoryTracker.class);
+        final ExperimentalInventoryTracker inventoryTracker = this.user.get(ExperimentalInventoryTracker.class);
         final Item[] inventoryItems = super.getJavaItems();
         final Item[] armorItems = inventoryTracker.getArmorContainer().getActualJavaItems();
         final Item[] offhandItems = inventoryTracker.getOffhandContainer().getActualJavaItems();
-        final Container hudContainer = inventoryTracker.getHudContainer();
+        final ExperimentalContainer hudContainer = inventoryTracker.getHudContainer();
 
         final Item[] combinedItems = StructuredItem.emptyArray(46);
         System.arraycopy(armorItems, 0, combinedItems, 5, armorItems.length);
@@ -84,6 +95,15 @@ public class InventoryContainer extends Container {
             return 36 + slot;
         } else {
             return super.javaSlot(slot);
+        }
+    }
+
+    @Override
+    public int bedrockSlot(final int slot) {
+        if (slot >= 36 && slot < 45) {
+            return slot - 36;
+        } else {
+            return super.bedrockSlot(slot);
         }
     }
 

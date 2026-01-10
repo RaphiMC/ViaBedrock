@@ -20,7 +20,12 @@ package net.raphimc.viabedrock.experimental;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
+import net.raphimc.viabedrock.experimental.storage.ExperimentalInventoryTracker;
 import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -28,6 +33,12 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerAction
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class ExperimentalPacketFactory {
+
+    public static void sendJavaContainerSetContent(final UserConnection user, final ExperimentalContainer container) {
+        final PacketWrapper containerSetContent = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_CONTENT, user);
+        writeJavaContainerSetContent(containerSetContent, container);
+        containerSetContent.send(BedrockProtocol.class);
+    }
 
     public static void sendBedrockPlayerAction(final UserConnection user, long entityId, PlayerActionType actionType, BlockPosition position, BlockPosition resultPosition, int face) {
         final PacketWrapper startItemUseOn = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, user);
@@ -43,6 +54,13 @@ public class ExperimentalPacketFactory {
         final PacketWrapper inventoryRequest = PacketWrapper.create(ServerboundBedrockPackets.ITEM_STACK_REQUEST, user);
         inventoryRequest.write(ExperimentalBedrockTypes.ITEM_STACK_REQUESTS, info);
         inventoryRequest.sendToServer(BedrockProtocol.class);
+    }
+
+    public static void writeJavaContainerSetContent(final PacketWrapper wrapper, final ExperimentalContainer container) {
+        wrapper.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
+        wrapper.write(Types.VAR_INT, 0); // revision
+        wrapper.write(VersionedTypes.V1_21_11.itemArray, container.getJavaItems()); // items
+        wrapper.write(VersionedTypes.V1_21_11.item, wrapper.user().get(ExperimentalInventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
     }
 
 }

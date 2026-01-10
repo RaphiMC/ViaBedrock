@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.block;
+package net.raphimc.viabedrock.experimental.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
@@ -25,11 +25,12 @@ import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
-import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
+import net.raphimc.viabedrock.experimental.storage.ExperimentalInventoryTracker;
 import net.raphimc.viabedrock.experimental.storage.InventoryRequestStorage;
 import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -37,16 +38,13 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnu
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
-import net.raphimc.viabedrock.protocol.model.BlockProperties;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
-import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
-public class BeaconContainer extends Container {
+public class BeaconContainer extends ExperimentalContainer {
 
     public BeaconContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
         super(user, containerId, ContainerType.BEACON, title, position, 1, "beacon");
@@ -118,7 +116,7 @@ public class BeaconContainer extends Container {
 
     public void updateEffects(int primaryEffect, int secondaryEffect) {
         InventoryRequestTracker inventoryRequestTracker = this.user.get(InventoryRequestTracker.class);
-        InventoryTracker inventoryTracker = this.user.get(InventoryTracker.class);
+        ExperimentalInventoryTracker inventoryTracker = this.user.get(ExperimentalInventoryTracker.class);
 
         //TODO: This is kinda cooked, refactor later
         final String javaIdentifierPrimary = BedrockProtocol.MAPPINGS.getJavaEffects().inverse().get(primaryEffect);
@@ -150,9 +148,9 @@ public class BeaconContainer extends Container {
                 TextProcessingEventOrigin.unknown
         );
 
-        List<Container> prevContainers = new ArrayList<>();
+        List<ExperimentalContainer> prevContainers = new ArrayList<>();
         prevContainers.add(this.copy());
-        Container prevCursorContainer = inventoryTracker.getHudContainer().copy();
+        ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy();
 
         this.setItem(0, BedrockItem.empty()); // Clear the payment slot
 

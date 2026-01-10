@@ -19,4 +19,8 @@ package net.raphimc.viabedrock.protocol.model;
 
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 
-public record FullContainerName(ContainerEnumName name, Integer dynamicId) {}
+public record FullContainerName(ContainerEnumName name, Integer dynamicId) {
+
+    public static final FullContainerName EMPTY = new FullContainerName(ContainerEnumName.AnvilInputContainer, null);
+
+}

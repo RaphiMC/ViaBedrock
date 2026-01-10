@@ -15,17 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.block;
+package net.raphimc.viabedrock.experimental.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
+import net.raphimc.viabedrock.experimental.storage.ExperimentalInventoryTracker;
 import net.raphimc.viabedrock.experimental.storage.InventoryRequestStorage;
 import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
@@ -34,12 +35,11 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessi
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
-import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnvilContainer extends Container {
+public class AnvilContainer extends ExperimentalContainer {
 
     private String renameText = "";
 
@@ -82,15 +82,15 @@ public class AnvilContainer extends Container {
         if (javaSlot == 2) {
             if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
                 //TODO: This is experimental code...
-                InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
+                ExperimentalInventoryTracker inventoryTracker = user.get(ExperimentalInventoryTracker.class);
                 InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
 
                 int requestId = inventoryRequestTracker.nextRequestId();
 
-                List<Container> prevContainers = new ArrayList<>();
+                List<ExperimentalContainer> prevContainers = new ArrayList<>();
                 prevContainers.add(this.copy());
                 prevContainers.add(inventoryTracker.getInventoryContainer().copy());
-                Container prevCursorContainer = inventoryTracker.getHudContainer().copy();
+                ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy();
 
                 BedrockItem resultItem = this.getItem(0);
 

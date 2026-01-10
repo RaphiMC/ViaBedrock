@@ -15,22 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.dynamic;
+package net.raphimc.viabedrock.experimental.model.container.dynamic;
 
 import com.viaversion.nbt.tag.IntTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.util.Pair;
-import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
+import net.raphimc.viabedrock.experimental.storage.ExperimentalInventoryTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
-import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
-public class BundleContainer extends Container {
+public class BundleContainer extends ExperimentalContainer {
 
     private final FullContainerName containerName;
 
@@ -40,8 +40,13 @@ public class BundleContainer extends Container {
     }
 
     @Override
+    public FullContainerName getFullContainerName(int slot) {
+        return this.containerName;
+    }
+
+    @Override
     public Item getJavaItem(final int slot) {
-        final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
+        final Pair<ExperimentalContainer, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
             throw new IllegalStateException("Could not find bundle in any container");
         }
@@ -51,7 +56,7 @@ public class BundleContainer extends Container {
 
     @Override
     public Item[] getJavaItems() {
-        final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
+        final Pair<ExperimentalContainer, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
             throw new IllegalStateException("Could not find bundle in any container");
         }
@@ -76,7 +81,7 @@ public class BundleContainer extends Container {
 
     @Override
     public int javaSlot(final int slot) {
-        final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
+        final Pair<ExperimentalContainer, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
             throw new IllegalStateException("Could not find bundle in any container");
         }
@@ -85,8 +90,18 @@ public class BundleContainer extends Container {
     }
 
     @Override
+    public int bedrockSlot(final int slot) {
+        final Pair<ExperimentalContainer, Integer> holdingContainer = this.findHoldingContainer();
+        if (holdingContainer == null) {
+            throw new IllegalStateException("Could not find bundle in any container");
+        }
+
+        return holdingContainer.key().bedrockSlot(holdingContainer.value());
+    }
+
+    @Override
     public byte javaContainerId() {
-        final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
+        final Pair<ExperimentalContainer, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
             throw new IllegalStateException("Could not find bundle in any container");
         }
@@ -98,8 +113,8 @@ public class BundleContainer extends Container {
         return super.getJavaItems();
     }
 
-    private Pair<Container, Integer> findHoldingContainer() {
-        final InventoryTracker inventoryTracker = this.user.get(InventoryTracker.class);
+    private Pair<ExperimentalContainer, Integer> findHoldingContainer() {
+        final ExperimentalInventoryTracker inventoryTracker = this.user.get(ExperimentalInventoryTracker.class);
 
         int slot = findBundleInContainer(inventoryTracker.getInventoryContainer());
         if (slot != -1) {
@@ -129,7 +144,7 @@ public class BundleContainer extends Container {
         return null;
     }
 
-    private int findBundleInContainer(final Container container) {
+    private int findBundleInContainer(final ExperimentalContainer container) {
         if (container == null) return -1;
 
         final ItemRewriter itemRewriter = this.user.get(ItemRewriter.class);

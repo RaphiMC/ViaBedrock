@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.block;
+package net.raphimc.viabedrock.experimental.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
@@ -25,20 +25,15 @@ import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.container.Container;
-import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
 import net.raphimc.viabedrock.experimental.model.recipe.ItemDescriptor;
-import net.raphimc.viabedrock.experimental.model.recipe.Recipe;
 import net.raphimc.viabedrock.experimental.model.recipe.ShapedRecipe;
 import net.raphimc.viabedrock.experimental.model.recipe.ShapelessRecipe;
-import net.raphimc.viabedrock.experimental.storage.CraftingDataStorage;
-import net.raphimc.viabedrock.experimental.storage.CraftingDataTracker;
-import net.raphimc.viabedrock.experimental.storage.InventoryRequestStorage;
-import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
+import net.raphimc.viabedrock.experimental.storage.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
@@ -46,14 +41,14 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessi
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
-import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
-import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
-public class CraftingTableContainer extends Container {
+public class CraftingTableContainer extends ExperimentalContainer {
 
     public CraftingTableContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
         super(user, containerId, ContainerType.WORKBENCH, title, position, 10, "crafting_table", "workbench");
@@ -129,13 +124,13 @@ public class CraftingTableContainer extends Container {
             return result;
         }
 
-        InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
+        ExperimentalInventoryTracker inventoryTracker = user.get(ExperimentalInventoryTracker.class);
         InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
 
-        List<Container> prevContainers = new ArrayList<>();
+        List<ExperimentalContainer> prevContainers = new ArrayList<>();
         prevContainers.add(this.copy());
         prevContainers.add(inventoryTracker.getInventoryContainer().copy());
-        Container prevCursorContainer = inventoryTracker.getHudContainer().copy();
+        ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy();
 
         int craftableAmount = 1;
 
@@ -205,7 +200,7 @@ public class CraftingTableContainer extends Container {
                 this.setItem(i, BedrockItem.empty());
             }
         }
-        PacketFactory.sendJavaContainerSetContent(user, this);
+        ExperimentalPacketFactory.sendJavaContainerSetContent(user, this);
 
         //TODO: Re-Update the output slot based on remaining items in the crafting grid
         return true;

@@ -56,8 +56,7 @@ import net.lenni0451.mcstructs_bedrock.forms.types.ModalForm;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTextUtils;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
-import net.raphimc.viabedrock.api.model.BlockState;
-import net.raphimc.viabedrock.api.model.container.block.*;
+import net.raphimc.viabedrock.api.model.container.ChestContainer;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.Entity;
@@ -118,12 +117,6 @@ public class InventoryPackets {
                 title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(customNameTag.getValue()));
             }
 
-            int size = 27;
-            if (blockEntity != null && blockEntity.tag().getString("id").equals("Chest") && blockEntity.tag().contains("pairlead")) {
-                // Double chest
-                size = 54;
-            }
-
             final Container container;
             switch (type) {
                 case INVENTORY -> {
@@ -131,17 +124,7 @@ public class InventoryPackets {
                     wrapper.cancel();
                     return;
                 }
-                case CONTAINER -> container = new ChestContainer(wrapper.user(), containerId, title, position, size);
-                case FURNACE -> container = new FurnaceContainer(wrapper.user(), containerId, title, position);
-                case BLAST_FURNACE -> container = new BlastFurnaceContainer(wrapper.user(), containerId, title, position);
-                case SMOKER -> container = new SmokerContainer(wrapper.user(), containerId, title, position);
-                case BREWING_STAND -> container = new BrewingStandContainer(wrapper.user(), containerId, title, position);
-                case BEACON -> container = new BeaconContainer(wrapper.user(), containerId, title, position);
-                //case ENCHANTMENT -> container = new EnchantmentContainer(wrapper.user(),  containerId, title, position);
-                case ANVIL -> container = new AnvilContainer(wrapper.user(), containerId, title, position);
-                case SMITHING_TABLE -> container = new SmithingContainer(wrapper.user(), containerId, type, title, position);
-                case DISPENSER, DROPPER -> container = new Generic3x3Container(wrapper.user(), containerId, type, title, position);
-                case WORKBENCH -> container = new CraftingTableContainer(wrapper.user(), containerId, title, position);
+                case CONTAINER -> container = new ChestContainer(wrapper.user(), containerId, title, position, 27);
                 case NONE, CAULDRON, JUKEBOX, ARMOR, HAND, HUD, DECORATED_POT -> { // Bedrock client can't open these containers
                     wrapper.cancel();
                     return;
@@ -157,12 +140,7 @@ public class InventoryPackets {
             inventoryTracker.setCurrentContainer(container);
 
             wrapper.write(Types.VAR_INT, (int) containerId); // container id
-            if (blockEntity != null && blockEntity.tag().getString("id").equals("Chest") && blockEntity.tag().contains("pairlead")) {
-                //TODO: Temporary fix
-                wrapper.write(Types.VAR_INT, 5); // generic_9x6
-            } else {
-                wrapper.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(type)); // type
-            }
+            wrapper.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(type)); // type
             wrapper.write(Types.TAG, TextUtil.textComponentToNbt(title)); // title
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_CLOSE, ClientboundPackets1_21_11.CONTAINER_CLOSE, new PacketHandlers() {
@@ -214,7 +192,7 @@ public class InventoryPackets {
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);
-            if (container != null && container.setItem(container.javaSlot(slot), item)) {
+            if (container != null && container.setItem(slot, item)) {
                 if (container.type() == ContainerType.HUD && slot == 0) { // cursor item
                     wrapper.setPacketType(ClientboundPackets1_21_11.SET_CURSOR_ITEM);
                 } else {
@@ -400,28 +378,6 @@ public class InventoryPackets {
                 return;
             }
             if (!container.handleClick(revision, slot, button, action)) {
-                if (container.type() != ContainerType.INVENTORY) {
-                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
-                }
-                PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);
-            }
-        });
-        protocol.registerServerbound(ServerboundPackets1_21_6.CONTAINER_BUTTON_CLICK, null, wrapper -> {
-            wrapper.cancel();
-            final int containerId = wrapper.read(Types.VAR_INT); // container id
-            final int button = wrapper.read(Types.VAR_INT); // button
-
-            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            if (inventoryTracker.getPendingCloseContainer() != null) {
-                wrapper.cancel();
-                return;
-            }
-            final Container container = inventoryTracker.getContainerServerbound((byte) containerId);
-            if (container == null) {
-                wrapper.cancel();
-                return;
-            }
-            if (!container.handleButtonClick(button)) {
                 if (container.type() != ContainerType.INVENTORY) {
                     PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer());
                 }

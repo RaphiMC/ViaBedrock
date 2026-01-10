@@ -15,28 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.block;
+package net.raphimc.viabedrock.experimental.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public class SmokerContainer extends FurnaceContainer {
+public class Generic3x3Container extends ExperimentalContainer {
 
-    public SmokerContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.SMOKER, title, position, "smoker");
+    public Generic3x3Container(UserConnection user, byte containerId, ContainerType type, TextComponent title, BlockPosition position) {
+        super(user, containerId, type, title, position, 9, "dispenser", "dropper");
     }
 
     @Override
     public FullContainerName getFullContainerName(int slot) {
-        if (slot == 0) {
-            return new FullContainerName(ContainerEnumName.SmokerIngredientContainer, null);
-        } else {
-            return super.getFullContainerName(slot);
-        }
+        return new FullContainerName(ContainerEnumName.LevelEntityContainer, null);
     }
-
 }

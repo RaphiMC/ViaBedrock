@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,28 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.block;
+package net.raphimc.viabedrock.api.model.container;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public class BlastFurnaceContainer extends FurnaceContainer {
+public class ChestContainer extends Container {
 
-    public BlastFurnaceContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.BLAST_FURNACE, title, position, "blast_furnace");
-    }
-
-    @Override
-    public FullContainerName getFullContainerName(int slot) {
-        if (slot == 0) {
-            return new FullContainerName(ContainerEnumName.BlastFurnaceIngredientContainer, null);
-        } else {
-            return super.getFullContainerName(slot);
-        }
+    public ChestContainer(final UserConnection user, final byte containerId, final TextComponent title, final BlockPosition position, final int size) {
+        super(user, containerId, ContainerType.CONTAINER, title, position, size, "chest", "trapped_chest");
     }
 
 }

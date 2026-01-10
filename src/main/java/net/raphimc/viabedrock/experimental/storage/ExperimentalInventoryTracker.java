@@ -15,40 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.storage;
+package net.raphimc.viabedrock.experimental.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
-import net.lenni0451.mcstructs_bedrock.forms.Form;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.container.Container;
-import net.raphimc.viabedrock.api.model.container.dynamic.BundleContainer;
-import net.raphimc.viabedrock.api.model.container.player.ArmorContainer;
-import net.raphimc.viabedrock.api.model.container.player.HudContainer;
-import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
-import net.raphimc.viabedrock.api.model.container.player.OffhandContainer;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
+import net.raphimc.viabedrock.experimental.model.container.dynamic.BundleContainer;
+import net.raphimc.viabedrock.experimental.model.container.player.ArmorContainer;
+import net.raphimc.viabedrock.experimental.model.container.player.HudContainer;
+import net.raphimc.viabedrock.experimental.model.container.player.InventoryContainer;
+import net.raphimc.viabedrock.experimental.model.container.player.OffhandContainer;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
-import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
+import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class InventoryTracker extends StoredObject {
+public class ExperimentalInventoryTracker extends StoredObject {
 
     private final InventoryContainer inventoryContainer = new InventoryContainer(this.user());
     private final OffhandContainer offhandContainer = new OffhandContainer(this.user());
@@ -56,15 +51,14 @@ public class InventoryTracker extends StoredObject {
     private final HudContainer hudContainer = new HudContainer(this.user());
     private final Map<FullContainerName, BundleContainer> dynamicContainerRegistry = new HashMap<>();
 
-    private Container currentContainer = null;
-    private Container pendingCloseContainer = null;
-    private IntObjectPair<Form> currentForm = null;
+    private ExperimentalContainer currentContainer = null;
+    private ExperimentalContainer pendingCloseContainer = null;
 
-    public InventoryTracker(final UserConnection user) {
+    public ExperimentalInventoryTracker(final UserConnection user) {
         super(user);
     }
 
-    public Container getContainerClientbound(final byte containerId, final FullContainerName containerName, final BedrockItem storageItem) {
+    public ExperimentalContainer getContainerClientbound(final byte containerId, final FullContainerName containerName, final BedrockItem storageItem) {
         if (containerId == this.inventoryContainer.containerId()) return this.inventoryContainer;
         if (containerId == this.offhandContainer.containerId()) return this.offhandContainer;
         if (containerId == this.armorContainer.containerId()) return this.armorContainer;
@@ -83,8 +77,24 @@ public class InventoryTracker extends StoredObject {
         return null;
     }
 
-    public Container getContainerServerbound(final byte containerId) {
+    public ExperimentalContainer getContainerServerbound(final byte containerId) {
         if (this.currentContainer != null && containerId == this.currentContainer.javaContainerId()) {
+            return this.currentContainer;
+        }
+        return null;
+    }
+
+    public ExperimentalContainer getContainerFromName(final FullContainerName containerName, int slot) {
+        if (containerName.name() == ContainerEnumName.InventoryContainer) return this.inventoryContainer;
+        if (containerName.name() == ContainerEnumName.HotbarContainer) return this.inventoryContainer;
+        if (containerName.name() == ContainerEnumName.OffhandContainer) return this.offhandContainer;
+        if (containerName.name() == ContainerEnumName.ArmorContainer) return this.armorContainer;
+        if (containerName.name() == ContainerEnumName.CursorContainer) return this.hudContainer;
+        if (containerName.name() == ContainerEnumName.CraftingInputContainer) return this.hudContainer;
+        if (containerName.name() == ContainerEnumName.DynamicContainer) {
+            return this.dynamicContainerRegistry.get(containerName);
+        }
+        if (this.currentContainer != null && containerName.equals(this.currentContainer.getFullContainerName(slot))) {
             return this.currentContainer;
         }
         return null;
@@ -98,7 +108,7 @@ public class InventoryTracker extends StoredObject {
         this.dynamicContainerRegistry.remove(containerName);
     }
 
-    public void markPendingClose(final Container container) {
+    public void markPendingClose(final ExperimentalContainer container) {
         if (this.pendingCloseContainer != null) {
             throw new IllegalStateException("There is already another container pending close");
         }
@@ -112,21 +122,9 @@ public class InventoryTracker extends StoredObject {
         if (serverInitiated) {
             PacketFactory.sendBedrockContainerClose(this.user(), this.currentContainer.containerId(), ContainerType.NONE);
         }
+        this.hudContainer.setItem(0, BedrockItem.empty()); // TODO: Drop cursor item if needed
         this.currentContainer = null;
         this.pendingCloseContainer = null;
-    }
-
-    public void closeCurrentForm() {
-        if (this.currentForm == null) {
-            throw new IllegalStateException("There is no form currently open");
-        }
-        final PacketWrapper modalFormResponse = PacketWrapper.create(ServerboundBedrockPackets.MODAL_FORM_RESPONSE, this.user());
-        modalFormResponse.write(BedrockTypes.UNSIGNED_VAR_INT, this.currentForm.leftInt()); // id
-        modalFormResponse.write(Types.BOOLEAN, false); // has response
-        modalFormResponse.write(Types.BOOLEAN, true); // has cancel reason
-        modalFormResponse.write(Types.BYTE, (byte) ModalFormCancelReason.UserClosed.getValue()); // cancel reason
-        modalFormResponse.sendToServer(BedrockProtocol.class);
-        this.currentForm = null;
     }
 
     public void tick() {
@@ -151,14 +149,12 @@ public class InventoryTracker extends StoredObject {
                 this.forceCloseCurrentContainer();
             }
         }
+
+        // TODO: Drop Cursor item if no container is open
     }
 
     public boolean isContainerOpen() {
         return this.currentContainer != null || this.pendingCloseContainer != null;
-    }
-
-    public boolean isAnyScreenOpen() {
-        return this.isContainerOpen() || this.currentForm != null;
     }
 
     public InventoryContainer getInventoryContainer() {
@@ -177,27 +173,19 @@ public class InventoryTracker extends StoredObject {
         return this.hudContainer;
     }
 
-    public Container getCurrentContainer() {
+    public ExperimentalContainer getCurrentContainer() {
         return this.currentContainer;
     }
 
-    public void setCurrentContainer(final Container container) {
+    public void setCurrentContainer(final ExperimentalContainer container) {
         if (this.isContainerOpen()) {
             throw new IllegalStateException("There is already another container open");
         }
         this.currentContainer = container;
     }
 
-    public Container getPendingCloseContainer() {
+    public ExperimentalContainer getPendingCloseContainer() {
         return this.pendingCloseContainer;
-    }
-
-    public IntObjectPair<Form> getCurrentForm() {
-        return this.currentForm;
-    }
-
-    public void setCurrentForm(final IntObjectPair<Form> currentForm) {
-        this.currentForm = currentForm;
     }
 
     private void forceCloseCurrentContainer() {

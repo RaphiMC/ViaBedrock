@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.player;
+package net.raphimc.viabedrock.experimental.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public class HudContainer extends InventoryRedirectContainer {
+public class SmokerContainer extends FurnaceContainer {
 
-    public HudContainer(final UserConnection user) {
-        super(user, (byte) ContainerID.CONTAINER_ID_PLAYER_ONLY_UI.getValue(), ContainerType.HUD, 54);
+    public SmokerContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
+        super(user, containerId, ContainerType.SMOKER, title, position, "smoker");
     }
 
     @Override
-    public boolean setItem(final int slot, final BedrockItem item) {
-        if (super.setItem(slot, item)) {
-            return slot == 0 || (slot >= 28 && slot <= 31);
+    public FullContainerName getFullContainerName(int slot) {
+        if (slot == 0) {
+            return new FullContainerName(ContainerEnumName.SmokerIngredientContainer, null);
         } else {
-            return false;
-        }
-    }
-
-    @Override
-    public int javaSlot(final int slot) {
-        if (slot >= 28 && slot <= 31) {
-            return slot - 27;
-        } else {
-            return super.javaSlot(slot);
+            return super.getFullContainerName(slot);
         }
     }
 

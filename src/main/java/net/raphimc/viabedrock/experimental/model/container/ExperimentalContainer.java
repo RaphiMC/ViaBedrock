@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,40 +18,77 @@
 package net.raphimc.viabedrock.experimental.model.container;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
+import net.raphimc.viabedrock.experimental.storage.ExperimentalInventoryTracker;
 import net.raphimc.viabedrock.experimental.storage.InventoryRequestStorage;
 import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
-import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
-public class ExperimentalContainer {
+public abstract class ExperimentalContainer {
 
-    // TODO!!!!!!!!!!!!!!!! Hotbar is broken in inventory
-    public static boolean handleClick(final UserConnection user, Container container, final int revision, final short javaSlot, final byte button, final ClickType action) {
-        InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
+    protected final UserConnection user;
+    protected final byte containerId;
+    protected final ContainerType type;
+    protected final TextComponent title;
+    protected final BlockPosition position;
+    protected final BedrockItem[] items;
+    protected final Set<String> validBlockTags;
+
+    public ExperimentalContainer(final UserConnection user, final byte containerId, final ContainerType type, final TextComponent title, final BlockPosition position, final int size, final String... validBlockTags) {
+        this.user = user;
+        this.containerId = containerId;
+        this.type = type;
+        this.title = title;
+        this.position = position;
+        this.items = BedrockItem.emptyArray(size);
+        this.validBlockTags = Set.of(validBlockTags);
+    }
+
+    protected ExperimentalContainer(final UserConnection user, final byte containerId, final ContainerType type, final TextComponent title, final BlockPosition position, final BedrockItem[] items, final Set<String> validBlockTags) {
+        this.user = user;
+        this.containerId = containerId;
+        this.type = type;
+        this.title = title;
+        this.position = position;
+        this.items = items;
+        this.validBlockTags = validBlockTags;
+    }
+
+    public abstract FullContainerName getFullContainerName(int slot);
+
+    public boolean handleClick(final int revision, final short javaSlot, final byte button, final ClickType action) {
+        ExperimentalContainer container = this;
+        ExperimentalInventoryTracker inventoryTracker = user.get(ExperimentalInventoryTracker.class);
         InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
         int clickSlot = container.bedrockSlot(javaSlot);
         int slot = javaSlot;
 
         /* TODO: Could potentially lead to a race condition if we receive a inventory update before the response for the request,
          *  a better solution would be to store the specific changes made in the request. From my testing this doesnt seem to happen though
-        */
-        List<Container> prevContainers = new ArrayList<>(); // Store previous state of all involved containers to be able to rollback if needed
+         */
+        List<ExperimentalContainer> prevContainers = new ArrayList<>(); // Store previous state of all involved containers to be able to rollback if needed
         prevContainers.add(container.copy()); // Store previous state of the container
         // TODO: because bedrock is cringe, when doing shift clicks we need to add the container we are moving items to as well (e.g. Armour container)
 
-        Container prevCursorContainer = inventoryTracker.getHudContainer().copy(); // Store previous state of the cursor item
+        ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy(); // Store previous state of the cursor item
 
         ItemStackRequestAction itemAction = switch (action) {
             case PICKUP -> {
@@ -79,7 +116,7 @@ public class ExperimentalContainer {
                             false
                     );
                 } else if (slot < 0 || slot >= container.getItems().length) {
-                    Container inventoryContainer = inventoryTracker.getInventoryContainer();
+                    ExperimentalContainer inventoryContainer = inventoryTracker.getInventoryContainer();
                     int invSlot = inventoryContainer.bedrockSlot(javaSlot - container.getItems().length + 9); // Map to inventory slot
                     if (invSlot < 0 || invSlot >= inventoryContainer.getItems().length) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle click for " + container.type() + ", but slot was out of bounds (" + slot + ")");
@@ -169,7 +206,7 @@ public class ExperimentalContainer {
                     yield null;
                 }
 
-                Container hotbarContainer = inventoryTracker.getInventoryContainer();
+                ExperimentalContainer hotbarContainer = inventoryTracker.getInventoryContainer();
 
                 if (slot < 0 || slot >= container.getItems().length) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle swap for " + container.type() + ", but slot was out of bounds (" + slot + ")");
@@ -209,7 +246,7 @@ public class ExperimentalContainer {
                 // TODO: VERRRY EXPERIMENTAL
                 // TODO: Inventory -> Hotbar/Armor/Offhand
                 // TODO: Container Limited Slots (e.g. Furnace Fuel/Input/Output) Note: this might not be needed as the server will reject invalid moves anyway
-                Container inventoryContainer = inventoryTracker.getInventoryContainer();
+                ExperimentalContainer inventoryContainer = inventoryTracker.getInventoryContainer();
                 prevContainers.add(inventoryContainer.copy()); // Store previous state of the inventory container
                 if (slot < 0 || slot >= container.getItems().length) {
                     int invSlot = inventoryContainer.bedrockSlot(javaSlot - container.getItems().length + 9); // Map to inventory slot
@@ -370,4 +407,111 @@ public class ExperimentalContainer {
         return true;
     }
 
+    public boolean handleButtonClick(final int button) {
+        return false;
+    }
+
+    public void clearItems() {
+        for (int i = 0; i < this.items.length; i++) {
+            this.items[i] = BedrockItem.empty();
+        }
+    }
+
+    public Item getJavaItem(final int slot) {
+        return this.user.get(ItemRewriter.class).javaItem(this.getItem(slot));
+    }
+
+    public Item[] getJavaItems() {
+        return this.user.get(ItemRewriter.class).javaItems(this.items);
+    }
+
+    public BedrockItem getItem(final int javaSlot) {
+        return this.items[javaSlot];
+    }
+
+    public BedrockItem[] getItems() {
+        return Arrays.copyOf(this.items, this.items.length);
+    }
+
+    public boolean setItem(final int javaSlot, final BedrockItem item) {
+        if (javaSlot < 0 || javaSlot >= this.items.length) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set item for " + this.type + ", but slot was out of bounds (" + javaSlot + ")");
+            return false;
+        }
+
+        final BedrockItem oldItem = this.items[javaSlot];
+        this.items[javaSlot] = item;
+        this.onSlotChanged(javaSlot, oldItem, item);
+        return true;
+    }
+
+    public boolean setItems(final BedrockItem[] items) {
+        if (items.length != this.items.length) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
+            return false;
+        }
+
+        for (int i = 0; i < items.length; i++) {
+            this.setItem(i, items[i]);
+        }
+        return true;
+    }
+
+    public int javaSlot(final int bedrockSlot) {
+        return bedrockSlot;
+    }
+
+    public int bedrockSlot(final int javaSlot) {
+        return javaSlot;
+    }
+
+    public byte javaContainerId() {
+        return this.containerId();
+    }
+
+    public int size() {
+        return this.items.length;
+    }
+
+    public byte containerId() {
+        return this.containerId;
+    }
+
+    public ContainerType type() {
+        return this.type;
+    }
+
+    public TextComponent title() {
+        return this.title;
+    }
+
+    public BlockPosition position() {
+        return this.position;
+    }
+
+    public boolean isValidBlockTag(final String tag) {
+        if (tag == null) {
+            return false;
+        } else {
+            return this.validBlockTags.contains(tag);
+        }
+    }
+
+    protected void onSlotChanged(final int javaSlot, final BedrockItem oldItem, final BedrockItem newItem) {
+    }
+
+    public ExperimentalContainer copy() { // TODO: This probably isnt the best way to do this
+        BedrockItem[] itemsCopy = Arrays.copyOf(this.items, this.items.length);
+        return new ExperimentalContainer(this.user, this.containerId, this.type, this.title, this.position, itemsCopy, this.validBlockTags) {
+            @Override
+            public FullContainerName getFullContainerName(int slot) {
+                return ExperimentalContainer.this.getFullContainerName(slot);
+            }
+        };
+    }
+
+    public short translateContainerData(int containerData) {
+        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "translateContainerData not implemented for container type: " + this.type);
+        return -1;
+    }
 }

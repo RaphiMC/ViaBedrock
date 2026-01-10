@@ -15,21 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.player;
+package net.raphimc.viabedrock.experimental.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
-public class ArmorContainer extends InventorySubContainer {
+public abstract class InventorySubContainer extends InventoryRedirectContainer {
 
-    public ArmorContainer(final UserConnection user) {
-        super(user, (byte) ContainerID.CONTAINER_ID_ARMOR.getValue(), ContainerType.ARMOR, 4);
+    public InventorySubContainer(final UserConnection user, final byte containerId, final ContainerType type, final int size) {
+        super(user, containerId, type, size);
     }
 
     @Override
-    public int javaSlot(final int slot) {
-        return 5 + slot;
+    public boolean setItems(BedrockItem[] items) {
+        if (items.length != this.size()) {
+            final BedrockItem[] newItems = this.getItems();
+            System.arraycopy(items, 0, newItems, 0, Math.min(items.length, newItems.length));
+            items = newItems;
+        }
+        return super.setItems(items);
     }
 
 }
