@@ -536,6 +536,17 @@ public class JoinPackets {
             commandsStorage.updateCommandTree();
         }
 
+        final PacketWrapper initializeBorder = PacketWrapper.create(ClientboundPackets1_21_11.INITIALIZE_BORDER, user);
+        initializeBorder.write(Types.DOUBLE, 0D); // center x
+        initializeBorder.write(Types.DOUBLE, 0D); // center z
+        initializeBorder.write(Types.DOUBLE, 0D); // old size
+        initializeBorder.write(Types.DOUBLE, 60_000_000D); // new size
+        initializeBorder.write(Types.VAR_LONG, 0L); // lerp time
+        initializeBorder.write(Types.VAR_INT, 60_000_000); // new absolute max size
+        initializeBorder.write(Types.VAR_INT, 0); // warning blocks
+        initializeBorder.write(Types.VAR_INT, 0); // warning time
+        initializeBorder.send(BedrockProtocol.class);
+
         final PacketWrapper updateAttributes = PacketWrapper.create(ClientboundPackets1_21_11.UPDATE_ATTRIBUTES, user);
         updateAttributes.write(Types.VAR_INT, clientPlayer.javaId()); // entity id
         updateAttributes.write(Types.VAR_INT, 1); // attribute count

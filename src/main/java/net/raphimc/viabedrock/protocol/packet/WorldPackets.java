@@ -177,6 +177,18 @@ public class WorldPackets {
             clientPlayer.sendAttribute("minecraft:health"); // Java client always resets health on respawn, but Bedrock client keeps health when switching dimensions
             clientPlayer.sendEffects(); // Java client always resets effects on respawn. Resend them
             clientPlayer.setAbilities(clientPlayer.abilities()); // Java client always resets abilities on respawn. Resend them
+
+            final PacketWrapper initializeBorder = PacketWrapper.create(ClientboundPackets1_21_11.INITIALIZE_BORDER, wrapper.user());
+            initializeBorder.write(Types.DOUBLE, 0D); // center x
+            initializeBorder.write(Types.DOUBLE, 0D); // center z
+            initializeBorder.write(Types.DOUBLE, 0D); // old size
+            initializeBorder.write(Types.DOUBLE, 60_000_000D); // new size
+            initializeBorder.write(Types.VAR_LONG, 0L); // lerp time
+            initializeBorder.write(Types.VAR_INT, 60_000_000); // new absolute max size
+            initializeBorder.write(Types.VAR_INT, 0); // warning blocks
+            initializeBorder.write(Types.VAR_INT, 0); // warning time
+            initializeBorder.send(BedrockProtocol.class);
+
             PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer()); // Java client always resets inventory on respawn. Resend it
             inventoryTracker.getInventoryContainer().sendSelectedHotbarSlotToClient(); // Java client always resets selected hotbar slot on respawn. Resend it
         });
