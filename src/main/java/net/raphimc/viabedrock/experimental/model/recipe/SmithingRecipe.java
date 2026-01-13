@@ -59,4 +59,20 @@ public class SmithingRecipe extends Recipe {
                 "} " + super.toString();
     }
 
+    public  ItemDescriptor getTemplate() {
+        return template;
+    }
+
+    public  ItemDescriptor getBaseIngredient() {
+        return baseIngredient;
+    }
+
+    public  ItemDescriptor getAdditionIngredient() {
+        return additionIngredient;
+    }
+
+    public  BedrockItem getResult() {
+        return result;
+    }
+
 }

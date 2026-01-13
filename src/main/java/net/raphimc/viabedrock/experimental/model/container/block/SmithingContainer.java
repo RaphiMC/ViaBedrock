@@ -19,20 +19,37 @@ package net.raphimc.viabedrock.experimental.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
+import net.raphimc.viabedrock.experimental.model.recipe.RecipeType;
+import net.raphimc.viabedrock.experimental.model.recipe.SmithingRecipe;
+import net.raphimc.viabedrock.experimental.storage.*;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public class SmithingContainer extends ExperimentalContainer {
 
     public SmithingContainer(UserConnection user, byte containerId, ContainerType type, TextComponent title, BlockPosition position) {
-        super(user, containerId, type, title, position, 3, "smithing_table");
+        super(user, containerId, type, title, position, 4, "smithing_table");
     }
 
     @Override
@@ -93,6 +110,167 @@ public class SmithingContainer extends ExperimentalContainer {
             this.setItem(i, items[i]);
         }
         return true;
+    }
+
+    @Override
+    public boolean handleClick(int revision, short javaSlot, byte button, ClickType action) {
+        boolean result = false;
+        if (javaSlot != 3) {
+            // Handle click first so we update the crafting grid before checking for a recipe
+            result = super.handleClick(revision, javaSlot, button, action);
+        }
+        if (!ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            return result;
+        }
+        //TODO: This is experimental code...
+
+        ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+        final CraftingDataStorage craftingDataStorage = this.getRecipeData();
+        BedrockItem resultItem = BedrockItem.empty();
+        if (craftingDataStorage != null) {
+
+        }
+
+        //this.setItem(0, resultItem);
+        PacketWrapper containerSlot = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_SLOT, user);
+        containerSlot.write(Types.VAR_INT, (int) this.containerId());
+        containerSlot.write(Types.VAR_INT, revision);
+        containerSlot.write(Types.SHORT, (short) 0); // Output slot
+        containerSlot.write(VersionedTypes.V1_21_11.item, itemRewriter.javaItem(resultItem));
+        containerSlot.send(BedrockProtocol.class);
+
+        if (craftingDataStorage == null) {
+            // No valid recipe found
+            return result;
+        }
+
+        if (javaSlot != 3) {
+            // Handle click first so we update the crafting grid before checking for a recipe
+            return result;
+        }
+
+        ExperimentalInventoryTracker inventoryTracker = user.get(ExperimentalInventoryTracker.class);
+        InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
+
+        List<ExperimentalContainer> prevContainers = new ArrayList<>();
+        prevContainers.add(this.copy());
+        prevContainers.add(inventoryTracker.getInventoryContainer().copy());
+        ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy();
+
+        int bedrockSlot = this.bedrockSlot(javaSlot);
+
+        List<ItemStackRequestAction> actions = new ArrayList<>();
+        actions.add(new ItemStackRequestAction.CraftRecipeAction(craftingDataStorage.networkId(), 1));
+        actions.add(new ItemStackRequestAction.ConsumeAction(
+                1,
+                new ItemStackRequestSlotInfo(
+                        this.getFullContainerName(53),
+                        (byte) 53,
+                        this.getItem(53).netId()
+                )
+        ));
+        actions.add(new ItemStackRequestAction.ConsumeAction(
+                1,
+                new ItemStackRequestSlotInfo(
+                        this.getFullContainerName(51),
+                        (byte) 51,
+                        this.getItem(51).netId()
+                )
+        ));
+        actions.add(new ItemStackRequestAction.ConsumeAction(
+                1,
+                new ItemStackRequestSlotInfo(
+                        this.getFullContainerName(52),
+                        (byte) 52,
+                        this.getItem(52).netId()
+                )
+        ));
+
+        int nextRequestId = inventoryRequestTracker.nextRequestId();
+
+        actions.add(
+                new ItemStackRequestAction.TakeAction(
+                        1, // Total amount to take
+                        new ItemStackRequestSlotInfo(
+                                this.getFullContainerName(bedrockSlot),
+                                (byte) bedrockSlot,
+                                nextRequestId // TODO
+                        ),
+                        new ItemStackRequestSlotInfo(
+                                new FullContainerName(ContainerEnumName.CursorContainer, null),
+                                (byte) 0,
+                                0 // The stackNetworkId is not known yet
+                        )
+                )
+        );
+
+        ItemStackRequestInfo request = new ItemStackRequestInfo(
+                nextRequestId,
+                actions,
+                List.of(),
+                TextProcessingEventOrigin.unknown
+        );
+
+        inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevCursorContainer, prevContainers)); // Store the request to track it later
+        ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[]{request});
+
+        inventoryTracker.getHudContainer().setItem(0, resultItem); // Update cursor to the crafted item
+
+        BedrockItem templateItem = this.getItem(53).copy();
+        if (templateItem.amount() - 1 != 0) {
+            templateItem.setAmount(templateItem.amount() - 1);
+        } else {
+            templateItem = BedrockItem.empty();
+        }
+        this.setItem(53, templateItem);
+
+        BedrockItem inputItem = this.getItem(51).copy();
+        if (inputItem.amount() - 1 != 0) {
+            inputItem.setAmount(inputItem.amount() - 1);
+        } else {
+            inputItem = BedrockItem.empty();
+        }
+        this.setItem(51, inputItem);
+
+        BedrockItem materialItem = this.getItem(52).copy();
+        if (materialItem.amount() - 1 != 0) {
+            materialItem.setAmount(materialItem.amount() - 1);
+        } else {
+            materialItem = BedrockItem.empty();
+        }
+        this.setItem(52, materialItem);
+
+        ExperimentalPacketFactory.sendJavaContainerSetContent(user, this);
+
+        //TODO: Re-Update the output slot
+        return true;
+    }
+
+    private CraftingDataStorage getRecipeData() {
+        CraftingDataTracker craftingDataTracker = user.get(CraftingDataTracker.class);
+
+        for (CraftingDataStorage craftingData : craftingDataTracker.getCraftingDataList()) {
+            if (craftingData.recipe() == null || !craftingData.recipe().getRecipeTag().equals("smithing_table")) {
+                continue;
+            }
+
+            switch (craftingData.type()) {
+                case SMITHING_TRIM, SMITHING_TRANSFORM -> {
+                    SmithingRecipe smithingRecipe = (SmithingRecipe) craftingData.recipe();
+                    if (smithingRecipe.getTemplate().matchesItem(user, this.getItem(53)) &&
+                            smithingRecipe.getBaseIngredient().matchesItem(user, this.getItem(51)) &&
+                            smithingRecipe.getAdditionIngredient().matchesItem(user, this.getItem(52))) {
+                        return craftingData;
+                    }
+                }
+                default -> {
+                    ViaBedrock.getPlatform().getLogger().warning(
+                            "Unknown recipe type for smithing: " + craftingData.type() + " in recipe " + craftingData.recipe().getUniqueId()
+                    );
+                }
+            }
+        }
+        return null;
     }
 
 }

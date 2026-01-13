@@ -295,34 +295,12 @@ public class CraftingTableContainer extends ExperimentalContainer {
             if (used[slot]) continue;
             int inputSlot = slot + 31; // Crafting grid slots in bedrock
             BedrockItem item = this.getItem(inputSlot);
-            if (matchesDescriptor(descriptor, item)) {
+            if (descriptor.matchesItem(user, item)) {
                 used[slot] = true;
                 return true;
             }
         }
         return false;
-    }
-
-    private boolean matchesDescriptor(ItemDescriptor descriptor, BedrockItem item) {
-        return switch (descriptor.getType()) {
-            case DEFAULT -> {
-                int itemId = ((ItemDescriptor.DefaultDescriptor) descriptor).itemId();
-                yield ((itemId == -1 || itemId == 0) && item.isEmpty()) || (!item.isEmpty() && item.identifier() == itemId);
-            }
-            case ITEM_TAG -> {
-                if (item.isEmpty()) yield false;
-                ItemRewriter itemRewriter = user.get(ItemRewriter.class);
-                String itemName = itemRewriter.getItems().inverse().get(item.identifier());
-                Set<String> tags = BedrockProtocol.MAPPINGS.getBedrockItemTags().get(itemName);
-
-                if (tags == null || tags.isEmpty()) yield false;
-
-                String tag = ((ItemDescriptor.ItemTagDescriptor) descriptor).itemTag();
-                yield tags.contains(tag);
-            }
-            case INVALID -> item.isEmpty();
-            default -> false;
-        };
     }
 
     private boolean noExtraItems(boolean[] used) {
@@ -343,7 +321,7 @@ public class CraftingTableContainer extends ExperimentalContainer {
             for (int x = 0; x < width; x++) {
                 ItemDescriptor descriptor = recipe.getPattern()[y][x];
                 BedrockItem item = this.getItem((startY + y) * 3 + (startX + x) + 1 + 31);
-                if (!matchesDescriptor(descriptor, item)) {
+                if (!descriptor.matchesItem(user, item)) {
                     return false;
                 }
             }

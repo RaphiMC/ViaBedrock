@@ -22,12 +22,18 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.util.Key;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
+
+import java.util.Set;
 
 public interface ItemDescriptor {
 
     ItemDescriptorType getType();
+
+    boolean matchesItem(final UserConnection user, BedrockItem item);
+
     default void writeJavaIngredientData(final PacketWrapper packet, final UserConnection user) {
         throw new UnsupportedOperationException("Not implemented for " + getType());
     }
@@ -37,6 +43,13 @@ public interface ItemDescriptor {
         public ItemDescriptorType getType() {
             return ItemDescriptorType.COMPLEX_ALIAS;
         }
+
+        @Override
+        public boolean matchesItem(UserConnection user, BedrockItem item) {
+            // TODO
+            return false;
+        }
+
         @Override
         public void writeJavaIngredientData(final PacketWrapper packet, final UserConnection user) {
             //TODO
@@ -48,6 +61,11 @@ public interface ItemDescriptor {
         @Override
         public ItemDescriptorType getType() {
             return ItemDescriptorType.DEFAULT;
+        }
+
+        @Override
+        public boolean matchesItem(UserConnection user, BedrockItem item) {
+            return  ((itemId == -1 || itemId == 0) && item.isEmpty()) || (!item.isEmpty() && item.identifier() == itemId);
         }
 
         @Override
@@ -67,6 +85,12 @@ public interface ItemDescriptor {
         @Override
         public ItemDescriptorType getType() {
             return ItemDescriptorType.DEFERRED;
+        }
+
+        @Override
+        public boolean matchesItem(UserConnection user, BedrockItem item) {
+            // TODO
+            return false;
         }
 
         @Override
@@ -90,6 +114,11 @@ public interface ItemDescriptor {
         }
 
         @Override
+        public boolean matchesItem(UserConnection user, BedrockItem item) {
+            return item.isEmpty();
+        }
+
+        @Override
         public void writeJavaIngredientData(final PacketWrapper packet, final UserConnection user) {
             packet.write(Types.VAR_INT, 0); // Slot Display Type (empty)
         }
@@ -99,6 +128,18 @@ public interface ItemDescriptor {
         @Override
         public ItemDescriptorType getType() {
             return ItemDescriptorType.ITEM_TAG;
+        }
+
+        @Override
+        public boolean matchesItem(UserConnection user, BedrockItem item) {
+            if (item.isEmpty()) return false;
+            ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+            String itemName = itemRewriter.getItems().inverse().get(item.identifier());
+            Set<String> tags = BedrockProtocol.MAPPINGS.getBedrockItemTags().get(itemName);
+
+            if (tags == null || tags.isEmpty()) return false;
+
+            return tags.contains(itemTag);
         }
 
         @Override
@@ -113,6 +154,12 @@ public interface ItemDescriptor {
         @Override
         public ItemDescriptorType getType() {
             return ItemDescriptorType.MOLANG;
+        }
+
+        @Override
+        public boolean matchesItem(UserConnection user, BedrockItem item) {
+            // TODO
+            return false;
         }
     }
 

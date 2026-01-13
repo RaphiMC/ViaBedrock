@@ -86,7 +86,6 @@ public abstract class ExperimentalContainer {
          */
         List<ExperimentalContainer> prevContainers = new ArrayList<>(); // Store previous state of all involved containers to be able to rollback if needed
         prevContainers.add(container.copy()); // Store previous state of the container
-        // TODO: because bedrock is cringe, when doing shift clicks we need to add the container we are moving items to as well (e.g. Armour container)
 
         ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy(); // Store previous state of the cursor item
 
@@ -158,6 +157,7 @@ public abstract class ExperimentalContainer {
                 } else {
                     if (item.isEmpty() || (!item.isDifferent(cursorItem) && item.amount() < 64)) { // TODO: Mostly accounts for stackability but not fully (shouldnt be an issue with server side inventory)
                         // Place item
+                        // TODO: Broken
                         int amt = button == 0 ? cursorItem.amount() : 1;
                         int amountToPlace = item.isDifferent(cursorItem) ? amt : Math.min(64 - item.amount(), cursorItem.amount());
 
