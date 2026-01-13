@@ -83,6 +83,33 @@ public class CraftingTableContainer extends ExperimentalContainer {
     }
 
     @Override
+    public BedrockItem getItem(int bedrockSlot) {
+        // Fix magic offset
+        bedrockSlot -= 31;
+        return this.items[bedrockSlot];
+    }
+
+    @Override
+    public boolean setItem(final int bedrockSlot, final BedrockItem item) {
+        // Fix magic offset
+        return super.setItem(bedrockSlot - 31, item);
+    }
+
+    @Override
+    public boolean setItems(final BedrockItem[] items) {
+        //TODO: Fix magic offset?
+        if (items.length != this.items.length) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
+            return false;
+        }
+
+        for (int i = 0; i < items.length; i++) {
+            this.setItem(i, items[i]);
+        }
+        return true;
+    }
+
+    @Override
     public boolean handleClick(final int revision, final short javaSlot, final byte button, final ClickType action) {
         boolean result = false;
         if (javaSlot != 0) {
@@ -116,7 +143,7 @@ public class CraftingTableContainer extends ExperimentalContainer {
 
         if (craftingDataStorage == null) {
             // No valid recipe found
-            return false;
+            return result;
         }
 
         if (javaSlot != 0) {
@@ -143,7 +170,7 @@ public class CraftingTableContainer extends ExperimentalContainer {
 
         for (int i = 1; i <= 9; i++) {
             int inputSlot = i + 31; // Crafting grid slots in bedrock
-            BedrockItem item = this.getItem(i);
+            BedrockItem item = this.getItem(inputSlot);
             if (!item.isEmpty() && item.amount() > 0) {
                 int toConsume = Math.min(item.amount(), craftableAmount);
                 actions.add(new ItemStackRequestAction.ConsumeAction(
@@ -151,7 +178,7 @@ public class CraftingTableContainer extends ExperimentalContainer {
                         new ItemStackRequestSlotInfo(
                                 this.getFullContainerName(inputSlot),
                                 (byte) inputSlot,
-                                this.getItem(i).netId()
+                                this.getItem(inputSlot).netId()
                         )
                 ));
             }
@@ -186,18 +213,19 @@ public class CraftingTableContainer extends ExperimentalContainer {
 
         inventoryTracker.getHudContainer().setItem(0, resultItem); // Update cursor to the crafted item
         for (int i = 1; i <= 9; i++) {
-            BedrockItem item = this.getItem(i);
+            int inputSlot = i + 31; // Crafting grid slots in bedrock
+            BedrockItem item = this.getItem(inputSlot);
             if (!item.isEmpty() && item.amount() > 0) {
                 int toConsume = Math.min(item.amount(), craftableAmount);
                 item = item.copy();
                 item.setAmount(item.amount() - toConsume);
                 if (item.amount() > 0) {
-                    this.setItem(i, item);
+                    this.setItem(inputSlot, item);
                 } else {
-                    this.setItem(i, BedrockItem.empty());
+                    this.setItem(inputSlot, BedrockItem.empty());
                 }
             } else {
-                this.setItem(i, BedrockItem.empty());
+                this.setItem(inputSlot, BedrockItem.empty());
             }
         }
         ExperimentalPacketFactory.sendJavaContainerSetContent(user, this);
@@ -265,7 +293,8 @@ public class CraftingTableContainer extends ExperimentalContainer {
     private boolean findMatchingSlot(ItemDescriptor descriptor, boolean[] used) {
         for (int slot = 1; slot <= 9; slot++) {
             if (used[slot]) continue;
-            BedrockItem item = this.getItem(slot);
+            int inputSlot = slot + 31; // Crafting grid slots in bedrock
+            BedrockItem item = this.getItem(inputSlot);
             if (matchesDescriptor(descriptor, item)) {
                 used[slot] = true;
                 return true;
@@ -298,7 +327,8 @@ public class CraftingTableContainer extends ExperimentalContainer {
 
     private boolean noExtraItems(boolean[] used) {
         for (int slot = 1; slot <= 9; slot++) {
-            if (!used[slot] && !this.getItem(slot).isEmpty()) {
+            int inputSlot = slot + 31; // Crafting grid slots in bedrock
+            if (!used[slot] && !this.getItem(inputSlot).isEmpty()) {
                 return false;
             }
         }
@@ -312,7 +342,7 @@ public class CraftingTableContainer extends ExperimentalContainer {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 ItemDescriptor descriptor = recipe.getPattern()[y][x];
-                BedrockItem item = this.getItem((startY + y) * 3 + (startX + x) + 1);
+                BedrockItem item = this.getItem((startY + y) * 3 + (startX + x) + 1 + 31);
                 if (!matchesDescriptor(descriptor, item)) {
                     return false;
                 }
@@ -327,7 +357,7 @@ public class CraftingTableContainer extends ExperimentalContainer {
                 if (gx >= startX && gx < startX + width && gy >= startY && gy < startY + height) {
                     continue;
                 }
-                if (!this.getItem(gy * 3 + gx + 1).isEmpty()) {
+                if (!this.getItem(gy * 3 + gx + 1 + 31).isEmpty()) {
                     return false;
                 }
             }

@@ -439,7 +439,7 @@ public class ExperimentalFeatures {
 
             final ExperimentalInventoryTracker inventoryTracker = wrapper.user().get(ExperimentalInventoryTracker.class);
             final ExperimentalContainer container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);
-            if (container != null && container.setItem(container.javaSlot(slot), item)) {
+            if (container != null && container.setItem(slot, item)) {
                 if (container.type() == ContainerType.HUD && slot == 0) { // cursor item
                     wrapper.setPacketType(ClientboundPackets1_21_11.SET_CURSOR_ITEM);
                 } else {
@@ -752,21 +752,14 @@ public class ExperimentalFeatures {
                             continue;
                         }
 
-                        int javaSlot = container.javaSlot(slotInfo.slot());
-
-                        if (javaSlot < 0 || javaSlot >= container.getItems().length) {
-                            ViaBedrock.getPlatform().getLogger().warning("Received item stack response with out of bounds slot: " + slotInfo.slot());
-                            continue;
-                        }
-
                         // Check if the item matches the expected item
-                        BedrockItem expectedItem = container.getItem(javaSlot);
+                        BedrockItem expectedItem = container.getItem(slotInfo.slot());
                         if (expectedItem.isEmpty()) continue; //TODO
                         if (expectedItem.netId() == null || expectedItem.netId() != slotInfo.itemNetId() || expectedItem.amount() != slotInfo.amount()) {
                             BedrockItem newItem = expectedItem.copy();
                             newItem.setNetId(slotInfo.itemNetId());
                             newItem.setAmount(slotInfo.amount());
-                            container.setItem(javaSlot, newItem);
+                            container.setItem(slotInfo.slot(), newItem);
                             if (container.getFullContainerName(slotInfo.slot()).name() != ContainerEnumName.CursorContainer) {
                                 mismatchedContainers.add(container);
                             }

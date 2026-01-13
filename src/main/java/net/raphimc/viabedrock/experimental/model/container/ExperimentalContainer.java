@@ -23,6 +23,7 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
+import net.raphimc.viabedrock.experimental.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
@@ -78,8 +79,7 @@ public abstract class ExperimentalContainer {
         ExperimentalContainer container = this;
         ExperimentalInventoryTracker inventoryTracker = user.get(ExperimentalInventoryTracker.class);
         InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
-        int clickSlot = container.bedrockSlot(javaSlot);
-        int slot = javaSlot;
+        int bedrockSlot = container.bedrockSlot(javaSlot);
 
         /* TODO: Could potentially lead to a race condition if we receive a inventory update before the response for the request,
          *  a better solution would be to store the specific changes made in the request. From my testing this doesnt seem to happen though
@@ -94,7 +94,7 @@ public abstract class ExperimentalContainer {
             case PICKUP -> {
                 BedrockItem cursorItem = inventoryTracker.getHudContainer().getItem(0);
 
-                if (slot == -999) {
+                if (javaSlot == -999) {
                     // Drop item
                     if (cursorItem.isEmpty()) {
                         yield null;
@@ -115,22 +115,21 @@ public abstract class ExperimentalContainer {
                             new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, cursorItem.netId()),
                             false
                     );
-                } else if (slot < 0 || slot >= container.getItems().length) {
+                } else if (!(container instanceof InventoryContainer) && (javaSlot < 0 || javaSlot >= container.getItems().length)) {
                     ExperimentalContainer inventoryContainer = inventoryTracker.getInventoryContainer();
                     int invSlot = inventoryContainer.bedrockSlot(javaSlot - container.getItems().length + 9); // Map to inventory slot
                     if (invSlot < 0 || invSlot >= inventoryContainer.getItems().length) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle click for " + container.type() + ", but slot was out of bounds (" + slot + ")");
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle click for " + container.type() + ", but slot was out of bounds (" + javaSlot + ")");
                         yield null;
                     } else {
-                        slot = invSlot;
-                        clickSlot = invSlot;
+                        bedrockSlot = invSlot;
                         container = inventoryContainer;
 
                         prevContainers.add(container.copy()); // Store previous state of the inventory container
                     }
                 }
 
-                BedrockItem item = container.getItem(slot);
+                BedrockItem item = container.getItem(bedrockSlot);
                 if (item.isEmpty() && cursorItem.isEmpty()) {
                     // Nothing to do
                     yield null;
@@ -149,11 +148,11 @@ public abstract class ExperimentalContainer {
                     } else {
                         finalContainerItem.setAmount(item.amount() - amountToTake);
                     }
-                    container.setItem(slot, finalContainerItem);
+                    container.setItem(bedrockSlot, finalContainerItem);
 
                     yield new ItemStackRequestAction.TakeAction(
                             amountToTake,
-                            new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, finalCursorItem.netId()),
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(bedrockSlot), (byte) bedrockSlot, finalCursorItem.netId()),
                             new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, 0)
                     );
                 } else {
@@ -169,7 +168,7 @@ public abstract class ExperimentalContainer {
                         } else {
                             finalContainerItem.setAmount(item.amount() + amountToPlace);
                         }
-                        container.setItem(slot, finalContainerItem);
+                        container.setItem(bedrockSlot, finalContainerItem);
 
                         BedrockItem finalCursorItem = cursorItem.copy();
                         if (amountToPlace >= cursorItem.amount()) {
@@ -182,7 +181,7 @@ public abstract class ExperimentalContainer {
                         yield new ItemStackRequestAction.PlaceAction(
                                 amountToPlace,
                                 new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, finalContainerItem.netId()),
-                                new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, 0)
+                                new ItemStackRequestSlotInfo(container.getFullContainerName(bedrockSlot), (byte) bedrockSlot, 0)
                         );
                     } else {
                         // Swap item
@@ -190,12 +189,12 @@ public abstract class ExperimentalContainer {
                         BedrockItem cursorCopy = cursorItem.copy();
                         BedrockItem itemCopy = item.copy();
 
-                        container.setItem(slot, cursorCopy);
+                        container.setItem(bedrockSlot, cursorCopy);
                         inventoryTracker.getHudContainer().setItem(0, itemCopy);
 
                         yield new ItemStackRequestAction.SwapAction(
                                 new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, cursorItem.netId()),
-                                new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, item.netId())
+                                new ItemStackRequestSlotInfo(container.getFullContainerName(bedrockSlot), (byte) bedrockSlot, item.netId())
                         );
                     }
                 }
@@ -208,50 +207,50 @@ public abstract class ExperimentalContainer {
 
                 ExperimentalContainer hotbarContainer = inventoryTracker.getInventoryContainer();
 
-                if (slot < 0 || slot >= container.getItems().length) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle swap for " + container.type() + ", but slot was out of bounds (" + slot + ")");
+                if (javaSlot < 0 || javaSlot >= container.getItems().length) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle swap for " + container.type() + ", but slot was out of bounds (" + javaSlot + ")");
                     yield null;
                 }
 
-                BedrockItem item = container.getItem(slot).copy();
+                BedrockItem item = container.getItem(bedrockSlot).copy();
                 BedrockItem hotbarItem = hotbarContainer.getItem(button).copy();
 
                 if (item.isEmpty() && hotbarItem.isEmpty()) {
                     yield null;
                 }
 
-                container.setItem(slot, hotbarItem);
+                container.setItem(bedrockSlot, hotbarItem);
                 hotbarContainer.setItem(button, item);
 
                 if (hotbarItem.isEmpty()) {
                     yield new ItemStackRequestAction.PlaceAction(
                             item.amount(),
-                            new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, item.netId()),
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(bedrockSlot), (byte) bedrockSlot, item.netId()),
                             new ItemStackRequestSlotInfo(hotbarContainer.getFullContainerName(button), button, 0)
                     );
                 } else if (item.isEmpty()) {
                     yield new ItemStackRequestAction.PlaceAction(
                             hotbarItem.amount(),
                             new ItemStackRequestSlotInfo(hotbarContainer.getFullContainerName(button), button, hotbarItem.netId()),
-                            new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, 0)
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(bedrockSlot), (byte) bedrockSlot, 0)
                     );
                 } else {
                     yield new ItemStackRequestAction.SwapAction(
                             new ItemStackRequestSlotInfo(hotbarContainer.getFullContainerName(button), (byte) button, hotbarItem.netId()),
-                            new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, item.netId())
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(bedrockSlot), (byte) bedrockSlot, item.netId())
                     );
                 }
             }
             case QUICK_MOVE -> {
-                // TODO: VERRRY EXPERIMENTAL
+                // TODO: Broken
                 // TODO: Inventory -> Hotbar/Armor/Offhand
                 // TODO: Container Limited Slots (e.g. Furnace Fuel/Input/Output) Note: this might not be needed as the server will reject invalid moves anyway
                 ExperimentalContainer inventoryContainer = inventoryTracker.getInventoryContainer();
                 prevContainers.add(inventoryContainer.copy()); // Store previous state of the inventory container
-                if (slot < 0 || slot >= container.getItems().length) {
+                if (javaSlot < 0 || javaSlot >= container.getItems().length) {
                     int invSlot = inventoryContainer.bedrockSlot(javaSlot - container.getItems().length + 9); // Map to inventory slot
                     if (invSlot < 0 || invSlot >= inventoryContainer.getItems().length) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle quick move for " + container.type() + ", but slot was out of bounds (" + slot + ")");
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle quick move for " + container.type() + ", but slot was out of bounds (" + javaSlot + ")");
                         yield null;
                     } else {
                         // Moving from inventory to container
@@ -266,13 +265,14 @@ public abstract class ExperimentalContainer {
                         int emptySlot = -1;
                         // TODO: Prioritize stacking over empty slots
                         for (int i = 0; i < container.getItems().length; i++) {
+                            int b = container.bedrockSlot(i);
                             BedrockItem containerItem = container.getItem(i);
                             if (containerItem.isEmpty()) {
                                 // Empty slot, move item here
                                 BedrockItem toMove = item.copy();
                                 toMove.setAmount(remaining);
-                                container.setItem(i, toMove);
-                                emptySlot = i;
+                                container.setItem(b, toMove);
+                                emptySlot = b;
                                 remaining = 0;
                                 break;
                             } else if (!containerItem.isDifferent(item) && containerItem.amount() < 64) {
@@ -281,7 +281,7 @@ public abstract class ExperimentalContainer {
                                 int space = 64 - containerItem.amount();
                                 int toTransfer = Math.min(space, remaining);
                                 containerItem.setAmount(containerItem.amount() + toTransfer);
-                                container.setItem(i, containerItem);
+                                container.setItem(b, containerItem);
                                 remaining -= toTransfer;
                                 if (remaining <= 0) {
                                     break;
@@ -306,7 +306,7 @@ public abstract class ExperimentalContainer {
                     }
                 } else {
                     // Moving from container to inventory
-                    BedrockItem item = container.getItem(slot);
+                    BedrockItem item = container.getItem(bedrockSlot);
 
                     if (item.isEmpty()) {
                         yield null;
@@ -349,21 +349,21 @@ public abstract class ExperimentalContainer {
                     } else {
                         finalContainerItem.setAmount(remaining);
                     }
-                    container.setItem(slot, finalContainerItem);
+                    container.setItem(bedrockSlot, finalContainerItem);
                     yield new ItemStackRequestAction.PlaceAction(
                             item.amount() - remaining,
-                            new ItemStackRequestSlotInfo(container.getFullContainerName(slot), (byte) slot, item.netId()),
+                            new ItemStackRequestSlotInfo(container.getFullContainerName(bedrockSlot), (byte) bedrockSlot, item.netId()),
                             new ItemStackRequestSlotInfo(inventoryContainer.getFullContainerName(emptySlot), (byte) emptySlot, 0)
                     );
                 }
             }
             case THROW -> {
-                if (slot < 0 || slot >= container.getItems().length) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle throw for " + container.type() + ", but slot was out of bounds (" + slot + ")");
+                if (javaSlot < 0 || javaSlot >= container.getItems().length) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle throw for " + container.type() + ", but slot was out of bounds (" + javaSlot + ")");
                     yield null;
                 }
 
-                BedrockItem item = container.getItem(slot);
+                BedrockItem item = container.getItem(bedrockSlot);
 
                 if (item.isEmpty()) {
                     yield null;
@@ -377,11 +377,11 @@ public abstract class ExperimentalContainer {
                 } else {
                     finalContainerItem.setAmount(item.amount() - amountToDrop);
                 }
-                container.setItem(slot, finalContainerItem);
+                container.setItem(bedrockSlot, finalContainerItem);
 
                 yield new ItemStackRequestAction.DropAction(
                         amountToDrop,
-                        new ItemStackRequestSlotInfo(container.getFullContainerName(clickSlot), (byte) clickSlot, item.netId()),
+                        new ItemStackRequestSlotInfo(container.getFullContainerName(bedrockSlot), (byte) bedrockSlot, item.netId()),
                         false
                 );
             }
@@ -425,23 +425,23 @@ public abstract class ExperimentalContainer {
         return this.user.get(ItemRewriter.class).javaItems(this.items);
     }
 
-    public BedrockItem getItem(final int javaSlot) {
-        return this.items[javaSlot];
+    public BedrockItem getItem(final int bedrockSlot) {
+        return this.items[bedrockSlot];
     }
 
     public BedrockItem[] getItems() {
         return Arrays.copyOf(this.items, this.items.length);
     }
 
-    public boolean setItem(final int javaSlot, final BedrockItem item) {
-        if (javaSlot < 0 || javaSlot >= this.items.length) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set item for " + this.type + ", but slot was out of bounds (" + javaSlot + ")");
+    public boolean setItem(final int bedrockSlot, final BedrockItem item) {
+        if (bedrockSlot < 0 || bedrockSlot >= this.items.length) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set item for " + this.type + ", but slot was out of bounds (" + bedrockSlot + ")");
             return false;
         }
 
-        final BedrockItem oldItem = this.items[javaSlot];
-        this.items[javaSlot] = item;
-        this.onSlotChanged(javaSlot, oldItem, item);
+        final BedrockItem oldItem = this.items[bedrockSlot];
+        this.items[bedrockSlot] = item;
+        this.onSlotChanged(bedrockSlot, oldItem, item);
         return true;
     }
 

@@ -20,10 +20,14 @@ package net.raphimc.viabedrock.experimental.model.container.block;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
+
+import java.util.logging.Level;
 
 public class EnchantmentContainer extends ExperimentalContainer {
 
@@ -57,4 +61,32 @@ public class EnchantmentContainer extends ExperimentalContainer {
             default -> super.bedrockSlot(slot);
         };
     }
+
+    @Override
+    public BedrockItem getItem(int bedrockSlot) {
+        // Fix magic offset
+        bedrockSlot -= 14;
+        return this.items[bedrockSlot];
+    }
+
+    @Override
+    public boolean setItem(final int bedrockSlot, final BedrockItem item) {
+        // Fix magic offset
+        return super.setItem(bedrockSlot - 14, item);
+    }
+
+    @Override
+    public boolean setItems(final BedrockItem[] items) {
+        //TODO: Fix magic offset?
+        if (items.length != this.items.length) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
+            return false;
+        }
+
+        for (int i = 0; i < items.length; i++) {
+            this.setItem(i, items[i]);
+        }
+        return true;
+    }
+
 }
