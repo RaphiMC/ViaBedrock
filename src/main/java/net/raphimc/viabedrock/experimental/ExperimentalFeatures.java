@@ -357,6 +357,7 @@ public class ExperimentalFeatures {
                     return;
                 }
                 case CONTAINER -> container = new ChestContainer(wrapper.user(), containerId, title, position, size);
+                case HOPPER -> container = new HopperContainer(wrapper.user(), containerId, title, position);
                 case FURNACE -> container = new FurnaceContainer(wrapper.user(), containerId, title, position);
                 case BLAST_FURNACE -> container = new BlastFurnaceContainer(wrapper.user(), containerId, title, position);
                 case SMOKER -> container = new SmokerContainer(wrapper.user(), containerId, title, position);
