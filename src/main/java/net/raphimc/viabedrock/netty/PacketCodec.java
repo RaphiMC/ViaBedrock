@@ -27,6 +27,8 @@ import java.util.List;
 
 public class PacketCodec extends ByteToMessageCodec<ByteBuf> {
 
+    public static final String NAME = "viabedrock-packet-codec";
+
     @Override
     protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
         final int packetId = Types.VAR_INT.readPrimitive(in);
