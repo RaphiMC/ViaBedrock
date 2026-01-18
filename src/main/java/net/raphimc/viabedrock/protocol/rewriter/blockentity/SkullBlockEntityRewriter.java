@@ -31,6 +31,7 @@ import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
@@ -40,7 +41,7 @@ public class SkullBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     static {
         for (BedrockBlockState bedrockBlockState : BedrockProtocol.MAPPINGS.getBedrockBlockStates()) {
-            if ("skull".equals(BedrockProtocol.MAPPINGS.getBedrockCustomBlockTags().get(bedrockBlockState.namespacedIdentifier()))) {
+            if (CustomBlockTags.SKULL.equals(BedrockProtocol.MAPPINGS.getBedrockCustomBlockTags().get(bedrockBlockState.namespacedIdentifier()))) {
                 final BlockState javaBlockState = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates().get(bedrockBlockState);
                 if (bedrockBlockState.properties().get("facing_direction").equals("1") && javaBlockState.properties().get("rotation").equals("0")) {
                     final int id = BedrockProtocol.MAPPINGS.getJavaBlockStates().getOrDefault(javaBlockState, -1);

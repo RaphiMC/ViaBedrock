@@ -53,6 +53,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.PlayerInfoUpdateAction;
+import net.raphimc.viabedrock.protocol.data.generated.java.Attributes;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -550,7 +551,7 @@ public class JoinPackets {
         final PacketWrapper updateAttributes = PacketWrapper.create(ClientboundPackets1_21_11.UPDATE_ATTRIBUTES, user);
         updateAttributes.write(Types.VAR_INT, clientPlayer.javaId()); // entity id
         updateAttributes.write(Types.VAR_INT, 1); // attribute count
-        updateAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:attack_speed")); // attribute id
+        updateAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get(Attributes.ATTACK_SPEED)); // attribute id
         updateAttributes.write(Types.DOUBLE, 20D); // base value
         updateAttributes.write(Types.VAR_INT, 0); // modifier count
         updateAttributes.send(BedrockProtocol.class);

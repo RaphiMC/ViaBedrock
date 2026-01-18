@@ -28,6 +28,8 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.AbilitiesIndex;
 import net.raphimc.viabedrock.protocol.data.enums.java.UpdateMobEffectFlag;
+import net.raphimc.viabedrock.protocol.data.generated.java.Attributes;
+import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.EntityEffect;
 
@@ -152,9 +154,9 @@ public class LivingEntity extends Entity {
         return switch (attribute.name()) {
             case "minecraft:attack_damage", "minecraft:knockback_resistance", "minecraft:movement" -> {
                 javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get(switch (attribute.name()) {
-                    case "minecraft:attack_damage" -> "minecraft:attack_damage";
-                    case "minecraft:knockback_resistance" -> "minecraft:knockback_resistance";
-                    case "minecraft:movement" -> "minecraft:movement_speed";
+                    case "minecraft:attack_damage" -> Attributes.ATTACK_DAMAGE;
+                    case "minecraft:knockback_resistance" -> Attributes.KNOCKBACK_RESISTANCE;
+                    case "minecraft:movement" -> Attributes.MOVEMENT_SPEED;
                     default -> throw new IllegalStateException("Unhandled entity attribute: " + attribute.name());
                 })); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.computeClampedValue()); // base value
@@ -163,8 +165,8 @@ public class LivingEntity extends Entity {
                 yield true;
             }
             case "minecraft:health" -> {
-                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("HEALTH"), VersionedTypes.V1_21_11.entityDataTypes.floatType, attribute.computeClampedValue()));
-                javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:max_health")); // attribute id
+                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex(EntityDataFields.HEALTH), VersionedTypes.V1_21_11.entityDataTypes.floatType, attribute.computeClampedValue()));
+                javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get(Attributes.MAX_HEALTH)); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.maxValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count
                 attributeCount.incrementAndGet();

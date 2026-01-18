@@ -25,6 +25,7 @@ import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomItemTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -139,8 +140,8 @@ public class BundleContainer extends Container {
             final BedrockItem item = items[i];
             if (item.isEmpty() || item.tag() == null) continue;
 
-            final String itemTag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().getOrDefault(itemRewriter.getItems().inverse().get(item.identifier()), "");
-            if (!itemTag.equals("bundle")) continue;
+            final String itemTag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(itemRewriter.getItems().inverse().get(item.identifier()));
+            if (!CustomItemTags.BUNDLE.equals(itemTag)) continue;
 
             final IntTag bundleIdTag = item.tag().getIntTag("bundle_id");
             if (bundleIdTag == null || bundleIdTag.asInt() == 0) continue;

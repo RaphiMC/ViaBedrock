@@ -31,6 +31,8 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.java.PlayerTeamAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.TeamCollisionRule;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.TeamVisibility;
+import net.raphimc.viabedrock.protocol.data.generated.java.Attributes;
+import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 
@@ -106,15 +108,15 @@ public class PlayerEntity extends LivingEntity {
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         return switch (attribute.name()) {
             case "minecraft:absorption" -> {
-                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex("PLAYER_ABSORPTION"), VersionedTypes.V1_21_11.entityDataTypes.floatType, attribute.computeClampedValue()));
-                javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:max_absorption")); // attribute id
+                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex(EntityDataFields.PLAYER_ABSORPTION), VersionedTypes.V1_21_11.entityDataTypes.floatType, attribute.computeClampedValue()));
+                javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get(Attributes.MAX_ABSORPTION)); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.maxValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count
                 attributeCount.incrementAndGet();
                 yield true;
             }
             case "minecraft:luck" -> {
-                javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:luck")); // attribute id
+                javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get(Attributes.LUCK)); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.computeClampedValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count
                 attributeCount.incrementAndGet();

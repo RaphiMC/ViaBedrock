@@ -57,6 +57,7 @@ import net.raphimc.viabedrock.api.util.FileSystemUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.SoundSource;
+import net.raphimc.viabedrock.protocol.data.generated.java.RegistryKeys;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.DataInputStream;
@@ -118,7 +119,7 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, EntityTypes1_21_11> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
     private BiMap<String, Integer> javaEntityAttributes;
-    private Map<EntityTypes1_21_11, List<String>> javaEntityData;
+    private Map<EntityTypes1_21_11, List<String>> javaEntityDataFields;
 
     // Entity Effects
     private BiMap<String, Integer> javaEffects;
@@ -635,9 +636,9 @@ public class BedrockMappingData extends MappingDataBase {
                 this.javaEntityAttributes.put(Key.namespaced(javaEntityAttributesJson.get(i).getAsString()), i);
             }
 
-            final JsonObject javaEntityDataJson = this.readJson("java/entity_data.json");
-            this.javaEntityData = new EnumMap<>(EntityTypes1_21_11.class);
-            for (Map.Entry<String, JsonElement> entry : javaEntityDataJson.entrySet()) {
+            final JsonObject javaEntityDataFieldsJson = this.readJson("java/entity_data_fields.json");
+            this.javaEntityDataFields = new EnumMap<>(EntityTypes1_21_11.class);
+            for (Map.Entry<String, JsonElement> entry : javaEntityDataFieldsJson.entrySet()) {
                 if (EnumUtil.getEnumConstantOrNull(EntityTypes1_21_11.class, entry.getKey()) == null) {
                     throw new RuntimeException("Unknown java entity type: " + entry.getKey());
                 }
@@ -645,22 +646,22 @@ public class BedrockMappingData extends MappingDataBase {
             for (EntityTypes1_21_11 type : EntityTypes1_21_11.values()) {
                 if (type.isAbstractType()) continue;
                 final EntityTypes1_21_11 realType = type;
-                final List<String> entityData = new ArrayList<>();
+                final List<String> allEntityTypeFields = new ArrayList<>();
                 do {
-                    final JsonArray entityDataArray = javaEntityDataJson.getAsJsonArray(type.name());
-                    if (entityDataArray != null) {
-                        final List<String> entityTypeData = new ArrayList<>(entityDataArray.size());
-                        for (JsonElement entry : entityDataArray) {
-                            if (entityData.contains(entry.getAsString()) || entityTypeData.contains(entry.getAsString())) {
-                                throw new IllegalStateException("Duplicate entity data for " + realType.name() + ": " + entry.getAsString());
+                    final JsonArray entityTypeFieldsJson = javaEntityDataFieldsJson.getAsJsonArray(type.name());
+                    if (entityTypeFieldsJson != null) {
+                        final List<String> entityTypeFields = new ArrayList<>(entityTypeFieldsJson.size());
+                        for (JsonElement entry : entityTypeFieldsJson) {
+                            if (allEntityTypeFields.contains(entry.getAsString()) || entityTypeFields.contains(entry.getAsString())) {
+                                throw new IllegalStateException("Duplicate entity data field for " + realType.name() + ": " + entry.getAsString());
                             } else {
-                                entityTypeData.add(entry.getAsString());
+                                entityTypeFields.add(entry.getAsString());
                             }
                         }
-                        entityData.addAll(0, entityTypeData);
+                        allEntityTypeFields.addAll(0, entityTypeFields);
                     }
                 } while ((type = (EntityTypes1_21_11) type.getParent()) != null);
-                this.javaEntityData.put(realType, entityData);
+                this.javaEntityDataFields.put(realType, allEntityTypeFields);
             }
         }
 
@@ -928,17 +929,18 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockToJavaExperimentalFeatures.put(entry.getKey(), entry.getValue().getAsString());
             }
 
+            final CompoundTag javaBannerPatternRegistry = this.javaRegistries.getCompoundTag(RegistryKeys.BANNER_PATTERN);
             final JsonObject bedrockToJavaBannerPatternMappingsJson = this.readJson("custom/banner_pattern_mappings.json");
             this.bedrockToJavaBannerPatterns = HashBiMap.create(bedrockToJavaBannerPatternMappingsJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaBannerPatternMappingsJson.entrySet()) {
                 final String javaIdentifier = entry.getValue().getAsString();
-                if (!this.javaRegistries.getCompoundTag("minecraft:banner_pattern").contains(javaIdentifier)) {
+                if (!javaBannerPatternRegistry.contains(javaIdentifier)) {
                     throw new RuntimeException("Unknown java banner pattern: " + javaIdentifier);
                 }
                 this.bedrockToJavaBannerPatterns.put(entry.getKey(), javaIdentifier);
             }
 
-            final CompoundTag javaPaintingVariantRegistry = this.javaRegistries.getCompoundTag("minecraft:painting_variant");
+            final CompoundTag javaPaintingVariantRegistry = this.javaRegistries.getCompoundTag(RegistryKeys.PAINTING_VARIANT);
             final JsonObject bedrockToJavaPaintingMappingsJson = this.readJson("custom/painting_mappings.json");
             this.bedrockToJavaPaintings = HashBiMap.create(bedrockToJavaPaintingMappingsJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaPaintingMappingsJson.entrySet()) {
@@ -949,14 +951,14 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockToJavaPaintings.put(entry.getKey(), javaIdentifier);
             }
 
-            final CompoundTag javaDamageTypeRegistry = this.javaRegistries.getCompoundTag("minecraft:damage_type");
+            final CompoundTag javaDamageTypeRegistry = this.javaRegistries.getCompoundTag(RegistryKeys.DAMAGE_TYPE);
             final JsonObject bedrockToJavaDamageCauseMappingsJson = this.readJson("custom/damage_cause_mappings.json");
             this.bedrockToJavaDamageCauses = new EnumMap<>(SharedTypes_Legacy_ActorDamageCause.class);
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaDamageCauseMappingsJson.entrySet()) {
                 final SharedTypes_Legacy_ActorDamageCause damageCause = SharedTypes_Legacy_ActorDamageCause.valueOf(entry.getKey());
                 final String javaIdentifier = entry.getValue().getAsString();
                 if (!javaDamageTypeRegistry.contains(javaIdentifier)) {
-                    throw new RuntimeException("Unknown java damage cause: " + javaIdentifier);
+                    throw new RuntimeException("Unknown java damage type: " + javaIdentifier);
                 }
                 this.bedrockToJavaDamageCauses.put(damageCause, javaIdentifier);
             }
@@ -1112,8 +1114,8 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaEntityAttributes;
     }
 
-    public Map<EntityTypes1_21_11, List<String>> getJavaEntityData() {
-        return this.javaEntityData;
+    public Map<EntityTypes1_21_11, List<String>> getJavaEntityDataFields() {
+        return this.javaEntityDataFields;
     }
 
     public BiMap<String, Integer> getJavaEffects() {

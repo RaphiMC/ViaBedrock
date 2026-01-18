@@ -219,7 +219,7 @@ public class Entity {
     }
 
     public final int getJavaEntityDataIndex(final String fieldName) {
-        final int index = BedrockProtocol.MAPPINGS.getJavaEntityData().get(this.javaType).indexOf(fieldName);
+        final int index = BedrockProtocol.MAPPINGS.getJavaEntityDataFields().get(this.javaType).indexOf(fieldName);
         if (index == -1) {
             throw new IllegalStateException("Unknown java entity data field: " + fieldName + " for entity type: " + this.javaType);
         }

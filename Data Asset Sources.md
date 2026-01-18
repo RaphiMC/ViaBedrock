@@ -53,7 +53,7 @@ This file has been generated using `BedrockSoundListGenerator` using data from t
 ### data/java/effects.json
 This file has been dumped using a fabric mod.
 
-### data/java/entity_data.json
+### data/java/entity_data_fields.json
 This file has been dumped using a fabric mod.
 
 ### data/java/heightmap_blockstates.nbt
