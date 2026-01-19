@@ -15,18 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container;
 
-import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.BlockPosition;
-import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
+// THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
+package net.raphimc.viabedrock.protocol.data.generated.bedrock;
 
-public class ChestContainer extends Container {
+public class CustomItemTags {
 
-    public ChestContainer(final UserConnection user, final byte containerId, final TextComponent title, final BlockPosition position, final int size) {
-        super(user, containerId, ContainerType.CONTAINER, title, position, size, CustomBlockTags.CHEST, CustomBlockTags.TRAPPED_CHEST);
-    }
+    public static final String BUNDLE = "bundle";
 
 }

@@ -42,6 +42,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemVersion;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomItemTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.rewriter.item.BundleItemRewriter;
@@ -72,7 +73,7 @@ public class ItemRewriter extends StoredObject {
 
     static {
         // TODO: Add missing item nbt rewriters
-        ITEM_NBT_REWRITERS.put("bundle", new BundleItemRewriter());
+        ITEM_NBT_REWRITERS.put(CustomItemTags.BUNDLE, new BundleItemRewriter());
     }
 
     public ItemRewriter(final UserConnection user, final ItemEntry[] itemEntries) {
@@ -187,10 +188,10 @@ public class ItemRewriter extends StoredObject {
                 }
 
                 if (resourcePacksStorage.getAttachables().attachables().containsKey(identifier) && resourcePacksStorage.isLoadedOnJavaClient() && resourcePacksStorage.getConverterData().containsKey("ca_" + identifier + "_default")) {
-                    data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(Key.of("viabedrock:attachable")));
+                    data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(CustomAttachableResourceRewriter.ITEM_MODEL_KEY));
                     data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomAttachableResourceRewriter.getCustomModelData(identifier + "_default"));
                 } else if (itemDefinition.iconComponent() != null && resourcePacksStorage.isLoadedOnJavaClient()) {
-                    data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(Key.of("viabedrock:item_texture")));
+                    data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(CustomItemTextureResourceRewriter.ITEM_MODEL_KEY));
                     data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomItemTextureResourceRewriter.getCustomModelData(itemDefinition.iconComponent() + "_0"));
                 } else {
                     data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Custom item: " + identifier)});

@@ -41,11 +41,6 @@ import java.util.stream.Collectors;
 
 public class BlockStateRewriter implements StorableObject {
 
-    public static final String TAG_WATER = "water";
-    public static final String TAG_ITEM_FRAME = "item_frame";
-    public static final String TAG_SIGN = "sign";
-    public static final String TAG_HANGING_SIGN = "hanging_sign";
-
     private final Int2IntMap blockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Java
     private final Int2IntMap legacyBlockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Bedrock
     private final BiMap<BlockState, Integer> blockStateMappings = HashBiMap.create(); // Bedrock -> Bedrock

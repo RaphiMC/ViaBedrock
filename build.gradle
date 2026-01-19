@@ -43,11 +43,12 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.7.0-SNAPSHOT"
+    compileOnly "com.viaversion:viaversion-common:5.7.1-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.5"
     compileOnly "com.google.guava:guava:33.5.0-jre"
     compileOnly "io.netty:netty-handler:4.2.9.Final"
     compileOnly "com.google.code.gson:gson:2.13.2"
+    compileOnly "dev.kastle.netty:netty-transport-raknet:1.6.1"
 
     api("io.netty:netty-codec-http:4.2.9.Final") {
         transitive = false

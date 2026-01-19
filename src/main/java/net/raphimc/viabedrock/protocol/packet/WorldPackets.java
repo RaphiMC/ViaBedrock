@@ -52,6 +52,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SpawnPositio
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SubChunkPacket_HeightMapDataType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SubChunkPacket_SubChunkRequestResult;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
@@ -177,6 +178,18 @@ public class WorldPackets {
             clientPlayer.sendAttribute("minecraft:health"); // Java client always resets health on respawn, but Bedrock client keeps health when switching dimensions
             clientPlayer.sendEffects(); // Java client always resets effects on respawn. Resend them
             clientPlayer.setAbilities(clientPlayer.abilities()); // Java client always resets abilities on respawn. Resend them
+
+            final PacketWrapper initializeBorder = PacketWrapper.create(ClientboundPackets1_21_11.INITIALIZE_BORDER, wrapper.user());
+            initializeBorder.write(Types.DOUBLE, 0D); // center x
+            initializeBorder.write(Types.DOUBLE, 0D); // center z
+            initializeBorder.write(Types.DOUBLE, 0D); // old size
+            initializeBorder.write(Types.DOUBLE, 60_000_000D); // new size
+            initializeBorder.write(Types.VAR_LONG, 0L); // lerp time
+            initializeBorder.write(Types.VAR_INT, 60_000_000); // new absolute max size
+            initializeBorder.write(Types.VAR_INT, 0); // warning blocks
+            initializeBorder.write(Types.VAR_INT, 0); // warning time
+            initializeBorder.send(BedrockProtocol.class);
+
             PacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer()); // Java client always resets inventory on respawn. Resend it
             inventoryTracker.getInventoryContainer().sendSelectedHotbarSlotToClient(); // Java client always resets selected hotbar slot on respawn. Resend it
         });
@@ -502,13 +515,13 @@ public class WorldPackets {
             }
 
             final String tag = blockStateRewriter.tag(chunkTracker.getBlockState(position));
-            final BedrockBlockEntity signBlockEntity = (BlockStateRewriter.TAG_HANGING_SIGN.equals(tag) || BlockStateRewriter.TAG_SIGN.equals(tag)) ? chunkTracker.getBlockEntity(position) : null;
+            final BedrockBlockEntity signBlockEntity = (CustomBlockTags.HANGING_SIGN.equals(tag) || CustomBlockTags.SIGN.equals(tag)) ? chunkTracker.getBlockEntity(position) : null;
             final CompoundTag signTag = signBlockEntity != null ? signBlockEntity.tag() : new CompoundTag();
             SignBlockEntityRewriter.upgradeData(signTag);
             SignBlockEntityRewriter.sanitizeData(signTag);
-            if (BlockStateRewriter.TAG_SIGN.equals(tag)) {
+            if (CustomBlockTags.SIGN.equals(tag)) {
                 signTag.putString("id", "Sign");
-            } else if (BlockStateRewriter.TAG_HANGING_SIGN.equals(tag)) {
+            } else if (CustomBlockTags.HANGING_SIGN.equals(tag)) {
                 signTag.putString("id", "HangingSign");
             }
             signTag.putInt("x", position.x());

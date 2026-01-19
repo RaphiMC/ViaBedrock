@@ -26,6 +26,7 @@ import net.raphimc.viabedrock.api.model.resourcepack.BiomeDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.FogDefinitions;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.generated.java.RegistryKeys;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
@@ -42,12 +43,12 @@ public class JavaRegistries {
     public static CompoundTag createJavaRegistries(final GameSessionStorage gameSession, final ResourcePacksStorage resourcePacksStorage) {
         final CompoundTag registries = BedrockProtocol.MAPPINGS.getJavaRegistries().copy();
 
-        registries.put("minecraft:worldgen/biome", buildJavaBiomeRegistry(gameSession.getBedrockBiomeDefinitions(), resourcePacksStorage));
-        modifyDimensionRegistry(gameSession, registries.getCompoundTag("minecraft:dimension_type"));
-        registries.remove("minecraft:dialog"); // Not needed
-        registries.remove("minecraft:test_instance"); // Not needed
-        registries.remove("minecraft:chat_type"); // Not needed
-        registries.remove("minecraft:test_environment"); // Not needed
+        registries.put(RegistryKeys.WORLDGEN_BIOME, buildJavaBiomeRegistry(gameSession.getBedrockBiomeDefinitions(), resourcePacksStorage));
+        modifyDimensionRegistry(gameSession, registries.getCompoundTag(RegistryKeys.DIMENSION_TYPE));
+        registries.remove(RegistryKeys.DIALOG); // Not needed
+        registries.remove(RegistryKeys.TEST_INSTANCE); // Not needed
+        registries.remove(RegistryKeys.CHAT_TYPE); // Not needed
+        registries.remove(RegistryKeys.TEST_ENVIRONMENT); // Not needed
 
         return registries;
     }

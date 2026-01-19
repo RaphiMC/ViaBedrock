@@ -46,6 +46,8 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AnimateAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.EquipmentSlot;
+import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
+import net.raphimc.viabedrock.protocol.data.generated.java.RegistryKeys;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
@@ -162,7 +164,7 @@ public class EntityPackets {
 
             final List<EntityData> javaEntityData = new ArrayList<>();
             entity.updateEntityData(entityData, javaEntityData);
-            javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("ITEM"), VersionedTypes.V1_21_11.entityDataTypes.itemType, itemRewriter.javaItem(item)));
+            javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.ITEM), VersionedTypes.V1_21_11.entityDataTypes.itemType, itemRewriter.javaItem(item)));
             final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_11.SET_ENTITY_DATA, wrapper.user());
             setEntityData.write(Types.VAR_INT, entity.javaId()); // entity id
             setEntityData.write(VersionedTypes.V1_21_11.entityDataList, javaEntityData); // entity data
@@ -353,7 +355,7 @@ public class EntityPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.ADD_PAINTING, ClientboundPackets1_21_11.ADD_ENTITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-            final CompoundTag paintingRegistry = gameSession.getJavaRegistries().getCompoundTag("minecraft:painting_variant");
+            final CompoundTag paintingRegistry = gameSession.getJavaRegistries().getCompoundTag(RegistryKeys.PAINTING_VARIANT);
 
             final long entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
@@ -400,7 +402,7 @@ public class EntityPackets {
 
             final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_11.SET_ENTITY_DATA, wrapper.user());
             setEntityData.write(Types.VAR_INT, entity.javaId()); // entity id
-            setEntityData.write(VersionedTypes.V1_21_11.entityDataList, Lists.newArrayList(new EntityData(entity.getJavaEntityDataIndex("PAINTING_VARIANT"), VersionedTypes.V1_21_11.entityDataTypes.paintingVariantType, paintingHolder))); // entity data
+            setEntityData.write(VersionedTypes.V1_21_11.entityDataList, Lists.newArrayList(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.PAINTING_VARIANT), VersionedTypes.V1_21_11.entityDataTypes.paintingVariantType, paintingHolder))); // entity data
             setEntityData.send(BedrockProtocol.class);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.ENTITY_EVENT, ClientboundPackets1_21_11.ENTITY_EVENT, wrapper -> {

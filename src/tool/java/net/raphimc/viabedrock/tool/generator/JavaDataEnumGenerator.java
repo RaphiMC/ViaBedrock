@@ -92,8 +92,8 @@ public class JavaDataEnumGenerator {
         codeGen.generate();
     }
 
-    private static Enum extractFromEnum(final String enumName, final ClassNode classNode) {
-        final Enum genEnum = new Enum(enumName);
+    private static Enum extractFromEnum(final String name, final ClassNode classNode) {
+        final Enum genEnum = new Enum(name);
         for (FieldNode fieldNode : classNode.fields) {
             if ((fieldNode.access & Opcodes.ACC_ENUM) != 0) {
                 genEnum.enumFields().add(new Field(fieldNode.name));

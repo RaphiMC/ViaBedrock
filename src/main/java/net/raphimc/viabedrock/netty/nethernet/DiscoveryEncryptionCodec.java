@@ -34,6 +34,8 @@ import java.util.List;
 
 public class DiscoveryEncryptionCodec extends ByteToMessageCodec<ByteBuf> {
 
+    public static final String NAME = "viabedrock-nethernet-discovery-encryption";
+
     private final SecretKey cryptoKey;
     private final SecretKey signingKey;
 

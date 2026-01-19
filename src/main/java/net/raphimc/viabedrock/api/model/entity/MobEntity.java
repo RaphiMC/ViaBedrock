@@ -23,6 +23,7 @@ import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.generated.java.Attributes;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class MobEntity extends LivingEntity {
     @Override
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         if (attribute.name().equals("minecraft:follow_range")) {
-            javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:follow_range")); // attribute id
+            javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get(Attributes.FOLLOW_RANGE)); // attribute id
             javaAttributes.write(Types.DOUBLE, (double) attribute.computeClampedValue()); // base value
             javaAttributes.write(Types.VAR_INT, 0); // modifier count
             attributeCount.incrementAndGet();

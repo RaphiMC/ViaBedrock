@@ -15,18 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container;
+package net.raphimc.viabedrock.netty;
 
-import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.BlockPosition;
-import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
 
-public class ChestContainer extends Container {
+public class DisconnectHandler extends ChannelOutboundHandlerAdapter {
 
-    public ChestContainer(final UserConnection user, final byte containerId, final TextComponent title, final BlockPosition position, final int size) {
-        super(user, containerId, ContainerType.CONTAINER, title, position, size, CustomBlockTags.CHEST, CustomBlockTags.TRAPPED_CHEST);
+    public static final String NAME = "viabedrock-disconnect-handler";
+
+    private boolean calledDisconnect = false;
+
+    @Override
+    public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+        if (ctx.channel().isActive() && !this.calledDisconnect) {
+            this.calledDisconnect = true;
+            ctx.disconnect(promise); // Send disconnect notification to the server and close the channel
+        } else {
+            super.close(ctx, promise);
+        }
     }
 
 }

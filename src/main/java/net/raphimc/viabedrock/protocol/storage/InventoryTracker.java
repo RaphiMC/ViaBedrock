@@ -37,6 +37,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnu
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ModalFormCancelReason;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomItemTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -70,8 +71,8 @@ public class InventoryTracker extends StoredObject {
         if (containerId == this.armorContainer.containerId()) return this.armorContainer;
         if (containerId == this.hudContainer.containerId()) return this.hudContainer;
         if (containerId == ContainerID.CONTAINER_ID_REGISTRY.getValue() && containerName.name() == ContainerEnumName.DynamicContainer) {
-            final String itemTag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().getOrDefault(this.user().get(ItemRewriter.class).getItems().inverse().get(storageItem.identifier()), "");
-            if (!storageItem.isEmpty() && itemTag.equals("bundle")) {
+            final String itemTag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(this.user().get(ItemRewriter.class).getItems().inverse().get(storageItem.identifier()));
+            if (!storageItem.isEmpty() && CustomItemTags.BUNDLE.equals(itemTag)) {
                 return this.dynamicContainerRegistry.computeIfAbsent(containerName, cn -> new BundleContainer(this.user(), cn));
             } else {
                 return null;

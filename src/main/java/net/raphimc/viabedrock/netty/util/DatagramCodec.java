@@ -27,6 +27,8 @@ import java.util.List;
 
 public class DatagramCodec extends MessageToMessageCodec<DatagramPacket, ByteBuf> {
 
+    public static final String NAME = "viabedrock-datagram-codec";
+
     private final InetSocketAddress remoteAddress;
 
     public DatagramCodec() {

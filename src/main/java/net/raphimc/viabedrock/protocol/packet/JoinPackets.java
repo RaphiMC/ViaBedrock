@@ -53,6 +53,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.PlayerInfoUpdateAction;
+import net.raphimc.viabedrock.protocol.data.generated.java.Attributes;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -536,10 +537,21 @@ public class JoinPackets {
             commandsStorage.updateCommandTree();
         }
 
+        final PacketWrapper initializeBorder = PacketWrapper.create(ClientboundPackets1_21_11.INITIALIZE_BORDER, user);
+        initializeBorder.write(Types.DOUBLE, 0D); // center x
+        initializeBorder.write(Types.DOUBLE, 0D); // center z
+        initializeBorder.write(Types.DOUBLE, 0D); // old size
+        initializeBorder.write(Types.DOUBLE, 60_000_000D); // new size
+        initializeBorder.write(Types.VAR_LONG, 0L); // lerp time
+        initializeBorder.write(Types.VAR_INT, 60_000_000); // new absolute max size
+        initializeBorder.write(Types.VAR_INT, 0); // warning blocks
+        initializeBorder.write(Types.VAR_INT, 0); // warning time
+        initializeBorder.send(BedrockProtocol.class);
+
         final PacketWrapper updateAttributes = PacketWrapper.create(ClientboundPackets1_21_11.UPDATE_ATTRIBUTES, user);
         updateAttributes.write(Types.VAR_INT, clientPlayer.javaId()); // entity id
         updateAttributes.write(Types.VAR_INT, 1); // attribute count
-        updateAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get("minecraft:attack_speed")); // attribute id
+        updateAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get(Attributes.ATTACK_SPEED)); // attribute id
         updateAttributes.write(Types.DOUBLE, 20D); // base value
         updateAttributes.write(Types.VAR_INT, 0); // modifier count
         updateAttributes.send(BedrockProtocol.class);

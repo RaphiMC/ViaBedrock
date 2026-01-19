@@ -132,7 +132,7 @@ public class NetherNetStatusProtocol extends AbstractSimpleProtocol {
 
         if (connection.getChannel() != null) {
             try {
-                connection.getChannel().pipeline().addBefore(Via.getManager().getInjector().getEncoderName(), "viabedrock-nethernet-discovery-encryption", new DiscoveryEncryptionCodec(APPLICATION_ID));
+                connection.getChannel().pipeline().addBefore(Via.getManager().getInjector().getEncoderName(), DiscoveryEncryptionCodec.NAME, new DiscoveryEncryptionCodec(APPLICATION_ID));
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException("Failed to initialize NetherNet encryption codec", e);
             }

@@ -49,10 +49,16 @@ public record Members(List<Member> members) {
     public List<String> generateCode() {
         final List<String> lines = new ArrayList<>();
         for (Member member : this.members) {
-            lines.addAll(member.generateCode());
-            lines.add("");
+            final List<String> memberLines = member.generateCode();
+            if (memberLines.size() > 1 && !lines.get(lines.size() - 1).isEmpty()) {
+                lines.add("");
+            }
+            lines.addAll(memberLines);
+            if (memberLines.size() > 1 && !lines.get(lines.size() - 1).isEmpty()) {
+                lines.add("");
+            }
         }
-        if (!lines.isEmpty()) {
+        if (!lines.isEmpty() && lines.get(lines.size() - 1).isEmpty()) {
             lines.remove(lines.size() - 1);
         }
         return lines;
