@@ -23,12 +23,13 @@ import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class HopperContainer extends ExperimentalContainer {
 
     public HopperContainer(final UserConnection user, final byte containerId, final TextComponent title, final BlockPosition position) {
-        super(user, containerId, ContainerType.HOPPER, title, position, 5, "hopper");
+        super(user, containerId, ContainerType.HOPPER, title, position, 5, CustomBlockTags.HOPPER);
     }
 
     @Override

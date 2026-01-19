@@ -37,6 +37,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
@@ -48,7 +49,7 @@ import java.util.logging.Level;
 public class BeaconContainer extends ExperimentalContainer {
 
     public BeaconContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.BEACON, title, position, 1, "beacon");
+        super(user, containerId, ContainerType.BEACON, title, position, 1, CustomBlockTags.BEACON);
 
         PacketWrapper propertiesPacket = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_DATA, user);
         propertiesPacket.write(Types.VAR_INT, (int) containerId);

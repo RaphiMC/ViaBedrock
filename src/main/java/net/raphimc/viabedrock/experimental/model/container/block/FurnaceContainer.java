@@ -23,12 +23,13 @@ import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class FurnaceContainer extends ExperimentalContainer {
 
     public FurnaceContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.FURNACE, title, position, 3, "furnace");
+        super(user, containerId, ContainerType.FURNACE, title, position, 3, CustomBlockTags.FURNACE);
     }
 
     public FurnaceContainer(UserConnection user, byte containerId, ContainerType type, TextComponent title, BlockPosition position, String... validBlockTags) {

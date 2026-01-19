@@ -33,6 +33,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnu
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
@@ -45,7 +46,7 @@ public class AnvilContainer extends ExperimentalContainer {
     private String renameText = "";
 
     public AnvilContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.ANVIL, title, position, 2, "anvil", "chipped_anvil", "damaged_anvil");
+        super(user, containerId, ContainerType.ANVIL, title, position, 2, CustomBlockTags.ANVIL);
     }
 
     @Override

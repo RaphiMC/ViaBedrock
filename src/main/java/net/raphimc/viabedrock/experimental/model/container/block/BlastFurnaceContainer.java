@@ -22,12 +22,13 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class BlastFurnaceContainer extends FurnaceContainer {
 
     public BlastFurnaceContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.BLAST_FURNACE, title, position, "blast_furnace");
+        super(user, containerId, ContainerType.BLAST_FURNACE, title, position, CustomBlockTags.BLAST_FURNACE);
     }
 
     @Override

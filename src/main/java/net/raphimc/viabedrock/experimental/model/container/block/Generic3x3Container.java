@@ -23,12 +23,13 @@ import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class Generic3x3Container extends ExperimentalContainer {
 
     public Generic3x3Container(UserConnection user, byte containerId, ContainerType type, TextComponent title, BlockPosition position) {
-        super(user, containerId, type, title, position, 9, "dispenser", "dropper");
+        super(user, containerId, type, title, position, 9, CustomBlockTags.DISPENSER, CustomBlockTags.DROPPER);
     }
 
     @Override

@@ -24,6 +24,7 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
@@ -32,7 +33,7 @@ import java.util.logging.Level;
 public class EnchantmentContainer extends ExperimentalContainer {
 
     public EnchantmentContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.ENCHANTMENT, title, position, 2, "enchanting_table", "enchantment_table"); // TODO verify block tags
+        super(user, containerId, ContainerType.ENCHANTMENT, title, position, 2, CustomBlockTags.ENCHANTING_TABLE);
     }
 
     @Override
