@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.rewriter;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.LongTag;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.StoredObject;
@@ -38,6 +39,8 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.TextUtil;
+import net.raphimc.viabedrock.experimental.model.map.MapObject;
+import net.raphimc.viabedrock.experimental.storage.MapTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
@@ -204,6 +207,22 @@ public class ItemRewriter extends StoredObject {
                 if (display.contains("Name")) { // Bedrock client defaults to empty string if the type is wrong
                     javaItem.dataContainer().set(StructuredDataKey.CUSTOM_NAME, TextUtil.stringToNbt(display.getString("Name", "")));
                 }
+            }
+
+            if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures() && bedrockTag.get("map_uuid") instanceof LongTag uuidTag) {
+                MapTracker mapTracker = this.user().get(MapTracker.class);
+                final long uuid = uuidTag.asLong();
+
+                MapObject map = mapTracker.getMapObjects().get(uuid);
+                if (map == null) {
+                    final int mapId = mapTracker.getNextMapId();
+                    map = new MapObject(uuid, mapId);
+                    mapTracker.getMapObjects().put(uuid, map);
+                    ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Registered new map with id " + mapId + " and uuid " + uuid);
+                }
+
+                javaItem.dataContainer().set(StructuredDataKey.MAP_ID, map.getJavaId());
+
             }
         }
 
