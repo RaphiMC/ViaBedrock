@@ -48,13 +48,13 @@ public class MappingDataGenerator {
         BedrockProtocol.MAPPINGS.load();
 
         { // Bedrock
-            final CodeGen codeGen = new CodeGen(new File("../src/main/java"), "net.raphimc.viabedrock.protocol.data.generated.bedrock");
+            final CodeGen codeGen = new CodeGen(new File("src/main/java"), "net.raphimc.viabedrock.protocol.data.generated.bedrock");
             codeGen.addType(generateFromSet("CustomBlockTags", new HashSet<>(BedrockProtocol.MAPPINGS.getBedrockCustomBlockTags().values())));
             codeGen.addType(generateFromSet("CustomItemTags", new HashSet<>(BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().values())));
             codeGen.generate();
         }
         { // Java
-            final CodeGen codeGen = new CodeGen(new File("../src/main/java"), "net.raphimc.viabedrock.protocol.data.generated.java");
+            final CodeGen codeGen = new CodeGen(new File("src/main/java"), "net.raphimc.viabedrock.protocol.data.generated.java");
             codeGen.addType(generateFromSet("RegistryKeys", BedrockProtocol.MAPPINGS.getJavaRegistries().keySet()));
             codeGen.addType(generateFromSet("Attributes", BedrockProtocol.MAPPINGS.getJavaEntityAttributes().keySet()));
             codeGen.addType(generateFromSet("EntityDataFields", BedrockProtocol.MAPPINGS.getJavaEntityDataFields().values().stream().flatMap(Collection::stream).collect(Collectors.toSet())));
