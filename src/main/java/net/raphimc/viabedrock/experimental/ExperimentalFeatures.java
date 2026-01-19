@@ -36,6 +36,7 @@ import net.raphimc.viabedrock.experimental.model.map.MapDecoration;
 import net.raphimc.viabedrock.experimental.model.map.MapObject;
 import net.raphimc.viabedrock.experimental.model.map.MapTrackedObject;
 import net.raphimc.viabedrock.experimental.rewriter.InventoryTransactionRewriter;
+import net.raphimc.viabedrock.experimental.storage.JavaMapPaletteStorage;
 import net.raphimc.viabedrock.experimental.storage.MapTracker;
 import net.raphimc.viabedrock.experimental.util.ProtocolUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -475,13 +476,15 @@ public class ExperimentalFeatures {
             wrapper.write(Types.BOOLEAN, false); // Icons (Prefixed Optional, TODO: Implement)
             wrapper.write(Types.UNSIGNED_BYTE, (short) mapObject.getWidth()); // width
             if (mapObject.getWidth() > 0) {
+                JavaMapPaletteStorage javaMapPaletteStorage = wrapper.user().get(JavaMapPaletteStorage.class);
+
                 wrapper.write(Types.UNSIGNED_BYTE, (short) mapObject.getHeight()); // height
                 wrapper.write(Types.BYTE, (byte) mapObject.getXOffset()); // xOffset
                 wrapper.write(Types.BYTE, (byte) mapObject.getYOffset()); // yOffset
 
                 wrapper.write(Types.VAR_INT, mapObject.getColors().length);
-                for (int color : mapObject.getColors()) {
-                    wrapper.write(Types.UNSIGNED_BYTE, (short) color);
+                for (short color : javaMapPaletteStorage.convertToJavaPalette(mapObject.getColors())) {
+                    wrapper.write(Types.UNSIGNED_BYTE, color);
                 }
 
             } else {
@@ -496,5 +499,6 @@ public class ExperimentalFeatures {
     public static void registerStorages(final UserConnection user) {
         user.put(new InventoryTransactionRewriter(user));
         user.put(new MapTracker(user));
+        user.put(new JavaMapPaletteStorage(user));
     }
 }

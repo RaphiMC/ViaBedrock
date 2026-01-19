@@ -222,7 +222,6 @@ public class ItemRewriter extends StoredObject {
                 }
 
                 javaItem.dataContainer().set(StructuredDataKey.MAP_ID, map.getJavaId());
-
             }
         }
 
