@@ -488,7 +488,8 @@ public class ExperimentalFeatures {
                 }
 
             } else {
-                ViaBedrock.getPlatform().getLogger().warning("Sent empty map data for map id: " + mapId);
+                //ViaBedrock.getPlatform().getLogger().warning("Sent empty map data for map id: " + mapId);
+                //TODO: Bedrock requests map data if it doesnt have it, so we need to send something
             }
         });
     }
