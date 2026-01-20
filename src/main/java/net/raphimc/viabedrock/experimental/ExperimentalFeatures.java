@@ -24,6 +24,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
@@ -34,6 +35,7 @@ import net.raphimc.viabedrock.experimental.model.inventory.InventoryTransactionD
 import net.raphimc.viabedrock.experimental.rewriter.InventoryTransactionRewriter;
 import net.raphimc.viabedrock.experimental.util.ProtocolUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
@@ -47,6 +49,7 @@ import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -297,7 +300,42 @@ public class ExperimentalFeatures {
                     0
             );
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_TRANSACTION, null, wrapper -> {
+            final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
+            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
 
+            wrapper.cancel();
+            BedrockInventoryTransaction inventoryTransaction = wrapper.read(inventoryTransactionRewriter.getInventoryTransactionType());
+
+            if (inventoryTransaction.legacyRequestId() != 0) {
+                // Ignore legacy inventory transactions for now
+                return;
+            }
+
+            if (inventoryTransaction.actions() != null && !inventoryTransaction.actions().isEmpty()) {
+                for (InventoryActionData action : inventoryTransaction.actions()) {
+                    if (action.source().type() == InventorySourceType.ContainerInventory) {
+                        Container container = inventoryTracker.getContainerClientbound((byte) action.source().containerId(), null, null);
+
+                        if (container != null) {
+                            container.setItem(action.slot(), action.toItem());
+                            PacketFactory.sendJavaContainerSetContent(wrapper.user(),  container);
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received inventory action for unknown container ID: " + action.source().containerId());
+                        }
+                    }
+                }
+            }
+
+            switch (inventoryTransaction.transactionType()) {
+                case NormalTransaction -> {
+                    break; // Nothing to do here for now
+                }
+                default -> {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unsupported inventory transaction type: " + inventoryTransaction.transactionType());
+                }
+            }
+        });
     }
 
     public static void registerTasks() {
