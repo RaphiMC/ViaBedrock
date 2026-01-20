@@ -54,6 +54,7 @@ public class JavaMapPaletteStorage extends StoredObject {
     }
 
     public short[] convertToJavaPalette(int[] bedrockColors) {
+        //TODO: Check biome tinting for grass/foliage/water
         short[] javaColors = new short[bedrockColors.length];
 
         for (int i = 0; i < bedrockColors.length; i++) {
