@@ -33,6 +33,7 @@ import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPac
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
+import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.TextUtil;
@@ -819,6 +820,42 @@ public class ExperimentalFeatures {
             }
             ExperimentalPacketFactory.sendJavaContainerSetContent(wrapper.user(), inventoryTracker.getInventoryContainer()); // Java client always resets inventory on respawn. Resend it
             inventoryTracker.getInventoryContainer().sendSelectedHotbarSlotToClient(); // Java client always resets selected hotbar slot on respawn. Resend it
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_TRANSACTION, null, wrapper -> {
+            final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
+            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+
+            wrapper.cancel();
+            BedrockInventoryTransaction inventoryTransaction = wrapper.read(inventoryTransactionRewriter.getInventoryTransactionType());
+
+            if (inventoryTransaction.legacyRequestId() != 0) {
+                // Ignore legacy inventory transactions for now
+                return;
+            }
+
+            if (inventoryTransaction.actions() != null && !inventoryTransaction.actions().isEmpty()) {
+                for (InventoryActionData action : inventoryTransaction.actions()) {
+                    if (action.source().type() == InventorySourceType.ContainerInventory) {
+                        Container container = inventoryTracker.getContainerClientbound((byte) action.source().containerId(), null, null);
+
+                        if (container != null) {
+                            container.setItem(action.slot(), action.toItem());
+                            PacketFactory.sendJavaContainerSetContent(wrapper.user(),  container);
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received inventory action for unknown container ID: " + action.source().containerId());
+                        }
+                    }
+                }
+            }
+
+            switch (inventoryTransaction.transactionType()) {
+                case NormalTransaction -> {
+                    break; // Nothing to do here for now
+                }
+                default -> {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unsupported inventory transaction type: " + inventoryTransaction.transactionType());
+                }
+            }
         });
     }
 

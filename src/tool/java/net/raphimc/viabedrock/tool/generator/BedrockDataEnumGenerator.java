@@ -96,7 +96,7 @@ public class BedrockDataEnumGenerator {
         packetCompressionAlgorithmEnum.removeIf(field -> field.name.equals("None"));
         packetCompressionAlgorithmEnum.add(new EnumField("None", "0xFF"));
 
-        final CodeGen codeGen = new CodeGen(new File("../src/main/java"), "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated");
+        final CodeGen codeGen = new CodeGen(new File("src/main/java"), "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated");
 
         for (Map.Entry<String, List<EnumField>> enumEntry : enums.entrySet()) {
             String rawEnumName = enumEntry.getKey().replace("::", "_");
