@@ -44,7 +44,6 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.MapFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.InteractionHand;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.GameMode;
@@ -318,7 +317,7 @@ public class ExperimentalFeatures {
             final BlockPosition origin = wrapper.read(BedrockTypes.BLOCK_POSITION); // origin
 
             final List<Long> trackedEntities = new ArrayList<>();
-            if ((typeFlags & MapFlags.FLAG_MAP_CREATION) != 0) {
+            if ((typeFlags & ClientboundMapItemDataPacket_Type.Creation.getValue()) != 0) {
                 final int length = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // length
                 for (int i = 0; i < length; i++) {
                     trackedEntities.add(wrapper.read(BedrockTypes.VAR_LONG));
@@ -326,13 +325,13 @@ public class ExperimentalFeatures {
             }
 
             byte scale = 0;
-            if ((typeFlags & MapFlags.FLAG_ALL) != 0) {
+            if ((typeFlags & (ClientboundMapItemDataPacket_Type.Creation.getValue() | ClientboundMapItemDataPacket_Type.DecorationUpdate.getValue() | ClientboundMapItemDataPacket_Type.TextureUpdate.getValue())) != 0) {
                 scale = wrapper.read(Types.BYTE); // scale
             }
 
             final List<MapDecoration> decorations = new ArrayList<>();
             final List<MapTrackedObject> trackedObjects = new ArrayList<>();
-            if ((typeFlags & MapFlags.FLAG_DECORATION_UPDATE) != 0) {
+            if ((typeFlags & ClientboundMapItemDataPacket_Type.DecorationUpdate.getValue()) != 0) {
                 final int length = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // length
                 for (int i = 0; i < length; i++) {
                     MapTrackedObject.Type objectType = MapTrackedObject.Type.values()[wrapper.read(BedrockTypes.INT_LE)]; //TODO: Error logging
@@ -364,7 +363,7 @@ public class ExperimentalFeatures {
             int xOffset = 0;
             int yOffset = 0;
             int[] colors = new int[0];
-            if ((typeFlags & MapFlags.FLAG_TEXTURE_UPDATE) != 0) {
+            if ((typeFlags & ClientboundMapItemDataPacket_Type.TextureUpdate.getValue()) != 0) {
                 width = wrapper.read(BedrockTypes.VAR_INT); // width
                 height = wrapper.read(BedrockTypes.VAR_INT); // height
                 xOffset = wrapper.read(BedrockTypes.VAR_INT); // x offset
@@ -379,7 +378,7 @@ public class ExperimentalFeatures {
 
             //TODO: Clean this up
             int nextJavaId = mapTracker.getNextMapId();
-            if ((typeFlags & MapFlags.FLAG_MAP_CREATION) != 0) {
+            if ((typeFlags & ClientboundMapItemDataPacket_Type.Creation.getValue()) != 0) {
                 MapObject existingMap = mapTracker.getMapObjects().get(mapId);
                 if (existingMap != null) {
                     existingMap.getTrackedEntities().clear();
@@ -404,7 +403,7 @@ public class ExperimentalFeatures {
                     mapTracker.getMapObjects().put(mapId, mapObject);
                 }
             }
-            if ((typeFlags & MapFlags.FLAG_DECORATION_UPDATE) != 0) {
+            if ((typeFlags & ClientboundMapItemDataPacket_Type.DecorationUpdate.getValue()) != 0) {
                 MapObject existingMap = mapTracker.getMapObjects().get(mapId);
                 if (existingMap != null) {
                     existingMap.getTrackedObjects().clear();
@@ -432,7 +431,7 @@ public class ExperimentalFeatures {
                     mapTracker.getMapObjects().put(mapId, mapObject);
                 }
             }
-            if ((typeFlags & MapFlags.FLAG_TEXTURE_UPDATE) != 0) {
+            if ((typeFlags & ClientboundMapItemDataPacket_Type.TextureUpdate.getValue()) != 0) {
                 MapObject existingMap = mapTracker.getMapObjects().get(mapId);
                 if (existingMap != null) {
                     existingMap.setWidth(width);
