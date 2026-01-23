@@ -65,6 +65,9 @@ public class Entity {
     protected int age;
     protected boolean hasBossBar;
 
+    // Mounting
+    protected List<Long> passengers = new ArrayList<>();
+
     public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_11 javaType) {
         this.user = user;
         this.uniqueId = uniqueId;
@@ -216,6 +219,20 @@ public class Entity {
 
     public void setHasBossBar(final boolean hasBossBar) {
         this.hasBossBar = hasBossBar;
+    }
+
+    public void addPassenger(final long passengerRuntimeId) {
+        if (!this.passengers.contains(passengerRuntimeId)) {
+            this.passengers.add(passengerRuntimeId);
+        }
+    }
+
+    public void removePassenger(final long passengerRuntimeId) {
+        this.passengers.remove(passengerRuntimeId);
+    }
+
+    public List<Long> passengers() {
+        return Collections.unmodifiableList(this.passengers);
     }
 
     public final int getJavaEntityDataIndex(final String fieldName) {
