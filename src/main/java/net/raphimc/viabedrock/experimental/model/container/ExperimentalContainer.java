@@ -242,6 +242,7 @@ public abstract class ExperimentalContainer {
                 }
             }
             case QUICK_MOVE -> {
+                if (true) yield null; // Disable for now
                 // TODO: Broken
                 // TODO: Inventory -> Hotbar/Armor/Offhand
                 // TODO: Container Limited Slots (e.g. Furnace Fuel/Input/Output) Note: this might not be needed as the server will reject invalid moves anyway
@@ -264,6 +265,7 @@ public abstract class ExperimentalContainer {
                         int remaining = item.amount();
                         int emptySlot = -1;
                         // TODO: Prioritize stacking over empty slots
+                        // TODO: Some containers start at 1 (e.g. Crafting table)
                         for (int i = 0; i < container.getItems().length; i++) {
                             int b = container.bedrockSlot(i);
                             BedrockItem containerItem = container.getItem(i);
