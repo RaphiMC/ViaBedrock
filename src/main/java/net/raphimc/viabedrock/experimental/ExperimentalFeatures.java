@@ -65,6 +65,8 @@ import java.util.logging.Level;
  */
 public class ExperimentalFeatures {
 
+    private static final int MAP_FLAGS_ALL = ClientboundMapItemDataPacket_Type.Creation.getValue() | ClientboundMapItemDataPacket_Type.DecorationUpdate.getValue() | ClientboundMapItemDataPacket_Type.TextureUpdate.getValue();
+
     public static void registerPacketTranslators(final BedrockProtocol protocol) {
         ProtocolUtil.prependServerbound(protocol, ServerboundPackets1_21_6.PLAYER_ACTION, wrapper -> {
             final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
@@ -325,7 +327,7 @@ public class ExperimentalFeatures {
             }
 
             byte scale = 0;
-            if ((typeFlags & (ClientboundMapItemDataPacket_Type.Creation.getValue() | ClientboundMapItemDataPacket_Type.DecorationUpdate.getValue() | ClientboundMapItemDataPacket_Type.TextureUpdate.getValue())) != 0) {
+            if ((typeFlags & MAP_FLAGS_ALL) != 0) {
                 scale = wrapper.read(Types.BYTE); // scale
             }
 
