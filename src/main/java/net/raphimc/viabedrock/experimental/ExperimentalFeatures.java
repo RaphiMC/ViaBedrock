@@ -350,7 +350,7 @@ public class ExperimentalFeatures {
 
             // TODO: Handle Passenger type if needed
             switch (linkType.type()) {
-                case Riding -> {
+                case Riding, Passenger -> { // TODO: This needs to be ordered properly based on the link types (rider first, then passengers)
                     vehicle.addPassenger(passenger.uniqueId());
 
                     wrapper.write(Types.VAR_INT, entityTracker.getEntityByUid(linkType.fromEntityUniqueId()).javaId()); // vehicle
@@ -363,10 +363,6 @@ public class ExperimentalFeatures {
                         // The player is now riding an entity, update the state
                         entityTracker.getClientPlayer().setMountedEntityRId(entityTracker.getEntityByUid(linkType.fromEntityUniqueId()).runtimeId());
                     }
-                }
-                case Passenger -> {
-                    wrapper.cancel();
-                    ViaBedrock.getPlatform().getLogger().warning("Passenger entity link type received, which is not supported yet.");
                 }
                 case None -> { // Remove
                     vehicle.removePassenger(passenger.uniqueId());
