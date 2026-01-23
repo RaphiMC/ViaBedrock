@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SharedTypes_
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.PositionSourceType;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.SoundSource;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
@@ -577,7 +578,7 @@ public class WorldEffectPackets {
                 return;
             }
             switch (tag) {
-                case "chest", "trapped_chest", "ender_chest", "shulker_box" -> {
+                case CustomBlockTags.CHEST, CustomBlockTags.TRAPPED_CHEST, CustomBlockTags.ENDER_CHEST, CustomBlockTags.SHULKER_BOX -> {
                     if (type == 1) { // open / close
                         wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
                         wrapper.write(Types.UNSIGNED_BYTE, (short) MathUtil.clamp(data, 0, 255)); // event data
@@ -587,7 +588,7 @@ public class WorldEffectPackets {
                         return;
                     }
                 }
-                case "note_block" -> {
+                case CustomBlockTags.NOTE_BLOCK -> {
                     final NoteBlockInstrument noteBlockInstrument = NoteBlockInstrument.getByValue(type);
                     if (noteBlockInstrument != null) {
                         wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
@@ -598,7 +599,7 @@ public class WorldEffectPackets {
                         return;
                     }
                 }
-                case "mob_spawner" -> {
+                case CustomBlockTags.MOB_SPAWNER -> {
                     if (type == 1) { // set spawn delay
                         wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
                         wrapper.write(Types.UNSIGNED_BYTE, (short) MathUtil.clamp(data, 0, 255)); // event data
@@ -608,7 +609,7 @@ public class WorldEffectPackets {
                         return;
                     }
                 }
-                case "end_gateway" -> {
+                case CustomBlockTags.END_GATEWAY -> {
                     if (type == 1) { // set cooldown
                         wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
                         wrapper.write(Types.UNSIGNED_BYTE, (short) MathUtil.clamp(data, 0, 255)); // event data

@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
-import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
@@ -40,6 +39,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorFlags;
+import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomEntityResourceRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
@@ -175,14 +175,14 @@ public class CustomEntity extends Entity {
             final List<EntityData> javaEntityData = new ArrayList<>();
 
             final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
-            data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(Key.of("viabedrock:entity")));
+            data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(CustomEntityResourceRewriter.ITEM_MODEL_KEY));
             data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomEntityResourceRewriter.getCustomModelData(key));
             final StructuredItem item = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), 1, data);
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("ITEM_STACK"), VersionedTypes.V1_21_11.entityDataTypes.itemType, item));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.ITEM_STACK), VersionedTypes.V1_21_11.entityDataTypes.itemType, item));
 
             final float scale = (float) resourcePacksStorage.getConverterData().get("ce_" + key + "_scale");
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("SCALE"), VersionedTypes.V1_21_11.entityDataTypes.vector3FType, new Vector3f(scale, scale, scale)));
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex("TRANSLATION"), VersionedTypes.V1_21_11.entityDataTypes.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.SCALE), VersionedTypes.V1_21_11.entityDataTypes.vector3FType, new Vector3f(scale, scale, scale)));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.TRANSLATION), VersionedTypes.V1_21_11.entityDataTypes.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
 
             final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets1_21_11.ADD_ENTITY, this.user);
             addEntity.write(Types.VAR_INT, partEntity.javaId()); // entity id
