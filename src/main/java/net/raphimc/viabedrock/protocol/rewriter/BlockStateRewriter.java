@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,11 +41,6 @@ import java.util.stream.Collectors;
 
 public class BlockStateRewriter implements StorableObject {
 
-    public static final String TAG_WATER = "water";
-    public static final String TAG_ITEM_FRAME = "item_frame";
-    public static final String TAG_SIGN = "sign";
-    public static final String TAG_HANGING_SIGN = "hanging_sign";
-
     private final Int2IntMap blockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Java
     private final Int2IntMap legacyBlockStateIdMappings = new Int2IntOpenHashMap(); // Bedrock -> Bedrock
     private final BiMap<BlockState, Integer> blockStateMappings = HashBiMap.create(); // Bedrock -> Bedrock
@@ -60,7 +55,7 @@ public class BlockStateRewriter implements StorableObject {
         final List<BedrockBlockState> bedrockBlockStates = new ArrayList<>(BedrockProtocol.MAPPINGS.getBedrockBlockStates());
         final Map<BlockState, Integer> javaBlockStates = BedrockProtocol.MAPPINGS.getJavaBlockStates();
         final Map<BlockState, BlockState> bedrockToJavaBlockStates = BedrockProtocol.MAPPINGS.getBedrockToJavaBlockStates();
-        final Map<String, String> blockTags = BedrockProtocol.MAPPINGS.getBedrockBlockTags();
+        final Map<String, String> blockTags = BedrockProtocol.MAPPINGS.getBedrockCustomBlockTags();
         final Set<String> bedrockBlockIdentifiers = bedrockBlockStates.stream().map(BedrockBlockState::namespacedIdentifier).collect(Collectors.toSet());
         final List<BedrockBlockState> customBlockStates = new ArrayList<>();
 
@@ -105,13 +100,13 @@ public class BlockStateRewriter implements StorableObject {
                 for (CompoundTag trait : traits) {
                     if (trait.get("name") instanceof StringTag nameTag) {
                         final String name = Key.namespaced(nameTag.getValue());
-                        final Map<String, Set<String>> traitStates = BedrockProtocol.MAPPINGS.getBedrockBlockTraits().get(name);
-                        if (traitStates == null) {
-                            throw new RuntimeException("Missing block trait states for " + name);
+                        final Map<String, Map<String, Set<String>>> traitStateProperties = BedrockProtocol.MAPPINGS.getBedrockBlockTraits().get(name);
+                        if (traitStateProperties == null) {
+                            throw new RuntimeException("Missing block trait state properties for " + name);
                         }
 
                         if (trait.get("enabled_states") instanceof CompoundTag enabledStatesTag) {
-                            if (enabledStatesTag.size() != traitStates.size()) {
+                            if (enabledStatesTag.size() != traitStateProperties.size()) {
                                 throw new RuntimeException("Invalid enabled_states tag for trait " + name + " (size mismatch)");
                             }
 
@@ -119,15 +114,16 @@ public class BlockStateRewriter implements StorableObject {
                                 final String key = Key.namespaced(tag.getKey());
                                 final boolean enabled = tag.getValue() instanceof ByteTag && ((ByteTag) tag.getValue()).asByte() != 0;
                                 if (enabled) {
-                                    if (traitStates.containsKey(key)) {
-                                        final Set<String> states = traitStates.get(key);
-                                        final Set<Tag> values = new LinkedHashSet<>();
-                                        for (String state : states) {
-                                            values.add(new StringTag(state));
+                                    if (traitStateProperties.containsKey(key)) {
+                                        for (Map.Entry<String, Set<String>> propertiesEntry : traitStateProperties.get(key).entrySet()) {
+                                            final Set<Tag> values = new LinkedHashSet<>();
+                                            for (String value : propertiesEntry.getValue()) {
+                                                values.add(new StringTag(value));
+                                            }
+                                            propertiesMap.put(propertiesEntry.getKey(), values);
                                         }
-                                        propertiesMap.put(key, values);
                                     } else {
-                                        throw new RuntimeException("Missing block trait states for trait " + name + " and key " + key);
+                                        throw new RuntimeException("Missing block trait state properties for trait " + name + " and enabled state " + key);
                                     }
                                 }
                             }

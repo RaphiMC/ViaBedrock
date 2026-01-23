@@ -22,6 +22,8 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
 
 ### data/bedrock/block_traits.json
+[microsoft.com](https://learn.microsoft.com/en-us/minecraft/creator/documents/intro-block-traits?view=minecraft-bedrock-stable)  
+[Mojang/bedrock-samples](https://github.com/Mojang/bedrock-samples/blob/84aa19df535fcf6d044f28bf76f236029bd8407a/metadata/doc_modules/addons.json)  
 [wiki.bedrock.dev](https://wiki.bedrock.dev/blocks/block-traits.html)
 
 ### data/bedrock/effects.json
@@ -32,6 +34,9 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 
 ### data/bedrock/game_rules.json
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
+
+### data/bedrock/item_tags.json
+[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/e9097a1f87cea40354ad59fad43e28fc097d800f/item_tags.json)
 
 ### data/bedrock/level_sound_event_mappings.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
@@ -48,7 +53,7 @@ This file has been generated using `BedrockSoundListGenerator` using data from t
 ### data/java/effects.json
 This file has been dumped using a fabric mod.
 
-### data/java/entity_data.json
+### data/java/entity_data_fields.json
 This file has been dumped using a fabric mod.
 
 ### data/java/heightmap_blockstates.nbt
@@ -61,7 +66,7 @@ This file has been dumped from a vanilla server using a fabric mod.
 This file has been dumped from a vanilla server using a fabric mod.
 
 ### data/java/via_mappings.json
-[ViaVersion Mappings](https://github.com/ViaVersion/Mappings/blob/60e1b59f97837b095eade6cc442d3d43e0b972af/mappings/mapping-1.21.11.json)
+[ViaVersion/Mappings](https://github.com/ViaVersion/Mappings/blob/60e1b59f97837b095eade6cc442d3d43e0b972af/mappings/mapping-1.21.11.json)
 
 ### block_state_upgrade_schema/*
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)
