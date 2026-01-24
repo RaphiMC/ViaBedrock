@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorLinkType;
 import net.raphimc.viabedrock.protocol.model.EntityLink;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -30,14 +31,14 @@ public class EntityLinkType extends Type<EntityLink> {
 
     @Override
     public EntityLink read(ByteBuf buffer) {
-        return new EntityLink(BedrockTypes.VAR_LONG.read(buffer), BedrockTypes.VAR_LONG.read(buffer), buffer.readByte(), buffer.readBoolean(), buffer.readBoolean(), buffer.readFloatLE());
+        return new EntityLink(BedrockTypes.VAR_LONG.read(buffer), BedrockTypes.VAR_LONG.read(buffer), ActorLinkType.getByValue(buffer.readByte()), buffer.readBoolean(), buffer.readBoolean(), buffer.readFloatLE());
     }
 
     @Override
     public void write(ByteBuf buffer, EntityLink value) {
         BedrockTypes.VAR_LONG.write(buffer, value.fromEntityUniqueId());
         BedrockTypes.VAR_LONG.write(buffer, value.toEntityUniqueId());
-        buffer.writeByte(value.type());
+        buffer.writeByte(value.type().getValue());
         buffer.writeBoolean(value.immediate());
         buffer.writeBoolean(value.riderInitiated());
         buffer.writeFloatLE(value.vehicleAngularVelocity());
