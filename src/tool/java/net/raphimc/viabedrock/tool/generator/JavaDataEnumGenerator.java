@@ -70,7 +70,7 @@ public class JavaDataEnumGenerator {
             classNodes.put(classNode.name.replace('/', '.'), classNode);
         }
 
-        final CodeGen codeGen = new CodeGen(new File("../src/main/java"), "net.raphimc.viabedrock.protocol.data.enums.java.generated");
+        final CodeGen codeGen = new CodeGen(new File("src/main/java"), "net.raphimc.viabedrock.protocol.data.enums.java.generated");
 
         codeGen.addType(extractFromEnum("BossEventOperationType", classNodes.get("net.minecraft.network.protocol.game.ClientboundBossEventPacket$OperationType")));
         codeGen.addType(extractFromEnum("ClickType", classNodes.get("net.minecraft.world.inventory.ClickType")));
