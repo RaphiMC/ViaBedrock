@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.rewriter;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.LongTag;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.StoredObject;
@@ -38,6 +39,9 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.TextUtil;
+import net.raphimc.viabedrock.experimental.model.map.MapObject;
+import net.raphimc.viabedrock.experimental.rewriter.ExperimentalItemRewriter;
+import net.raphimc.viabedrock.experimental.storage.MapTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
@@ -205,6 +209,10 @@ public class ItemRewriter extends StoredObject {
                     javaItem.dataContainer().set(StructuredDataKey.CUSTOM_NAME, TextUtil.stringToNbt(display.getString("Name", "")));
                 }
             }
+        }
+
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            ExperimentalItemRewriter.handleItem(this.user(), bedrockItem, bedrockTag, javaItem);
         }
 
         final String tag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(identifier);
