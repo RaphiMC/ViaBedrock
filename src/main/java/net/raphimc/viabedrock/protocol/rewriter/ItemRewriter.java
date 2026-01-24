@@ -40,6 +40,7 @@ import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.experimental.model.map.MapObject;
+import net.raphimc.viabedrock.experimental.rewriter.ExperimentalItemRewriter;
 import net.raphimc.viabedrock.experimental.storage.MapTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
@@ -208,21 +209,10 @@ public class ItemRewriter extends StoredObject {
                     javaItem.dataContainer().set(StructuredDataKey.CUSTOM_NAME, TextUtil.stringToNbt(display.getString("Name", "")));
                 }
             }
+        }
 
-            if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures() && bedrockTag.get("map_uuid") instanceof LongTag uuidTag) {
-                MapTracker mapTracker = this.user().get(MapTracker.class);
-                final long uuid = uuidTag.asLong();
-
-                MapObject map = mapTracker.getMapObjects().get(uuid);
-                if (map == null) {
-                    final int mapId = mapTracker.getNextMapId();
-                    map = new MapObject(uuid, mapId);
-                    mapTracker.getMapObjects().put(uuid, map);
-                    ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Registered new map with id " + mapId + " and uuid " + uuid);
-                }
-
-                javaItem.dataContainer().set(StructuredDataKey.MAP_ID, map.getJavaId());
-            }
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            ExperimentalItemRewriter.handleItem(this.user(), bedrockItem, bedrockTag, javaItem);
         }
 
         final String tag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(identifier);
