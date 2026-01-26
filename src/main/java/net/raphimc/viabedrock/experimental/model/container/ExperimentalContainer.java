@@ -89,6 +89,7 @@ public abstract class ExperimentalContainer {
 
         ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy(); // Store previous state of the cursor item
 
+        // TODO: Armour container and hud container
         ItemStackRequestAction itemAction = switch (action) {
             case PICKUP -> {
                 BedrockItem cursorItem = inventoryTracker.getHudContainer().getItem(0);
