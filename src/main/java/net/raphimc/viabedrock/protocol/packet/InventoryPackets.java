@@ -65,12 +65,9 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacket_Action;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ModalFormCancelReason;
-import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
@@ -346,40 +343,44 @@ public class InventoryPackets {
                 inventoryTracker.removeDynamicContainer(containerName);
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_ARMOR_DAMAGE, null, wrapper -> {
-            final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
-            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-
-            wrapper.cancel();
-
-            if (!wrapper.user().get(GameSessionStorage.class).isInventoryServerAuthoritative()) return;
-
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_ARMOR_DAMAGE, ClientboundPackets1_21_11.SET_EQUIPMENT, wrapper -> {
+            if (!wrapper.user().get(GameSessionStorage.class).isInventoryServerAuthoritative()) {
+                wrapper.cancel();
+                return;
+            }
             final int size = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // size
+            if (size <= 0) {
+                wrapper.cancel();
+                return;
+            }
+            final Container armorContainer = wrapper.user().get(InventoryTracker.class).getArmorContainer();
+
+            wrapper.write(Types.VAR_INT, wrapper.user().get(EntityTracker.class).getClientPlayer().javaId()); // entity id
             for (int i = 0; i < size; i++) {
-                final SharedTypes_Legacy_ArmorSlot armorSlot = SharedTypes_Legacy_ArmorSlot.getByValue(wrapper.read(BedrockTypes.VAR_INT));
+                final int rawArmorSlot = wrapper.read(BedrockTypes.VAR_INT); // armor slot
+                final SharedTypes_Legacy_ArmorSlot armorSlot = SharedTypes_Legacy_ArmorSlot.getByValue(rawArmorSlot);
+                if (armorSlot == null) { // Bedrock client ignores the whole packet if an unknown armor slot is sent
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown SharedTypes_Legacy_ArmorSlot: " + rawArmorSlot);
+                    wrapper.cancel();
+                    return;
+                }
                 final short damage = wrapper.read(BedrockTypes.SHORT_LE); // damage
 
-                if (armorSlot == null || armorSlot == SharedTypes_Legacy_ArmorSlot.Body) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ArmorSlot: " + armorSlot);
-                    continue;
+                final BedrockItem item = armorSlot.getValue() < armorContainer.size() ? armorContainer.getItem(armorSlot.getValue()) : BedrockItem.empty();
+                if (item.tag() == null) {
+                    item.setTag(new CompoundTag());
                 }
+                item.tag().putInt("Damage", damage);
 
-                BedrockItem item = inventoryTracker.getArmorContainer().getItem(armorSlot.getValue());
-                if (item == null) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Empty armor slot: " + armorSlot);
-                    continue;
-                }
-
-                BedrockItem newItem = item.copy();
-                newItem.tag().putInt("Damage", damage);
-                inventoryTracker.getArmorContainer().setItem(armorSlot.getValue(), newItem);
-
-                PacketWrapper itemPacket = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_SLOT, wrapper.user());
-                itemPacket.write(Types.VAR_INT, (int) inventoryTracker.getArmorContainer().javaContainerId()); // container id
-                itemPacket.write(Types.VAR_INT, 0); // revision
-                itemPacket.write(Types.SHORT, (short) inventoryTracker.getArmorContainer().javaSlot(armorSlot.getValue())); // slot
-                itemPacket.write(VersionedTypes.V1_21_9.item, itemRewriter.javaItem(newItem)); // item
-                itemPacket.send(BedrockProtocol.class);
+                final EquipmentSlot equipmentSlot = switch (armorSlot) {
+                    case Head -> EquipmentSlot.HEAD;
+                    case Torso -> EquipmentSlot.CHEST;
+                    case Legs -> EquipmentSlot.LEGS;
+                    case Feet -> EquipmentSlot.FEET;
+                    case Body -> EquipmentSlot.BODY;
+                };
+                wrapper.write(Types.BYTE, (byte) (equipmentSlot.ordinal() | (i < (size - 1) ? Byte.MIN_VALUE : 0))); // slot
+                wrapper.write(VersionedTypes.V1_21_11.item, wrapper.user().get(ItemRewriter.class).javaItem(item)); // item
             }
         });
 
