@@ -65,19 +65,14 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacket_Action;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ModalFormCancelReason;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
-import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.ArrayList;
@@ -346,6 +341,46 @@ public class InventoryPackets {
             final FullContainerName[] removedContainers = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME_ARRAY); // removed containers
             for (FullContainerName containerName : removedContainers) {
                 inventoryTracker.removeDynamicContainer(containerName);
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_ARMOR_DAMAGE, ClientboundPackets1_21_11.SET_EQUIPMENT, wrapper -> {
+            if (!wrapper.user().get(GameSessionStorage.class).isInventoryServerAuthoritative()) {
+                wrapper.cancel();
+                return;
+            }
+            final int size = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // size
+            if (size <= 0) {
+                wrapper.cancel();
+                return;
+            }
+            final Container armorContainer = wrapper.user().get(InventoryTracker.class).getArmorContainer();
+
+            wrapper.write(Types.VAR_INT, wrapper.user().get(EntityTracker.class).getClientPlayer().javaId()); // entity id
+            for (int i = 0; i < size; i++) {
+                final int rawArmorSlot = wrapper.read(BedrockTypes.VAR_INT); // armor slot
+                final SharedTypes_Legacy_ArmorSlot armorSlot = SharedTypes_Legacy_ArmorSlot.getByValue(rawArmorSlot);
+                if (armorSlot == null) { // Bedrock client ignores the whole packet if an unknown armor slot is sent
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown SharedTypes_Legacy_ArmorSlot: " + rawArmorSlot);
+                    wrapper.cancel();
+                    return;
+                }
+                final short damage = wrapper.read(BedrockTypes.SHORT_LE); // damage
+
+                final BedrockItem item = armorSlot.getValue() < armorContainer.size() ? armorContainer.getItem(armorSlot.getValue()) : BedrockItem.empty();
+                if (item.tag() == null) {
+                    item.setTag(new CompoundTag());
+                }
+                item.tag().putInt("Damage", damage);
+
+                final EquipmentSlot equipmentSlot = switch (armorSlot) {
+                    case Head -> EquipmentSlot.HEAD;
+                    case Torso -> EquipmentSlot.CHEST;
+                    case Legs -> EquipmentSlot.LEGS;
+                    case Feet -> EquipmentSlot.FEET;
+                    case Body -> EquipmentSlot.BODY;
+                };
+                wrapper.write(Types.BYTE, (byte) (equipmentSlot.ordinal() | (i < (size - 1) ? Byte.MIN_VALUE : 0))); // slot
+                wrapper.write(VersionedTypes.V1_21_11.item, wrapper.user().get(ItemRewriter.class).javaItem(item)); // item
             }
         });
 
