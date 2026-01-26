@@ -157,10 +157,10 @@ public abstract class ExperimentalContainer {
                 } else {
                     if (item.isEmpty() || (!item.isDifferent(cursorItem) && item.amount() < 64)) { // TODO: Mostly accounts for stackability but not fully (shouldnt be an issue with server side inventory)
                         // Place item
-                        // TODO: Broken
                         int amt = button == 0 ? cursorItem.amount() : 1;
                         int amountToPlace = item.isDifferent(cursorItem) ? amt : Math.min(64 - item.amount(), cursorItem.amount());
 
+                        final int containerNetId = item.netId() != null ? item.netId() : 0;
                         BedrockItem finalContainerItem = item.copy();
                         if (item.isDifferent(cursorItem)) {
                             finalContainerItem = cursorItem.copy();
@@ -170,6 +170,7 @@ public abstract class ExperimentalContainer {
                         }
                         container.setItem(bedrockSlot, finalContainerItem);
 
+                        final int cursorNetId = cursorItem.netId();
                         BedrockItem finalCursorItem = cursorItem.copy();
                         if (amountToPlace >= cursorItem.amount()) {
                             finalCursorItem = BedrockItem.empty();
@@ -180,8 +181,8 @@ public abstract class ExperimentalContainer {
 
                         yield new ItemStackRequestAction.PlaceAction(
                                 amountToPlace,
-                                new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, finalContainerItem.netId()),
-                                new ItemStackRequestSlotInfo(container.getFullContainerName(bedrockSlot), (byte) bedrockSlot, 0)
+                                new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, cursorNetId),
+                                new ItemStackRequestSlotInfo(container.getFullContainerName(bedrockSlot), (byte) bedrockSlot, containerNetId)
                         );
                     } else {
                         // Swap item
