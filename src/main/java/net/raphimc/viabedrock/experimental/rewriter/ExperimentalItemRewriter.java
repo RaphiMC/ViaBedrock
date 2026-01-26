@@ -18,7 +18,9 @@
 package net.raphimc.viabedrock.experimental.rewriter;
 
 import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntTag;
 import com.viaversion.nbt.tag.LongTag;
+import com.viaversion.nbt.tag.NumberTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
@@ -33,21 +35,28 @@ public class ExperimentalItemRewriter {
 
     // BedrockTag can be null
     public static void handleItem(final UserConnection user, final BedrockItem bedrockItem, final CompoundTag bedrockTag, final Item javaItem) {
-        if (bedrockTag != null && bedrockTag.get("map_uuid") instanceof LongTag uuidTag) {
-            MapTracker mapTracker = user.get(MapTracker.class);
-            final long uuid = uuidTag.asLong();
 
-            MapObject map = mapTracker.getMapObjects().get(uuid);
-            if (map == null) {
-                final int mapId = mapTracker.getNextMapId();
-                map = new MapObject(uuid, mapId);
-                mapTracker.getMapObjects().put(uuid, map);
-                //ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Registered new map with id " + mapId + " and uuid " + uuid);
+        if (bedrockTag != null) {
+
+            if (bedrockTag.get("Damage") instanceof NumberTag durability)  {
+                javaItem.dataContainer().set(StructuredDataKey.DAMAGE, durability.asInt());
             }
 
-            javaItem.dataContainer().set(StructuredDataKey.MAP_ID, map.getJavaId());
+            if (bedrockTag.get("map_uuid") instanceof NumberTag uuidTag) {
+                MapTracker mapTracker = user.get(MapTracker.class);
+                final long uuid = uuidTag.asLong();
+
+                MapObject map = mapTracker.getMapObjects().get(uuid);
+                if (map == null) {
+                    final int mapId = mapTracker.getNextMapId();
+                    map = new MapObject(uuid, mapId);
+                    mapTracker.getMapObjects().put(uuid, map);
+                    //ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Registered new map with id " + mapId + " and uuid " + uuid);
+                }
+
+                javaItem.dataContainer().set(StructuredDataKey.MAP_ID, map.getJavaId());
+            }
+
         }
-
     }
-
 }
