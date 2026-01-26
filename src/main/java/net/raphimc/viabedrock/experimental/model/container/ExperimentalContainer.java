@@ -361,6 +361,30 @@ public abstract class ExperimentalContainer {
                 }
             }
             case THROW -> {
+                if (javaSlot == -999) {
+                    // Drop cursor item
+                    BedrockItem cursorItem = inventoryTracker.getHudContainer().getItem(0);
+                    if (cursorItem.isEmpty()) {
+                        yield null;
+                    }
+
+                    int amountToDrop = button == 0 ? cursorItem.amount() : 1;
+
+                    BedrockItem finalCursorItem = cursorItem.copy();
+                    if (amountToDrop >= cursorItem.amount()) {
+                        finalCursorItem = BedrockItem.empty();
+                    } else {
+                        finalCursorItem.setAmount(cursorItem.amount() - amountToDrop);
+                    }
+                    inventoryTracker.getHudContainer().setItem(0, finalCursorItem);
+
+                    yield new ItemStackRequestAction.DropAction(
+                            amountToDrop,
+                            new ItemStackRequestSlotInfo(inventoryTracker.getHudContainer().getFullContainerName(0), (byte) 0, cursorItem.netId()),
+                            false
+                    );
+                }
+
                 if (javaSlot < 0 || javaSlot >= container.getItems().length) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to handle throw for " + container.type() + ", but slot was out of bounds (" + javaSlot + ")");
                     yield null;
