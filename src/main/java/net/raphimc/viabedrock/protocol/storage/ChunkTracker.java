@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,8 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.HeightmapType;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
+import net.raphimc.viabedrock.protocol.data.generated.java.RegistryKeys;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
@@ -87,8 +89,8 @@ public class ChunkTracker extends StoredObject {
         final GameSessionStorage gameSession = user.get(GameSessionStorage.class);
         final CompoundTag registries = gameSession.getJavaRegistries();
         final String dimensionKey = this.dimension.getKey();
-        final CompoundTag dimensionRegistry = registries.getCompoundTag("minecraft:dimension_type");
-        final CompoundTag biomeRegistry = registries.getCompoundTag("minecraft:worldgen/biome");
+        final CompoundTag dimensionRegistry = registries.getCompoundTag(RegistryKeys.DIMENSION_TYPE);
+        final CompoundTag biomeRegistry = registries.getCompoundTag(RegistryKeys.WORLDGEN_BIOME);
         final CompoundTag dimensionTag = dimensionRegistry.getCompoundTag(dimensionKey);
         this.minY = dimensionTag.getNumberTag("min_y").asInt();
         this.worldHeight = dimensionTag.getNumberTag("height").asInt();
@@ -196,7 +198,7 @@ public class ChunkTracker extends StoredObject {
 
         if (blockPalettes.size() > 1) {
             final int layer1BlockState = blockPalettes.get(1).idAt(sectionX, sectionY, sectionZ);
-            if (BlockStateRewriter.TAG_WATER.equals(blockStateRewriter.tag(layer1BlockState))) { // Waterlogging
+            if (CustomBlockTags.WATER.equals(blockStateRewriter.tag(layer1BlockState))) { // Waterlogging
                 final int prevBlockState = remappedBlockState;
                 remappedBlockState = blockStateRewriter.waterlog(remappedBlockState);
                 if (remappedBlockState == -1) {
@@ -359,7 +361,7 @@ public class ChunkTracker extends StoredObject {
                 if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
                     return new IntObjectImmutablePair<>(remappedBlockState, javaBlockEntity);
                 }
-            } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
+            } else if (CustomBlockTags.ITEM_FRAME.equals(tag)) {
                 entityTracker.spawnItemFrame(blockPosition, blockStateRewriter.blockState(blockState));
             }
         }
@@ -523,7 +525,7 @@ public class ChunkTracker extends StoredObject {
                                     final BlockEntity javaBlockEntity = new BlockEntityImpl(BlockEntity.pack(x, z), (short) absY, javaType, new CompoundTag());
                                     remappedChunk.blockEntities().add(javaBlockEntity);
                                 }
-                            } else if (BlockStateRewriter.TAG_ITEM_FRAME.equals(tag)) {
+                            } else if (CustomBlockTags.ITEM_FRAME.equals(tag)) {
                                 this.user().get(EntityTracker.class).spawnItemFrame(position, blockStateRewriter.blockState(layer0.idAt(x, y, z)));
                             }
                         }
@@ -543,7 +545,7 @@ public class ChunkTracker extends StoredObject {
                                     if (blockState == airId) continue;
                                     final int javaBlockState = remappedBlockPalette.idAt(x, y, z);
 
-                                    if (BlockStateRewriter.TAG_WATER.equals(blockStateRewriter.tag(blockState))) { // Waterlogging
+                                    if (CustomBlockTags.WATER.equals(blockStateRewriter.tag(blockState))) { // Waterlogging
                                         final int remappedBlockState = blockStateRewriter.waterlog(javaBlockState);
                                         if (remappedBlockState == -1) {
                                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing waterlogged block state: " + prevBlockState);

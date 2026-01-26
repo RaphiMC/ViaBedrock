@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,10 +49,16 @@ public record Members(List<Member> members) {
     public List<String> generateCode() {
         final List<String> lines = new ArrayList<>();
         for (Member member : this.members) {
-            lines.addAll(member.generateCode());
-            lines.add("");
+            final List<String> memberLines = member.generateCode();
+            if (memberLines.size() > 1 && !lines.get(lines.size() - 1).isEmpty()) {
+                lines.add("");
+            }
+            lines.addAll(memberLines);
+            if (memberLines.size() > 1 && !lines.get(lines.size() - 1).isEmpty()) {
+                lines.add("");
+            }
         }
-        if (!lines.isEmpty()) {
+        if (!lines.isEmpty() && lines.get(lines.size() - 1).isEmpty()) {
             lines.remove(lines.size() - 1);
         }
         return lines;

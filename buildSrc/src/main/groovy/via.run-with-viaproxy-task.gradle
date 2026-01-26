@@ -21,7 +21,7 @@ tasks.register("runViaProxy", JavaExec) {
     finalizedBy(cleanupTask)
 
     def viaProxyConfiguration = configurations.create("viaProxy")
-    viaProxyConfiguration.dependencies.add(dependencies.create("net.raphimc:ViaProxy:3.4.8-SNAPSHOT") {
+    viaProxyConfiguration.dependencies.add(dependencies.create("net.raphimc:ViaProxy:3.4.9-SNAPSHOT") {
         transitive = false
     })
 

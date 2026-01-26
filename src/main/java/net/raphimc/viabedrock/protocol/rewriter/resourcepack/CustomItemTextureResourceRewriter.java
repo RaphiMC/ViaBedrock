@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
+import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.model.resourcepack.TextureDefinitions;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
@@ -27,6 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter {
+
+    public static final Key ITEM_MODEL_KEY = Key.of("viabedrock", "item_texture");
 
     public CustomItemTextureResourceRewriter() {
         super("item_texture", "item");

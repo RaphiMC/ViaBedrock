@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
+import net.raphimc.viabedrock.experimental.rewriter.EntityMetadataRewriter;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
@@ -219,7 +220,7 @@ public class Entity {
     }
 
     public final int getJavaEntityDataIndex(final String fieldName) {
-        final int index = BedrockProtocol.MAPPINGS.getJavaEntityData().get(this.javaType).indexOf(fieldName);
+        final int index = BedrockProtocol.MAPPINGS.getJavaEntityDataFields().get(this.javaType).indexOf(fieldName);
         if (index == -1) {
             throw new IllegalStateException("Unknown java entity data field: " + fieldName + " for entity type: " + this.javaType);
         }
@@ -227,6 +228,10 @@ public class Entity {
     }
 
     protected boolean translateEntityData(final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            return EntityMetadataRewriter.rewrite(user, this, id, entityData, javaEntityData);
+        }
+
         return false;
     }
 

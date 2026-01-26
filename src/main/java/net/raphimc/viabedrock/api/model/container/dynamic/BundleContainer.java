@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomItemTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -139,8 +140,8 @@ public class BundleContainer extends Container {
             final BedrockItem item = items[i];
             if (item.isEmpty() || item.tag() == null) continue;
 
-            final String itemTag = BedrockProtocol.MAPPINGS.getBedrockItemTags().getOrDefault(itemRewriter.getItems().inverse().get(item.identifier()), "");
-            if (!itemTag.equals("bundle")) continue;
+            final String itemTag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(itemRewriter.getItems().inverse().get(item.identifier()));
+            if (!CustomItemTags.BUNDLE.equals(itemTag)) continue;
 
             final IntTag bundleIdTag = item.tag().getIntTag("bundle_id");
             if (bundleIdTag == null || bundleIdTag.asInt() == 0) continue;
