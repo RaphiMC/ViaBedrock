@@ -72,6 +72,8 @@ public class ItemRewriter extends StoredObject {
     private final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates;
     private final Type<BedrockItem> itemType;
     private final Type<BedrockItem[]> itemArrayType;
+    private final Type<BedrockItem> itemInstanceType;
+    private final Type<BedrockItem[]> itemInstanceArrayType;
 
     static {
         // TODO: Add missing item nbt rewriters
@@ -110,8 +112,11 @@ public class ItemRewriter extends StoredObject {
             }
         }
 
-        this.itemType = new BedrockItemType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false);
+        this.itemType = new BedrockItemType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false, true);
         this.itemArrayType = new ArrayType<>(this.itemType, BedrockTypes.UNSIGNED_VAR_INT);
+
+        this.itemInstanceType = new BedrockItemType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false, false);
+        this.itemInstanceArrayType = new ArrayType<>(this.itemInstanceType, BedrockTypes.UNSIGNED_VAR_INT);
     }
 
     public Item javaItem(final BedrockItem bedrockItem) {
@@ -263,6 +268,14 @@ public class ItemRewriter extends StoredObject {
 
     public Type<BedrockItem[]> itemArrayType() {
         return this.itemArrayType;
+    }
+
+    public Type<BedrockItem> itemInstanceType() {
+        return this.itemInstanceType;
+    }
+
+    public Type<BedrockItem[]> itemInstanceArrayType() {
+        return this.itemInstanceArrayType;
     }
 
     public interface NbtRewriter {
