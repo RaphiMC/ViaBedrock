@@ -132,6 +132,7 @@ public enum ActorFlags {
     DOES_SERVER_AUTH_ONLY_DISMOUNT(123),
     BODY_ROTATION_ALWAYS_FOLLOWS_HEAD(124),
     CAN_USE_VERTICAL_MOVEMENT_ACTION(125),
+    ROTATION_LOCKED_TO_VEHICLE(126),
     ;
 
     private static final Int2ObjectMap<ActorFlags> BY_VALUE = new Int2ObjectOpenHashMap<>();
