@@ -48,6 +48,9 @@ public class UnhandledPackets {
         protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST_PRESETS); // Not possible in Java Edition
         protocol.cancelClientbound(ClientboundBedrockPackets.PLAYER_VIDEO_CAPTURE); // Not possible in Java Edition
         protocol.cancelClientbound(ClientboundBedrockPackets.GRAPHICS_OVERRIDE_PARAMETER); // Not possible in Java Edition
+        protocol.cancelClientbound(ClientboundBedrockPackets.TEXTURE_SHIFT); // Not possible in Java Edition
+        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_SPLINE); // Not possible in Java Edition
+        protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST_ACTOR_PRIORITY); // Not possible in Java Edition
 
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_9.KEEP_ALIVE, null, PacketWrapper::cancel);
         protocol.cancelServerbound(ServerboundPackets1_21_6.CHAT_ACK);

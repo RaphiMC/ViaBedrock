@@ -13,7 +13,7 @@ public enum ActorType {
     Animal(4864),
     TamableAnimal(21248),
     Ambient(33024),
-    UndeadMob(68352),
+    UndeadMonster(68352),
     ZombieMonster(199424),
     Arthropod(264960),
     Minecart(524288),
@@ -43,8 +43,8 @@ public enum ActorType {
     Dolphin(8991),
     Donkey(2118424),
     Mule(2118425),
-    SkeletonHorse(2186010),
-    ZombieHorse(2186011),
+    SkeletonHorse(2183962),
+    ZombieHorse(2183963),
     Zombie(199456),
     Creeper(2849),
     Skeleton(1116962),
@@ -160,9 +160,9 @@ public enum ActorType {
     HappyGhast(5011),
     CopperGolem(916),
     Nautilus(9109),
-    ZombieNautilus(76694),
+    ZombieNautilus(74646),
     Parched(1117079),
-    CamelHusk(68504),
+    CamelHusk(70552),
     ;
 
     private static final Int2ObjectMap<ActorType> BY_VALUE = new Int2ObjectOpenHashMap<>();
