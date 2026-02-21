@@ -44,6 +44,7 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.AnimateAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
@@ -424,8 +425,13 @@ public class EntityPackets {
                 wrapper.cancel();
                 return;
             }
+
+            ViaBedrock.getPlatform().getLogger().warning("ActorEvent: " + event); // TODO: Test logging (remove for merge)
+
+            //https://minecraft.wiki/w/Bedrock_Edition_protocol/Entity_Events
+            //https://minecraft.wiki/w/Java_Edition_protocol/Entity_statuses
             switch (event) {
-                case HURT -> {
+                case HURT -> { // Sent when an entity gets hurt
                     final CompoundTag damageTypeRegistry = gameSession.getJavaRegistries().getCompoundTag("minecraft:damage_type");
                     final SharedTypes_Legacy_ActorDamageCause damageCause = SharedTypes_Legacy_ActorDamageCause.getByValue(data, SharedTypes_Legacy_ActorDamageCause.Override);
                     final CompoundTag damageTypeEntry = damageTypeRegistry.getCompoundTag(BedrockProtocol.MAPPINGS.getBedrockToJavaDamageCauses().get(damageCause));
@@ -440,8 +446,7 @@ public class EntityPackets {
                         entity.playSound(SharedTypes_Legacy_LevelSoundEvent.Hurt);
                     }
                 }
-                case DEATH -> {
-                    wrapper.cancel();
+                case DEATH -> { // Sent when an entity dies
                     if (entity instanceof LivingEntity livingEntity) {
                         livingEntity.setHealth(0F);
                         livingEntity.sendAttribute("minecraft:health");
@@ -453,13 +458,170 @@ public class EntityPackets {
                         playerCombatKill.send(BedrockProtocol.class);
                     }
                     if (entity != entityTracker.getClientPlayer()) {
+                        //TODO: Java has an entity event for death but that only plays the sound no particles, find out how java syncs both
                         entity.playSound(SharedTypes_Legacy_LevelSoundEvent.Death);
+                        wrapper.write(Types.INT, entity.javaId()); // entity id
+                        wrapper.write(Types.BYTE, EntityEvent.POOF.getValue()); // entity event
+                    } else {
+                        wrapper.cancel();
                     }
                 }
+                case TAMING_FAILED -> { // Sent when you fail to tame an entity, used for particles
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.TAMING_FAILED.getValue()); // entity event
+                }
+                case TAMING_SUCCEEDED -> { // Sent when you successfully tame an entity, used for particles
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.TAMING_SUCCEEDED.getValue()); // entity event
+                }
+                case SHAKE_WETNESS -> { // Sent to sync wolf shake animation
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SHAKE_WETNESS.getValue()); // entity event
+                }
+                case EAT_GRASS -> { // Sent to sync sheep eating animation
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.EAT_GRASS.getValue()); // entity event
+                }
+                case SQUID_FLEEING -> { // Sent when you attack a squid, most likely used for the ink particles
+                    //TODO: Java has no equivalent event, send particles here
+                }
+                case ZOMBIE_CONVERTING -> { // TODO
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.ZOMBIE_CONVERTING.getValue()); // entity event
+                    //TODO: Doesnt seem to make the zombie shake on java, needs testing
+                }
+                case START_OFFER_FLOWER -> { // Sent when an iron golem starts offering a flower
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.OFFER_FLOWER.getValue()); // entity event
+                }
+                case STOP_OFFER_FLOWER -> { // Sent when an iron golem stops offering a flower
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.STOP_OFFER_FLOWER.getValue()); // entity event
+                }
+                case LOVE_HEARTS -> { // Sent when an animal was bred, also sent when villagers are breeding
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    // Java splits these events and bedrock has cases for both but only seems to use one???
+                    if (entityTracker.getEntityByRid(entity.runtimeId()).javaType().is(EntityTypes1_21_11.VILLAGER)) {
+                        wrapper.write(Types.BYTE, EntityEvent.LOVE_HEARTS.getValue()); // entity event
+                    } else {
+                        wrapper.write(Types.BYTE, EntityEvent.IN_LOVE_HEARTS.getValue()); // entity event
+                    }
+                }
+                case VILLAGER_ANGRY -> { // Sent to sync angry villager particles
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.VILLAGER_ANGRY.getValue()); // entity event
+                }
+                case VILLAGER_HAPPY -> { // Sent to sync happy villager particles
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.VILLAGER_HAPPY.getValue()); // entity event
+                }
+                case WITCH_HAT_MAGIC -> { // Sent to sync witch magic particles
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.WITCH_HAT_MAGIC.getValue()); // entity event
+                }
+                case FIREWORKS_EXPLODE -> { // Sent to sync firework explosions
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.FIREWORKS_EXPLODE.getValue()); // entity event
+                }
+                case IN_LOVE_HEARTS -> { //TODO: What calls this?
+                    wrapper.cancel();
+                    //wrapper.write(Types.INT, entity.javaId()); // entity id
+                    //wrapper.write(Types.BYTE, EntityEvent.IN_LOVE_HEARTS.getValue()); // entity event
+                }
+                case SILVERFISH_MERGE_ANIM -> { // Displays particles when a silverfish merges into a block
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SILVERFISH_MERGE_ANIM.getValue()); // entity event
+                }
+                case GUARDIAN_ATTACK_SOUND -> { // TODO: Gets called when a guardian attacks, Java does not seem to receive the sound effect properly
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.GUARDIAN_ATTACK_SOUND.getValue()); // entity event
+                }
+                case AIR_SUPPLY -> { // TODO: Test
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.DROWN_PARTICLES.getValue()); // entity event
+                }
+                case SHAKE -> { // TODO: Test
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.SHAKE.getValue()); // entity event
+                }
+                case INSTANT_DEATH -> { // TODO: Test
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.POOF.getValue()); // entity event
+                }
+                case TALISMAN_ACTIVATE -> { // Sent to sync totem activate animation
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.PROTECTED_FROM_DEATH.getValue()); // entity event
+                }
+                case TREASURE_HUNT -> { // TODO: Test
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.DOLPHIN_LOOKING_FOR_TREASURE.getValue()); // entity event
+                }
+                case VIBRATION_DETECTED -> { // Sent to sync warden tendril vibration animation
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.TENDRILS_SHIVER.getValue()); // entity event
+                }
+                case START_ATTACKING -> { // Sent to sync ravager and evoker attack animations TODO: doesnt play the evoker arm wave anim
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.START_ATTACKING.getValue()); // entity event
+                }
+                case GUARDIAN_MINING_FATIGUE -> {
+                    // Handled in WorldEffectPackets under ParticleSoundGuardianGhost
+                    //TODO: Should it be moved here / also handled here?
+                    wrapper.cancel();
+                }
+                case SHAKE_WETNESS_STOP -> { // Sent to sync wolf shake animation
+                    wrapper.write(Types.INT, entity.javaId()); // entity id
+                    wrapper.write(Types.BYTE, EntityEvent.CANCEL_SHAKE_WETNESS.getValue()); // entity event
+                }
+                case DRAGON_START_DEATH_ANIM -> {
+                    wrapper.cancel();
+
+                    EntityData entityData = new EntityData(entity.getJavaEntityDataIndex("PHASE"),  VersionedTypes.V1_21_9.entityDataTypes().varIntType, 9); // DYING phase
+                    //TODO: Allow java entity data to be set
+                    //TODO: Test
+                }
+                case PUKE -> {
+                    wrapper.cancel();
+
+                    EntityData entityData = new EntityData(entity.getJavaEntityDataIndex("PHASE"),  VersionedTypes.V1_21_9.entityDataTypes().varIntType, 5); // Breath attack phase
+                    //TODO: Allow java entity data to be set
+                    //TODO: Check this is correct and test if it works
+                }
+                case NONE, // TODO: Whats the point of this????
+                     JUMP, // TODO: What calls this?
+                     FISHHOOK_TEASE, // TODO: Sync
+                     FISHHOOK_BUBBLE, // TODO: Sync
+                     FISHHOOK_FISHPOS, // TODO: Sync
+                     FISHHOOK_HOOKTIME, // TODO: Sync
+                     PLAY_AMBIENT, // TODO: Why the fuck is this an entity event? Does it ever actually get used????????
+                     DRINK_POTION, // TODO: Find java equivalent
+                     THROW_POTION, // TODO: Find java equivalent
+                     PRIME_TNTCART, // TODO: Find java equivalent
+                     PRIME_CREEPER, // TODO: Find java equivalent
+                     GROUND_DUST, // TODO: What calls this?
+                     FEED, // Sent when an animal is fed, java does not have an equivalent animation
+                     BABY_AGE, // Sent to display "aging" particles when a baby is fed TODO: find java equivalent
+                     NOTIFY_TRADE, // TODO: Find java equivalent
+                     STOP_ATTACKING, // Not used in java and doesnt seem to be sent in bedrock
+                     FINISHED_CHARGING_ITEM, // Sent when a crossbow finishes charging (might also be other senders) TODO: Add this
+                     PLAYER_SPAWNED_MOB, //Sent when a player uses a spawn egg, idk what this is for
+                     LEASH_DESTROYED, // TODO: Leash handling
+                     CARAVAN_UPDATED, // TODO: Leash handling
+                     AGENT_SWING_ARM, // Education edition feature
+                     SUMMON_AGENT, // Education edition feature
+                     BALLOON_POP, // Education edition feature TODO: double check
+                     SPAWN_ALIVE, // TODO: Seems to get called when you respawn, not sure what it does
+                     UPDATE_STACK_SIZE, // Sent to sync stack size updates for items on the ground TODO: find the java equivalent (might not be needed)
+                     START_SWIMMING, // TODO: What calls this?
+                     ACTOR_GROW_UP, // TODO: Find java equivalent
+                     DRINK_MILK, //TODO: Find java equivalent
+                     KINETIC_DAMAGE_DEALT, //TODO: Find java equivalent
+                     DEPRECATED_ADD_PLAYER_LEVELS, // Deprecated
+                     DEPRECATED_UPDATE_STRUCTURE_FEATURE // Deprecated
+                        -> wrapper.cancel();
                 default -> {
                     wrapper.cancel();
-                    // TODO: Handle remaining events
-                    // throw new IllegalStateException("Unhandled ActorEvent: " + event);
+                    throw new IllegalStateException("Unhandled ActorEvent: " + event);
                 }
             }
         });

@@ -318,6 +318,10 @@ public class WorldEffectPackets {
                 case StartBlockCracking, StopBlockCracking, UpdateBlockCracking -> {
                     wrapper.cancel(); // TODO: Implement block break progress translation
                 }
+                case JumpPrevented -> {
+                    // TODO: Maps to an Entity event but bedrock doesnt supply an entity id with this packet so we will have to send the particles manually
+                    wrapper.cancel();
+                }
                 default -> {
                     BedrockMappingData.LevelEventMapping levelEventMapping = BedrockProtocol.MAPPINGS.getBedrockToJavaLevelEvents().get(levelEvent);
                     if (levelEventMapping instanceof BedrockMappingData.JavaSoundLevelEvent javaSoundLevelEvent) {
