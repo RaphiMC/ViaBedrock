@@ -1,4 +1,9 @@
 {
+  "anvil": [
+    "minecraft:anvil",
+    "minecraft:chipped_anvil",
+    "minecraft:damaged_anvil"
+  ],
   "banner": [
     "minecraft:standing_banner",
     "minecraft:wall_banner"
@@ -240,6 +245,9 @@
     "minecraft:wither_skeleton_skull",
     "minecraft:zombie_head"
   ],
+  "smithing_table": [
+    "minecraft:smithing_table"
+  ],
   "smoker": [
     "minecraft:smoker",
     "minecraft:lit_smoker"
@@ -262,5 +270,8 @@
   "water": [
     "minecraft:flowing_water",
     "minecraft:water"
+  ],
+  "workbench": [
+    "minecraft:crafting_table"
   ]
 }
