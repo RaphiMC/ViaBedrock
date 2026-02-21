@@ -52,6 +52,7 @@ import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
+import net.raphimc.viabedrock.protocol.storage.BreakingTracker;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -315,8 +316,15 @@ public class WorldEffectPackets {
                     ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Server sped up the game. This is not supported by ViaBedrock.");
                     wrapper.cancel();
                 }
-                case StartBlockCracking, StopBlockCracking, UpdateBlockCracking -> {
-                    wrapper.cancel(); // TODO: Implement block break progress translation
+                case StartBlockCracking, UpdateBlockCracking -> {
+                    wrapper.cancel();
+                    wrapper.user().get(BreakingTracker.class).updateCrackingInfo(new Position3f(
+                            MathUtil.floor(position.x()), MathUtil.floor(position.y()), MathUtil.floor(position.z())
+                    ), data, levelEvent == LevelEvent.UpdateBlockCracking);
+                }
+                case StopBlockCracking -> {
+                    wrapper.cancel();
+                    wrapper.user().get(BreakingTracker.class).stopCracking(new Position3f(MathUtil.floor(position.x()), MathUtil.floor(position.y()), MathUtil.floor(position.z())));
                 }
                 default -> {
                     BedrockMappingData.LevelEventMapping levelEventMapping = BedrockProtocol.MAPPINGS.getBedrockToJavaLevelEvents().get(levelEvent);
