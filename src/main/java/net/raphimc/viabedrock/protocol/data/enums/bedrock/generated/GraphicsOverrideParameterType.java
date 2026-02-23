@@ -46,6 +46,70 @@ public enum GraphicsOverrideParameterType {
      * Sent to set the sun glare shape
      */
     SunGlareShape(9),
+    /**
+     * Sent to set the water chlorophyll value
+     */
+    Chlorophyll(10),
+    /**
+     * Sent to set the water CDOM value
+     */
+    CDOM(11),
+    /**
+     * Sent to set the water SuspendedSediment value
+     */
+    SuspendedSediment(12),
+    /**
+     * Sent to set the water waves depth value
+     */
+    WavesDepth(13),
+    /**
+     * Sent to set the water waves frequency value
+     */
+    WavesFrequency(14),
+    /**
+     * Sent to set the water waves frequency scaling value
+     */
+    WavesFrequencyScaling(15),
+    /**
+     * Sent to set the water waves speed value
+     */
+    WavesSpeed(16),
+    /**
+     * Sent to set the water waves speed scaling value
+     */
+    WavesSpeedScaling(17),
+    /**
+     * Sent to set the water waves shape value
+     */
+    WavesShape(18),
+    /**
+     * Sent to set the water waves octaves value
+     */
+    WavesOctaves(19),
+    /**
+     * Sent to set the water waves mix value
+     */
+    WavesMix(20),
+    /**
+     * Sent to set the water waves pull value
+     */
+    WavesPull(21),
+    /**
+     * Sent to set the water waves direction increment value
+     */
+    WavesDirectionIncrement(22),
+    /**
+     * Sent to set the color grading midtones contrast value
+     */
+    MidtonesContrast(23),
+    /**
+     * Sent to set the color grading highlights contrast value
+     */
+    HighlightsContrast(24),
+    /**
+     * Sent to set the color grading shadows contrast value
+     */
+    ShadowsContrast(25),
     ;
 
     private static final Int2ObjectMap<GraphicsOverrideParameterType> BY_VALUE = new Int2ObjectOpenHashMap<>();

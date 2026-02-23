@@ -88,20 +88,7 @@ public class ChatPackets {
             public void register() {
                 handler(wrapper -> {
                     final boolean localize = wrapper.read(Types.BOOLEAN); // localize
-                    final short messageType = wrapper.read(Types.UNSIGNED_BYTE); // message type
-                    switch (messageType) {
-                        case 0 -> {
-                            for (int i = 0; i < 6; i++) {
-                                wrapper.read(BedrockTypes.STRING); // unused
-                            }
-                        }
-                        case 1, 2 -> {
-                            for (int i = 0; i < 3; i++) {
-                                wrapper.read(BedrockTypes.STRING); // unused
-                            }
-                        }
-                        default -> throw new IllegalStateException("Unhandled message type: " + messageType);
-                    }
+                    wrapper.read(Types.UNSIGNED_BYTE); // message type
                     final short rawType = wrapper.read(Types.UNSIGNED_BYTE); // text packet type
                     final TextPacketType type = TextPacketType.getByValue(rawType);
                     if (type == null) {
@@ -269,9 +256,6 @@ public class ChatPackets {
             public void register() {
                 create(Types.BOOLEAN, false); // localize
                 create(Types.UNSIGNED_BYTE, (short) 1); // message type
-                create(BedrockTypes.STRING, "chat"); // dummy string 1
-                create(BedrockTypes.STRING, "whisper"); // dummy string 2
-                create(BedrockTypes.STRING, "announcement"); // dummy string 3
                 create(Types.UNSIGNED_BYTE, (short) TextPacketType.Chat.getValue()); // type
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(EntityTracker.class).getClientPlayer().name())); // source name
                 map(Types.STRING, BedrockTypes.STRING); // message
