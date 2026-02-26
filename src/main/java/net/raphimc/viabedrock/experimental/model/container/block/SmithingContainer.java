@@ -49,8 +49,8 @@ import java.util.logging.Level;
 
 public class SmithingContainer extends ExperimentalContainer {
 
-    public SmithingContainer(UserConnection user, byte containerId, ContainerType type, TextComponent title, BlockPosition position) {
-        super(user, containerId, type, title, position, 4, CustomBlockTags.SMITHING_TABLE);
+    public SmithingContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
+        super(user, containerId, ContainerType.SMITHING_TABLE, title, position, 4, CustomBlockTags.SMITHING_TABLE);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class SmithingContainer extends ExperimentalContainer {
             case 53 -> new FullContainerName(ContainerEnumName.SmithingTableTemplateContainer, null);
             case 51 -> new FullContainerName(ContainerEnumName.SmithingTableInputContainer, null);
             case 52 -> new FullContainerName(ContainerEnumName.SmithingTableMaterialContainer, null);
-            case 50 -> new FullContainerName(ContainerEnumName.SmithingTableResultPreviewContainer, null);
+            case 50 -> new FullContainerName(ContainerEnumName.SmithingTableResultPreviewContainer, null); //TODO: CreatedOutputContainer?
             default -> throw new IllegalArgumentException("Invalid slot for Smithing Container: " + slot);
         };
     }
