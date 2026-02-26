@@ -360,7 +360,8 @@ public class ExperimentalFeatures {
 
             int size = 27;
             if (blockEntity != null && blockEntity.tag() != null
-                    && blockEntity.tag().getString("id").equals("Chest") && blockEntity.tag().contains("pairlead")) {
+                    && blockEntity.tag().contains("id") && blockEntity.tag().getString("id").equals("Chest")
+                    && blockEntity.tag().contains("pairlead")) {
                 // Double chest
                 size = 54;
             }
