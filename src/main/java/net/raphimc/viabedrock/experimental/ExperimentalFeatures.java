@@ -401,7 +401,9 @@ public class ExperimentalFeatures {
             inventoryTracker.setCurrentContainer(container);
 
             wrapper.write(Types.VAR_INT, (int) containerId); // container id
-            if (blockEntity != null && blockEntity.tag().getString("id").equals("Chest") && blockEntity.tag().contains("pairlead")) {
+            if (blockEntity != null && blockEntity.tag() != null
+                    && blockEntity.tag().contains("id") && blockEntity.tag().getString("id").equals("Chest")
+                    && blockEntity.tag().contains("pairlead")) {
                 //TODO: Temporary fix
                 wrapper.write(Types.VAR_INT, 5); // generic_9x6
             } else {
