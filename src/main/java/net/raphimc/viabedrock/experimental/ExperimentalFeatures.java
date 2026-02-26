@@ -573,6 +573,7 @@ public class ExperimentalFeatures {
             wrapper.user().get(ExperimentalInventoryTracker.class).getInventoryContainer().setSelectedHotbarSlot((byte) slot, wrapper); // slot
         }, true);
         protocol.appendServerbound(ServerboundPackets1_21_6.INTERACT, wrapper -> {
+            if (wrapper.isCancelled()) return;
             final InventoryContainer inventoryContainer = wrapper.user().get(ExperimentalInventoryTracker.class).getInventoryContainer();
             wrapper.set(BedrockTypes.VAR_INT, 1, (int) inventoryContainer.getSelectedHotbarSlot()); // hotbar slot
             wrapper.set(wrapper.user().get(ItemRewriter.class).itemType(), 0, inventoryContainer.getSelectedHotbarItem()); // held item
