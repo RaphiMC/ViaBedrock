@@ -17,16 +17,19 @@
  */
 package net.raphimc.viabedrock.experimental.rewriter;
 
-import com.viaversion.nbt.tag.CompoundTag;
-import com.viaversion.nbt.tag.IntTag;
-import com.viaversion.nbt.tag.LongTag;
-import com.viaversion.nbt.tag.NumberTag;
+import com.viaversion.nbt.tag.*;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.data.StructuredData;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.api.minecraft.item.data.Enchantments;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.util.RegistryUtil;
 import net.raphimc.viabedrock.experimental.model.map.MapObject;
 import net.raphimc.viabedrock.experimental.storage.MapTracker;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.JavaRegistries;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 import java.util.logging.Level;
@@ -55,6 +58,44 @@ public class ExperimentalItemRewriter {
                 }
 
                 javaItem.dataContainer().set(StructuredDataKey.MAP_ID, map.getJavaId());
+            }
+
+            if (bedrockTag.get("ench") instanceof ListTag<?> enchantments) {
+
+                StructuredData<Enchantments> enchantmentsData = javaItem.dataContainer().getData(StructuredDataKey.ENCHANTMENTS1_21_5);
+                Enchantments javaEnchantments;
+                if (enchantmentsData == null || enchantmentsData.isEmpty()) {
+                    javaEnchantments = new Enchantments(true);
+                } else {
+                    javaEnchantments = enchantmentsData.value();
+                }
+
+                for (Tag enchantment : enchantments) {
+                    if (enchantment instanceof CompoundTag compoundTag) {
+                        if (compoundTag.get("id") instanceof NumberTag idTag && compoundTag.get("lvl") instanceof NumberTag levelTag) {
+                            int bedrockId = idTag.asInt();
+                            int level = levelTag.asInt();
+
+                            String javaEnchantmentId = BedrockProtocol.MAPPINGS.getBedrockToJavaEnchantments().get(bedrockId);
+
+                            //Update the java item with the enchantment
+                            if (javaEnchantmentId != null) {
+                                CompoundTag enchantmentsRegistry = (CompoundTag) BedrockProtocol.MAPPINGS.getJavaRegistries().get("minecraft:enchantment");
+                                CompoundTag enchantmentEntry = (CompoundTag) enchantmentsRegistry.get(javaEnchantmentId);
+                                if (enchantmentEntry == null) {
+                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Enchantment entry is null for enchantment " + javaEnchantmentId);
+                                } else {
+                                    int javaId = RegistryUtil.getRegistryIndex(enchantmentsRegistry, enchantmentEntry);
+                                    javaEnchantments.add(javaId, level);
+                                }
+                            } else {
+                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown enchantment with id " + bedrockId + " and level " + level);
+                            }
+                        }
+                    }
+                }
+
+                javaItem.dataContainer().set(StructuredDataKey.ENCHANTMENTS1_21_5, javaEnchantments);
             }
 
         }
