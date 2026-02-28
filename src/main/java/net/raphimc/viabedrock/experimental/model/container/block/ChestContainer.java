@@ -25,15 +25,35 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnu
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
+import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
+import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 
 public class ChestContainer extends ExperimentalContainer {
 
+    private final boolean isBarrel;
+    private final boolean isShulkerBox;
+
     public ChestContainer(final UserConnection user, final byte containerId, final TextComponent title, final BlockPosition position, final int size) {
-        super(user, containerId, ContainerType.CONTAINER, title, position, size, CustomBlockTags.CHEST, CustomBlockTags.TRAPPED_CHEST);
+        super(user, containerId, ContainerType.CONTAINER, title, position, size, CustomBlockTags.CHEST, CustomBlockTags.TRAPPED_CHEST, CustomBlockTags.BARREL, CustomBlockTags.SHULKER_BOX);
+
+        // TODO: Is there a better way to do this
+        ChunkTracker tracker = user.get(ChunkTracker.class);
+        BlockStateRewriter blockStateRewriter = user.get(BlockStateRewriter.class);
+        int blockState = tracker.getBlockState(position);
+        String tag = blockStateRewriter.tag(blockState);
+        this.isBarrel = CustomBlockTags.BARREL.equals(tag);
+        this.isShulkerBox = CustomBlockTags.SHULKER_BOX.equals(tag);
     }
 
     @Override
     public FullContainerName getFullContainerName(int slot) {
-        return new FullContainerName(ContainerEnumName.LevelEntityContainer, null);
+        if (isShulkerBox) {
+            return new FullContainerName(ContainerEnumName.ShulkerBoxContainer, null);
+        } else if (isBarrel) {
+            return new FullContainerName(ContainerEnumName.BarrelContainer, null);
+        } else {
+            return new FullContainerName(ContainerEnumName.LevelEntityContainer, null);
+        }
     }
+
 }
