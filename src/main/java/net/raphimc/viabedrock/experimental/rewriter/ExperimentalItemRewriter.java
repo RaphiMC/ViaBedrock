@@ -17,10 +17,7 @@
  */
 package net.raphimc.viabedrock.experimental.rewriter;
 
-import com.viaversion.nbt.tag.CompoundTag;
-import com.viaversion.nbt.tag.IntTag;
-import com.viaversion.nbt.tag.LongTag;
-import com.viaversion.nbt.tag.NumberTag;
+import com.viaversion.nbt.tag.*;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
@@ -28,8 +25,6 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.experimental.model.map.MapObject;
 import net.raphimc.viabedrock.experimental.storage.MapTracker;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
-
-import java.util.logging.Level;
 
 public class ExperimentalItemRewriter {
 
@@ -57,6 +52,13 @@ public class ExperimentalItemRewriter {
                 javaItem.dataContainer().set(StructuredDataKey.MAP_ID, map.getJavaId());
             }
 
+            if (bedrockTag.get("display") instanceof CompoundTag displayTag) {
+                if (displayTag.get("Lore") instanceof ListTag<?> loreTag) {
+                    // TODO: Bedrock lore might be able to contain translatable components, but for now we just ignore that
+                    Tag[] tags = loreTag.getValue().toArray(new Tag[0]);
+                    javaItem.dataContainer().set(StructuredDataKey.LORE, tags);
+                }
+            }
         }
     }
 }
