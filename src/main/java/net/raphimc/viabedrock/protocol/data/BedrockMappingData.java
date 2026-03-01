@@ -111,7 +111,6 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, Map<BlockState, JavaItemMapping>> bedrockToJavaBlockItems;
     private Map<String, Map<Integer, JavaItemMapping>> bedrockToJavaMetaItems;
     private Map<ContainerType, Integer> bedrockToJavaContainers;
-    private Map<Integer, String> bedrockToJavaEnchantments;
 
     // Entities
     private BiMap<String, Integer> bedrockEntities;
@@ -548,14 +547,6 @@ public class BedrockMappingData extends MappingDataBase {
                 if (!this.bedrockToJavaContainers.containsKey(containerType) && !unmappedContainerTypes.contains(containerType)) {
                     throw new RuntimeException("Missing bedrock -> java container mapping for " + containerType.name());
                 }
-            }
-
-            final JsonObject bedrockToJavaEnchantmentMappingsJson = this.readJson("custom/enchantment_mappings.json");
-            this.bedrockToJavaEnchantments = new HashMap<>(bedrockToJavaEnchantmentMappingsJson.size());
-            for (Map.Entry<String, JsonElement> entry : bedrockToJavaEnchantmentMappingsJson.entrySet()) {
-                final String javaIdentifier = entry.getKey();
-                final int bedrockId = entry.getValue().getAsInt();
-                this.bedrockToJavaEnchantments.put(bedrockId, javaIdentifier);
             }
         }
 
@@ -1115,10 +1106,6 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<ContainerType, Integer> getBedrockToJavaContainers() {
         return this.bedrockToJavaContainers;
-    }
-
-    public Map<Integer, String> getBedrockToJavaEnchantments() {
-        return this.bedrockToJavaEnchantments;
     }
 
     public BiMap<String, Integer> getBedrockEntities() {

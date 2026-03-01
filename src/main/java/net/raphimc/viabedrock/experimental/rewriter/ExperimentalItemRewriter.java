@@ -30,6 +30,7 @@ import net.raphimc.viabedrock.experimental.model.map.MapObject;
 import net.raphimc.viabedrock.experimental.storage.MapTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Enchant_Type;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 import java.util.logging.Level;
@@ -70,11 +71,18 @@ public class ExperimentalItemRewriter {
                     javaEnchantments = enchantmentsData.value();
                 }
 
+                //TODO: Empty list gives an enchantment glint, but no entries in lore
                 for (Tag enchantment : enchantments) {
                     if (enchantment instanceof CompoundTag compoundTag) {
-                        if (compoundTag.get("id") instanceof NumberTag idTag && compoundTag.get("lvl") instanceof NumberTag levelTag) {
-                            int bedrockId = idTag.asInt();
+                        //id and lvl must be a short. Else bedrock defaults to protection (id 0) and lvl 0 (TODO: implement the fallback)
+                        if (compoundTag.get("id") instanceof ShortTag idTag && compoundTag.get("lvl") instanceof ShortTag levelTag) {
+                            Enchant_Type bedrockId = Enchant_Type.getByValue(idTag.asInt());
                             int level = levelTag.asInt();
+
+                            if (bedrockId == null) {
+                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown enchantment with id " + idTag.asInt() + " and level " + level);
+                                continue;
+                            }
 
                             String javaEnchantmentId = BedrockProtocol.MAPPINGS.getBedrockToJavaEnchantments().get(bedrockId);
 
