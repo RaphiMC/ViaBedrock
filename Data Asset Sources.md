@@ -68,9 +68,6 @@ This file has been dumped from a vanilla server using a fabric mod.
 ### data/java/via_mappings.json
 [ViaVersion/Mappings](https://github.com/ViaVersion/Mappings/blob/60e1b59f97837b095eade6cc442d3d43e0b972af/mappings/mapping-1.21.11.json)
 
-### data/custom/enchantment_mappings.json
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/master/core/src/main/java/org/geysermc/geyser/inventory/item/BedrockEnchantment.java)
-
 ### block_state_upgrade_schema/*
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)
 
