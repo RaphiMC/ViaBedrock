@@ -33,7 +33,7 @@ Here is an overview of the current and planned features in ViaBedrock.
 - [x] Entity interactions
 - [ ] Entity metadata
 - [x] Entity attributes
-- [ ] Entity mounting
+- [x] Entity mounting
 - [x] Player abilities
 - [x] Movement
 - [ ] Client-Authoritative Inventory

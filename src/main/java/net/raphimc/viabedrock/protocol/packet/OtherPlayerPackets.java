@@ -113,6 +113,7 @@ public class OtherPlayerPackets {
             setEquipment.send(BedrockProtocol.class);
 
             entity.updateEntityData(entityData);
+            entityTracker.applyEntityLinks(entityLinks);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOVE_PLAYER, ClientboundPackets1_21_11.ENTITY_POSITION_SYNC, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
