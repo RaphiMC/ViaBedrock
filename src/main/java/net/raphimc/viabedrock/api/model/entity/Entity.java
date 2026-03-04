@@ -68,6 +68,7 @@ public class Entity {
 
     // Mounting
     protected List<Long> passengers = new ArrayList<>();
+    protected long mountRuntimeId = -1;
 
     public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_11 javaType) {
         this.user = user;
@@ -234,6 +235,14 @@ public class Entity {
 
     public List<Long> passengers() {
         return Collections.unmodifiableList(this.passengers);
+    }
+
+    public void setMountEntityRId(final long runtimeId) {
+        this.mountRuntimeId = runtimeId;
+    }
+
+    public long mountEntityRId() {
+        return this.mountRuntimeId;
     }
 
     public final int getJavaEntityDataIndex(final String fieldName) {

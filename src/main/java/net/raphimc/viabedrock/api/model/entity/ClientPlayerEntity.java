@@ -75,7 +75,6 @@ public class ClientPlayerEntity extends PlayerEntity {
     private boolean sprinting;
 
     // Riding
-    private long mountedRuntimeId = -1;
     private boolean requestedDismount = false;
 
     // Misc data
@@ -106,9 +105,9 @@ public class ClientPlayerEntity extends PlayerEntity {
         if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
             // TODO: Experimental
 
-            if (this.mountedRuntimeId != -1 && this.sneaking && !this.requestedDismount) {
+            if (this.mountRuntimeId != -1 && this.sneaking && !this.requestedDismount) {
                 // Dismount entity
-                ExperimentalPacketFactory.sendBedrockDismount(this.user, this.mountedRuntimeId);
+                ExperimentalPacketFactory.sendBedrockDismount(this.user, this.mountRuntimeId);
                 this.requestedDismount = true;
             }
         }
@@ -437,9 +436,6 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.blockBreakingInfo = blockBreakingInfo;
     }
 
-    public void setMountedEntityRId(final long runtimeId) {
-        this.mountedRuntimeId = runtimeId;
-    }
 
     public void setRequestedDismount(final boolean requestedDismount) {
         this.requestedDismount = requestedDismount;

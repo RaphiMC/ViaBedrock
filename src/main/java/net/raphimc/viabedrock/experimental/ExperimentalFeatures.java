@@ -366,10 +366,16 @@ public class ExperimentalFeatures {
                         wrapper.write(Types.VAR_INT, entityTracker.getEntityByUid(passengerUid).javaId()); // passenger id
                     }
 
-                    if (passenger.uniqueId() == entityTracker.getClientPlayer().uniqueId()) { // TODO: This could be applied to all passengers not just players
-                        // The player is now riding an entity, update the state
-                        entityTracker.getClientPlayer().setMountedEntityRId(entityTracker.getEntityByUid(linkType.fromEntityUniqueId()).runtimeId());
+                    if (passenger.mountEntityRId() != -1) {
+                        // The passenger is riding another entity
+                        Entity oldVehicle = entityTracker.getEntityByRid(passenger.mountEntityRId());
+                        if (oldVehicle != null) {
+                            oldVehicle.removePassenger(passenger.uniqueId());
+                            ExperimentalPacketFactory.sendJavaSetPassengers(wrapper.user(), oldVehicle);
+                        }
                     }
+
+                    passenger.setMountEntityRId(vehicle.runtimeId());
                 }
                 case None -> { // Remove
                     vehicle.removePassenger(passenger.uniqueId());
@@ -380,9 +386,9 @@ public class ExperimentalFeatures {
                         wrapper.write(Types.VAR_INT, entityTracker.getEntityByUid(passengerUid).javaId()); // passenger id
                     }
 
-                    if (passenger.uniqueId() == entityTracker.getClientPlayer().uniqueId()) {// TODO: This could be applied to all passengers not just players
+                    passenger.setMountEntityRId(-1);
+                    if (passenger.uniqueId() == entityTracker.getClientPlayer().uniqueId()) {
                         // The player is no longer riding an entity, update the state
-                        entityTracker.getClientPlayer().setMountedEntityRId(-1);
                         entityTracker.getClientPlayer().setRequestedDismount(false);
                     }
                 }
