@@ -175,6 +175,10 @@
         1.2
       ]
     },
+    "entity:minecraft:zombie_nautilus": {
+      "sound": "mob.zombie_nautilus.ambient",
+      "volume": 3.0
+    },
     "entity:minecraft:pillager": {
       "sound": "mob.pillager.idle",
       "pitch": [
@@ -294,6 +298,10 @@
         0.8,
         1.2
       ]
+    },
+    "entity:minecraft:nautilus": {
+      "sound": "mob.nautilus.ambient",
+      "volume": 3.0
     },
     "entity:minecraft:strider": {
       "sound": "mob.strider.idle",
@@ -821,7 +829,7 @@
       ]
     },
     "entity:minecraft:zombie_nautilus": {
-      "sound": "mob.zombie_nautilus.ambient",
+      "sound": "mob.zombie_nautilus.ambient.in.water",
       "volume": 3.0
     },
     "entity:minecraft:dolphin": {
@@ -832,7 +840,7 @@
       ]
     },
     "entity:minecraft:nautilus": {
-      "sound": "mob.nautilus.ambient",
+      "sound": "mob.nautilus.ambient.in.water",
       "volume": 3.0
     },
     "entity:minecraft:elder_guardian": {
@@ -2630,6 +2638,21 @@
       "sound": "block.copper_bulb.turn_on"
     }
   },
+  "CopperSpearAttackHit": {
+    "": {
+      "sound": "item.spear.attack_hit"
+    }
+  },
+  "CopperSpearAttackMiss": {
+    "": {
+      "sound": "item.spear.attack_miss"
+    }
+  },
+  "CopperSpearUse": {
+    "": {
+      "sound": "item.spear.use"
+    }
+  },
   "CopperWaxOff": {
     "": {
       "sound": "copper.wax.off",
@@ -3461,7 +3484,7 @@
       ]
     },
     "entity:minecraft:zombie_nautilus": {
-      "sound": "mob.zombie_nautilus.death",
+      "sound": "mob.zombie_nautilus.death.in.water",
       "volume": 3.0
     },
     "entity:minecraft:dolphin": {
@@ -3472,7 +3495,7 @@
       ]
     },
     "entity:minecraft:nautilus": {
-      "sound": "mob.nautilus.death",
+      "sound": "mob.nautilus.death.in.water",
       "volume": 3.0
     },
     "entity:minecraft:elder_guardian": {
@@ -3568,6 +3591,21 @@
     },
     "entity:minecraft:happy_ghast": {
       "sound": "mob.happy_ghast.goggles_up"
+    }
+  },
+  "DiamondSpearAttackHit": {
+    "": {
+      "sound": "item.spear.attack_hit"
+    }
+  },
+  "DiamondSpearAttackMiss": {
+    "": {
+      "sound": "item.spear.attack_miss"
+    }
+  },
+  "DiamondSpearUse": {
+    "": {
+      "sound": "item.spear.use"
     }
   },
   "Disappeared": {
@@ -7025,6 +7063,21 @@
       "volume": 16.0
     }
   },
+  "GoldenSpearAttackHit": {
+    "": {
+      "sound": "item.spear.attack_hit"
+    }
+  },
+  "GoldenSpearAttackMiss": {
+    "": {
+      "sound": "item.spear.attack_miss"
+    }
+  },
+  "GoldenSpearUse": {
+    "": {
+      "sound": "item.spear.use"
+    }
+  },
   "GrindstoneUse": {
     "": {
       "sound": "block.grindstone.use"
@@ -8436,7 +8489,7 @@
       ]
     },
     "entity:minecraft:zombie_nautilus": {
-      "sound": "mob.zombie_nautilus.hurt",
+      "sound": "mob.zombie_nautilus.hurt.in.water",
       "volume": 3.0
     },
     "entity:minecraft:dolphin": {
@@ -8447,7 +8500,7 @@
       ]
     },
     "entity:minecraft:nautilus": {
-      "sound": "mob.nautilus.hurt",
+      "sound": "mob.nautilus.hurt.in.water",
       "volume": 3.0
     },
     "entity:minecraft:elder_guardian": {
@@ -8777,6 +8830,21 @@
   "InsertEnchanted": {
     "block:chiseled_bookshelf": {
       "sound": "insert_enchanted.chiseled_bookshelf"
+    }
+  },
+  "IronSpearAttackHit": {
+    "": {
+      "sound": "item.spear.attack_hit"
+    }
+  },
+  "IronSpearAttackMiss": {
+    "": {
+      "sound": "item.spear.attack_miss"
+    }
+  },
+  "IronSpearUse": {
+    "": {
+      "sound": "item.spear.use"
     }
   },
   "ItemFizz": null,
@@ -10351,6 +10419,21 @@
         0.8,
         1.2
       ]
+    }
+  },
+  "NetheriteSpearAttackHit": {
+    "": {
+      "sound": "item.spear.attack_hit"
+    }
+  },
+  "NetheriteSpearAttackMiss": {
+    "": {
+      "sound": "item.spear.attack_miss"
+    }
+  },
+  "NetheriteSpearUse": {
+    "": {
+      "sound": "item.spear.use"
     }
   },
   "Note": null,
@@ -12113,7 +12196,7 @@
       "volume": 0.5
     },
     "entity:minecraft:zombie_nautilus": {
-      "sound": "mob.nautilus.nautilus_saddle",
+      "sound": "mob.nautilus.saddle",
       "volume": 3.0
     },
     "entity:minecraft:zombie_horse": {
@@ -12121,7 +12204,17 @@
       "volume": 0.6
     },
     "entity:minecraft:nautilus": {
-      "sound": "mob.nautilus.nautilus_saddle",
+      "sound": "mob.nautilus.saddle",
+      "volume": 3.0
+    }
+  },
+  "SaddleInWater": {
+    "entity:minecraft:zombie_nautilus": {
+      "sound": "mob.nautilus.saddle_underwater",
+      "volume": 3.0
+    },
+    "entity:minecraft:nautilus": {
+      "sound": "mob.nautilus.saddle_underwater",
       "volume": 3.0
     }
   },
@@ -13760,6 +13853,21 @@
       ]
     }
   },
+  "StoneSpearAttackHit": {
+    "": {
+      "sound": "item.spear.attack_hit"
+    }
+  },
+  "StoneSpearAttackMiss": {
+    "": {
+      "sound": "item.spear.attack_miss"
+    }
+  },
+  "StoneSpearUse": {
+    "": {
+      "sound": "item.spear.use"
+    }
+  },
   "StonecutterUse": {
     "": {
       "sound": "block.stonecutter.use",
@@ -13919,6 +14027,10 @@
         1.4
       ]
     },
+    "entity:minecraft:zombie_nautilus": {
+      "sound": "mob.zombie_nautilus.swim",
+      "volume": 3.0
+    },
     "entity:minecraft:pillager": {
       "sound": "random.swim",
       "pitch": [
@@ -14011,6 +14123,10 @@
         0.6,
         1.4
       ]
+    },
+    "entity:minecraft:nautilus": {
+      "sound": "mob.nautilus.swim",
+      "volume": 3.0
     },
     "entity:minecraft:bat": {
       "sound": "random.swim",

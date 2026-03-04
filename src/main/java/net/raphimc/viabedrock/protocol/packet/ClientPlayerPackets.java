@@ -300,7 +300,6 @@ public class ClientPlayerPackets {
             final boolean isMining = action == PlayerActionAction.START_DESTROY_BLOCK || action == PlayerActionAction.ABORT_DESTROY_BLOCK || action == PlayerActionAction.STOP_DESTROY_BLOCK;
             if (isMining && (gameSession.isImmutableWorld() || !clientPlayer.abilities().getBooleanValue(AbilitiesIndex.Mine))) {
                 // TODO: Prevent breaking and cancel any packets that would be sent (swing, player action)
-                BedrockProtocol.kickForIllegalState(wrapper.user(), "Breaking blocks in protected areas is not handled yet by ViaBedrock");
                 PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, chunkTracker.getJavaBlockState(position));
                 PacketFactory.sendJavaBlockChangedAck(wrapper.user(), sequence);
                 return;

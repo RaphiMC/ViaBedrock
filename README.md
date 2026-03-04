@@ -18,7 +18,6 @@ To use ViaBedrock as a Fabric mod, you can download the latest [ViaFabricPlus de
 
 ## Features
 Here is an overview of the current and planned features in ViaBedrock.
-Some features are marked as experimental, which means they are almost certainly not fully stable/tested and may cause unexpected issues. To enable those features set `enable-experimental-features` to `true` in the config file.
 
 - [x] Pinging
 - [x] Joining
@@ -41,8 +40,8 @@ Some features are marked as experimental, which means they are almost certainly 
 - [ ] Server-Authoritative Inventory
 - [ ] Item data
 - [ ] Block breaking
-- [x] Block placing (Experimental)
-- [x] Item use (Experimental)
+- [ ] Block placing
+- [ ] Item use
 - [x] Respawning and dimension switching
 - [x] Form GUIs
 - [x] Scoreboard
@@ -53,6 +52,14 @@ Some features are marked as experimental, which means they are almost certainly 
 - [x] Sounds (No mob sounds yet)
 - [x] Particles
 - [x] Basic resource pack conversion (Contributions are welcome)
+
+### Experimental
+Some features are experimental, which means they are almost certainly not fully stable/tested and may cause unexpected issues. To enable those features set `enable-experimental-features` to `true` in the config file.
+
+* Block placing
+* Item use
+* Entity metadata
+* Some item data
 
 ## Optional clientside mods
 Below is a list of mods which can be used in combination with ViaBedrock to enhance certain aspects, which would not be possible without client modification:

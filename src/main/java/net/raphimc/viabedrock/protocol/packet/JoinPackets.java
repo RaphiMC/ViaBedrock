@@ -263,10 +263,6 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // enable experimental game play
                     final ChatRestrictionLevel chatRestrictionLevel = ChatRestrictionLevel.getByValue(wrapper.read(Types.BYTE), ChatRestrictionLevel.Disabled); // chat restriction level
                     wrapper.read(Types.BOOLEAN); // disabling player interactions
-                    wrapper.read(BedrockTypes.STRING); // server id
-                    wrapper.read(BedrockTypes.STRING); // world id
-                    wrapper.read(BedrockTypes.STRING); // scenario id
-                    wrapper.read(BedrockTypes.STRING); // owner id
 
                     // Continue reading start game packet
                     wrapper.read(BedrockTypes.STRING); // level id
@@ -287,6 +283,20 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // client side generation
                     final boolean hashedRuntimeBlockIds = wrapper.read(Types.BOOLEAN); // use hashed block runtime ids
                     wrapper.read(Types.BOOLEAN); // server authoritative sounds
+                    if (wrapper.read(Types.BOOLEAN)) { // has server join information
+                        if (wrapper.read(Types.BOOLEAN)) { // has gathering join information
+                            wrapper.read(BedrockTypes.STRING); // experience id
+                            wrapper.read(BedrockTypes.STRING); // experience name
+                            wrapper.read(BedrockTypes.STRING); // experience world id
+                            wrapper.read(BedrockTypes.STRING); // experience world name
+                            wrapper.read(BedrockTypes.STRING); // creator id
+                            wrapper.read(BedrockTypes.STRING); // store id
+                        }
+                    }
+                    wrapper.read(BedrockTypes.STRING); // server id
+                    wrapper.read(BedrockTypes.STRING); // scenario id
+                    wrapper.read(BedrockTypes.STRING); // world id
+                    wrapper.read(BedrockTypes.STRING); // owner id
 
                     if (editorWorldType == Editor_WorldType.EditorProject) {
                         final PacketWrapper disconnect = PacketWrapper.create(ClientboundConfigurationPackets1_21_9.DISCONNECT, wrapper.user());

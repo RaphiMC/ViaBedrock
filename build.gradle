@@ -44,16 +44,16 @@ repositories {
 
 dependencies {
     compileOnly "com.viaversion:viaversion-common:5.7.1-SNAPSHOT"
-    compileOnly "org.yaml:snakeyaml:2.5"
+    compileOnly "org.yaml:snakeyaml:2.6"
     compileOnly "com.google.guava:guava:33.5.0-jre"
-    compileOnly "io.netty:netty-handler:4.2.9.Final"
+    compileOnly "io.netty:netty-handler:4.2.10.Final"
     compileOnly "com.google.code.gson:gson:2.13.2"
-    compileOnly "dev.kastle.netty:netty-transport-raknet:1.6.1"
+    compileOnly "dev.kastle.netty:netty-transport-raknet:1.7.0"
 
-    api("io.netty:netty-codec-http:4.2.9.Final") {
+    api("io.netty:netty-codec-http:4.2.10.Final") {
         transitive = false
     }
-    api("io.netty:netty-codec-compression:4.2.9.Final") {
+    api("io.netty:netty-codec-compression:4.2.10.Final") {
         transitive = false
     }
     api "io.jsonwebtoken:jjwt-impl:0.13.0"
@@ -74,7 +74,7 @@ dependencies {
     }
     api "com.vdurmont:semver4j:3.1.0"
     api "com.mojang:brigadier:1.3.10"
-    api "at.yawk.lz4:lz4-java:1.10.3"
+    api "at.yawk.lz4:lz4-java:1.10.4"
     api("com.github.oryxel1:CubeConverter:5b4fce77c4") {
         transitive = false
     }

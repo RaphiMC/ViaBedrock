@@ -558,6 +558,11 @@
         "minecraft:stripped_mangrove_log",
         "minecraft:stripped_mangrove_wood"
     ],
+    "minecraft:metal_nuggets": [
+        "minecraft:copper_nugget",
+        "minecraft:gold_nugget",
+        "minecraft:iron_nugget"
+    ],
     "minecraft:music_disc": [
         "minecraft:music_disc_11",
         "minecraft:music_disc_13",
