@@ -143,6 +143,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, String> bedrockToJavaBannerPatterns;
     private BiMap<String, String> bedrockToJavaPaintings;
     private Map<SharedTypes_Legacy_ActorDamageCause, String> bedrockToJavaDamageCauses;
+    private Map<Enchant_Type, String> bedrockToJavaEnchantments;
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolConstants.JAVA_VERSION.getName());
@@ -973,6 +974,23 @@ public class BedrockMappingData extends MappingDataBase {
                     throw new RuntimeException("Missing bedrock -> java damage cause mapping for " + actorDamageCause.name());
                 }
             }
+
+            final CompoundTag javaEnchantmentRegistry = this.javaRegistries.getCompoundTag(RegistryKeys.ENCHANTMENT);
+            final JsonObject bedrockToJavaEnchantmentMappingsJson = this.readJson("custom/enchantment_mappings.json");
+            this.bedrockToJavaEnchantments = new EnumMap<>(Enchant_Type.class);
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaEnchantmentMappingsJson.entrySet()) {
+                final Enchant_Type enchantType = Enchant_Type.valueOf(entry.getKey());
+                final String javaIdentifier = entry.getValue().getAsString();
+                if (!javaEnchantmentRegistry.contains(javaIdentifier)) {
+                    throw new RuntimeException("Unknown java enchantment: " + javaIdentifier);
+                }
+                this.bedrockToJavaEnchantments.put(enchantType, javaIdentifier);
+            }
+            for (Enchant_Type enchantType : Enchant_Type.values()) {
+                if (!this.bedrockToJavaEnchantments.containsKey(enchantType)) {
+                    throw new RuntimeException("Missing bedrock -> java enchantment mapping for " + enchantType.name());
+                }
+            }
         }
     }
 
@@ -1190,6 +1208,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<SharedTypes_Legacy_ActorDamageCause, String> getBedrockToJavaDamageCauses() {
         return this.bedrockToJavaDamageCauses;
+    }
+
+    public Map<Enchant_Type, String> getBedrockToJavaEnchantments() {
+        return this.bedrockToJavaEnchantments;
     }
 
     @Override
