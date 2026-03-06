@@ -106,10 +106,6 @@ public class BlockStateRewriter implements StorableObject {
                         }
 
                         if (trait.get("enabled_states") instanceof CompoundTag enabledStatesTag) {
-                            if (enabledStatesTag.size() != traitStateProperties.size()) {
-                                throw new RuntimeException("Invalid enabled_states tag for trait " + name + " (size mismatch)");
-                            }
-
                             for (Map.Entry<String, Tag> tag : enabledStatesTag) {
                                 final String key = Key.namespaced(tag.getKey());
                                 final boolean enabled = tag.getValue() instanceof ByteTag && ((ByteTag) tag.getValue()).asByte() != 0;
