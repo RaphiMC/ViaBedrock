@@ -753,11 +753,11 @@ public class ExperimentalFeatures {
 
                 if (info.result() != ItemStackNetResult.Success) {
                     ViaBedrock.getPlatform().getLogger().warning("Received unsuccessful item stack response: " + info.result());
-                    inventoryTracker.getHudContainer().setItems(requestInfo.prevCursorContainer().getItems().clone());
+                    inventoryTracker.getHudContainer().setItemsRaw(requestInfo.prevCursorContainer().getItems().clone());
                     for (ExperimentalContainer container : requestInfo.prevContainers()) {
                         ExperimentalContainer newContainer = inventoryTracker.getContainerServerbound(container.javaContainerId());
                         if (newContainer == null) continue;
-                        newContainer.setItems(container.getItems().clone());
+                        newContainer.setItemsRaw(container.getItems().clone());
                         ExperimentalPacketFactory.sendJavaContainerSetContent(wrapper.user(), newContainer);  // Resync the container content on Java side
                     }
                     continue;

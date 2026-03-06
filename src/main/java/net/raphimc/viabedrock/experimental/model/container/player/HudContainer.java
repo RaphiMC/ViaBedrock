@@ -57,6 +57,8 @@ public class HudContainer extends InventoryRedirectContainer {
     public int javaSlot(final int slot) {
         if (slot >= 28 && slot <= 31) {
             return slot - 27;
+        } else if (slot == 50) {
+            return 0;
         } else {
             return super.javaSlot(slot);
         }
@@ -66,6 +68,8 @@ public class HudContainer extends InventoryRedirectContainer {
     public int bedrockSlot(final int slot) {
         if (slot >= 1 && slot <= 4) {
             return slot + 27;
+        } else if (slot == 0) {
+            return 50;
         } else {
             return super.bedrockSlot(slot);
         }
