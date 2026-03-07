@@ -37,6 +37,7 @@ import com.viaversion.viaversion.libs.mcstructs.dialog.Input;
 import com.viaversion.viaversion.libs.mcstructs.dialog.action.CustomAllAction;
 import com.viaversion.viaversion.libs.mcstructs.dialog.body.PlainMessageBody;
 import com.viaversion.viaversion.libs.mcstructs.dialog.impl.MultiActionDialog;
+import com.viaversion.viaversion.libs.mcstructs.dialog.impl.NoticeDialog;
 import com.viaversion.viaversion.libs.mcstructs.dialog.input.BooleanInput;
 import com.viaversion.viaversion.libs.mcstructs.dialog.input.NumberRangeInput;
 import com.viaversion.viaversion.libs.mcstructs.dialog.input.SingleOptionInput;
@@ -232,52 +233,64 @@ public class InventoryPackets {
             final CompoundTag exitButtonAdditions = new CompoundTag();
             exitButtonAdditions.putBoolean("exit", true);
             final ActionButton exitButton = new ActionButton(new StringComponent(resourcePacksStorage.getTexts().get("gui.close")), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, exitButtonAdditions));
-            final MultiActionDialog dialog = new MultiActionDialog(TextUtil.stringToTextComponent(form.getTitle()), true, false, AfterAction.CLOSE, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), exitButton, 1);
+
+            final Dialog dialog;
             if (form instanceof ModalForm modalForm) {
-                addTextToDialog(wrapper.user(), dialog, modalForm.getText());
+                final MultiActionDialog actionDialog = new MultiActionDialog(TextUtil.stringToTextComponent(form.getTitle()), true, false, AfterAction.CLOSE, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), exitButton, 1);
+                addTextToDialog(wrapper.user(), actionDialog, modalForm.getText());
                 final CompoundTag button1Additions = new CompoundTag();
                 button1Additions.putInt("button_id", 0);
-                dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(modalForm.getButton1()), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, button1Additions)));
+                actionDialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(modalForm.getButton1()), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, button1Additions)));
                 final CompoundTag button2Additions = new CompoundTag();
                 button2Additions.putInt("button_id", 1);
-                dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(modalForm.getButton2()), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, button2Additions)));
+                actionDialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(modalForm.getButton2()), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, button2Additions)));
+                dialog = actionDialog;
             } else if (form instanceof ActionForm actionForm) {
-                addTextToDialog(wrapper.user(), dialog, actionForm.getText());
-                int buttonIndex = 0;
-                for (int elementIndex = 0; elementIndex < actionForm.getElements().length; elementIndex++) {
-                    final FormElement element = actionForm.getElements()[elementIndex];
-                    if (element instanceof ButtonFormElement button) {
-                        final CompoundTag buttonAdditions = new CompoundTag();
-                        buttonAdditions.putInt("button_id", buttonIndex);
-                        dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(button.getText()), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, buttonAdditions)));
-                        buttonIndex++;
-                    } else if (element instanceof HeaderFormElement header) {
-                        dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(header.getText()), new StringComponent(DIALOG_FAKE_BUTTON_TEXT), DIALOG_FAKE_BUTTON_WIDTH, exitButton.getAction()));
-                    } else if (element instanceof LabelFormElement label) {
-                        dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(label.getText()), new StringComponent(DIALOG_FAKE_BUTTON_TEXT), DIALOG_FAKE_BUTTON_WIDTH, exitButton.getAction()));
-                    } else if (element instanceof DividerFormElement) {
-                    } else {
-                        throw new IllegalArgumentException("Unhandled form element type: " + element.getClass().getSimpleName());
+                if (actionForm.getElements().length == 0) { // Text only form
+                    final NoticeDialog noticeDialog = new NoticeDialog(TextUtil.stringToTextComponent(form.getTitle()), true, false, AfterAction.CLOSE, new ArrayList<>(), new ArrayList<>(), exitButton);
+                    addTextToDialog(wrapper.user(), noticeDialog, actionForm.getText());
+                    dialog = noticeDialog;
+                } else {
+                    final MultiActionDialog actionDialog = new MultiActionDialog(TextUtil.stringToTextComponent(form.getTitle()), true, false, AfterAction.CLOSE, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), exitButton, 1);
+                    addTextToDialog(wrapper.user(), actionDialog, actionForm.getText());
+                    int buttonIndex = 0;
+                    for (int elementIndex = 0; elementIndex < actionForm.getElements().length; elementIndex++) {
+                        final FormElement element = actionForm.getElements()[elementIndex];
+                        if (element instanceof ButtonFormElement button) {
+                            final CompoundTag buttonAdditions = new CompoundTag();
+                            buttonAdditions.putInt("button_id", buttonIndex);
+                            actionDialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(button.getText()), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, buttonAdditions)));
+                            buttonIndex++;
+                        } else if (element instanceof HeaderFormElement header) {
+                            actionDialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(header.getText()), new StringComponent(DIALOG_FAKE_BUTTON_TEXT), DIALOG_FAKE_BUTTON_WIDTH, exitButton.getAction()));
+                        } else if (element instanceof LabelFormElement label) {
+                            actionDialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(label.getText()), new StringComponent(DIALOG_FAKE_BUTTON_TEXT), DIALOG_FAKE_BUTTON_WIDTH, exitButton.getAction()));
+                        } else if (element instanceof DividerFormElement) {
+                        } else {
+                            throw new IllegalArgumentException("Unhandled form element type: " + element.getClass().getSimpleName());
+                        }
                     }
+                    dialog = actionDialog;
                 }
             } else if (form instanceof CustomForm customForm) {
+                final MultiActionDialog actionDialog = new MultiActionDialog(TextUtil.stringToTextComponent(form.getTitle()), true, false, AfterAction.CLOSE, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), exitButton, 1);
                 for (int elementIndex = 0; elementIndex < customForm.getElements().length; elementIndex++) {
                     final FormElement element = customForm.getElements()[elementIndex];
                     final String inputKey = String.valueOf(elementIndex);
                     if (element instanceof CheckboxFormElement checkbox) {
                         final BooleanInput booleanInput = new BooleanInput(TextUtil.stringToTextComponent(checkbox.getText()));
                         booleanInput.setInitial(checkbox.getDefaultValue());
-                        dialog.getInputs().add(new Input(inputKey, booleanInput));
+                        actionDialog.getInputs().add(new Input(inputKey, booleanInput));
                     } else if (element instanceof DropdownFormElement dropdown) {
                         final SingleOptionInput singleOptionInput = new SingleOptionInput(new ArrayList<>(dropdown.getOptions().length), TextUtil.stringToTextComponent(dropdown.getText()));
                         for (int dropdownIndex = 0; dropdownIndex < dropdown.getOptions().length; dropdownIndex++) {
                             final String option = dropdown.getOptions()[dropdownIndex];
                             singleOptionInput.getOptions().add(new SingleOptionInput.Entry(String.valueOf(dropdownIndex), TextUtil.stringToTextComponent(option), dropdownIndex == dropdown.getDefaultOption()));
                         }
-                        dialog.getInputs().add(new Input(inputKey, singleOptionInput));
+                        actionDialog.getInputs().add(new Input(inputKey, singleOptionInput));
                     } else if (element instanceof SliderFormElement slider) {
                         final NumberRangeInput numberRangeInput = new NumberRangeInput(TextUtil.stringToTextComponent(slider.getText()), new NumberRangeInput.Range(slider.getMin(), slider.getMax(), slider.getDefaultValue(), slider.getStep()));
-                        dialog.getInputs().add(new Input(inputKey, numberRangeInput));
+                        actionDialog.getInputs().add(new Input(inputKey, numberRangeInput));
                     } else if (element instanceof StepSliderFormElement stepSlider) {
                         final SingleOptionInput singleOptionInput = new SingleOptionInput(new ArrayList<>(stepSlider.getSteps().length), TextUtil.stringToTextComponent(stepSlider.getText()));
                         for (int stepIndex = 0; stepIndex < stepSlider.getSteps().length; stepIndex++) {
@@ -285,29 +298,30 @@ public class InventoryPackets {
                             final String stepKey = String.valueOf(stepIndex);
                             singleOptionInput.getOptions().add(new SingleOptionInput.Entry(stepKey, TextUtil.stringToTextComponent(step), stepIndex == stepSlider.getDefaultStep()));
                         }
-                        dialog.getInputs().add(new Input(inputKey, singleOptionInput));
+                        actionDialog.getInputs().add(new Input(inputKey, singleOptionInput));
                     } else if (element instanceof TextFieldFormElement textField) {
                         final TextInput textInput = new TextInput(TextUtil.stringToTextComponent(textField.getText()));
                         textInput.setMaxLength(100);
                         textInput.setInitial(textField.getDefaultValue());
-                        dialog.getInputs().add(new Input(inputKey, textInput));
+                        actionDialog.getInputs().add(new Input(inputKey, textInput));
                     } else if (element instanceof HeaderFormElement header) {
-                        addTextToDialog(wrapper.user(), dialog, header.getText());
+                        addTextToDialog(wrapper.user(), actionDialog, header.getText());
                     } else if (element instanceof LabelFormElement label) {
-                        addTextToDialog(wrapper.user(), dialog, label.getText());
+                        addTextToDialog(wrapper.user(), actionDialog, label.getText());
                     } else if (element instanceof DividerFormElement) {
                         if (wrapper.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolVersion.v1_21_6)) {
                             final TextInput textInput = new TextInput(new StringComponent());
                             textInput.setLabelVisible(false);
                             textInput.setMaxLength(Integer.MAX_VALUE);
                             textInput.setMultiline(new TextInput.MultilineOptions(null, 1));
-                            dialog.getInputs().add(new Input("dummy", textInput));
+                            actionDialog.getInputs().add(new Input("dummy", textInput));
                         }
                     } else {
                         throw new IllegalArgumentException("Unhandled form element type: " + element.getClass().getSimpleName());
                     }
                 }
-                dialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(resourcePacksStorage.getTexts().get("gui.submit")), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, null)));
+                actionDialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(resourcePacksStorage.getTexts().get("gui.submit")), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, null)));
+                dialog = actionDialog;
             } else {
                 throw new IllegalArgumentException("Unhandled form type: " + form.getClass().getSimpleName());
             }
