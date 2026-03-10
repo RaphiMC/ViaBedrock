@@ -19,11 +19,16 @@ package net.raphimc.viabedrock.experimental.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.experimental.model.recipe.ItemDescriptor;
+import net.raphimc.viabedrock.experimental.model.recipe.ShapelessRecipe;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +47,40 @@ public class CraftingDataTracker extends StoredObject {
 
     public void updateCraftingDataList(List<CraftingDataStorage> craftingDataList) {
         this.craftingDataList = craftingDataList;
+    }
+
+    public void sendJavaUpdateRecipes(final UserConnection user) {
+        //TODO: Fix up this mess
+        if (craftingDataList.isEmpty()) {
+            ViaBedrock.getPlatform().getLogger().warning("No crafting data available to update.");
+            return;
+        }
+        ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+
+        PacketWrapper packet = PacketWrapper.create(ClientboundPackets1_21_11.UPDATE_RECIPES, user);
+        packet.write(Types.VAR_INT, 0); // Property Sets (Prefixed array) TODO: What is this?
+        List<CraftingDataStorage> stonecutterList = craftingDataList.stream()
+                .filter(c -> c.recipe().getRecipeTag().equals("stonecutter"))
+                .filter(c -> c.recipe() instanceof ShapelessRecipe)
+                .toList();
+        packet.write(Types.VAR_INT, stonecutterList.size()); // Number of recipes
+        for (CraftingDataStorage craftingData : stonecutterList) {
+            //ID Set
+            packet.write(Types.VAR_INT, 2); // Type (Size + 1)
+            packet.write(Types.BOOLEAN, false); // Tag Name
+            packet.write(Types.BOOLEAN, true); // IDs
+            packet.write(Types.VAR_INT_ARRAY_PRIMITIVE, ((ShapelessRecipe)craftingData.recipe()).getIngredients().stream()
+                    .map(itemDescriptor -> ((ItemDescriptor.DefaultDescriptor)itemDescriptor).itemId())
+                    .map(i -> itemRewriter.javaItem(new BedrockItem(i)).identifier())
+                    .mapToInt(Integer::intValue)
+                    .toArray());
+
+            //Slot Display
+            Item javaOutput = itemRewriter.javaItem(((ShapelessRecipe)craftingData.recipe()).getResults().get(0));
+            packet.write(Types.VAR_INT, 2); // Type (Item)
+            packet.write(Types.VAR_INT, javaOutput.identifier());
+        }
+        packet.send(BedrockProtocol.class);
     }
 
     public void sendJavaRecipeBook(final UserConnection user) {

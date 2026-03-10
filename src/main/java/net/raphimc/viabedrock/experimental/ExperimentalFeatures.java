@@ -723,6 +723,7 @@ public class ExperimentalFeatures {
             }
             craftingDataTracker.updateCraftingDataList(recipes);
 
+            //TODO: craftingDataTracker.sendJavaUpdateRecipes(wrapper.user());
             craftingDataTracker.sendJavaRecipeBook(wrapper.user()); //TODO: Cursed
 
             wrapper.clearPacket();
@@ -753,11 +754,11 @@ public class ExperimentalFeatures {
 
                 if (info.result() != ItemStackNetResult.Success) {
                     ViaBedrock.getPlatform().getLogger().warning("Received unsuccessful item stack response: " + info.result());
-                    inventoryTracker.getHudContainer().setItemsRaw(requestInfo.prevCursorContainer().getItems().clone());
+                    inventoryTracker.getHudContainer().setItems(requestInfo.prevCursorContainer().getItems().clone());
                     for (ExperimentalContainer container : requestInfo.prevContainers()) {
                         ExperimentalContainer newContainer = inventoryTracker.getContainerServerbound(container.javaContainerId());
                         if (newContainer == null) continue;
-                        newContainer.setItemsRaw(container.getItems().clone());
+                        newContainer.setItems(container.getItems().clone());
                         ExperimentalPacketFactory.sendJavaContainerSetContent(wrapper.user(), newContainer);  // Resync the container content on Java side
                     }
                     continue;

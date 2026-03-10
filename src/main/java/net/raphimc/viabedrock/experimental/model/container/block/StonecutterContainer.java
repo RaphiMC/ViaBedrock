@@ -20,16 +20,20 @@ package net.raphimc.viabedrock.experimental.model.container.block;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
+
+import java.util.logging.Level;
 
 public class StonecutterContainer extends ExperimentalContainer {
 
     public StonecutterContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.STONECUTTER, title, position, 2, "stonecutter_block", "stonecutter"); //TODO: Figure out block tag
+        super(user, containerId, ContainerType.STONECUTTER, title, position, 2, "stonecutter_block", "stonecutter");
     }
 
     @Override
@@ -59,6 +63,26 @@ public class StonecutterContainer extends ExperimentalContainer {
         };
     }
 
-    //TODO: bedrock handles stonecutter recipes client side, only send the result container click
+    @Override
+    public BedrockItem getItem(int bedrockSlot) {
+        if (bedrockSlot == 3) {
+            return this.items[0];
+        } else if (bedrockSlot == 50) {
+            return this.items[1];
+        } else {
+            throw new IllegalArgumentException("Bedrock Slot out of bounds for stonecutter (getItem): " + bedrockSlot);
+        }
+    }
+
+    @Override
+    public boolean setItem(final int bedrockSlot, final BedrockItem item) {
+        if (bedrockSlot == 3) {
+            return super.setItem(0, item);
+        } else if (bedrockSlot == 50) {
+            return super.setItem(1, item);
+        } else {
+            throw new IllegalArgumentException("Bedrock Slot out of bounds for stonecutter (setItem): " + bedrockSlot);
+        }
+    }
 
 }

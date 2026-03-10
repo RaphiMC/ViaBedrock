@@ -475,18 +475,6 @@ public abstract class ExperimentalContainer {
 
     public boolean setItems(final BedrockItem[] items) {
         if (items.length != this.items.length) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
-            return false;
-        }
-
-        for (int i = 0; i < items.length; i++) {
-            this.setItem(i, items[i]);
-        }
-        return true;
-    }
-
-    public boolean setItemsRaw(final BedrockItem[] items) {
-        if (items.length != this.items.length) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items (raw) for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
             return false;
         }

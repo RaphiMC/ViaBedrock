@@ -255,6 +255,10 @@
   "spore_blossom": [
     "minecraft:spore_blossom"
   ],
+  "stonecutter": [
+    "minecraft:stonecutter",
+    "minecraft:stonecutter_block"
+  ],
   "structure_block": [
     "minecraft:structure_block"
   ],
