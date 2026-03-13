@@ -38,10 +38,6 @@ public class TextDefinitions {
         }
     }
 
-    public String translate(final String text) {
-        return BedrockTranslator.translate(text, this.lookup(), new Object[0]);
-    }
-
     public String translate(final String text, final Object... args) {
         return BedrockTranslator.translate(text, this.lookup(), args);
     }

@@ -539,10 +539,10 @@ public class WorldEffectPackets {
                         if (sleepingPlayerCount < playerCount) {
                             wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.translate("multiplayer.playersSleeping", sleepingPlayerCount, playerCount))); // message
                         } else {
-                            wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.translate("multiplayer.playersSkippingNight"))); // message
+                            wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.get("multiplayer.playersSkippingNight"))); // message
                         }
                     } else {
-                        wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.translate("multiplayer.playersSleepingNotPossible"))); // message
+                        wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.get("multiplayer.playersSleepingNotPossible"))); // message
                     }
                     wrapper.write(Types.BOOLEAN, true); // overlay
                 }
