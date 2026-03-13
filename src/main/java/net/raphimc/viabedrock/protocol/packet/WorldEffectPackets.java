@@ -537,7 +537,6 @@ public class WorldEffectPackets {
                 }
                 case SleepingPlayers -> {
                     wrapper.cancel();
-                    ViaBedrock.getPlatform().getLogger().warning("Data: " + data.asRawString());
                     final boolean canSleep = data.getBoolean("ableToSleep");
                     if (canSleep) {
                         final int playerCount = data.getInt("overworldPlayerCount");
