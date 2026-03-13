@@ -544,14 +544,14 @@ public class WorldEffectPackets {
 
                         GameRulesStorage gameRulesStorage = wrapper.user().get(GameRulesStorage.class);
                         int playersSleepingPercentage = gameRulesStorage.getGameRule("playersSleepingPercentage");
-                        int neededSleepers = (int) Math.max(1, Math.ceil((float)(playerCount * playersSleepingPercentage) / 100.0F)); // Taken from Java Edition
+                        int neededSleepers = (int) Math.max(1, Math.ceil((float)(playerCount * playersSleepingPercentage) / 100.0F));
 
-                        // Using java translation components for now, should switch these to bedrock
                         Tag message;
+                        final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTexts().lookup();
                         if (sleepingPlayerCount >= neededSleepers) {
-                            message = TextUtil.textComponentToNbt(new TranslationComponent("sleep.skipping_night"));
+                            message = TextUtil.stringToNbt(BedrockTranslator.translate("multiplayer.playersSkippingNight", translator, new Object[0]));
                         } else {
-                            message = TextUtil.textComponentToNbt(new TranslationComponent("sleep.players_sleeping", sleepingPlayerCount, neededSleepers));
+                            message = TextUtil.stringToNbt(BedrockTranslator.translate("multiplayer.playersSleeping", translator, new Object[] {sleepingPlayerCount, neededSleepers}));
                         }
                         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_21_11.SYSTEM_CHAT, wrapper.user());
                         systemChat.write(Types.TAG, message); // message
