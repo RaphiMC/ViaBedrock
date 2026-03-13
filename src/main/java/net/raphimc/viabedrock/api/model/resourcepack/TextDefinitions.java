@@ -42,6 +42,10 @@ public class TextDefinitions {
         return BedrockTranslator.translate(text, this.lookup(), new Object[0]);
     }
 
+    public String translate(final String text, final Object... args) {
+        return BedrockTranslator.translate(text, this.lookup(), args);
+    }
+
     public String get(final String key) {
         return this.translations.getOrDefault(key, key);
     }

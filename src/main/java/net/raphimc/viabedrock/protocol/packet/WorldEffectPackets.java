@@ -19,8 +19,6 @@ package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.FloatTag;
-import com.viaversion.nbt.tag.StringTag;
-import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.Holder;
@@ -28,14 +26,13 @@ import com.viaversion.viaversion.api.minecraft.Particle;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.libs.mcstructs.text.components.TranslationComponent;
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import com.viaversion.viaversion.util.Key;
-import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
+import net.raphimc.viabedrock.api.model.resourcepack.TextDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
@@ -59,13 +56,11 @@ import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.GameRulesStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 import java.util.logging.Level;
 
 public class WorldEffectPackets {
@@ -536,28 +531,20 @@ public class WorldEffectPackets {
                     PacketFactory.writeJavaLevelParticles(wrapper, position, new BedrockMappingData.JavaParticle(particle, 0F, 0F, 0F, 0F, 7));
                 }
                 case SleepingPlayers -> {
-                    wrapper.cancel();
-                    final boolean canSleep = data.getBoolean("ableToSleep");
-                    if (canSleep) {
+                    wrapper.setPacketType(ClientboundPackets1_21_11.SYSTEM_CHAT);
+                    final TextDefinitions textDefinitions = wrapper.user().get(ResourcePacksStorage.class).getTexts();
+                    if (data.getInt("ableToSleep") != 0) {
                         final int playerCount = data.getInt("overworldPlayerCount");
                         final int sleepingPlayerCount = data.getInt("sleepingPlayerCount");
-
-                        GameRulesStorage gameRulesStorage = wrapper.user().get(GameRulesStorage.class);
-                        int playersSleepingPercentage = gameRulesStorage.getGameRule("playersSleepingPercentage");
-                        int neededSleepers = (int) Math.max(1, Math.ceil((float)(playerCount * playersSleepingPercentage) / 100.0F));
-
-                        Tag message;
-                        final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTexts().lookup();
-                        if (sleepingPlayerCount >= neededSleepers) {
-                            message = TextUtil.stringToNbt(BedrockTranslator.translate("multiplayer.playersSkippingNight", translator, new Object[0]));
+                        if (sleepingPlayerCount < playerCount) {
+                            wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.translate("multiplayer.playersSleeping", sleepingPlayerCount, playerCount))); // message
                         } else {
-                            message = TextUtil.stringToNbt(BedrockTranslator.translate("multiplayer.playersSleeping", translator, new Object[] {sleepingPlayerCount, neededSleepers}));
+                            wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.translate("multiplayer.playersSkippingNight"))); // message
                         }
-                        final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets1_21_11.SYSTEM_CHAT, wrapper.user());
-                        systemChat.write(Types.TAG, message); // message
-                        systemChat.write(Types.BOOLEAN, true); // overlay
-                        systemChat.send(BedrockProtocol.class);
+                    } else {
+                        wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.translate("multiplayer.playersSleepingNotPossible"))); // message
                     }
+                    wrapper.write(Types.BOOLEAN, true); // overlay
                 }
                 case ParticleCreakingHeartTrail -> {
                     wrapper.cancel();

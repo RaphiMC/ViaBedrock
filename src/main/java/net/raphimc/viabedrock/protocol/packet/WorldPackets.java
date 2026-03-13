@@ -501,7 +501,7 @@ public class WorldPackets {
             wrapper.write(Types.LONG, wrapper.user().get(GameSessionStorage.class).getLevelTime()); // level time
             final long bedrockTime = wrapper.read(BedrockTypes.VAR_INT); // time of day
             wrapper.write(Types.LONG, bedrockTime >= 0 ? bedrockTime % 24000L : 24000 + (bedrockTime % 24000L)); // time of day
-            wrapper.write(Types.BOOLEAN, wrapper.user().get(GameRulesStorage.class).<Boolean>getGameRule("doDayLightCycle")); // do day light cycle
+            wrapper.write(Types.BOOLEAN, wrapper.user().get(GameRulesStorage.class).getGameRule("doDayLightCycle")); // do day light cycle
         });
 
         protocol.registerServerbound(ServerboundPackets1_21_6.SIGN_UPDATE, ServerboundBedrockPackets.BLOCK_ENTITY_DATA, wrapper -> {
