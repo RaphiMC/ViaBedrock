@@ -65,6 +65,8 @@ public class Entity {
     protected String name;
     protected int age;
     protected boolean hasBossBar;
+    protected final List<Integer> passengers = new ArrayList<>();
+    protected int vehicle = -1;
 
     public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_11 javaType) {
         this.user = user;
@@ -217,6 +219,18 @@ public class Entity {
 
     public void setHasBossBar(final boolean hasBossBar) {
         this.hasBossBar = hasBossBar;
+    }
+
+    public List<Integer> passengers() {
+        return this.passengers;
+    }
+
+    public int vehicle() {
+        return this.vehicle;
+    }
+
+    public void setVehicle(final int vehicle) {
+        this.vehicle = vehicle;
     }
 
     public final int getJavaEntityDataIndex(final String fieldName) {

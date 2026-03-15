@@ -30,6 +30,8 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorLinkType;
+import net.raphimc.viabedrock.protocol.model.EntityLink;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -96,6 +98,36 @@ public class EntityTracker extends StoredObject {
     public void removeEntity(final Entity entity) {
         if (entity instanceof ClientPlayerEntity) {
             throw new IllegalArgumentException("Cannot remove client player entity");
+        }
+
+        // Remove this entity from its vehicle's passenger list and notify the Java client
+        if (entity.vehicle() != -1) {
+            final Entity vehicle = this.getEntityByJid(entity.vehicle());
+            if (vehicle != null) {
+                vehicle.passengers().remove(Integer.valueOf(entity.javaId()));
+
+                final PacketWrapper setPassengers = PacketWrapper.create(ClientboundPackets1_21_11.SET_PASSENGERS, this.user());
+                setPassengers.write(Types.VAR_INT, vehicle.javaId()); // vehicle entity id
+                setPassengers.write(Types.VAR_INT_ARRAY_PRIMITIVE, vehicle.passengers().stream().mapToInt(Integer::intValue).toArray()); // passenger entity ids
+                setPassengers.send(BedrockProtocol.class);
+            }
+            entity.setVehicle(-1);
+        }
+
+        // Detach all passengers that were riding this entity and notify the Java client
+        if (!entity.passengers().isEmpty()) {
+            for (final int passengerId : entity.passengers()) {
+                final Entity passenger = this.getEntityByJid(passengerId);
+                if (passenger != null) {
+                    passenger.setVehicle(-1);
+                }
+            }
+            entity.passengers().clear();
+
+            final PacketWrapper setPassengers = PacketWrapper.create(ClientboundPackets1_21_11.SET_PASSENGERS, this.user());
+            setPassengers.write(Types.VAR_INT, entity.javaId()); // vehicle entity id
+            setPassengers.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[0]); // passenger entity ids
+            setPassengers.send(BedrockProtocol.class);
         }
 
         this.entities.remove(entity.uniqueId());
@@ -168,6 +200,8 @@ public class EntityTracker extends StoredObject {
 
     public void prepareForRespawn() {
         for (Entity entity : this.entities.values()) {
+            entity.passengers().clear();
+            entity.setVehicle(-1);
             entity.remove();
         }
     }
@@ -186,6 +220,48 @@ public class EntityTracker extends StoredObject {
 
     public ClientPlayerEntity getClientPlayer() {
         return this.clientPlayerEntity;
+    }
+
+    public void applyEntityLinks(final EntityLink[] entityLinks) {
+        for (final EntityLink entityLink : entityLinks) {
+            final ActorLinkType linkType = ActorLinkType.getByValue(entityLink.type(), ActorLinkType.None);
+            if (linkType == ActorLinkType.None) {
+                continue;
+            }
+
+            final Entity vehicle = this.getEntityByUid(entityLink.fromEntityUniqueId());
+            final Entity passenger = this.getEntityByUid(entityLink.toEntityUniqueId());
+            if (vehicle == null || passenger == null) {
+                continue;
+            }
+
+            if (vehicle == passenger) {
+                continue;
+            }
+
+            // Detach from previous vehicle if remounting to a different one
+            if (passenger.vehicle() != -1 && passenger.vehicle() != vehicle.javaId()) {
+                final Entity oldVehicle = this.getEntityByJid(passenger.vehicle());
+                if (oldVehicle != null) {
+                    oldVehicle.passengers().remove(Integer.valueOf(passenger.javaId()));
+
+                    final PacketWrapper oldVehiclePassengers = PacketWrapper.create(ClientboundPackets1_21_11.SET_PASSENGERS, this.user());
+                    oldVehiclePassengers.write(Types.VAR_INT, oldVehicle.javaId()); // vehicle entity id
+                    oldVehiclePassengers.write(Types.VAR_INT_ARRAY_PRIMITIVE, oldVehicle.passengers().stream().mapToInt(Integer::intValue).toArray()); // passenger entity ids
+                    oldVehiclePassengers.send(BedrockProtocol.class);
+                }
+            }
+
+            if (!vehicle.passengers().contains(passenger.javaId())) {
+                vehicle.passengers().add(passenger.javaId());
+                passenger.setVehicle(vehicle.javaId());
+            }
+
+            final PacketWrapper setPassengers = PacketWrapper.create(ClientboundPackets1_21_11.SET_PASSENGERS, this.user());
+            setPassengers.write(Types.VAR_INT, vehicle.javaId()); // vehicle entity id
+            setPassengers.write(Types.VAR_INT_ARRAY_PRIMITIVE, vehicle.passengers().stream().mapToInt(Integer::intValue).toArray()); // passenger entity ids
+            setPassengers.send(BedrockProtocol.class);
+        }
     }
 
     public boolean isEmpty() {

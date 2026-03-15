@@ -86,7 +86,6 @@ public class EntityPackets {
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
             final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
             final EntityLink[] entityLinks = wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
-
             final Entity entity;
             final EntityTypes1_21_11 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(type);
             if (javaEntityType != null) {
@@ -132,6 +131,7 @@ public class EntityPackets {
                 livingEntity.updateAttributes(attributes);
             }
             entity.updateEntityData(entityData);
+            entityTracker.applyEntityLinks(entityLinks);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.ADD_ITEM_ENTITY, ClientboundPackets1_21_11.ADD_ENTITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
@@ -627,6 +627,69 @@ public class EntityPackets {
                 wrapper.write(VersionedTypes.V1_21_11.item, itemRewriter.javaItem(item)); // item
             } else {
                 wrapper.cancel();
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_ENTITY_LINK, ClientboundPackets1_21_11.SET_PASSENGERS, wrapper -> {
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+
+            final EntityLink entityLink = wrapper.read(BedrockTypes.ENTITY_LINK); // entity link
+            final ActorLinkType linkType = ActorLinkType.getByValue(entityLink.type(), ActorLinkType.None);
+
+            final Entity passenger = entityTracker.getEntityByUid(entityLink.toEntityUniqueId());
+            if (passenger == null) {
+                wrapper.cancel();
+                return;
+            }
+
+            if (linkType != ActorLinkType.None) {
+                final Entity vehicle = entityTracker.getEntityByUid(entityLink.fromEntityUniqueId());
+                if (vehicle == null || vehicle == passenger) { // guard: unknown vehicle or self-link
+                    wrapper.cancel();
+                    return;
+                }
+
+                // Detach from previous vehicle if remounting to a different one
+                if (passenger.vehicle() != -1 && passenger.vehicle() != vehicle.javaId()) {
+                    final Entity oldVehicle = entityTracker.getEntityByJid(passenger.vehicle());
+                    if (oldVehicle != null) {
+                        oldVehicle.passengers().remove(Integer.valueOf(passenger.javaId()));
+
+                        final PacketWrapper oldVehiclePassengers = PacketWrapper.create(ClientboundPackets1_21_11.SET_PASSENGERS, wrapper.user());
+                        oldVehiclePassengers.write(Types.VAR_INT, oldVehicle.javaId()); // vehicle entity id
+                        oldVehiclePassengers.write(Types.VAR_INT_ARRAY_PRIMITIVE, oldVehicle.passengers().stream().mapToInt(Integer::intValue).toArray()); // passenger entity ids
+                        oldVehiclePassengers.send(BedrockProtocol.class);
+                    }
+                }
+
+                if (!vehicle.passengers().contains(passenger.javaId())) {
+                    vehicle.passengers().add(passenger.javaId());
+                    passenger.setVehicle(vehicle.javaId());
+                }
+
+                // TODO: Send MOUNT_SCREEN_OPEN for rideable entities with inventories (horse, donkey, llama, mule)
+                // This requires CONTAINER_OPEN to be implemented in InventoryPackets first
+
+                wrapper.write(Types.VAR_INT, vehicle.javaId()); // vehicle entity id
+                wrapper.write(Types.VAR_INT_ARRAY_PRIMITIVE, vehicle.passengers().stream().mapToInt(Integer::intValue).toArray()); // passenger entity ids
+            } else {
+                // Dismount: prefer tracked vehicle ref, fall back to packet's fromEntityUniqueId
+                Entity vehicle = passenger.vehicle() != -1 ? entityTracker.getEntityByJid(passenger.vehicle()) : null;
+                if (vehicle == null) {
+                    vehicle = entityTracker.getEntityByUid(entityLink.fromEntityUniqueId());
+                }
+
+                // Always clear the passenger's vehicle ref, even if vehicle entity is already gone
+                passenger.setVehicle(-1);
+
+                if (vehicle == null) {
+                    wrapper.cancel();
+                    return;
+                }
+
+                vehicle.passengers().remove(Integer.valueOf(passenger.javaId()));
+
+                wrapper.write(Types.VAR_INT, vehicle.javaId()); // vehicle entity id
+                wrapper.write(Types.VAR_INT_ARRAY_PRIMITIVE, vehicle.passengers().stream().mapToInt(Integer::intValue).toArray()); // passenger entity ids
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.TAKE_ITEM_ENTITY, ClientboundPackets1_21_11.TAKE_ITEM_ENTITY, wrapper -> {
