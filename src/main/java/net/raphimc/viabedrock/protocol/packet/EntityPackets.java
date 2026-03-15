@@ -426,7 +426,7 @@ public class EntityPackets {
             }
             switch (event) {
                 case HURT -> {
-                    final CompoundTag damageTypeRegistry = gameSession.getJavaRegistries().getCompoundTag("minecraft:damage_type");
+                    final CompoundTag damageTypeRegistry = gameSession.getJavaRegistries().getCompoundTag(RegistryKeys.DAMAGE_TYPE);
                     final SharedTypes_Legacy_ActorDamageCause damageCause = SharedTypes_Legacy_ActorDamageCause.getByValue(data, SharedTypes_Legacy_ActorDamageCause.Override);
                     final CompoundTag damageTypeEntry = damageTypeRegistry.getCompoundTag(BedrockProtocol.MAPPINGS.getBedrockToJavaDamageCauses().get(damageCause));
 

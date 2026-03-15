@@ -115,7 +115,7 @@ public class ClientPlayerPackets {
                         wrapper.write(Types.OPTIONAL_GLOBAL_POSITION, null); // last death position
                         wrapper.write(Types.VAR_INT, 0); // portal cooldown
                         wrapper.write(Types.VAR_INT, 64); // sea level
-                        wrapper.write(Types.BYTE, (byte) 0x03); // keep data mask
+                        wrapper.write(Types.BYTE, (byte) (RespawnKeepFlag.ATTRIBUTE_MODIFIERS.getBit() | RespawnKeepFlag.ENTITY_DATA.getBit())); // keep data mask
                         wrapper.send(BedrockProtocol.class);
                         clientPlayer.sendAttribute("minecraft:health"); // Ensure health is synced
                         clientPlayer.setAbilities(clientPlayer.abilities()); // Java client always resets abilities on respawn. Resend them

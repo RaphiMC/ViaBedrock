@@ -28,7 +28,7 @@ import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPa
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.data.enums.java.PlayerTeamAction;
+import net.raphimc.viabedrock.protocol.data.enums.java.PlayerTeamMethod;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.TeamCollisionRule;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.TeamVisibility;
 import net.raphimc.viabedrock.protocol.data.generated.java.Attributes;
@@ -36,6 +36,7 @@ import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
 import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,7 +54,7 @@ public class PlayerEntity extends LivingEntity {
     public final void createTeam() {
         final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21_11.SET_PLAYER_TEAM, this.user);
         setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
-        setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.ADD.ordinal()); // mode
+        setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamMethod.ADD.ordinal()); // mode
         setPlayerTeam.write(Types.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
         setPlayerTeam.write(Types.BYTE, (byte) 3); // flags
         setPlayerTeam.write(Types.VAR_INT, TeamVisibility.ALWAYS.ordinal()); // name tag visibility
@@ -70,7 +71,7 @@ public class PlayerEntity extends LivingEntity {
 
         final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21_11.SET_PLAYER_TEAM, this.user);
         setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
-        setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.CHANGE.ordinal()); // mode
+        setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamMethod.CHANGE.ordinal()); // mode
         setPlayerTeam.write(Types.TAG, TextUtil.stringToNbt("vb_" + this.javaId)); // display name
         setPlayerTeam.write(Types.BYTE, (byte) 3); // flags
         setPlayerTeam.write(Types.VAR_INT, TeamVisibility.ALWAYS.ordinal()); // name tag visibility
@@ -81,13 +82,23 @@ public class PlayerEntity extends LivingEntity {
         setPlayerTeam.send(BedrockProtocol.class);
     }
 
+    public final void sendInitialEntityData() {
+        final List<EntityData> entityData = new ArrayList<>();
+        entityData.add(new EntityData(this.getJavaEntityDataIndex(EntityDataFields.PLAYER_MODE_CUSTOMISATION), VersionedTypes.V1_21_11.entityDataTypes.byteType, (byte) 0xFF));
+
+        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_11.SET_ENTITY_DATA, this.user);
+        setEntityData.write(Types.VAR_INT, this.javaId); // entity id
+        setEntityData.write(VersionedTypes.V1_21_11.entityDataList, entityData); // entity data
+        setEntityData.send(BedrockProtocol.class);
+    }
+
     @Override
     public void remove() {
         super.remove();
 
         final PacketWrapper setPlayerTeam = PacketWrapper.create(ClientboundPackets1_21_11.SET_PLAYER_TEAM, this.user);
         setPlayerTeam.write(Types.STRING, "vb_" + this.javaId); // team name
-        setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamAction.REMOVE.ordinal()); // mode
+        setPlayerTeam.write(Types.BYTE, (byte) PlayerTeamMethod.REMOVE.ordinal()); // mode
         setPlayerTeam.send(BedrockProtocol.class);
     }
 

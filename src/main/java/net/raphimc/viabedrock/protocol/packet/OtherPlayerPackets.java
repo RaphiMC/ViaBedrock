@@ -112,6 +112,7 @@ public class OtherPlayerPackets {
             setEquipment.write(VersionedTypes.V1_21_11.item, itemRewriter.javaItem(item)); // item
             setEquipment.send(BedrockProtocol.class);
 
+            entity.sendInitialEntityData();
             entity.updateEntityData(entityData);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOVE_PLAYER, ClientboundPackets1_21_11.ENTITY_POSITION_SYNC, wrapper -> {

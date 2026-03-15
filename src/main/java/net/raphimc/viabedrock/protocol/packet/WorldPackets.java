@@ -52,6 +52,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SpawnPositio
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SubChunkPacket_HeightMapDataType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SubChunkPacket_SubChunkRequestResult;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
+import net.raphimc.viabedrock.protocol.data.enums.java.RespawnKeepFlag;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BlockChangeEntry;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -171,7 +172,7 @@ public class WorldPackets {
             wrapper.write(Types.OPTIONAL_GLOBAL_POSITION, null); // last death position
             wrapper.write(Types.VAR_INT, 0); // portal cooldown
             wrapper.write(Types.VAR_INT, 64); // sea level
-            wrapper.write(Types.BYTE, (byte) 0x03); // keep data mask
+            wrapper.write(Types.BYTE, (byte) (RespawnKeepFlag.ATTRIBUTE_MODIFIERS.getBit() | RespawnKeepFlag.ENTITY_DATA.getBit())); // keep data mask
             wrapper.send(BedrockProtocol.class);
             wrapper.cancel();
             clientPlayer.sendPlayerPositionPacketToClient(Relative.NONE);
