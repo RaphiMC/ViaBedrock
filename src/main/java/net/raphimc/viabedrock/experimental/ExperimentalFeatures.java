@@ -28,6 +28,7 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
+import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
 import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
@@ -50,11 +51,13 @@ import net.raphimc.viabedrock.protocol.data.enums.java.InteractionHand;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.GameMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.PlayerActionAction;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.EntityLink;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+import net.raphimc.viabedrock.protocol.types.model.EntityLinkType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -342,6 +345,52 @@ public class ExperimentalFeatures {
                 }
                 default -> {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unsupported inventory transaction type: " + inventoryTransaction.transactionType());
+                }
+            }
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_ENTITY_LINK, ClientboundPackets1_21_11.SET_PASSENGERS, wrapper -> {
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+
+            final EntityLink linkType = wrapper.read(BedrockTypes.ENTITY_LINK);
+            final Entity vehicle = entityTracker.getEntityByUid(linkType.fromEntityUniqueId());
+            final Entity passenger = entityTracker.getEntityByUid(linkType.toEntityUniqueId());
+
+            // TODO: Handle Passenger type if needed
+            switch (linkType.type()) {
+                case Riding, Passenger -> { // TODO: This needs to be ordered properly based on the link types (rider first, then passengers)
+                    vehicle.addPassenger(passenger.uniqueId());
+
+                    wrapper.write(Types.VAR_INT, entityTracker.getEntityByUid(linkType.fromEntityUniqueId()).javaId()); // vehicle
+                    wrapper.write(Types.VAR_INT, vehicle.passengers().size()); // number of passengers
+                    for (long passengerUid : vehicle.passengers()) {
+                        wrapper.write(Types.VAR_INT, entityTracker.getEntityByUid(passengerUid).javaId()); // passenger id
+                    }
+
+                    if (passenger.mountEntityRId() != -1) {
+                        // The passenger is riding another entity
+                        Entity oldVehicle = entityTracker.getEntityByRid(passenger.mountEntityRId());
+                        if (oldVehicle != null) {
+                            oldVehicle.removePassenger(passenger.uniqueId());
+                            ExperimentalPacketFactory.sendJavaSetPassengers(wrapper.user(), oldVehicle);
+                        }
+                    }
+
+                    passenger.setMountEntityRId(vehicle.runtimeId());
+                }
+                case None -> { // Remove
+                    vehicle.removePassenger(passenger.uniqueId());
+
+                    wrapper.write(Types.VAR_INT, vehicle.javaId()); // vehicle
+                    wrapper.write(Types.VAR_INT, vehicle.passengers().size()); // number of passengers
+                    for (long passengerUid : vehicle.passengers()) {
+                        wrapper.write(Types.VAR_INT, entityTracker.getEntityByUid(passengerUid).javaId()); // passenger id
+                    }
+
+                    passenger.setMountEntityRId(-1);
+                    if (passenger.uniqueId() == entityTracker.getClientPlayer().uniqueId()) {
+                        // The player is no longer riding an entity, update the state
+                        entityTracker.getClientPlayer().setRequestedDismount(false);
+                    }
                 }
             }
         });
