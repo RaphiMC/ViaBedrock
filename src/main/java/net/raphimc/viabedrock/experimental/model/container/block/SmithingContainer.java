@@ -136,7 +136,7 @@ public class SmithingContainer extends ExperimentalContainer {
         PacketWrapper containerSlot = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_SLOT, user);
         containerSlot.write(Types.VAR_INT, (int) this.containerId());
         containerSlot.write(Types.VAR_INT, revision);
-        containerSlot.write(Types.SHORT, (short) 0); // Output slot
+        containerSlot.write(Types.SHORT, (short) 3); // Output slot
         containerSlot.write(VersionedTypes.V1_21_11.item, itemRewriter.javaItem(resultItem));
         containerSlot.send(BedrockProtocol.class);
 

@@ -119,6 +119,9 @@
     "minecraft:furnace",
     "minecraft:lit_furnace"
   ],
+  "grindstone": [
+    "minecraft:grindstone"
+  ],
   "hanging_sign": [
     "minecraft:acacia_hanging_sign",
     "minecraft:bamboo_hanging_sign",
