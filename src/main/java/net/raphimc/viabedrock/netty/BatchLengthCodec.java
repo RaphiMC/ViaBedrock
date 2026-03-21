@@ -20,9 +20,11 @@ package net.raphimc.viabedrock.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.List;
+import java.util.logging.Level;
 
 public class BatchLengthCodec extends ByteToMessageCodec<ByteBuf> {
 
@@ -36,7 +38,12 @@ public class BatchLengthCodec extends ByteToMessageCodec<ByteBuf> {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         while (in.isReadable()) {
             final int length = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(in);
-            out.add(in.readRetainedSlice(length));
+            if (in.isReadable(length)) {
+                out.add(in.readRetainedSlice(length));
+            } else { // Bedrock client drops the packet if the length is invalid
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Dropping packet with invalid length: " + length + " (readable bytes: " + in.readableBytes() + ")");
+                in.skipBytes(in.readableBytes());
+            }
         }
     }
 

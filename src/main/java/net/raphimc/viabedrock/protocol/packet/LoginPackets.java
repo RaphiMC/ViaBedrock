@@ -31,7 +31,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.api.util.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
@@ -41,7 +40,6 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompre
 import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
 import net.raphimc.viabedrock.protocol.storage.AuthData;
-import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.HandshakeStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -63,19 +61,12 @@ public class LoginPackets {
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_SETTINGS, null, wrapper -> {
             wrapper.cancel();
-            final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final HandshakeStorage handshakeStorage = wrapper.user().get(HandshakeStorage.class);
             final AuthData authData = wrapper.user().get(AuthData.class);
 
             final int threshold = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // compression threshold
             final PacketCompressionAlgorithm algorithm = PacketCompressionAlgorithm.getByValue(wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE), PacketCompressionAlgorithm.None); // compression algorithm
-            final ProtocolCompression protocolCompression = new ProtocolCompression(algorithm, threshold);
-            if (gameSession.getProtocolCompression() == null) {
-                Via.getManager().getProviders().get(NettyPipelineProvider.class).enableCompression(wrapper.user(), protocolCompression);
-            } else {
-                gameSession.getProtocolCompression().end();
-            }
-            gameSession.setProtocolCompression(protocolCompression);
+            Via.getManager().getProviders().get(NettyPipelineProvider.class).enableCompression(wrapper.user(), algorithm, threshold);
 
             final JsonObject authInfoObj = new JsonObject();
             final List<String> certificateChain = authData.getCertificateChain();
