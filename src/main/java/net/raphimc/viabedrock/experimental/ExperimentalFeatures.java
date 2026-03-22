@@ -387,6 +387,11 @@ public class ExperimentalFeatures {
                 case DISPENSER, DROPPER -> container = new Generic3x3Container(wrapper.user(), containerId, type, title, position);
                 case WORKBENCH -> container = new CraftingTableContainer(wrapper.user(), containerId, title, position);
                 case GRINDSTONE -> container = new GrindstoneContainer(wrapper.user(), containerId, title, position);
+                case CRAFTER -> container = new CrafterContainer(wrapper.user(), containerId, title, position);
+                case COMPOUND_CREATOR, ELEMENT_CONSTRUCTOR, MATERIAL_REDUCER, LAB_TABLE -> { // Education Edition features, no java equivalent
+                    wrapper.cancel();
+                    return;
+                }
                 case NONE, CAULDRON, JUKEBOX, ARMOR, HAND, HUD, DECORATED_POT -> { // Bedrock client can't open these containers
                     wrapper.cancel();
                     return;
@@ -612,6 +617,24 @@ public class ExperimentalFeatures {
             if (inventoryTracker.isContainerOpen() && inventoryTracker.getCurrentContainer() instanceof AnvilContainer anvilContainer) {
                 anvilContainer.setRenameText(newName);
             }
+        });
+        protocol.registerServerbound(ServerboundPackets1_21_6.CONTAINER_SLOT_STATE_CHANGED, ServerboundBedrockPackets.TOGGLE_CRAFTER_SLOT_REQUEST, wrapper -> {
+            int slotId = wrapper.read(Types.VAR_INT);
+            int windowId = wrapper.read(Types.VAR_INT);
+            boolean state = wrapper.read(Types.BOOLEAN);
+
+            ExperimentalInventoryTracker inventoryTracker = wrapper.user().get(ExperimentalInventoryTracker.class);
+            ExperimentalContainer container = inventoryTracker.getContainerServerbound((byte) windowId);
+            if (!(container instanceof CrafterContainer)) {
+                wrapper.cancel();
+                return;
+            }
+
+            wrapper.write(BedrockTypes.INT_LE, container.position().x());
+            wrapper.write(BedrockTypes.INT_LE, container.position().y());
+            wrapper.write(BedrockTypes.INT_LE, container.position().z());
+            wrapper.write(Types.UNSIGNED_BYTE, (short) slotId);
+            wrapper.write(Types.BOOLEAN, state);
         });
 
         protocol.registerClientbound(ClientboundBedrockPackets.CRAFTING_DATA, null, wrapper -> {
