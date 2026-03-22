@@ -24,7 +24,6 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntImmutablePair;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ChatRestrictionLevel;
@@ -36,8 +35,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class GameSessionStorage extends StoredObject {
-
-    private ProtocolCompression protocolCompression;
 
     private CompoundTag javaRegistries;
     private CompoundTag bedrockBiomeDefinitions = BedrockProtocol.MAPPINGS.getBedrockBiomeDefinitions();
@@ -61,14 +58,6 @@ public class GameSessionStorage extends StoredObject {
         super(user);
 
         this.bedrockDimensionDefinitions.put("minecraft:the_nether", new IntIntImmutablePair(0, 128));
-    }
-
-    public ProtocolCompression getProtocolCompression() {
-        return this.protocolCompression;
-    }
-
-    public void setProtocolCompression(final ProtocolCompression protocolCompression) {
-        this.protocolCompression = protocolCompression;
     }
 
     public CompoundTag getJavaRegistries() {

@@ -32,9 +32,11 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
+import net.raphimc.viabedrock.api.model.resourcepack.TextDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
@@ -54,6 +56,7 @@ import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.Map;
@@ -528,8 +531,20 @@ public class WorldEffectPackets {
                     PacketFactory.writeJavaLevelParticles(wrapper, position, new BedrockMappingData.JavaParticle(particle, 0F, 0F, 0F, 0F, 7));
                 }
                 case SleepingPlayers -> {
-                    // This shows the amount of players currently sleeping when in a bed
-                    wrapper.cancel(); // TODO: Implement translation
+                    wrapper.setPacketType(ClientboundPackets1_21_11.SYSTEM_CHAT);
+                    final TextDefinitions textDefinitions = wrapper.user().get(ResourcePacksStorage.class).getTexts();
+                    if (data.getInt("ableToSleep") != 0) {
+                        final int playerCount = data.getInt("overworldPlayerCount");
+                        final int sleepingPlayerCount = data.getInt("sleepingPlayerCount");
+                        if (sleepingPlayerCount < playerCount) {
+                            wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.translate("multiplayer.playersSleeping", sleepingPlayerCount, playerCount))); // message
+                        } else {
+                            wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.get("multiplayer.playersSkippingNight"))); // message
+                        }
+                    } else {
+                        wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.get("multiplayer.playersSleepingNotPossible"))); // message
+                    }
+                    wrapper.write(Types.BOOLEAN, true); // overlay
                 }
                 case ParticleCreakingHeartTrail -> {
                     wrapper.cancel();

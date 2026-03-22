@@ -540,6 +540,7 @@ public class JoinPackets {
         joinGame.send(BedrockProtocol.class);
 
         clientPlayer.createTeam();
+        clientPlayer.sendInitialEntityData();
         clientPlayer.updateAttributes(clientPlayer.attributes().values().toArray(new EntityAttribute[0]));
         clientPlayer.setAbilities(clientPlayer.abilities());
         clientPlayer.sendPlayerPositionPacketToClient(Relative.NONE);

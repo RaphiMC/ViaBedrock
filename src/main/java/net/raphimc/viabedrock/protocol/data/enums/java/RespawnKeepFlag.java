@@ -17,12 +17,13 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.java;
 
-public enum PlayerTeamAction {
+public enum RespawnKeepFlag {
 
-    ADD,
-    REMOVE,
-    CHANGE,
-    JOIN,
-    LEAVE,
+    ATTRIBUTE_MODIFIERS,
+    ENTITY_DATA;
+
+    public byte getBit() {
+        return (byte) (1 << this.ordinal());
+    }
 
 }

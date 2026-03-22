@@ -19,19 +19,20 @@ package net.raphimc.viabedrock.protocol.provider;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
-import net.raphimc.viabedrock.api.io.compression.ProtocolCompression;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompressionAlgorithm;
 
 import javax.crypto.SecretKey;
 
 public abstract class NettyPipelineProvider implements Provider {
 
     /**
-     * Enables compression/decompression for the given user
+     * Enables compression/decompression for the given user. May get called multiple times for the same user.
      *
-     * @param user The user
-     * @param protocolCompression The protocol compression
+     * @param user                          The user
+     * @param preferredCompressionAlgorithm The preferred compression algorithm
+     * @param threshold                     The compression threshold
      */
-    public abstract void enableCompression(final UserConnection user, final ProtocolCompression protocolCompression);
+    public abstract void enableCompression(final UserConnection user, final PacketCompressionAlgorithm preferredCompressionAlgorithm, final int threshold);
 
     /**
      * Enables encryption/decryption for the given user
