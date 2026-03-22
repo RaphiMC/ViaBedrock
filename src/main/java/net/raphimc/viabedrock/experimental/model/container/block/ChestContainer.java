@@ -34,7 +34,7 @@ public class ChestContainer extends ExperimentalContainer {
     private final boolean isShulkerBox;
 
     public ChestContainer(final UserConnection user, final byte containerId, final TextComponent title, final BlockPosition position, final int size) {
-        super(user, containerId, ContainerType.CONTAINER, title, position, size, CustomBlockTags.CHEST, CustomBlockTags.TRAPPED_CHEST, CustomBlockTags.BARREL, CustomBlockTags.SHULKER_BOX);
+        super(user, containerId, ContainerType.CONTAINER, title, position, size, CustomBlockTags.CHEST, CustomBlockTags.TRAPPED_CHEST, CustomBlockTags.BARREL, CustomBlockTags.SHULKER_BOX, CustomBlockTags.ENDER_CHEST);
 
         // TODO: Is there a better way to do this
         ChunkTracker tracker = user.get(ChunkTracker.class);
