@@ -25,7 +25,7 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import net.raphimc.viabedrock.ViaBedrock;
+import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -37,10 +37,23 @@ import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.Arrays;
+
 public class CrafterContainer extends ExperimentalContainer {
 
     public CrafterContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
         super(user, containerId, ContainerType.CRAFTER, title, position, 9, CustomBlockTags.CRAFTER);
+
+        boolean[] disabledSlots = getCrafterMetadata();
+        for (short i = 0; i < 9; i++) {
+            boolean disabled = disabledSlots[i];
+
+            PacketWrapper setData = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_DATA, user);
+            setData.write(Types.VAR_INT, (int) this.javaContainerId());
+            setData.write(Types.SHORT, i);
+            setData.write(Types.SHORT, (short) (disabled ? 1 : 0));
+            setData.scheduleSend(BedrockProtocol.class);
+        }
     }
 
     @Override

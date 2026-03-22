@@ -634,7 +634,7 @@ public class ExperimentalFeatures {
             wrapper.write(BedrockTypes.INT_LE, container.position().y());
             wrapper.write(BedrockTypes.INT_LE, container.position().z());
             wrapper.write(Types.UNSIGNED_BYTE, (short) slotId);
-            wrapper.write(Types.BOOLEAN, state);
+            wrapper.write(Types.BOOLEAN, !state);
         });
 
         protocol.registerClientbound(ClientboundBedrockPackets.CRAFTING_DATA, null, wrapper -> {
