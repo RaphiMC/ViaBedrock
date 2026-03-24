@@ -20,5 +20,9 @@
   "Creeper": "note.creeper",
   "Dragon": "note.enderdragon",
   "WitherSkeleton": "note.witherskeleton",
-  "Piglin": "note.piglin"
+  "Piglin": "note.piglin",
+  "Trumpet": "note.harp",
+  "TrumpetExposed": "note.harp",
+  "TrumpetWeathered": "note.harp",
+  "TrumpetOxidized": "note.harp"
 }

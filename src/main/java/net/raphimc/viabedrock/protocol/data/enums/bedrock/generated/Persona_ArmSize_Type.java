@@ -4,33 +4,32 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
-public enum Persona_AnimatedTextureType {
+public enum Persona_ArmSize_Type {
 
-    Face(1),
-    Body32x32(2),
-    Body128x128(3),
+    Slim(0),
+    Wide(1),
     ;
 
-    private static final Int2ObjectMap<Persona_AnimatedTextureType> BY_VALUE = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<Persona_ArmSize_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
-        for (Persona_AnimatedTextureType value : values()) {
+        for (Persona_ArmSize_Type value : values()) {
             if (!BY_VALUE.containsKey(value.value)) {
                 BY_VALUE.put(value.value, value);
             }
         }
     }
 
-    public static Persona_AnimatedTextureType getByValue(final int value) {
+    public static Persona_ArmSize_Type getByValue(final int value) {
         return BY_VALUE.get(value);
     }
 
-    public static Persona_AnimatedTextureType getByValue(final int value, final Persona_AnimatedTextureType fallback) {
+    public static Persona_ArmSize_Type getByValue(final int value, final Persona_ArmSize_Type fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
-    public static Persona_AnimatedTextureType getByName(final String name) {
-        for (Persona_AnimatedTextureType value : values()) {
+    public static Persona_ArmSize_Type getByName(final String name) {
+        for (Persona_ArmSize_Type value : values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -38,8 +37,8 @@ public enum Persona_AnimatedTextureType {
         return null;
     }
 
-    public static Persona_AnimatedTextureType getByName(final String name, final Persona_AnimatedTextureType fallback) {
-        for (Persona_AnimatedTextureType value : values()) {
+    public static Persona_ArmSize_Type getByName(final String name, final Persona_ArmSize_Type fallback) {
+        for (Persona_ArmSize_Type value : values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -49,11 +48,11 @@ public enum Persona_AnimatedTextureType {
 
     private final int value;
 
-    Persona_AnimatedTextureType(final Persona_AnimatedTextureType value) {
+    Persona_ArmSize_Type(final Persona_ArmSize_Type value) {
         this(value.value);
     }
 
-    Persona_AnimatedTextureType(final int value) {
+    Persona_ArmSize_Type(final int value) {
         this.value = value;
     }
 

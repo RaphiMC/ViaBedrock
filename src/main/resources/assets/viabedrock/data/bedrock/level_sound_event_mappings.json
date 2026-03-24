@@ -15014,5 +15014,15 @@
     "": {
       "sound": "item.wooden_spear.use"
     }
+  },
+  "PauseGrowth": {
+    "": {
+      "sound": "note.harp"
+    }
+  },
+  "ResetGrowth": {
+    "": {
+      "sound": "note.harp"
+    }
   }
 }

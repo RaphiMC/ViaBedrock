@@ -73,7 +73,6 @@ public class BedrockTypes {
     public static final Type<Tag> TAG_LE = new TagLEType();
     public static final Type<Tag> COMPOUND_TAG_VALUE = new TagValueType(Tag_Type.Compound);
     public static final Type<BlockPosition> BLOCK_POSITION = new BlockPositionType();
-    public static final Type<BlockPosition> POSITION_3I = new Position3iType();
     public static final Type<Position3f> POSITION_3F = new Position3fType();
     public static final Type<Position3f> OPTIONAL_POSITION_3F = new Position3fType.OptionalPosition3fType();
     public static final Type<Position2f> POSITION_2F = new Position2fType();

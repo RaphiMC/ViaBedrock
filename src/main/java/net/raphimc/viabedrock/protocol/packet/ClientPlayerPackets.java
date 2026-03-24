@@ -358,7 +358,9 @@ public class ClientPlayerPackets {
             }
         });
         protocol.registerServerbound(ServerboundPackets26_1.INTERACT, ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper -> {
-            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            wrapper.cancel();
+            // TODO: 26.1
+            /*final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
             final int entityId = wrapper.read(Types.VAR_INT); // entity id
             final InteractActionType action = InteractActionType.values()[wrapper.read(Types.VAR_INT)]; // action
@@ -405,7 +407,7 @@ public class ClientPlayerPackets {
                     wrapper.write(BedrockTypes.POSITION_3F, entity.position().add(x, y, z)); // click position
                 }
                 default -> throw new IllegalStateException("Unhandled InteractActionType: " + action);
-            }
+            }*/
         });
         protocol.registerServerbound(ServerboundPackets26_1.MOVE_PLAYER_STATUS_ONLY, null, wrapper -> {
             wrapper.cancel();
@@ -539,7 +541,7 @@ public class ClientPlayerPackets {
                     switch (blockAction.action()) {
                         // StopDestroyBlock does not have additional data even tho bedrock protocol docs claim it does
                         case StartDestroyBlock, AbortDestroyBlock, CrackBlock, PredictDestroyBlock, ContinueDestroyBlock -> {
-                            wrapper.write(BedrockTypes.POSITION_3I, blockAction.position()); // position
+                            wrapper.write(BedrockTypes.BLOCK_POSITION, blockAction.position()); // position
                             wrapper.write(BedrockTypes.VAR_INT, blockAction.direction()); // facing
                         }
                     }
