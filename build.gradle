@@ -40,10 +40,11 @@ repositories {
             includeGroupByRegex "com\\.github\\..+"
         }
     }
+    mavenLocal()
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.7.1-SNAPSHOT"
+    compileOnly "com.viaversion:viaversion-common:5.8.0-mc26.1-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.6"
     compileOnly "com.google.guava:guava:33.5.0-jre"
     compileOnly "io.netty:netty-handler:4.2.10.Final"

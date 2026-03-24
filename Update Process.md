@@ -7,9 +7,16 @@ This file lists the steps necessary to update ViaBedrock.
 4. Update data in the `protocol/data` package
 5. Run `MappingDataGenerator` to generate the mapping classes
 6. Update hardcoded blockstates: Search all files for `new BlockState("`
-7. Replace `VersionedTypes.V1_21_11` and `EntityTypes1_21_11` with the new type
-8. Replace `ClientboundPackets1_21_11` and `ServerboundPackets1_21_6` with the new packet enum
+7. Replace `VersionedTypes.V26_1` and `EntityTypes1_21_11` with the new type
+8. Replace `ClientboundPackets26_1` and `ServerboundPackets26_1` with the new packet enum
 9. Replace `ClientboundConfigurationPackets1_21_9` and `ServerboundConfigurationPackets1_21_9` with the new packet enum
 10. Check `StructuredDataKey` usages and update them to new Minecraft version if needed
 11. Update changed packet contents
 12. Update rewriters
+
+TODO (Java):
+ - Run JavaDataEnumGenerator
+ - Protocol changes
+
+TODO (Bedrock):
+ - Everything

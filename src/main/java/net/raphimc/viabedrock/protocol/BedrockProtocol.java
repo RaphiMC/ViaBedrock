@@ -30,9 +30,9 @@ import com.viaversion.viaversion.exception.CancelException;
 import com.viaversion.viaversion.exception.InformativeException;
 import com.viaversion.viaversion.protocol.packet.PacketWrapperImpl;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ServerboundPackets26_1;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundConfigurationPackets1_21_9;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -53,7 +53,7 @@ import net.raphimc.viabedrock.protocol.task.*;
 import java.util.EnumSet;
 import java.util.logging.Level;
 
-public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedrockPackets, ClientboundPackets1_21_11, ServerboundBedrockPackets, ServerboundPackets1_21_6> {
+public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedrockPackets, ClientboundPackets26_1, ServerboundBedrockPackets, ServerboundPackets26_1> {
 
     public static final BedrockMappingData MAPPINGS = new BedrockMappingData();
 
@@ -82,7 +82,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     }
 
     public BedrockProtocol() {
-        super(ClientboundBedrockPackets.class, ClientboundPackets1_21_11.class, ServerboundBedrockPackets.class, ServerboundPackets1_21_6.class);
+        super(ClientboundBedrockPackets.class, ClientboundPackets26_1.class, ServerboundBedrockPackets.class, ServerboundPackets26_1.class);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
                 this.cancelClientbound(packet);
             }
         }
-        for (ServerboundPackets1_21_6 packet : this.unmappedServerboundPacketType.getEnumConstants()) {
+        for (ServerboundPackets26_1 packet : this.unmappedServerboundPacketType.getEnumConstants()) {
             if (!this.hasRegisteredServerbound(packet)) {
                 this.cancelServerbound(packet);
             }
@@ -199,11 +199,11 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         /*if (direction == Direction.CLIENTBOUND) {
             System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ClientboundBedrockPackets.getPacket(wrapper.getId()) + ", wrapper = " + wrapper);
         } else {
-            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets1_21_6.values()[wrapper.getId()] + ", wrapper = " + wrapper);
+            System.out.println("PRE: direction = " + direction + ", state = " + state + ", packet=" + ServerboundPackets26_1.values()[wrapper.getId()] + ", wrapper = " + wrapper);
         }*/
         super.transform(direction, state, wrapper);
         /*if (direction == Direction.CLIENTBOUND) {
-            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets1_21_11.values()[wrapper.getId()] + ", wrapper = " + wrapper);
+            System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ClientboundPackets26_1.values()[wrapper.getId()] + ", wrapper = " + wrapper);
         } else {
             System.out.println("POST: direction = " + direction + ", state = " + state + ", packet=" + ServerboundBedrockPackets.getPacket(wrapper.getId()) + ", wrapper = " + wrapper);
         }*/
@@ -219,7 +219,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         final PacketType disconnectPacketType = switch (user.getProtocolInfo().getServerState()) {
             case LOGIN -> ClientboundLoginPackets.LOGIN_DISCONNECT;
             case CONFIGURATION -> ClientboundConfigurationPackets1_21_9.DISCONNECT;
-            case PLAY -> ClientboundPackets1_21_11.DISCONNECT;
+            case PLAY -> ClientboundPackets26_1.DISCONNECT;
             default -> throw new IllegalStateException("Unexpected state: " + user.getProtocolInfo().getServerState());
         };
         try {

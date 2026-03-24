@@ -25,7 +25,7 @@ import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
@@ -55,7 +55,7 @@ import java.util.logging.Level;
 public class OtherPlayerPackets {
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.ADD_PLAYER, ClientboundPackets1_21_11.ADD_ENTITY, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.ADD_PLAYER, ClientboundPackets26_1.ADD_ENTITY, wrapper -> {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
@@ -79,7 +79,7 @@ public class OtherPlayerPackets {
             entity.setRotation(rotation);
             entity.updateName(username);
 
-            final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets1_21_11.PLAYER_INFO_UPDATE, wrapper.user());
+            final PacketWrapper playerInfoUpdate = PacketWrapper.create(ClientboundPackets26_1.PLAYER_INFO_UPDATE, wrapper.user());
             playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_4, BitSets.create(8, PlayerInfoUpdateAction.ADD_PLAYER, PlayerInfoUpdateAction.UPDATE_GAME_MODE)); // actions
             playerInfoUpdate.write(Types.VAR_INT, 1); // length
             playerInfoUpdate.write(Types.UUID, uuid); // uuid
@@ -98,7 +98,7 @@ public class OtherPlayerPackets {
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y()); // y
             wrapper.write(Types.DOUBLE, (double) position.z()); // z
-            wrapper.write(Types.MOVEMENT_VECTOR, new Vector3d(motion.x(), motion.y(), motion.z())); // velocity
+            wrapper.write(Types.LOW_PRECISION_VECTOR, new Vector3d(motion.x(), motion.y(), motion.z())); // velocity
             wrapper.write(Types.BYTE, MathUtil.float2Byte(rotation.x())); // pitch
             wrapper.write(Types.BYTE, MathUtil.float2Byte(rotation.y())); // yaw
             wrapper.write(Types.BYTE, MathUtil.float2Byte(rotation.z())); // head yaw
@@ -106,16 +106,16 @@ public class OtherPlayerPackets {
             wrapper.send(BedrockProtocol.class);
             wrapper.cancel();
 
-            final PacketWrapper setEquipment = PacketWrapper.create(ClientboundPackets1_21_11.SET_EQUIPMENT, wrapper.user());
+            final PacketWrapper setEquipment = PacketWrapper.create(ClientboundPackets26_1.SET_EQUIPMENT, wrapper.user());
             setEquipment.write(Types.VAR_INT, entity.javaId()); // entity id
             setEquipment.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
-            setEquipment.write(VersionedTypes.V1_21_11.item, itemRewriter.javaItem(item)); // item
+            setEquipment.write(VersionedTypes.V26_1.item, itemRewriter.javaItem(item)); // item
             setEquipment.send(BedrockProtocol.class);
 
             entity.sendInitialEntityData();
             entity.updateEntityData(entityData);
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.MOVE_PLAYER, ClientboundPackets1_21_11.ENTITY_POSITION_SYNC, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.MOVE_PLAYER, ClientboundPackets26_1.ENTITY_POSITION_SYNC, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
@@ -142,7 +142,7 @@ public class OtherPlayerPackets {
             }
             if (mode == PlayerPositionModeComponent_PositionMode.OnlyHeadRot) {
                 entity.setRotation(new Position3f(rotation.x(), entity.rotation().y(), entity.rotation().z()));
-                wrapper.setPacketType(ClientboundPackets1_21_11.MOVE_ENTITY_ROT);
+                wrapper.setPacketType(ClientboundPackets26_1.MOVE_ENTITY_ROT);
                 wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
                 wrapper.write(Types.BYTE, MathUtil.float2Byte(entity.rotation().y())); // yaw
                 wrapper.write(Types.BYTE, MathUtil.float2Byte(rotation.x())); // pitch
@@ -155,7 +155,7 @@ public class OtherPlayerPackets {
             entity.setOnGround(onGround);
 
             if ((mode == PlayerPositionModeComponent_PositionMode.Teleport || mode == PlayerPositionModeComponent_PositionMode.Respawn) && entity instanceof ClientPlayerEntity clientPlayer) {
-                wrapper.setPacketType(ClientboundPackets1_21_11.PLAYER_POSITION);
+                wrapper.setPacketType(ClientboundPackets26_1.PLAYER_POSITION);
                 clientPlayer.writePlayerPositionPacketToClient(wrapper, Relative.NONE, mode == PlayerPositionModeComponent_PositionMode.Respawn);
                 return;
             }
@@ -183,7 +183,7 @@ public class OtherPlayerPackets {
 
             Via.getManager().getProviders().get(SkinProvider.class).setSkin(wrapper.user(), uuid, skin);
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, ClientboundPackets1_21_11.PLAYER_ABILITIES, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_ABILITIES, ClientboundPackets26_1.PLAYER_ABILITIES, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
             final Entity entity = entityTracker.getEntityByUid(abilities.entityUniqueId());

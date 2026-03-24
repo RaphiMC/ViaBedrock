@@ -40,7 +40,7 @@ import java.util.zip.ZipInputStream;
 public class JavaDataEnumGenerator {
 
     private static final String MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
-    private static final String VERSION_ID = "1.21.11";
+    private static final String VERSION_ID = "26.1";
 
     public static void main(String[] args) throws Throwable {
         final JsonObject metaObj = JsonParser.parseReader(new InputStreamReader(new URL(MANIFEST_URL).openStream())).getAsJsonObject();
@@ -51,8 +51,7 @@ public class JavaDataEnumGenerator {
                 .orElseThrow(() -> new IllegalStateException("Version not found"))
                 .get("url").getAsString();
         final JsonObject versionObj = JsonParser.parseReader(new InputStreamReader(new URL(versionUrl).openStream())).getAsJsonObject();
-        //final String clientUrl = versionObj.getAsJsonObject("downloads").getAsJsonObject("client").get("url").getAsString();
-        final String clientUrl = "https://piston-data.mojang.com/v1/objects/4509ee9b65f226be61142d37bf05f8d28b03417b/client.jar";
+        final String clientUrl = versionObj.getAsJsonObject("downloads").getAsJsonObject("client").get("url").getAsString();
         final ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new URL(clientUrl).openStream()));
 
         final Map<String, ClassNode> classNodes = new HashMap<>();
@@ -93,6 +92,10 @@ public class JavaDataEnumGenerator {
     }
 
     private static Enum extractFromEnum(final String name, final ClassNode classNode) {
+        if (classNode == null) {
+            throw new IllegalArgumentException("Class node for " + name + " is null");
+        }
+
         final Enum genEnum = new Enum(name);
         for (FieldNode fieldNode : classNode.fields) {
             if ((fieldNode.access & Opcodes.ACC_ENUM) != 0) {

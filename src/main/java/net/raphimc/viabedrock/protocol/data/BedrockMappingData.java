@@ -1289,7 +1289,7 @@ public class BedrockMappingData extends MappingDataBase {
                         if (!this.javaItems.containsKey(identifier)) {
                             throw new IllegalStateException("Unknown java item: " + identifier);
                         }
-                        particle.add(VersionedTypes.V1_21_11.item, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
+                        particle.add(VersionedTypes.V26_1.item, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
                     }
                     default -> throw new IllegalStateException("Unknown particle argument type: " + type);
                 }
