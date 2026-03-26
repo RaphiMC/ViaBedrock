@@ -28,7 +28,7 @@ import com.viaversion.viaversion.api.minecraft.chunks.*;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.chunk.ChunkType1_21_5;
+import com.viaversion.viaversion.api.type.types.chunk.ChunkType26_1;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import com.viaversion.viaversion.util.CompactArrayUtil;
@@ -94,7 +94,7 @@ public class ChunkTracker extends StoredObject {
         final CompoundTag dimensionTag = dimensionRegistry.getCompoundTag(dimensionKey);
         this.minY = dimensionTag.getNumberTag("min_y").asInt();
         this.worldHeight = dimensionTag.getNumberTag("height").asInt();
-        this.chunkType = new ChunkType1_21_5(this.worldHeight >> 4, MathUtil.ceilLog2(BedrockProtocol.MAPPINGS.getJavaBlockStates().size()), MathUtil.ceilLog2(biomeRegistry.size()));
+        this.chunkType = new ChunkType26_1(this.worldHeight >> 4, MathUtil.ceilLog2(BedrockProtocol.MAPPINGS.getJavaBlockStates().size()), MathUtil.ceilLog2(biomeRegistry.size()));
 
         final ChunkTracker oldChunkTracker = user.get(ChunkTracker.class);
         this.radius = oldChunkTracker != null ? oldChunkTracker.radius : user.get(ClientSettingsStorage.class).viewDistance();
