@@ -189,12 +189,15 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     DATA_STORE(MinecraftPacketIds.ClientboundDataStore.getValue()),
     GRAPHICS_OVERRIDE_PARAMETER(MinecraftPacketIds.GraphicsParameterOverridePacket.getValue()),
     DATA_DRIVEN_UI_SHOW_SCREEN(MinecraftPacketIds.ClientboundDataDrivenUIShowScreen.getValue()),
-    DATA_DRIVEN_UI_CLOSE_ALL_SCREENS(MinecraftPacketIds.ClientboundDataDrivenUICloseAllScreens.getValue()),
+    DATA_DRIVEN_UI_CLOSE_SCREEN(MinecraftPacketIds.ClientboundDataDrivenUICloseScreen.getValue()),
     DATA_DRIVEN_UI_RELOAD(MinecraftPacketIds.ClientboundDataDrivenUIReload.getValue()),
     TEXTURE_SHIFT(MinecraftPacketIds.ClientboundTextureShiftPacket.getValue()),
     VOXEL_SHAPES(MinecraftPacketIds.VoxelShapesPacket.getValue()),
     CAMERA_SPLINE(MinecraftPacketIds.CameraSpline.getValue()),
-    CAMERA_AIM_ASSIST_ACTOR_PRIORITY(MinecraftPacketIds.CameraAimAssistActorPriority.getValue());
+    CAMERA_AIM_ASSIST_ACTOR_PRIORITY(MinecraftPacketIds.CameraAimAssistActorPriority.getValue()),
+    LOCATOR_BAR(MinecraftPacketIds.LocatorBarPacket.getValue()),
+    SYNC_WORLD_CLOCKS(MinecraftPacketIds.SyncWorldClocks.getValue()),
+    ATTRIBUTE_LAYER_SYNC(MinecraftPacketIds.ClientboundAttributeLayerSyncPacket.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 

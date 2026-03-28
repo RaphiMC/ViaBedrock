@@ -165,13 +165,12 @@ public class BedrockSoundListGenerator {
         Unknown sound: use.azalea
         Unknown sound: use.azalea_leaves
         Unknown sound: use.anvil
-        Unknown sound: place.sculk_vein
-        Unknown sound: place.froglight
         Unknown sound: use.big_dripleaf
         Unknown sound: nearby_closest.warden
         Unknown sound: mob.zombie.converted_to_drowned
         Unknown sound: block.dried_ghast.hit
         Unknown sound: nearby_close.warden
+        Unknown sound: mob.cow.death
         Unknown sound: nearby_closer.warden
     */
 

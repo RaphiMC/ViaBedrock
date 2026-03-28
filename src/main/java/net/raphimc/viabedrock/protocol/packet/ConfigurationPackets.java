@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.packet;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ServerboundPackets26_1;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ServerboundConfigurationPackets1_21_9;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
@@ -39,7 +39,7 @@ public class ConfigurationPackets {
             wrapper.cancel();
             wrapper.user().getProtocolInfo().setClientState(State.PLAY);
         });
-        protocol.registerServerbound(ServerboundPackets1_21_6.CONFIGURATION_ACKNOWLEDGED, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets26_1.CONFIGURATION_ACKNOWLEDGED, null, wrapper -> {
             wrapper.cancel();
             wrapper.user().getProtocolInfo().setClientState(State.CONFIGURATION);
         });

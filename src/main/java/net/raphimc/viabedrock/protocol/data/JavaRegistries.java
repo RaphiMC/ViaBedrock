@@ -26,6 +26,7 @@ import net.raphimc.viabedrock.api.model.resourcepack.BiomeDefinitions;
 import net.raphimc.viabedrock.api.model.resourcepack.FogDefinitions;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.data.generated.java.RegistryKeys;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
@@ -56,9 +57,9 @@ public class JavaRegistries {
     private static void modifyDimensionRegistry(final GameSessionStorage gameSession, final CompoundTag dimensionRegistry) {
         dimensionRegistry.remove("minecraft:overworld_caves");
         if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
-            dimensionRegistry.getCompoundTag("minecraft:overworld").putInt("min_y", 0);
-            dimensionRegistry.getCompoundTag("minecraft:overworld").putInt("height", 256);
-            dimensionRegistry.getCompoundTag("minecraft:overworld").putInt("logical_height", 256);
+            dimensionRegistry.getCompoundTag(Dimension.OVERWORLD.getKey()).putInt("min_y", 0);
+            dimensionRegistry.getCompoundTag(Dimension.OVERWORLD.getKey()).putInt("height", 256);
+            dimensionRegistry.getCompoundTag(Dimension.OVERWORLD.getKey()).putInt("logical_height", 256);
         }
         for (Map.Entry<String, IntIntPair> entry : gameSession.getBedrockDimensionDefinitions().entrySet()) {
             final CompoundTag dimensionTag = new CompoundTag();

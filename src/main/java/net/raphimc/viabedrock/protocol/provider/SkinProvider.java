@@ -81,6 +81,7 @@ public class SkinProvider implements Provider {
         { // Session claims
             claims.put("ServerAddress", handshakeStorage.hostname() + ":" + handshakeStorage.port());
             claims.put("ThirdPartyName", user.getProtocolInfo().getUsername());
+            claims.put("PartyId", "");
         }
         { // Client claims
             claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);

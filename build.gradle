@@ -43,7 +43,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.7.1-SNAPSHOT"
+    compileOnly "com.viaversion:viaversion-common:5.8.0"
     compileOnly "org.yaml:snakeyaml:2.6"
     compileOnly "com.google.guava:guava:33.5.0-jre"
     compileOnly "io.netty:netty-handler:4.2.12.Final"
@@ -84,4 +84,5 @@ dependencies {
 
     toolImplementation "org.jsoup:jsoup:1.22.1"
     toolImplementation "org.ow2.asm:asm-tree:9.9.1"
+    toolImplementation "net.lenni0451.commons:asm:1.9.2"
 }

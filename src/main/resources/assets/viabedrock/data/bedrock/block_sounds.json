@@ -425,6 +425,7 @@
   "minecraft:glowstone": "glass",
   "minecraft:gold_block": "metal",
   "minecraft:gold_ore": "stone",
+  "minecraft:golden_dandelion": "grass",
   "minecraft:golden_rail": "metal",
   "minecraft:granite": "stone",
   "minecraft:granite_double_slab": "stone",

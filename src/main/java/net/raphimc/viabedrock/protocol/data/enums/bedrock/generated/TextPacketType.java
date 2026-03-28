@@ -9,51 +9,51 @@ public enum TextPacketType {
     /**
      * Raw unformatted text message
      */
-    Raw(0),
+    raw(0),
     /**
      * Player chat message with author name
      */
-    Chat(1),
+    chat(1),
     /**
      * Localized message with translation key and parameters
      */
-    Translate(2),
+    translate(2),
     /**
      * Popup notification with translation key and parameters
      */
-    Popup(3),
+    popup(3),
     /**
      * Jukebox 'Now Playing' popup notification
      */
-    JukeboxPopup(4),
+    jukeboxPopup(4),
     /**
      * Action bar tip message
      */
-    Tip(5),
+    tip(5),
     /**
      * System-generated message
      */
-    SystemMessage(6),
+    systemMessage(6),
     /**
      * Private message between players
      */
-    Whisper(7),
+    whisper(7),
     /**
      * Broadcast announcement message with author
      */
-    Announcement(8),
+    announcement(8),
     /**
      * Private message using text object format
      */
-    TextObjectWhisper(9),
+    textObjectWhisper(9),
     /**
      * Rich text message using JSON text object format
      */
-    TextObject(10),
+    textObject(10),
     /**
      * Broadcast announcement using text object format
      */
-    TextObjectAnnouncement(11),
+    textObjectAnnouncement(11),
     ;
 
     private static final Int2ObjectMap<TextPacketType> BY_VALUE = new Int2ObjectOpenHashMap<>();

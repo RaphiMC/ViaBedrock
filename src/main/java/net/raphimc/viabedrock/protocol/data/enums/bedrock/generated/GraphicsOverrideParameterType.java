@@ -110,6 +110,98 @@ public enum GraphicsOverrideParameterType {
      * Sent to set the color grading shadows contrast value
      */
     ShadowsContrast(25),
+    /**
+     * Sent to set the color grading highlights gain value
+     */
+    HighlightsGain(26),
+    /**
+     * Sent to set the color grading highlights gamma value
+     */
+    HighlightsGamma(27),
+    /**
+     * Sent to set the color grading highlights offset value
+     */
+    HighlightsOffset(28),
+    /**
+     * Sent to set the color grading highlights saturation value
+     */
+    HighlightsSaturation(29),
+    /**
+     * Sent to set the color grading midtones gain value
+     */
+    MidtonesGain(30),
+    /**
+     * Sent to set the color grading midtones gamma value
+     */
+    MidtonesGamma(31),
+    /**
+     * Sent to set the color grading midtones offset value
+     */
+    MidtonesOffset(32),
+    /**
+     * Sent to set the color grading midtones saturation value
+     */
+    MidtonesSaturation(33),
+    /**
+     * Sent to set the color grading shadows gain value
+     */
+    ShadowsGain(34),
+    /**
+     * Sent to set the color grading shadows gamma value
+     */
+    ShadowsGamma(35),
+    /**
+     * Sent to set the color grading shadows offset value
+     */
+    ShadowsOffset(36),
+    /**
+     * Sent to set the color grading shadows saturation value
+     */
+    ShadowsSaturation(37),
+    /**
+     * Sent to set the color grading highlights min value
+     */
+    HighlightsMin(38),
+    /**
+     * Sent to set the color grading shadows max value
+     */
+    ShadowsMax(39),
+    /**
+     * Sent to set the color grading temperature value
+     */
+    Temperature(40),
+    /**
+     * Sent to set the lighting sun color value
+     */
+    SunColor(41),
+    /**
+     * Sent to set the lighting sun illuminance value
+     */
+    SunIlluminance(42),
+    /**
+     * Sent to set the lighting moon color value
+     */
+    MoonColor(43),
+    /**
+     * Sent to set the lighting moon illuminance value
+     */
+    MoonIlluminance(44),
+    /**
+     * Sent to set the lighting flash color value
+     */
+    FlashColor(45),
+    /**
+     * Sent to set the lighting flash illuminance value
+     */
+    FlashIlluminance(46),
+    /**
+     * Sent to set the lighting ambient color value
+     */
+    AmbientColor(47),
+    /**
+     * Sent to set the lighting ambient illuminance value
+     */
+    AmbientIlluminance(48),
     ;
 
     private static final Int2ObjectMap<GraphicsOverrideParameterType> BY_VALUE = new Int2ObjectOpenHashMap<>();

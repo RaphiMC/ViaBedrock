@@ -546,7 +546,7 @@ public enum SharedTypes_Legacy_LevelSoundEvent {
     SpearUse(576),
     WoodenSpearUse(577),
     SaddleInWater(578),
-    Undefined(597),
+    Undefined(599),
     StoneSpearAttackHit(579),
     IronSpearAttackHit(580),
     CopperSpearAttackHit(581),
@@ -565,6 +565,8 @@ public enum SharedTypes_Legacy_LevelSoundEvent {
     GoldenSpearUse(594),
     DiamondSpearUse(595),
     NetheriteSpearUse(596),
+    PauseGrowth(597),
+    ResetGrowth(598),
     ;
 
     private static final Int2ObjectMap<SharedTypes_Legacy_LevelSoundEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();

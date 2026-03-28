@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ServerboundPackets26_1;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ServerboundConfigurationPackets1_21_9;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
@@ -53,15 +53,15 @@ public class UnhandledPackets {
         protocol.cancelClientbound(ClientboundBedrockPackets.CAMERA_AIM_ASSIST_ACTOR_PRIORITY); // Not possible in Java Edition
 
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_9.KEEP_ALIVE, null, PacketWrapper::cancel);
-        protocol.cancelServerbound(ServerboundPackets1_21_6.CHAT_ACK);
-        protocol.cancelServerbound(ServerboundPackets1_21_6.CHAT_SESSION_UPDATE);
-        protocol.cancelServerbound(ServerboundPackets1_21_6.CHUNK_BATCH_RECEIVED);
-        protocol.cancelServerbound(ServerboundPackets1_21_6.COOKIE_RESPONSE);
-        protocol.cancelServerbound(ServerboundPackets1_21_6.DEBUG_SAMPLE_SUBSCRIPTION);
-        protocol.cancelServerbound(ServerboundPackets1_21_6.KEEP_ALIVE);
-        protocol.cancelServerbound(ServerboundPackets1_21_6.PLAYER_LOADED);
-        protocol.cancelServerbound(ServerboundPackets1_21_6.SET_TEST_BLOCK);
-        protocol.cancelServerbound(ServerboundPackets1_21_6.TEST_INSTANCE_BLOCK_ACTION);
+        protocol.cancelServerbound(ServerboundPackets26_1.CHAT_ACK);
+        protocol.cancelServerbound(ServerboundPackets26_1.CHAT_SESSION_UPDATE);
+        protocol.cancelServerbound(ServerboundPackets26_1.CHUNK_BATCH_RECEIVED);
+        protocol.cancelServerbound(ServerboundPackets26_1.COOKIE_RESPONSE);
+        protocol.cancelServerbound(ServerboundPackets26_1.DEBUG_SAMPLE_SUBSCRIPTION);
+        protocol.cancelServerbound(ServerboundPackets26_1.KEEP_ALIVE);
+        protocol.cancelServerbound(ServerboundPackets26_1.PLAYER_LOADED);
+        protocol.cancelServerbound(ServerboundPackets26_1.SET_TEST_BLOCK);
+        protocol.cancelServerbound(ServerboundPackets26_1.TEST_INSTANCE_BLOCK_ACTION);
     }
 
 }
