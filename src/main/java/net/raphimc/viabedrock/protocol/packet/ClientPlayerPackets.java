@@ -542,7 +542,7 @@ public class ClientPlayerPackets {
                     switch (blockAction.action()) {
                         // StopDestroyBlock does not have additional data even tho bedrock protocol docs claim it does
                         case StartDestroyBlock, AbortDestroyBlock, CrackBlock, PredictDestroyBlock, ContinueDestroyBlock -> {
-                            wrapper.write(BedrockTypes.POSITION_3I, blockAction.position()); // position
+                            wrapper.write(BedrockTypes.BLOCK_POSITION, blockAction.position()); // position
                             wrapper.write(BedrockTypes.VAR_INT, blockAction.direction()); // facing
                         }
                     }

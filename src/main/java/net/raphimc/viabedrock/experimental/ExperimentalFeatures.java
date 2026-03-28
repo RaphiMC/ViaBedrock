@@ -208,7 +208,8 @@ public class ExperimentalFeatures {
                             entityTracker.getClientPlayer().position(),
                             Position3f.ZERO, // click position
                             0, // block runtime id
-                            ItemUseInventoryTransaction_PredictedResult.Failure
+                            ItemUseInventoryTransaction_PredictedResult.Failure,
+                            (byte) 0 // TODO: client cooldown state
                     )
             );
             wrapper.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
@@ -292,7 +293,8 @@ public class ExperimentalFeatures {
                             clientPlayer.position(),
                             clickPosition,
                             chunkTracker.getBlockState(position),
-                            ItemUseInventoryTransaction_PredictedResult.Success
+                            ItemUseInventoryTransaction_PredictedResult.Success,
+                            (byte) 0 // TODO: client cooldown state
                     )
             );
             transactionPacket.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);

@@ -6795,6 +6795,7 @@
   "minecraft:glowstone": "minecraft:glowstone",
   "minecraft:gold_block": "minecraft:gold_block",
   "minecraft:gold_ore": "minecraft:gold_ore",
+  "minecraft:golden_dandelion": "minecraft:golden_dandelion",
   "minecraft:golden_rail[rail_data_bit=0,rail_direction=0]": "minecraft:powered_rail[powered=false,shape=north_south,waterlogged=false]",
   "minecraft:golden_rail[rail_data_bit=0,rail_direction=1]": "minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]",
   "minecraft:golden_rail[rail_data_bit=0,rail_direction=2]": "minecraft:powered_rail[powered=false,shape=ascending_east,waterlogged=false]",

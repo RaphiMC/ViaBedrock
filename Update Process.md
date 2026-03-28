@@ -13,6 +13,3 @@ This file lists the steps necessary to update ViaBedrock.
 10. Check `StructuredDataKey` usages and update them to new Minecraft version if needed
 11. Update changed packet contents
 12. Update rewriters
-
-TODO (Bedrock):
- - Everything

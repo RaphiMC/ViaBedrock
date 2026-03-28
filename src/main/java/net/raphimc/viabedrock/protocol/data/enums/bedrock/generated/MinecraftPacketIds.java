@@ -222,12 +222,18 @@ public enum MinecraftPacketIds {
     GraphicsParameterOverridePacket(331),
     ServerboundDataStore(332),
     ClientboundDataDrivenUIShowScreen(333),
-    ClientboundDataDrivenUICloseAllScreens(334),
+    ClientboundDataDrivenUICloseScreen(334),
     ClientboundDataDrivenUIReload(335),
     ClientboundTextureShiftPacket(336),
     VoxelShapesPacket(337),
     CameraSpline(338),
     CameraAimAssistActorPriority(339),
+    ResourcePacksReadyForValidation(340),
+    LocatorBarPacket(341),
+    PartyChanged(342),
+    ServerboundDataDrivenScreenClosed(343),
+    SyncWorldClocks(344),
+    ClientboundAttributeLayerSyncPacket(345),
     ;
 
     private static final Int2ObjectMap<MinecraftPacketIds> BY_VALUE = new Int2ObjectOpenHashMap<>();

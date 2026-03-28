@@ -4,33 +4,35 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
-public enum Persona_AnimatedTextureType {
+public enum EAS_ColorAttributeOperation {
 
-    Face(1),
-    Body32x32(2),
-    Body128x128(3),
+    OVERRIDE(0),
+    ALPHA_BLEND(1),
+    ADD(2),
+    SUBTRACT(3),
+    MULTIPLY(4),
     ;
 
-    private static final Int2ObjectMap<Persona_AnimatedTextureType> BY_VALUE = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<EAS_ColorAttributeOperation> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
-        for (Persona_AnimatedTextureType value : values()) {
+        for (EAS_ColorAttributeOperation value : values()) {
             if (!BY_VALUE.containsKey(value.value)) {
                 BY_VALUE.put(value.value, value);
             }
         }
     }
 
-    public static Persona_AnimatedTextureType getByValue(final int value) {
+    public static EAS_ColorAttributeOperation getByValue(final int value) {
         return BY_VALUE.get(value);
     }
 
-    public static Persona_AnimatedTextureType getByValue(final int value, final Persona_AnimatedTextureType fallback) {
+    public static EAS_ColorAttributeOperation getByValue(final int value, final EAS_ColorAttributeOperation fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
-    public static Persona_AnimatedTextureType getByName(final String name) {
-        for (Persona_AnimatedTextureType value : values()) {
+    public static EAS_ColorAttributeOperation getByName(final String name) {
+        for (EAS_ColorAttributeOperation value : values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -38,8 +40,8 @@ public enum Persona_AnimatedTextureType {
         return null;
     }
 
-    public static Persona_AnimatedTextureType getByName(final String name, final Persona_AnimatedTextureType fallback) {
-        for (Persona_AnimatedTextureType value : values()) {
+    public static EAS_ColorAttributeOperation getByName(final String name, final EAS_ColorAttributeOperation fallback) {
+        for (EAS_ColorAttributeOperation value : values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -49,11 +51,11 @@ public enum Persona_AnimatedTextureType {
 
     private final int value;
 
-    Persona_AnimatedTextureType(final Persona_AnimatedTextureType value) {
+    EAS_ColorAttributeOperation(final EAS_ColorAttributeOperation value) {
         this(value.value);
     }
 
-    Persona_AnimatedTextureType(final int value) {
+    EAS_ColorAttributeOperation(final int value) {
         this.value = value;
     }
 

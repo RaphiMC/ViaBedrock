@@ -16,7 +16,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/71803c0ca86d68af9adf0c74d98b6b54a441fb2a/core/src/main/resources/bedrock/block_palette.1_21_110.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/cc7ae040fe786d8d95aff0ee4b25569d2e4b3f6f/core/src/main/resources/bedrock/block_palette.1_26_10.nbt)
 
 ### data/bedrock/block_sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
@@ -36,7 +36,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
 ### data/bedrock/item_tags.json
-[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/cbbf6c3abef9a73743b56f4599934aae3790c0ac/item_tags.json)
+[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/efb7cd308d5d578ca2c6e77e3c43541fa49b7cc3/item_tags.json)
 
 ### data/bedrock/level_sound_event_mappings.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.

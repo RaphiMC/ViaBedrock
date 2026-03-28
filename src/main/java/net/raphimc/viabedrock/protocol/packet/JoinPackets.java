@@ -285,12 +285,22 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // server authoritative sounds
                     if (wrapper.read(Types.BOOLEAN)) { // has server join information
                         if (wrapper.read(Types.BOOLEAN)) { // has gathering join information
-                            wrapper.read(BedrockTypes.STRING); // experience id
+                            wrapper.read(BedrockTypes.UUID); // experience id
                             wrapper.read(BedrockTypes.STRING); // experience name
-                            wrapper.read(BedrockTypes.STRING); // experience world id
+                            wrapper.read(BedrockTypes.UUID); // experience world id
                             wrapper.read(BedrockTypes.STRING); // experience world name
                             wrapper.read(BedrockTypes.STRING); // creator id
+                            wrapper.read(BedrockTypes.UUID); // unknown
+                            wrapper.read(BedrockTypes.UUID); // unknown
+                            wrapper.read(BedrockTypes.STRING); // server id
+                        }
+                        if (wrapper.read(Types.BOOLEAN)) { // has store entry point info
                             wrapper.read(BedrockTypes.STRING); // store id
+                            wrapper.read(BedrockTypes.STRING); // store name
+                        }
+                        if (wrapper.read(Types.BOOLEAN)) { // has presence info
+                            wrapper.read(BedrockTypes.STRING); // experience name
+                            wrapper.read(BedrockTypes.STRING); // world name
                         }
                     }
                     wrapper.read(BedrockTypes.STRING); // server id

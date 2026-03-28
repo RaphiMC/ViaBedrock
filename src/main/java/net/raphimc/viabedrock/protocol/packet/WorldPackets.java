@@ -314,7 +314,7 @@ public class WorldPackets {
             if (dimension != chunkTracker.getDimension()) {
                 return;
             }
-            final BlockPosition center = wrapper.read(BedrockTypes.POSITION_3I); // center position
+            final BlockPosition center = wrapper.read(BedrockTypes.BLOCK_POSITION); // center position
             final long count = wrapper.read(BedrockTypes.UNSIGNED_INT_LE); // count
 
             for (long i = 0; i < count; i++) {
@@ -472,7 +472,7 @@ public class WorldPackets {
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.NETWORK_CHUNK_PUBLISHER_UPDATE, ClientboundPackets26_1.SET_CHUNK_CACHE_RADIUS, wrapper -> {
-            final BlockPosition position = wrapper.read(BedrockTypes.POSITION_3I); // center position
+            final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // center position
             final int radius = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT) >> 4; // radius
             wrapper.write(Types.VAR_INT, radius); // radius
 

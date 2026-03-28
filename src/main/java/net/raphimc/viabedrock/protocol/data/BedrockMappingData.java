@@ -768,7 +768,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            final JsonObject bedrockNoteBlockInstrumentMappingsJson = this.readJson("bedrock/note_block_instrument_mappings.json");
+            final JsonObject bedrockNoteBlockInstrumentMappingsJson = this.readJson("custom/note_block_instrument_mappings.json");
             this.bedrockNoteBlockInstrumentSounds = new EnumMap<>(NoteBlockInstrument.class);
             for (Map.Entry<String, JsonElement> entry : bedrockNoteBlockInstrumentMappingsJson.entrySet()) {
                 final NoteBlockInstrument instrument = NoteBlockInstrument.valueOf(entry.getKey());
