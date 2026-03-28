@@ -67,7 +67,7 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
-import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.ContainerInput;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
@@ -404,7 +404,7 @@ public class InventoryPackets {
             final int revision = wrapper.read(Types.VAR_INT); // revision
             final short slot = wrapper.read(Types.SHORT); // slot
             final byte button = wrapper.read(Types.BYTE); // button
-            final ClickType action = ClickType.values()[wrapper.read(Types.VAR_INT)]; // action
+            final ContainerInput action = ContainerInput.values()[wrapper.read(Types.VAR_INT)]; // action
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             if (inventoryTracker.getPendingCloseContainer() != null) {

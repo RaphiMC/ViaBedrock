@@ -14,9 +14,5 @@ This file lists the steps necessary to update ViaBedrock.
 11. Update changed packet contents
 12. Update rewriters
 
-TODO (Java):
- - Run JavaDataEnumGenerator
- - Protocol changes
-
 TODO (Bedrock):
  - Everything

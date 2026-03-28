@@ -499,10 +499,13 @@ public class WorldPackets {
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SET_TIME, ClientboundPackets26_1.SET_TIME, wrapper -> {
-            wrapper.write(Types.LONG, wrapper.user().get(GameSessionStorage.class).getLevelTime()); // level time
-            final long bedrockTime = wrapper.read(BedrockTypes.VAR_INT); // time of day
-            wrapper.write(Types.LONG, bedrockTime >= 0 ? bedrockTime % 24000L : 24000 + (bedrockTime % 24000L)); // time of day
-            wrapper.write(Types.BOOLEAN, wrapper.user().get(GameRulesStorage.class).getGameRule("doDayLightCycle")); // do day light cycle
+            final long bedrockTime = wrapper.read(BedrockTypes.VAR_INT); // time
+            wrapper.write(Types.LONG, wrapper.user().get(GameSessionStorage.class).getLevelTime()); // game time
+            wrapper.write(Types.VAR_INT, 1); // clock update count
+            wrapper.write(Types.VAR_INT, 0); // registry id (overworld clock)
+            wrapper.write(Types.VAR_LONG, bedrockTime >= 0L ? bedrockTime % 24000L : 24000L + (bedrockTime % 24000L)); // total ticks
+            wrapper.write(Types.FLOAT, 0F); // partial tick
+            wrapper.write(Types.FLOAT, wrapper.user().get(GameRulesStorage.class).getGameRule("doDayLightCycle") ? 1F : 0F); // rate
         });
 
         protocol.registerServerbound(ServerboundPackets26_1.SIGN_UPDATE, ServerboundBedrockPackets.BLOCK_ENTITY_DATA, wrapper -> {
