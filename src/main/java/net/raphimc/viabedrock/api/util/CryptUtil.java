@@ -51,10 +51,14 @@ public class CryptUtil {
         }
     }
 
-    public static KeyPair generateEcdsa384KeyPair() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        final KeyPairGenerator secp384r1 = KeyPairGenerator.getInstance("EC");
-        secp384r1.initialize(new ECGenParameterSpec("secp384r1"));
-        return secp384r1.generateKeyPair();
+    public static KeyPair generateEcdsa384KeyPair() {
+        try {
+            final KeyPairGenerator secp384r1 = KeyPairGenerator.getInstance("EC");
+            secp384r1.initialize(new ECGenParameterSpec("secp384r1"));
+            return secp384r1.generateKeyPair();
+        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+            throw new RuntimeException("Could not generate key pair", e);
+        }
     }
 
 }

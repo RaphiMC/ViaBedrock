@@ -20,37 +20,22 @@ package net.raphimc.viabedrock.protocol.storage;
 import com.viaversion.viaversion.api.connection.StorableObject;
 
 import java.security.KeyPair;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class AuthData implements StorableObject {
 
-    private final String mojangJwt;
-    private final String identityJwt;
     private final String multiplayerToken;
     private final KeyPair sessionKeyPair;
     private final UUID deviceId;
 
-    private String selfSignedJwt;
     private String skinJwt;
     private String displayName;
     private String xuid;
 
-    public AuthData(final String mojangJwt, final String identityJwt, final String multiplayerToken, final KeyPair sessionKeyPair, final UUID deviceId) {
-        this.mojangJwt = mojangJwt;
-        this.identityJwt = identityJwt;
+    public AuthData(final String multiplayerToken, final KeyPair sessionKeyPair, final UUID deviceId) {
         this.multiplayerToken = multiplayerToken;
         this.sessionKeyPair = sessionKeyPair;
         this.deviceId = deviceId;
-    }
-
-    public String getMojangJwt() {
-        return this.mojangJwt;
-    }
-
-    public String getIdentityJwt() {
-        return this.identityJwt;
     }
 
     public String getMultiplayerToken() {
@@ -63,14 +48,6 @@ public class AuthData implements StorableObject {
 
     public UUID getDeviceId() {
         return this.deviceId;
-    }
-
-    public String getSelfSignedJwt() {
-        return this.selfSignedJwt;
-    }
-
-    public void setSelfSignedJwt(final String selfSignedJwt) {
-        this.selfSignedJwt = selfSignedJwt;
     }
 
     public String getSkinJwt() {
@@ -97,18 +74,9 @@ public class AuthData implements StorableObject {
         this.xuid = xuid;
     }
 
-    public List<String> getCertificateChain() {
-        final List<String> chain = new ArrayList<>();
-        if (this.selfSignedJwt != null) {
-            chain.add(this.selfSignedJwt);
-        }
-        if (this.mojangJwt != null) {
-            chain.add(this.mojangJwt);
-        }
-        if (this.identityJwt != null) {
-            chain.add(this.identityJwt);
-        }
-        return chain;
+    @Deprecated(forRemoval = true)
+    public AuthData(final String mojangJwt, final String identityJwt, final String multiplayerToken, final KeyPair sessionKeyPair, final UUID deviceId) {
+        this(multiplayerToken, sessionKeyPair, deviceId);
     }
 
 }

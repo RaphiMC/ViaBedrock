@@ -23,6 +23,7 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
+import net.raphimc.viabedrock.api.util.FNV1;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MemoryTier;
@@ -39,7 +40,6 @@ import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class SkinProvider implements Provider {
 
@@ -88,8 +88,8 @@ public class SkinProvider implements Provider {
             claims.put("GraphicsMode", GraphicsMode.Fancy.getValue());
             claims.put("GuiScale", -1);
             claims.put("UIProfile", UIProfile.Classic.getValue());
-            claims.put("ClientRandomId", ThreadLocalRandom.current().nextLong()); // ?
-            claims.put("SelfSignedId", UUID.randomUUID().toString()); // ?
+            claims.put("ClientRandomId", FNV1.fnv1_64(user.getProtocolInfo().getUsername().getBytes(StandardCharsets.UTF_8))); // Not correct, but should be fine for most cases
+            claims.put("SelfSignedId", user.getProtocolInfo().getUuid()); // Not correct, but should be fine for most cases
             claims.put("IsEditorMode", false);
         }
         { // Device claims
