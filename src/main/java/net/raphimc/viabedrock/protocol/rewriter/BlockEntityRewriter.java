@@ -111,7 +111,7 @@ public class BlockEntityRewriter {
         }
 
         final String tag = blockStateRewriter.tag(bedrockBlockStateId);
-        if (BLOCK_ENTITY_REWRITERS.containsKey(tag)) {
+        if (isBlockEntity(tag)) {
             final BlockEntity javaBlockEntity = BLOCK_ENTITY_REWRITERS.get(tag).toJava(user, bedrockBlockEntity);
             if (javaBlockEntity == null) return null;
 
@@ -130,8 +130,8 @@ public class BlockEntityRewriter {
         return null;
     }
 
-    public static boolean isJavaBlockEntity(final String tag) {
-        return !NULL_REWRITER.equals(BLOCK_ENTITY_REWRITERS.get(tag));
+    public static boolean isBlockEntity(final String tag) {
+        return BLOCK_ENTITY_REWRITERS.containsKey(tag);
     }
 
     public interface Rewriter {

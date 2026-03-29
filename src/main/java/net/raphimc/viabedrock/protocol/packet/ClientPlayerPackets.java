@@ -338,8 +338,8 @@ public class ClientPlayerPackets {
                         clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.AbortDestroyBlock, position, 0));
                     }
 
-                    chunkTracker.handleBlockChange(position, 0, chunkTracker.airId());
-                    PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, 0);
+                    chunkTracker.handleBlockChange(position, 0, chunkTracker.bedrockAirId());
+                    PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, ProtocolConstants.JAVA_AIR_ID);
                 }
                 case DROP_ALL_ITEMS, DROP_ITEM -> {
                     // TODO: Implement DROP_ALL_ITEMS, DROP_ITEM (Currently experimental)

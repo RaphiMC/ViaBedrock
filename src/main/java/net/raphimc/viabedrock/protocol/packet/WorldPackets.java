@@ -246,7 +246,7 @@ public class WorldPackets {
                     try {
                         for (int i = 0; i < sectionCount; i++) {
                             sections[i].mergeWith(chunkTracker.handleBlockPalette(BedrockTypes.CHUNK_SECTION.read(dataBuf))); // chunk section
-                            sections[i].applyPendingBlockUpdates(chunkTracker.airId());
+                            sections[i].applyPendingBlockUpdates(chunkTracker.bedrockAirId());
                         }
                         if (gameSession.getBedrockVanillaVersion().isLowerThan("1.18.0")) {
                             final byte[] biomeData = new byte[256];

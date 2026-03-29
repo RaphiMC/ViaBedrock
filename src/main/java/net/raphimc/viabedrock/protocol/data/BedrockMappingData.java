@@ -286,7 +286,7 @@ public class BedrockMappingData extends MappingDataBase {
 
             this.buildLegacyBlockStateMappings();
 
-            final JsonArray javaPreWaterloggedBlockStatesJson = this.readJson("custom/pre_waterlogged_blockstates.json").getAsJsonArray("blockstates");
+            final JsonArray javaPreWaterloggedBlockStatesJson = this.readJson("custom/pre_waterlogged_blockstates.json", JsonArray.class);
             this.javaPreWaterloggedBlockStates = new IntOpenHashSet(javaPreWaterloggedBlockStatesJson.size());
             for (JsonElement stateJson : javaPreWaterloggedBlockStatesJson) {
                 final BlockState javaBlockState = BlockState.fromString(stateJson.getAsString());
@@ -1238,7 +1238,7 @@ public class BedrockMappingData extends MappingDataBase {
         }
     }
 
-    private JsonObject readJson(String file) {
+    private JsonObject readJson(final String file) {
         return this.readJson(file, JsonObject.class);
     }
 
