@@ -320,7 +320,7 @@ public class EntityMetadataRewriter {
                 }
                 Entity ownerEntity = entityTracker.getEntityByUid(ownerId);
                 if (ownerEntity == null) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not find owner entity with id " + ownerId + " for entity " + entity.type());
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to find owner entity with id " + ownerId + " for entity " + entity.type());
                     break;
                 }
                 if (entity.javaType().isOrHasParent(EntityTypes1_21_11.TAMABLE_ANIMAL)) {
@@ -580,7 +580,7 @@ public class EntityMetadataRewriter {
                     }
                     Entity targetAEntity = entityTracker.getEntityByUid(targetAId);
                     if (targetAEntity == null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not find TARGET_A entity with id " + targetAId + " for entity " + entity.type());
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to find TARGET_A entity with id " + targetAId + " for entity " + entity.type());
                         break;
                     }
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.TARGET_A), VersionedTypes.V26_1.entityDataTypes().varIntType, targetAEntity.javaId()));
@@ -596,7 +596,7 @@ public class EntityMetadataRewriter {
                     }
                     Entity targetBEntity = entityTracker.getEntityByUid(targetBId);
                     if (targetBEntity == null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not find TARGET_B entity with id " + targetBId + " for entity " + entity.type());
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to find TARGET_B entity with id " + targetBId + " for entity " + entity.type());
                         break;
                     }
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.TARGET_B), VersionedTypes.V26_1.entityDataTypes().varIntType, targetBEntity.javaId()));
@@ -612,7 +612,7 @@ public class EntityMetadataRewriter {
                     }
                     Entity targetCEntity = entityTracker.getEntityByUid(targetCId);
                     if (targetCEntity == null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not find TARGET_C entity with id " + targetCId + " for entity " + entity.type());
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to find TARGET_C entity with id " + targetCId + " for entity " + entity.type());
                         break;
                     }
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.TARGET_C), VersionedTypes.V26_1.entityDataTypes().varIntType, targetCEntity.javaId()));
@@ -628,7 +628,7 @@ public class EntityMetadataRewriter {
                     }
                     Entity targetEntity = entityTracker.getEntityByUid(targetId);
                     if (targetEntity == null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not find TARGET entity with id " + targetId + " for entity " + entity.type());
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to find TARGET entity with id " + targetId + " for entity " + entity.type());
                         break;
                     }
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.ATTACK_TARGET), VersionedTypes.V26_1.entityDataTypes().varIntType, targetEntity.javaId()));

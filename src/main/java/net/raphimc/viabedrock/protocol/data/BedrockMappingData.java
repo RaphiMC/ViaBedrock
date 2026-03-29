@@ -1218,7 +1218,7 @@ public class BedrockMappingData extends MappingDataBase {
             resourcePack.processDataChunk(0, bytes);
             return resourcePack;
         } catch (Exception e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
+            this.getLogger().log(Level.SEVERE, "Failed to read " + file, e);
             return null;
         }
     }
@@ -1227,13 +1227,13 @@ public class BedrockMappingData extends MappingDataBase {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open " + file);
+                this.getLogger().severe("Failed to open " + file);
                 return null;
             }
 
             return NBTIO.readTag(new DataInputStream(new GZIPInputStream(inputStream)), TagLimiter.noop(), true, CompoundTag.class);
         } catch (IOException e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
+            this.getLogger().log(Level.SEVERE, "Failed to read " + file, e);
             return null;
         }
     }
@@ -1246,13 +1246,13 @@ public class BedrockMappingData extends MappingDataBase {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open " + file);
+                this.getLogger().severe("Failed to open " + file);
                 return null;
             }
 
             return GsonUtil.getGson().fromJson(new InputStreamReader(inputStream), classOfT);
         } catch (IOException e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
+            this.getLogger().log(Level.SEVERE, "Failed to read " + file, e);
             return null;
         }
     }
@@ -1301,7 +1301,7 @@ public class BedrockMappingData extends MappingDataBase {
     private void buildLegacyBlockStateMappings() {
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("assets/viabedrock/data/bedrock/block_id_meta_to_1_12_0_nbt.bin")) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open block_id_meta_to_1_12_0_nbt.bin");
+                this.getLogger().severe("Failed to open block_id_meta_to_1_12_0_nbt.bin");
                 return;
             }
             final byte[] bytes = inputStream.readAllBytes();
@@ -1330,7 +1330,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
         } catch (Exception e) {
-            this.getLogger().log(Level.SEVERE, "Could not read block_id_meta_to_1_12_0_nbt.bin", e);
+            this.getLogger().log(Level.SEVERE, "Failed to read block_id_meta_to_1_12_0_nbt.bin", e);
             this.bedrockLegacyBlockStates = null;
         }
     }

@@ -107,7 +107,7 @@ public class ProtocolUtil {
             }
         }
         if (handlerField == null) {
-            throw new IllegalStateException("Could not find handler field in PacketMapping");
+            throw new IllegalStateException("Failed to find handler field in PacketMapping");
         }
         handlerField.setAccessible(true);
         try {

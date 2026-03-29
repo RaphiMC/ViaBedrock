@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.provider;
 
+import com.viaversion.viaversion.api.connection.ProtocolInfo;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
 import com.viaversion.viaversion.libs.gson.JsonObject;
@@ -83,13 +84,14 @@ public class SkinProvider implements Provider {
             claims.put("PartyId", "");
         }
         { // Client claims
+            final ProtocolInfo protocolInfo = user.getProtocolInfo();
             claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);
             claims.put("LanguageCode", "en_US");
             claims.put("GraphicsMode", GraphicsMode.Fancy.getValue());
             claims.put("GuiScale", -1);
             claims.put("UIProfile", UIProfile.Classic.getValue());
-            claims.put("ClientRandomId", FNV1.fnv1_64(user.getProtocolInfo().getUsername().getBytes(StandardCharsets.UTF_8))); // Not correct, but should be fine for most cases
-            claims.put("SelfSignedId", user.getProtocolInfo().getUuid()); // Not correct, but should be fine for most cases
+            claims.put("ClientRandomId", FNV1.fnv1_64(protocolInfo.getUsername().getBytes(StandardCharsets.UTF_8))); // Not correct, but should be fine for most cases
+            claims.put("SelfSignedId", protocolInfo.getUuid()); // Not correct, but should be fine for most cases
             claims.put("IsEditorMode", false);
         }
         { // Device claims
