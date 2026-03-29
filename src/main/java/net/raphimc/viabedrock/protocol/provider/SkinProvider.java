@@ -44,8 +44,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SkinProvider implements Provider {
 
     public Map<String, Object> getClientPlayerSkin(final UserConnection user) {
-        final HandshakeStorage handshakeStorage = user.get(HandshakeStorage.class);
-        final AuthData authData = user.get(AuthData.class);
         final Map<String, Object> claims = new HashMap<>();
 
         { // Skin claims
@@ -79,6 +77,7 @@ public class SkinProvider implements Provider {
             claims.put("CapeOnClassicSkin", false);
         }
         { // Session claims
+            final HandshakeStorage handshakeStorage = user.get(HandshakeStorage.class);
             claims.put("ServerAddress", handshakeStorage.hostname() + ":" + handshakeStorage.port());
             claims.put("ThirdPartyName", user.getProtocolInfo().getUsername());
             claims.put("PartyId", "");
@@ -94,11 +93,11 @@ public class SkinProvider implements Provider {
             claims.put("IsEditorMode", false);
         }
         { // Device claims
-            claims.put("DeviceId", authData.getDeviceId().toString().replace("-", ""));
-            claims.put("DeviceModel", "");
-            claims.put("DeviceOS", BuildPlatform.Google.getValue());
+            claims.put("DeviceId", user.get(AuthData.class).getDeviceId().toString().replace("-", ""));
+            claims.put("DeviceModel", "MS-7E51 Micro-Star International Co., Ltd. (Unknown)");
+            claims.put("DeviceOS", BuildPlatform.Win32.getValue());
             claims.put("CurrentInputMode", InputMode.Mouse.getValue());
-            claims.put("DefaultInputMode", InputMode.Touch.getValue());
+            claims.put("DefaultInputMode", InputMode.Mouse.getValue());
         }
         { // Hardware claims
             claims.put("MemoryTier", MemoryTier.SuperHigh.ordinal());
