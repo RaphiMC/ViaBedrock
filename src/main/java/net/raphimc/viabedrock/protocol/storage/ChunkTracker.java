@@ -558,14 +558,18 @@ public class ChunkTracker extends StoredObject {
                 }
 
                 int nonAirBlockCount = 0;
+                int fluidCount = 0;
                 for (int i = 0; i < ChunkSection.SIZE; i++) {
                     final int javaBlockState = remappedBlockPalette.idAt(i);
                     if (javaBlockState != ProtocolConstants.JAVA_AIR_ID) {
                         nonAirBlockCount++;
                     }
+                    if (BedrockProtocol.MAPPINGS.getJavaFluidBlockStates().contains(javaBlockState)) {
+                        fluidCount++;
+                    }
                 }
                 remappedSection.setNonAirBlocksCount(nonAirBlockCount);
-                remappedSection.setFluidCount(1); // TODO: Calculate fluid count
+                remappedSection.setFluidCount(fluidCount);
             } else {
                 remappedBlockPalette.addId(ProtocolConstants.JAVA_AIR_ID);
             }

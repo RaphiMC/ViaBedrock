@@ -92,6 +92,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> bedrockLegacyBlocks;
     private Int2ObjectMap<BedrockBlockState> bedrockLegacyBlockStates;
     private IntSet javaPreWaterloggedBlockStates;
+    private IntSet javaFluidBlockStates;
     private Int2IntMap javaPottedBlockStates;
     private Map<String, IntSet> javaHeightMapBlockStates;
 
@@ -296,6 +297,13 @@ public class BedrockMappingData extends MappingDataBase {
                 this.javaPreWaterloggedBlockStates.add(this.javaBlockStates.get(javaBlockState).intValue());
             }
 
+            this.javaFluidBlockStates = new IntOpenHashSet(this.javaPreWaterloggedBlockStates);
+            for (Map.Entry<BlockState, Integer> entry : this.javaBlockStates.entrySet()) {
+                if (entry.getKey().hasProperty("waterlogged", "true") || entry.getKey().namespacedIdentifier().equals("minecraft:lava")) {
+                    this.javaFluidBlockStates.add(entry.getValue().intValue());
+                }
+            }
+
             final JsonObject javaPottedBlockStatesJson = this.readJson("custom/potted_blockstates.json");
             this.javaPottedBlockStates = new Int2IntOpenHashMap(javaPottedBlockStatesJson.size());
             for (Map.Entry<String, JsonElement> entry : javaPottedBlockStatesJson.entrySet()) {
@@ -407,7 +415,7 @@ public class BedrockMappingData extends MappingDataBase {
                         this.bedrockItemTags.put(bedrockIdentifier, new HashSet<>());
                     }
                     if (!this.bedrockItemTags.get(bedrockIdentifier).add(tagName)) {
-                        throw new RuntimeException("Duplicate bedrock item tag "+ tagName + " for " + bedrockIdentifier);
+                        throw new RuntimeException("Duplicate bedrock item tag " + tagName + " for " + bedrockIdentifier);
                     }
                 }
             }
@@ -1046,6 +1054,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public IntSet getJavaPreWaterloggedBlockStates() {
         return this.javaPreWaterloggedBlockStates;
+    }
+
+    public IntSet getJavaFluidBlockStates() {
+        return this.javaFluidBlockStates;
     }
 
     public Int2IntMap getJavaPottedBlockStates() {
