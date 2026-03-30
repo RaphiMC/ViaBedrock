@@ -30,7 +30,10 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.util.*;
+import net.raphimc.viabedrock.api.util.CryptUtil;
+import net.raphimc.viabedrock.api.util.FNV1;
+import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.api.util.ServerBlacklist;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -51,6 +54,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 public class LoginPackets {
@@ -125,33 +129,47 @@ public class LoginPackets {
                 return;
             }
 
-            final String username = wrapper.read(Types.STRING); // username
+            final String javaUsername = wrapper.read(Types.STRING); // username
             wrapper.read(Types.UUID); // uuid
             wrapper.write(Types.INT, handshakeStorage.protocolVersion()); // protocol version
 
             if (!wrapper.user().has(AuthData.class)) { // Generate self-signed JWT if no AuthData has been provided by the implementation
                 final Instant now = Instant.now();
                 final KeyPair sessionKeyPair = CryptUtil.generateEcdsa384KeyPair();
+                final String encodedPublicKey = Base64.getEncoder().encodeToString(sessionKeyPair.getPublic().getEncoded());
+                final long rawXuid = FNV1.fnv1_64(javaUsername.getBytes(StandardCharsets.UTF_8));
+                final String xuid = String.valueOf(Math.abs(rawXuid));
                 final String multiplayerToken = Jwts.builder()
                         .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
-                        .claim("cpk", Base64.getEncoder().encodeToString(sessionKeyPair.getPublic().getEncoded())) // client public key
-                        .claim("xid", String.valueOf(Math.abs(FNV1.fnv1_64(username.getBytes(StandardCharsets.UTF_8))))) // xuid
-                        .claim("xname", username) // display name
+                        .header().add("x5u", encodedPublicKey).and()
+                        .claim(Claims.AUDIENCE, "api://auth-minecraft-services/multiplayer") // audience
+                        .claim("cpk", encodedPublicKey) // client public key
+                        .claim("leguuid", UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + xuid).getBytes(StandardCharsets.UTF_8))) // ? (Should be the same as SelfSignedId)
+                        .claim("mid", Long.toHexString(rawXuid).toUpperCase(Locale.ROOT)) // PlayFab entity id
+                        .claim("nid", "") // ?
+                        .claim("nname", "") // ?
+                        .claim("pid", "") // ?
+                        .claim("pname", "") // ?
+                        .claim("xid", xuid) // xuid
+                        .claim("xname", javaUsername) // display name
                         .issuedAt(Date.from(now))
-                        .expiration(Date.from(now.plus(4, ChronoUnit.HOURS)))
+                        .expiration(Date.from(now.plus(365, ChronoUnit.DAYS)))
                         .compact();
-                wrapper.user().put(new AuthData(multiplayerToken, sessionKeyPair, UUID.randomUUID()));
+                wrapper.user().put(new AuthData(multiplayerToken, sessionKeyPair));
             }
-
             final AuthData authData = wrapper.user().get(AuthData.class);
-            final Jwt multiplayerTokenJwt = Jwt.parse(authData.getMultiplayerToken());
-            authData.setDisplayName(multiplayerTokenJwt.payload().get("xname").getAsString());
-            authData.setXuid(multiplayerTokenJwt.payload().get("xid").getAsString());
-
             final ProtocolInfo protocolInfo = wrapper.user().getProtocolInfo();
             protocolInfo.setUsername(authData.getDisplayName());
             protocolInfo.setUuid(UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + authData.getXuid()).getBytes(StandardCharsets.UTF_8)));
-
+            if (authData.getDeviceId() == null) {
+                authData.setDeviceId(UUID.randomUUID()); // Not correct, but should be fine for most cases
+            }
+            if (authData.getSelfSignedId() == null) {
+                authData.setSelfSignedId(protocolInfo.getUuid()); // Not correct, but should be fine for most cases
+            }
+            if (authData.getClientRandomId() == null) {
+                authData.setClientRandomId(FNV1.fnv1_64(authData.getSelfSignedId().toString().getBytes(StandardCharsets.UTF_8))); // Not correct, but should be fine for most cases
+            }
             if (authData.getSkinJwt() == null) {
                 final KeyPair sessionKeyPair = authData.getSessionKeyPair();
                 authData.setSkinJwt(Jwts.builder()

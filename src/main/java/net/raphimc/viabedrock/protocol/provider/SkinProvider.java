@@ -17,14 +17,12 @@
  */
 package net.raphimc.viabedrock.protocol.provider;
 
-import com.viaversion.viaversion.api.connection.ProtocolInfo;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
-import net.raphimc.viabedrock.api.util.FNV1;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MemoryTier;
@@ -45,6 +43,7 @@ import java.util.*;
 public class SkinProvider implements Provider {
 
     public Map<String, Object> getClientPlayerSkin(final UserConnection user) {
+        final AuthData authData = user.get(AuthData.class);
         final Map<String, Object> claims = new HashMap<>();
 
         { // Skin claims
@@ -84,18 +83,17 @@ public class SkinProvider implements Provider {
             claims.put("PartyId", "");
         }
         { // Client claims
-            final ProtocolInfo protocolInfo = user.getProtocolInfo();
             claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);
             claims.put("LanguageCode", "en_US");
             claims.put("GraphicsMode", GraphicsMode.Fancy.getValue());
             claims.put("GuiScale", -1);
             claims.put("UIProfile", UIProfile.Classic.getValue());
-            claims.put("ClientRandomId", FNV1.fnv1_64(protocolInfo.getUsername().getBytes(StandardCharsets.UTF_8))); // Not correct, but should be fine for most cases
-            claims.put("SelfSignedId", protocolInfo.getUuid()); // Not correct, but should be fine for most cases
+            claims.put("ClientRandomId", authData.getClientRandomId());
+            claims.put("SelfSignedId", authData.getSelfSignedId());
             claims.put("IsEditorMode", false);
         }
         { // Device claims
-            claims.put("DeviceId", user.get(AuthData.class).getDeviceId().toString().replace("-", ""));
+            claims.put("DeviceId", authData.getDeviceId().toString().replace("-", ""));
             claims.put("DeviceModel", "MS-7E51 Micro-Star International Co., Ltd. (Unknown)");
             claims.put("DeviceOS", BuildPlatform.Win32.getValue());
             claims.put("CurrentInputMode", InputMode.Mouse.getValue());

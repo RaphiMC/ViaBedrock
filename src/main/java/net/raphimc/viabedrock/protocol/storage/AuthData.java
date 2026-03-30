@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StorableObject;
+import net.raphimc.viabedrock.api.util.Jwt;
 
 import java.security.KeyPair;
 import java.util.UUID;
@@ -25,16 +26,22 @@ import java.util.UUID;
 public class AuthData implements StorableObject {
 
     private final String multiplayerToken;
+    private final Jwt multiplayerTokenJwt;
     private final KeyPair sessionKeyPair;
-    private final UUID deviceId;
 
+    private UUID deviceId;
+    private UUID selfSignedId;
+    private Long clientRandomId;
     private String skinJwt;
-    private String displayName;
-    private String xuid;
+
+    public AuthData(final String multiplayerToken, final KeyPair sessionKeyPair) {
+        this.multiplayerToken = multiplayerToken;
+        this.multiplayerTokenJwt = Jwt.parse(multiplayerToken);
+        this.sessionKeyPair = sessionKeyPair;
+    }
 
     public AuthData(final String multiplayerToken, final KeyPair sessionKeyPair, final UUID deviceId) {
-        this.multiplayerToken = multiplayerToken;
-        this.sessionKeyPair = sessionKeyPair;
+        this(multiplayerToken, sessionKeyPair);
         this.deviceId = deviceId;
     }
 
@@ -50,6 +57,26 @@ public class AuthData implements StorableObject {
         return this.deviceId;
     }
 
+    public void setDeviceId(final UUID deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public UUID getSelfSignedId() {
+        return this.selfSignedId;
+    }
+
+    public void setSelfSignedId(final UUID selfSignedId) {
+        this.selfSignedId = selfSignedId;
+    }
+
+    public Long getClientRandomId() {
+        return this.clientRandomId;
+    }
+
+    public void setClientRandomId(final Long clientRandomId) {
+        this.clientRandomId = clientRandomId;
+    }
+
     public String getSkinJwt() {
         return this.skinJwt;
     }
@@ -59,19 +86,11 @@ public class AuthData implements StorableObject {
     }
 
     public String getDisplayName() {
-        return this.displayName;
-    }
-
-    public void setDisplayName(final String displayName) {
-        this.displayName = displayName;
+        return this.multiplayerTokenJwt.payload().get("xname").getAsString();
     }
 
     public String getXuid() {
-        return this.xuid;
-    }
-
-    public void setXuid(final String xuid) {
-        this.xuid = xuid;
+        return this.multiplayerTokenJwt.payload().get("xid").getAsString();
     }
 
     @Deprecated(forRemoval = true)
