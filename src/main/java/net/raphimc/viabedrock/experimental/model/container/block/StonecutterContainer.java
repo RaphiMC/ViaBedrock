@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.experimental.model.recipe.ShapedRecipe;
@@ -33,7 +33,7 @@ import net.raphimc.viabedrock.experimental.storage.CraftingDataTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.ContainerInput;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
@@ -102,7 +102,7 @@ public class StonecutterContainer extends ExperimentalContainer {
     }
 
     @Override
-    public boolean handleClick(final int revision, final short javaSlot, final byte button, final ClickType action) {
+    public boolean handleClick(final int revision, final short javaSlot, final byte button, final ContainerInput action) {
         boolean result = false;
         if (javaSlot != 1) {
             // Handle click first so we update the crafting grid before checking for a recipe
@@ -130,7 +130,7 @@ public class StonecutterContainer extends ExperimentalContainer {
             }
         }
 
-        PacketWrapper containerSlot = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_SLOT, user);
+        PacketWrapper containerSlot = PacketWrapper.create(ClientboundPackets26_1.CONTAINER_SET_SLOT, user);
         containerSlot.write(Types.VAR_INT, (int) this.containerId());
         containerSlot.write(Types.VAR_INT, 0); // Revision
         containerSlot.write(Types.SHORT, (short) 1); // Output slot
@@ -159,7 +159,7 @@ public class StonecutterContainer extends ExperimentalContainer {
             }
         }
 
-        PacketWrapper containerSlot = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_SLOT, user);
+        PacketWrapper containerSlot = PacketWrapper.create(ClientboundPackets26_1.CONTAINER_SET_SLOT, user);
         containerSlot.write(Types.VAR_INT, (int) this.containerId());
         containerSlot.write(Types.VAR_INT, 0); // Revision
         containerSlot.write(Types.SHORT, (short) 1); // Output slot

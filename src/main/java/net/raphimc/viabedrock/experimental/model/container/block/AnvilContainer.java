@@ -32,7 +32,7 @@ import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
-import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.ContainerInput;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
@@ -107,7 +107,7 @@ public class AnvilContainer extends ExperimentalContainer {
     }
 
     @Override
-    public boolean handleClick(final int revision, final short javaSlot, final byte button, final ClickType action) {
+    public boolean handleClick(final int revision, final short javaSlot, final byte button, final ContainerInput action) {
         if (javaSlot == 2) {
             if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
                 //TODO: This is experimental code...

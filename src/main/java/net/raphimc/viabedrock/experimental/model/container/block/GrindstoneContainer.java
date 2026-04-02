@@ -19,29 +19,12 @@ package net.raphimc.viabedrock.experimental.model.container.block;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
-import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
-import net.raphimc.viabedrock.experimental.model.recipe.SmithingRecipe;
-import net.raphimc.viabedrock.experimental.storage.CraftingDataStorage;
-import net.raphimc.viabedrock.experimental.storage.CraftingDataTracker;
-import net.raphimc.viabedrock.experimental.storage.ExperimentalInventoryTracker;
-import net.raphimc.viabedrock.experimental.storage.InventoryRequestTracker;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
-import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GrindstoneContainer extends ExperimentalContainer {
 

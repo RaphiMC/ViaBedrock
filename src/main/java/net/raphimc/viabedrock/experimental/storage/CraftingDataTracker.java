@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.experimental.model.recipe.ItemDescriptor;
 import net.raphimc.viabedrock.experimental.model.recipe.ShapelessRecipe;
@@ -57,7 +57,7 @@ public class CraftingDataTracker extends StoredObject {
         }
         ItemRewriter itemRewriter = user.get(ItemRewriter.class);
 
-        PacketWrapper packet = PacketWrapper.create(ClientboundPackets1_21_11.UPDATE_RECIPES, user);
+        PacketWrapper packet = PacketWrapper.create(ClientboundPackets26_1.UPDATE_RECIPES, user);
         packet.write(Types.VAR_INT, 0); // Property Sets (Prefixed array) TODO: What is this?
         List<CraftingDataStorage> stonecutterList = craftingDataList.stream()
                 .filter(c -> c.recipe().getRecipeTag().equals("stonecutter"))
@@ -89,7 +89,7 @@ public class CraftingDataTracker extends StoredObject {
             return;
         }
 
-        PacketWrapper packet = PacketWrapper.create(ClientboundPackets1_21_11.RECIPE_BOOK_ADD, user);
+        PacketWrapper packet = PacketWrapper.create(ClientboundPackets26_1.RECIPE_BOOK_ADD, user);
         packet.write(Types.VAR_INT, craftingDataList.size()); // Number of recipes
         for (CraftingDataStorage craftingData : craftingDataList) {
             packet.write(Types.VAR_INT, craftingData.networkId()); // Recipe ID

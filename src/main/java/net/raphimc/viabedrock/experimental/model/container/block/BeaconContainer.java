@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
@@ -51,7 +51,7 @@ public class BeaconContainer extends ExperimentalContainer {
     public BeaconContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
         super(user, containerId, ContainerType.BEACON, title, position, 1, CustomBlockTags.BEACON);
 
-        PacketWrapper propertiesPacket = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_DATA, user);
+        PacketWrapper propertiesPacket = PacketWrapper.create(ClientboundPackets26_1.CONTAINER_SET_DATA, user);
         propertiesPacket.write(Types.VAR_INT, (int) containerId);
         propertiesPacket.write(Types.SHORT, (short) 0); // Property ID (Power level)
         // TODO: Dynamically set this based on the beacon's current level
@@ -76,13 +76,13 @@ public class BeaconContainer extends ExperimentalContainer {
 
             ViaBedrock.getPlatform().getLogger().info("Beacon effects - Primary: " + javaIdPrimary + " Secondary: " + javaIdSecondary);
 
-            PacketWrapper propertiesPacket2 = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_DATA, user);
+            PacketWrapper propertiesPacket2 = PacketWrapper.create(ClientboundPackets26_1.CONTAINER_SET_DATA, user);
             propertiesPacket2.write(Types.VAR_INT, (int) containerId);
             propertiesPacket2.write(Types.SHORT, (short) 1); // Property ID (First potion effect )
             propertiesPacket2.write(Types.SHORT, (short) javaIdPrimary); // Property Value
             propertiesPacket2.scheduleSend(BedrockProtocol.class);
 
-            PacketWrapper propertiesPacket3 = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_DATA, user);
+            PacketWrapper propertiesPacket3 = PacketWrapper.create(ClientboundPackets26_1.CONTAINER_SET_DATA, user);
             propertiesPacket3.write(Types.VAR_INT, (int) containerId);
             propertiesPacket3.write(Types.SHORT, (short) 2); // Property ID (Second potion effect )
             propertiesPacket3.write(Types.SHORT, (short) javaIdSecondary); // Property Value

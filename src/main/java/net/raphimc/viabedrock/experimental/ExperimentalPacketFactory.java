@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
 import net.raphimc.viabedrock.experimental.storage.ExperimentalInventoryTracker;
@@ -35,7 +35,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 public class ExperimentalPacketFactory {
 
     public static void sendJavaContainerSetContent(final UserConnection user, final ExperimentalContainer container) {
-        final PacketWrapper containerSetContent = PacketWrapper.create(ClientboundPackets1_21_11.CONTAINER_SET_CONTENT, user);
+        final PacketWrapper containerSetContent = PacketWrapper.create(ClientboundPackets26_1.CONTAINER_SET_CONTENT, user);
         writeJavaContainerSetContent(containerSetContent, container);
         containerSetContent.send(BedrockProtocol.class);
     }
