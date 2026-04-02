@@ -162,7 +162,8 @@ public class BedrockMappingData extends MappingDataBase {
             try {
                 for (Map.Entry<Path, byte[]> entry : FileSystemUtil.getFilesInDirectory("assets/viabedrock/vanilla_packs").entrySet()) {
                     final String packName = entry.getKey().getFileName().toString().replace(".mcpack", "");
-                    final ResourcePack resourcePack = new ResourcePack(null, null, new byte[0], packName, "", false, false, false, null, 0, PackType.Resources);
+                    final PackType type = packName.equals("vanilla_skin_pack") ? PackType.Skins : PackType.Resources;
+                    final ResourcePack resourcePack = new ResourcePack(null, null, new byte[0], packName, "", false, false, false, null, 0, type);
                     resourcePack.setCompressedDataLength(entry.getValue().length, entry.getValue().length);
                     resourcePack.processDataChunk(0, entry.getValue());
                     this.bedrockVanillaResourcePacks.put(packName, resourcePack);

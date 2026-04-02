@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.api.model.resourcepack;
 
+import com.vdurmont.semver4j.Semver;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
@@ -26,6 +27,7 @@ import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PackType;
 
 import javax.crypto.BadPaddingException;
@@ -49,6 +51,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -288,27 +291,43 @@ public class ResourcePack {
 
         final JsonObject manifestJson = this.content.contains("manifest.json") ? this.content.getJson("manifest.json") : this.content.getJson("pack_manifest.json");
         final int formatVersion = manifestJson.get("format_version").getAsInt();
-        if (formatVersion != 1 && formatVersion != 2) {
+        if (formatVersion < 1 || formatVersion > 3) {
             throw new IllegalStateException("Unsupported resource pack format version: " + formatVersion);
         }
         final JsonObject headerObj = manifestJson.getAsJsonObject("header");
+        if (!headerObj.has("name")) {
+            throw new IllegalStateException("Missing header.name in manifest.json");
+        }
         final UUID packId = UUID.fromString(headerObj.get("uuid").getAsString());
         if (this.packId == null) {
             this.packId = packId;
-        } else if (!this.packId.equals(packId)) {
-            throw new IllegalStateException("manifest.json packId mismatch: " + this.packId + " != " + packId);
+        } else if (!packId.equals(this.packId)) {
+            throw new IllegalStateException("manifest.json uuid mismatch: " + packId + " != " + this.packId);
         }
-        final JsonArray versionArray = headerObj.getAsJsonArray("version");
-        final StringBuilder version = new StringBuilder();
-        for (JsonElement digit : versionArray) {
-            version.append(digit.getAsString()).append(".");
+        final String version;
+        if (formatVersion >= 3) {
+            version = headerObj.get("version").getAsString();
+        } else {
+            version = StreamSupport.stream(headerObj.getAsJsonArray("version").spliterator(), false).map(JsonElement::getAsString).collect(Collectors.joining("."));
         }
-        version.deleteCharAt(version.length() - 1);
         if (this.version == null) {
-            this.version = version.toString();
-        } else if (!this.version.contentEquals(version)) {
-            throw new IllegalStateException("manifest.json version mismatch: " + this.version + " != " + version);
+            this.version = version;
+        } else if (!version.equals(this.version)) {
+            throw new IllegalStateException("manifest.json version mismatch: " + version + " != " + this.version);
         }
+        if (this.type == PackType.Resources && formatVersion >= 2) {
+            final Semver minEngineVersion;
+            if (formatVersion >= 3) {
+                minEngineVersion = new Semver(headerObj.get("min_engine_version").getAsString());
+            } else {
+                minEngineVersion = new Semver(StreamSupport.stream(headerObj.getAsJsonArray("min_engine_version").spliterator(), false).map(JsonElement::getAsString).collect(Collectors.joining(".")));
+            }
+            if (minEngineVersion.isGreaterThan(ProtocolConstants.BEDROCK_VERSION_NAME)) {
+                throw new IllegalStateException("Resource pack requires a newer game version: " + minEngineVersion + " > " + ProtocolConstants.BEDROCK_VERSION_NAME);
+            }
+        }
+        // TODO: dependencies handling
+        // TODO: subpack handling
     }
 
     private boolean hasReceivedAllChunks() {
