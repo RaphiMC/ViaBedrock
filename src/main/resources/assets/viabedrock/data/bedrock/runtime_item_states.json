@@ -4662,6 +4662,12 @@
         "componentBased": false
     },
     {
+        "name": "minecraft:golden_dandelion",
+        "id": -1091,
+        "version": 2,
+        "componentBased": false
+    },
+    {
         "name": "minecraft:golden_helmet",
         "id": 383,
         "version": 2,

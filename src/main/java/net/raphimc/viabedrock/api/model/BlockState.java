@@ -153,6 +153,10 @@ public class BlockState {
         return builder.toString();
     }
 
+    public boolean hasProperty(final String key, final String value) {
+        return this.properties.containsKey(key) && this.properties.get(key).equals(value);
+    }
+
     public String namespace() {
         return this.namespace;
     }

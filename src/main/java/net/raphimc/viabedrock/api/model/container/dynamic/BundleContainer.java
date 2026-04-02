@@ -44,7 +44,7 @@ public class BundleContainer extends Container {
     public Item getJavaItem(final int slot) {
         final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
-            throw new IllegalStateException("Could not find bundle in any container");
+            throw new IllegalStateException("Failed to find bundle in any container");
         }
 
         return holdingContainer.key().getJavaItem(holdingContainer.value());
@@ -54,7 +54,7 @@ public class BundleContainer extends Container {
     public Item[] getJavaItems() {
         final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
-            throw new IllegalStateException("Could not find bundle in any container");
+            throw new IllegalStateException("Failed to find bundle in any container");
         }
 
         return holdingContainer.key().getJavaItems();
@@ -79,7 +79,7 @@ public class BundleContainer extends Container {
     public int javaSlot(final int slot) {
         final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
-            throw new IllegalStateException("Could not find bundle in any container");
+            throw new IllegalStateException("Failed to find bundle in any container");
         }
 
         return holdingContainer.key().javaSlot(holdingContainer.value());
@@ -89,7 +89,7 @@ public class BundleContainer extends Container {
     public byte javaContainerId() {
         final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
-            throw new IllegalStateException("Could not find bundle in any container");
+            throw new IllegalStateException("Failed to find bundle in any container");
         }
 
         return holdingContainer.key().javaContainerId();

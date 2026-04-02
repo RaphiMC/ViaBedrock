@@ -105,6 +105,8 @@ public enum ParticleType {
     EyeblossomOpen(96),
     EyeblossomClose(97),
     GreenFlame(98),
+    PauseMobGrowth(99),
+    ResetMobGrowth(100),
     ;
 
     private static final Int2ObjectMap<ParticleType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -92,6 +92,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> bedrockLegacyBlocks;
     private Int2ObjectMap<BedrockBlockState> bedrockLegacyBlockStates;
     private IntSet javaPreWaterloggedBlockStates;
+    private IntSet javaFluidBlockStates;
     private Int2IntMap javaPottedBlockStates;
     private Map<String, IntSet> javaHeightMapBlockStates;
 
@@ -287,7 +288,7 @@ public class BedrockMappingData extends MappingDataBase {
 
             this.buildLegacyBlockStateMappings();
 
-            final JsonArray javaPreWaterloggedBlockStatesJson = this.readJson("custom/pre_waterlogged_blockstates.json").getAsJsonArray("blockstates");
+            final JsonArray javaPreWaterloggedBlockStatesJson = this.readJson("custom/pre_waterlogged_blockstates.json", JsonArray.class);
             this.javaPreWaterloggedBlockStates = new IntOpenHashSet(javaPreWaterloggedBlockStatesJson.size());
             for (JsonElement stateJson : javaPreWaterloggedBlockStatesJson) {
                 final BlockState javaBlockState = BlockState.fromString(stateJson.getAsString());
@@ -295,6 +296,13 @@ public class BedrockMappingData extends MappingDataBase {
                     throw new RuntimeException("Unknown java block state: " + javaBlockState.toBlockStateString());
                 }
                 this.javaPreWaterloggedBlockStates.add(this.javaBlockStates.get(javaBlockState).intValue());
+            }
+
+            this.javaFluidBlockStates = new IntOpenHashSet(this.javaPreWaterloggedBlockStates);
+            for (Map.Entry<BlockState, Integer> entry : this.javaBlockStates.entrySet()) {
+                if (entry.getKey().hasProperty("waterlogged", "true") || entry.getKey().namespacedIdentifier().equals("minecraft:lava")) {
+                    this.javaFluidBlockStates.add(entry.getValue().intValue());
+                }
             }
 
             final JsonObject javaPottedBlockStatesJson = this.readJson("custom/potted_blockstates.json");
@@ -408,7 +416,7 @@ public class BedrockMappingData extends MappingDataBase {
                         this.bedrockItemTags.put(bedrockIdentifier, new HashSet<>());
                     }
                     if (!this.bedrockItemTags.get(bedrockIdentifier).add(tagName)) {
-                        throw new RuntimeException("Duplicate bedrock item tag "+ tagName + " for " + bedrockIdentifier);
+                        throw new RuntimeException("Duplicate bedrock item tag " + tagName + " for " + bedrockIdentifier);
                     }
                 }
             }
@@ -774,7 +782,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            final JsonObject bedrockNoteBlockInstrumentMappingsJson = this.readJson("bedrock/note_block_instrument_mappings.json");
+            final JsonObject bedrockNoteBlockInstrumentMappingsJson = this.readJson("custom/note_block_instrument_mappings.json");
             this.bedrockNoteBlockInstrumentSounds = new EnumMap<>(NoteBlockInstrument.class);
             for (Map.Entry<String, JsonElement> entry : bedrockNoteBlockInstrumentMappingsJson.entrySet()) {
                 final NoteBlockInstrument instrument = NoteBlockInstrument.valueOf(entry.getKey());
@@ -1054,6 +1062,10 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaPreWaterloggedBlockStates;
     }
 
+    public IntSet getJavaFluidBlockStates() {
+        return this.javaFluidBlockStates;
+    }
+
     public Int2IntMap getJavaPottedBlockStates() {
         return this.javaPottedBlockStates;
     }
@@ -1228,7 +1240,7 @@ public class BedrockMappingData extends MappingDataBase {
             resourcePack.processDataChunk(0, bytes);
             return resourcePack;
         } catch (Exception e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
+            this.getLogger().log(Level.SEVERE, "Failed to read " + file, e);
             return null;
         }
     }
@@ -1237,18 +1249,18 @@ public class BedrockMappingData extends MappingDataBase {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open " + file);
+                this.getLogger().severe("Failed to open " + file);
                 return null;
             }
 
             return NBTIO.readTag(new DataInputStream(new GZIPInputStream(inputStream)), TagLimiter.noop(), true, CompoundTag.class);
         } catch (IOException e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
+            this.getLogger().log(Level.SEVERE, "Failed to read " + file, e);
             return null;
         }
     }
 
-    private JsonObject readJson(String file) {
+    private JsonObject readJson(final String file) {
         return this.readJson(file, JsonObject.class);
     }
 
@@ -1256,13 +1268,13 @@ public class BedrockMappingData extends MappingDataBase {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open " + file);
+                this.getLogger().severe("Failed to open " + file);
                 return null;
             }
 
             return GsonUtil.getGson().fromJson(new InputStreamReader(inputStream), classOfT);
         } catch (IOException e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
+            this.getLogger().log(Level.SEVERE, "Failed to read " + file, e);
             return null;
         }
     }
@@ -1299,7 +1311,7 @@ public class BedrockMappingData extends MappingDataBase {
                         if (!this.javaItems.containsKey(identifier)) {
                             throw new IllegalStateException("Unknown java item: " + identifier);
                         }
-                        particle.add(VersionedTypes.V1_21_11.item, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
+                        particle.add(VersionedTypes.V26_1.item, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
                     }
                     default -> throw new IllegalStateException("Unknown particle argument type: " + type);
                 }
@@ -1311,7 +1323,7 @@ public class BedrockMappingData extends MappingDataBase {
     private void buildLegacyBlockStateMappings() {
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("assets/viabedrock/data/bedrock/block_id_meta_to_1_12_0_nbt.bin")) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open block_id_meta_to_1_12_0_nbt.bin");
+                this.getLogger().severe("Failed to open block_id_meta_to_1_12_0_nbt.bin");
                 return;
             }
             final byte[] bytes = inputStream.readAllBytes();
@@ -1340,7 +1352,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
         } catch (Exception e) {
-            this.getLogger().log(Level.SEVERE, "Could not read block_id_meta_to_1_12_0_nbt.bin", e);
+            this.getLogger().log(Level.SEVERE, "Failed to read block_id_meta_to_1_12_0_nbt.bin", e);
             this.bedrockLegacyBlockStates = null;
         }
     }

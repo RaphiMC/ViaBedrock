@@ -279,5 +279,7 @@
       }
     ]
   },
-  "GreenFlame": "minecraft:copper_fire_flame"
+  "GreenFlame": "minecraft:copper_fire_flame",
+  "PauseMobGrowth": "minecraft:pause_mob_growth",
+  "ResetMobGrowth": "minecraft:reset_mob_growth"
 }

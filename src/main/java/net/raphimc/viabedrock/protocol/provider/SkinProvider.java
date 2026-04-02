@@ -39,12 +39,10 @@ import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class SkinProvider implements Provider {
 
     public Map<String, Object> getClientPlayerSkin(final UserConnection user) {
-        final HandshakeStorage handshakeStorage = user.get(HandshakeStorage.class);
         final AuthData authData = user.get(AuthData.class);
         final Map<String, Object> claims = new HashMap<>();
 
@@ -79,8 +77,10 @@ public class SkinProvider implements Provider {
             claims.put("CapeOnClassicSkin", false);
         }
         { // Session claims
+            final HandshakeStorage handshakeStorage = user.get(HandshakeStorage.class);
             claims.put("ServerAddress", handshakeStorage.hostname() + ":" + handshakeStorage.port());
             claims.put("ThirdPartyName", user.getProtocolInfo().getUsername());
+            claims.put("PartyId", "");
         }
         { // Client claims
             claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);
@@ -88,16 +88,16 @@ public class SkinProvider implements Provider {
             claims.put("GraphicsMode", GraphicsMode.Fancy.getValue());
             claims.put("GuiScale", -1);
             claims.put("UIProfile", UIProfile.Classic.getValue());
-            claims.put("ClientRandomId", ThreadLocalRandom.current().nextLong()); // ?
-            claims.put("SelfSignedId", UUID.randomUUID().toString()); // ?
+            claims.put("ClientRandomId", authData.getClientRandomId());
+            claims.put("SelfSignedId", authData.getSelfSignedId());
             claims.put("IsEditorMode", false);
         }
         { // Device claims
             claims.put("DeviceId", authData.getDeviceId().toString().replace("-", ""));
-            claims.put("DeviceModel", "");
-            claims.put("DeviceOS", BuildPlatform.Google.getValue());
+            claims.put("DeviceModel", "MS-7E51 Micro-Star International Co., Ltd. (Unknown)");
+            claims.put("DeviceOS", BuildPlatform.Win32.getValue());
             claims.put("CurrentInputMode", InputMode.Mouse.getValue());
-            claims.put("DefaultInputMode", InputMode.Touch.getValue());
+            claims.put("DefaultInputMode", InputMode.Mouse.getValue());
         }
         { // Hardware claims
             claims.put("MemoryTier", MemoryTier.SuperHigh.ordinal());

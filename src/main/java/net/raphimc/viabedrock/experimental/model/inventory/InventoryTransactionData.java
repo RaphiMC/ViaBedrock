@@ -46,7 +46,8 @@ public interface InventoryTransactionData {
             Position3f playerPosition,
             Position3f clickPosition,
             int blockRuntimeId,
-            ItemUseInventoryTransaction_PredictedResult predictedResult
+            ItemUseInventoryTransaction_PredictedResult predictedResult,
+            byte clientCooldownState
     ) implements InventoryTransactionData {}
 
     // UseItemOnEntityTransactionData represents an inventory transaction data object sent when the client uses an item on an entity.

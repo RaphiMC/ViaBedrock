@@ -35,7 +35,10 @@ import net.raphimc.viabedrock.protocol.types.chunk.DataPaletteType;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataType;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityPropertiesType;
 import net.raphimc.viabedrock.protocol.types.model.*;
-import net.raphimc.viabedrock.protocol.types.position.*;
+import net.raphimc.viabedrock.protocol.types.position.BlockPositionType;
+import net.raphimc.viabedrock.protocol.types.position.Position2fType;
+import net.raphimc.viabedrock.protocol.types.position.Position3fType;
+import net.raphimc.viabedrock.protocol.types.position.SubChunkOffsetType;
 import net.raphimc.viabedrock.protocol.types.primitive.*;
 
 import java.awt.image.BufferedImage;
@@ -73,7 +76,6 @@ public class BedrockTypes {
     public static final Type<Tag> TAG_LE = new TagLEType();
     public static final Type<Tag> COMPOUND_TAG_VALUE = new TagValueType(Tag_Type.Compound);
     public static final Type<BlockPosition> BLOCK_POSITION = new BlockPositionType();
-    public static final Type<BlockPosition> POSITION_3I = new Position3iType();
     public static final Type<Position3f> POSITION_3F = new Position3fType();
     public static final Type<Position3f> OPTIONAL_POSITION_3F = new Position3fType.OptionalPosition3fType();
     public static final Type<Position2f> POSITION_2F = new Position2fType();

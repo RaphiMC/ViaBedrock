@@ -19,19 +19,21 @@ package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.ProtocolInfo;
-import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
 import com.viaversion.viaversion.protocols.base.ServerboundHandshakePackets;
 import com.viaversion.viaversion.protocols.base.ServerboundLoginPackets;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.util.*;
+import net.raphimc.viabedrock.api.util.CryptUtil;
+import net.raphimc.viabedrock.api.util.FNV1;
+import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.api.util.ServerBlacklist;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -48,11 +50,12 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
 
 public class LoginPackets {
 
@@ -68,18 +71,18 @@ public class LoginPackets {
             final PacketCompressionAlgorithm algorithm = PacketCompressionAlgorithm.getByValue(wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE), PacketCompressionAlgorithm.None); // compression algorithm
             Via.getManager().getProviders().get(NettyPipelineProvider.class).enableCompression(wrapper.user(), algorithm, threshold);
 
-            final JsonObject authInfoObj = new JsonObject();
-            final List<String> certificateChain = authData.getCertificateChain();
-            final boolean fullAuth = authData.getMultiplayerToken() != null || certificateChain.size() == 3;
-            authInfoObj.addProperty("AuthenticationType", (fullAuth ? AuthenticationType.Full : AuthenticationType.SelfSigned).ordinal());
-            if (!certificateChain.isEmpty()) {
-                final JsonObject certificateChainObj = new JsonObject();
-                certificateChainObj.add("chain", certificateChain.stream().collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
-                authInfoObj.addProperty("Certificate", certificateChainObj.toString());
-            } else {
-                authInfoObj.addProperty("Certificate", "");
+            boolean isSelfSigned;
+            try {
+                Jwts.parser().clockSkewSeconds(CLOCK_SKEW).verifyWith(authData.getSessionKeyPair().getPublic()).build().parseSignedClaims(authData.getMultiplayerToken());
+                isSelfSigned = true;
+            } catch (JwtException e) {
+                isSelfSigned = false;
             }
-            authInfoObj.addProperty("Token", authData.getMultiplayerToken() != null ? authData.getMultiplayerToken() : "");
+
+            final JsonObject authInfoObj = new JsonObject();
+            authInfoObj.addProperty("AuthenticationType", (!isSelfSigned ? AuthenticationType.Full : AuthenticationType.SelfSigned).ordinal());
+            authInfoObj.addProperty("Certificate", "{\"chain\":[\"..\"]}\n");
+            authInfoObj.addProperty("Token", authData.getMultiplayerToken());
             final String authInfo = authInfoObj.toString();
 
             final PacketWrapper login = PacketWrapper.create(ServerboundBedrockPackets.LOGIN, wrapper.user());
@@ -91,16 +94,11 @@ public class LoginPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SERVER_TO_CLIENT_HANDSHAKE, null, wrapper -> {
             wrapper.cancel();
-            final AuthData authData = wrapper.user().get(AuthData.class);
+            final KeyPair sessionKeyPair = wrapper.user().get(AuthData.class).getSessionKeyPair();
             final Jws<Claims> jwt = Jwts.parser().clockSkewSeconds(CLOCK_SKEW).keyLocator(CryptUtil.X5U_KEY_LOCATOR).build().parseSignedClaims(wrapper.read(BedrockTypes.STRING)); // jwt
-
-            try {
-                final byte[] salt = Base64.getDecoder().decode(jwt.getPayload().get("salt", String.class));
-                final SecretKey secretKey = ecdhKeyExchange((ECPrivateKey) authData.getSessionKeyPair().getPrivate(), CryptUtil.ecPublicKeyFromBase64((String) jwt.getHeader().get("x5u")), salt);
-                Via.getManager().getProviders().get(NettyPipelineProvider.class).enableEncryption(wrapper.user(), secretKey);
-            } catch (Throwable e) {
-                throw new RuntimeException("Failed to enable encryption", e);
-            }
+            final byte[] salt = Base64.getDecoder().decode(jwt.getPayload().get("salt", String.class));
+            final SecretKey secretKey = ecdhKeyExchange(sessionKeyPair.getPrivate(), CryptUtil.X5U_KEY_LOCATOR.locate(jwt.getHeader()), salt);
+            Via.getManager().getProviders().get(NettyPipelineProvider.class).enableEncryption(wrapper.user(), secretKey);
 
             final PacketWrapper clientToServerHandshake = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_TO_SERVER_HANDSHAKE, wrapper.user());
             clientToServerHandshake.sendToServer(BedrockProtocol.class);
@@ -131,90 +129,73 @@ public class LoginPackets {
                 return;
             }
 
-            final ProtocolInfo protocolInfo = wrapper.user().getProtocolInfo();
-            protocolInfo.setUsername(wrapper.read(Types.STRING));
-            protocolInfo.setUuid(wrapper.read(Types.UUID));
-
+            final String javaUsername = wrapper.read(Types.STRING); // username
+            wrapper.read(Types.UUID); // uuid
             wrapper.write(Types.INT, handshakeStorage.protocolVersion()); // protocol version
 
-            try {
-                validateAndFillAuthData(wrapper.user());
-            } catch (Throwable e) {
-                throw new RuntimeException("Could not validate and fill auth data", e);
+            if (!wrapper.user().has(AuthData.class)) { // Generate self-signed JWT if no AuthData has been provided by the implementation
+                final Instant now = Instant.now();
+                final KeyPair sessionKeyPair = CryptUtil.generateEcdsa384KeyPair();
+                final String encodedPublicKey = Base64.getEncoder().encodeToString(sessionKeyPair.getPublic().getEncoded());
+                final long rawXuid = FNV1.fnv1_64(javaUsername.getBytes(StandardCharsets.UTF_8));
+                final String xuid = String.valueOf(Math.abs(rawXuid));
+                final String multiplayerToken = Jwts.builder()
+                        .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
+                        .header().add("x5u", encodedPublicKey).and()
+                        .claim(Claims.AUDIENCE, "api://auth-minecraft-services/multiplayer") // audience
+                        .claim("cpk", encodedPublicKey) // client public key
+                        .claim("leguuid", UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + xuid).getBytes(StandardCharsets.UTF_8))) // ? (Should be the same as SelfSignedId)
+                        .claim("mid", Long.toHexString(rawXuid).toUpperCase(Locale.ROOT)) // PlayFab entity id
+                        .claim("nid", "") // ?
+                        .claim("nname", "") // ?
+                        .claim("pid", "") // ?
+                        .claim("pname", "") // ?
+                        .claim("xid", xuid) // xuid
+                        .claim("xname", javaUsername) // display name
+                        .issuedAt(Date.from(now))
+                        .expiration(Date.from(now.plus(365, ChronoUnit.DAYS)))
+                        .compact();
+                wrapper.user().put(new AuthData(multiplayerToken, sessionKeyPair));
+            }
+            final AuthData authData = wrapper.user().get(AuthData.class);
+            final ProtocolInfo protocolInfo = wrapper.user().getProtocolInfo();
+            protocolInfo.setUsername(authData.getDisplayName());
+            protocolInfo.setUuid(UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + authData.getXuid()).getBytes(StandardCharsets.UTF_8)));
+            if (authData.getDeviceId() == null) {
+                authData.setDeviceId(UUID.randomUUID()); // Not correct, but should be fine for most cases
+            }
+            if (authData.getSelfSignedId() == null) {
+                authData.setSelfSignedId(protocolInfo.getUuid()); // Not correct, but should be fine for most cases
+            }
+            if (authData.getClientRandomId() == null) {
+                authData.setClientRandomId(FNV1.fnv1_64(authData.getSelfSignedId().toString().getBytes(StandardCharsets.UTF_8))); // Not correct, but should be fine for most cases
+            }
+            if (authData.getSkinJwt() == null) {
+                final KeyPair sessionKeyPair = authData.getSessionKeyPair();
+                authData.setSkinJwt(Jwts.builder()
+                        .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
+                        .header().add("x5u", Base64.getEncoder().encodeToString(sessionKeyPair.getPublic().getEncoded())).and()
+                        .claims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(wrapper.user()))
+                        .compact());
             }
         });
         protocol.registerServerboundTransition(ServerboundLoginPackets.LOGIN_ACKNOWLEDGED, null, PacketWrapper::cancel);
     }
 
-    private static void validateAndFillAuthData(final UserConnection user) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        if (user.has(AuthData.class)) { // Externally supplied auth data
-            final AuthData authData = user.get(AuthData.class);
-            if (authData.getMojangJwt() != null && authData.getSelfSignedJwt() == null) {
-                final KeyPair sessionKeyPair = authData.getSessionKeyPair();
-                final Jwt mojangJwt = Jwt.parse(authData.getMojangJwt());
-                authData.setSelfSignedJwt(Jwts.builder()
-                        .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
-                        .header().add("x5u", Base64.getEncoder().encodeToString(sessionKeyPair.getPublic().getEncoded())).and()
-                        .claim("certificateAuthority", true)
-                        .claim("identityPublicKey", mojangJwt.header().get("x5u").getAsString())
-                        .expiration(Date.from(Instant.now().plus(2, ChronoUnit.DAYS)))
-                        .notBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
-                        .compact());
-            }
-        } else {
-            final KeyPair sessionKeyPair = CryptUtil.generateEcdsa384KeyPair();
-            final String encodedPublicKey = Base64.getEncoder().encodeToString(sessionKeyPair.getPublic().getEncoded());
-            final long xuid = Math.abs(FNV1.fnv1_64(user.getProtocolInfo().getUsername().getBytes(StandardCharsets.UTF_8)));
+    private static SecretKey ecdhKeyExchange(final PrivateKey localPrivateKey, final Key remotePublicKey, final byte[] salt) {
+        try {
+            final KeyAgreement ecdh = KeyAgreement.getInstance("ECDH");
+            ecdh.init(localPrivateKey);
+            ecdh.doPhase(remotePublicKey, true);
+            final byte[] sharedSecret = ecdh.generateSecret();
 
-            final Map<String, Object> extraData = new HashMap<>();
-            extraData.put("displayName", user.getProtocolInfo().getUsername());
-            extraData.put("XUID", String.valueOf(xuid));
-            extraData.put("identity", UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + xuid).getBytes(StandardCharsets.UTF_8)));
-
-            final String identityJwt = Jwts.builder()
-                    .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
-                    .header().add("x5u", encodedPublicKey).and()
-                    .claim("identityPublicKey", encodedPublicKey)
-                    .claim("extraData", extraData)
-                    .expiration(Date.from(Instant.now().plus(365, ChronoUnit.DAYS)))
-                    .notBefore(Date.from(Instant.now().minus(1, ChronoUnit.MINUTES)))
-                    .compact();
-
-            user.put(new AuthData(null, identityJwt, null, sessionKeyPair, UUID.randomUUID()));
+            final MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+            sha256.update(salt);
+            sha256.update(sharedSecret);
+            return new SecretKeySpec(sha256.digest(), "AES");
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException("Failed to perform ECDH key exchange", e);
         }
-
-        final AuthData authData = user.get(AuthData.class);
-        if (authData.getSkinJwt() == null) {
-            authData.setSkinJwt(Jwts.builder()
-                    .signWith(authData.getSessionKeyPair().getPrivate(), Jwts.SIG.ES384)
-                    .header().add("x5u", Base64.getEncoder().encodeToString(authData.getSessionKeyPair().getPublic().getEncoded())).and()
-                    .claims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(user))
-                    .compact());
-        }
-        if (authData.getMultiplayerToken() != null) {
-            final Jwt multiplayerTokenJwt = Jwt.parse(authData.getMultiplayerToken());
-            authData.setDisplayName(multiplayerTokenJwt.payload().get("xname").getAsString());
-            authData.setXuid(multiplayerTokenJwt.payload().get("xid").getAsString());
-        } else if (authData.getIdentityJwt() != null) {
-            final Jwt identityJwt = Jwt.parse(authData.getIdentityJwt());
-            final JsonObject extraData = identityJwt.payload().getAsJsonObject("extraData");
-            authData.setDisplayName(extraData.get("displayName").getAsString());
-            authData.setXuid(extraData.get("XUID").getAsString());
-        } else {
-            throw new IllegalStateException("No multiplayer token or identity token present to extract display name and XUID from");
-        }
-    }
-
-    private static SecretKey ecdhKeyExchange(final ECPrivateKey localPrivateKey, final ECPublicKey remotePublicKey, final byte[] salt) throws NoSuchAlgorithmException, InvalidKeyException {
-        final KeyAgreement ecdh = KeyAgreement.getInstance("ECDH");
-        ecdh.init(localPrivateKey);
-        ecdh.doPhase(remotePublicKey, true);
-        final byte[] sharedSecret = ecdh.generateSecret();
-
-        final MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
-        sha256.update(salt);
-        sha256.update(sharedSecret);
-        return new SecretKeySpec(sha256.digest(), "AES");
     }
 
 }

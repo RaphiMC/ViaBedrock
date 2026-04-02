@@ -43,17 +43,17 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.7.1-SNAPSHOT"
+    compileOnly "com.viaversion:viaversion-common:5.8.1-SNAPSHOT"
     compileOnly "org.yaml:snakeyaml:2.6"
     compileOnly "com.google.guava:guava:33.5.0-jre"
-    compileOnly "io.netty:netty-handler:4.2.10.Final"
+    compileOnly "io.netty:netty-handler:4.2.12.Final"
     compileOnly "com.google.code.gson:gson:2.13.2"
     compileOnly "dev.kastle.netty:netty-transport-raknet:1.7.0"
 
-    api("io.netty:netty-codec-http:4.2.10.Final") {
+    api("io.netty:netty-codec-http:4.2.12.Final") {
         transitive = false
     }
-    api("io.netty:netty-codec-compression:4.2.10.Final") {
+    api("io.netty:netty-codec-compression:4.2.12.Final") {
         transitive = false
     }
     api "io.jsonwebtoken:jjwt-impl:0.13.0"
@@ -84,4 +84,5 @@ dependencies {
 
     toolImplementation "org.jsoup:jsoup:1.22.1"
     toolImplementation "org.ow2.asm:asm-tree:9.9.1"
+    toolImplementation "net.lenni0451.commons:asm:1.9.2"
 }

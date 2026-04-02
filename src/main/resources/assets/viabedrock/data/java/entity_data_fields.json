@@ -1,6 +1,7 @@
 {
   "ABSTRACT_AGEABLE": [
-    "BABY"
+    "BABY",
+    "AGE_LOCKED"
   ],
   "ABSTRACT_ARROW": [
     "FLAGS",
@@ -94,10 +95,12 @@
     "VARIANT",
     "IS_LYING",
     "RELAX_STATE_ONE",
-    "COLLAR_COLOR"
+    "COLLAR_COLOR",
+    "SOUND_VARIANT"
   ],
   "CHICKEN": [
-    "VARIANT"
+    "VARIANT",
+    "SOUND_VARIANT"
   ],
   "COMMAND_BLOCK_MINECART": [
     "COMMAND_NAME",
@@ -108,7 +111,8 @@
     "COPPER_GOLEM_STATE"
   ],
   "COW": [
-    "VARIANT"
+    "VARIANT",
+    "SOUND_VARIANT"
   ],
   "CREAKING": [
     "CAN_MOVE",
@@ -297,7 +301,8 @@
   ],
   "PIG": [
     "BOOST_TIME",
-    "VARIANT"
+    "VARIANT",
+    "SOUND_VARIANT"
   ],
   "PIGLIN": [
     "BABY",
@@ -356,6 +361,9 @@
     "BOOST_TIME",
     "SUFFOCATING"
   ],
+  "TADPOLE": [
+    "AGE_LOCKED"
+  ],
   "TAMABLE_ANIMAL": [
     "FLAGS",
     "OWNERUUID"
@@ -391,7 +399,8 @@
     "FLAGS"
   ],
   "VILLAGER": [
-    "VILLAGER_DATA"
+    "VILLAGER_DATA",
+    "VILLAGER_DATA_FINALIZED"
   ],
   "WARDEN": [
     "CLIENT_ANGER_LEVEL"
@@ -428,6 +437,7 @@
   ],
   "ZOMBIE_VILLAGER": [
     "CONVERTING",
-    "VILLAGER_DATA"
+    "VILLAGER_DATA",
+    "VILLAGER_DATA_FINALIZED"
   ]
 }
