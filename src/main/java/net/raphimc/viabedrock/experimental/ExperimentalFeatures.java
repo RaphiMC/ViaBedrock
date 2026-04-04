@@ -750,7 +750,7 @@ public class ExperimentalFeatures {
             craftingDataTracker.updateCraftingDataList(recipes);
 
             //TODO: craftingDataTracker.sendJavaUpdateRecipes(wrapper.user());
-            craftingDataTracker.sendJavaRecipeBook(wrapper.user()); //TODO: Cursed
+            //craftingDataTracker.sendJavaRecipeBook(wrapper.user()); //TODO: Broken: 26.1
 
             wrapper.clearPacket();
 
@@ -870,7 +870,7 @@ public class ExperimentalFeatures {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_TRANSACTION, null, wrapper -> {
             final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
-            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            ExperimentalInventoryTracker inventoryTracker = wrapper.user().get(ExperimentalInventoryTracker.class);
 
             wrapper.cancel();
             BedrockInventoryTransaction inventoryTransaction = wrapper.read(inventoryTransactionRewriter.getInventoryTransactionType());
@@ -883,11 +883,11 @@ public class ExperimentalFeatures {
             if (inventoryTransaction.actions() != null && !inventoryTransaction.actions().isEmpty()) {
                 for (InventoryActionData action : inventoryTransaction.actions()) {
                     if (action.source().type() == InventorySourceType.ContainerInventory) {
-                        Container container = inventoryTracker.getContainerClientbound((byte) action.source().containerId(), null, null);
+                        ExperimentalContainer container = inventoryTracker.getContainerClientbound((byte) action.source().containerId(), null, null);
 
                         if (container != null) {
                             container.setItem(action.slot(), action.toItem());
-                            PacketFactory.sendJavaContainerSetContent(wrapper.user(),  container);
+                            ExperimentalPacketFactory.sendJavaContainerSetContent(wrapper.user(),  container);
                         } else {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received inventory action for unknown container ID: " + action.source().containerId());
                         }

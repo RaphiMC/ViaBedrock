@@ -76,6 +76,8 @@ public abstract class ExperimentalContainer {
     public abstract FullContainerName getFullContainerName(int slot);
 
     public boolean handleClick(final int revision, final short javaSlot, final byte button, final ContainerInput action) {
+        if (javaSlot == -1) return false; // TODO: Safeguard
+
         ExperimentalContainer container = this;
         ExperimentalInventoryTracker inventoryTracker = user.get(ExperimentalInventoryTracker.class);
         InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);

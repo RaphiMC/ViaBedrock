@@ -94,7 +94,7 @@ public class CraftingDataTracker extends StoredObject {
         for (CraftingDataStorage craftingData : craftingDataList) {
             packet.write(Types.VAR_INT, craftingData.networkId()); // Recipe ID
             craftingData.recipe().writeJavaRecipeData(packet, user);
-            packet.write(Types.VAR_INT, craftingData.networkId()); //TODO: Group Id
+            packet.write(Types.OPTIONAL_VAR_INT, craftingData.networkId()); //TODO: Group Id
             packet.write(Types.VAR_INT, 1); // TODO: Category ID
             packet.write(Types.BOOLEAN, false); // Optional Ingredients list
             packet.write(Types.BYTE, (byte) 0x00); // Recipe Flags (0x01: show notification; 0x02: highlight as new)
