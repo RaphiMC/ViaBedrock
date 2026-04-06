@@ -101,6 +101,34 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, beeBitMask));
                 }
 
+                if (entity.javaType().is(EntityTypes1_21_11.FOX)) { // TODO: Test
+                    byte foxBitMask = 0;
+                    if (bedrockFlags.contains(ActorFlags.SITTING)) {
+                        foxBitMask |= 0x01;
+                    }
+                    // 0x02: Unused
+                    if (bedrockFlags.contains(ActorFlags.SNEAKING)) { // TODO: Crouching
+                        foxBitMask |= 0x04;
+                    }
+                    if (bedrockFlags.contains(ActorFlags.INTERESTED)) {
+                        foxBitMask |= 0x08;
+                    }
+                    if (false) { // TODO: Pouncing
+                        foxBitMask |= 0x10;
+                    }
+                    if (bedrockFlags.contains(ActorFlags.SLEEPING)) {
+                        foxBitMask |= 0x20;
+                    }
+                    if (false) { // TODO: Faceplanted
+                        foxBitMask |= 0x40;
+                    }
+                    if (false) { // TODO: Defending
+                        foxBitMask |= (byte) 0x80;
+                    }
+
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, foxBitMask));
+                }
+
                 if (entity.javaType().is(EntityTypes1_21_11.OCELOT)) {
                     boolean isTrusting = bedrockFlags.contains(ActorFlags.TRUSTING);
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.TRUSTING), VersionedTypes.V26_1.entityDataTypes().booleanType, isTrusting));
@@ -178,6 +206,12 @@ public class EntityMetadataRewriter {
 
                     boolean ignited = bedrockFlags.contains(ActorFlags.IGNITED);
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.IS_IGNITED), VersionedTypes.V26_1.entityDataTypes().booleanType, ignited));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_11.SPIDER)) {
+                    boolean climbing = bedrockFlags.contains(ActorFlags.WALLCLIMBING);
+                    byte mask = (byte) (climbing ? 1 : 0);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, mask));
                 }
 
                 if (entity.javaType().is(EntityTypes1_21_11.ZOGLIN)) {
