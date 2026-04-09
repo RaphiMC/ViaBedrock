@@ -353,7 +353,7 @@ public abstract class ExperimentalContainer {
         return copy;
     }
 
-    private BedrockItem itemAfterRemovingAmount(final BedrockItem item, final int amountToRemove) {
+    protected BedrockItem itemAfterRemovingAmount(final BedrockItem item, final int amountToRemove) {
         if (amountToRemove >= item.amount()) {
             return BedrockItem.empty();
         }

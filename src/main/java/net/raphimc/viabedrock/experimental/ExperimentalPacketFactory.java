@@ -40,6 +40,14 @@ public class ExperimentalPacketFactory {
         containerSetContent.send(BedrockProtocol.class);
     }
 
+    public static void sendJavaContainerProperties(final UserConnection user, final ExperimentalContainer container, final short property, final short value) {
+        final PacketWrapper containerSetProperty = PacketWrapper.create(ClientboundPackets26_1.CONTAINER_SET_DATA, user);
+        containerSetProperty.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
+        containerSetProperty.write(Types.SHORT, property); // property id
+        containerSetProperty.write(Types.SHORT, value); // property value
+        containerSetProperty.send(BedrockProtocol.class);
+    }
+
     public static void sendBedrockPlayerAction(final UserConnection user, long entityId, PlayerActionType actionType, BlockPosition position, BlockPosition resultPosition, int face) {
         final PacketWrapper startItemUseOn = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, user);
         startItemUseOn.write(BedrockTypes.UNSIGNED_VAR_LONG, entityId); // entity runtime id

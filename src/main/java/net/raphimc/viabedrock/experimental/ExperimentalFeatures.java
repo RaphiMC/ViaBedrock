@@ -532,7 +532,7 @@ public class ExperimentalFeatures {
                 case SMOKER -> container = new SmokerContainer(wrapper.user(), containerId, title, position);
                 case BREWING_STAND -> container = new BrewingStandContainer(wrapper.user(), containerId, title, position);
                 case BEACON -> container = new BeaconContainer(wrapper.user(), containerId, title, position);
-                //case ENCHANTMENT -> container = new EnchantmentContainer(wrapper.user(),  containerId, title, position);
+                case ENCHANTMENT -> container = new EnchantmentContainer(wrapper.user(),  containerId, title, position);
                 case ANVIL -> container = new AnvilContainer(wrapper.user(), containerId, title, position);
                 case SMITHING_TABLE -> container = new SmithingContainer(wrapper.user(), containerId, title, position);
                 case STONECUTTER -> container = new StonecutterContainer(wrapper.user(), containerId, title, position);
@@ -856,9 +856,65 @@ public class ExperimentalFeatures {
             wrapper.write(Types.SHORT, javaId);
             wrapper.write(Types.SHORT, (short) value);
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_ENCHANT_OPTIONS, ClientboundPackets26_1.CONTAINER_SET_DATA, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_ENCHANT_OPTIONS, null, wrapper -> {
             wrapper.cancel();
-            // TODO
+            ExperimentalInventoryTracker inventoryTracker = wrapper.user().get(ExperimentalInventoryTracker.class);
+            if (!(inventoryTracker.getCurrentContainer() instanceof EnchantmentContainer)){
+                return;
+            }
+            EnchantmentContainer enchantmentContainer = (EnchantmentContainer) inventoryTracker.getCurrentContainer();
+
+            final int size = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // size
+
+            List<EnchantData> data = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                final int cost = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // cost
+                wrapper.read(BedrockTypes.INT_LE); // slot
+
+                // TODO: How does bedrock decide on what to show
+                Enchant_Type selected = null;
+                int level = -1;
+
+                final int l1 = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // size
+                for (int j = 0; j < l1; j++) {
+                    final byte id = wrapper.read(Types.BYTE); // enchant id
+                    final byte lvl = wrapper.read(Types.BYTE); // enchant level
+
+                    if (selected == null) {
+                        selected = Enchant_Type.getByValue(id);
+                        level = lvl;
+                    }
+                }
+
+                final int l2 = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // size
+                for (int j = 0; j < l2; j++) {
+                    final byte id = wrapper.read(Types.BYTE); // enchant id
+                    final byte lvl = wrapper.read(Types.BYTE); // enchant level
+
+                    if (selected == null) {
+                        selected = Enchant_Type.getByValue(id);
+                        level = lvl;
+                    }
+                }
+
+                final int l3 = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // size
+                for (int j = 0; j < l3; j++) {
+                    final byte id = wrapper.read(Types.BYTE); // enchant id
+                    final byte lvl = wrapper.read(Types.BYTE); // enchant level
+
+                    if (selected == null) {
+                        selected = Enchant_Type.getByValue(id);
+                        level = lvl;
+                    }
+                }
+
+                wrapper.read(BedrockTypes.STRING); // Name
+                final int netId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // Enchant Net Id
+
+                data.add(new EnchantData(cost, selected, level, netId));
+            }
+
+            enchantmentContainer.setEnchantData(data);
         });
         ProtocolUtil.appendClientbound(protocol, ClientboundBedrockPackets.CHANGE_DIMENSION, wrapper -> {
             final ExperimentalInventoryTracker inventoryTracker = wrapper.user().get(ExperimentalInventoryTracker.class);

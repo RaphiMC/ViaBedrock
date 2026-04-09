@@ -114,8 +114,12 @@ public class StonecutterContainer extends ExperimentalContainer {
         //TODO: This is experimental code...
 
         if (javaSlot == 0 || javaSlot == 1) {
-            this.updateRecipeData(this.getItem(0));
+            this.updateRecipeData(this.getItem(3));
         } else {
+            return result;
+        }
+
+        if (this.currentRecipes.isEmpty()) {
             return result;
         }
 
