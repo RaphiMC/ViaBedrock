@@ -782,7 +782,7 @@ public class ExperimentalFeatures {
                     ViaBedrock.getPlatform().getLogger().warning("Received unsuccessful item stack response: " + info.result());
                     inventoryTracker.getHudContainer().setItems(requestInfo.prevCursorContainer().getItems().clone());
                     for (ExperimentalContainer container : requestInfo.prevContainers()) {
-                        ExperimentalContainer newContainer = inventoryTracker.getContainerServerbound(container.javaContainerId());
+                        ExperimentalContainer newContainer = inventoryTracker.getContainerClientbound(container.containerId(), null, null);
                         if (newContainer == null) continue;
                         newContainer.setItems(container.getItems().clone());
                         ExperimentalPacketFactory.sendJavaContainerSetContent(wrapper.user(), newContainer);  // Resync the container content on Java side
@@ -898,6 +898,9 @@ public class ExperimentalFeatures {
             switch (inventoryTransaction.transactionType()) {
                 case NormalTransaction -> {
                     break; // Nothing to do here for now
+                }
+                case ItemReleaseTransaction -> {
+
                 }
                 default -> {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unsupported inventory transaction type: " + inventoryTransaction.transactionType());
