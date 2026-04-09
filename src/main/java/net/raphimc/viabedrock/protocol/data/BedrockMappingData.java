@@ -50,8 +50,9 @@ import net.raphimc.viabedrock.api.chunk.blockstate.BlockStateUpgrader;
 import net.raphimc.viabedrock.api.item.ItemUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.ZipContent;
+import net.raphimc.viabedrock.api.resourcepack.definition.SoundDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.FileSystemUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
@@ -73,7 +74,9 @@ import java.util.zip.GZIPInputStream;
 public class BedrockMappingData extends MappingDataBase {
 
     // Bedrock misc
-    private Map<String, ResourcePack> bedrockVanillaResourcePacks;
+    private Map<ResourcePack.Key, ResourcePack> bedrockResourcePacks;
+    private Map<ResourcePack.Key, ResourcePack> bedrockSkinPacks;
+    private List<ResourcePack> bedrockVanillaResourcePacks;
     private Map<String, Object> bedrockGameRules;
 
     // Java misc
@@ -158,18 +161,34 @@ public class BedrockMappingData extends MappingDataBase {
         final JsonObject javaViaMappingJson = this.readJson("java/via_mappings.json");
 
         { // Bedrock misc
-            this.bedrockVanillaResourcePacks = new HashMap<>();
+            this.bedrockResourcePacks = new HashMap<>();
             try {
-                for (Map.Entry<Path, byte[]> entry : FileSystemUtil.getFilesInDirectory("assets/viabedrock/vanilla_packs").entrySet()) {
-                    final String packName = entry.getKey().getFileName().toString().replace(".mcpack", "");
-                    final PackType type = packName.equals("vanilla_skin_pack") ? PackType.Skins : PackType.Resources;
-                    final ResourcePack resourcePack = new ResourcePack(null, null, new byte[0], packName, "", false, false, false, null, 0, type);
-                    resourcePack.setCompressedDataLength(entry.getValue().length, entry.getValue().length);
-                    resourcePack.processDataChunk(0, entry.getValue());
-                    this.bedrockVanillaResourcePacks.put(packName, resourcePack);
+                for (Map.Entry<Path, byte[]> entry : FileSystemUtil.getFilesInDirectory("assets/viabedrock/resource_packs").entrySet()) {
+                    final ResourcePack resourcePack = new ResourcePack(new ZipContent(entry.getValue()));
+                    this.bedrockResourcePacks.put(resourcePack.key(), resourcePack);
                 }
             } catch (Exception e) {
-                this.getLogger().log(Level.SEVERE, "Failed to load vanilla resource packs", e);
+                this.getLogger().log(Level.SEVERE, "Failed to load resource packs", e);
+            }
+
+            this.bedrockSkinPacks = new HashMap<>();
+            try {
+                for (Map.Entry<Path, byte[]> entry : FileSystemUtil.getFilesInDirectory("assets/viabedrock/skin_packs").entrySet()) {
+                    final ResourcePack resourcePack = new ResourcePack(new ZipContent(entry.getValue()));
+                    this.bedrockSkinPacks.put(resourcePack.key(), resourcePack);
+                }
+            } catch (Exception e) {
+                this.getLogger().log(Level.SEVERE, "Failed to load skin packs", e);
+            }
+
+            final JsonArray bedrockVanillaResourcePacksJson = this.readJson("custom/vanilla_resource_packs.json", JsonArray.class);
+            this.bedrockVanillaResourcePacks = new ArrayList<>(bedrockVanillaResourcePacksJson.size());
+            for (JsonElement entry : bedrockVanillaResourcePacksJson) {
+                final ResourcePack.Key key = ResourcePack.Key.fromString(entry.getAsString());
+                if (!this.bedrockResourcePacks.containsKey(key)) {
+                    throw new RuntimeException("Unknown bedrock vanilla resource pack: " + key);
+                }
+                this.bedrockVanillaResourcePacks.add(this.bedrockResourcePacks.get(key));
             }
 
             final JsonObject bedrockGameRulesJson = this.readJson("bedrock/game_rules.json");
@@ -995,9 +1014,19 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
         }
+
+        DataValues.validate();
     }
 
-    public Map<String, ResourcePack> getBedrockVanillaResourcePacks() {
+    public Map<ResourcePack.Key, ResourcePack> getBedrockResourcePacks() {
+        return this.bedrockResourcePacks;
+    }
+
+    public Map<ResourcePack.Key, ResourcePack> getBedrockSkinPacks() {
+        return this.bedrockSkinPacks;
+    }
+
+    public List<ResourcePack> getBedrockVanillaResourcePacks() {
         return this.bedrockVanillaResourcePacks;
     }
 
@@ -1220,20 +1249,6 @@ public class BedrockMappingData extends MappingDataBase {
     @Override
     protected Logger getLogger() {
         return ViaBedrock.getPlatform().getLogger();
-    }
-
-    private ResourcePack readResourcePack(String file, final UUID uuid, final String version) {
-        file = "assets/viabedrock/data/" + file;
-        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
-            final byte[] bytes = inputStream.readAllBytes();
-            final ResourcePack resourcePack = new ResourcePack(uuid, version, new byte[0], "", "", false, false, false, null, 0, PackType.Resources);
-            resourcePack.setCompressedDataLength(bytes.length, bytes.length);
-            resourcePack.processDataChunk(0, bytes);
-            return resourcePack;
-        } catch (Exception e) {
-            this.getLogger().log(Level.SEVERE, "Failed to read " + file, e);
-            return null;
-        }
     }
 
     private CompoundTag readNBT(String file) {

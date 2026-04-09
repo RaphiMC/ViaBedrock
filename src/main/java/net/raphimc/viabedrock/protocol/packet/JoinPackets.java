@@ -38,7 +38,7 @@ import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPack
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundConfigurationPackets1_21_9;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
-import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.StringUtil;
@@ -47,6 +47,7 @@ import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.DataValues;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
@@ -61,9 +62,9 @@ import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 
 public class JoinPackets {
@@ -190,14 +191,13 @@ public class JoinPackets {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.START_GAME,
                 State.CONFIGURATION, (PacketHandler) wrapper -> {
                     wrapper.cancel();
-                    ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
-
-                    if (resourcePacksStorage == null || !resourcePacksStorage.hasFinishedLoading()) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Pack negotiation not completed before joining game. Skipping resource pack loading");
-                        resourcePacksStorage = new ResourcePacksStorage(wrapper.user());
-                        resourcePacksStorage.setPackStack(new UUID[0]);
-                        wrapper.user().put(resourcePacksStorage);
+                    ResourcePackStorage resourcePackStorage = wrapper.user().get(ResourcePackStorage.class);
+                    if (resourcePackStorage == null) {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Skipping resource pack negotiation");
+                        wrapper.user().remove(ResourcePackLoadStateTracker.class);
+                        resourcePackStorage = new ResourcePackStorage(Collections.emptyList());
+                        wrapper.user().put(resourcePackStorage);
                     }
 
                     final long entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
@@ -305,7 +305,7 @@ public class JoinPackets {
 
                     if (editorWorldType == Editor_WorldType.EditorProject) {
                         final PacketWrapper disconnect = PacketWrapper.create(ClientboundConfigurationPackets1_21_9.DISCONNECT, wrapper.user());
-                        PacketFactory.writeJavaDisconnect(wrapper, resourcePacksStorage.getTexts().get("disconnectionScreen.editor.mismatchEditorWorld"));
+                        PacketFactory.writeJavaDisconnect(wrapper, resourcePackStorage.getTexts().get("disconnectionScreen.editor.mismatchEditorWorld"));
                         disconnect.send(BedrockProtocol.class);
                         return;
                     }
@@ -428,7 +428,7 @@ public class JoinPackets {
             final ItemEntry[] itemEntries = wrapper.read(BedrockTypes.ITEM_ENTRY_ARRAY); // items
             final ItemRewriter itemRewriter = new ItemRewriter(wrapper.user(), itemEntries);
             wrapper.user().put(itemRewriter);
-            final ItemDefinitions itemDefinitions = wrapper.user().get(ResourcePacksStorage.class).getItems();
+            final ItemDefinitions itemDefinitions = wrapper.user().get(ResourcePackStorage.class).getItems();
 
             // Component items are loaded from the item registry entries
             for (String identifier : itemRewriter.getComponentItems()) {
@@ -463,7 +463,7 @@ public class JoinPackets {
     }
 
     private static void writePlayStatusKickMessage(final PacketWrapper wrapper, final PlayStatus status) {
-        final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks().get("vanilla").content().getLang("texts/en_US.lang");
+        final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockResourcePacks().get(DataValues.VANILLA_RESOURCE_PACK_KEY).content().getLang("texts/en_US.lang");
 
         switch (status) {
             case LoginFailed_ClientOld -> PacketFactory.writeJavaDisconnect(wrapper, translations.get("disconnectionScreen.outdatedClient"));

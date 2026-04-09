@@ -75,7 +75,7 @@ public class ChatPackets {
                     final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                     if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() == ChatRestrictionLevel.Disabled && clientPlayer.abilities().playerPermission() <= PlayerPermissionLevel.Member.getValue())) {
                         wrapper.cancel();
-                        PacketFactory.sendJavaSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTexts().get("commands.generic.disabled")));
+                        PacketFactory.sendJavaSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePackStorage.class).getTexts().get("commands.generic.disabled")));
                     }
                 }
             });
@@ -97,7 +97,7 @@ public class ChatPackets {
                         return;
                     }
 
-                    final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTexts().lookup();
+                    final Function<String, String> translator = wrapper.user().get(ResourcePackStorage.class).getTexts().lookup();
                     String originalMessage = null;
                     try {
                         switch (type) {
@@ -176,7 +176,7 @@ public class ChatPackets {
                 return;
             }
 
-            final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTexts().lookup();
+            final Function<String, String> translator = wrapper.user().get(ResourcePackStorage.class).getTexts().lookup();
             final StringBuilder message = new StringBuilder();
             final int messageCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // message count
             for (int i = 0; i < messageCount; i++) {
@@ -268,7 +268,7 @@ public class ChatPackets {
                     final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                     if (gameSession.getChatRestrictionLevel() != ChatRestrictionLevel.None || clientPlayer.abilities().getBooleanValue(AbilitiesIndex.Muted)) {
                         wrapper.cancel();
-                        PacketFactory.sendJavaSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTexts().get("permissions.chatmute")));
+                        PacketFactory.sendJavaSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePackStorage.class).getTexts().get("permissions.chatmute")));
                     }
                 });
             }

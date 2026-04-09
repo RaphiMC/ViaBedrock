@@ -20,10 +20,10 @@ package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 import com.viaversion.viaversion.api.minecraft.item.data.CustomModelData1_21_4;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.Content;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,9 +43,9 @@ public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.
     }
 
     @Override
-    public final void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent) {
+    public final void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
         final Set<String> modelsList = new HashSet<>();
-        this.apply(resourcePacksStorage, javaContent, modelsList);
+        this.apply(resourcePackStorage, javaContent, modelsList);
         if (!modelsList.isEmpty()) {
             final JsonArray cases = new JsonArray();
             for (String modelKey : modelsList) {
@@ -70,7 +70,7 @@ public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.
         }
     }
 
-    protected abstract void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList);
+    protected abstract void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<String> modelsList);
 
     protected String getJavaModelName(final String bedrockName) {
         return this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(bedrockName);

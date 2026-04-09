@@ -19,9 +19,10 @@ package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.Key;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.api.model.resourcepack.TextureDefinitions;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.Content;
+import net.raphimc.viabedrock.api.resourcepack.definition.TextureDefinitions;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.util.List;
 import java.util.Map;
@@ -36,13 +37,13 @@ public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter
     }
 
     @Override
-    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList) {
-        for (Map.Entry<String, List<TextureDefinitions.ItemTextureDefinition>> entry : resourcePacksStorage.getTextures().itemTextures().entrySet()) {
+    protected void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<String> modelsList) {
+        for (Map.Entry<String, List<TextureDefinitions.ItemTextureDefinition>> entry : resourcePackStorage.getTextures().itemTextures().entrySet()) {
             for (int i = 0; i < entry.getValue().size(); i++) {
                 final TextureDefinitions.ItemTextureDefinition itemTextureDefinition = entry.getValue().get(i);
-                for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
-                    final ResourcePack.Content bedrockContent = pack.content();
-                    final ResourcePack.Content.LazyImage texture = bedrockContent.getShortnameImage(itemTextureDefinition.texturePath());
+                for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
+                    final Content bedrockContent = pack.content();
+                    final Content.LazyImage texture = bedrockContent.getShortnameImage(itemTextureDefinition.texturePath());
                     if (texture == null) continue;
 
                     javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(itemTextureDefinition.texturePath()) + ".png", texture);

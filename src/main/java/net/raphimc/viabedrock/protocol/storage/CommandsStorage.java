@@ -341,8 +341,8 @@ public class CommandsStorage extends StoredObject {
         }
 
         if (this.dispatcher.getRoot().getChild("help") == null) {
-            final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
-            final Function<String, String> translator = resourcePacksStorage.getTexts().lookup();
+            final ResourcePackStorage resourcePackStorage = this.user().get(ResourcePackStorage.class);
+            final Function<String, String> translator = resourcePackStorage.getTexts().lookup();
             final LiteralArgumentBuilder<UserConnection> cmdBuilder = literal("help");
             cmdBuilder.executes(cmd -> {
                 PacketFactory.sendJavaSystemChat(cmd.getSource(), TextUtil.stringToNbt(BedrockTranslator.translate("§c%commands.generic.usage", translator, new Object[]{"/help <command>"})));
@@ -366,7 +366,7 @@ public class CommandsStorage extends StoredObject {
                     while (node.getRedirect() != null) {
                         node = node.getRedirect();
                     }
-                    lines.add(resourcePacksStorage.getTexts().get("commands.generic.usage.noparam"));
+                    lines.add(resourcePackStorage.getTexts().get("commands.generic.usage.noparam"));
                     final String[] usage = this.dispatcher.getAllUsage(node, cmd.getSource(), true);
                     if (usage.length == 0) {
                         lines.add("- /" + node.getName());

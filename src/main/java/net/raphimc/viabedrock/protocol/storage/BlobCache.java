@@ -126,7 +126,7 @@ public class BlobCache extends StoredObject {
                 for (long hash : hashes) {
                     output.write(Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(hash));
                 }
-            } catch (final IOException ignored) {
+            } catch (IOException ignored) {
             }
             return CompletableFuture.completedFuture(output.toByteArray());
         }

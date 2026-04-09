@@ -31,7 +31,7 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.rewriter.blockentity.*;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -186,7 +186,7 @@ public class BlockEntityRewriter {
         }
 
         default StringTag rewriteCustomName(final UserConnection user, final StringTag textTag) {
-            return new StringTag(TextUtil.stringToJson(user.get(ResourcePacksStorage.class).getTexts().translate(textTag.getValue())));
+            return new StringTag(TextUtil.stringToJson(user.get(ResourcePackStorage.class).getTexts().translate(textTag.getValue())));
         }
 
     }

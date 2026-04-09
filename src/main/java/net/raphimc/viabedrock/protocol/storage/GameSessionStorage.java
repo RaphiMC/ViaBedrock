@@ -62,7 +62,7 @@ public class GameSessionStorage extends StoredObject {
 
     public CompoundTag getJavaRegistries() {
         if (this.javaRegistries == null) {
-            this.javaRegistries = JavaRegistries.createJavaRegistries(this, this.user().get(ResourcePacksStorage.class));
+            this.javaRegistries = JavaRegistries.createJavaRegistries(this, this.user().get(ResourcePackStorage.class));
         }
         return this.javaRegistries;
     }

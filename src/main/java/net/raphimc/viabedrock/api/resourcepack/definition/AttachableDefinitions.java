@@ -1,0 +1,58 @@
+/*
+ * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package net.raphimc.viabedrock.api.resourcepack.definition;
+
+import com.viaversion.viaversion.util.Key;
+import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
+import org.cube.converter.data.bedrock.BedrockAttachableData;
+import org.cube.converter.parser.bedrock.data.impl.BedrockAttachableParser;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
+// https://wiki.bedrock.dev/items/attachables.html
+public class AttachableDefinitions {
+
+    private final Map<String, AttachableDefinition> attachables = new HashMap<>();
+
+    public AttachableDefinitions(final ResourcePackStorage resourcePackStorage) {
+        for (ResourcePack pack : resourcePackStorage.getPackStackBottomToTop()) {
+            for (String attachablePath : pack.content().getFilesDeep("attachables/", ".json")) {
+                try {
+                    final BedrockAttachableData attachableData = BedrockAttachableParser.parse(pack.content().getString(attachablePath));
+                    final String identifier = Key.namespaced(attachableData.getIdentifier());
+                    this.attachables.put(identifier, new AttachableDefinition(identifier, attachableData));
+                } catch (Throwable e) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse attachable definition " + attachablePath + " in pack " + pack.key(), e);
+                }
+            }
+        }
+    }
+
+    public Map<String, AttachableDefinition> attachables() {
+        return Collections.unmodifiableMap(this.attachables);
+    }
+
+    public record AttachableDefinition(String identifier, BedrockAttachableData attachableData) {
+    }
+
+}

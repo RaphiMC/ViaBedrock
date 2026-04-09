@@ -74,5 +74,8 @@ This file has been dumped from a vanilla server using a fabric mod.
 ### item_upgrade_schema/*
 [PMMP/BedrockItemUpgradeSchema](https://github.com/pmmp/BedrockItemUpgradeSchema/tree/master/id_meta_upgrade_schema)
 
-### vanilla_packs/*
+### resource_packs/*
+These files have been generated using `BedrockPacksGenerator` using data from the official bedrock client's assets folder.
+
+### skin_packs/*
 These files have been generated using `BedrockPacksGenerator` using data from the official bedrock client's assets folder.

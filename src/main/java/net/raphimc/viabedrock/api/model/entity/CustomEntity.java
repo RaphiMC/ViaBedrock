@@ -31,8 +31,8 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
+import net.raphimc.viabedrock.api.resourcepack.definition.EntityDefinitions;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.MoLangEngine;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -44,7 +44,7 @@ import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomEntityResourceRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import org.cube.converter.data.bedrock.BedrockEntityData;
 import org.cube.converter.data.bedrock.controller.BedrockRenderController;
 import team.unnamed.mocha.runtime.Scope;
@@ -157,7 +157,7 @@ public class CustomEntity extends Entity {
         }
 
         final EntityTracker entityTracker = this.user.get(EntityTracker.class);
-        final ResourcePacksStorage resourcePacksStorage = this.user.get(ResourcePacksStorage.class);
+        final ResourcePackStorage resourcePackStorage = this.user.get(ResourcePackStorage.class);
         final ChannelStorage channelStorage = this.user.get(ChannelStorage.class);
         if (channelStorage.hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
             ViaBedrockUtilityInterface.spawnCustomEntity(this.user, this.javaUuid(), this.entityDefinition.identifier(), this.entityData());
@@ -166,7 +166,7 @@ public class CustomEntity extends Entity {
 
         for (EvaluatedModel model : this.models) {
             final String key = this.entityDefinition.identifier() + "_" + model.key();
-            if (!resourcePacksStorage.getConverterData().containsKey("ce_" + key + "_scale")) {
+            if (!resourcePackStorage.getConverterData().containsKey("ce_" + key + "_scale")) {
                 continue;
             }
 
@@ -180,7 +180,7 @@ public class CustomEntity extends Entity {
             final StructuredItem item = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), 1, data);
             javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.ITEM_STACK), VersionedTypes.V26_1.entityDataTypes.itemType, item));
 
-            final float scale = (float) resourcePacksStorage.getConverterData().get("ce_" + key + "_scale");
+            final float scale = (float) resourcePackStorage.getConverterData().get("ce_" + key + "_scale");
             javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.SCALE), VersionedTypes.V26_1.entityDataTypes.vector3FType, new Vector3f(scale, scale, scale)));
             javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.TRANSLATION), VersionedTypes.V26_1.entityDataTypes.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
 
@@ -242,9 +242,9 @@ public class CustomEntity extends Entity {
         executionScope.set("q", queryBinding);
 
         final List<EvaluatedModel> newModels = new ArrayList<>();
-        final ResourcePacksStorage resourcePacksStorage = user.get(ResourcePacksStorage.class);
+        final ResourcePackStorage resourcePackStorage = user.get(ResourcePackStorage.class);
         for (final BedrockEntityData.RenderController entityRenderController : this.entityDefinition.entityData().getControllers()) {
-            final BedrockRenderController renderController = resourcePacksStorage.getRenderControllers().get(entityRenderController.identifier());
+            final BedrockRenderController renderController = resourcePackStorage.getRenderControllers().get(entityRenderController.identifier());
             if (renderController == null) {
                 continue;
             }

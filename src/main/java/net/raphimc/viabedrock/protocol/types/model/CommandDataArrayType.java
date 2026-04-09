@@ -55,7 +55,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
             for (int j = 0; j < count; j++) {
                 final long index = buffer.readUnsignedIntLE(); // value
                 if (index >= 0 && index < enumLiterals.length) {
-                    values.add(enumLiterals[(int) index]);
+                    values.add(enumLiterals[Math.toIntExact(index)]);
                 } else {
                     values.add("default");
                 }

@@ -111,7 +111,7 @@ public class InventoryPackets {
             final BedrockBlockEntity blockEntity = chunkTracker.getBlockEntity(position);
             TextComponent title = new TranslationComponent("container." + blockStateRewriter.tag(chunkTracker.getBlockState(position)));
             if (blockEntity != null && blockEntity.tag().get("CustomName") instanceof StringTag customNameTag) {
-                title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(customNameTag.getValue()));
+                title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePackStorage.class).getTexts().translate(customNameTag.getValue()));
             }
 
             final Container container;
@@ -226,14 +226,14 @@ public class InventoryPackets {
                 wrapper.cancel();
                 return;
             }
-            final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
-            form.setTranslator(resourcePacksStorage.getTexts()::translate);
+            final ResourcePackStorage resourcePackStorage = wrapper.user().get(ResourcePackStorage.class);
+            form.setTranslator(resourcePackStorage.getTexts()::translate);
             inventoryTracker.setCurrentForm(IntObjectPair.of(id, form));
 
             final Identifier responseIdentifier = Identifier.of("viabedrock", "form/" + id);
             final CompoundTag exitButtonAdditions = new CompoundTag();
             exitButtonAdditions.putBoolean("exit", true);
-            final ActionButton exitButton = new ActionButton(new StringComponent(resourcePacksStorage.getTexts().get("gui.close")), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, exitButtonAdditions));
+            final ActionButton exitButton = new ActionButton(new StringComponent(resourcePackStorage.getTexts().get("gui.close")), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, exitButtonAdditions));
 
             final Dialog dialog;
             if (form instanceof ModalForm modalForm) {
@@ -321,7 +321,7 @@ public class InventoryPackets {
                         throw new IllegalArgumentException("Unhandled form element type: " + element.getClass().getSimpleName());
                     }
                 }
-                actionDialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(resourcePacksStorage.getTexts().get("gui.submit")), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, null)));
+                actionDialog.getActions().add(new ActionButton(TextUtil.stringToTextComponent(resourcePackStorage.getTexts().get("gui.submit")), DIALOG_BUTTON_WIDTH, new CustomAllAction(responseIdentifier, null)));
                 dialog = actionDialog;
             } else {
                 throw new IllegalArgumentException("Unhandled form type: " + form.getClass().getSimpleName());

@@ -171,7 +171,7 @@ public class HudPackets {
             wrapper.read(BedrockTypes.STRING); // platform online id
             wrapper.read(BedrockTypes.STRING); // filtered text
 
-            final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTexts().lookup();
+            final Function<String, String> translator = wrapper.user().get(ResourcePackStorage.class).getTexts().lookup();
             final String originalText = text;
             try {
                 if (type.getValue() >= SetTitlePacketPayload_TitleType.TitleTextObject.getValue() && type.getValue() <= SetTitlePacketPayload_TitleType.ActionbarTextObject.getValue()) {
@@ -241,7 +241,7 @@ public class HudPackets {
                 final PacketWrapper scoreboardObjective = PacketWrapper.create(ClientboundPackets26_1.SET_OBJECTIVE, wrapper.user());
                 scoreboardObjective.write(Types.STRING, objectiveName); // objective name
                 scoreboardObjective.write(Types.BYTE, (byte) ObjectiveAction.ADD.ordinal()); // mode
-                scoreboardObjective.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(displayName))); // display name
+                scoreboardObjective.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePackStorage.class).getTexts().translate(displayName))); // display name
                 scoreboardObjective.write(Types.VAR_INT, ObjectiveCriteriaRenderType.INTEGER.ordinal()); // display mode
                 scoreboardObjective.write(Types.BOOLEAN, false); // has number format
                 scoreboardObjective.send(BedrockProtocol.class);
@@ -369,7 +369,7 @@ public class HudPackets {
                     if (!entity.hasBossBar()) {
                         entity.setHasBossBar(true);
                         wrapper.write(Types.VAR_INT, BossEventOperationType.ADD.ordinal()); // operation
-                        wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(wrapper.read(BedrockTypes.STRING)))); // name
+                        wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePackStorage.class).getTexts().translate(wrapper.read(BedrockTypes.STRING)))); // name
                         wrapper.read(BedrockTypes.STRING); // filtered name
                         wrapper.write(Types.FLOAT, wrapper.read(BedrockTypes.FLOAT_LE)); // progress
                         wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // darken screen | Does nothing in Bedrock Edition
@@ -391,7 +391,7 @@ public class HudPackets {
                 }
                 case Update_Name -> {
                     wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_NAME.ordinal()); // operation
-                    wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(wrapper.read(BedrockTypes.STRING)))); // name
+                    wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePackStorage.class).getTexts().translate(wrapper.read(BedrockTypes.STRING)))); // name
                     wrapper.read(BedrockTypes.STRING); // filtered name
                 }
                 case Update_Properties -> {
@@ -418,7 +418,7 @@ public class HudPackets {
             final String message = wrapper.read(BedrockTypes.STRING); // death cause message
             final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
 
-            final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTexts().lookup();
+            final Function<String, String> translator = wrapper.user().get(ResourcePackStorage.class).getTexts().lookup();
             gameSession.setDeathMessage(TextUtil.stringToTextComponent(BedrockTranslator.translate(message, translator, parameters)));
             if (entityTracker.getClientPlayer().isDead()) {
                 final PacketWrapper playerCombatKill = PacketWrapper.create(ClientboundPackets26_1.PLAYER_COMBAT_KILL, wrapper.user());
