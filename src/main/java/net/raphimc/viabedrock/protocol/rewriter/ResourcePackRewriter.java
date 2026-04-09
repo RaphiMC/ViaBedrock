@@ -18,9 +18,6 @@
 package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
-import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.resourcepack.content.Content;
 import net.raphimc.viabedrock.api.resourcepack.content.InMemoryContent;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
@@ -28,13 +25,10 @@ import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomAttachableRes
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomEntityResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.GlyphSheetResourceRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class ResourcePackRewriter {
 
@@ -49,24 +43,10 @@ public class ResourcePackRewriter {
 
     public static Content bedrockToJava(final ResourcePackStorage resourcePackStorage) {
         final Content javaContent = new InMemoryContent();
-
         for (Rewriter rewriter : REWRITERS) {
             rewriter.apply(resourcePackStorage, javaContent);
         }
-
         javaContent.putJson("pack.mcmeta", createPackManifest());
-
-        final ChannelStorage channelStorage = resourcePackStorage.user().get(ChannelStorage.class);
-        if (channelStorage.hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
-            for (ResourcePack pack : resourcePackStorage.getPackStackBottomToTop()) {
-                try {
-                    javaContent.put("bedrock/" + pack.id() + ".mcpack", pack.content().toZip());
-                } catch (IOException e) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to put bedrock pack " + pack.id() + " into java resource pack", e);
-                }
-            }
-        }
-
         return javaContent;
     }
 
