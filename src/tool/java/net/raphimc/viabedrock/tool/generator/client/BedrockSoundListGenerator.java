@@ -21,10 +21,10 @@ import com.viaversion.viaversion.libs.gson.Gson;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.GsonUtil;
-import net.raphimc.viabedrock.api.model.resourcepack.BlockDefinitions;
-import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.BlockDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.SoundDefinitions;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SharedTypes_Legacy_LevelSoundEvent;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import net.raphimc.viabedrock.util.Util;
 
 import java.io.File;
@@ -175,11 +175,11 @@ public class BedrockSoundListGenerator {
     */
 
     public static void main(String[] args) throws Throwable {
-        final ResourcePacksStorage resourcePacksStorage = Util.getClientResourcePacks(new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
+        final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
 
         final JsonObject soundList = new JsonObject();
         final Set<String> soundsWithoutCategory = new HashSet<>();
-        for (Map.Entry<String, SoundDefinitions.SoundDefinition> entry : resourcePacksStorage.getSounds().soundDefinitions().entrySet()) {
+        for (Map.Entry<String, SoundDefinitions.SoundDefinition> entry : resourcePackStorage.getSounds().soundDefinitions().entrySet()) {
             if (entry.getValue().category() == null) {
                 soundsWithoutCategory.add(entry.getKey());
             } else {
@@ -221,7 +221,7 @@ public class BedrockSoundListGenerator {
         Files.writeString(new File("sounds.json").toPath(), json);
 
         final Map<String, String> blockSounds = new TreeMap<>();
-        for (Map.Entry<String, BlockDefinitions.BlockDefinition> blockEntry : resourcePacksStorage.getBlocks().blocks().entrySet()) {
+        for (Map.Entry<String, BlockDefinitions.BlockDefinition> blockEntry : resourcePackStorage.getBlocks().blocks().entrySet()) {
             if (blockEntry.getValue().sound() != null && !blockEntry.getValue().sound().isEmpty()) {
                 blockSounds.put(blockEntry.getKey(), blockEntry.getValue().sound());
             }
@@ -232,17 +232,17 @@ public class BedrockSoundListGenerator {
 
         final JsonObject levelSoundMappings = new JsonObject();
         Map<String, Map<String, SoundDefinitions.ConfiguredSound>> mapping = new HashMap<>();
-        for (Map.Entry<String, SoundDefinitions.EventSound> entry : resourcePacksStorage.getSounds().eventSounds().entrySet()) {
+        for (Map.Entry<String, SoundDefinitions.EventSound> entry : resourcePackStorage.getSounds().eventSounds().entrySet()) {
             mapping.computeIfAbsent(entry.getKey(), k -> new HashMap<>()).put("", entry.getValue().sound());
         }
 
-        for (Map.Entry<String, SoundDefinitions.EventSounds> entry : resourcePacksStorage.getSounds().entitySounds().entrySet()) {
+        for (Map.Entry<String, SoundDefinitions.EventSounds> entry : resourcePackStorage.getSounds().entitySounds().entrySet()) {
             for (Map.Entry<String, SoundDefinitions.ConfiguredSound> soundEntry : entry.getValue().eventSounds().entrySet()) {
                 mapping.computeIfAbsent(soundEntry.getKey(), k -> new HashMap<>()).put("entity:" + entry.getKey(), soundEntry.getValue());
             }
         }
 
-        for (Map.Entry<String, SoundDefinitions.EventSounds> entry : resourcePacksStorage.getSounds().blockSounds().entrySet()) {
+        for (Map.Entry<String, SoundDefinitions.EventSounds> entry : resourcePackStorage.getSounds().blockSounds().entrySet()) {
             if (!blockSounds.containsValue(entry.getKey())) {
                 System.out.println("Unknown block sound: " + entry.getKey());
                 continue;

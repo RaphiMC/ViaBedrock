@@ -18,39 +18,41 @@
 package net.raphimc.viabedrock.protocol.provider.impl;
 
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.ZipContent;
 import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class DiskResourcePackProvider extends ResourcePackProvider {
 
     @Override
-    public boolean hasPack(final ResourcePack pack) {
-        return this.getPackFile(pack).isFile();
+    public boolean has(final ResourcePack.Key key) {
+        return Files.isRegularFile(this.getPath(key));
     }
 
     @Override
-    public void loadPack(final ResourcePack pack) throws Exception {
-        if (!this.hasPack(pack)) {
-            throw new IOException("Pack not found");
+    public ResourcePack load(final ResourcePack.Key key) throws IOException {
+        if (!this.has(key)) {
+            throw new IOException("Resource pack not found");
         }
-        final byte[] data = Files.readAllBytes(this.getPackFile(pack).toPath());
-
-        pack.setContentKey(new byte[0]);
-        pack.setCompressedDataLength(data.length, data.length);
-        pack.processDataChunk(0, data);
+        return new ResourcePack(new ZipContent(Files.readAllBytes(this.getPath(key))));
     }
 
     @Override
-    public void addPack(final ResourcePack pack) throws IOException {
-        Files.write(this.getPackFile(pack).toPath(), pack.content().toZip());
+    public void save(final ResourcePack resourcePack) throws IOException {
+        Files.write(this.getPath(resourcePack.key()), resourcePack.content().toZip());
     }
 
-    private File getPackFile(final ResourcePack pack) {
-        return new File(ViaBedrock.getPlatform().getServerPacksFolder(), pack.packId() + "_" + pack.version() + ".mcpack");
+    private Path getPath(final ResourcePack.Key key) {
+        final Path basePath = ViaBedrock.getPlatform().getServerPacksFolder().toPath();
+        final Path resolvedPath = basePath.resolve(key.toString() + ".mcpack").normalize();
+        if (!resolvedPath.startsWith(basePath)) {
+            throw new IllegalArgumentException("Path traversal attempt: " + key);
+        }
+        return resolvedPath;
     }
 
 }

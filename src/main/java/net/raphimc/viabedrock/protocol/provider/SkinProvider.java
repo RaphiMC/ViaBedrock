@@ -20,10 +20,11 @@ package net.raphimc.viabedrock.protocol.provider;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
+import net.raphimc.viabedrock.api.resourcepack.content.Content;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.DataValues;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MemoryTier;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.BuildPlatform;
@@ -47,7 +48,7 @@ public class SkinProvider implements Provider {
         final Map<String, Object> claims = new HashMap<>();
 
         { // Skin claims
-            final ResourcePack.Content skinPackContent = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks().get("vanilla_skin_pack").content();
+            final Content skinPackContent = BedrockProtocol.MAPPINGS.getBedrockSkinPacks().get(DataValues.VANILLA_SKIN_PACK_KEY).content();
             final BufferedImage skin = skinPackContent.getImage("steve.png").getImage();
             final JsonObject skinGeometry = skinPackContent.getSortedJson("geometry.json");
 

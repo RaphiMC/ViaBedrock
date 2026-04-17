@@ -34,7 +34,7 @@ import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.CustomEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.entity.LivingEntity;
-import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.EntityDefinitions;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.RegistryUtil;
@@ -52,7 +52,7 @@ import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.ArrayList;
@@ -92,10 +92,10 @@ public class EntityPackets {
             if (javaEntityType != null) {
                 entity = entityTracker.addEntity(entityUniqueId, entityRuntimeId, type, javaEntityType);
             } else if (gameSession.getAvailableEntityIdentifiers().contains(type)) {
-                final ResourcePacksStorage resourcePacksStorage = wrapper.user().get(ResourcePacksStorage.class);
-                final EntityDefinitions.EntityDefinition entityDefinition = resourcePacksStorage.getEntities().get(type);
+                final ResourcePackStorage resourcePackStorage = wrapper.user().get(ResourcePackStorage.class);
+                final EntityDefinitions.EntityDefinition entityDefinition = resourcePackStorage.getEntities().get(type);
                 if (entityDefinition != null) {
-                    if (resourcePacksStorage.isLoadedOnJavaClient()) {
+                    if (resourcePackStorage.isLoadedOnJavaClient()) {
                         entity = new CustomEntity(wrapper.user(), entityUniqueId, entityRuntimeId, type, entityTracker.getNextJavaEntityId(), entityDefinition);
                         entityTracker.addEntity(entity);
                     } else {

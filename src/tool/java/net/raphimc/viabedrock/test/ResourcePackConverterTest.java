@@ -17,14 +17,15 @@
  */
 package net.raphimc.viabedrock.test;
 
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PackType;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.Content;
+import net.raphimc.viabedrock.api.resourcepack.content.ZipContent;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.UUID;
+import java.util.List;
 
 public class ResourcePackConverterTest {
 
@@ -37,17 +38,13 @@ public class ResourcePackConverterTest {
         System.out.println("Reading took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();
-        final ResourcePack resourcePack = new ResourcePack(null, null, new byte[0], "", "", false, false, false, null, 0, PackType.Resources);
-        resourcePack.setCompressedDataLength(bytes.length, bytes.length);
-        resourcePack.processDataChunk(0, bytes);
+        final ResourcePack resourcePack = new ResourcePack(new ZipContent(bytes));
 
-        final ResourcePacksStorage resourcePacksStorage = new ResourcePacksStorage(null);
-        resourcePacksStorage.addPack(resourcePack);
-        resourcePacksStorage.setPackStack(new UUID[]{resourcePack.packId()});
+        final ResourcePackStorage resourcePackStorage = new ResourcePackStorage(List.of(resourcePack));
         System.out.println("Preparation took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();
-        final ResourcePack.Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePacksStorage);
+        final Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePackStorage);
         System.out.println("Conversion took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();

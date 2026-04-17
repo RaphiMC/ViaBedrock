@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.api.io.NetworkByteBufOutputStream;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 public class TagType extends Type<Tag> {
 
@@ -43,7 +44,7 @@ public class TagType extends Type<Tag> {
             BedrockTypes.STRING.read(buffer);
             return TagRegistry.read(id, new NetworkByteBufInputStream(buffer), TagLimiter.noop(), 0);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -59,7 +60,7 @@ public class TagType extends Type<Tag> {
         try {
             value.write(new NetworkByteBufOutputStream(buffer));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

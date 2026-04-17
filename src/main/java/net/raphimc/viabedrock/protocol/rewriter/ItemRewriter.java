@@ -36,7 +36,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntSortedSet;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
-import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.experimental.rewriter.ExperimentalItemRewriter;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -49,7 +49,7 @@ import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.rewriter.item.BundleItemRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomAttachableResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 import net.raphimc.viabedrock.protocol.types.item.BedrockItemType;
@@ -169,29 +169,29 @@ public class ItemRewriter extends StoredObject {
                 // TODO: Update: Fix this
             }
             if (javaItemMapping.name() != null) {
-                final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
-                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get(javaItemMapping.name())));
+                final ResourcePackStorage resourcePackStorage = this.user().get(ResourcePackStorage.class);
+                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePackStorage.getTexts().get(javaItemMapping.name())));
                 data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Mapped item: " + identifier)});
             }
             javaItem = new StructuredItem(javaItemMapping.id(), bedrockItem.amount(), data);
         } else {
-            final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
-            final ItemDefinitions.ItemDefinition itemDefinition = resourcePacksStorage.getItems().get(identifier);
+            final ResourcePackStorage resourcePackStorage = this.user().get(ResourcePackStorage.class);
+            final ItemDefinitions.ItemDefinition itemDefinition = resourcePackStorage.getItems().get(identifier);
             final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
 
             if (itemDefinition != null) {
                 if (itemDefinition.displayNameComponent() != null) {
-                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().translate(itemDefinition.displayNameComponent())));
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePackStorage.getTexts().translate(itemDefinition.displayNameComponent())));
                 } else if (this.componentItems.contains(identifier)) {
-                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier))));
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePackStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier))));
                 } else {
-                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier) + ".name")));
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePackStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier) + ".name")));
                 }
 
-                if (resourcePacksStorage.getAttachables().attachables().containsKey(identifier) && resourcePacksStorage.isLoadedOnJavaClient() && resourcePacksStorage.getConverterData().containsKey("ca_" + identifier + "_default")) {
+                if (resourcePackStorage.getAttachables().attachables().containsKey(identifier) && resourcePackStorage.isLoadedOnJavaClient() && resourcePackStorage.getConverterData().containsKey("ca_" + identifier + "_default")) {
                     data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(CustomAttachableResourceRewriter.ITEM_MODEL_KEY));
                     data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomAttachableResourceRewriter.getCustomModelData(identifier + "_default"));
-                } else if (itemDefinition.iconComponent() != null && resourcePacksStorage.isLoadedOnJavaClient()) {
+                } else if (itemDefinition.iconComponent() != null && resourcePackStorage.isLoadedOnJavaClient()) {
                     data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(CustomItemTextureResourceRewriter.ITEM_MODEL_KEY));
                     data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomItemTextureResourceRewriter.getCustomModelData(itemDefinition.iconComponent() + "_0"));
                 } else {

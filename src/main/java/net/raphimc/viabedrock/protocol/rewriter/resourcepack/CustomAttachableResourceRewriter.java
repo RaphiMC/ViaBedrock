@@ -21,9 +21,10 @@ import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.GsonUtil;
 import com.viaversion.viaversion.util.Key;
-import net.raphimc.viabedrock.api.model.resourcepack.AttachableDefinitions;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.Content;
+import net.raphimc.viabedrock.api.resourcepack.definition.AttachableDefinitions;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import org.cube.converter.converter.enums.RotationType;
 import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
 import org.cube.converter.model.impl.java.JavaItemModel;
@@ -40,12 +41,12 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
     }
 
     @Override
-    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList) {
-        for (Map.Entry<String, AttachableDefinitions.AttachableDefinition> attachableEntry : resourcePacksStorage.getAttachables().attachables().entrySet()) {
+    protected void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<String> modelsList) {
+        for (Map.Entry<String, AttachableDefinitions.AttachableDefinition> attachableEntry : resourcePackStorage.getAttachables().attachables().entrySet()) {
             for (String bedrockPath : attachableEntry.getValue().attachableData().getTextures().values()) {
-                for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
-                    final ResourcePack.Content bedrockContent = pack.content();
-                    final ResourcePack.Content.LazyImage texture = bedrockContent.getShortnameImage(bedrockPath);
+                for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
+                    final Content bedrockContent = pack.content();
+                    final Content.LazyImage texture = bedrockContent.getShortnameImage(bedrockPath);
                     if (texture != null) {
                         javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(bedrockPath) + ".png", texture);
                         break;
@@ -55,7 +56,7 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
 
             final AttachableDefinitions.AttachableDefinition attachableDefinition = attachableEntry.getValue();
             for (Map.Entry<String, String> modelEntry : attachableDefinition.attachableData().getGeometries().entrySet()) {
-                final BedrockGeometryModel bedrockGeometry = resourcePacksStorage.getModels().entityModels().get(modelEntry.getValue());
+                final BedrockGeometryModel bedrockGeometry = resourcePackStorage.getModels().entityModels().get(modelEntry.getValue());
                 if (bedrockGeometry == null) continue;
                 if (!attachableDefinition.attachableData().getTextures().containsKey(modelEntry.getKey())) continue;
 
@@ -84,7 +85,7 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
                 itemModel.add("display", display);
 
                 final String key = attachableEntry.getKey() + "_" + modelEntry.getKey();
-                resourcePacksStorage.getConverterData().put("ca_" + key, true);
+                resourcePackStorage.getConverterData().put("ca_" + key, true);
                 javaContent.putJson("assets/viabedrock/models/" + this.getJavaModelName(key) + ".json", itemModel);
                 modelsList.add(key);
             }

@@ -15,7 +15,7 @@ This file lists the steps necessary to update ViaBedrock.
 11. Update rewriters
 
 ## Bedrock Edition Update
-1. Add new vanilla packs to `ResourcePacksStorage#VANILLA_PACK_NAMES`
+1. Add new vanilla resource packs to `assets/viabedrock/data/custom/vanilla_resource_packs.json`
 2. Update and run `BedrockDataEnumGenerator` to generate the data enums
 3. Update `assets/viabedrock/data` (See `Data Asset Sources.md`) and `BedrockMappingData`
 4. Update data in the `protocol/data` package

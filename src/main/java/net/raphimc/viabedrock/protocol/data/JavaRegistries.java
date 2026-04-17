@@ -22,14 +22,14 @@ import com.viaversion.nbt.tag.ListTag;
 import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.resourcepack.BiomeDefinitions;
-import net.raphimc.viabedrock.api.model.resourcepack.FogDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.BiomeDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.FogDefinitions;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.data.generated.java.RegistryKeys;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.awt.*;
 import java.util.List;
@@ -41,10 +41,10 @@ public class JavaRegistries {
     private static final int BEDROCK_DEFAULT_WATER_COLOR = 4501493;
     private static final int JAVA_DEFAULT_FOG_COLOR = 12638463;
 
-    public static CompoundTag createJavaRegistries(final GameSessionStorage gameSession, final ResourcePacksStorage resourcePacksStorage) {
+    public static CompoundTag createJavaRegistries(final GameSessionStorage gameSession, final ResourcePackStorage resourcePackStorage) {
         final CompoundTag registries = BedrockProtocol.MAPPINGS.getJavaRegistries().copy();
 
-        registries.put(RegistryKeys.WORLDGEN_BIOME, buildJavaBiomeRegistry(gameSession.getBedrockBiomeDefinitions(), resourcePacksStorage));
+        registries.put(RegistryKeys.WORLDGEN_BIOME, buildJavaBiomeRegistry(gameSession.getBedrockBiomeDefinitions(), resourcePackStorage));
         modifyDimensionRegistry(gameSession, registries.getCompoundTag(RegistryKeys.DIMENSION_TYPE));
         registries.remove(RegistryKeys.DIALOG); // Not needed
         registries.remove(RegistryKeys.TEST_INSTANCE); // Not needed
@@ -71,7 +71,7 @@ public class JavaRegistries {
         }
     }
 
-    private static CompoundTag buildJavaBiomeRegistry(final CompoundTag biomeDefinitions, final ResourcePacksStorage resourcePacksStorage) {
+    private static CompoundTag buildJavaBiomeRegistry(final CompoundTag biomeDefinitions, final ResourcePackStorage resourcePackStorage) {
         final CompoundTag javaBiomes = new CompoundTag();
         javaBiomes.put("minecraft:the_void", getTheVoidBiome());
 
@@ -82,8 +82,8 @@ public class JavaRegistries {
 
         for (String bedrockBiomeName : BedrockProtocol.MAPPINGS.getBedrockBiomes().keySet()) {
             final CompoundTag bedrockBiome = biomeDefinitions.getCompoundTag(bedrockBiomeName);
-            final BiomeDefinitions.BiomeDefinition bedrockBiomeDefinition = resourcePacksStorage.getBiomes().get(bedrockBiomeName);
-            final FogDefinitions.FogDefinition bedrockFogDefinition = bedrockBiomeDefinition != null ? resourcePacksStorage.getFogs().get(bedrockBiomeDefinition.fog()) : null;
+            final BiomeDefinitions.BiomeDefinition bedrockBiomeDefinition = resourcePackStorage.getBiomes().get(bedrockBiomeName);
+            final FogDefinitions.FogDefinition bedrockFogDefinition = bedrockBiomeDefinition != null ? resourcePackStorage.getFogs().get(bedrockBiomeDefinition.fog()) : null;
             if (bedrockBiome == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome definition for " + bedrockBiomeName);
                 continue;

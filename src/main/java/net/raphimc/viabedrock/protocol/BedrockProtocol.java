@@ -146,6 +146,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     public void init(UserConnection user) {
         user.put(new ClientSettingsStorage("en_us", 12, 0, true, (short) 127, 1, false, true, 0));
         user.put(new GameSessionStorage(user));
+        user.put(new ResourcePackDownloadTracker());
         user.put(new BlobCache(user));
         user.put(new PacketSyncStorage(user));
         user.put(new ChannelStorage());
@@ -183,7 +184,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
                 throw CancelException.generate();
             }
             if (serverState == State.LOGIN && !LOGIN_STATE_WHITELIST.contains(packet) && BEFORE_PLAY_STATE_WHITELIST.contains(packet)) { // Bedrock client can skip the login state
-                ViaBedrock.getPlatform().getLogger().warning("Server skipped LOGIN state");
+                ViaBedrock.getPlatform().getLogger().warning("Skipping LOGIN state");
                 final PacketWrapper playStatus = PacketWrapper.create(ClientboundBedrockPackets.PLAY_STATUS, wrapper.user());
                 playStatus.write(Types.INT, PlayStatus.LoginSuccess.getValue()); // status
                 playStatus.send(BedrockProtocol.class, false);

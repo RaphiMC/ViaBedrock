@@ -31,8 +31,8 @@ import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.Entity;
-import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
-import net.raphimc.viabedrock.api.model.resourcepack.TextDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.SoundDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.TextDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
@@ -56,7 +56,7 @@ import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.Map;
@@ -532,7 +532,7 @@ public class WorldEffectPackets {
                 }
                 case SleepingPlayers -> {
                     wrapper.setPacketType(ClientboundPackets26_1.SYSTEM_CHAT);
-                    final TextDefinitions textDefinitions = wrapper.user().get(ResourcePacksStorage.class).getTexts();
+                    final TextDefinitions textDefinitions = wrapper.user().get(ResourcePackStorage.class).getTexts();
                     if (data.getInt("ableToSleep") != 0) {
                         final int playerCount = data.getInt("overworldPlayerCount");
                         final int sleepingPlayerCount = data.getInt("sleepingPlayerCount");
