@@ -513,6 +513,7 @@ public class EntityPackets {
 
             final List<EntityData> javaEntityData = new ArrayList<>();
             entity.updateEntityData(entityData, javaEntityData);
+            entity.translateEntityProperties(entityProperties, javaEntityData);
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(VersionedTypes.V26_1.entityDataList, javaEntityData); // entity data
         });

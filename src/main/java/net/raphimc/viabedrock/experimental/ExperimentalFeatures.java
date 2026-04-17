@@ -17,6 +17,10 @@
  */
 package net.raphimc.viabedrock.experimental;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.ListTag;
+import com.viaversion.nbt.tag.StringTag;
+import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockFace;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
@@ -29,6 +33,8 @@ import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.experimental.model.entity.properties.EntityProperty;
+import net.raphimc.viabedrock.experimental.model.entity.properties.EntityPropertyList;
 import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
 import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
 import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
@@ -37,6 +43,7 @@ import net.raphimc.viabedrock.experimental.model.map.MapDecoration;
 import net.raphimc.viabedrock.experimental.model.map.MapObject;
 import net.raphimc.viabedrock.experimental.model.map.MapTrackedObject;
 import net.raphimc.viabedrock.experimental.rewriter.InventoryTransactionRewriter;
+import net.raphimc.viabedrock.experimental.storage.EntityPropertyTracker;
 import net.raphimc.viabedrock.experimental.storage.MapTracker;
 import net.raphimc.viabedrock.experimental.util.JavaMapPaletteUtil;
 import net.raphimc.viabedrock.experimental.util.ProtocolUtil;
@@ -530,6 +537,53 @@ public class ExperimentalFeatures {
                 //TODO: Bedrock requests map data if it doesnt have it, so we need to send something
             }
         });
+        protocol.registerClientbound(ClientboundBedrockPackets.SYNC_ENTITY_PROPERTY, null, wrapper -> {
+            wrapper.cancel();
+            final Tag tag = wrapper.read(BedrockTypes.NETWORK_TAG);
+
+            final EntityPropertyTracker epTracker = wrapper.user().get(EntityPropertyTracker.class);
+
+            String entityType = ((CompoundTag)tag).getString("type");
+            List<EntityProperty> intEntityProperties = new ArrayList<>();
+            List<EntityProperty.FloatProperty> floatEntityProperties = new ArrayList<>();
+
+            ListTag<CompoundTag> properties = ((CompoundTag)tag).getListTag("properties", CompoundTag.class);
+            for (CompoundTag property : properties) {
+                EntityProperty newProperty = switch (property.getInt("type")) {
+                    case 0 -> new EntityProperty.IntProperty(
+                            property.getString("name"),
+                            property.getInt("min"),
+                            property.getInt("max")
+                    );
+                    case 1 ->  new EntityProperty.FloatProperty(
+                            property.getString("name"),
+                            property.getFloat("min"),
+                            property.getFloat("max")
+                    );
+                    case 2 ->  new EntityProperty.BooleanProperty(
+                            property.getString("name")
+                    );
+                    case 3 ->  new EntityProperty.EnumProperty(
+                            property.getString("name"),
+                            property.getListTag("enum", StringTag.class).stream().map(StringTag::getValue).toArray(String[]::new)
+                    );
+                    default -> {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received entity property with unknown type: " + property.getInt("type"));
+                        yield null;
+                    }
+                };
+
+                if (newProperty != null) {
+                    if (newProperty instanceof EntityProperty.FloatProperty floatProperty) {
+                        floatEntityProperties.add(floatProperty);
+                    } else {
+                        intEntityProperties.add(newProperty);
+                    }
+                }
+            }
+
+            epTracker.addEntity(entityType, new EntityPropertyList(intEntityProperties, floatEntityProperties));
+        });
     }
 
     public static void registerTasks() {
@@ -538,5 +592,6 @@ public class ExperimentalFeatures {
     public static void registerStorages(final UserConnection user) {
         user.put(new InventoryTransactionRewriter(user));
         user.put(new MapTracker(user));
+        user.put(new EntityPropertyTracker(user));
     }
 }

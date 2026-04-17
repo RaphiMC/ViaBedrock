@@ -23,18 +23,26 @@ import com.viaversion.viaversion.api.minecraft.EulerAngle;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
+import com.viaversion.viaversion.libs.fastutil.ints.IntIterator;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.entity.LivingEntity;
+import net.raphimc.viabedrock.experimental.model.entity.properties.EntityProperty;
+import net.raphimc.viabedrock.experimental.model.entity.properties.EntityPropertyList;
+import net.raphimc.viabedrock.experimental.storage.EntityPropertyTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
 import net.raphimc.viabedrock.protocol.model.EntityAttribute;
+import net.raphimc.viabedrock.protocol.model.EntityProperties;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataTypesBedrock;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -717,6 +725,43 @@ public class EntityMetadataRewriter {
         }
 
         return true;
+    }
+
+    public static void rewriteProperties(final UserConnection user, final Entity entity, final EntityProperties properties, final List<EntityData> javaEntityData) {
+        final EntityPropertyTracker epTracker = user.get(EntityPropertyTracker.class);
+        EntityPropertyList expectedProperties = epTracker.getEntityProperties(entity.type());
+        if (expectedProperties == null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to find expected properties for entity " + entity.type());
+            return;
+        }
+
+        Iterator<EntityProperty> intIterator = expectedProperties.intProperties().iterator();
+
+        for (int i: properties.intProperties().values()) {
+            final EntityProperty property = intIterator.next();
+
+            if (property instanceof EntityProperty.BooleanProperty booleanProperty) {
+                boolean value = i != 0;
+
+                ViaBedrock.getPlatform().getLogger().warning("Received boolean property " + booleanProperty.identifier() + " for entity " + entity.type() + " with value " + value);
+            } else if (property instanceof EntityProperty.IntProperty integerProperty) {
+                int value = i;
+
+                ViaBedrock.getPlatform().getLogger().warning("Received int property " + integerProperty.identifier() + " for entity " + entity.type() + " with value " + value);
+            } else if (property instanceof EntityProperty.EnumProperty enumProperty) {
+                String value = enumProperty.possibleValues()[i];
+
+                ViaBedrock.getPlatform().getLogger().warning("Received enum property " + enumProperty.identifier() + " for entity " + entity.type() + " with value " + value);
+            }
+        }
+
+        Iterator<EntityProperty.FloatProperty> floatIterator = expectedProperties.floatProperties().iterator();
+
+        for (float value : properties.floatProperties().values()) {
+            final EntityProperty.FloatProperty property = floatIterator.next();
+
+            ViaBedrock.getPlatform().getLogger().warning("Received float property " + property.identifier() + " for entity " + entity.type() + " with value " + value);
+        }
     }
 
     private static Number readNumber(EntityData data) {
