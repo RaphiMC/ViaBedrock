@@ -507,7 +507,7 @@ public class ExperimentalFeatures {
             final BedrockBlockEntity blockEntity = chunkTracker.getBlockEntity(position);
             TextComponent title = new TranslationComponent("container." + blockStateRewriter.tag(chunkTracker.getBlockState(position)));
             if (blockEntity != null && blockEntity.tag().get("CustomName") instanceof StringTag customNameTag) {
-                title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePacksStorage.class).getTexts().translate(customNameTag.getValue()));
+                title = TextUtil.stringToTextComponent(wrapper.user().get(ResourcePackStorage.class).getTexts().translate(customNameTag.getValue()));
             }
 
             int size = 27;
