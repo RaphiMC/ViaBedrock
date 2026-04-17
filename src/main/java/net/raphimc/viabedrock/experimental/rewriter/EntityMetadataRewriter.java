@@ -17,14 +17,17 @@
  */
 package net.raphimc.viabedrock.experimental.rewriter;
 
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.EulerAngle;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityDataType;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIterator;
+import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.entity.LivingEntity;
@@ -729,9 +732,10 @@ public class EntityMetadataRewriter {
 
     public static void rewriteProperties(final UserConnection user, final Entity entity, final EntityProperties properties, final List<EntityData> javaEntityData) {
         final EntityPropertyTracker epTracker = user.get(EntityPropertyTracker.class);
+        CompoundTag registries = BedrockProtocol.MAPPINGS.getJavaRegistries();
         EntityPropertyList expectedProperties = epTracker.getEntityProperties(entity.type());
         if (expectedProperties == null) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to find expected properties for entity " + entity.type());
+            //ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to find expected properties for entity " + entity.type());
             return;
         }
 
@@ -751,7 +755,87 @@ public class EntityMetadataRewriter {
             } else if (property instanceof EntityProperty.EnumProperty enumProperty) {
                 String value = enumProperty.possibleValues()[i];
 
-                ViaBedrock.getPlatform().getLogger().warning("Received enum property " + enumProperty.identifier() + " for entity " + entity.type() + " with value " + value);
+                switch (enumProperty.identifier()) {
+                    case "minecraft:climate_variant" -> {
+                        String namespacedVariant = Key.namespaced(value);
+
+                        String registryName = switch (entity.javaType()) {
+                            case CHICKEN -> "minecraft:chicken_variant";
+                            case COW -> "minecraft:cow_variant";
+                            case PIG -> "minecraft:pig_variant";
+                            default -> {
+                                ViaBedrock.getPlatform().getLogger().warning("Received climate_variant for unsupported entity " + entity.type());
+                                yield null;
+                            }
+                        };
+                        EntityDataType variantType = switch (entity.javaType()) {
+                            case CHICKEN -> VersionedTypes.V26_1.entityDataTypes().chickenVariantType;
+                            case COW -> VersionedTypes.V26_1.entityDataTypes().cowVariantType;
+                            case PIG -> VersionedTypes.V26_1.entityDataTypes().pigVariantType;
+                            default -> null;
+                        };
+
+                        if (registryName != null && variantType != null) {
+                            CompoundTag variantRegistry = registries.getCompoundTag(registryName);
+                            // TODO: Could be cleaned up
+                            int javaVariant = -1;
+                            for (String key : variantRegistry.keySet()) {
+                                javaVariant++;
+                                if (key.equals(namespacedVariant)) {
+                                    break;
+                                }
+                            }
+
+                            if (javaVariant != -1) {
+                                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.VARIANT), variantType, javaVariant));
+                            } else {
+                                ViaBedrock.getPlatform().getLogger().warning("Failed to find variant " + namespacedVariant + " in registry " + registryName + " for entity " + entity.type());
+                            }
+                        }
+                    }
+                    case "minecraft:sound_variant" -> {
+                        String namespacedVariant = Key.namespaced(value);
+
+                        String registryName = switch (entity.javaType()) {
+                            case CHICKEN -> "minecraft:chicken_sound_variant";
+                            case COW -> "minecraft:cow_sound_variant";
+                            case PIG -> "minecraft:pig_sound_variant";
+                            case WOLF -> "minecraft:wolf_sound_variant";
+                            case CAT -> "minecraft:cat_sound_variant";
+                            default -> {
+                                ViaBedrock.getPlatform().getLogger().warning("Received sound_variant for unsupported entity " + entity.type());
+                                yield null;
+                            }
+                        };
+                        EntityDataType variantType = switch (entity.javaType()) {
+                            case CHICKEN -> VersionedTypes.V26_1.entityDataTypes().chickenSoundVariant;
+                            case COW -> VersionedTypes.V26_1.entityDataTypes().cowSoundVariant;
+                            case PIG -> VersionedTypes.V26_1.entityDataTypes().pigSoundVariant;
+                            case WOLF -> VersionedTypes.V26_1.entityDataTypes().wolfSoundVariantType;
+                            case CAT -> VersionedTypes.V26_1.entityDataTypes().catSoundVariant;
+                            default -> null;
+                        };
+
+                        if (registryName != null && variantType != null) {
+                            CompoundTag variantRegistry = registries.getCompoundTag(registryName);
+                            // TODO: Could be cleaned up
+                            int javaVariant = -1;
+                            for (String key : variantRegistry.keySet()) {
+                                javaVariant++;
+                                if (key.equals(namespacedVariant)) {
+                                    break;
+                                }
+                            }
+
+                            if (javaVariant != -1) {
+                                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SOUND_VARIANT), variantType, javaVariant));
+                            } else {
+                                ViaBedrock.getPlatform().getLogger().warning("Failed to find sound variant " + namespacedVariant + " in registry " + registryName + " for entity " + entity.type());
+                            }
+                        }
+                    }
+                    default -> ViaBedrock.getPlatform().getLogger().warning("Received enum property " + enumProperty.identifier() + " for entity " + entity.type() + " with value " + value);
+                }
             }
         }
 
