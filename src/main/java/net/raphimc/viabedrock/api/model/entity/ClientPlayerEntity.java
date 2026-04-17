@@ -360,7 +360,7 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
         final EntityAttribute newMovementAttribute = oldMovementAttribute.withModifiers(modifiers.toArray(new EntityAttribute.Modifier[0]));
         // Compute the current value, as the client only updates it when a modifier is changed by itself
-        this.updateAttributes(new EntityAttribute[]{newMovementAttribute.withValue(newMovementAttribute.computeCurrentValue())});
+        this.updateAttributes(newMovementAttribute.withValue(newMovementAttribute.computeCurrentValue()));
     }
 
     public GameType gameType() {
