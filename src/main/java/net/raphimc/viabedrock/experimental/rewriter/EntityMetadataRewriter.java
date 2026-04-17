@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.experimental.rewriter;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.EulerAngle;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
@@ -25,6 +26,7 @@ import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.model.entity.LivingEntity;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
@@ -322,6 +324,10 @@ public class EntityMetadataRewriter {
                         int javaVariant = variant;
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.VARIANT), VersionedTypes.V26_1.entityDataTypes().varIntType, javaVariant));
                     }
+                    case CAT -> { // TODO: Test when I can
+                        int javaVariant = variant;
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.VARIANT), VersionedTypes.V26_1.entityDataTypes().varIntType, javaVariant));
+                    }
                     default -> {
                         if (variant != 0) { // For some reason bedrock seems to send variant 0 for many entities that don't have variants
                             ViaBedrock.getPlatform().getLogger().warning("Received non-zero VARIANT " + variant + " for unsupported entity " + entity.type());
@@ -599,6 +605,17 @@ public class EntityMetadataRewriter {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received DATA_PARTICLE for non-AREA_EFFECT_CLOUD entity " + entity.type());
                 }
             }
+            case AUX_POWER -> {
+                if (entity.javaType().is(EntityTypes1_21_11.ARROW)) {
+                    // Potion aux value used for an Arrow's trail. (Equal to the potion ID - 1)
+                    int potionId = readNumber(entityData).byteValue() + 1;
+
+                    // TODO: Find potion by id and get color
+                    //javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.EFFECT_COLOR), VersionedTypes.V26_1.entityDataTypes().varIntType, to_do));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received AUX_POWER for non-ARROW entity " + entity.type());
+                }
+            }
             case INV -> {
                 if (entity.javaType().is(EntityTypes1_21_11.WITHER)) {
                     int invulnerabilityTicks = readNumber(entityData).intValue();
@@ -669,6 +686,15 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.ATTACK_TARGET), VersionedTypes.V26_1.entityDataTypes().varIntType, targetEntity.javaId()));
                 } else if (targetId != 0)  {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received TARGET for non-GUARDIAN entity " + entity.type() + " with non-zero value " + targetId);
+                }
+            }
+            case BLOCK_TARGET ->  {
+                if (entity.javaType().is(EntityTypes1_21_11.END_CRYSTAL)) {
+                    BlockPosition blockPosition = (BlockPosition) entityData.getValue(); // TODO: Test
+
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.BEAM_TARGET), VersionedTypes.V26_1.entityDataTypes().optionalBlockPositionType, blockPosition));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received BLOCK_TARGET for non-END_CRYSTAL entity " + entity.type());
                 }
             }
             case RESERVED_038 -> { // SCALE
