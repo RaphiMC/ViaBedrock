@@ -747,7 +747,25 @@ public class EntityMetadataRewriter {
             if (property instanceof EntityProperty.BooleanProperty booleanProperty) {
                 boolean value = i != 0;
 
-                ViaBedrock.getPlatform().getLogger().warning("Received boolean property " + booleanProperty.identifier() + " for entity " + entity.type() + " with value " + value);
+                switch (booleanProperty.identifier()) {
+                    case "minecraft:can_move" -> {
+                        if (entity.javaType().is(EntityTypes1_21_11.HAPPY_GHAST)) {
+                            javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.STAYS_STILL), VersionedTypes.V26_1.entityDataTypes().booleanType, !value));
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().warning("Received can_move property for non-HAPPY_GHAST entity " + entity.type());
+                        }
+                    }
+                    case "minecraft:has_nectar" -> {
+                        if  (entity.javaType().is(EntityTypes1_21_11.BEE)) {
+                            byte bitmask = value ? (byte) 0x08 : 0; // TODO
+
+                            javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, bitmask));
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().warning("Received has_nectar property for non-BEE entity " + entity.type());
+                        }
+                    }
+                    default -> ViaBedrock.getPlatform().getLogger().warning("Received boolean property " + booleanProperty.identifier() + " for entity " + entity.type() + " with value " + value);
+                }
             } else if (property instanceof EntityProperty.IntProperty integerProperty) {
                 int value = i;
 
@@ -832,6 +850,45 @@ public class EntityMetadataRewriter {
                             } else {
                                 ViaBedrock.getPlatform().getLogger().warning("Failed to find sound variant " + namespacedVariant + " in registry " + registryName + " for entity " + entity.type());
                             }
+                        }
+                    }
+                    case "minecraft:chest_interaction" -> {
+                        if (entity.javaType().is(EntityTypes1_21_11.COPPER_GOLEM)) {
+                            int state = switch (value) {
+                                case "none" -> 0; // IDLE
+                                case "take" -> 1; // GETTING_ITEM
+                                case "take_fail" -> 2; // GETTING_NO_ITEM
+                                case "put" -> 3; // DROPPING_ITEM
+                                case "put_fail" -> 4; // DROPPING_NO_ITEM
+                                default -> -1;
+                            };
+
+                            if (state != -1) {
+                                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.COPPER_GOLEM_STATE), VersionedTypes.V26_1.entityDataTypes().copperGolemState, state));
+                            } else {
+                                ViaBedrock.getPlatform().getLogger().warning("Received unknown chest_interaction state " + value + " for COPPER_GOLEM entity " + entity.type());
+                            }
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().warning("Received chest_interaction for non-COPPER_GOLEM entity " + entity.type());
+                        }
+                    }
+                    case "minecraft:oxidation_level" -> {
+                        if (entity.javaType().is(EntityTypes1_21_11.COPPER_GOLEM)) {
+                            int state = switch (value) {
+                                case "unoxidized" -> 0; // UNAFFECTED
+                                case "exposed" -> 1; // EXPOSED
+                                case "weathered" -> 2; // WEATHERED
+                                case "oxidized" -> 3; // OXIDIZED
+                                default -> -1;
+                            };
+
+                            if (state != -1) {
+                                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WEATHER_STATE), VersionedTypes.V26_1.entityDataTypes().weatheringCopperState, state));
+                            } else {
+                                ViaBedrock.getPlatform().getLogger().warning("Received unknown oxidation_level state " + value + " for COPPER_GOLEM entity " + entity.type());
+                            }
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().warning("Received oxidation_level for non-COPPER_GOLEM entity " + entity.type());
                         }
                     }
                     default -> ViaBedrock.getPlatform().getLogger().warning("Received enum property " + enumProperty.identifier() + " for entity " + entity.type() + " with value " + value);
