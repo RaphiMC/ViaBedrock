@@ -46,18 +46,13 @@ public class BlockEntityRewriter {
 
     static {
         // TODO: Enhancement: Add missing block entities
-        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BREWING_STAND, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.CALIBRATED_SCULK_SENSOR, NOOP_REWRITER);
-        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.CAMPFIRE, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.COPPER_GOLEM_STATUE, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.NOTE_BLOCK, NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.PISTON, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.MOVING_BLOCK, NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.SCULK_SENSOR, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.SCULK_SHRIEKER, NOOP_REWRITER);
-        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.SHELF, NOOP_REWRITER);
-        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.TRIAL_SPAWNER, NOOP_REWRITER);
-        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.VAULT, NOOP_REWRITER);
 
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BANNER, new BannerBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BARREL, new LootableContainerBlockEntityRewriter());
@@ -66,7 +61,9 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BEEHIVE, new BeehiveBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BELL, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BLAST_FURNACE, new FurnaceBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BREWING_STAND, new BrewingStandBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BRUSHABLE_BLOCK, new BrushableBlockBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.CAMPFIRE, new CampfireBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.CAULDRON, NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.CHEST, new LootableContainerBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.CHISELED_BOOKSHELF, new ChiseledBookshelfBlockEntityRewriter());
@@ -95,6 +92,7 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.MOB_SPAWNER, new MobSpawnerBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.NETHER_REACTOR, NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.SCULK_CATALYST, NOOP_REWRITER);
+        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.SHELF, new ShelfBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.SHULKER_BOX, new LootableContainerBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.SIGN, new SignBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.SKULL, new SkullBlockEntityRewriter());
@@ -102,6 +100,9 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.SPORE_BLOSSOM, NULL_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.STRUCTURE_BLOCK, new StructureBlockBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.TRAPPED_CHEST, new LootableContainerBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.TRIAL_SPAWNER, new TrialSpawnerBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.VAULT, new VaultBlockEntityRewriter());
+
     }
 
     public static BlockEntity toJava(final UserConnection user, final int bedrockBlockStateId, final BedrockBlockEntity bedrockBlockEntity) {
@@ -166,7 +167,10 @@ public class BlockEntityRewriter {
 
         default void copyItem(final UserConnection user, final CompoundTag fromTag, final CompoundTag toTag, final String fromKey, final String toKey) {
             if (fromTag.get(fromKey) instanceof CompoundTag itemTag) {
-                toTag.put(toKey, this.rewriteItem(user, itemTag));
+                CompoundTag item = this.rewriteItem(user, itemTag);
+                if (item != null) {
+                    toTag.put(toKey, item);
+                }
             }
         }
 
@@ -179,6 +183,7 @@ public class BlockEntityRewriter {
             final ItemRewriter itemRewriter = user.get(ItemRewriter.class);
             for (final CompoundTag bedrockItemTag : bedrockItemList) {
                 final CompoundTag javaItemTag = itemRewriter.javaItem(bedrockItemTag);
+                if (javaItemTag == null) continue;
                 this.copy(bedrockItemTag, javaItemTag, "Slot", ByteTag.class);
                 javaItemList.add(javaItemTag);
             }

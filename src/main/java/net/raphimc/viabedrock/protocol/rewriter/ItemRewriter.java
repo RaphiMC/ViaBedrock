@@ -20,6 +20,8 @@ package net.raphimc.viabedrock.protocol.rewriter;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntTag;
+import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.StoredObject;
@@ -222,8 +224,43 @@ public class ItemRewriter extends StoredObject {
 
     public CompoundTag javaItem(final CompoundTag bedrockTag) {
         final CompoundTag javaTag = new CompoundTag();
-        javaTag.putString("id", "minecraft:stone");
-        return javaTag; // TODO: Support converting nbt items
+
+        if (bedrockTag == null) {
+            return null;
+        }
+
+        String bedrockId = bedrockTag.getString("Name");
+        if (bedrockId == null || bedrockId.isEmpty()) {
+            return null;
+        }
+
+        Integer id = this.items.get(bedrockId);
+        if (id == null) {
+            ViaBedrock.getPlatform().getLogger().warning("Could not find item " + bedrockId);
+            return null;
+        }
+
+        BedrockItem item = new BedrockItem(
+                id,
+                (short) 0,
+                bedrockTag.getByte("Count"),
+                bedrockTag.getCompoundTag("tag")
+        );
+        if (item.isEmpty()) {
+            return null;
+        }
+
+        Item javaItem = this.javaItem(item);
+
+        String javaId = BedrockProtocol.MAPPINGS.getJavaItems().inverse().get(javaItem.identifier());
+        javaTag.put("id", new StringTag(javaId));
+
+        javaTag.put("count",new IntTag(javaItem.amount()));
+        if (javaItem.tag() != null) {
+            javaTag.put("components", javaItem.tag());
+        }
+
+        return javaTag;
     }
 
     public Item[] javaItems(final BedrockItem[] bedrockItems) {
