@@ -24,7 +24,9 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.experimental.model.recipe.ItemDescriptor;
+import net.raphimc.viabedrock.experimental.model.recipe.ShapedRecipe;
 import net.raphimc.viabedrock.experimental.model.recipe.ShapelessRecipe;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
@@ -48,6 +50,115 @@ public class CraftingDataTracker extends StoredObject {
     public void updateCraftingDataList(List<CraftingDataStorage> craftingDataList) {
         this.craftingDataList = craftingDataList;
     }
+
+    // TODO: Allow matching in 2x2 grid
+    public CraftingDataStorage getRecipeData(ExperimentalContainer container, String tag) {
+        for (CraftingDataStorage craftingData : this.getCraftingDataList()) {
+            if (craftingData.recipe() == null || !craftingData.recipe().getRecipeTag().equals(tag)) {
+                continue;
+            }
+
+            switch (craftingData.type()) {
+                case SHAPELESS -> {
+                    if (matchShapelessRecipe(container, (ShapelessRecipe) craftingData.recipe())) {
+                        return craftingData;
+                    }
+                }
+                case SHAPED -> {
+                    if (matchShapedRecipe(container, (ShapedRecipe) craftingData.recipe())) {
+                        return craftingData;
+                    }
+                }
+                case USER_DATA_SHAPELESS -> {
+                    // TODO: Not supported yet
+                }
+                default -> {
+                    ViaBedrock.getPlatform().getLogger().warning(
+                            "Unknown recipe type for crafting: " + craftingData.type() + " in recipe " + craftingData.recipe().getUniqueId()
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean matchShapelessRecipe(ExperimentalContainer container, ShapelessRecipe recipe) {
+        boolean[] used = new boolean[10];
+        for (ItemDescriptor descriptor : recipe.getIngredients()) {
+            if (!findMatchingSlot(container, descriptor, used)) {
+                return false;
+            }
+        }
+        return noExtraItems(container, used);
+    }
+
+    private boolean matchShapedRecipe(ExperimentalContainer container, ShapedRecipe recipe) {
+        int height = recipe.getPattern().length;
+        int width = recipe.getPattern()[0].length;
+
+        for (int startY = 0; startY <= 3 - height; startY++) {
+            for (int startX = 0; startX <= 3 - width; startX++) {
+                if (checkPattern(container, recipe, startX, startY) && noExtraItemsOutsidePattern(container, startX, startY, width, height)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean findMatchingSlot(ExperimentalContainer container, ItemDescriptor descriptor, boolean[] used) {
+        for (int slot = 1; slot <= 9; slot++) {
+            if (used[slot]) continue;
+            int inputSlot = container.bedrockSlot(slot);
+            BedrockItem item = container.getItem(inputSlot);
+            if (descriptor.matchesItem(this.user(), item)) {
+                used[slot] = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean noExtraItems(ExperimentalContainer container, boolean[] used) {
+        for (int slot = 1; slot <= 9; slot++) {
+            int inputSlot = container.bedrockSlot(slot);
+            if (!used[slot] && !container.getItem(inputSlot).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkPattern(ExperimentalContainer container, ShapedRecipe recipe, int startX, int startY) {
+        int height = recipe.getPattern().length;
+        int width = recipe.getPattern()[0].length;
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                ItemDescriptor descriptor = recipe.getPattern()[y][x];
+                BedrockItem item = container.getItem(container.bedrockSlot((startY + y) * 3 + (startX + x) + 1));
+                if (!descriptor.matchesItem(this.user(), item)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean noExtraItemsOutsidePattern(ExperimentalContainer container, int startX, int startY, int width, int height) {
+        for (int gx = 0; gx < 3; gx++) {
+            for (int gy = 0; gy < 3; gy++) {
+                if (gx >= startX && gx < startX + width && gy >= startY && gy < startY + height) {
+                    continue;
+                }
+                if (!container.getItem(container.bedrockSlot(gy * 3 + gx + 1)).isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 
     public void sendJavaUpdateRecipes(final UserConnection user) {
         //TODO: Fix up this mess

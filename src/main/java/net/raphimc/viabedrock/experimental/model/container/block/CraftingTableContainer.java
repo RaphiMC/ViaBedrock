@@ -123,7 +123,8 @@ public class CraftingTableContainer extends ExperimentalContainer {
         //TODO: This is experimental code...
 
         ItemRewriter itemRewriter = user.get(ItemRewriter.class);
-        final CraftingDataStorage craftingDataStorage = this.getRecipeData();
+        CraftingDataTracker tracker = user.get(CraftingDataTracker.class);
+        final CraftingDataStorage craftingDataStorage = tracker.getRecipeData(this, "crafting_table");
         BedrockItem resultItem = BedrockItem.empty();
         if (craftingDataStorage != null) {
             // Valid recipe found, show output
@@ -234,115 +235,4 @@ public class CraftingTableContainer extends ExperimentalContainer {
         //TODO: Re-Update the output slot based on remaining items in the crafting grid
         return true;
     }
-
-    private CraftingDataStorage getRecipeData() {
-        CraftingDataTracker craftingDataTracker = user.get(CraftingDataTracker.class);
-
-        for (CraftingDataStorage craftingData : craftingDataTracker.getCraftingDataList()) {
-            if (craftingData.recipe() == null || !craftingData.recipe().getRecipeTag().equals("crafting_table")) {
-                continue;
-            }
-
-            switch (craftingData.type()) {
-                case SHAPELESS -> {
-                    if (matchShapelessRecipe((ShapelessRecipe) craftingData.recipe())) {
-                        return craftingData;
-                    }
-                }
-                case SHAPED -> {
-                    if (matchShapedRecipe((ShapedRecipe) craftingData.recipe())) {
-                        return craftingData;
-                    }
-                }
-                case USER_DATA_SHAPELESS -> {
-                    // TODO: Not supported yet
-                }
-                default -> {
-                    ViaBedrock.getPlatform().getLogger().warning(
-                            "Unknown recipe type for crafting: " + craftingData.type() + " in recipe " + craftingData.recipe().getUniqueId()
-                    );
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean matchShapelessRecipe(ShapelessRecipe recipe) {
-        boolean[] used = new boolean[10];
-        for (ItemDescriptor descriptor : recipe.getIngredients()) {
-            if (!findMatchingSlot(descriptor, used)) {
-                return false;
-            }
-        }
-        return noExtraItems(used);
-    }
-
-    private boolean matchShapedRecipe(ShapedRecipe recipe) {
-        int height = recipe.getPattern().length;
-        int width = recipe.getPattern()[0].length;
-
-        for (int startY = 0; startY <= 3 - height; startY++) {
-            for (int startX = 0; startX <= 3 - width; startX++) {
-                if (checkPattern(recipe, startX, startY) && noExtraItemsOutsidePattern(startX, startY, width, height)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean findMatchingSlot(ItemDescriptor descriptor, boolean[] used) {
-        for (int slot = 1; slot <= 9; slot++) {
-            if (used[slot]) continue;
-            int inputSlot = slot + 31; // Crafting grid slots in bedrock
-            BedrockItem item = this.getItem(inputSlot);
-            if (descriptor.matchesItem(user, item)) {
-                used[slot] = true;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean noExtraItems(boolean[] used) {
-        for (int slot = 1; slot <= 9; slot++) {
-            int inputSlot = slot + 31; // Crafting grid slots in bedrock
-            if (!used[slot] && !this.getItem(inputSlot).isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean checkPattern(ShapedRecipe recipe, int startX, int startY) {
-        int height = recipe.getPattern().length;
-        int width = recipe.getPattern()[0].length;
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                ItemDescriptor descriptor = recipe.getPattern()[y][x];
-                BedrockItem item = this.getItem((startY + y) * 3 + (startX + x) + 1 + 31);
-                if (!descriptor.matchesItem(user, item)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private boolean noExtraItemsOutsidePattern(int startX, int startY, int width, int height) {
-        for (int gx = 0; gx < 3; gx++) {
-            for (int gy = 0; gy < 3; gy++) {
-                if (gx >= startX && gx < startX + width && gy >= startY && gy < startY + height) {
-                    continue;
-                }
-                if (!this.getItem(gy * 3 + gx + 1 + 31).isEmpty()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-
 }
