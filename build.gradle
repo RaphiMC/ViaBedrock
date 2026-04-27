@@ -43,11 +43,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly "com.viaversion:viaversion-common:5.9.0-SNAPSHOT"
+    compileOnly "com.viaversion:viaversion-common:5.9.0"
     compileOnly "org.yaml:snakeyaml:2.6"
     compileOnly "com.google.guava:guava:33.6.0-jre"
     compileOnly "io.netty:netty-handler:4.2.12.Final"
-    compileOnly "com.google.code.gson:gson:2.13.2"
+    compileOnly "com.google.code.gson:gson:2.14.0"
     compileOnly "dev.kastle.netty:netty-transport-raknet:1.7.0"
 
     api("io.netty:netty-codec-http:4.2.12.Final") {
@@ -82,7 +82,7 @@ dependencies {
         transitive = false
     }
 
-    toolImplementation "org.jsoup:jsoup:1.22.1"
+    toolImplementation "org.jsoup:jsoup:1.22.2"
     toolImplementation "org.ow2.asm:asm-tree:9.9.1"
     toolImplementation "net.lenni0451.commons:asm:1.9.2"
 }
