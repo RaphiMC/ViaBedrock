@@ -139,8 +139,18 @@ public abstract class ExperimentalContainer {
         }
 
         if (container instanceof InventoryContainer) {
-            // TODO: Inventory crafting grid
-            if (javaSlot >= 5 && javaSlot < 9) {
+            if (javaSlot >= 0 && javaSlot < 5) {
+                ExperimentalContainer hudContainer = clickContext.inventoryTracker.getHudContainer();
+                int hudSlot  = hudContainer.bedrockSlot(javaSlot);
+
+                bedrockSlot = hudSlot;
+                container = hudContainer;
+                clickContext.container = container;
+                clickContext.bedrockSlot = hudSlot;
+                clickContext.prevContainers.add(container.copy());
+
+                // TODO: Crafting
+            } else if (javaSlot >= 5 && javaSlot < 9) {
                 // Armor slots
                 ExperimentalContainer armorContainer = clickContext.inventoryTracker.getArmorContainer();
                 int armorSlot = armorContainer.bedrockSlot(javaSlot);

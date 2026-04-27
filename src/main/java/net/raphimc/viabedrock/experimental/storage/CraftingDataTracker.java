@@ -91,7 +91,7 @@ public class CraftingDataTracker extends StoredObject {
     }
 
     private boolean matchShapelessRecipe(ExperimentalContainer container, ShapelessRecipe recipe) {
-        boolean[] used = new boolean[10];
+        boolean[] used = new boolean[9];
         for (ItemDescriptor descriptor : recipe.getIngredients()) {
             if (!findMatchingSlot(container, descriptor, used)) {
                 return false;
@@ -115,9 +115,9 @@ public class CraftingDataTracker extends StoredObject {
     }
 
     private boolean findMatchingSlot(ExperimentalContainer container, ItemDescriptor descriptor, boolean[] used) {
-        for (int slot = 1; slot <= 9; slot++) {
+        for (int slot = 0; slot < 9; slot++) {
             if (used[slot]) continue;
-            int inputSlot = container.bedrockSlot(slot);
+            int inputSlot = container.bedrockSlot(slot + 1);
             BedrockItem item = container.getItem(inputSlot);
             if (descriptor.matchesItem(this.user(), item)) {
                 used[slot] = true;
@@ -128,8 +128,8 @@ public class CraftingDataTracker extends StoredObject {
     }
 
     private boolean noExtraItems(ExperimentalContainer container, boolean[] used) {
-        for (int slot = 1; slot <= 9; slot++) {
-            int inputSlot = container.bedrockSlot(slot);
+        for (int slot = 0; slot < 9; slot++) {
+            int inputSlot = container.bedrockSlot(slot + 1);
             if (!used[slot] && !container.getItem(inputSlot).isEmpty()) {
                 return false;
             }

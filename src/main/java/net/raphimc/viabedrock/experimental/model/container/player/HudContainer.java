@@ -75,6 +75,4 @@ public class HudContainer extends InventoryRedirectContainer {
         }
     }
 
-    // TODO: Crafting (Currently clashes with hotbar)
-
 }
