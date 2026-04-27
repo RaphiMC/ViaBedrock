@@ -28,6 +28,7 @@ import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer
 import net.raphimc.viabedrock.experimental.model.recipe.ItemDescriptor;
 import net.raphimc.viabedrock.experimental.model.recipe.ShapedRecipe;
 import net.raphimc.viabedrock.experimental.model.recipe.ShapelessRecipe;
+import net.raphimc.viabedrock.experimental.model.recipe.SmithingRecipe;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -72,11 +73,18 @@ public class CraftingDataTracker extends StoredObject {
                 case USER_DATA_SHAPELESS -> {
                     // TODO: Not supported yet
                 }
-                default -> {
-                    ViaBedrock.getPlatform().getLogger().warning(
-                            "Unknown recipe type for crafting: " + craftingData.type() + " in recipe " + craftingData.recipe().getUniqueId()
-                    );
+                case SMITHING_TRIM, SMITHING_TRANSFORM -> {
+                    // TODO: Hard coded slots for Smithing Container
+                    SmithingRecipe smithingRecipe = (SmithingRecipe) craftingData.recipe();
+                    if (smithingRecipe.getTemplate().matchesItem(this.user(), container.getItem(53)) &&
+                            smithingRecipe.getBaseIngredient().matchesItem(this.user(), container.getItem(51)) &&
+                            smithingRecipe.getAdditionIngredient().matchesItem(this.user(), container.getItem(52))) {
+                        return craftingData;
+                    }
                 }
+                default -> ViaBedrock.getPlatform().getLogger().warning(
+                        "Unknown recipe type: " + craftingData.type() + " in recipe " + craftingData.recipe().getUniqueId()
+                );
             }
         }
         return null;

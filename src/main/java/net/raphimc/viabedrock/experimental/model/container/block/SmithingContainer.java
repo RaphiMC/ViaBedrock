@@ -126,7 +126,8 @@ public class SmithingContainer extends ExperimentalContainer {
         //TODO: This is experimental code...
 
         ItemRewriter itemRewriter = user.get(ItemRewriter.class);
-        final CraftingDataStorage craftingDataStorage = this.getRecipeData();
+        CraftingDataTracker tracker = user.get(CraftingDataTracker.class);
+        final CraftingDataStorage craftingDataStorage = tracker.getRecipeData(this, "smithing_table");
         BedrockItem resultItem = BedrockItem.empty();
         if (craftingDataStorage != null) {
 
@@ -247,40 +248,4 @@ public class SmithingContainer extends ExperimentalContainer {
         return true;
     }
 
-    private CraftingDataStorage getRecipeData() {
-        CraftingDataTracker craftingDataTracker = user.get(CraftingDataTracker.class);
-
-        for (CraftingDataStorage craftingData : craftingDataTracker.getCraftingDataList()) {
-            if (craftingData.recipe() == null || !craftingData.recipe().getRecipeTag().equals("smithing_table")) {
-                continue;
-            }
-
-            switch (craftingData.type()) {
-                case SMITHING_TRIM, SMITHING_TRANSFORM -> {
-                    SmithingRecipe smithingRecipe = (SmithingRecipe) craftingData.recipe();
-                    if (smithingRecipe.getTemplate().matchesItem(user, this.getItem(53)) &&
-                            smithingRecipe.getBaseIngredient().matchesItem(user, this.getItem(51)) &&
-                            smithingRecipe.getAdditionIngredient().matchesItem(user, this.getItem(52))) {
-                        return craftingData;
-                    }
-                }
-                default -> {
-                    ViaBedrock.getPlatform().getLogger().warning(
-                            "Unknown recipe type for smithing: " + craftingData.type() + " in recipe " + craftingData.recipe().getUniqueId()
-                    );
-                }
-            }
-        }
-        return null;
-    }
-
 }
-
-//[22:24:41:011] [SERVER BOUND] - ItemStackRequestPacket(requests=[ItemStackRequest(requestId=-31, actions=[CraftRecipeAction(recipeNetworkId=821, numberOfRequestedCrafts=1), CraftResultsDeprecatedAction(resultItems=[BaseItemData(definition=SimpleItemDefinition(identifier=minecraft:golden_helmet, runtimeId=383, version=LEGACY, componentBased=false, componentData=null), damage=0, count=1, tag={
-//        "Damage": 0i,
-//        "Trim": {
-//        "Material": "iron",
-//        "Pattern": "wild"
-//        }
-//        }, canPlace=[], canBreak=[], blockingTicks=0, blockDefinition=UnknownDefinition[runtimeId=0], usingNetId=false, netId=0)], timesCrafted=1), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=SMITHING_TABLE_TEMPLATE, slot=53, stackNetworkId=11, containerName=FullContainerName(container=SMITHING_TABLE_TEMPLATE, dynamicId=null))), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=SMITHING_TABLE_INPUT, slot=51, stackNetworkId=10, containerName=FullContainerName(container=SMITHING_TABLE_INPUT, dynamicId=null))), ConsumeAction(count=1, source=ItemStackRequestSlotData(container=SMITHING_TABLE_MATERIAL, slot=52, stackNetworkId=8, containerName=FullContainerName(container=SMITHING_TABLE_MATERIAL, dynamicId=null))), TakeAction(count=1, source=ItemStackRequestSlotData(container=CREATED_OUTPUT, slot=50, stackNetworkId=-31, containerName=FullContainerName(container=CREATED_OUTPUT, dynamicId=null)), destination=ItemStackRequestSlotData(container=CURSOR, slot=0, stackNetworkId=0, containerName=FullContainerName(container=CURSOR, dynamicId=null)))], filterStrings=[], textProcessingEventOrigin=null)])
-// [22:24:41:055] [CLIENT BOUND] - ItemStackResponsePacket(entries=[ItemStackResponse(result=OK, requestId=-31, containers=[ItemStackResponseContainer(container=SMITHING_TABLE_TEMPLATE, items=[ItemStackResponseSlot(slot=53, hotbarSlot=53, count=63, stackNetworkId=11, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=SMITHING_TABLE_TEMPLATE, dynamicId=null)), ItemStackResponseContainer(container=SMITHING_TABLE_INPUT, items=[ItemStackResponseSlot(slot=51, hotbarSlot=51, count=0, stackNetworkId=0, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=SMITHING_TABLE_INPUT, dynamicId=null)), ItemStackResponseContainer(container=SMITHING_TABLE_MATERIAL, items=[ItemStackResponseSlot(slot=52, hotbarSlot=52, count=59, stackNetworkId=8, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=SMITHING_TABLE_MATERIAL, dynamicId=null)), ItemStackResponseContainer(container=CURSOR, items=[ItemStackResponseSlot(slot=0, hotbarSlot=0, count=1, stackNetworkId=12, customName=, durabilityCorrection=0, filteredCustomName=)], containerName=FullContainerName(container=CURSOR, dynamicId=null))])])

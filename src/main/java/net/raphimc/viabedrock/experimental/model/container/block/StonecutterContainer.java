@@ -173,6 +173,7 @@ public class StonecutterContainer extends ExperimentalContainer {
         return true;
     }
 
+    // TODO: Refactor to CraftingDataTracker
     private void updateRecipeData(BedrockItem item) {
         CraftingDataTracker craftingDataTracker = user.get(CraftingDataTracker.class);
         this.currentRecipes.clear();
