@@ -97,20 +97,6 @@ public class CraftingTableContainer extends ExperimentalContainer {
     }
 
     @Override
-    public boolean setItems(final BedrockItem[] items) {
-        //TODO: Fix magic offset?
-        if (items.length != this.items.length) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
-            return false;
-        }
-
-        for (int i = 0; i < items.length; i++) {
-            this.setItem(i, items[i]);
-        }
-        return true;
-    }
-
-    @Override
     public boolean handleClick(final int revision, final short javaSlot, final byte button, final ContainerInput action) {
         boolean result = false;
         if (javaSlot != 0) {
@@ -133,6 +119,9 @@ public class CraftingTableContainer extends ExperimentalContainer {
                 case SHAPED -> resultItem = ((ShapedRecipe) craftingDataStorage.recipe()).getResults().get(0);
                 default -> ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown recipe type for crafting: " + craftingDataStorage.type());
             }
+        } else {
+            // No valid recipe found
+            return result;
         }
 
         //this.setItem(0, resultItem);
@@ -142,11 +131,6 @@ public class CraftingTableContainer extends ExperimentalContainer {
         containerSlot.write(Types.SHORT, (short) 0); // Output slot
         containerSlot.write(VersionedTypes.V1_21_11.item, itemRewriter.javaItem(resultItem));
         containerSlot.send(BedrockProtocol.class);
-
-        if (craftingDataStorage == null) {
-            // No valid recipe found
-            return result;
-        }
 
         if (javaSlot != 0) {
             // Handle click first so we update the crafting grid before checking for a recipe
