@@ -285,6 +285,12 @@ public class ClientPlayerPackets {
                     clientPlayer.setSprinting(false);
                     clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StopSprinting);
                 }
+                case START_FALL_FLYING -> {
+                    if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+                        clientPlayer.setGliding(true);
+                        clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StartGliding);
+                    }
+                }
                 default -> throw new IllegalStateException("Unhandled PlayerCommandAction: " + action);
             }
         });
@@ -450,6 +456,11 @@ public class ClientPlayerPackets {
 
             if (prevOnGround && clientPlayer.inputFlags().contains(InputFlag.JUMP)) {
                 clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StartJumping);
+            }
+
+            if (clientPlayer.isOnGround() && clientPlayer.isGliding()) {
+                clientPlayer.setGliding(false);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StopGliding);
             }
 
             if (!clientPlayer.isInitiallySpawned() || clientPlayer.isDead()) {
