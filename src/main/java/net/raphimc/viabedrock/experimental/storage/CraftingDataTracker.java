@@ -22,6 +22,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
@@ -177,28 +178,25 @@ public class CraftingDataTracker extends StoredObject {
         ItemRewriter itemRewriter = user.get(ItemRewriter.class);
 
         PacketWrapper packet = PacketWrapper.create(ClientboundPackets26_1.UPDATE_RECIPES, user);
-        packet.write(Types.VAR_INT, 0); // Property Sets (Prefixed array) TODO: What is this?
+        packet.write(Types.VAR_INT, 0); // Property Sets (Prefixed array) TODO: Sends registries e.g. furnace fuel, smithing template
         List<CraftingDataStorage> stonecutterList = craftingDataList.stream()
                 .filter(c -> c.recipe().getRecipeTag().equals("stonecutter"))
                 .filter(c -> c.recipe() instanceof ShapelessRecipe)
                 .toList();
         packet.write(Types.VAR_INT, stonecutterList.size()); // Number of recipes
         for (CraftingDataStorage craftingData : stonecutterList) {
-            //ID Set
+            //IDs
             packet.write(Types.VAR_INT, 2); // Type (Size + 1)
-            packet.write(Types.BOOLEAN, false); // Tag Name
-            packet.write(Types.BOOLEAN, true); // IDs
-            packet.write(Types.VAR_INT_ARRAY_PRIMITIVE, ((ShapelessRecipe)craftingData.recipe()).getIngredients().stream()
-                    .map(itemDescriptor -> ((ItemDescriptor.DefaultDescriptor)itemDescriptor).itemId())
-                    .map(i -> itemRewriter.javaItem(new BedrockItem(i)).identifier())
-                    .mapToInt(Integer::intValue)
-                    .toArray());
+            int bedrockId = ((ItemDescriptor.DefaultDescriptor)((ShapelessRecipe)craftingData.recipe()).getIngredients().get(0)).itemId(); // TODO: clean
+            int javaId = itemRewriter.javaItem(new BedrockItem(bedrockId)).identifier();
+            packet.write(Types.VAR_INT, javaId);
 
             //Slot Display
             Item javaOutput = itemRewriter.javaItem(((ShapelessRecipe)craftingData.recipe()).getResults().get(0));
-            packet.write(Types.VAR_INT, 2); // Type (Item)
-            packet.write(Types.VAR_INT, javaOutput.identifier());
+            packet.write(Types.VAR_INT, 5); // Type (ItemStack) TODO: check this when mc updates
+            packet.write(VersionedTypes.V26_1.itemTemplate, javaOutput);
         }
+
         packet.send(BedrockProtocol.class);
     }
 

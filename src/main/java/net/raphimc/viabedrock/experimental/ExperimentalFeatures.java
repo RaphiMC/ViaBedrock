@@ -749,7 +749,7 @@ public class ExperimentalFeatures {
             }
             craftingDataTracker.updateCraftingDataList(recipes);
 
-            //TODO: craftingDataTracker.sendJavaUpdateRecipes(wrapper.user());
+            craftingDataTracker.sendJavaUpdateRecipes(wrapper.user());
             //craftingDataTracker.sendJavaRecipeBook(wrapper.user()); //TODO: Broken: 26.1
 
             wrapper.clearPacket();

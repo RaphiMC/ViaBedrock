@@ -25,14 +25,18 @@ import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestAction;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestInfo;
+import net.raphimc.viabedrock.experimental.model.inventory.ItemStackRequestSlotInfo;
 import net.raphimc.viabedrock.experimental.model.recipe.ShapedRecipe;
 import net.raphimc.viabedrock.experimental.model.recipe.ShapelessRecipe;
-import net.raphimc.viabedrock.experimental.storage.CraftingDataStorage;
-import net.raphimc.viabedrock.experimental.storage.CraftingDataTracker;
+import net.raphimc.viabedrock.experimental.storage.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.TextProcessingEventOrigin;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ContainerInput;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
@@ -46,7 +50,7 @@ import java.util.logging.Level;
 public class StonecutterContainer extends ExperimentalContainer {
 
     private final List<CraftingDataStorage> currentRecipes = new ArrayList<>();
-    private int selectedRecipe;
+    private int selectedRecipe = 0;
 
     public StonecutterContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
         super(user, containerId, ContainerType.STONECUTTER, title, position, 2, "stonecutter_block", "stonecutter");
@@ -124,7 +128,7 @@ public class StonecutterContainer extends ExperimentalContainer {
         }
 
         ItemRewriter itemRewriter = user.get(ItemRewriter.class);
-        final CraftingDataStorage craftingDataStorage = this.currentRecipes.get(button);
+        final CraftingDataStorage craftingDataStorage = this.currentRecipes.get(this.selectedRecipe);
         BedrockItem resultItem = BedrockItem.empty();
         if (craftingDataStorage != null) {
             // Valid recipe found, show output
@@ -145,11 +149,74 @@ public class StonecutterContainer extends ExperimentalContainer {
             return result;
         }
 
+        ExperimentalInventoryTracker inventoryTracker = user.get(ExperimentalInventoryTracker.class);
+        InventoryRequestTracker inventoryRequestTracker = user.get(InventoryRequestTracker.class);
+
+        List<ExperimentalContainer> prevContainers = new ArrayList<>();
+        prevContainers.add(this.copy());
+        prevContainers.add(inventoryTracker.getInventoryContainer().copy());
+        ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy();
+
+        int nextRequestId = inventoryRequestTracker.nextRequestId();
+        BedrockItem sourceItem = this.getItem(3);
+
+        int craftableAmount = 1;
+        int toConsume = Math.min(sourceItem.amount(), craftableAmount);
+        // TODO: shift click = max to inventory
+
+        List<ItemStackRequestAction> actions = new ArrayList<>();
+        actions.add(new ItemStackRequestAction.CraftRecipeAction(craftingDataStorage.networkId(), craftableAmount));
+        actions.add(new ItemStackRequestAction.ConsumeAction(
+                toConsume,
+                new ItemStackRequestSlotInfo(
+                        this.getFullContainerName(3),
+                        (byte) 3,
+                        sourceItem.netId()
+                )
+        ));
+        actions.add(new ItemStackRequestAction.TakeAction(
+                craftableAmount * resultItem.amount(), // Total amount to take
+                new ItemStackRequestSlotInfo(
+                        this.getFullContainerName(50),
+                        (byte) 50,
+                        nextRequestId // TODO
+                ),
+                new ItemStackRequestSlotInfo(
+                        new FullContainerName(ContainerEnumName.CursorContainer, null),
+                        (byte) 0,
+                        0 // The stackNetworkId is not known yet
+                )
+        ));
+
+        ItemStackRequestInfo request = new ItemStackRequestInfo(
+                nextRequestId,
+                actions,
+                List.of(),
+                TextProcessingEventOrigin.unknown
+        );
+
+        inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevCursorContainer, prevContainers)); // Store the request to track it later
+        ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[]{request});
+
+        inventoryTracker.getHudContainer().setItem(0, resultItem); // Update cursor to the crafted item
+        BedrockItem newSrc = sourceItem.copy();
+        newSrc.setAmount(sourceItem.amount() - 1);
+        this.setItem(3, newSrc);
+
+        ExperimentalPacketFactory.sendJavaContainerSetContent(user, this);
+
+        this.updateRecipeData(this.getItem(3));
         return true;
     }
 
     @Override
     public boolean handleButtonClick(final int button) {
+        this.updateRecipeData(this.getItem(3));
+        if (button >= this.currentRecipes.size()) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid recipe button clicked in stonecutter: " + button);
+            return false;
+        }
+
         this.selectedRecipe = button;
         ItemRewriter itemRewriter = user.get(ItemRewriter.class);
 
