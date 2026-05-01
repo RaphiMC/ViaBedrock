@@ -30,6 +30,10 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.chunk.ChunkType26_1;
 import com.viaversion.viaversion.libs.fastutil.ints.*;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.longs.LongOpenHashSet;
+import com.viaversion.viaversion.libs.fastutil.longs.LongSet;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import com.viaversion.viaversion.util.CompactArrayUtil;
 import com.viaversion.viaversion.util.MathUtil;
@@ -73,8 +77,8 @@ public class ChunkTracker extends StoredObject {
     private final int worldHeight;
     private final Type<Chunk> chunkType;
 
-    private final Map<Long, BedrockChunk> chunks = new HashMap<>();
-    private final Set<Long> dirtyChunks = new HashSet<>();
+    private final Long2ObjectMap<BedrockChunk> chunks = new Long2ObjectOpenHashMap<>();
+    private final LongSet dirtyChunks = new LongOpenHashSet();
 
     private final Set<SubChunkPosition> subChunkRequests = new HashSet<>();
     private final Set<SubChunkPosition> pendingSubChunks = new HashSet<>();
@@ -436,7 +440,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void tick() {
-        for (Long dirtyChunk : this.dirtyChunks) {
+        for (long dirtyChunk : this.dirtyChunks) {
             final ChunkPosition chunkPos = new ChunkPosition(dirtyChunk);
             this.sendChunk(chunkPos.chunkX(), chunkPos.chunkZ());
         }

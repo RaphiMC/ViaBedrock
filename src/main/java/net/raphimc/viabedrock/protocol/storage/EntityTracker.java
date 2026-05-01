@@ -25,13 +25,21 @@ import com.viaversion.viaversion.api.minecraft.Vector3d;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.objects.Object2IntMap;
+import com.viaversion.viaversion.libs.fastutil.objects.Object2IntOpenHashMap;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
@@ -40,10 +48,10 @@ public class EntityTracker extends StoredObject {
     private final AtomicInteger ID_COUNTER = new AtomicInteger(1);
 
     private ClientPlayerEntity clientPlayerEntity = null;
-    private final Map<Long, Entity> entities = new HashMap<>();
-    private final Map<Long, Long> runtimeIdToUniqueId = new HashMap<>();
-    private final Map<Integer, Long> javaIdToUniqueId = new HashMap<>();
-    private final Map<BlockPosition, Integer> itemFrames = new HashMap<>();
+    private final Long2ObjectMap<Entity> entities = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<Long> runtimeIdToUniqueId = new Long2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<Long> javaIdToUniqueId = new Int2ObjectOpenHashMap<>();
+    private final Object2IntMap<BlockPosition> itemFrames = new Object2IntOpenHashMap<>();
 
     public EntityTracker(final UserConnection user) {
         super(user);
@@ -67,8 +75,8 @@ public class EntityTracker extends StoredObject {
     }
 
     public <T extends Entity> T addEntity(final T entity, final boolean updateTeam) {
-        if (entity instanceof ClientPlayerEntity) {
-            this.clientPlayerEntity = (ClientPlayerEntity) entity;
+        if (entity instanceof ClientPlayerEntity clientPlayerEntity) {
+            this.clientPlayerEntity = clientPlayerEntity;
         }
 
         final Entity prevEntity = this.entities.put(entity.uniqueId(), entity);
@@ -79,10 +87,10 @@ public class EntityTracker extends StoredObject {
             removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
         }
-        if (this.javaIdToUniqueId.put(entity.javaId(), entity.uniqueId()) != null) {
+        if (this.javaIdToUniqueId.put(entity.javaId(), (Long) entity.uniqueId()) != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate Java entity ID: " + entity.javaId());
         }
-        if (this.runtimeIdToUniqueId.putIfAbsent(entity.runtimeId(), entity.uniqueId()) != null) {
+        if (this.runtimeIdToUniqueId.putIfAbsent(entity.runtimeId(), (Long) entity.uniqueId()) != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate entity runtime ID: " + entity.runtimeId());
         }
 
@@ -129,31 +137,22 @@ public class EntityTracker extends StoredObject {
         spawnEntity.send(BedrockProtocol.class);
     }
 
-    public int getItemFrameId(final BlockPosition position) {
-        return this.itemFrames.getOrDefault(position, -1);
-    }
-
     public void removeItemFrame(final BlockPosition position) {
-        final Integer javaId = this.itemFrames.remove(position);
-        if (javaId == null) {
-            return;
+        if (this.itemFrames.containsKey(position)) {
+            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets26_1.REMOVE_ENTITIES, this.user());
+            removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{this.itemFrames.getInt(position)}); // entity ids
+            removeEntities.send(BedrockProtocol.class);
         }
-
-        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets26_1.REMOVE_ENTITIES, this.user());
-        removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{javaId}); // entity ids
-        removeEntities.send(BedrockProtocol.class);
     }
 
     public void removeItemFrame(final ChunkPosition chunkPos) {
         final List<BlockPosition> toRemove = new ArrayList<>();
-        for (final Map.Entry<BlockPosition, Integer> entry : this.itemFrames.entrySet()) {
-            final BlockPosition position = entry.getKey();
+        for (BlockPosition position : this.itemFrames.keySet()) {
             if (position.x() >> 4 == chunkPos.chunkX() && position.z() >> 4 == chunkPos.chunkZ()) {
                 toRemove.add(position);
             }
         }
-
-        for (final BlockPosition position : toRemove) {
+        for (BlockPosition position : toRemove) {
             this.removeItemFrame(position);
         }
     }
@@ -173,7 +172,7 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity getEntityByRid(final long runtimeId) {
-        return this.entities.get(this.runtimeIdToUniqueId.get(runtimeId));
+        return this.entities.get(this.runtimeIdToUniqueId.get(runtimeId).longValue());
     }
 
     public Entity getEntityByUid(final long uniqueId) {
@@ -181,7 +180,7 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity getEntityByJid(final int javaId) {
-        return this.entities.get(this.javaIdToUniqueId.get(javaId));
+        return this.entities.get(this.javaIdToUniqueId.get(javaId).longValue());
     }
 
     public ClientPlayerEntity getClientPlayer() {
