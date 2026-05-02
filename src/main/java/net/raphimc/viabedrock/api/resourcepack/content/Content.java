@@ -45,7 +45,7 @@ public abstract class Content {
         if (this.contains(shortNamePath)) {
             return shortNamePath;
         }
-        for (final String extension : extensions) {
+        for (String extension : extensions) {
             final String path = shortNamePath + "." + extension;
             if (this.contains(path)) {
                 return path;

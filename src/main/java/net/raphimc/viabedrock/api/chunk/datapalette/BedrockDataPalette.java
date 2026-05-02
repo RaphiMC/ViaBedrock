@@ -168,7 +168,7 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
     public void resolvePersistentIds(final Object2IntFunction<Tag> persistentToRuntimeId) {
         if (this.usesPersistentIds()) {
             this.palette.clear();
-            for (final Tag tag : this.persistentPalette) {
+            for (Tag tag : this.persistentPalette) {
                 this.palette.add(persistentToRuntimeId.getInt(tag));
             }
             this.persistentPalette = null;
