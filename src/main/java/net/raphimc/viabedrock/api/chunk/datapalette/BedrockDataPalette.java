@@ -40,8 +40,8 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
     }
 
     public BedrockDataPalette(final BitArrayVersion version) {
-        this.bitArray = version.createArray(ChunkSection.SIZE);
         this.palette = new IntArrayList(version.getEntriesPerWord());
+        this.bitArray = version.createArray(ChunkSection.SIZE);
     }
 
     public BedrockDataPalette(final IntList palette, final BitArray bitArray) {
@@ -50,9 +50,9 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
     }
 
     public BedrockDataPalette(final List<Tag> persistentPalette, final BitArray bitArray) {
-        this.persistentPalette = persistentPalette;
-        this.bitArray = bitArray;
         this.palette = new IntArrayList(persistentPalette.size());
+        this.bitArray = bitArray;
+        this.persistentPalette = persistentPalette;
     }
 
     @Override
@@ -74,7 +74,6 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
             index = this.palette.size();
             this.addId(id);
         }
-
         this.bitArray.set(sectionCoordinate, index);
     }
 
@@ -102,6 +101,7 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     @Override
     public void addId(final int id) {
+        this.checkPersistentIds();
         this.palette.add(id);
 
         final BitArrayVersion currentVersion = this.bitArray.getVersion();
@@ -118,34 +118,17 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
     }
 
     @Override
-    public void replaceId(final int oldId, final int newId) {
-        this.checkPersistentIds();
-        final int index = this.palette.indexOf(oldId);
-        if (index == -1) return;
-
-        for (int i = 0; i < this.palette.size(); i++) {
-            if (this.palette.getInt(i) == oldId) {
-                this.palette.set(i, newId);
-            }
-        }
-    }
-
-    @Override
     public int size() {
-        if (this.usesPersistentIds()) {
+        if (!this.usesPersistentIds()) {
+            return this.palette.size();
+        } else {
             return this.persistentPalette.size();
         }
-
-        return this.palette.size();
     }
 
     @Override
     public void clear() {
-        if (this.usesPersistentIds()) {
-            this.persistentPalette = null;
-        }
-
-        this.palette.clear();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -177,7 +160,7 @@ public class BedrockDataPalette implements DataPalette, Cloneable {
 
     private void checkPersistentIds() {
         if (this.usesPersistentIds()) {
-            throw new IllegalStateException("Palette uses persistent ids");
+            throw new IllegalStateException("Persistent IDs need to be resolved before performing this operation");
         }
     }
 

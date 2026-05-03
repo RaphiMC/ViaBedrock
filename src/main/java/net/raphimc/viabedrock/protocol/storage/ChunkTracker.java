@@ -675,14 +675,14 @@ public class ChunkTracker extends StoredObject {
         for (DataPalette palette : palettes) {
             if (palette instanceof BedrockDataPalette bedrockPalette) {
                 if (bedrockPalette.usesPersistentIds()) {
-                    bedrockPalette.addId(this.bedrockAirId());
-                    bedrockPalette.resolvePersistentIds(tag -> {
-                        int remappedBlockState = blockStateRewriter.bedrockId((CompoundTag) tag);
-                        if (remappedBlockState == -1) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
-                            remappedBlockState = blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
+                    bedrockPalette.resolvePersistentIds(bedrockBlockStateTag -> {
+                        final int bedrockBlockState = blockStateRewriter.bedrockId((CompoundTag) bedrockBlockStateTag);
+                        if (bedrockBlockState != -1) {
+                            return bedrockBlockState;
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockBlockStateTag);
+                            return blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
                         }
-                        return remappedBlockState;
                     });
                 }
             }
@@ -694,19 +694,19 @@ public class ChunkTracker extends StoredObject {
 
         final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
         for (DataPalette palette : palettes) {
-            if (palette instanceof BedrockBlockArray blockArray) {
-                final BedrockDataPalette dataPalette = new BedrockDataPalette();
-                this.transferPaletteData(blockArray, dataPalette);
-                for (int i = 0; i < dataPalette.size(); i++) {
-                    final int blockState = dataPalette.idByIndex(i);
-                    int remappedBlockState = blockStateRewriter.bedrockId(blockState);
-                    if (remappedBlockState == -1) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + blockState);
-                        remappedBlockState = this.bedrockAirId();
+            if (palette instanceof BedrockBlockArray) {
+                final BedrockDataPalette newPalette = new BedrockDataPalette();
+                this.transferPaletteData(palette, newPalette);
+                newPalette.replaceIds(legacyBlockState -> {
+                    final int bedrockBlockState = blockStateRewriter.bedrockId(legacyBlockState);
+                    if (bedrockBlockState != -1) {
+                        return bedrockBlockState;
+                    } else {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + legacyBlockState);
+                        return this.bedrockAirId();
                     }
-                    dataPalette.setIdByIndex(i, remappedBlockState);
-                }
-                palettes.set(palettes.indexOf(palette), dataPalette);
+                });
+                palettes.set(palettes.indexOf(palette), newPalette);
             }
         }
     }
