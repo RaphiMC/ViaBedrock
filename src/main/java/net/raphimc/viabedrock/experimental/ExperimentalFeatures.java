@@ -536,6 +536,8 @@ public class ExperimentalFeatures {
                 case ANVIL -> container = new AnvilContainer(wrapper.user(), containerId, title, position);
                 case SMITHING_TABLE -> container = new SmithingContainer(wrapper.user(), containerId, title, position);
                 case STONECUTTER -> container = new StonecutterContainer(wrapper.user(), containerId, title, position);
+                case LOOM -> container = new LoomContainer(wrapper.user(), containerId, title, position);
+                case CARTOGRAPHY -> container = new CartographyContainer(wrapper.user(), containerId, title, position);
                 case DISPENSER, DROPPER -> container = new Generic3x3Container(wrapper.user(), containerId, type, title, position);
                 case WORKBENCH -> container = new CraftingTableContainer(wrapper.user(), containerId, title, position);
                 case GRINDSTONE -> container = new GrindstoneContainer(wrapper.user(), containerId, title, position);
@@ -803,7 +805,12 @@ public class ExperimentalFeatures {
 
                         // Check if the item matches the expected item
                         BedrockItem expectedItem = container.getItem(slotInfo.slot());
-                        if (expectedItem.isEmpty()) continue; //TODO
+                        if (expectedItem.isEmpty()) {
+                            if (slotInfo.amount() != 0 || slotInfo.itemNetId() != 0) {
+                                mismatchedContainers.add(container);
+                            }
+                            continue;
+                        }
                         if (expectedItem.netId() == null || expectedItem.netId() != slotInfo.itemNetId() || expectedItem.amount() != slotInfo.amount()) {
                             BedrockItem newItem = expectedItem.copy();
                             newItem.setNetId(slotInfo.itemNetId());

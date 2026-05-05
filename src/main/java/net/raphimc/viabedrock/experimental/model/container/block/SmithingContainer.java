@@ -88,28 +88,34 @@ public class SmithingContainer extends ExperimentalContainer {
 
     @Override
     public BedrockItem getItem(int bedrockSlot) {
-        // Fix magic offset
-        bedrockSlot -= 50;
-        return this.items[bedrockSlot];
+        return switch (bedrockSlot) {
+            case 53 -> this.items[0];
+            case 51 -> this.items[1];
+            case 52 -> this.items[2];
+            case 50 -> this.items[3];
+            default -> throw new IllegalArgumentException("Invalid slot for Smithing Container: " + bedrockSlot);
+        };
     }
 
     @Override
     public boolean setItem(final int bedrockSlot, final BedrockItem item) {
-        // Fix magic offset
-        return super.setItem(bedrockSlot - 50, item);
+        return switch (bedrockSlot) {
+            case 53 -> super.setItem(0, item);
+            case 51 -> super.setItem(1, item);
+            case 52 -> super.setItem(2, item);
+            case 50 -> super.setItem(3, item);
+            default -> throw new IllegalArgumentException("Invalid slot for Smithing Container: " + bedrockSlot);
+        };
     }
 
     @Override
     public boolean setItems(final BedrockItem[] items) {
-        //TODO: Fix magic offset?
         if (items.length != this.items.length) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
             return false;
         }
 
-        for (int i = 0; i < items.length; i++) {
-            this.setItem(i, items[i]);
-        }
+        System.arraycopy(items, 0, this.items, 0, items.length);
         return true;
     }
 

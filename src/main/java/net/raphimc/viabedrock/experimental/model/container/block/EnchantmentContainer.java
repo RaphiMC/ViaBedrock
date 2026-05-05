@@ -96,15 +96,12 @@ public class EnchantmentContainer extends ExperimentalContainer {
 
     @Override
     public boolean setItems(final BedrockItem[] items) {
-        //TODO: Fix magic offset?
         if (items.length != this.items.length) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
             return false;
         }
 
-        for (int i = 0; i < items.length; i++) {
-            this.setItem(i, items[i]);
-        }
+        System.arraycopy(items, 0, this.items, 0, items.length);
         return true;
     }
 

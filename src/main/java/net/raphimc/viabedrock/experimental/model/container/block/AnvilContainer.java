@@ -46,7 +46,7 @@ public class AnvilContainer extends ExperimentalContainer {
     private String renameText = "";
 
     public AnvilContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.ANVIL, title, position, 2, CustomBlockTags.ANVIL);
+        super(user, containerId, ContainerType.ANVIL, title, position, 3, CustomBlockTags.ANVIL);
     }
 
     @Override
@@ -81,28 +81,32 @@ public class AnvilContainer extends ExperimentalContainer {
 
     @Override
     public BedrockItem getItem(int bedrockSlot) {
-        // Fix magic offset
-        bedrockSlot -= 1;
-        return this.items[bedrockSlot];
+        return switch (bedrockSlot) {
+            case 1 -> this.items[0];
+            case 2 -> this.items[1];
+            case 50 -> this.items[2];
+            default -> throw new IllegalArgumentException("Invalid slot for Anvil Container: " + bedrockSlot);
+        };
     }
 
     @Override
     public boolean setItem(final int bedrockSlot, final BedrockItem item) {
-        // Fix magic offset
-        return super.setItem(bedrockSlot - 1, item);
+        return switch (bedrockSlot) {
+            case 1 -> super.setItem(0, item);
+            case 2 -> super.setItem(1, item);
+            case 50 -> super.setItem(2, item);
+            default -> throw new IllegalArgumentException("Invalid slot for Anvil Container: " + bedrockSlot);
+        };
     }
 
     @Override
     public boolean setItems(final BedrockItem[] items) {
-        //TODO: Fix magic offset?
         if (items.length != this.items.length) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
             return false;
         }
 
-        for (int i = 0; i < items.length; i++) {
-            this.setItem(i, items[i]);
-        }
+        System.arraycopy(items, 0, this.items, 0, items.length);
         return true;
     }
 
@@ -121,7 +125,7 @@ public class AnvilContainer extends ExperimentalContainer {
                 prevContainers.add(inventoryTracker.getInventoryContainer().copy());
                 ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy();
 
-                BedrockItem resultItem = this.getItem(1);
+                BedrockItem resultItem = this.getItem(50);
 
                 List<ItemStackRequestAction> actions = new ArrayList<>();
                 actions.add(new ItemStackRequestAction.CraftRecipeOptionalAction(0, 0)); //TODO: This needs more debugging
@@ -173,6 +177,7 @@ public class AnvilContainer extends ExperimentalContainer {
 
                 inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevCursorContainer, prevContainers)); // Store the request to track it later
                 ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[] {request});
+                return true;
             } else {
                 return false;
             }

@@ -63,7 +63,10 @@ public class ExperimentalInventoryTracker extends StoredObject {
         if (containerId == this.offhandContainer.containerId()) return this.offhandContainer;
         if (containerId == this.armorContainer.containerId()) return this.armorContainer;
         if (containerId == this.hudContainer.containerId()) return this.hudContainer;
-        if (containerId == ContainerID.CONTAINER_ID_REGISTRY.getValue() && containerName.name() == ContainerEnumName.DynamicContainer) {
+        if (containerId == ContainerID.CONTAINER_ID_REGISTRY.getValue() && containerName != null && containerName.name() == ContainerEnumName.DynamicContainer) {
+            if (storageItem == null) {
+                return null;
+            }
             final String itemTag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().getOrDefault(this.user().get(ItemRewriter.class).getItems().inverse().get(storageItem.identifier()), "");
             if (!storageItem.isEmpty() && itemTag.equals("bundle")) {
                 return this.dynamicContainerRegistry.computeIfAbsent(containerName, cn -> new BundleContainer(this.user(), cn));

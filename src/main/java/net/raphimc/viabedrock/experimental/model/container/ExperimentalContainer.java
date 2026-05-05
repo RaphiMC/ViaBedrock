@@ -87,23 +87,21 @@ public abstract class ExperimentalContainer {
          */
         clickContext.prevContainers.add(this.copy()); // Store previous state of the container
 
-        ItemStackRequestAction itemAction = switch (action) {
-            case PICKUP -> this.handlePickupClick(clickContext, javaSlot, button);
-            case SWAP -> this.handleSwapClick(clickContext, javaSlot, button);
+        List<ItemStackRequestAction> itemActions = switch (action) {
+            case PICKUP -> this.singletonAction(this.handlePickupClick(clickContext, javaSlot, button));
+            case SWAP -> this.singletonAction(this.handleSwapClick(clickContext, javaSlot, button));
             case QUICK_MOVE -> this.handleQuickMoveClick(clickContext, javaSlot);
-            case THROW -> this.handleThrowClick(clickContext, javaSlot, button);
-            default -> null;
+            case THROW -> this.singletonAction(this.handleThrowClick(clickContext, javaSlot, button));
+            default -> List.of();
         };
 
-        if (itemAction == null) {
+        if (itemActions.isEmpty()) {
             return false;
         }
 
         ItemStackRequestInfo request = new ItemStackRequestInfo(
                 clickContext.inventoryRequestTracker.nextRequestId(),
-                List.of(
-                        itemAction
-                ),
+                itemActions,
                 List.of(),
                 TextProcessingEventOrigin.unknown
         );
@@ -207,6 +205,10 @@ public abstract class ExperimentalContainer {
         );
     }
 
+    private List<ItemStackRequestAction> singletonAction(final ItemStackRequestAction action) {
+        return action == null ? List.of() : List.of(action);
+    }
+
     private ItemStackRequestAction handlePickupPlace(final ClickContext clickContext, final ExperimentalContainer container, final int bedrockSlot, final byte button, final BedrockItem cursorItem, final BedrockItem item) {
         int amt = button == 0 ? cursorItem.amount() : 1;
         int amountToPlace = item.isDifferent(cursorItem) ? amt : Math.min(64 - item.amount(), cursorItem.amount());
@@ -289,11 +291,160 @@ public abstract class ExperimentalContainer {
         );
     }
 
-    private ItemStackRequestAction handleQuickMoveClick(final ClickContext clickContext, final short javaSlot) {
-        return null; // Disable for now
-        // TODO: Broken
-        // TODO: Inventory -> Hotbar/Armor/Offhand
-        // TODO: Container Limited Slots (e.g. Furnace Fuel/Input/Output) Note: this might not be needed as the server will reject invalid moves anyway
+    private List<ItemStackRequestAction> handleQuickMoveClick(final ClickContext clickContext, final short javaSlot) {
+        final SlotRef source = this.resolveJavaSlot(clickContext, javaSlot);
+        if (source == null) {
+            return List.of();
+        }
+
+        BedrockItem sourceItem = source.container().getItem(source.bedrockSlot());
+        if (sourceItem.isEmpty()) {
+            return List.of();
+        }
+
+        final List<ItemStackRequestAction> actions = new ArrayList<>();
+        final List<QuickMoveRange> ranges = this.quickMoveRanges(javaSlot, source);
+        for (boolean mergePass : new boolean[]{true, false}) {
+            for (QuickMoveRange range : ranges) {
+                final int start = range.backwards() ? range.endJavaSlot() - 1 : range.startJavaSlot();
+                final int end = range.backwards() ? range.startJavaSlot() - 1 : range.endJavaSlot();
+                final int step = range.backwards() ? -1 : 1;
+                for (int javaDestSlot = start; javaDestSlot != end && !sourceItem.isEmpty(); javaDestSlot += step) {
+                    final int bedrockDestSlot = range.container().bedrockSlot(javaDestSlot);
+                    if (source.container() == range.container() && source.bedrockSlot() == bedrockDestSlot) {
+                        continue;
+                    }
+
+                    final BedrockItem destinationItem = range.container().getItem(bedrockDestSlot);
+                    if (mergePass) {
+                        if (destinationItem.isEmpty() || destinationItem.isDifferent(sourceItem) || destinationItem.amount() >= this.maxStackSize(sourceItem)) {
+                            continue;
+                        }
+                    } else if (!destinationItem.isEmpty()) {
+                        continue;
+                    }
+
+                    final int amountToMove = mergePass
+                            ? Math.min(sourceItem.amount(), this.maxStackSize(sourceItem) - destinationItem.amount())
+                            : sourceItem.amount();
+                    if (amountToMove <= 0) {
+                        continue;
+                    }
+
+                    this.addPrevContainer(clickContext, source.container());
+                    this.addPrevContainer(clickContext, range.container());
+                    actions.add(new ItemStackRequestAction.PlaceAction(
+                            amountToMove,
+                            new ItemStackRequestSlotInfo(source.container().getFullContainerName(source.bedrockSlot()), (byte) source.bedrockSlot(), sourceItem.netId()),
+                            new ItemStackRequestSlotInfo(range.container().getFullContainerName(bedrockDestSlot), (byte) bedrockDestSlot, destinationItem.netId() != null ? destinationItem.netId() : 0)
+                    ));
+
+                    final BedrockItem newSourceItem = this.itemAfterRemovingAmount(sourceItem, amountToMove);
+                    source.container().setItem(source.bedrockSlot(), newSourceItem);
+                    if (destinationItem.isEmpty()) {
+                        final BedrockItem newDestinationItem = sourceItem.copy();
+                        newDestinationItem.setAmount(amountToMove);
+                        range.container().setItem(bedrockDestSlot, newDestinationItem);
+                    } else {
+                        final BedrockItem newDestinationItem = destinationItem.copy();
+                        newDestinationItem.setAmount(destinationItem.amount() + amountToMove);
+                        range.container().setItem(bedrockDestSlot, newDestinationItem);
+                    }
+                    sourceItem = newSourceItem;
+                }
+            }
+        }
+
+        return actions;
+    }
+
+    private List<QuickMoveRange> quickMoveRanges(final short javaSlot, final SlotRef source) {
+        final ExperimentalInventoryTracker inventoryTracker = this.user.get(ExperimentalInventoryTracker.class);
+        final InventoryContainer inventory = inventoryTracker.getInventoryContainer();
+        if (this instanceof InventoryContainer) {
+            if (javaSlot >= 9 && javaSlot < 36) {
+                return List.of(new QuickMoveRange(inventory, 36, 45, false));
+            } else if (javaSlot >= 36 && javaSlot < 45) {
+                return List.of(new QuickMoveRange(inventory, 9, 36, false));
+            } else {
+                return List.of(new QuickMoveRange(inventory, 9, 45, false));
+            }
+        }
+
+        if (source.container() != inventory && source.container() != inventoryTracker.getArmorContainer() && source.container() != inventoryTracker.getOffhandContainer()) {
+            return List.of(new QuickMoveRange(inventory, 0, inventory.size(), true));
+        }
+
+        return switch (this.type) {
+            case FURNACE, BLAST_FURNACE, SMOKER -> List.of(
+                    new QuickMoveRange(this, 0, 1, false),
+                    new QuickMoveRange(this, 1, 2, false)
+            );
+            case BREWING_STAND -> List.of(
+                    new QuickMoveRange(this, 4, 5, false),
+                    new QuickMoveRange(this, 0, 4, false)
+            );
+            case BEACON -> List.of(new QuickMoveRange(this, 0, 1, false));
+            case ANVIL -> List.of(new QuickMoveRange(this, 0, 2, false));
+            case ENCHANTMENT -> List.of(new QuickMoveRange(this, 0, 2, false));
+            case SMITHING_TABLE -> List.of(new QuickMoveRange(this, 0, 3, false));
+            case STONECUTTER -> List.of(new QuickMoveRange(this, 0, 1, false));
+            case LOOM -> List.of(new QuickMoveRange(this, 0, 3, false));
+            case CARTOGRAPHY -> List.of(new QuickMoveRange(this, 0, 2, false));
+            case WORKBENCH -> List.of(new QuickMoveRange(this, 1, 10, false));
+            case GRINDSTONE -> List.of(new QuickMoveRange(this, 0, 2, false));
+            case CRAFTER -> List.of(new QuickMoveRange(this, 0, 9, false));
+            default -> List.of(new QuickMoveRange(this, 0, this.size(), false));
+        };
+    }
+
+    private SlotRef resolveJavaSlot(final ClickContext clickContext, final short javaSlot) {
+        if (javaSlot < 0) {
+            return null;
+        }
+
+        ExperimentalContainer container = clickContext.container;
+        int bedrockSlot = clickContext.bedrockSlot;
+        final ExperimentalInventoryTracker inventoryTracker = clickContext.inventoryTracker;
+        if (container.type() == ContainerType.CRAFTER && javaSlot == 45) {
+            return new SlotRef(container, container.bedrockSlot(javaSlot));
+        }
+        if (!(container instanceof InventoryContainer) && (javaSlot < 0 || javaSlot >= container.getItems().length)) {
+            final ExperimentalContainer inventoryContainer = inventoryTracker.getInventoryContainer();
+            final int invSlot = inventoryContainer.bedrockSlot(javaSlot - container.getItems().length + 9);
+            if (invSlot < 0 || invSlot >= inventoryContainer.getItems().length) {
+                return null;
+            }
+            return new SlotRef(inventoryContainer, invSlot);
+        }
+
+        if (container instanceof InventoryContainer) {
+            if (javaSlot >= 0 && javaSlot < 5) {
+                final ExperimentalContainer hudContainer = inventoryTracker.getHudContainer();
+                return new SlotRef(hudContainer, hudContainer.bedrockSlot(javaSlot));
+            } else if (javaSlot >= 5 && javaSlot < 9) {
+                final ExperimentalContainer armorContainer = inventoryTracker.getArmorContainer();
+                return new SlotRef(armorContainer, armorContainer.bedrockSlot(javaSlot));
+            } else if (javaSlot == 45) {
+                final ExperimentalContainer offhandContainer = inventoryTracker.getOffhandContainer();
+                return new SlotRef(offhandContainer, offhandContainer.bedrockSlot(javaSlot));
+            }
+        }
+
+        return new SlotRef(container, bedrockSlot);
+    }
+
+    private int maxStackSize(final BedrockItem item) {
+        return 64;
+    }
+
+    private void addPrevContainer(final ClickContext clickContext, final ExperimentalContainer container) {
+        for (ExperimentalContainer prevContainer : clickContext.prevContainers) {
+            if (prevContainer.containerId() == container.containerId()) {
+                return;
+            }
+        }
+        clickContext.prevContainers.add(container.copy());
     }
 
     private ItemStackRequestAction handleThrowClick(final ClickContext clickContext, final short javaSlot, final byte button) {
@@ -388,6 +539,12 @@ public abstract class ExperimentalContainer {
             this.inventoryRequestTracker = inventoryRequestTracker;
             this.prevCursorContainer = inventoryTracker.getHudContainer().copy();
         }
+    }
+
+    private record SlotRef(ExperimentalContainer container, int bedrockSlot) {
+    }
+
+    private record QuickMoveRange(ExperimentalContainer container, int startJavaSlot, int endJavaSlot, boolean backwards) {
     }
 
     public boolean handleButtonClick(final int button) {
