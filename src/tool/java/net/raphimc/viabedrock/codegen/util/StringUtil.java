@@ -48,7 +48,7 @@ public class StringUtil {
             return input;
         }
         final List<String> indented = new ArrayList<>(input.size());
-        for (final String line : input) {
+        for (String line : input) {
             indented.add(indent(line, level));
         }
         return indented;

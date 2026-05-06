@@ -32,7 +32,7 @@ public record CommandData(String name, String description, int flags, byte permi
         public EnumData(final String name, final Set<String> values, final boolean soft) {
             this.name = name;
             this.values = new HashMap<>();
-            for (final String value : values) {
+            for (String value : values) {
                 this.values.put(value, new HashSet<>());
             }
             this.soft = soft;
@@ -47,13 +47,13 @@ public record CommandData(String name, String description, int flags, byte permi
         }
 
         public void addValues(final Set<String> values) {
-            for (final String value : values) {
+            for (String value : values) {
                 this.values.put(value, new HashSet<>());
             }
         }
 
         public void removeValues(final Set<String> values) {
-            for (final String value : values) {
+            for (String value : values) {
                 this.values.remove(value);
             }
         }

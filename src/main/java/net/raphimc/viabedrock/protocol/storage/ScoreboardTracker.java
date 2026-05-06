@@ -46,7 +46,7 @@ public class ScoreboardTracker implements StorableObject {
     }
 
     public Pair<ScoreboardObjective, ScoreboardEntry> getEntry(final long scoreboardId) {
-        for (final ScoreboardObjective objective : this.objectives.values()) {
+        for (ScoreboardObjective objective : this.objectives.values()) {
             final ScoreboardEntry entry = objective.getEntry(scoreboardId);
             if (entry != null) {
                 return new Pair<>(objective, entry);
@@ -57,7 +57,7 @@ public class ScoreboardTracker implements StorableObject {
     }
 
     public Pair<ScoreboardObjective, ScoreboardEntry> getEntryForPlayer(final long entityUniqueId) {
-        for (final ScoreboardObjective objective : this.objectives.values()) {
+        for (ScoreboardObjective objective : this.objectives.values()) {
             final ScoreboardEntry entry = objective.getEntryForPlayer(entityUniqueId);
             if (entry != null) {
                 return new Pair<>(objective, entry);

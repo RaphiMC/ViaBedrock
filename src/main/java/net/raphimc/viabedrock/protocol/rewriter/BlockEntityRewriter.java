@@ -178,7 +178,7 @@ public class BlockEntityRewriter {
         default ListTag<?> rewriteItemList(final UserConnection user, final ListTag<CompoundTag> bedrockItemList) {
             final ListTag<CompoundTag> javaItemList = new ListTag<>(CompoundTag.class);
             final ItemRewriter itemRewriter = user.get(ItemRewriter.class);
-            for (final CompoundTag bedrockItemTag : bedrockItemList) {
+            for (CompoundTag bedrockItemTag : bedrockItemList) {
                 final CompoundTag javaItemTag = itemRewriter.javaItem(bedrockItemTag);
                 this.copy(bedrockItemTag, javaItemTag, "Slot", ByteTag.class);
                 javaItemList.add(javaItemTag);

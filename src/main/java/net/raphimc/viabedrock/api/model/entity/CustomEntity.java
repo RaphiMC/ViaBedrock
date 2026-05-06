@@ -243,7 +243,7 @@ public class CustomEntity extends Entity {
 
         final List<EvaluatedModel> newModels = new ArrayList<>();
         final ResourcePackStorage resourcePackStorage = user.get(ResourcePackStorage.class);
-        for (final BedrockEntityData.RenderController entityRenderController : this.entityDefinition.entityData().getControllers()) {
+        for (BedrockEntityData.RenderController entityRenderController : this.entityDefinition.entityData().getControllers()) {
             final BedrockRenderController renderController = resourcePackStorage.getRenderControllers().get(entityRenderController.identifier());
             if (renderController == null) {
                 continue;

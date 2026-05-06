@@ -29,7 +29,13 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.chunk.ChunkType26_1;
-import com.viaversion.viaversion.libs.fastutil.ints.*;
+import com.viaversion.viaversion.libs.fastutil.ints.IntObjectImmutablePair;
+import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
+import com.viaversion.viaversion.libs.fastutil.ints.IntSet;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.longs.LongOpenHashSet;
+import com.viaversion.viaversion.libs.fastutil.longs.LongSet;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import com.viaversion.viaversion.util.CompactArrayUtil;
 import com.viaversion.viaversion.util.MathUtil;
@@ -73,8 +79,8 @@ public class ChunkTracker extends StoredObject {
     private final int worldHeight;
     private final Type<Chunk> chunkType;
 
-    private final Map<Long, BedrockChunk> chunks = new HashMap<>();
-    private final Set<Long> dirtyChunks = new HashSet<>();
+    private final Long2ObjectMap<BedrockChunk> chunks = new Long2ObjectOpenHashMap<>();
+    private final LongSet dirtyChunks = new LongOpenHashSet();
 
     private final Set<SubChunkPosition> subChunkRequests = new HashSet<>();
     private final Set<SubChunkPosition> pendingSubChunks = new HashSet<>();
@@ -436,7 +442,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void tick() {
-        for (Long dirtyChunk : this.dirtyChunks) {
+        for (long dirtyChunk : this.dirtyChunks) {
             final ChunkPosition chunkPos = new ChunkPosition(dirtyChunk);
             this.sendChunk(chunkPos.chunkX(), chunkPos.chunkZ());
         }
@@ -489,15 +495,17 @@ public class ChunkTracker extends StoredObject {
 
                 final String[] paletteIndexBlockStateTags = new String[remappedBlockPalette.size()];
                 for (int i = 0; i < remappedBlockPalette.size(); i++) {
-                    final int bedrockBlockState = remappedBlockPalette.idByIndex(i);
-                    int javaBlockState = blockStateRewriter.javaId(bedrockBlockState);
-                    if (javaBlockState == -1) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockBlockState);
-                        javaBlockState = ProtocolConstants.JAVA_AIR_ID;
-                    }
-                    remappedBlockPalette.setIdByIndex(i, javaBlockState);
-                    paletteIndexBlockStateTags[i] = blockStateRewriter.tag(bedrockBlockState);
+                    paletteIndexBlockStateTags[i] = blockStateRewriter.tag(remappedBlockPalette.idByIndex(i));
                 }
+                remappedBlockPalette.replaceIds(bedrockBlockState -> {
+                    final int javaBlockState = blockStateRewriter.javaId(bedrockBlockState);
+                    if (javaBlockState != -1) {
+                        return javaBlockState;
+                    } else {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockBlockState);
+                        return ProtocolConstants.JAVA_AIR_ID;
+                    }
+                });
 
                 for (int y = 0; y < 16; y++) {
                     for (int z = 0; z < 16; z++) {
@@ -505,8 +513,8 @@ public class ChunkTracker extends StoredObject {
                             final String tag = paletteIndexBlockStateTags[remappedBlockPalette.paletteIndexAt(remappedBlockPalette.index(x, y, z))];
                             if (tag != null) {
                                 if (BlockEntityRewriter.isBlockEntity(tag)) {
-                                    final int absY = this.minY + idx * 16 + y;
-                                    final BlockPosition position = new BlockPosition(chunk.getX() * 16 + x, absY, chunk.getZ() * 16 + z);
+                                    final int absY = this.minY + (idx << 4) + y;
+                                    final BlockPosition position = new BlockPosition((chunk.getX() << 4) + x, absY, (chunk.getZ() << 4) + z);
                                     final BedrockBlockEntity bedrockBlockEntity = chunk.getBlockEntityAt(position);
                                     if (bedrockBlockEntity != null) {
                                         final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(this.user(), layer0.idAt(x, y, z), bedrockBlockEntity);
@@ -522,7 +530,7 @@ public class ChunkTracker extends StoredObject {
                                         remappedChunk.blockEntities().add(javaBlockEntity);
                                     }
                                 } else if (tag.equals(CustomBlockTags.ITEM_FRAME)) {
-                                    final BlockPosition position = new BlockPosition(chunk.getX() * 16 + x, this.minY + idx * 16 + y, chunk.getZ() * 16 + z);
+                                    final BlockPosition position = new BlockPosition((chunk.getX() << 4) + x, this.minY + (idx << 4) + y, (chunk.getZ() << 4) + z);
                                     this.user().get(EntityTracker.class).spawnItemFrame(position, blockStateRewriter.blockState(layer0.idAt(x, y, z)));
                                 }
                             }
@@ -585,40 +593,29 @@ public class ChunkTracker extends StoredObject {
                     for (int x = 0; x < 4; x++) {
                         for (int z = 0; z < 4; z++) {
                             for (int y = 0; y < 4; y++) {
-                                final Int2IntMap subBiomes = new Int2IntOpenHashMap();
-                                int maxBiomeId = -1;
-                                int maxValue = -1;
+                                final BiomeAggregator subBiomes = new BiomeAggregator(4);
                                 for (int subX = 0; subX < 4; subX++) {
                                     for (int subZ = 0; subZ < 4; subZ++) {
                                         for (int subY = 0; subY < 4; subY++) {
-                                            final int biomeId = biomePalette.idAt(x * 4 + subX, y * 4 + subY, z * 4 + subZ);
-                                            final int value = subBiomes.get(biomeId) + 1;
-                                            subBiomes.put(biomeId, value);
-                                            if (value > maxValue) {
-                                                maxBiomeId = biomeId;
-                                                maxValue = value;
-                                            }
+                                            subBiomes.record(biomePalette.idAt((x << 2) + subX, (y << 2) + subY, (z << 2) + subZ));
                                         }
                                     }
                                 }
-                                remappedBiomePalette.setIdAt(x, y, z, maxBiomeId);
+                                remappedBiomePalette.setIdAt(x, y, z, subBiomes.getMaxBiome());
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i < remappedBiomePalette.size(); i++) {
-                    final int bedrockBiome = remappedBiomePalette.idByIndex(i);
+                remappedBiomePalette.replaceIds(bedrockBiome -> {
                     final String bedrockBiomeName = BedrockProtocol.MAPPINGS.getBedrockBiomes().inverse().get(bedrockBiome);
-                    final int javaBiome;
-                    if (bedrockBiomeName == null) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + bedrockBiome);
-                        javaBiome = BedrockProtocol.MAPPINGS.getJavaBiomes().get("the_void");
+                    if (bedrockBiomeName != null) {
+                        return BedrockProtocol.MAPPINGS.getJavaBiomes().get(bedrockBiomeName);
                     } else {
-                        javaBiome = BedrockProtocol.MAPPINGS.getJavaBiomes().get(bedrockBiomeName);
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing biome: " + bedrockBiome);
+                        return BedrockProtocol.MAPPINGS.getJavaBiomes().get("the_void");
                     }
-                    remappedBiomePalette.setIdByIndex(i, javaBiome);
-                }
+                });
             } else {
                 remappedBiomePalette.addId(BedrockProtocol.MAPPINGS.getJavaBiomes().get("the_void"));
             }
@@ -631,7 +628,7 @@ public class ChunkTracker extends StoredObject {
         Arrays.fill(motionBlocking, Integer.MIN_VALUE);
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                final int index = z << 4 | x;
+                final int index = (z << 4) + x;
                 FIND_Y:
                 for (int idx = remappedSections.length - 1; idx >= 0; idx--) {
                     final DataPalette blockPalette = remappedSections[idx].palette(PaletteType.BLOCKS);
@@ -642,7 +639,7 @@ public class ChunkTracker extends StoredObject {
                     for (int y = 15; y >= 0; y--) {
                         final int blockState = blockPalette.idAt(x, y, z);
                         if (blockState != ProtocolConstants.JAVA_AIR_ID) {
-                            final int value = idx * 16 + y + 1;
+                            final int value = (idx << 4) + y + 1;
 
                             if (worldSurface[index] == Integer.MIN_VALUE) {
                                 worldSurface[index] = value;
@@ -678,14 +675,14 @@ public class ChunkTracker extends StoredObject {
         for (DataPalette palette : palettes) {
             if (palette instanceof BedrockDataPalette bedrockPalette) {
                 if (bedrockPalette.usesPersistentIds()) {
-                    bedrockPalette.addId(this.bedrockAirId());
-                    bedrockPalette.resolvePersistentIds(tag -> {
-                        int remappedBlockState = blockStateRewriter.bedrockId((CompoundTag) tag);
-                        if (remappedBlockState == -1) {
-                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + tag);
-                            remappedBlockState = blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
+                    bedrockPalette.resolvePersistentIds(bedrockBlockStateTag -> {
+                        final int bedrockBlockState = blockStateRewriter.bedrockId((CompoundTag) bedrockBlockStateTag);
+                        if (bedrockBlockState != -1) {
+                            return bedrockBlockState;
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + bedrockBlockStateTag);
+                            return blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
                         }
-                        return remappedBlockState;
                     });
                 }
             }
@@ -697,19 +694,19 @@ public class ChunkTracker extends StoredObject {
 
         final List<DataPalette> palettes = bedrockSection.palettes(PaletteType.BLOCKS);
         for (DataPalette palette : palettes) {
-            if (palette instanceof BedrockBlockArray blockArray) {
-                final BedrockDataPalette dataPalette = new BedrockDataPalette();
-                this.transferPaletteData(blockArray, dataPalette);
-                for (int i = 0; i < dataPalette.size(); i++) {
-                    final int blockState = dataPalette.idByIndex(i);
-                    int remappedBlockState = blockStateRewriter.bedrockId(blockState);
-                    if (remappedBlockState == -1) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + blockState);
-                        remappedBlockState = this.bedrockAirId();
+            if (palette instanceof BedrockBlockArray) {
+                final BedrockDataPalette newPalette = new BedrockDataPalette();
+                this.transferPaletteData(palette, newPalette);
+                newPalette.replaceIds(legacyBlockState -> {
+                    final int bedrockBlockState = blockStateRewriter.bedrockId(legacyBlockState);
+                    if (bedrockBlockState != -1) {
+                        return bedrockBlockState;
+                    } else {
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing legacy block state: " + legacyBlockState);
+                        return this.bedrockAirId();
                     }
-                    dataPalette.setIdByIndex(i, remappedBlockState);
-                }
-                palettes.set(palettes.indexOf(palette), dataPalette);
+                });
+                palettes.set(palettes.indexOf(palette), newPalette);
             }
         }
     }
@@ -731,6 +728,55 @@ public class ChunkTracker extends StoredObject {
     }
 
     private record SubChunkPosition(int chunkX, int subChunkY, int chunkZ) {
+    }
+
+    private static class BiomeAggregator {
+
+        private int[] biome;
+        private int[] count;
+        private int size;
+
+        private BiomeAggregator(final int capacity) {
+            this.biome = new int[capacity];
+            this.count = new int[capacity];
+        }
+
+        private void record(final int biome) {
+            for (int i = 0; i < this.size; i++) {
+                if (this.biome[i] == biome) {
+                    this.count[i]++;
+                    return;
+                }
+            }
+            this.init(biome);
+        }
+
+        private int getMaxBiome() {
+            int maxBiome = Integer.MIN_VALUE;
+            int maxCount = Integer.MIN_VALUE;
+            for (int i = 0; i < this.size; i++) {
+                if (this.count[i] > maxCount) {
+                    maxCount = this.count[i];
+                    maxBiome = this.biome[i];
+                }
+            }
+            return maxBiome;
+        }
+
+        private void init(final int biome) {
+            if (this.size == this.biome.length) {
+                final int[] newBiome = new int[this.size == 0 ? 2 : this.size * 2];
+                final int[] newCount = new int[this.size == 0 ? 2 : this.size * 2];
+                System.arraycopy(this.biome, 0, newBiome, 0, this.size);
+                System.arraycopy(this.count, 0, newCount, 0, this.size);
+                this.biome = newBiome;
+                this.count = newCount;
+            }
+            this.biome[this.size] = biome;
+            this.count[this.size] = 1;
+            this.size++;
+        }
+
     }
 
 }

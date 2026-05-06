@@ -68,7 +68,7 @@ public class BlockState {
             } else {
                 propertiesSplit = new String[0];
             }
-            for (final String property : propertiesSplit) {
+            for (String property : propertiesSplit) {
                 final String[] split = property.split("=", 2);
                 properties.put(split[0], split[1]);
             }
@@ -109,7 +109,7 @@ public class BlockState {
 
     public BlockState withoutProperties(final String... keys) {
         final Map<String, String> newProperties = new HashMap<>(this.properties);
-        for (final String key : keys) {
+        for (String key : keys) {
             newProperties.remove(key);
         }
         return new BlockState(this.namespace, this.identifier, newProperties);
@@ -123,7 +123,7 @@ public class BlockState {
 
     public BlockState replaceProperties(final Map<String, String> properties) {
         final Map<String, String> newProperties = new HashMap<>(this.properties);
-        for (final Map.Entry<String, String> entry : properties.entrySet()) {
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
             if (newProperties.containsKey(entry.getKey())) {
                 newProperties.put(entry.getKey(), entry.getValue());
             }
@@ -141,7 +141,7 @@ public class BlockState {
         if (!this.properties.isEmpty()) {
             builder.append("[");
             boolean first = true;
-            for (final Map.Entry<String, String> entry : (sorted ? new TreeMap<>(this.properties) : this.properties).entrySet()) {
+            for (Map.Entry<String, String> entry : (sorted ? new TreeMap<>(this.properties) : this.properties).entrySet()) {
                 if (!first) {
                     builder.append(",");
                 }

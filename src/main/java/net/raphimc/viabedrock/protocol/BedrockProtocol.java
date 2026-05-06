@@ -160,10 +160,6 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
     }
 
     @Override
-    protected void registerConfigurationChangeHandlers() {
-    }
-
-    @Override
     public BedrockMappingData getMappingData() {
         return MAPPINGS;
     }

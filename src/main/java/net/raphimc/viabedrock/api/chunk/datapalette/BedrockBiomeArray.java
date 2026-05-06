@@ -21,10 +21,10 @@ import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 
 public class BedrockBiomeArray implements DataPalette, Cloneable {
 
-    private byte[] biomes;
+    private final byte[] biomes;
 
     public BedrockBiomeArray() {
-        this.biomes = new byte[256];
+        this.biomes = new byte[16 * 16];
     }
 
     public BedrockBiomeArray(final byte[] biomes) {
@@ -75,22 +75,13 @@ public class BedrockBiomeArray implements DataPalette, Cloneable {
     }
 
     @Override
-    public void replaceId(final int oldId, final int newId) {
-        for (int i = 0; i < this.size(); i++) {
-            if (this.idAt(i) == oldId) {
-                this.setIdAt(i, newId);
-            }
-        }
-    }
-
-    @Override
     public int size() {
         return this.biomes.length;
     }
 
     @Override
     public void clear() {
-        this.biomes = new byte[this.biomes.length];
+        throw new UnsupportedOperationException();
     }
 
     @Override

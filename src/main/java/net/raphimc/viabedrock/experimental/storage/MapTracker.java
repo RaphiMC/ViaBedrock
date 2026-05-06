@@ -19,21 +19,20 @@ package net.raphimc.viabedrock.experimental.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
 import net.raphimc.viabedrock.experimental.model.map.MapObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MapTracker extends StoredObject {
 
-    private final Map<Long, MapObject> mapObjects = new HashMap<>();
+    private final Long2ObjectMap<MapObject> mapObjects = new Long2ObjectOpenHashMap<>();
     private int nextMapId = 0;
 
     public MapTracker(UserConnection user) {
         super(user);
     }
 
-    public Map<Long, MapObject> getMapObjects() {
+    public Long2ObjectMap<MapObject> getMapObjects() {
         return mapObjects;
     }
 

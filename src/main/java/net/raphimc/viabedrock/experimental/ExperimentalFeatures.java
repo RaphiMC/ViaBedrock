@@ -29,6 +29,8 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import com.viaversion.viaversion.libs.mcstructs.text.components.TranslationComponent;
+import com.viaversion.viaversion.libs.fastutil.longs.LongArrayList;
+import com.viaversion.viaversion.libs.fastutil.longs.LongList;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ServerboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -973,11 +975,11 @@ public class ExperimentalFeatures {
             final boolean locked = wrapper.read(Types.BOOLEAN); // locked
             final BlockPosition origin = wrapper.read(BedrockTypes.BLOCK_POSITION); // origin
 
-            final List<Long> trackedEntities = new ArrayList<>();
+            final LongList trackedEntities = new LongArrayList();
             if ((typeFlags & ClientboundMapItemDataPacket_Type.Creation.getValue()) != 0) {
                 final int length = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // length
                 for (int i = 0; i < length; i++) {
-                    trackedEntities.add(wrapper.read(BedrockTypes.VAR_LONG));
+                    trackedEntities.add(wrapper.read(BedrockTypes.VAR_LONG).longValue());
                 }
             }
 

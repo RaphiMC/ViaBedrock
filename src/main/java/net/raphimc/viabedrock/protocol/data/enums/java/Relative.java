@@ -40,7 +40,7 @@ public enum Relative {
     @SafeVarargs
     public static Set<Relative> union(final Set<Relative>... sets) {
         final EnumSet<Relative> result = EnumSet.noneOf(Relative.class);
-        for (final Set<Relative> set : sets) {
+        for (Set<Relative> set : sets) {
             result.addAll(set);
         }
         return Collections.unmodifiableSet(result);
