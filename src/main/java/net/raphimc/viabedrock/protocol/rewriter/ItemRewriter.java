@@ -251,6 +251,25 @@ public class ItemRewriter extends StoredObject {
         return bedrockItems;
     }
 
+    public int maxStackSize(final BedrockItem bedrockItem) {
+        if (bedrockItem == null || bedrockItem.isEmpty()) {
+            return 64;
+        }
+
+        final String identifier = this.items.inverse().get(bedrockItem.identifier());
+        if (identifier == null) {
+            return 64;
+        }
+
+        final ItemDefinitions.ItemDefinition itemDefinition = this.user().get(ResourcePackStorage.class).getItems().get(identifier);
+        if (itemDefinition != null && itemDefinition.maxStackSize() != null) {
+            return Math.max(1, itemDefinition.maxStackSize());
+        }
+
+        CompoundTag item = BedrockProtocol.MAPPINGS.getBedrockItems().get(identifier);
+        return item.getInt("maxStackSize", 64);
+    }
+
     public BiMap<String, Integer> getItems() {
         return this.items;
     }

@@ -38,14 +38,14 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 ### data/bedrock/item_tags.json
 [PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/efb7cd308d5d578ca2c6e77e3c43541fa49b7cc3/item_tags.json)
 
+### data/bedrock/items.json
+[AllayMC/BedrockData](https://github.com/AllayMC/BedrockData/blob/986a7f06bfa6d012d6c39b0c0d0acef25a9535ce/1.26.12.2/items.json)
+
 ### data/bedrock/level_sound_event_mappings.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
 
 ### data/bedrock/particles.json
 This file has been generated using `BedrockParticleListGenerator` using data from the official bedrock client's assets folder.
-
-### data/bedrock/runtime_item_states.json
-This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
 ### data/bedrock/sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.

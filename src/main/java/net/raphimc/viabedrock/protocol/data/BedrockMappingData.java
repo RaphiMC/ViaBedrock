@@ -108,6 +108,7 @@ public class BedrockMappingData extends MappingDataBase {
     // Items
     private ItemUpgrader bedrockItemUpgrader;
     private BiMap<String, Integer> javaItems;
+    private BiMap<String, CompoundTag> bedrockItems;
     private Set<String> bedrockBlockItems;
     private Set<String> bedrockMetaItems;
     private Map<String, Set<String>> bedrockItemTags;
@@ -407,13 +408,14 @@ public class BedrockMappingData extends MappingDataBase {
                 this.javaItems.put(Key.namespaced(javaItemsJson.get(i).getAsString()), i);
             }
 
-            final JsonArray bedrockItemsJson = this.readJson("bedrock/runtime_item_states.json", JsonArray.class);
+            final JsonObject bedrockItemsJson = this.readJson("bedrock/items.json");
             final Set<String> bedrockItems = new HashSet<>(bedrockItemsJson.size());
+            this.bedrockItems = HashBiMap.create(bedrockItemsJson.size()); // TODO: this can probs be used instead of the block + meta split
             this.bedrockBlockItems = new HashSet<>();
             this.bedrockMetaItems = new HashSet<>();
-            for (JsonElement entry : bedrockItemsJson) {
-                final JsonObject itemEntry = entry.getAsJsonObject();
-                final String identifier = itemEntry.get("name").getAsString();
+            for (Map.Entry<String, JsonElement> entry : bedrockItemsJson.entrySet()) {
+                final JsonObject itemEntry = entry.getValue().getAsJsonObject();
+                final String identifier = entry.getKey();
                 final int id = itemEntry.get("id").getAsInt();
                 bedrockItems.add(identifier);
                 if (id <= ProtocolConstants.LAST_BLOCK_ITEM_ID) {
@@ -421,6 +423,8 @@ public class BedrockMappingData extends MappingDataBase {
                 } else {
                     this.bedrockMetaItems.add(identifier);
                 }
+
+                this.bedrockItems.put(identifier, SNBT.deserializeCompoundTag(itemEntry.toString()));
             }
 
             final JsonObject bedrockItemTagsJson = this.readJson("bedrock/item_tags.json");
@@ -1126,6 +1130,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public BiMap<String, Integer> getJavaItems() {
         return this.javaItems;
+    }
+
+    public BiMap<String, CompoundTag> getBedrockItems() {
+        return this.bedrockItems;
     }
 
     public Set<String> getBedrockBlockItems() {

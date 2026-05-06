@@ -313,9 +313,10 @@ public abstract class ExperimentalContainer {
                     /*if (!range.container().canQuickMoveToSlot(bedrockDestSlot, sourceItem)) {
                         continue;
                     }*/
+                    final ItemRewriter itemRewriter = this.user.get(ItemRewriter.class);
 
                     final BedrockItem destinationItem = range.container().getItem(bedrockDestSlot);
-                    final int slotMaxStackSize = 64; // TODO: Account for different stack sizes (e.g. pearls, tools, etc.)
+                    final int slotMaxStackSize = itemRewriter.maxStackSize(destinationItem);
                     if (mergePass) {
                         if (destinationItem == null || destinationItem.isEmpty() || destinationItem.isDifferent(sourceItem) || destinationItem.amount() >= slotMaxStackSize) {
                             continue;
@@ -343,7 +344,7 @@ public abstract class ExperimentalContainer {
 
                     final BedrockItem newSourceItem = this.itemAfterRemovingAmount(sourceItem, amountToMove);
                     source.container().setItem(source.bedrockSlot(), newSourceItem);
-                    if (destinationItem.isEmpty()) {
+                    if (destinationItem == null || destinationItem.isEmpty()) {
                         final BedrockItem newDestinationItem = sourceItem.copy();
                         newDestinationItem.setAmount(amountToMove);
                         range.container().setItem(bedrockDestSlot, newDestinationItem);
