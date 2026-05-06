@@ -91,7 +91,7 @@ public abstract class ExperimentalContainer {
             case PICKUP -> this.singletonAction(this.handlePickupClick(clickContext, javaSlot, button));
             case SWAP -> this.singletonAction(this.handleSwapClick(clickContext, javaSlot, button));
             case QUICK_MOVE -> this.handleQuickMoveClick(clickContext, javaSlot);
-            case THROW ->  this.singletonAction(this.handleThrowClick(clickContext, javaSlot, button));
+            case THROW -> this.singletonAction(this.handleThrowClick(clickContext, javaSlot, button));
             default -> List.of();
         };
 
@@ -182,7 +182,9 @@ public abstract class ExperimentalContainer {
             return this.handlePickupTake(clickContext, container, bedrockSlot, button, item);
         }
 
-        if (item.isEmpty() || (!item.isDifferent(cursorItem) && item.amount() < 64)) { // TODO: Mostly accounts for stackability but not fully (shouldnt be an issue with server side inventory)
+        final ItemRewriter itemRewriter = this.user.get(ItemRewriter.class);
+
+        if (item.isEmpty() || (!item.isDifferent(cursorItem) && item.amount() < itemRewriter.maxStackSize(item))) {
             return this.handlePickupPlace(clickContext, container, bedrockSlot, button, cursorItem, item);
         }
 
@@ -298,6 +300,8 @@ public abstract class ExperimentalContainer {
             return List.of();
         }
 
+        final ItemRewriter itemRewriter = this.user.get(ItemRewriter.class);
+
         final List<ItemStackRequestAction> actions = new ArrayList<>();
         final List<QuickMoveRange> ranges = this.quickMoveRanges(javaSlot, source);
         for (boolean mergePass : new boolean[]{true, false}) {
@@ -313,7 +317,6 @@ public abstract class ExperimentalContainer {
                     /*if (!range.container().canQuickMoveToSlot(bedrockDestSlot, sourceItem)) {
                         continue;
                     }*/
-                    final ItemRewriter itemRewriter = this.user.get(ItemRewriter.class);
 
                     final BedrockItem destinationItem = range.container().getItem(bedrockDestSlot);
                     final int slotMaxStackSize = itemRewriter.maxStackSize(destinationItem);
