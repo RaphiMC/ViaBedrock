@@ -38,7 +38,7 @@ public class ItemStackRequestType extends Type<ItemStackRequestInfo> {
         int requestId = BedrockTypes.VAR_INT.read(buffer);
         List<ItemStackRequestAction> actions = List.of(ExperimentalBedrockTypes.ITEM_STACK_REQUEST_ACTIONS.read(buffer));
         List<String> toFilter = List.of(BedrockTypes.STRING_ARRAY.read(buffer));
-        TextProcessingEventOrigin origin = TextProcessingEventOrigin.getByValue(BedrockTypes.VAR_INT.read(buffer));
+        TextProcessingEventOrigin origin = TextProcessingEventOrigin.getByValue(BedrockTypes.INT_LE.read(buffer));
 
         return new ItemStackRequestInfo(requestId, actions, toFilter, origin);
     }

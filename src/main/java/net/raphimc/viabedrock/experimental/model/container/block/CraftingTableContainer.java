@@ -85,15 +85,20 @@ public class CraftingTableContainer extends ExperimentalContainer {
 
     @Override
     public BedrockItem getItem(int bedrockSlot) {
-        // Fix magic offset
-        bedrockSlot -= 31;
-        return this.items[bedrockSlot];
+        return switch (bedrockSlot) {
+            case 50 -> this.items[0];
+            case 32, 33, 34, 35, 36, 37, 38, 39, 40 -> this.items[bedrockSlot - 31];
+            default -> throw new IllegalArgumentException("Invalid slot for Crafting Container: " + bedrockSlot);
+        };
     }
 
     @Override
     public boolean setItem(final int bedrockSlot, final BedrockItem item) {
-        // Fix magic offset
-        return super.setItem(bedrockSlot - 31, item);
+        return switch (bedrockSlot) {
+            case 50 -> super.setItem(0, item);
+            case 32, 33, 34, 35, 36, 37, 38, 39, 40 -> super.setItem(bedrockSlot - 31, item);
+            default -> throw new IllegalArgumentException("Invalid slot for Crafting Container: " + bedrockSlot);
+        };
     }
 
     @Override
