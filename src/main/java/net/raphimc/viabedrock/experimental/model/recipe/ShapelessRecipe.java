@@ -53,7 +53,7 @@ public class ShapelessRecipe extends Recipe {
         for (ItemDescriptor ingredient : this.getIngredients()) {
             ingredient.writeJavaIngredientData(packet, user); // Write each ingredient
         }
-        new ItemDescriptor.DefaultDescriptor(results.get(0).identifier(), 0).writeJavaIngredientData(packet, user); //TODO: what is auxValue
+        new ItemDescriptor.DefaultDescriptor(results.get(0).identifier(), results.get(0).auxValue()).writeJavaIngredientData(packet, user);
         new ItemDescriptor.InvalidDescriptor().writeJavaIngredientData(packet, user); //TODO: Crafting Station
     }
 

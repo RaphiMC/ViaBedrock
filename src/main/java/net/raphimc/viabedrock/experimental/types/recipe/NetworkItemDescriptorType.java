@@ -59,9 +59,9 @@ public class NetworkItemDescriptorType extends Type<ItemDescriptor> {
             }
         };
 
-        int amount = BedrockTypes.VAR_INT.read(buffer); // TODO: Handle amount if necessary
+        int amount = BedrockTypes.VAR_INT.read(buffer);
 
-        return result;
+        return result.withAmount(amount);
     }
 
     @Override
@@ -97,5 +97,6 @@ public class NetworkItemDescriptorType extends Type<ItemDescriptor> {
                 buffer.writeByte(descriptor.molangVersion());
             }
         }
+        BedrockTypes.VAR_INT.write(buffer, value.amount());
     }
 }

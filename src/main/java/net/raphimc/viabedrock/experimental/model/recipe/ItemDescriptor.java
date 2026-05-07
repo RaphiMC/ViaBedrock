@@ -34,11 +34,26 @@ public interface ItemDescriptor {
 
     boolean matchesItem(final UserConnection user, BedrockItem item);
 
+    default int amount() {
+        return 1;
+    }
+
+    ItemDescriptor withAmount(int amount);
+
+    static boolean matchesAuxValue(final int auxValue, final BedrockItem item) {
+        return auxValue == -1 || auxValue == Short.MAX_VALUE || auxValue == item.data() || auxValue == item.auxValue();
+    }
+
     default void writeJavaIngredientData(final PacketWrapper packet, final UserConnection user) {
         throw new UnsupportedOperationException("Not implemented for " + getType());
     }
 
-    record ComplexAliasDescriptor(String name) implements ItemDescriptor {
+    record ComplexAliasDescriptor(String name, int amount) implements ItemDescriptor {
+
+        public ComplexAliasDescriptor(final String name) {
+            this(name, 1);
+        }
+
         @Override
         public ItemDescriptorType getType() {
             return ItemDescriptorType.COMPLEX_ALIAS;
@@ -53,11 +68,21 @@ public interface ItemDescriptor {
         @Override
         public void writeJavaIngredientData(final PacketWrapper packet, final UserConnection user) {
             //TODO
-            packet.write(Types.VAR_INT, 0); // Slot Display Type (empty)
+            packet.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaSlotDisplayId("minecraft:empty")); // Slot Display Type
+        }
+
+        @Override
+        public ItemDescriptor withAmount(final int amount) {
+            return new ComplexAliasDescriptor(this.name, amount);
         }
     }
 
-    record DefaultDescriptor(int itemId, int auxValue) implements ItemDescriptor {
+    record DefaultDescriptor(int itemId, int auxValue, int amount) implements ItemDescriptor {
+
+        public DefaultDescriptor(final int itemId, final int auxValue) {
+            this(itemId, auxValue, 1);
+        }
+
         @Override
         public ItemDescriptorType getType() {
             return ItemDescriptorType.DEFAULT;
@@ -65,7 +90,8 @@ public interface ItemDescriptor {
 
         @Override
         public boolean matchesItem(UserConnection user, BedrockItem item) {
-            return  ((itemId == -1 || itemId == 0) && item.isEmpty()) || (!item.isEmpty() && item.identifier() == itemId);
+            return ((itemId == -1 || itemId == 0) && item.isEmpty())
+                    || (!item.isEmpty() && item.identifier() == itemId && ItemDescriptor.matchesAuxValue(auxValue, item));
         }
 
         @Override
@@ -76,12 +102,23 @@ public interface ItemDescriptor {
                 throw new IllegalStateException("Could not find Java item for Bedrock ID: " + itemId);
             }
 
-            packet.write(Types.VAR_INT, 2); // Slot Display Type (Item)
+            packet.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaSlotDisplayId("minecraft:item")); // Slot Display Type
             packet.write(Types.VAR_INT, javaItem.identifier()); // Item ID
         }
+
+        @Override
+        public ItemDescriptor withAmount(final int amount) {
+            return new DefaultDescriptor(this.itemId, this.auxValue, amount);
+        }
+
     }
 
-    record DeferredDescriptor(String fullName, int auxValue) implements ItemDescriptor {
+    record DeferredDescriptor(String fullName, int auxValue, int amount) implements ItemDescriptor {
+
+        public DeferredDescriptor(final String fullName, final int auxValue) {
+            this(fullName, auxValue, 1);
+        }
+
         @Override
         public ItemDescriptorType getType() {
             return ItemDescriptorType.DEFERRED;
@@ -102,9 +139,15 @@ public interface ItemDescriptor {
                 throw new IllegalStateException("Could not find Java item for Bedrock ID: " + itemId);
             }
 
-            packet.write(Types.VAR_INT, 2); // Slot Display Type (Item)
+            packet.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaSlotDisplayId("minecraft:item")); // Slot Display Type
             packet.write(Types.VAR_INT, javaItem.identifier()); // Item ID
         }
+
+        @Override
+        public ItemDescriptor withAmount(final int amount) {
+            return new DeferredDescriptor(this.fullName, this.auxValue, amount);
+        }
+
     }
 
     record InvalidDescriptor() implements ItemDescriptor {
@@ -120,11 +163,22 @@ public interface ItemDescriptor {
 
         @Override
         public void writeJavaIngredientData(final PacketWrapper packet, final UserConnection user) {
-            packet.write(Types.VAR_INT, 0); // Slot Display Type (empty)
+            packet.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaSlotDisplayId("minecraft:empty")); // Slot Display Type
         }
+
+        @Override
+        public ItemDescriptor withAmount(final int amount) {
+            return this;
+        }
+
     }
 
-    record ItemTagDescriptor(String itemTag) implements ItemDescriptor {
+    record ItemTagDescriptor(String itemTag, int amount) implements ItemDescriptor {
+
+        public ItemTagDescriptor(final String itemTag) {
+            this(itemTag, 1);
+        }
+
         @Override
         public ItemDescriptorType getType() {
             return ItemDescriptorType.ITEM_TAG;
@@ -144,13 +198,24 @@ public interface ItemDescriptor {
 
         @Override
         public void writeJavaIngredientData(final PacketWrapper packet, final UserConnection user) {
-            packet.write(Types.VAR_INT, 4); // Slot Display Type (Tag)
+            packet.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaSlotDisplayId("minecraft:tag")); // Slot Display Type
             //TODO: Convert to Java Tag properly
             packet.write(Types.IDENTIFIER, Key.of(itemTag)); // Item Tag
         }
+
+        @Override
+        public ItemDescriptor withAmount(final int amount) {
+            return new ItemTagDescriptor(this.itemTag, amount);
+        }
+
     }
 
-    record MolangDescriptor(String tagExpression, int molangVersion) implements ItemDescriptor {
+    record MolangDescriptor(String tagExpression, int molangVersion, int amount) implements ItemDescriptor {
+
+        public MolangDescriptor(final String tagExpression, final int molangVersion) {
+            this(tagExpression, molangVersion, 1);
+        }
+
         @Override
         public ItemDescriptorType getType() {
             return ItemDescriptorType.MOLANG;
@@ -161,6 +226,12 @@ public interface ItemDescriptor {
             // TODO
             return false;
         }
+
+        @Override
+        public ItemDescriptor withAmount(final int amount) {
+            return new MolangDescriptor(this.tagExpression, this.molangVersion, amount);
+        }
+
     }
 
 }

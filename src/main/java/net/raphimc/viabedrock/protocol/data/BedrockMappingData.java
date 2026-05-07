@@ -83,6 +83,8 @@ public class BedrockMappingData extends MappingDataBase {
     private CompoundTag javaRegistries;
     private CompoundTag javaTags;
     private BiMap<String, Integer> javaCommandArgumentTypes;
+    private BiMap<String, Integer> javaMenus;
+    private BiMap<String, Integer> javaSlotDisplays;
 
     // Block states
     private BlockStateUpgrader bedrockBlockStateUpgrader;
@@ -555,9 +557,15 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             final JsonArray javaMenusJson = javaViaMappingJson.get("menus").getAsJsonArray();
-            final List<String> javaMenus = new ArrayList<>(javaMenusJson.size());
-            for (JsonElement menuJson : javaMenusJson) {
-                javaMenus.add(Key.namespaced(menuJson.getAsString()));
+            this.javaMenus = HashBiMap.create(javaMenusJson.size());
+            for (int i = 0; i < javaMenusJson.size(); i++) {
+                this.javaMenus.put(Key.namespaced(javaMenusJson.get(i).getAsString()), i);
+            }
+
+            final JsonArray javaSlotDisplaysJson = javaViaMappingJson.getAsJsonArray("slot_displays");
+            this.javaSlotDisplays = HashBiMap.create(javaSlotDisplaysJson.size());
+            for (int i = 0; i < javaSlotDisplaysJson.size(); i++) {
+                this.javaSlotDisplays.put(Key.namespaced(javaSlotDisplaysJson.get(i).getAsString()), i);
             }
 
             final JsonObject bedrockToJavaContainersJson = this.readJson("custom/container_mappings.json");
@@ -570,11 +578,7 @@ public class BedrockMappingData extends MappingDataBase {
                     continue;
                 }
                 final String javaIdentifier = entry.getValue().getAsString();
-                final int javaId = javaMenus.indexOf(javaIdentifier);
-                if (javaId == -1) {
-                    throw new IllegalStateException("Unknown java menu: " + javaIdentifier);
-                }
-                this.bedrockToJavaContainers.put(bedrockContainerType, javaId);
+                this.bedrockToJavaContainers.put(bedrockContainerType, this.getJavaMenuId(javaIdentifier));
             }
             for (ContainerType containerType : ContainerType.values()) {
                 if (!this.bedrockToJavaContainers.containsKey(containerType) && !unmappedContainerTypes.contains(containerType)) {
@@ -1162,6 +1166,24 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<ContainerType, Integer> getBedrockToJavaContainers() {
         return this.bedrockToJavaContainers;
+    }
+
+    public int getJavaMenuId(final String javaIdentifier) {
+        final String namespacedIdentifier = Key.namespaced(javaIdentifier);
+        final Integer javaMenuId = this.javaMenus.get(namespacedIdentifier);
+        if (javaMenuId == null) {
+            throw new IllegalStateException("Unknown java menu: " + namespacedIdentifier);
+        }
+        return javaMenuId;
+    }
+
+    public int getJavaSlotDisplayId(final String javaIdentifier) {
+        final String namespacedIdentifier = Key.namespaced(javaIdentifier);
+        final Integer javaSlotDisplayId = this.javaSlotDisplays.get(namespacedIdentifier);
+        if (javaSlotDisplayId == null) {
+            throw new IllegalStateException("Unknown java slot display: " + namespacedIdentifier);
+        }
+        return javaSlotDisplayId;
     }
 
     public BiMap<String, Integer> getBedrockEntities() {

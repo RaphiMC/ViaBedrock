@@ -193,7 +193,7 @@ public class CraftingDataTracker extends StoredObject {
 
             //Slot Display
             Item javaOutput = itemRewriter.javaItem(((ShapelessRecipe)craftingData.recipe()).getResults().get(0));
-            packet.write(Types.VAR_INT, 5); // Type (ItemStack) TODO: check this when mc updates
+            packet.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaSlotDisplayId("minecraft:item_stack")); // Type
             packet.write(VersionedTypes.V26_1.itemTemplate, javaOutput);
         }
 

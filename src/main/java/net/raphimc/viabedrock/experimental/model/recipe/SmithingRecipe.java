@@ -45,7 +45,7 @@ public class SmithingRecipe extends Recipe {
         template.writeJavaIngredientData(packet, user);
         baseIngredient.writeJavaIngredientData(packet, user);
         additionIngredient.writeJavaIngredientData(packet, user);
-        new ItemDescriptor.DefaultDescriptor(result.identifier(), 0).writeJavaIngredientData(packet, user); //TODO: what is auxValue
+        new ItemDescriptor.DefaultDescriptor(result.identifier(), result.auxValue()).writeJavaIngredientData(packet, user);
         new ItemDescriptor.InvalidDescriptor().writeJavaIngredientData(packet, user); //TODO: Crafting Station
     }
 
