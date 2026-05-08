@@ -52,6 +52,7 @@ import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureRe
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
+import net.raphimc.viabedrock.protocol.types.item.BedrockItemStackType;
 import net.raphimc.viabedrock.protocol.types.item.BedrockItemType;
 
 import java.util.HashMap;
@@ -69,6 +70,7 @@ public class ItemRewriter extends StoredObject {
     private final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates;
     private final Type<BedrockItem> itemType;
     private final Type<BedrockItem[]> itemArrayType;
+    private final Type<BedrockItem> itemStackType;
 
     static {
         // TODO: Add missing item nbt rewriters
@@ -109,6 +111,7 @@ public class ItemRewriter extends StoredObject {
 
         this.itemType = new BedrockItemType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false);
         this.itemArrayType = new ArrayType<>(this.itemType, BedrockTypes.UNSIGNED_VAR_INT);
+        this.itemStackType = new BedrockItemStackType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false);
     }
 
     public Item javaItem(final BedrockItem bedrockItem) {
@@ -260,6 +263,10 @@ public class ItemRewriter extends StoredObject {
 
     public Type<BedrockItem[]> itemArrayType() {
         return this.itemArrayType;
+    }
+
+    public Type<BedrockItem> itemStackType() {
+        return this.itemStackType;
     }
 
     public interface NbtRewriter {

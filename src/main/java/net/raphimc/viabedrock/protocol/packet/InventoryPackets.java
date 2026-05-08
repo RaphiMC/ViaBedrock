@@ -183,9 +183,16 @@ public class InventoryPackets {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
             final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // slot
-            final FullContainerName containerName = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
-            final BedrockItem storageItem = wrapper.read(itemRewriter.itemType()); // storage item
-            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // item
+            FullContainerName containerName = null;
+            if (wrapper.read(Types.BOOLEAN)) { // has container name
+                containerName = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
+            }
+            BedrockItem storageItem = null;
+            if (wrapper.read(Types.BOOLEAN)) { // has storage item
+                storageItem = wrapper.read(itemRewriter.itemStackType()); // storage item
+
+            }
+            final BedrockItem item = wrapper.read(itemRewriter.itemStackType()); // item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);

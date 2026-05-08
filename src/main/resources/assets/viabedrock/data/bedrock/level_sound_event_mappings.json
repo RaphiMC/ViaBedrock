@@ -4530,11 +4530,7 @@
       ]
     },
     "entity:minecraft:pig": {
-      "sound": "random.eat",
-      "volume": [
-        0.5,
-        1.1
-      ],
+      "sound": "mob.pig.eat",
       "pitch": [
         0.8,
         1.2
@@ -15079,5 +15075,7 @@
     "": {
       "sound": "item.wooden_spear.use"
     }
-  }
+  },
+  "PushedByPlayer": null,
+  "Bounce": null
 }

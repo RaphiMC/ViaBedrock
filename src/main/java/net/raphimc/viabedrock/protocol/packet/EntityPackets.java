@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.packet;
 
 import com.google.common.collect.Lists;
 import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.Holder;
 import com.viaversion.viaversion.api.minecraft.PaintingVariant;
 import com.viaversion.viaversion.api.minecraft.Vector3d;
@@ -418,6 +419,9 @@ public class EntityPackets {
                 return;
             }
             final int data = wrapper.read(BedrockTypes.VAR_INT); // data
+            if (wrapper.read(Types.BOOLEAN)) { // has fire at position
+                wrapper.read(BedrockTypes.POSITION_3F); // fire at position
+            }
 
             final Entity entity = entityTracker.getEntityByRid(entityRuntimeId);
             if (entity == null) {
@@ -607,10 +611,10 @@ public class EntityPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.MOB_EQUIPMENT, ClientboundPackets26_1.SET_EQUIPMENT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
-            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // item
-            final byte slot = wrapper.read(Types.BYTE); // slot
-            final byte selectedSlot = wrapper.read(Types.BYTE); // selected slot
-            final byte containerId = wrapper.read(Types.BYTE); // container id
+            final BedrockItem item = wrapper.read(itemRewriter.itemStackType()); // item
+            final short slot = wrapper.read(Types.UNSIGNED_BYTE); // slot
+            final short selectedSlot = wrapper.read(Types.UNSIGNED_BYTE); // selected slot
+            final short containerId = wrapper.read(Types.UNSIGNED_BYTE); // container id
 
             final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(entityRuntimeId);
             if (entity == null || entity instanceof ClientPlayerEntity) {

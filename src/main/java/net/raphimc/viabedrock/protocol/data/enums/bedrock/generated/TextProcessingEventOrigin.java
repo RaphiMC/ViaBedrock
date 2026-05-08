@@ -22,6 +22,7 @@ public enum TextProcessingEventOrigin {
     TitleCommand(12),
     SummonCommand(13),
     ServerForm(14),
+    DataDrivenUI(15),
     ;
 
     private static final Int2ObjectMap<TextProcessingEventOrigin> BY_VALUE = new Int2ObjectOpenHashMap<>();

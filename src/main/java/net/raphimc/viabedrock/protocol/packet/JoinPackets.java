@@ -412,6 +412,7 @@ public class JoinPackets {
                         final int maximumHeight = wrapper.read(BedrockTypes.VAR_INT); // maximum height
                         final int minimumHeight = wrapper.read(BedrockTypes.VAR_INT); // minimum height
                         wrapper.read(BedrockTypes.VAR_INT); // generator type
+                        wrapper.read(BedrockTypes.VAR_INT); // dimension type TODO
                         if (dimensionIdentifier.equals(Dimension.OVERWORLD.getKey())) { // Bedrock client currently only supports overworld
                             gameSession.putBedrockDimensionDefinition(dimensionIdentifier, new IntIntImmutablePair(minimumHeight, maximumHeight));
                         }

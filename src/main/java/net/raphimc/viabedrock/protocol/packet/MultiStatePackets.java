@@ -55,7 +55,7 @@ public class MultiStatePackets {
 
     private static final PacketHandler DISCONNECT_HANDLER = wrapper -> {
         final Connection_DisconnectFailReason disconnectReason = Connection_DisconnectFailReason.getByValue(wrapper.read(BedrockTypes.VAR_INT), Connection_DisconnectFailReason.Unknown); // reason
-        final boolean hasMessage = !wrapper.read(Types.BOOLEAN); // skip message
+        final boolean hasMessage = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT) == 0; // skip message
         if (hasMessage) {
             final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockResourcePacks().get(DataValues.VANILLA_RESOURCE_PACK_KEY).content().getLang("texts/en_US.lang");
             final Function<String, String> translator = k -> translations.getOrDefault(k, k);

@@ -73,4 +73,12 @@ public class LittleEndianByteBufInputStream extends ByteBufInputStream {
         return (String) this.buffer.readCharSequence(this.readUnsignedShort(), StandardCharsets.UTF_8);
     }
 
+    public String readUTFMaxLen(int maxLength) throws IOException {
+        int length = this.readUnsignedShort();
+        if (length > maxLength) {
+            throw new IOException("String length " + length + " exceeds maximum of " + maxLength);
+        }
+        return (String) buffer.readCharSequence(length, StandardCharsets.UTF_8);
+    }
+
 }

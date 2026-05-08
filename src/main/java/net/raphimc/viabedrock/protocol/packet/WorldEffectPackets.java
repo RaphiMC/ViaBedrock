@@ -75,6 +75,9 @@ public class WorldEffectPackets {
             final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
             final float volume = wrapper.read(BedrockTypes.FLOAT_LE); // volume
             final float pitch = wrapper.read(BedrockTypes.FLOAT_LE); // pitch
+            if (wrapper.read(Types.BOOLEAN)) { // has ServerSoundHandle
+                wrapper.read(BedrockTypes.UNSIGNED_LONG_LE); // ServerSoundHandle TODO: is this the seed?
+            }
 
             final BedrockMappingData.JavaSound javaSound = BedrockProtocol.MAPPINGS.getBedrockToJavaSounds().get(name);
             if (javaSound == null) {
@@ -155,6 +158,9 @@ public class WorldEffectPackets {
             final boolean isBabyMob = wrapper.read(Types.BOOLEAN); // is baby mob
             final boolean isGlobal = wrapper.read(Types.BOOLEAN); // is global sound
             wrapper.read(BedrockTypes.LONG_LE); // entity unique id
+            if (wrapper.read(Types.BOOLEAN)) { // has fire at position
+                final Position3f firePosition = wrapper.read(BedrockTypes.POSITION_3F); // fire at position
+            }
 
             final boolean globalSound = isGlobal || Float.isNaN(position.x()) || Float.isNaN(position.y()) || Float.isNaN(position.z());
             SoundDefinitions.ConfiguredSound configuredSound;
