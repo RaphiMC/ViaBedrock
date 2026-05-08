@@ -23,13 +23,14 @@ import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.experimental.model.container.ExperimentalContainer;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
 public class GrindstoneContainer extends ExperimentalContainer {
 
     public GrindstoneContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
-        super(user, containerId, ContainerType.GRINDSTONE, title, position, 3, "grindstone");
+        super(user, containerId, ContainerType.GRINDSTONE, title, position, 3, CustomBlockTags.GRINDSTONE);
     }
 
     @Override

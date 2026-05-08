@@ -67,8 +67,8 @@ public class ExperimentalPacketFactory {
     public static void writeJavaContainerSetContent(final PacketWrapper wrapper, final ExperimentalContainer container) {
         wrapper.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
         wrapper.write(Types.VAR_INT, 0); // revision
-        wrapper.write(VersionedTypes.V1_21_11.itemArray, container.getJavaItems()); // items
-        wrapper.write(VersionedTypes.V1_21_11.item, wrapper.user().get(ExperimentalInventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
+        wrapper.write(VersionedTypes.V26_1.itemArray, container.getJavaItems()); // items
+        wrapper.write(VersionedTypes.V26_1.item, wrapper.user().get(ExperimentalInventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
     }
 
 }

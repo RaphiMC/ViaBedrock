@@ -395,7 +395,7 @@ public class ExperimentalFeatures {
         protocol.registerServerbound(ServerboundPackets26_1.SET_CREATIVE_MODE_SLOT, null, wrapper -> {
             wrapper.cancel();
             final short slot = wrapper.read(Types.SHORT); // slot
-            final Item item = wrapper.read(VersionedTypes.V1_21_11.lengthPrefixedItem); // item
+            final Item item = wrapper.read(VersionedTypes.V26_1.lengthPrefixedItem); // item
 
             final ExperimentalInventoryTracker inventoryTracker = wrapper.user().get(ExperimentalInventoryTracker.class);
             if (inventoryTracker.getPendingCloseContainer() != null) {
@@ -565,7 +565,7 @@ public class ExperimentalFeatures {
                     && blockEntity.tag().contains("id") && blockEntity.tag().getString("id").equals("Chest")
                     && blockEntity.tag().contains("pairlead")) {
                 //TODO: Temporary fix
-                wrapper.write(Types.VAR_INT, 5); // generic_9x6
+                wrapper.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaMenuId("minecraft:generic_9x6"));
             } else {
                 wrapper.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().get(type)); // type
             }
@@ -628,7 +628,7 @@ public class ExperimentalFeatures {
                     wrapper.write(Types.VAR_INT, 0); // revision
                     wrapper.write(Types.SHORT, (short) container.javaSlot(slot)); // slot
                 }
-                wrapper.write(VersionedTypes.V1_21_11.item, container.getJavaItem(slot)); // item
+                wrapper.write(VersionedTypes.V26_1.item, container.getJavaItem(slot)); // item
             } else {
                 wrapper.cancel();
             }

@@ -129,20 +129,6 @@ public class BeaconContainer extends ExperimentalContainer {
         return super.setItem(bedrockSlot - 27, item);
     }
 
-    @Override
-    public boolean setItems(final BedrockItem[] items) {
-        //TODO: Fix magic offset?
-        if (items.length != this.items.length) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
-            return false;
-        }
-
-        for (int i = 0; i < items.length; i++) {
-            this.setItem(i, items[i]);
-        }
-        return true;
-    }
-
     public void updateEffects(int primaryEffect, int secondaryEffect) {
         InventoryRequestTracker inventoryRequestTracker = this.user.get(InventoryRequestTracker.class);
         ExperimentalInventoryTracker inventoryTracker = this.user.get(ExperimentalInventoryTracker.class);
@@ -157,6 +143,8 @@ public class BeaconContainer extends ExperimentalContainer {
         final int bedrockIdPrimary = bedrockIdentifierPrimary == null ? 0 : BedrockProtocol.MAPPINGS.getBedrockEffects().get(bedrockIdentifierPrimary);
         final int bedrockIdSecondary = bedrockIdentifierSecondary == null ? 0 : BedrockProtocol.MAPPINGS.getBedrockEffects().get(bedrockIdentifierSecondary);
 
+        final BedrockItem paymentItem = this.getItem(27);
+
         ItemStackRequestInfo requestInfo = new ItemStackRequestInfo(
                 inventoryRequestTracker.nextRequestId(),
                 List.of(
@@ -169,7 +157,7 @@ public class BeaconContainer extends ExperimentalContainer {
                                 new ItemStackRequestSlotInfo(
                                         this.getFullContainerName(27),
                                         (byte) 27,
-                                        this.getItem(27).netId()
+                                        paymentItem.netId()
                                 )
                         )
                 ),
@@ -181,7 +169,7 @@ public class BeaconContainer extends ExperimentalContainer {
         prevContainers.add(this.copy());
         ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy();
 
-        this.setItem(27, BedrockItem.empty()); // Clear the payment slot
+        this.setItem(27, this.itemAfterRemovingAmount(paymentItem, 1)); // Clear the payment slot
 
         inventoryRequestTracker.addRequest(new InventoryRequestStorage(requestInfo, 0, prevCursorContainer, prevContainers));
         ExperimentalPacketFactory.sendBedrockInventoryRequest(user, new ItemStackRequestInfo[] {requestInfo});

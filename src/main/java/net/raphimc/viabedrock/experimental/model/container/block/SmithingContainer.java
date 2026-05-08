@@ -49,6 +49,11 @@ import java.util.logging.Level;
 
 public class SmithingContainer extends ExperimentalContainer {
 
+    public static final int RESULT_SLOT = 50;
+    public static final int INPUT_SLOT = 51;
+    public static final int MATERIAL_SLOT = 52;
+    public static final int TEMPLATE_SLOT = 53;
+
     public SmithingContainer(UserConnection user, byte containerId, TextComponent title, BlockPosition position) {
         super(user, containerId, ContainerType.SMITHING_TABLE, title, position, 4, CustomBlockTags.SMITHING_TABLE);
     }
@@ -56,10 +61,10 @@ public class SmithingContainer extends ExperimentalContainer {
     @Override
     public FullContainerName getFullContainerName(int slot) {
         return switch (slot) {
-            case 53 -> new FullContainerName(ContainerEnumName.SmithingTableTemplateContainer, null);
-            case 51 -> new FullContainerName(ContainerEnumName.SmithingTableInputContainer, null);
-            case 52 -> new FullContainerName(ContainerEnumName.SmithingTableMaterialContainer, null);
-            case 50 -> new FullContainerName(ContainerEnumName.SmithingTableResultPreviewContainer, null); //TODO: CreatedOutputContainer?
+            case TEMPLATE_SLOT -> new FullContainerName(ContainerEnumName.SmithingTableTemplateContainer, null);
+            case INPUT_SLOT -> new FullContainerName(ContainerEnumName.SmithingTableInputContainer, null);
+            case MATERIAL_SLOT -> new FullContainerName(ContainerEnumName.SmithingTableMaterialContainer, null);
+            case RESULT_SLOT -> new FullContainerName(ContainerEnumName.SmithingTableResultPreviewContainer, null); //TODO: CreatedOutputContainer?
             default -> throw new IllegalArgumentException("Invalid slot for Smithing Container: " + slot);
         };
     }
@@ -67,10 +72,10 @@ public class SmithingContainer extends ExperimentalContainer {
     @Override
     public int javaSlot(final int slot) {
         return switch (slot) {
-            case 53 -> 0;
-            case 51 -> 1;
-            case 52 -> 2;
-            case 50 -> 3;
+            case TEMPLATE_SLOT -> 0;
+            case INPUT_SLOT -> 1;
+            case MATERIAL_SLOT -> 2;
+            case RESULT_SLOT -> 3;
             default -> super.javaSlot(slot);
         };
     }
@@ -78,39 +83,34 @@ public class SmithingContainer extends ExperimentalContainer {
     @Override
     public int bedrockSlot(final int slot) {
         return switch (slot) {
-            case 0 -> 53;
-            case 1 -> 51;
-            case 2 -> 52;
-            case 3 -> 50;
+            case 0 -> TEMPLATE_SLOT;
+            case 1 -> INPUT_SLOT;
+            case 2 -> MATERIAL_SLOT;
+            case 3 -> RESULT_SLOT;
             default -> super.bedrockSlot(slot);
         };
     }
 
     @Override
     public BedrockItem getItem(int bedrockSlot) {
-        // Fix magic offset
-        bedrockSlot -= 50;
-        return this.items[bedrockSlot];
+        return switch (bedrockSlot) {
+            case TEMPLATE_SLOT -> this.items[0];
+            case INPUT_SLOT -> this.items[1];
+            case MATERIAL_SLOT -> this.items[2];
+            case RESULT_SLOT -> this.items[3];
+            default -> throw new IllegalArgumentException("Invalid slot for Smithing Container: " + bedrockSlot);
+        };
     }
 
     @Override
     public boolean setItem(final int bedrockSlot, final BedrockItem item) {
-        // Fix magic offset
-        return super.setItem(bedrockSlot - 50, item);
-    }
-
-    @Override
-    public boolean setItems(final BedrockItem[] items) {
-        //TODO: Fix magic offset?
-        if (items.length != this.items.length) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
-            return false;
-        }
-
-        for (int i = 0; i < items.length; i++) {
-            this.setItem(i, items[i]);
-        }
-        return true;
+        return switch (bedrockSlot) {
+            case TEMPLATE_SLOT -> super.setItem(0, item);
+            case INPUT_SLOT -> super.setItem(1, item);
+            case MATERIAL_SLOT -> super.setItem(2, item);
+            case RESULT_SLOT -> super.setItem(3, item);
+            default -> throw new IllegalArgumentException("Invalid slot for Smithing Container: " + bedrockSlot);
+        };
     }
 
     @Override
@@ -138,7 +138,7 @@ public class SmithingContainer extends ExperimentalContainer {
         containerSlot.write(Types.VAR_INT, (int) this.containerId());
         containerSlot.write(Types.VAR_INT, revision);
         containerSlot.write(Types.SHORT, (short) 3); // Output slot
-        containerSlot.write(VersionedTypes.V1_21_11.item, itemRewriter.javaItem(resultItem));
+        containerSlot.write(VersionedTypes.V26_1.item, itemRewriter.javaItem(resultItem));
         containerSlot.send(BedrockProtocol.class);
 
         if (craftingDataStorage == null) {
@@ -166,25 +166,25 @@ public class SmithingContainer extends ExperimentalContainer {
         actions.add(new ItemStackRequestAction.ConsumeAction(
                 1,
                 new ItemStackRequestSlotInfo(
-                        this.getFullContainerName(53),
-                        (byte) 53,
-                        this.getItem(53).netId()
+                        this.getFullContainerName(TEMPLATE_SLOT),
+                        (byte) TEMPLATE_SLOT,
+                        this.getItem(TEMPLATE_SLOT).netId()
                 )
         ));
         actions.add(new ItemStackRequestAction.ConsumeAction(
                 1,
                 new ItemStackRequestSlotInfo(
-                        this.getFullContainerName(51),
-                        (byte) 51,
-                        this.getItem(51).netId()
+                        this.getFullContainerName(INPUT_SLOT),
+                        (byte) INPUT_SLOT,
+                        this.getItem(INPUT_SLOT).netId()
                 )
         ));
         actions.add(new ItemStackRequestAction.ConsumeAction(
                 1,
                 new ItemStackRequestSlotInfo(
-                        this.getFullContainerName(52),
-                        (byte) 52,
-                        this.getItem(52).netId()
+                        this.getFullContainerName(MATERIAL_SLOT),
+                        (byte) MATERIAL_SLOT,
+                        this.getItem(MATERIAL_SLOT).netId()
                 )
         ));
 
@@ -218,29 +218,29 @@ public class SmithingContainer extends ExperimentalContainer {
 
         inventoryTracker.getHudContainer().setItem(0, resultItem); // Update cursor to the crafted item
 
-        BedrockItem templateItem = this.getItem(53).copy();
+        BedrockItem templateItem = this.getItem(TEMPLATE_SLOT).copy();
         if (templateItem.amount() - 1 != 0) {
             templateItem.setAmount(templateItem.amount() - 1);
         } else {
             templateItem = BedrockItem.empty();
         }
-        this.setItem(53, templateItem);
+        this.setItem(TEMPLATE_SLOT, templateItem);
 
-        BedrockItem inputItem = this.getItem(51).copy();
+        BedrockItem inputItem = this.getItem(INPUT_SLOT).copy();
         if (inputItem.amount() - 1 != 0) {
             inputItem.setAmount(inputItem.amount() - 1);
         } else {
             inputItem = BedrockItem.empty();
         }
-        this.setItem(51, inputItem);
+        this.setItem(INPUT_SLOT, inputItem);
 
-        BedrockItem materialItem = this.getItem(52).copy();
+        BedrockItem materialItem = this.getItem(MATERIAL_SLOT).copy();
         if (materialItem.amount() - 1 != 0) {
             materialItem.setAmount(materialItem.amount() - 1);
         } else {
             materialItem = BedrockItem.empty();
         }
-        this.setItem(52, materialItem);
+        this.setItem(MATERIAL_SLOT, materialItem);
 
         ExperimentalPacketFactory.sendJavaContainerSetContent(user, this);
 

@@ -134,7 +134,7 @@ public class CraftingTableContainer extends ExperimentalContainer {
         containerSlot.write(Types.VAR_INT, (int) this.containerId());
         containerSlot.write(Types.VAR_INT, revision);
         containerSlot.write(Types.SHORT, (short) 0); // Output slot
-        containerSlot.write(VersionedTypes.V1_21_11.item, itemRewriter.javaItem(resultItem));
+        containerSlot.write(VersionedTypes.V26_1.item, itemRewriter.javaItem(resultItem));
         containerSlot.send(BedrockProtocol.class);
 
         if (javaSlot != 0) {

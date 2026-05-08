@@ -95,22 +95,8 @@ public class EnchantmentContainer extends ExperimentalContainer {
     }
 
     @Override
-    public boolean setItems(final BedrockItem[] items) {
-        //TODO: Fix magic offset?
-        if (items.length != this.items.length) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Tried to set items for " + this.type + ", but items array length was not correct (" + items.length + " != " + this.items.length + ")");
-            return false;
-        }
-
-        for (int i = 0; i < items.length; i++) {
-            this.setItem(i, items[i]);
-        }
-        return true;
-    }
-
-    @Override
     public boolean handleButtonClick(final int button) {
-        if (button > 2 || button > this.data.size() - 1) {
+        if (button < 0 || button > 2 || button >= this.data.size()) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received invalid enchantment option button click: " + button);
             return false;
         }
@@ -122,7 +108,7 @@ public class EnchantmentContainer extends ExperimentalContainer {
         final List<ExperimentalContainer> prevContainers = new ArrayList<>();
         final ExperimentalContainer prevCursorContainer = inventoryTracker.getHudContainer().copy();
 
-        prevContainers.add(this);
+        prevContainers.add(this.copy());
 
         int reqId = inventoryRequestTracker.nextRequestId();
 

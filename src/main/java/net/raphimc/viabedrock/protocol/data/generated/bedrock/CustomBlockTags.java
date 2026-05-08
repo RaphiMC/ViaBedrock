@@ -34,6 +34,7 @@ public class CustomBlockTags {
     public static final String ENDER_CHEST = "ender_chest";
     public static final String FLOWER_POT = "flower_pot";
     public static final String FURNACE = "furnace";
+    public static final String GRINDSTONE = "grindstone";
     public static final String HANGING_SIGN = "hanging_sign";
     public static final String HOPPER = "hopper";
     public static final String ITEM_FRAME = "item_frame";
