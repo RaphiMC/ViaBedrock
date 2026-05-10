@@ -172,7 +172,7 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity getEntityByRid(final long runtimeId) {
-        return this.entities.get(this.runtimeIdToUniqueId.get(runtimeId).longValue());
+        return this.entities.get(this.runtimeIdToUniqueId.get(runtimeId));
     }
 
     public Entity getEntityByUid(final long uniqueId) {
@@ -180,7 +180,7 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity getEntityByJid(final int javaId) {
-        return this.entities.get(this.javaIdToUniqueId.get(javaId).longValue());
+        return this.entities.get(this.javaIdToUniqueId.get(javaId));
     }
 
     public ClientPlayerEntity getClientPlayer() {
