@@ -66,6 +66,7 @@ public enum ActorEvent {
     DRINK_MILK(78),
     SHAKE_WETNESS_STOP(79),
     KINETIC_DAMAGE_DEALT(80),
+    HURT_WITHOUT_RECEIVING_DAMAGE(81),
     ;
 
     private static final Int2ObjectMap<ActorEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();

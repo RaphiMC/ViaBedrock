@@ -410,14 +410,15 @@ public class EntityPackets {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
-            final byte rawEvent = wrapper.read(Types.BYTE); // event
-            final ActorEvent event = ActorEvent.getByValue(rawEvent); // event
+            final short rawEvent = wrapper.read(Types.UNSIGNED_BYTE); // event
+            final ActorEvent event = ActorEvent.getByValue(rawEvent);
             if (event == null) {
                 wrapper.cancel();
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ActorEvent: " + rawEvent);
                 return;
             }
             final int data = wrapper.read(BedrockTypes.VAR_INT); // data
+            wrapper.read(BedrockTypes.OPTIONAL_POSITION_3F); // fire at position
 
             final Entity entity = entityTracker.getEntityByRid(entityRuntimeId);
             if (entity == null) {

@@ -21,5 +21,9 @@ This file lists the steps necessary to update ViaBedrock.
 4. Update data in the `protocol/data` package
 5. Run `MappingDataGenerator` to generate the mapping classes
 6. Update hardcoded blockstates: Search all files for `new BlockState("`
-7. Update changed packet contents
-8. Update rewriters
+7. Update fields in `SkinProvider`
+8. Update changed packet contents
+9. Update rewriters
+
+## 1.26.20/26.2 TODO
+Fix all `TODO: Waiting for Java Edition 26.2`

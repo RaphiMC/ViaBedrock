@@ -33,8 +33,8 @@ import java.util.regex.Pattern;
 
 public class BedrockDataEnumGenerator {
 
-    private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/a20a93e6997cb415fe1e7d58ec183964408648ed/html/enums.html";
-    private static final List<String> IGNORED_FIELDS = Arrays.asList("deprecated", "count", "_count", "total", "all", "numenchantments", "invalidenchantment", "numtagtypes", "abilitycount", "nummodes", "input_num", "total_operations", "total_operands", "numvalidversions", "num_categories", "max_disconnect_fail_reason");
+    private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/c2ed9ad62f6dc9b8a307cf39e349aad79fb37a8e/html/enums.html";
+    private static final List<String> IGNORED_FIELDS = Arrays.asList("deprecated", "count", "_count", "total", "all", "numenchantments", "invalidenchantment", "numtagtypes", "abilitycount", "nummodes", "input_num", "total_operations", "total_operands", "numvalidversions", "num_categories", "max_disconnect_fail_reason", "numshapetypes");
     private static final Map<String, String> VALUE_REPLACEMENTS = new HashMap<>();
     private static final Pattern NUMBER_PATTERN = Pattern.compile("^\\d+$");
 

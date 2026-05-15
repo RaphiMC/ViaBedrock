@@ -163,6 +163,7 @@ public enum ActorType {
     ZombieNautilus(74646),
     Parched(1117079),
     CamelHusk(70552),
+    SulfurCube(2969),
     ;
 
     private static final Int2ObjectMap<ActorType> BY_VALUE = new Int2ObjectOpenHashMap<>();

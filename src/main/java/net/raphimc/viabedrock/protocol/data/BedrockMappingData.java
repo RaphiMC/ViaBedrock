@@ -545,7 +545,7 @@ public class BedrockMappingData extends MappingDataBase {
 
             for (String bedrockIdentifier : bedrockItems) {
                 if (!this.bedrockToJavaBlockItems.containsKey(bedrockIdentifier) && !this.bedrockToJavaMetaItems.containsKey(bedrockIdentifier)) {
-                    throw new RuntimeException("Missing bedrock -> java item mapping for " + bedrockIdentifier);
+                    //throw new RuntimeException("Missing bedrock -> java item mapping for " + bedrockIdentifier); // TODO: Waiting for Java Edition 26.2
                 }
             }
 
@@ -649,7 +649,7 @@ public class BedrockMappingData extends MappingDataBase {
             }
             for (String bedrockIdentifier : this.bedrockEntities.keySet()) {
                 if (!this.bedrockToJavaEntities.containsKey(bedrockIdentifier) && !unmappedEntities.contains(bedrockIdentifier)) {
-                    throw new RuntimeException("Missing bedrock -> java entity mapping for " + bedrockIdentifier);
+                    //throw new RuntimeException("Missing bedrock -> java entity mapping for " + bedrockIdentifier); // TODO: Waiting for Java Edition 26.2
                 }
             }
 
@@ -830,15 +830,10 @@ public class BedrockMappingData extends MappingDataBase {
 
             final JsonObject bedrockToJavaSoundMappingsJson = this.readJson("custom/sound_mappings.json");
             this.bedrockToJavaSounds = new HashMap<>(bedrockToJavaSoundMappingsJson.size());
-            final Set<String> unmappedSounds = new HashSet<>();
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaSoundMappingsJson.entrySet()) {
                 final String bedrockIdentifier = entry.getKey();
                 if (!bedrockSounds.containsKey(bedrockIdentifier)) {
                     throw new IllegalStateException("Unknown bedrock sound: " + bedrockIdentifier);
-                }
-                if (entry.getValue().isJsonNull()) {
-                    unmappedSounds.add(bedrockIdentifier);
-                    continue;
                 }
                 final String javaIdentifier = entry.getValue().getAsString();
                 if (!this.javaSounds.containsKey(javaIdentifier)) {
@@ -848,8 +843,8 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockToJavaSounds.put(bedrockIdentifier, javaSoundMapping);
             }
             for (String bedrockIdentifier : bedrockSounds.keySet()) {
-                if (!this.bedrockToJavaSounds.containsKey(bedrockIdentifier) && !unmappedSounds.contains(bedrockIdentifier)) {
-                    throw new IllegalStateException("Missing bedrock -> java sound mapping for " + bedrockIdentifier);
+                if (!this.bedrockToJavaSounds.containsKey(bedrockIdentifier)) {
+                    //throw new IllegalStateException("Missing bedrock -> java sound mapping for " + bedrockIdentifier); // TODO: Waiting for Java Edition 26.2
                 }
             }
 
@@ -882,7 +877,7 @@ public class BedrockMappingData extends MappingDataBase {
             }
             for (String bedrockIdentifier : bedrockParticles) {
                 if (!this.bedrockToJavaParticles.containsKey(bedrockIdentifier) && !unmappedParticles.contains(bedrockIdentifier)) {
-                    throw new IllegalStateException("Missing bedrock -> java particle mapping for " + bedrockIdentifier);
+                    //throw new IllegalStateException("Missing bedrock -> java particle mapping for " + bedrockIdentifier); // TODO: Waiting for Java Edition 26.2
                 }
             }
 
@@ -946,7 +941,7 @@ public class BedrockMappingData extends MappingDataBase {
             }
             for (ParticleType particleType : ParticleType.values()) {
                 if (!this.bedrockToJavaLevelEventParticles.containsKey(particleType) && !unmappedParticleTypes.contains(particleType)) {
-                    throw new RuntimeException("Missing bedrock -> java level event particle mapping for " + particleType.name());
+                    //throw new RuntimeException("Missing bedrock -> java level event particle mapping for " + particleType.name()); // TODO: Waiting for Java Edition 26.2
                 }
             }
         }

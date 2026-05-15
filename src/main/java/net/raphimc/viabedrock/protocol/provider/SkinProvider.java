@@ -81,7 +81,6 @@ public class SkinProvider implements Provider {
             final HandshakeStorage handshakeStorage = user.get(HandshakeStorage.class);
             claims.put("ServerAddress", handshakeStorage.hostname() + ":" + handshakeStorage.port());
             claims.put("ThirdPartyName", user.getProtocolInfo().getUsername());
-            claims.put("PartyId", "");
         }
         { // Client claims
             claims.put("GameVersion", ProtocolConstants.BEDROCK_VERSION_NAME);
@@ -92,6 +91,7 @@ public class SkinProvider implements Provider {
             claims.put("ClientRandomId", authData.getClientRandomId());
             claims.put("SelfSignedId", authData.getSelfSignedId());
             claims.put("IsEditorMode", false);
+            claims.put("FilterProfanity", false);
         }
         { // Device claims
             claims.put("DeviceId", authData.getDeviceId().toString().replace("-", ""));

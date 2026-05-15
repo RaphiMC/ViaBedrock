@@ -1,4 +1,5 @@
 [
+  "editor:selected_marker",
   "minecraft:arrow_spell_emitter",
   "minecraft:balloon_gas_particle",
   "minecraft:basic_bubble_particle",
@@ -106,6 +107,7 @@
   "minecraft:nautilus_bubbles_particle",
   "minecraft:nectar_drip_particle",
   "minecraft:note_particle",
+  "minecraft:noxious_gas_particle",
   "minecraft:obsidian_glow_dust_particle",
   "minecraft:obsidian_tear_particle",
   "minecraft:ominous_spawning_particle",
@@ -153,6 +155,8 @@
   "minecraft:stalactite_lava_drip_particle",
   "minecraft:stalactite_water_drip_particle",
   "minecraft:stunned_emitter",
+  "minecraft:sulfur_bubble_particle",
+  "minecraft:sulfur_cube_goo",
   "minecraft:totem_manual",
   "minecraft:totem_particle",
   "minecraft:trial_omen_ambient",
