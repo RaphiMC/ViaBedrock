@@ -608,7 +608,7 @@ public class EntityPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.MOB_EQUIPMENT, ClientboundPackets26_1.SET_EQUIPMENT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
-            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // item
+            final BedrockItem item = wrapper.read(itemRewriter.newItemType()); // item
             final byte slot = wrapper.read(Types.BYTE); // slot
             final byte selectedSlot = wrapper.read(Types.BYTE); // selected slot
             final byte containerId = wrapper.read(Types.BYTE); // container id

@@ -166,7 +166,7 @@ public class ExperimentalFeatures {
                     final PacketWrapper mobEquipPacket = PacketWrapper.create(ServerboundBedrockPackets.MOB_EQUIPMENT, wrapper.user());
 
                     mobEquipPacket.write(BedrockTypes.UNSIGNED_VAR_LONG, clientPlayer.runtimeId());
-                    mobEquipPacket.write(itemRewriter.itemType(), predictedToItem);
+                    mobEquipPacket.write(itemRewriter.newItemType(), predictedToItem);
                     mobEquipPacket.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot());
                     mobEquipPacket.write(Types.BYTE, inventoryTracker.getInventoryContainer().getSelectedHotbarSlot());
                     mobEquipPacket.write(Types.BYTE, (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue());

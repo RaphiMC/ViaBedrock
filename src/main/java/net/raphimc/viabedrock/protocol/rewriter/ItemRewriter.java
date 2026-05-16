@@ -29,6 +29,7 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
+import com.viaversion.viaversion.api.type.OptionalType;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
@@ -53,6 +54,7 @@ import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 import net.raphimc.viabedrock.protocol.types.item.BedrockItemType;
+import net.raphimc.viabedrock.protocol.types.item.NetworkItemStackDescriptorType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,7 +70,11 @@ public class ItemRewriter extends StoredObject {
     private final Set<String> componentItems;
     private final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates;
     private final Type<BedrockItem> itemType;
+    private final Type<BedrockItem> optionalItemType;
     private final Type<BedrockItem[]> itemArrayType;
+    private final Type<BedrockItem> newItemType;
+    private final Type<BedrockItem> optionalNewItemType;
+    private final Type<BedrockItem[]> newItemArrayType;
 
     static {
         // TODO: Add missing item nbt rewriters
@@ -108,7 +114,11 @@ public class ItemRewriter extends StoredObject {
         }
 
         this.itemType = new BedrockItemType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false);
+        this.optionalItemType = new OptionalType<>(this.itemType);
         this.itemArrayType = new ArrayType<>(this.itemType, BedrockTypes.UNSIGNED_VAR_INT);
+        this.newItemType = new NetworkItemStackDescriptorType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false);
+        this.optionalNewItemType = new OptionalType<>(this.newItemType);
+        this.newItemArrayType = new ArrayType<>(this.newItemType, BedrockTypes.UNSIGNED_VAR_INT);
     }
 
     public Item javaItem(final BedrockItem bedrockItem) {
@@ -258,8 +268,24 @@ public class ItemRewriter extends StoredObject {
         return this.itemType;
     }
 
+    public Type<BedrockItem> optionalItemType() {
+        return this.optionalItemType;
+    }
+
     public Type<BedrockItem[]> itemArrayType() {
         return this.itemArrayType;
+    }
+
+    public Type<BedrockItem> newItemType() {
+        return this.newItemType;
+    }
+
+    public Type<BedrockItem> optionalNewItemType() {
+        return this.optionalNewItemType;
+    }
+
+    public Type<BedrockItem[]> newItemArrayType() {
+        return this.newItemArrayType;
     }
 
     public interface NbtRewriter {

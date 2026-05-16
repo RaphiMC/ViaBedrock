@@ -75,9 +75,7 @@ public class WorldEffectPackets {
             final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
             final float volume = wrapper.read(BedrockTypes.FLOAT_LE); // volume
             final float pitch = wrapper.read(BedrockTypes.FLOAT_LE); // pitch
-            if (wrapper.read(Types.BOOLEAN)) { // has server sound handle
-                wrapper.read(BedrockTypes.UNSIGNED_LONG_LE); // server sound handle
-            }
+            wrapper.read(BedrockTypes.OPTIONAL_UNSIGNED_LONG_LE); // server sound handle
 
             final BedrockMappingData.JavaSound javaSound = BedrockProtocol.MAPPINGS.getBedrockToJavaSounds().get(name);
             if (javaSound == null) {
