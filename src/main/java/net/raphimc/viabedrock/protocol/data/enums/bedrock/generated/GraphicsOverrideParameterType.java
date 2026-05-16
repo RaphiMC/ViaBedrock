@@ -202,6 +202,18 @@ public enum GraphicsOverrideParameterType {
      * Sent to set the lighting ambient illuminance value
      */
     AmbientIlluminance(48),
+    /**
+     * Sent to set the lighting emissive desaturation value
+     */
+    EmissiveDesaturation(49),
+    /**
+     * Sent to set the lighting sky intensity value
+     */
+    SkyIntensity(50),
+    /**
+     * Sent to set the lighting orbital offset degrees value
+     */
+    OrbitalOffsetDegrees(51),
     ;
 
     private static final Int2ObjectMap<GraphicsOverrideParameterType> BY_VALUE = new Int2ObjectOpenHashMap<>();

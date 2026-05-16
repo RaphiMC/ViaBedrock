@@ -50,7 +50,6 @@ public class Util {
             resourcePacks.add(new ResourcePack(new DirectoryContent(packDir.toPath())));
         }
 
-        resourcePacks.removeIf(pack -> !orderedKeys.contains(pack.key().toString()));
         resourcePacks.sort((a, b) -> {
             final int indexA = orderedKeys.indexOf(a.key().toString());
             final int indexB = orderedKeys.indexOf(b.key().toString());
