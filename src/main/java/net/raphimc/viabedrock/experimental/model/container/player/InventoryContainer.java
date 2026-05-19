@@ -153,7 +153,7 @@ public class InventoryContainer extends ExperimentalContainer {
         }
 
         mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // entity runtime id
-        mobEquipment.write(this.user.get(ItemRewriter.class).itemType(), newItem); // item
+        mobEquipment.write(this.user.get(ItemRewriter.class).newItemType(), newItem); // item
         mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // slot
         mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // selected slot
         mobEquipment.write(Types.BYTE, this.containerId); // container id

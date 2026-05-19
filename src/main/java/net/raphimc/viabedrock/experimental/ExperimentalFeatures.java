@@ -614,9 +614,9 @@ public class ExperimentalFeatures {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
             final int slot = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // slot
-            final FullContainerName containerName = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
-            final BedrockItem storageItem = wrapper.read(itemRewriter.itemType()); // storage item
-            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // item
+            final FullContainerName containerName = wrapper.read(BedrockTypes.OPTIONAL_FULL_CONTAINER_NAME); // container name
+            final BedrockItem storageItem = wrapper.read(itemRewriter.optionalNewItemType()); // storage item
+            final BedrockItem item = wrapper.read(itemRewriter.newItemType()); // item
 
             final ExperimentalInventoryTracker inventoryTracker = wrapper.user().get(ExperimentalInventoryTracker.class);
             final ExperimentalContainer container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);
@@ -870,7 +870,7 @@ public class ExperimentalFeatures {
 
             List<EnchantData> data = new ArrayList<>();
             for (int i = 0; i < size; i++) {
-                final int cost = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // cost
+                final byte cost = wrapper.read(Types.BYTE); // cost
                 wrapper.read(BedrockTypes.INT_LE); // slot
 
                 // TODO: How does bedrock decide on what to show
@@ -879,7 +879,7 @@ public class ExperimentalFeatures {
 
                 final int l1 = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // size
                 for (int j = 0; j < l1; j++) {
-                    final byte id = wrapper.read(Types.BYTE); // enchant id
+                    final int id = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // enchant id
                     final byte lvl = wrapper.read(Types.BYTE); // enchant level
 
                     if (selected == null) {
@@ -890,7 +890,7 @@ public class ExperimentalFeatures {
 
                 final int l2 = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // size
                 for (int j = 0; j < l2; j++) {
-                    final byte id = wrapper.read(Types.BYTE); // enchant id
+                    final int id = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // enchant id
                     final byte lvl = wrapper.read(Types.BYTE); // enchant level
 
                     if (selected == null) {
@@ -901,7 +901,7 @@ public class ExperimentalFeatures {
 
                 final int l3 = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // size
                 for (int j = 0; j < l3; j++) {
-                    final byte id = wrapper.read(Types.BYTE); // enchant id
+                    final int id = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // enchant id
                     final byte lvl = wrapper.read(Types.BYTE); // enchant level
 
                     if (selected == null) {
