@@ -92,12 +92,13 @@ public enum CommandRegistry_HardNonTerminal {
     BlockStateValues(0x100053),
     BlockStateArray(0x100054),
     BlockStateArrayCont(0x100055),
-    Command(0x100056),
-    SlashCommand(0x100057),
-    CodeBuilderArg(0x100058),
-    CodeBuilderArgs(0x100059),
-    CodeBuilderSelectParam(0x10005a),
-    CodeBuilderSelector(0x10005b),
+    ClockTimeMarkerName(0x100056),
+    Command(0x100057),
+    SlashCommand(0x100058),
+    CodeBuilderArg(0x100059),
+    CodeBuilderArgs(0x10005a),
+    CodeBuilderSelectParam(0x10005b),
+    CodeBuilderSelector(0x10005c),
     ;
 
     private static final Int2ObjectMap<CommandRegistry_HardNonTerminal> BY_VALUE = new Int2ObjectOpenHashMap<>();

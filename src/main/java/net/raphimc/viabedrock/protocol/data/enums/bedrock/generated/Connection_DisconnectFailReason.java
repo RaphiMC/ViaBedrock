@@ -142,6 +142,10 @@ public enum Connection_DisconnectFailReason {
     EditorMismatchEditorToVanilla(133),
     EditorMismatchVanillaToEditor(134),
     DenyListed(135),
+    NonceMissing(136),
+    NonceNotFound(137),
+    NonceExpired(138),
+    NonceNotValid(139),
     ;
 
     private static final Int2ObjectMap<Connection_DisconnectFailReason> BY_VALUE = new Int2ObjectOpenHashMap<>();

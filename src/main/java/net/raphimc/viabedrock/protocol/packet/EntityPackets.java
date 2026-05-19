@@ -410,14 +410,15 @@ public class EntityPackets {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
 
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
-            final byte rawEvent = wrapper.read(Types.BYTE); // event
-            final ActorEvent event = ActorEvent.getByValue(rawEvent); // event
+            final short rawEvent = wrapper.read(Types.UNSIGNED_BYTE); // event
+            final ActorEvent event = ActorEvent.getByValue(rawEvent);
             if (event == null) {
                 wrapper.cancel();
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ActorEvent: " + rawEvent);
                 return;
             }
             final int data = wrapper.read(BedrockTypes.VAR_INT); // data
+            wrapper.read(BedrockTypes.OPTIONAL_POSITION_3F); // fire at position
 
             final Entity entity = entityTracker.getEntityByRid(entityRuntimeId);
             if (entity == null) {
@@ -607,7 +608,7 @@ public class EntityPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.MOB_EQUIPMENT, ClientboundPackets26_1.SET_EQUIPMENT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
-            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // item
+            final BedrockItem item = wrapper.read(itemRewriter.newItemType()); // item
             final byte slot = wrapper.read(Types.BYTE); // slot
             final byte selectedSlot = wrapper.read(Types.BYTE); // selected slot
             final byte containerId = wrapper.read(Types.BYTE); // container id

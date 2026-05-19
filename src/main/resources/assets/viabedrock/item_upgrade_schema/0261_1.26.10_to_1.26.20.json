@@ -1,0 +1,14 @@
+{
+    "remappedMetas": {
+        "minecraft:bucket": {
+            "14": "minecraft:sulfur_cube_bucket"
+        },
+        "minecraft:spawn_egg": {
+            "149": "minecraft:nautilus_spawn_egg",
+            "150": "minecraft:zombie_nautilus_spawn_egg",
+            "151": "minecraft:parched_spawn_egg",
+            "152": "minecraft:camel_husk_spawn_egg",
+            "153": "minecraft:sulfur_cube_spawn_egg"
+        }
+    }
+}

@@ -8,8 +8,6 @@ public enum CraftingDataEntryType {
 
     ShapelessRecipe(0),
     ShapedRecipe(1),
-    FurnaceRecipe(2),
-    FurnaceAuxRecipe(3),
     MultiRecipe(4),
     UserDataShapelessRecipe(5),
     ShapelessChemistryRecipe(6),

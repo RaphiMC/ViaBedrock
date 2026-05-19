@@ -86,7 +86,10 @@ public class BedrockSoundListGenerator {
             Map.entry("charge.sculk", SharedTypes_Legacy_LevelSoundEvent.SculkCharge),
             Map.entry("ambient.weather.the_end_light_flash", SharedTypes_Legacy_LevelSoundEvent.TheEndLightFlash),
             Map.entry("single_swap", SharedTypes_Legacy_LevelSoundEvent.SingleItemSwap),
-            Map.entry("multi_swap", SharedTypes_Legacy_LevelSoundEvent.MultiItemSwap)
+            Map.entry("multi_swap", SharedTypes_Legacy_LevelSoundEvent.MultiItemSwap),
+            Map.entry("lt.reaction.mgsalt", SharedTypes_Legacy_LevelSoundEvent.LTReactionMagnesiumSalt),
+            Map.entry("lt.reaction.epaste", SharedTypes_Legacy_LevelSoundEvent.LTReactionElephantToothpaste),
+            Map.entry("lt.reaction.epaste2", SharedTypes_Legacy_LevelSoundEvent.LTReactionElephantToothpaste2)
     );
 
     private static final Set<String> CANCELLED_SOUNDS = Set.of(
@@ -126,30 +129,10 @@ public class BedrockSoundListGenerator {
             SharedTypes_Legacy_LevelSoundEvent.JumpPrevent,
             SharedTypes_Legacy_LevelSoundEvent.Bump,
             SharedTypes_Legacy_LevelSoundEvent.Undefined,
-            // Edu sounds
-            SharedTypes_Legacy_LevelSoundEvent.ElemConstructOpen,
-            SharedTypes_Legacy_LevelSoundEvent.IceBombHit,
-            SharedTypes_Legacy_LevelSoundEvent.BalloonPop,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionIceBomb,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionBleach,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionElephantToothpaste,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionElephantToothpaste2,
             SharedTypes_Legacy_LevelSoundEvent.LTReactionGlowStick,
             SharedTypes_Legacy_LevelSoundEvent.LTReactionGlowStick2,
             SharedTypes_Legacy_LevelSoundEvent.LTReactionLuminol,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionSalt,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionFertilizer,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionFireball,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionMagnesiumSalt,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionMiscFire,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionFire,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionMiscExplosion,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionMiscMystical,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionMiscMystical2,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionProduct,
-            SharedTypes_Legacy_LevelSoundEvent.SparklerUse,
-            SharedTypes_Legacy_LevelSoundEvent.GlowStickUse,
-            SharedTypes_Legacy_LevelSoundEvent.SparklerActive
+            SharedTypes_Legacy_LevelSoundEvent.LTReactionSalt
     );
 
     /* Last output:
@@ -211,6 +194,14 @@ public class BedrockSoundListGenerator {
         if (soundsWithoutCategory.contains("game.player.attack.critical")) {
             soundsWithoutCategory.remove("game.player.attack.critical");
             soundList.addProperty("game.player.attack.critical", "player");
+        }
+        if (soundsWithoutCategory.contains("lt.reaction.fire")) {
+            soundsWithoutCategory.remove("lt.reaction.fire");
+            soundList.addProperty("lt.reaction.fire", "block");
+        }
+        if (soundsWithoutCategory.contains("elemconstruct.active")) {
+            soundsWithoutCategory.remove("elemconstruct.active");
+            soundList.addProperty("elemconstruct.active", "block");
         }
         // Check if there are any sounds without a category
         for (String s : soundsWithoutCategory) {
