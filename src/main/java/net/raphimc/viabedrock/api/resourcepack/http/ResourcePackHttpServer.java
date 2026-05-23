@@ -91,8 +91,6 @@ public class ResourcePackHttpServer {
                                         final long end = System.nanoTime();
                                         ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Converted resource packs in " + ((end - start) / 1_000_000L) + "ms");
 
-                                        Files.write(new File("test.zip").toPath(), data);
-
                                         final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
                                         response.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
                                         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/octet-stream");
