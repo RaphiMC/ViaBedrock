@@ -58,7 +58,7 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
                 if (!attachableDefinition.attachableData().getTextures().containsKey(modelEntry.getKey())) continue;
 
                 final String javaTexturePath = this.getJavaTexturePath(attachableDefinition.attachableData().getTextures().get(modelEntry.getKey()));
-                final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.POST_1_21_6);
+                final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.POST_1_21_11);
                 final JsonObject itemModel = GsonUtil.getGson().fromJson(itemModelData.compile().toString(), JsonObject.class);
 
                 final JsonObject display = new JsonObject();

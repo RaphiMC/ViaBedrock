@@ -56,7 +56,7 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
                 for (Map.Entry<String, String> textureEntry : entityDefinition.entityData().getTextures().entrySet()) {
                     final String javaTexturePath = this.getJavaTexturePath(textureEntry.getValue());
                     final String key = entityEntry.getKey() + "_" + modelEntry.getKey() + "_" + textureEntry.getKey();
-                    final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.HACKY_POST_1_21_6);
+                    final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.POST_1_21_11);
                     resourcePackStorage.getConverterData().put("ce_" + key + "_scale", itemModelData.getScale());
                     javaContent.putString("assets/viabedrock/models/" + this.getJavaModelName(key) + ".json", itemModelData.compile().toString());
                     modelsList.add(key);
