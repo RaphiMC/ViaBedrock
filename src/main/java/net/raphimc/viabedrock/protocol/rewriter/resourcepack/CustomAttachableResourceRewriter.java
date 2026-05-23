@@ -33,11 +33,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter {
-
-    public static final Key ITEM_MODEL_KEY = Key.of("viabedrock", "attachable");
-
     public CustomAttachableResourceRewriter() {
-        super("attachable", "attachable");
+        super("attachable");
     }
 
     @Override

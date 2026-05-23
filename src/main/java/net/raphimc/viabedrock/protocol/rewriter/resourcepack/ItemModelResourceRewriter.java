@@ -34,11 +34,9 @@ public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.
         return new CustomModelData1_21_4(new float[0], new boolean[0], new String[]{key}, new int[0]);
     }
 
-    private final String name;
     private final String subFolder;
 
-    public ItemModelResourceRewriter(final String name, final String subFolder) {
-        this.name = name;
+    public ItemModelResourceRewriter(final String subFolder) {
         this.subFolder = subFolder;
     }
 
@@ -46,27 +44,30 @@ public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.
     public final void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
         final Set<String> modelsList = new HashSet<>();
         this.apply(resourcePackStorage, javaContent, modelsList);
-        if (!modelsList.isEmpty()) {
+        if (modelsList.isEmpty()) {
+            return;
+        }
+
+        for (String modelKey : modelsList) {
             final JsonArray cases = new JsonArray();
-            for (String modelKey : modelsList) {
-                final JsonObject caseObj = new JsonObject();
-                caseObj.addProperty("when", modelKey);
+            final JsonObject caseObj = new JsonObject();
+            caseObj.addProperty("when", modelKey);
 
-                final JsonObject model = new JsonObject();
-                model.addProperty("type", "minecraft:model");
-                model.addProperty("model", "viabedrock:" + this.getJavaModelName(modelKey));
-                caseObj.add("model", model);
+            final JsonObject model = new JsonObject();
+            model.addProperty("type", "minecraft:model");
+            model.addProperty("model", "viabedrock:" + this.getJavaModelName(modelKey));
+            caseObj.add("model", model);
 
-                cases.add(caseObj);
-            }
+            cases.add(caseObj);
+
+            final JsonObject model1 = new JsonObject();
+            model1.addProperty("type", "minecraft:select");
+            model1.addProperty("property", "minecraft:custom_model_data");
+            model1.add("cases", cases);
 
             final JsonObject itemDefinition = new JsonObject();
-            final JsonObject model = new JsonObject();
-            model.addProperty("type", "minecraft:select");
-            model.addProperty("property", "minecraft:custom_model_data");
-            model.add("cases", cases);
             itemDefinition.add("model", model);
-            javaContent.putJson("assets/viabedrock/items/" + this.name + ".json", itemDefinition);
+            javaContent.putJson("assets/viabedrock/items/" + modelKey.hashCode() + ".json", itemDefinition);
         }
     }
 
@@ -79,5 +80,4 @@ public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.
     protected String getJavaTexturePath(final String bedrockPath) {
         return "item/" + this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(bedrockPath.replace("textures/", ""));
     }
-
 }

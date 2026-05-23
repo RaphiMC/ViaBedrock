@@ -31,7 +31,9 @@ import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -88,6 +90,8 @@ public class ResourcePackHttpServer {
                                         final byte[] data = javaContent.toZip();
                                         final long end = System.nanoTime();
                                         ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Converted resource packs in " + ((end - start) / 1_000_000L) + "ms");
+
+                                        Files.write(new File("test.zip").toPath(), data);
 
                                         final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
                                         response.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);

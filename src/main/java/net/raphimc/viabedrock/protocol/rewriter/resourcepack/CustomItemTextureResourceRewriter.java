@@ -29,11 +29,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter {
-
-    public static final Key ITEM_MODEL_KEY = Key.of("viabedrock", "item_texture");
-
     public CustomItemTextureResourceRewriter() {
-        super("item_texture", "item");
+        super("item");
     }
 
     @Override
