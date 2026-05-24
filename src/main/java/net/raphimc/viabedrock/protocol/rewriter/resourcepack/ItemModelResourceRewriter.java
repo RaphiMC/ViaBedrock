@@ -25,7 +25,9 @@ import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.Rewriter {
@@ -34,50 +36,55 @@ public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.
         return new CustomModelData1_21_4(new float[0], new boolean[0], new String[]{key}, new int[0]);
     }
 
-    private final String name;
     private final String subFolder;
 
-    public ItemModelResourceRewriter(final String name, final String subFolder) {
-        this.name = name;
+    public ItemModelResourceRewriter(final String subFolder) {
         this.subFolder = subFolder;
     }
 
     @Override
     public final void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
-        final Set<String> modelsList = new HashSet<>();
-        this.apply(resourcePackStorage, javaContent, modelsList);
-        if (!modelsList.isEmpty()) {
-            final JsonArray cases = new JsonArray();
-            for (String modelKey : modelsList) {
-                final JsonObject caseObj = new JsonObject();
-                caseObj.addProperty("when", modelKey);
+        final Set<ItemDefinition> javaItemDefinitions = new HashSet<>();
+        this.apply(resourcePackStorage, javaContent, javaItemDefinitions);
+        for (ItemDefinition itemDefinition : javaItemDefinitions) {
+            final String itemPath = this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(itemDefinition.name());
+            final JsonArray modelCases = new JsonArray();
+            for (Map.Entry<String, JsonObject> modelDefinition : itemDefinition.modelDefinitions().entrySet()) {
+                final String modelPath = itemPath + '/' + StringUtil.makeIdentifierValueSafe(modelDefinition.getKey());
+                javaContent.putJson("assets/viabedrock/models/" + modelPath + ".json", modelDefinition.getValue());
 
                 final JsonObject model = new JsonObject();
                 model.addProperty("type", "minecraft:model");
-                model.addProperty("model", "viabedrock:" + this.getJavaModelName(modelKey));
-                caseObj.add("model", model);
+                model.addProperty("model", "viabedrock:" + modelPath);
 
-                cases.add(caseObj);
+                final JsonObject caseObj = new JsonObject();
+                caseObj.addProperty("when", modelDefinition.getKey());
+                caseObj.add("model", model);
+                modelCases.add(caseObj);
             }
 
-            final JsonObject itemDefinition = new JsonObject();
             final JsonObject model = new JsonObject();
             model.addProperty("type", "minecraft:select");
             model.addProperty("property", "minecraft:custom_model_data");
-            model.add("cases", cases);
-            itemDefinition.add("model", model);
-            javaContent.putJson("assets/viabedrock/items/" + this.name + ".json", itemDefinition);
+            model.add("cases", modelCases);
+            final JsonObject itemDefinitionObj = new JsonObject();
+            itemDefinitionObj.add("model", model);
+            javaContent.putJson("assets/viabedrock/items/" + itemPath + ".json", itemDefinitionObj);
         }
     }
 
-    protected abstract void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<String> modelsList);
-
-    protected String getJavaModelName(final String bedrockName) {
-        return this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(bedrockName);
-    }
+    protected abstract void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<ItemDefinition> javaItemDefinitions);
 
     protected String getJavaTexturePath(final String bedrockPath) {
         return "item/" + this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(bedrockPath.replace("textures/", ""));
+    }
+
+    protected record ItemDefinition(String name, Map<String, JsonObject> modelDefinitions) {
+
+        protected ItemDefinition(final String name) {
+            this(name, new HashMap<>());
+        }
+
     }
 
 }

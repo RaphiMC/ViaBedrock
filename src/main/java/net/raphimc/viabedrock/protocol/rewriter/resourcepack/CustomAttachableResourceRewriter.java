@@ -17,6 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
+import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.GsonUtil;
@@ -24,6 +25,7 @@ import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.resourcepack.content.Content;
 import net.raphimc.viabedrock.api.resourcepack.definition.AttachableDefinitions;
+import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import org.cube.converter.converter.enums.RotationType;
 import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
@@ -34,34 +36,41 @@ import java.util.Set;
 
 public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter {
 
-    public static final Key ITEM_MODEL_KEY = Key.of("viabedrock", "attachable");
+    private static final String SUB_FOLDER = "attachables";
+
+    public static ItemModel getItemModel(final String attachableIdentifier) {
+        return new ItemModel(Key.of("viabedrock", SUB_FOLDER + '/' + StringUtil.makeIdentifierValueSafe(attachableIdentifier)));
+    }
 
     public CustomAttachableResourceRewriter() {
-        super("attachable", "attachable");
+        super(SUB_FOLDER);
     }
 
     @Override
-    protected void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<String> modelsList) {
+    protected void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<ItemDefinition> javaItemDefinitions) {
         for (Map.Entry<String, AttachableDefinitions.AttachableDefinition> attachableEntry : resourcePackStorage.getAttachables().attachables().entrySet()) {
-            for (String bedrockPath : attachableEntry.getValue().attachableData().getTextures().values()) {
+            final AttachableDefinitions.AttachableDefinition attachableDefinition = attachableEntry.getValue();
+            final ItemDefinition javaItemDefinition = new ItemDefinition(attachableEntry.getKey());
+            for (String bedrockPath : attachableDefinition.attachableData().getTextures().values()) {
                 for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
-                    final Content bedrockContent = pack.content();
-                    final Content.LazyImage texture = bedrockContent.getShortnameImage(bedrockPath);
+                    final Content.LazyImage texture = pack.content().getShortnameImage(bedrockPath);
                     if (texture != null) {
                         javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(bedrockPath) + ".png", texture);
                         break;
                     }
                 }
             }
-
-            final AttachableDefinitions.AttachableDefinition attachableDefinition = attachableEntry.getValue();
             for (Map.Entry<String, String> modelEntry : attachableDefinition.attachableData().getGeometries().entrySet()) {
                 final BedrockGeometryModel bedrockGeometry = resourcePackStorage.getModels().entityModels().get(modelEntry.getValue());
-                if (bedrockGeometry == null) continue;
-                if (!attachableDefinition.attachableData().getTextures().containsKey(modelEntry.getKey())) continue;
+                if (bedrockGeometry == null) {
+                    continue;
+                }
+                if (!attachableDefinition.attachableData().getTextures().containsKey(modelEntry.getKey())) {
+                    continue;
+                }
 
                 final String javaTexturePath = this.getJavaTexturePath(attachableDefinition.attachableData().getTextures().get(modelEntry.getKey()));
-                final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.POST_1_21_6);
+                final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.POST_1_21_11);
                 final JsonObject itemModel = GsonUtil.getGson().fromJson(itemModelData.compile().toString(), JsonObject.class);
 
                 final JsonObject display = new JsonObject();
@@ -84,11 +93,11 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
 
                 itemModel.add("display", display);
 
-                final String key = attachableEntry.getKey() + "_" + modelEntry.getKey();
-                resourcePackStorage.getConverterData().put("ca_" + key, true);
-                javaContent.putJson("assets/viabedrock/models/" + this.getJavaModelName(key) + ".json", itemModel);
-                modelsList.add(key);
+                final String modelKey = attachableEntry.getKey() + "_" + modelEntry.getKey();
+                javaItemDefinition.modelDefinitions().put(modelKey, itemModel);
+                resourcePackStorage.getConverterData().put("ca_" + attachableEntry.getKey() + '_' + modelKey, true);
             }
+            javaItemDefinitions.add(javaItemDefinition);
         }
     }
 

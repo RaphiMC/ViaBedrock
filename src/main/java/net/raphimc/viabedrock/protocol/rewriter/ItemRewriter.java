@@ -28,7 +28,6 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
-import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
 import com.viaversion.viaversion.api.type.OptionalType;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -199,11 +198,11 @@ public class ItemRewriter extends StoredObject {
                 }
 
                 if (resourcePackStorage.getAttachables().attachables().containsKey(identifier) && resourcePackStorage.isLoadedOnJavaClient() && resourcePackStorage.getConverterData().containsKey("ca_" + identifier + "_default")) {
-                    data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(CustomAttachableResourceRewriter.ITEM_MODEL_KEY));
-                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomAttachableResourceRewriter.getCustomModelData(identifier + "_default"));
+                    data.set(StructuredDataKey.ITEM_MODEL, CustomAttachableResourceRewriter.getItemModel(identifier));
+                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomAttachableResourceRewriter.getCustomModelData("default"));
                 } else if (itemDefinition.iconComponent() != null && resourcePackStorage.isLoadedOnJavaClient()) {
-                    data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(CustomItemTextureResourceRewriter.ITEM_MODEL_KEY));
-                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomItemTextureResourceRewriter.getCustomModelData(itemDefinition.iconComponent() + "_0"));
+                    data.set(StructuredDataKey.ITEM_MODEL, CustomItemTextureResourceRewriter.getItemModel(itemDefinition.iconComponent()));
+                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomItemTextureResourceRewriter.getCustomModelData("0"));
                 } else {
                     data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Custom item: " + identifier)});
                 }
