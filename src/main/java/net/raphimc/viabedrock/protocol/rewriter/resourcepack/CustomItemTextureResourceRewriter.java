@@ -26,9 +26,9 @@ import net.raphimc.viabedrock.api.resourcepack.definition.TextureDefinitions;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter {
 
@@ -43,9 +43,9 @@ public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter
     }
 
     @Override
-    protected void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<ItemDefinition> javaItemDefinitions) {
+    public void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
         for (Map.Entry<String, List<TextureDefinitions.ItemTextureDefinition>> itemEntry : resourcePackStorage.getTextures().itemTextures().entrySet()) {
-            final ItemDefinition javaItemDefinition = new ItemDefinition(itemEntry.getKey());
+            final Map<String, JsonObject> javaModelDefinitions = new HashMap<>();
             for (int i = 0; i < itemEntry.getValue().size(); i++) {
                 final TextureDefinitions.ItemTextureDefinition itemTextureDefinition = itemEntry.getValue().get(i);
                 for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
@@ -60,9 +60,9 @@ public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter
                 final JsonObject layer0 = new JsonObject();
                 layer0.addProperty("layer0", "viabedrock:" + this.getJavaTexturePath(itemTextureDefinition.texturePath()));
                 itemModel.add("textures", layer0);
-                javaItemDefinition.modelDefinitions().put(String.valueOf(i), itemModel);
+                javaModelDefinitions.put(String.valueOf(i), itemModel);
             }
-            javaItemDefinitions.add(javaItemDefinition);
+            this.putItemDefinition(javaContent, itemEntry.getKey(), javaModelDefinitions);
         }
     }
 

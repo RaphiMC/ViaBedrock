@@ -31,8 +31,8 @@ import org.cube.converter.converter.enums.RotationType;
 import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
 import org.cube.converter.model.impl.java.JavaItemModel;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter {
 
@@ -47,10 +47,10 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
     }
 
     @Override
-    protected void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<ItemDefinition> javaItemDefinitions) {
+    public void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
         for (Map.Entry<String, AttachableDefinitions.AttachableDefinition> attachableEntry : resourcePackStorage.getAttachables().attachables().entrySet()) {
             final AttachableDefinitions.AttachableDefinition attachableDefinition = attachableEntry.getValue();
-            final ItemDefinition javaItemDefinition = new ItemDefinition(attachableEntry.getKey());
+            final Map<String, JsonObject> javaModelDefinitions = new HashMap<>();
             for (String bedrockPath : attachableDefinition.attachableData().getTextures().values()) {
                 for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
                     final Content.LazyImage texture = pack.content().getShortnameImage(bedrockPath);
@@ -94,10 +94,10 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
                 itemModel.add("display", display);
 
                 final String modelKey = attachableEntry.getKey() + "_" + modelEntry.getKey();
-                javaItemDefinition.modelDefinitions().put(modelKey, itemModel);
+                javaModelDefinitions.put(modelKey, itemModel);
                 resourcePackStorage.getConverterData().put("ca_" + attachableEntry.getKey() + '_' + modelKey, true);
             }
-            javaItemDefinitions.add(javaItemDefinition);
+            this.putItemDefinition(javaContent, attachableEntry.getKey(), javaModelDefinitions);
         }
     }
 

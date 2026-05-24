@@ -30,8 +30,8 @@ import org.cube.converter.converter.enums.RotationType;
 import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
 import org.cube.converter.model.impl.java.JavaItemModel;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
 
@@ -46,10 +46,10 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
     }
 
     @Override
-    protected void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<ItemDefinition> javaItemDefinitions) {
+    public void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
         for (Map.Entry<String, EntityDefinitions.EntityDefinition> entityEntry : resourcePackStorage.getEntities().entities().entrySet()) {
             final EntityDefinitions.EntityDefinition entityDefinition = entityEntry.getValue();
-            final ItemDefinition javaItemDefinition = new ItemDefinition(entityEntry.getKey());
+            final Map<String, JsonObject> javaModelDefinitions = new HashMap<>();
             for (String bedrockPath : entityDefinition.entityData().getTextures().values()) {
                 for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
                     final Content.LazyImage texture = pack.content().getShortnameImage(bedrockPath);
@@ -65,12 +65,12 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
                     for (Map.Entry<String, String> textureEntry : entityDefinition.entityData().getTextures().entrySet()) {
                         final String modelKey = modelEntry.getKey() + "_" + textureEntry.getKey();
                         final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + this.getJavaTexturePath(textureEntry.getValue()), RotationType.POST_1_21_11);
-                        javaItemDefinition.modelDefinitions().put(modelKey, GsonUtil.getGson().fromJson(itemModelData.compile().toString(), JsonObject.class));
+                        javaModelDefinitions.put(modelKey, GsonUtil.getGson().fromJson(itemModelData.compile().toString(), JsonObject.class));
                         resourcePackStorage.getConverterData().put("ce_" + entityEntry.getKey() + '_' + modelKey + "_scale", itemModelData.getScale());
                     }
                 }
             }
-            javaItemDefinitions.add(javaItemDefinition);
+            this.putItemDefinition(javaContent, entityEntry.getKey(), javaModelDefinitions);
         }
     }
 
