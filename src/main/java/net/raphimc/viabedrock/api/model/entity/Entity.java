@@ -129,6 +129,7 @@ public class Entity {
         levelSoundEvent.write(Types.BOOLEAN, false); // is baby mob
         levelSoundEvent.write(Types.BOOLEAN, false); // is global sound
         levelSoundEvent.write(BedrockTypes.LONG_LE, -1L); // entity unique id
+        levelSoundEvent.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // fire at position
         levelSoundEvent.send(BedrockProtocol.class, false);
     }
 
