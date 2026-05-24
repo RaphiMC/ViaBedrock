@@ -25,8 +25,6 @@ import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityDataType;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
-import com.viaversion.viaversion.libs.fastutil.ints.IntIterator;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
@@ -45,7 +43,6 @@ import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataTypesBedrock;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -83,6 +80,19 @@ public class EntityMetadataRewriter {
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SILENT), VersionedTypes.V26_1.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.SILENT)));
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.NO_GRAVITY), VersionedTypes.V26_1.entityDataTypes().booleanType, !bedrockFlags.contains(ActorFlags.HAS_GRAVITY)));
 
+                if (entity.javaType().is(EntityTypes1_21_11.END_CRYSTAL)) {
+                    boolean showBottom = bedrockFlags.contains(ActorFlags.SHOW_BOTTOM);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SHOW_BOTTOM), VersionedTypes.V26_1.entityDataTypes().booleanType, showBottom));
+                }
+
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_11.ABSTRACT_ARROW)) {
+                    byte arrowBitMask = 0;
+                    if (bedrockFlags.contains(ActorFlags.CRITICAL)) {
+                        arrowBitMask |= 0x01;
+                    }
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, arrowBitMask));
+                }
+
                 if (entity.javaType().isOrHasParent(EntityTypes1_21_11.MOB)) {
                     byte mobBitMask = 0;
                     if (bedrockFlags.contains(ActorFlags.NOAI)) {
@@ -90,6 +100,16 @@ public class EntityMetadataRewriter {
                     }
 
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.MOB_FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, mobBitMask));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_11.GHAST)) {
+                    boolean attacking = bedrockFlags.contains(ActorFlags.CHARGED);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.IS_CHARGING), VersionedTypes.V26_1.entityDataTypes().booleanType, attacking));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_11.SNOW_GOLEM)) {
+                    byte hasPumpkin = (byte) (bedrockFlags.contains(ActorFlags.SHEARED) ? 0 : 0x10);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, hasPumpkin));
                 }
 
                 if (entity.javaType().is(EntityTypes1_21_11.ALLAY)) {
@@ -118,14 +138,14 @@ public class EntityMetadataRewriter {
 
                 if (entity.javaType().is(EntityTypes1_21_11.FOX)) { // TODO: Test
                     byte foxBitMask = 0;
-                    if (bedrockFlags.contains(ActorFlags.SITTING)) {
-                        foxBitMask |= 0x01;
+                    if (false) { // TODO: Sitting
+                       foxBitMask |= 0x01;
                     }
                     // 0x02: Unused
-                    if (bedrockFlags.contains(ActorFlags.SNEAKING)) { // TODO: Crouching
+                    if (false) { // TODO: Crouching
                         foxBitMask |= 0x04;
                     }
-                    if (bedrockFlags.contains(ActorFlags.INTERESTED)) {
+                    if (false) { // TODO: Interested
                         foxBitMask |= 0x08;
                     }
                     if (false) { // TODO: Pouncing
@@ -161,11 +181,9 @@ public class EntityMetadataRewriter {
                     int sniffingState = 0;
                     if (bedrockFlags.contains(ActorFlags.IDLING)) {
                         sniffingState = 0;
-                    } else if (false) {
-                        //TODO: FEELING_HAPPY
+                    } else if (bedrockFlags.contains(ActorFlags.DEPRECATED_3)) { // FEELING_HAPPY
                         sniffingState = 1;
-                    } else if (false) {
-                        //TODO: SCENTING
+                    } else if (bedrockFlags.contains(ActorFlags.DEPRECATED_1)) { // SCENTING
                         sniffingState = 2;
                     } else if (bedrockFlags.contains(ActorFlags.SNIFFING)) {
                         sniffingState = 3;
@@ -173,16 +191,19 @@ public class EntityMetadataRewriter {
                         sniffingState = 4;
                     } else if (bedrockFlags.contains(ActorFlags.DIGGING)) {
                         sniffingState = 5;
-                    } else if (false) {
-                        //TODO: RISING
+                    } else if (bedrockFlags.contains(ActorFlags.DEPRECATED_2)) { // RISING
                         sniffingState = 6;
                     } else {
                         sniffingState = 0;
-                        //TODO: Currently spams a bit but thats probably because we are missing states
-                        //ViaBedrock.getPlatform().getLogger().warning("Unknown sniffer state, defaulting to IDLING.");
+                        ViaBedrock.getPlatform().getLogger().warning("Unknown sniffer state, defaulting to IDLING.");
                     }
 
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.STATE), VersionedTypes.V26_1.entityDataTypes().snifferState, sniffingState));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_11.STRIDER)) {
+                    boolean shaking =  bedrockFlags.contains(ActorFlags.SHAKING);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SUFFOCATING), VersionedTypes.V26_1.entityDataTypes().booleanType, shaking));
                 }
 
                 if (entity.javaType().is(EntityTypes1_21_11.TURTLE)) { //TODO: Test
@@ -206,8 +227,13 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, tamableBitMask));
                 }
 
-                if (entity.javaType().is(EntityTypes1_21_11.CAT)) { //TODO: Test
-                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.IS_LYING), VersionedTypes.V26_1.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.LAYING_DOWN)));
+                if (entity.javaType().is(EntityTypes1_21_11.CAT)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.IS_LYING), VersionedTypes.V26_1.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.RESTING)));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_11.BLAZE)) {
+                    byte onFire = (byte) (bedrockFlags.contains(ActorFlags.CHARGED) ? 0x01 : 0);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, onFire));
                 }
 
                 if (entity.javaType().is(EntityTypes1_21_11.BOGGED)) {
