@@ -20,7 +20,6 @@ package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import com.viaversion.viaversion.util.GsonUtil;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.resourcepack.content.Content;
@@ -71,7 +70,7 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
 
                 final String javaTexturePath = this.getJavaTexturePath(attachableDefinition.attachableData().getTextures().get(modelEntry.getKey()));
                 final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.POST_1_21_11);
-                final JsonObject itemModel = GsonUtil.getGson().fromJson(itemModelData.compile().toString(), JsonObject.class);
+                final JsonObject itemModel = itemModelData.compile();
 
                 final JsonObject display = new JsonObject();
                 final JsonArray scaling = new JsonArray();

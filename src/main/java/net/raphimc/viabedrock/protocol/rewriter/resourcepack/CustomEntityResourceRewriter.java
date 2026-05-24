@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
 import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import com.viaversion.viaversion.util.GsonUtil;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.resourcepack.content.Content;
@@ -65,7 +64,7 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
                     for (Map.Entry<String, String> textureEntry : entityDefinition.entityData().getTextures().entrySet()) {
                         final String modelKey = modelEntry.getKey() + "_" + textureEntry.getKey();
                         final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + this.getJavaTexturePath(textureEntry.getValue()), RotationType.POST_1_21_11);
-                        javaModelDefinitions.put(modelKey, GsonUtil.getGson().fromJson(itemModelData.compile().toString(), JsonObject.class));
+                        javaModelDefinitions.put(modelKey, itemModelData.compile());
                         resourcePackStorage.getConverterData().put("ce_" + entityEntry.getKey() + '_' + modelKey + "_scale", itemModelData.getScale());
                     }
                 }
