@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.types;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
+import com.viaversion.viaversion.api.type.OptionalType;
 import com.viaversion.viaversion.api.type.Type;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
@@ -51,6 +52,7 @@ public class BedrockTypes {
     public static final FloatLEType FLOAT_LE = new FloatLEType();
     public static final LongLEType LONG_LE = new LongLEType();
     public static final LongLEType UNSIGNED_LONG_LE = LONG_LE;
+    public static final Type<Long> OPTIONAL_UNSIGNED_LONG_LE = new OptionalType<>(UNSIGNED_LONG_LE);
 
     public static final VarIntType VAR_INT = new VarIntType();
     public static final UnsignedVarIntType UNSIGNED_VAR_INT = new UnsignedVarIntType();
@@ -61,7 +63,7 @@ public class BedrockTypes {
     public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
     public static final Type<String> ASCII_STRING = new AsciiStringType();
     public static final Type<String> STRING = new StringType();
-    public static final Type<String> OPTIONAL_STRING = new StringType.OptionalStringType();
+    public static final Type<String> OPTIONAL_STRING = new OptionalType<>(STRING);
     public static final Type<String[]> SHORT_LE_STRING_ARRAY = new ArrayType<>(STRING, SHORT_LE);
     public static final Type<String[]> STRING_ARRAY = new ArrayType<>(STRING, UNSIGNED_VAR_INT);
     public static final Type<String> UTF8_STRING = new Utf8StringType();
@@ -75,7 +77,7 @@ public class BedrockTypes {
     public static final Type<Tag> COMPOUND_TAG_VALUE = new TagValueType(Tag_Type.Compound);
     public static final Type<BlockPosition> BLOCK_POSITION = new BlockPositionType();
     public static final Type<Position3f> POSITION_3F = new Position3fType();
-    public static final Type<Position3f> OPTIONAL_POSITION_3F = new Position3fType.OptionalPosition3fType();
+    public static final Type<Position3f> OPTIONAL_POSITION_3F = new OptionalType<>(POSITION_3F);
     public static final Type<Position2f> POSITION_2F = new Position2fType();
     public static final Type<GameRule> GAME_RULE = new GameRuleType(false);
     public static final Type<GameRule[]> GAME_RULE_ARRAY = new ArrayType<>(GAME_RULE, UNSIGNED_VAR_INT);
@@ -104,6 +106,7 @@ public class BedrockTypes {
     public static final Type<PlayerAbilities> PLAYER_ABILITIES = new PlayerAbilitiesType();
     public static final Type<CommandData[]> COMMAND_DATA_ARRAY = new CommandDataArrayType();
     public static final Type<FullContainerName> FULL_CONTAINER_NAME = new FullContainerNameType();
+    public static final Type<FullContainerName> OPTIONAL_FULL_CONTAINER_NAME = new OptionalType<>(FULL_CONTAINER_NAME);
     public static final Type<FullContainerName[]> FULL_CONTAINER_NAME_ARRAY = new ArrayType<>(FULL_CONTAINER_NAME, UNSIGNED_VAR_INT);
 
 }

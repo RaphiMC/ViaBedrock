@@ -45,7 +45,7 @@ public class PlayerListStorage implements StorableObject {
     }
 
     public Pair<UUID, String> getPlayer(final long entityUniqueId) {
-        for (final Map.Entry<UUID, Pair<Long, String>> entry : this.playerList.entrySet()) {
+        for (Map.Entry<UUID, Pair<Long, String>> entry : this.playerList.entrySet()) {
             if (entry.getValue().key() == entityUniqueId) {
                 return new Pair<>(entry.getKey(), entry.getValue().value());
             }

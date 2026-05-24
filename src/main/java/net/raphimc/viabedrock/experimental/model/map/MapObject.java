@@ -18,6 +18,8 @@
 package net.raphimc.viabedrock.experimental.model.map;
 
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import com.viaversion.viaversion.libs.fastutil.longs.LongArrayList;
+import com.viaversion.viaversion.libs.fastutil.longs.LongList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,7 @@ public class MapObject {
     private byte dimension;
     private boolean locked;
     private BlockPosition origin;
-    private final List<Long> trackedEntities;
+    private final LongList trackedEntities;
     private byte scale;
     private final List<MapTrackedObject> trackedObjects;
     private final List<MapDecoration> decorations;
@@ -43,14 +45,14 @@ public class MapObject {
     public MapObject(long id, int java_id) {
         this.id = id;
 
-        this.trackedEntities = new ArrayList<>();
+        this.trackedEntities = new LongArrayList();
         this.trackedObjects = new ArrayList<>();
         this.decorations = new ArrayList<>();
 
         this.java_id = java_id;
     }
 
-    public MapObject(long id, byte dimension, boolean locked, BlockPosition origin, List<Long> trackedEntities,
+    public MapObject(long id, byte dimension, boolean locked, BlockPosition origin, LongList trackedEntities,
                      byte scale, List<MapTrackedObject> trackedObjects, List<MapDecoration> decorations,
                      int width, int height, int xOffset, int yOffset, int[] colors, int java_id) {
         this.id = id;
@@ -90,7 +92,7 @@ public class MapObject {
         return origin;
     }
 
-    public List<Long> getTrackedEntities() {
+    public LongList getTrackedEntities() {
         return trackedEntities;
     }
 

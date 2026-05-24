@@ -20,23 +20,21 @@ package net.raphimc.viabedrock.api.model.scoreboard;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ObjectiveSortOrder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ScoreboardObjective {
 
     private final String name;
-    private final Map<Long, ScoreboardEntry> entries;
     private final ObjectiveSortOrder sortOrder;
+    private final Long2ObjectMap<ScoreboardEntry> entries = new Long2ObjectOpenHashMap<>();
 
     public ScoreboardObjective(final String name, final ObjectiveSortOrder sortOrder) {
         this.name = name;
-        this.entries = new HashMap<>();
         this.sortOrder = sortOrder;
     }
 

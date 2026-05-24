@@ -1,4 +1,13 @@
 {
+  "editor:selected_marker": {
+    "particle": "minecraft:shriek",
+    "arguments": [
+      {
+        "type": "var_int",
+        "value": 0
+      }
+    ]
+  },
   "minecraft:arrow_spell_emitter": {
     "particle": "minecraft:entity_effect",
     "arguments": [

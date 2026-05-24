@@ -145,6 +145,8 @@ public enum ActorDataIDs {
     AIM_ASSIST_PRIORITY_PRESET_ID(136),
     AIM_ASSIST_PRIORITY_CATEGORY_ID(137),
     AIM_ASSIST_PRIORITY_ACTOR_ID(138),
+    RESERVED_139(139),
+    NAMEPLATE_RENDER_DISTANCE_MAX(140),
     ;
 
     private static final Int2ObjectMap<ActorDataIDs> BY_VALUE = new Int2ObjectOpenHashMap<>();

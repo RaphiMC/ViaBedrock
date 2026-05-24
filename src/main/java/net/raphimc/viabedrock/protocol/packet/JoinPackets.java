@@ -285,8 +285,8 @@ public class JoinPackets {
                             wrapper.read(BedrockTypes.UUID); // experience world id
                             wrapper.read(BedrockTypes.STRING); // experience world name
                             wrapper.read(BedrockTypes.STRING); // creator id
-                            wrapper.read(BedrockTypes.UUID); // unknown
-                            wrapper.read(BedrockTypes.UUID); // unknown
+                            wrapper.read(BedrockTypes.UUID); // target id
+                            wrapper.read(BedrockTypes.STRING); // scenario id
                             wrapper.read(BedrockTypes.STRING); // server id
                         }
                         if (wrapper.read(Types.BOOLEAN)) { // has store entry point info
@@ -412,6 +412,7 @@ public class JoinPackets {
                         final int maximumHeight = wrapper.read(BedrockTypes.VAR_INT); // maximum height
                         final int minimumHeight = wrapper.read(BedrockTypes.VAR_INT); // minimum height
                         wrapper.read(BedrockTypes.VAR_INT); // generator type
+                        wrapper.read(BedrockTypes.VAR_INT); // dimension type
                         if (dimensionIdentifier.equals(Dimension.OVERWORLD.getKey())) { // Bedrock client currently only supports overworld
                             gameSession.putBedrockDimensionDefinition(dimensionIdentifier, new IntIntImmutablePair(minimumHeight, maximumHeight));
                         }

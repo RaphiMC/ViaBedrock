@@ -25,7 +25,6 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
-import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
@@ -165,8 +164,8 @@ public class CustomEntity extends Entity {
         }
 
         for (EvaluatedModel model : this.models) {
-            final String key = this.entityDefinition.identifier() + "_" + model.key();
-            if (!resourcePackStorage.getConverterData().containsKey("ce_" + key + "_scale")) {
+            final String converterKey = this.entityDefinition.identifier() + "_" + model.key();
+            if (!resourcePackStorage.getConverterData().containsKey("ce_" + converterKey + "_scale")) {
                 continue;
             }
 
@@ -175,12 +174,12 @@ public class CustomEntity extends Entity {
             final List<EntityData> javaEntityData = new ArrayList<>();
 
             final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
-            data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(CustomEntityResourceRewriter.ITEM_MODEL_KEY));
-            data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomEntityResourceRewriter.getCustomModelData(key));
+            data.set(StructuredDataKey.ITEM_MODEL, CustomEntityResourceRewriter.getItemModel(this.entityDefinition.identifier()));
+            data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomEntityResourceRewriter.getCustomModelData(model.key()));
             final StructuredItem item = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), 1, data);
             javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.ITEM_STACK), VersionedTypes.V26_1.entityDataTypes.itemType, item));
 
-            final float scale = (float) resourcePackStorage.getConverterData().get("ce_" + key + "_scale");
+            final float scale = (float) resourcePackStorage.getConverterData().get("ce_" + converterKey + "_scale");
             javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.SCALE), VersionedTypes.V26_1.entityDataTypes.vector3FType, new Vector3f(scale, scale, scale)));
             javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.TRANSLATION), VersionedTypes.V26_1.entityDataTypes.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
 
@@ -243,7 +242,7 @@ public class CustomEntity extends Entity {
 
         final List<EvaluatedModel> newModels = new ArrayList<>();
         final ResourcePackStorage resourcePackStorage = user.get(ResourcePackStorage.class);
-        for (final BedrockEntityData.RenderController entityRenderController : this.entityDefinition.entityData().getControllers()) {
+        for (BedrockEntityData.RenderController entityRenderController : this.entityDefinition.entityData().getControllers()) {
             final BedrockRenderController renderController = resourcePackStorage.getRenderControllers().get(entityRenderController.identifier());
             if (renderController == null) {
                 continue;

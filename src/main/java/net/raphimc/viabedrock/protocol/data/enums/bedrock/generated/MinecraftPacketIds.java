@@ -216,7 +216,7 @@ public enum MinecraftPacketIds {
     PlayerUpdateEntityOverridesPacket(325),
     PlayerLocation(326),
     ClientboundControlSchemeSetPacket(327),
-    DebugDrawerPacket(328),
+    PrimitiveShapesPacket(328),
     ServerboundPackSettingChange(329),
     ClientboundDataStore(330),
     GraphicsParameterOverridePacket(331),
@@ -234,6 +234,8 @@ public enum MinecraftPacketIds {
     ServerboundDataDrivenScreenClosed(343),
     SyncWorldClocks(344),
     ClientboundAttributeLayerSyncPacket(345),
+    ServerStoreInfo(346),
+    ServerPresenceInfo(347),
     ;
 
     private static final Int2ObjectMap<MinecraftPacketIds> BY_VALUE = new Int2ObjectOpenHashMap<>();

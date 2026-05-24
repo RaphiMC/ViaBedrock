@@ -65,7 +65,7 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
         buffer.writeByte(value.commandPermission());
 
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.abilityLayers().size());
-        for (final Map.Entry<SerializedAbilitiesData_SerializedAbilitiesLayer, PlayerAbilities.AbilitiesLayer> entry : value.abilityLayers().entrySet()) {
+        for (Map.Entry<SerializedAbilitiesData_SerializedAbilitiesLayer, PlayerAbilities.AbilitiesLayer> entry : value.abilityLayers().entrySet()) {
             buffer.writeShortLE(entry.getKey().getValue());
             buffer.writeIntLE(EnumUtil.getIntBitmaskFromEnumSet(entry.getValue().abilitiesSet(), AbilitiesIndex::getValue));
             buffer.writeIntLE(EnumUtil.getIntBitmaskFromEnumSet(entry.getValue().abilityValues(), AbilitiesIndex::getValue));
