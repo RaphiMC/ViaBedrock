@@ -22,12 +22,16 @@ public enum NoteBlockInstrument {
     Bit(13),
     Banjo(14),
     Pling(15),
-    Zombie(16),
-    Skeleton(17),
-    Creeper(18),
-    Dragon(19),
-    WitherSkeleton(20),
-    Piglin(21),
+    Trumpet(16),
+    TrumpetExposed(17),
+    TrumpetWeathered(18),
+    TrumpetOxidized(19),
+    Zombie(20),
+    Skeleton(21),
+    Creeper(22),
+    Dragon(23),
+    WitherSkeleton(24),
+    Piglin(25),
     ;
 
     private static final Int2ObjectMap<NoteBlockInstrument> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -44,9 +44,9 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
             return this.blockPalettes.size();
         } else if (type == PaletteType.BIOMES) {
             return this.biomePalette != null ? 1 : 0;
+        } else {
+            return 0;
         }
-
-        return 0;
     }
 
     @Override
@@ -55,9 +55,9 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
             return this.blockPalettes;
         } else if (type == PaletteType.BIOMES) {
             return this.biomePalette != null ? Collections.singletonList(this.biomePalette) : Collections.emptyList();
+        } else {
+            return Collections.emptyList();
         }
-
-        return Collections.emptyList();
     }
 
     @Override

@@ -23,6 +23,7 @@ import net.raphimc.viabedrock.api.io.LittleEndianByteBufInputStream;
 import net.raphimc.viabedrock.api.io.LittleEndianByteBufOutputStream;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 public class Utf8StringType extends Type<String> {
 
@@ -35,7 +36,7 @@ public class Utf8StringType extends Type<String> {
         try {
             return new LittleEndianByteBufInputStream(buffer).readUTF();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -44,7 +45,7 @@ public class Utf8StringType extends Type<String> {
         try {
             new LittleEndianByteBufOutputStream(buffer).writeUTF(value);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

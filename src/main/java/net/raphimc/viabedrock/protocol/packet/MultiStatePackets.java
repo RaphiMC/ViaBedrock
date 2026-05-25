@@ -21,10 +21,10 @@ import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.base.ClientboundLoginPackets;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ServerboundPackets26_1;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundConfigurationPackets1_21_9;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ServerboundConfigurationPackets1_21_9;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
 import com.viaversion.viaversion.util.Key;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -33,6 +33,7 @@ import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.DataValues;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Connection_DisconnectFailReason;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.MinecraftPacketIds;
@@ -54,9 +55,9 @@ public class MultiStatePackets {
 
     private static final PacketHandler DISCONNECT_HANDLER = wrapper -> {
         final Connection_DisconnectFailReason disconnectReason = Connection_DisconnectFailReason.getByValue(wrapper.read(BedrockTypes.VAR_INT), Connection_DisconnectFailReason.Unknown); // reason
-        final boolean hasMessage = !wrapper.read(Types.BOOLEAN); // skip message
+        final boolean hasMessage = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT) == 0; // has message
         if (hasMessage) {
-            final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockVanillaResourcePacks().get("vanilla").content().getLang("texts/en_US.lang");
+            final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockResourcePacks().get(DataValues.VANILLA_RESOURCE_PACK_KEY).content().getLang("texts/en_US.lang");
             final Function<String, String> translator = k -> translations.getOrDefault(k, k);
             final String rawMessage = wrapper.read(BedrockTypes.STRING); // message
             wrapper.read(BedrockTypes.STRING); // filtered message
@@ -140,17 +141,17 @@ public class MultiStatePackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.DISCONNECT,
-                ClientboundPackets1_21_11.DISCONNECT, DISCONNECT_HANDLER,
+                ClientboundPackets26_1.DISCONNECT, DISCONNECT_HANDLER,
                 ClientboundLoginPackets.LOGIN_DISCONNECT, DISCONNECT_HANDLER,
                 ClientboundConfigurationPackets1_21_9.DISCONNECT, DISCONNECT_HANDLER
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.PACKET_VIOLATION_WARNING,
-                ClientboundPackets1_21_11.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
+                ClientboundPackets26_1.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
                 ClientboundLoginPackets.LOGIN_DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER,
                 ClientboundConfigurationPackets1_21_9.DISCONNECT, PACKET_VIOLATION_WARNING_HANDLER
         );
         protocol.registerClientboundTransition(ClientboundBedrockPackets.NETWORK_STACK_LATENCY,
-                ClientboundPackets1_21_11.PING, NETWORK_STACK_LATENCY_HANDLER,
+                ClientboundPackets26_1.PING, NETWORK_STACK_LATENCY_HANDLER,
                 State.LOGIN, (PacketHandler) wrapper -> {
                     NETWORK_STACK_LATENCY_HANDLER.handle(wrapper);
                     if (!wrapper.isCancelled()) {
@@ -166,7 +167,7 @@ public class MultiStatePackets {
                 ClientboundConfigurationPackets1_21_9.PING, NETWORK_STACK_LATENCY_HANDLER
         );
 
-        protocol.registerServerbound(ServerboundPackets1_21_6.PONG, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, PONG_HANDLER);
+        protocol.registerServerbound(ServerboundPackets26_1.PONG, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, PONG_HANDLER);
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_9.PONG, ServerboundBedrockPackets.NETWORK_STACK_LATENCY, PONG_HANDLER);
     }
 

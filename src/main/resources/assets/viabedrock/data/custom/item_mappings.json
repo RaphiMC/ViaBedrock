@@ -6255,6 +6255,13 @@
       }
     }
   },
+  "minecraft:golden_dandelion": {
+    "block": {
+      "minecraft:golden_dandelion": {
+        "java_id": "minecraft:golden_dandelion"
+      }
+    }
+  },
   "minecraft:golden_helmet": {
     "meta": {
       "": {

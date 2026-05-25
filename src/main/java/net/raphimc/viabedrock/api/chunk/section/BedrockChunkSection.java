@@ -40,6 +40,18 @@ public interface BedrockChunkSection extends ChunkSection, Cloneable {
 
     @Override
     @Deprecated
+    default int getFluidCount() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    @Deprecated
+    default void setFluidCount(final int fluidCount) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    @Deprecated
     default ChunkSectionLight getLight() {
         return null;
     }

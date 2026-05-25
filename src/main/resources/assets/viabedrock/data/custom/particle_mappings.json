@@ -1,4 +1,13 @@
 {
+  "editor:selected_marker": {
+    "particle": "minecraft:shriek",
+    "arguments": [
+      {
+        "type": "var_int",
+        "value": 0
+      }
+    ]
+  },
   "minecraft:arrow_spell_emitter": {
     "particle": "minecraft:entity_effect",
     "arguments": [
@@ -385,6 +394,7 @@
   "minecraft:oozing_ambient": "minecraft:item_slime",
   "minecraft:oozing_emitter": "minecraft:item_slime",
   "minecraft:pale_oak_leaves_particle": "minecraft:pale_oak_leaves",
+  "minecraft:pause_mob_growth": "minecraft:pause_mob_growth",
   "minecraft:phantom_trail_particle": "minecraft:mycelium",
   "minecraft:portal_directional": "minecraft:portal",
   "minecraft:portal_east_west": "minecraft:portal",
@@ -445,6 +455,7 @@
       }
     ]
   },
+  "minecraft:reset_mob_growth": "minecraft:reset_mob_growth",
   "minecraft:rising_border_dust_particle": {
     "particle": "minecraft:dust",
     "arguments": [

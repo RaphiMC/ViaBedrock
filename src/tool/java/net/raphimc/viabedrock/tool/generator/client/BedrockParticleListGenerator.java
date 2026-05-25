@@ -18,8 +18,8 @@
 package net.raphimc.viabedrock.tool.generator.client;
 
 import com.viaversion.viaversion.libs.gson.Gson;
-import net.raphimc.viabedrock.api.model.resourcepack.ParticleDefinitions;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.api.resourcepack.definition.ParticleDefinitions;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import net.raphimc.viabedrock.util.Util;
 
 import java.io.File;
@@ -31,10 +31,10 @@ import java.util.Map;
 public class BedrockParticleListGenerator {
 
     public static void main(String[] args) throws Throwable {
-        final ResourcePacksStorage resourcePacksStorage = Util.getClientResourcePacks(new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
+        final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
 
         final List<String> particleList = new ArrayList<>();
-        for (Map.Entry<String, ParticleDefinitions.ParticleDefinition> entry : resourcePacksStorage.getParticles().particles().entrySet()) {
+        for (Map.Entry<String, ParticleDefinitions.ParticleDefinition> entry : resourcePackStorage.getParticles().particles().entrySet()) {
             particleList.add(entry.getKey());
         }
         particleList.sort(String::compareTo);

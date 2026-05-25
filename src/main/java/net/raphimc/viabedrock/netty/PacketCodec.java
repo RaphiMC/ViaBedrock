@@ -21,9 +21,11 @@ import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.List;
+import java.util.logging.Level;
 
 public class PacketCodec extends ByteToMessageCodec<ByteBuf> {
 
@@ -41,10 +43,12 @@ public class PacketCodec extends ByteToMessageCodec<ByteBuf> {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         final int header = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(in);
         final int packetId = header & 1023;
-        final int senderId = (header >> 10) & 3;
-        final int recipientId = (header >> 12) & 3;
-        if (senderId != 0) {
-            throw new UnsupportedOperationException("Sender ID " + senderId + " is not supported");
+        final int senderSubClientId = (header >> 10) & 3;
+        final int targetSubClientId = (header >> 12) & 3;
+        if (senderSubClientId != 0) { // Bedrock client drops the packet if sender sub client id is not 0
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Dropping packet with invalid sender sub client id: " + senderSubClientId);
+            in.skipBytes(in.readableBytes());
+            return;
         }
 
         final ByteBuf packetBuffer = ctx.alloc().buffer();

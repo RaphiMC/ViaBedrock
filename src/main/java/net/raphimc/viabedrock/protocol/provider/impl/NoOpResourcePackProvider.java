@@ -17,23 +17,23 @@
  */
 package net.raphimc.viabedrock.protocol.provider.impl;
 
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 
 public class NoOpResourcePackProvider extends ResourcePackProvider {
 
     @Override
-    public boolean hasPack(final ResourcePack pack) {
+    public boolean has(final ResourcePack.Key key) {
         return false;
     }
 
     @Override
-    public void loadPack(final ResourcePack pack) {
+    public ResourcePack load(final ResourcePack.Key key) {
         throw new UnsupportedOperationException("NoOpResourcePackProvider cannot load packs");
     }
 
     @Override
-    public void addPack(final ResourcePack pack) {
+    public void save(final ResourcePack resourcePack) {
     }
 
 }

@@ -1,6 +1,6 @@
 {
   "Override": "minecraft:generic",
-  "Contact": "minecraft:mob_attack",
+  "Contact": "minecraft:cactus",
   "EntityAttack": "minecraft:generic",
   "Projectile": "minecraft:mob_projectile",
   "Suffocation": "minecraft:in_wall",

@@ -17,46 +17,52 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
+import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.Key;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.api.model.resourcepack.TextureDefinitions;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.Content;
+import net.raphimc.viabedrock.api.resourcepack.definition.TextureDefinitions;
+import net.raphimc.viabedrock.api.util.StringUtil;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class CustomItemTextureResourceRewriter extends ItemModelResourceRewriter {
 
-    public static final Key ITEM_MODEL_KEY = Key.of("viabedrock", "item_texture");
+    private static final String SUB_FOLDER = "item_textures";
+
+    public static ItemModel getItemModel(final String itemTextureName) {
+        return new ItemModel(Key.of("viabedrock", SUB_FOLDER + '/' + StringUtil.makeIdentifierValueSafe(itemTextureName)));
+    }
 
     public CustomItemTextureResourceRewriter() {
-        super("item_texture", "item");
+        super(SUB_FOLDER);
     }
 
     @Override
-    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList) {
-        for (Map.Entry<String, List<TextureDefinitions.ItemTextureDefinition>> entry : resourcePacksStorage.getTextures().itemTextures().entrySet()) {
-            for (int i = 0; i < entry.getValue().size(); i++) {
-                final TextureDefinitions.ItemTextureDefinition itemTextureDefinition = entry.getValue().get(i);
-                for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
-                    final ResourcePack.Content bedrockContent = pack.content();
-                    final ResourcePack.Content.LazyImage texture = bedrockContent.getShortnameImage(itemTextureDefinition.texturePath());
-                    if (texture == null) continue;
-
-                    javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(itemTextureDefinition.texturePath()) + ".png", texture);
-
-                    final JsonObject itemModel = new JsonObject();
-                    itemModel.addProperty("parent", "minecraft:item/generated");
-                    final JsonObject layer0 = new JsonObject();
-                    layer0.addProperty("layer0", "viabedrock:" + this.getJavaTexturePath(itemTextureDefinition.texturePath()));
-                    itemModel.add("textures", layer0);
-                    javaContent.putJson("assets/viabedrock/models/" + this.getJavaModelName(entry.getKey() + "_" + i) + ".json", itemModel);
-                    modelsList.add(entry.getKey() + "_" + i);
-                    break;
+    public void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
+        for (Map.Entry<String, List<TextureDefinitions.ItemTextureDefinition>> itemEntry : resourcePackStorage.getTextures().itemTextures().entrySet()) {
+            final Map<String, JsonObject> javaModelDefinitions = new HashMap<>();
+            for (int i = 0; i < itemEntry.getValue().size(); i++) {
+                final TextureDefinitions.ItemTextureDefinition itemTextureDefinition = itemEntry.getValue().get(i);
+                for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
+                    final Content.LazyImage texture = pack.content().getShortnameImage(itemTextureDefinition.texturePath());
+                    if (texture != null) {
+                        javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(itemTextureDefinition.texturePath()) + ".png", texture);
+                        break;
+                    }
                 }
+                final JsonObject itemModel = new JsonObject();
+                itemModel.addProperty("parent", "minecraft:item/generated");
+                final JsonObject layer0 = new JsonObject();
+                layer0.addProperty("layer0", "viabedrock:" + this.getJavaTexturePath(itemTextureDefinition.texturePath()));
+                itemModel.add("textures", layer0);
+                javaModelDefinitions.put(String.valueOf(i), itemModel);
             }
+            this.putItemDefinition(javaContent, itemEntry.getKey(), javaModelDefinitions);
         }
     }
 

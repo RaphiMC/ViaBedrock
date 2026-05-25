@@ -72,7 +72,7 @@ public class IntegerRangeArgumentType implements ArgumentType<Object> {
         if (number.isEmpty()) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt().createWithContext(reader);
         try {
             return Integer.parseInt(number);
-        } catch (final NumberFormatException ex) {
+        } catch (NumberFormatException e) {
             reader.setCursor(start);
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt().createWithContext(reader, number);
         }

@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -101,7 +101,7 @@ public class InventoryContainer extends Container {
     }
 
     public void sendSelectedHotbarSlotToClient() {
-        final PacketWrapper setHeldSlot = PacketWrapper.create(ClientboundPackets1_21_11.SET_HELD_SLOT, this.user);
+        final PacketWrapper setHeldSlot = PacketWrapper.create(ClientboundPackets26_1.SET_HELD_SLOT, this.user);
         setHeldSlot.write(Types.VAR_INT, (int) this.selectedHotbarSlot);
         setHeldSlot.send(BedrockProtocol.class);
     }
@@ -133,7 +133,7 @@ public class InventoryContainer extends Container {
         }
 
         mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // entity runtime id
-        mobEquipment.write(this.user.get(ItemRewriter.class).itemType(), newItem); // item
+        mobEquipment.write(this.user.get(ItemRewriter.class).newItemType(), newItem); // item
         mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // slot
         mobEquipment.write(Types.BYTE, this.selectedHotbarSlot); // selected slot
         mobEquipment.write(Types.BYTE, this.containerId); // container id

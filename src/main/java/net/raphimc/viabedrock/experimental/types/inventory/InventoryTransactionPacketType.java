@@ -69,7 +69,8 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
                     BedrockTypes.POSITION_3F.read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer),
                     BedrockTypes.UNSIGNED_VAR_INT.read(buffer),
-                    ItemUseInventoryTransaction_PredictedResult.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer))
+                    ItemUseInventoryTransaction_PredictedResult.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer)),
+                    buffer.readByte()
             );
             case ItemUseOnEntityTransaction -> new InventoryTransactionData.UseItemOnEntityTransactionData(
                     BedrockTypes.VAR_LONG.read(buffer),
@@ -122,6 +123,7 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
                 BedrockTypes.POSITION_3F.write(buffer, data.clickPosition());
                 BedrockTypes.UNSIGNED_VAR_INT.write(buffer, data.blockRuntimeId());
                 BedrockTypes.UNSIGNED_VAR_INT.write(buffer, data.predictedResult().getValue());
+                buffer.writeByte(data.clientCooldownState());
             }
             case ItemUseOnEntityTransaction -> {
                 InventoryTransactionData.UseItemOnEntityTransactionData data = (InventoryTransactionData.UseItemOnEntityTransactionData) bedrockInventoryTransaction.transactionData();

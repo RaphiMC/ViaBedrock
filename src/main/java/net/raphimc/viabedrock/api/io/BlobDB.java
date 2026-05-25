@@ -78,7 +78,7 @@ public class BlobDB implements Closeable {
         try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(this.indexFile)))) {
             dos.write(MAGIC);
             dos.writeInt(VERSION);
-            for (final Map.Entry<Long, IndexEntry> entry : this.index.entrySet()) {
+            for (Map.Entry<Long, IndexEntry> entry : this.index.entrySet()) {
                 dos.writeLong(entry.getKey());
                 dos.writeInt(entry.getValue().length);
             }

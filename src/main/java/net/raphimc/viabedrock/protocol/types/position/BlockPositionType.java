@@ -31,7 +31,7 @@ public class BlockPositionType extends Type<BlockPosition> {
     @Override
     public BlockPosition read(ByteBuf buffer) {
         final int x = BedrockTypes.VAR_INT.readPrimitive(buffer);
-        final int y = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
+        final int y = BedrockTypes.VAR_INT.readPrimitive(buffer);
         final int z = BedrockTypes.VAR_INT.readPrimitive(buffer);
 
         return new BlockPosition(x, y, z);
@@ -40,7 +40,7 @@ public class BlockPositionType extends Type<BlockPosition> {
     @Override
     public void write(ByteBuf buffer, BlockPosition value) {
         BedrockTypes.VAR_INT.writePrimitive(buffer, value.x());
-        BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.y());
+        BedrockTypes.VAR_INT.writePrimitive(buffer, value.y());
         BedrockTypes.VAR_INT.writePrimitive(buffer, value.z());
     }
 

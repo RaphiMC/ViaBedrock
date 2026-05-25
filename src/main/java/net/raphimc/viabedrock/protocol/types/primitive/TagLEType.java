@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.api.io.LittleEndianByteBufOutputStream;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 public class TagLEType extends Type<Tag> {
 
@@ -43,7 +44,7 @@ public class TagLEType extends Type<Tag> {
             BedrockTypes.UTF8_STRING.read(buffer);
             return TagRegistry.read(id, new LittleEndianByteBufInputStream(buffer), TagLimiter.noop(), 0);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -59,7 +60,7 @@ public class TagLEType extends Type<Tag> {
         try {
             value.write(new LittleEndianByteBufOutputStream(buffer));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

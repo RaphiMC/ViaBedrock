@@ -27,7 +27,8 @@ public class ServerBlacklist {
             "geo.hivebedrock.network",
             "ca.hivebedrock.network",
             "fr.hivebedrock.network",
-            "sg.hivebedrock.network"
+            "sg.hivebedrock.network",
+            "donutsmp.net"
     );
 
     public static boolean isBlacklisted(final String hostname) {

@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.experimental.util;
 
 import com.viaversion.viaversion.api.protocol.packet.mapping.PacketMapping;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ServerboundPackets26_1;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 
@@ -44,7 +44,7 @@ public class ProtocolUtil {
         }
     }
 
-    public static void appendServerbound(final BedrockProtocol protocol, final ServerboundPackets1_21_6 type, final PacketHandler handler) {
+    public static void appendServerbound(final BedrockProtocol protocol, final ServerboundPackets26_1 type, final PacketHandler handler) {
         final PacketMapping mapping = protocol.getServerboundMappings().mappedPacket(type.state(), type.getId());
         if (mapping != null) {
             final PacketHandler oldHandler = mapping.handler();
@@ -80,7 +80,7 @@ public class ProtocolUtil {
         }
     }
 
-    public static void prependServerbound(final BedrockProtocol protocol, final ServerboundPackets1_21_6 type, final PacketHandler handler) {
+    public static void prependServerbound(final BedrockProtocol protocol, final ServerboundPackets26_1 type, final PacketHandler handler) {
         final PacketMapping mapping = protocol.getServerboundMappings().mappedPacket(type.state(), type.getId());
         if (mapping != null) {
             final PacketHandler oldHandler = mapping.handler();
@@ -107,7 +107,7 @@ public class ProtocolUtil {
             }
         }
         if (handlerField == null) {
-            throw new IllegalStateException("Could not find handler field in PacketMapping");
+            throw new IllegalStateException("Failed to find handler field in PacketMapping");
         }
         handlerField.setAccessible(true);
         try {

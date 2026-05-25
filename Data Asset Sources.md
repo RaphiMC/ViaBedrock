@@ -16,7 +16,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/71803c0ca86d68af9adf0c74d98b6b54a441fb2a/core/src/main/resources/bedrock/block_palette.1_21_110.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/ba17cf2f4b030603bea017e2c30902e2187df340/core/src/main/resources/bedrock/block_palette.1_26_20.nbt)
 
 ### data/bedrock/block_sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
@@ -36,7 +36,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
 ### data/bedrock/item_tags.json
-[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/e9097a1f87cea40354ad59fad43e28fc097d800f/item_tags.json)
+[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/e5a25957497a4520f4672a379e2a3f6b87602e37/item_tags.json)
 
 ### data/bedrock/level_sound_event_mappings.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
@@ -66,7 +66,7 @@ This file has been dumped from a vanilla server using a fabric mod.
 This file has been dumped from a vanilla server using a fabric mod.
 
 ### data/java/via_mappings.json
-[ViaVersion/Mappings](https://github.com/ViaVersion/Mappings/blob/60e1b59f97837b095eade6cc442d3d43e0b972af/mappings/mapping-1.21.11.json)
+[ViaVersion/Mappings](https://github.com/ViaVersion/Mappings/blob/2b78dc148ea0164f10efd716bdc48aeb3ad8494b/mappings/mapping-26.1.json)
 
 ### block_state_upgrade_schema/*
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)
@@ -74,5 +74,8 @@ This file has been dumped from a vanilla server using a fabric mod.
 ### item_upgrade_schema/*
 [PMMP/BedrockItemUpgradeSchema](https://github.com/pmmp/BedrockItemUpgradeSchema/tree/master/id_meta_upgrade_schema)
 
-### vanilla_packs/*
+### resource_packs/*
+These files have been generated using `BedrockPacksGenerator` using data from the official bedrock client's assets folder.
+
+### skin_packs/*
 These files have been generated using `BedrockPacksGenerator` using data from the official bedrock client's assets folder.

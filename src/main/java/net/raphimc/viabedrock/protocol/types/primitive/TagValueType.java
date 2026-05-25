@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.api.io.NetworkByteBufOutputStream;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Tag_Type;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 public class TagValueType extends Type<Tag> {
 
@@ -42,7 +43,7 @@ public class TagValueType extends Type<Tag> {
         try {
             return TagRegistry.read(this.tagType.getValue(), new NetworkByteBufInputStream(buffer), TagLimiter.noop(), 0);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -57,7 +58,7 @@ public class TagValueType extends Type<Tag> {
         try {
             value.write(new NetworkByteBufOutputStream(buffer));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

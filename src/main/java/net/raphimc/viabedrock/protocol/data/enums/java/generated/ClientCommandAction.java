@@ -5,6 +5,7 @@ public enum ClientCommandAction {
 
     PERFORM_RESPAWN,
     REQUEST_STATS,
+    REQUEST_GAMERULE_VALUES,
     ;
 
 }

@@ -23,7 +23,7 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
-import net.raphimc.viabedrock.protocol.data.enums.java.generated.ClickType;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.ContainerInput;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
@@ -61,7 +61,7 @@ public abstract class Container {
         this.validBlockTags = validBlockTags;
     }
 
-    public boolean handleClick(final int revision, final short slot, final byte button, final ClickType action) {
+    public boolean handleClick(final int revision, final short slot, final byte button, final ContainerInput action) {
         return false;
     }
 

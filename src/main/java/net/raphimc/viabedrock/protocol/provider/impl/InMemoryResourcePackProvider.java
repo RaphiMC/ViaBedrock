@@ -17,7 +17,8 @@
  */
 package net.raphimc.viabedrock.protocol.provider.impl;
 
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.ZipContent;
 import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 
 import java.io.IOException;
@@ -26,32 +27,24 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryResourcePackProvider extends ResourcePackProvider {
 
-    private final Map<String, byte[]> packs = new ConcurrentHashMap<>();
+    private final Map<String, byte[]> resourcePacks = new ConcurrentHashMap<>();
 
     @Override
-    public boolean hasPack(final ResourcePack pack) {
-        return this.packs.containsKey(this.getPackKey(pack));
+    public boolean has(final ResourcePack.Key key) {
+        return this.resourcePacks.containsKey(key.toString());
     }
 
     @Override
-    public void loadPack(final ResourcePack pack) throws Exception {
-        if (!this.hasPack(pack)) {
+    public ResourcePack load(final ResourcePack.Key key) throws IOException {
+        if (!this.has(key)) {
             throw new IOException("Pack not found");
         }
-        final byte[] data = this.packs.get(this.getPackKey(pack));
-
-        pack.setContentKey(new byte[0]);
-        pack.setCompressedDataLength(data.length, data.length);
-        pack.processDataChunk(0, data);
+        return new ResourcePack(new ZipContent(this.resourcePacks.get(key.toString())));
     }
 
     @Override
-    public void addPack(final ResourcePack pack) throws IOException {
-        this.packs.put(this.getPackKey(pack), pack.content().toZip());
-    }
-
-    private String getPackKey(final ResourcePack pack) {
-        return pack.packId() + "_" + pack.version();
+    public void save(final ResourcePack resourcePack) throws IOException {
+        this.resourcePacks.put(resourcePack.key().toString(), resourcePack.content().toZip());
     }
 
 }

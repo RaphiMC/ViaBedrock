@@ -18,14 +18,14 @@
 package net.raphimc.viabedrock.protocol.provider;
 
 import com.viaversion.viaversion.api.platform.providers.Provider;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 
 public abstract class ResourcePackProvider implements Provider {
 
-    public abstract boolean hasPack(final ResourcePack pack) throws Exception;
+    public abstract boolean has(final ResourcePack.Key key);
 
-    public abstract void loadPack(final ResourcePack pack) throws Exception;
+    public abstract ResourcePack load(final ResourcePack.Key key) throws Exception;
 
-    public abstract void addPack(final ResourcePack pack) throws Exception;
+    public abstract void save(final ResourcePack resourcePack) throws Exception;
 
 }

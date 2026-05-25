@@ -23,9 +23,10 @@ import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
+import net.raphimc.viabedrock.experimental.rewriter.EntityMetadataRewriter;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
@@ -82,7 +83,7 @@ public class Entity {
     public void remove() {
         if (this.hasBossBar) {
             this.hasBossBar = false;
-            final PacketWrapper bossEvent = PacketWrapper.create(ClientboundPackets1_21_11.BOSS_EVENT, this.user);
+            final PacketWrapper bossEvent = PacketWrapper.create(ClientboundPackets26_1.BOSS_EVENT, this.user);
             bossEvent.write(Types.UUID, this.javaUuid()); // uuid
             bossEvent.write(Types.VAR_INT, BossEventOperationType.REMOVE.ordinal()); // operation
             bossEvent.send(BedrockProtocol.class);
@@ -92,9 +93,9 @@ public class Entity {
     public final void updateEntityData(final EntityData[] entityData) {
         final List<EntityData> javaEntityData = new ArrayList<>();
         this.updateEntityData(entityData, javaEntityData);
-        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets1_21_11.SET_ENTITY_DATA, this.user);
+        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets26_1.SET_ENTITY_DATA, this.user);
         setEntityData.write(Types.VAR_INT, this.javaId); // entity id
-        setEntityData.write(VersionedTypes.V1_21_11.entityDataList, javaEntityData); // entity data
+        setEntityData.write(VersionedTypes.V26_1.entityDataList, javaEntityData); // entity data
         setEntityData.send(BedrockProtocol.class);
     }
 
@@ -128,6 +129,7 @@ public class Entity {
         levelSoundEvent.write(Types.BOOLEAN, false); // is baby mob
         levelSoundEvent.write(Types.BOOLEAN, false); // is global sound
         levelSoundEvent.write(BedrockTypes.LONG_LE, -1L); // entity unique id
+        levelSoundEvent.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // fire at position
         levelSoundEvent.send(BedrockProtocol.class, false);
     }
 
@@ -227,6 +229,10 @@ public class Entity {
     }
 
     protected boolean translateEntityData(final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            return EntityMetadataRewriter.rewrite(user, this, id, entityData, javaEntityData);
+        }
+
         return false;
     }
 

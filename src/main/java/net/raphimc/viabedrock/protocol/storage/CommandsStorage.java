@@ -38,7 +38,7 @@ import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
@@ -94,7 +94,7 @@ public class CommandsStorage extends StoredObject {
     }
 
     public void updateCommandTree() {
-        final PacketWrapper commands = PacketWrapper.create(ClientboundPackets1_21_11.COMMANDS, this.user());
+        final PacketWrapper commands = PacketWrapper.create(ClientboundPackets26_1.COMMANDS, this.user());
         this.writeCommandTree(commands);
         commands.send(BedrockProtocol.class);
     }
@@ -341,11 +341,11 @@ public class CommandsStorage extends StoredObject {
         }
 
         if (this.dispatcher.getRoot().getChild("help") == null) {
-            final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
-            final Function<String, String> translator = resourcePacksStorage.getTexts().lookup();
+            final ResourcePackStorage resourcePackStorage = this.user().get(ResourcePackStorage.class);
+            final Function<String, String> translator = resourcePackStorage.getTexts().lookup();
             final LiteralArgumentBuilder<UserConnection> cmdBuilder = literal("help");
             cmdBuilder.executes(cmd -> {
-                PacketFactory.sendJavaSystemChat(cmd.getSource(), TextUtil.stringToNbt("§c" + BedrockTranslator.translate("%commands.generic.usage", translator, new Object[]{"/help <command>"})));
+                PacketFactory.sendJavaSystemChat(cmd.getSource(), TextUtil.stringToNbt(BedrockTranslator.translate("§c%commands.generic.usage", translator, new Object[]{"/help <command>"})));
                 return RESULT_CANCEL;
             });
             cmdBuilder.then(argument("command", StringArgumentType.greedyString()).suggests((context, builder) -> SuggestionsUtil.suggestMatching(this.dispatcher.getRoot().getChildren().stream().map(c -> {
@@ -366,7 +366,7 @@ public class CommandsStorage extends StoredObject {
                     while (node.getRedirect() != null) {
                         node = node.getRedirect();
                     }
-                    lines.add(resourcePacksStorage.getTexts().get("commands.generic.usage.noparam"));
+                    lines.add(resourcePackStorage.getTexts().get("commands.generic.usage.noparam"));
                     final String[] usage = this.dispatcher.getAllUsage(node, cmd.getSource(), true);
                     if (usage.length == 0) {
                         lines.add("- /" + node.getName());
@@ -377,7 +377,7 @@ public class CommandsStorage extends StoredObject {
                     }
                     Collections.addAll(lines, usage);
                 } else {
-                    lines.add("§c" + BedrockTranslator.translate("%commands.generic.unknown", translator, new Object[]{commandName}));
+                    lines.add(BedrockTranslator.translate("§c%commands.generic.unknown", translator, new Object[]{commandName}));
                 }
 
                 for (String line : lines) {

@@ -3,6 +3,7 @@ package net.raphimc.viabedrock.protocol.data.generated.java;
 
 public class EntityDataFields {
 
+    public static final String AGE_LOCKED = "AGE_LOCKED";
     public static final String AIR_SUPPLY = "AIR_SUPPLY";
     public static final String ANGER_END_TIME = "ANGER_END_TIME";
     public static final String ARMADILLO_STATE = "ARMADILLO_STATE";
@@ -174,6 +175,7 @@ public class EntityDataFields {
     public static final String VARIANT = "VARIANT";
     public static final String VIEW_RANGE = "VIEW_RANGE";
     public static final String VILLAGER_DATA = "VILLAGER_DATA";
+    public static final String VILLAGER_DATA_FINALIZED = "VILLAGER_DATA_FINALIZED";
     public static final String WAITING = "WAITING";
     public static final String WEATHER_STATE = "WEATHER_STATE";
     public static final String WIDTH = "WIDTH";

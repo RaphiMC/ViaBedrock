@@ -25,7 +25,7 @@ import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class CommandBlockBlockEntityRewriter implements BlockEntityRewriter.Rewr
         this.copyCustomName(user, bedrockTag, javaTag);
 
         if (bedrockTag.get("LastOutput") instanceof StringTag lastOutputTag) {
-            final Function<String, String> translator = user.get(ResourcePacksStorage.class).getTexts().lookup();
+            final Function<String, String> translator = user.get(ResourcePackStorage.class).getTexts().lookup();
 
             final List<String> lastOutputParams = new ArrayList<>();
             final ListTag<StringTag> bedrockLastOutputParams = bedrockTag.getListTag("LastOutputParams", StringTag.class);

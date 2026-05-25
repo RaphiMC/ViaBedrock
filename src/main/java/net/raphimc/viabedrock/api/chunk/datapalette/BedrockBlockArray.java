@@ -23,8 +23,8 @@ import com.viaversion.viaversion.api.minecraft.chunks.NibbleArray;
 
 public class BedrockBlockArray implements DataPalette, Cloneable {
 
-    private byte[] blocks;
-    private NibbleArray data;
+    private final byte[] blocks;
+    private final NibbleArray data;
 
     public BedrockBlockArray() {
         this.blocks = new byte[ChunkSection.SIZE];
@@ -81,23 +81,13 @@ public class BedrockBlockArray implements DataPalette, Cloneable {
     }
 
     @Override
-    public void replaceId(final int oldId, final int newId) {
-        for (int i = 0; i < this.size(); i++) {
-            if (this.idAt(i) == oldId) {
-                this.setIdAt(i, newId);
-            }
-        }
-    }
-
-    @Override
     public int size() {
         return this.blocks.length;
     }
 
     @Override
     public void clear() {
-        this.blocks = new byte[this.blocks.length];
-        this.data = new NibbleArray(this.blocks.length);
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -22,7 +22,7 @@ import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -87,7 +87,7 @@ public class ScoreboardEntry {
                 if (player != null) {
                     this.javaName = player.value();
                 } else {
-                    this.javaName = StringUtil.encodeLong(this.entityUniqueId) + user.get(ResourcePacksStorage.class).getTexts().get("commands.scoreboard.players.offlinePlayerName");
+                    this.javaName = StringUtil.encodeLong(this.entityUniqueId) + user.get(ResourcePackStorage.class).getTexts().get("commands.scoreboard.players.offlinePlayerName");
                 }
             }
             case Entity -> this.javaName = String.valueOf(this.entityUniqueId);

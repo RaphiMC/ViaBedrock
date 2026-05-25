@@ -20,12 +20,10 @@ package net.raphimc.viabedrock.protocol.types;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
+import com.viaversion.viaversion.api.type.OptionalType;
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.util.Pair;
-import com.viaversion.viaversion.util.Triple;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Tag_Type;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
@@ -35,7 +33,10 @@ import net.raphimc.viabedrock.protocol.types.chunk.DataPaletteType;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataType;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityPropertiesType;
 import net.raphimc.viabedrock.protocol.types.model.*;
-import net.raphimc.viabedrock.protocol.types.position.*;
+import net.raphimc.viabedrock.protocol.types.position.BlockPositionType;
+import net.raphimc.viabedrock.protocol.types.position.Position2fType;
+import net.raphimc.viabedrock.protocol.types.position.Position3fType;
+import net.raphimc.viabedrock.protocol.types.position.SubChunkOffsetType;
 import net.raphimc.viabedrock.protocol.types.primitive.*;
 
 import java.awt.image.BufferedImage;
@@ -50,6 +51,8 @@ public class BedrockTypes {
     public static final UnsignedIntLEType UNSIGNED_INT_LE = new UnsignedIntLEType();
     public static final FloatLEType FLOAT_LE = new FloatLEType();
     public static final LongLEType LONG_LE = new LongLEType();
+    public static final LongLEType UNSIGNED_LONG_LE = LONG_LE;
+    public static final Type<Long> OPTIONAL_UNSIGNED_LONG_LE = new OptionalType<>(UNSIGNED_LONG_LE);
 
     public static final VarIntType VAR_INT = new VarIntType();
     public static final UnsignedVarIntType UNSIGNED_VAR_INT = new UnsignedVarIntType();
@@ -60,7 +63,7 @@ public class BedrockTypes {
     public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
     public static final Type<String> ASCII_STRING = new AsciiStringType();
     public static final Type<String> STRING = new StringType();
-    public static final Type<String> OPTIONAL_STRING = new StringType.OptionalStringType();
+    public static final Type<String> OPTIONAL_STRING = new OptionalType<>(STRING);
     public static final Type<String[]> SHORT_LE_STRING_ARRAY = new ArrayType<>(STRING, SHORT_LE);
     public static final Type<String[]> STRING_ARRAY = new ArrayType<>(STRING, UNSIGNED_VAR_INT);
     public static final Type<String> UTF8_STRING = new Utf8StringType();
@@ -73,9 +76,8 @@ public class BedrockTypes {
     public static final Type<Tag> TAG_LE = new TagLEType();
     public static final Type<Tag> COMPOUND_TAG_VALUE = new TagValueType(Tag_Type.Compound);
     public static final Type<BlockPosition> BLOCK_POSITION = new BlockPositionType();
-    public static final Type<BlockPosition> POSITION_3I = new Position3iType();
     public static final Type<Position3f> POSITION_3F = new Position3fType();
-    public static final Type<Position3f> OPTIONAL_POSITION_3F = new Position3fType.OptionalPosition3fType();
+    public static final Type<Position3f> OPTIONAL_POSITION_3F = new OptionalType<>(POSITION_3F);
     public static final Type<Position2f> POSITION_2F = new Position2fType();
     public static final Type<GameRule> GAME_RULE = new GameRuleType(false);
     public static final Type<GameRule[]> GAME_RULE_ARRAY = new ArrayType<>(GAME_RULE, UNSIGNED_VAR_INT);
@@ -91,11 +93,6 @@ public class BedrockTypes {
     public static final Type<CommandOriginData> COMMAND_ORIGIN_DATA = new CommandOriginDataType();
     public static final Type<BedrockChunkSection> CHUNK_SECTION = new ChunkSectionType();
     public static final Type<BlockPosition> SUB_CHUNK_OFFSET = new SubChunkOffsetType();
-    public static final Type<ResourcePack> RESOURCE_PACK = new ResourcePackType();
-    public static final Type<ResourcePack[]> RESOURCE_PACK_ARRAY = new ArrayType<>(RESOURCE_PACK, UNSIGNED_SHORT_LE);
-    public static final Type<Pair<UUID, String>> PACK_ID_AND_VERSION = new PackIdAndVersionType();
-    public static final Type<Triple<UUID, String, String>> PACK_ID_AND_VERSION_AND_NAME = new PackIdAndVersionAndNameType();
-    public static final Type<Triple<UUID, String, String>[]> PACK_ID_AND_VERSION_AND_NAME_ARRAY = new ArrayType<>(PACK_ID_AND_VERSION_AND_NAME, UNSIGNED_VAR_INT);
     public static final Type<BlockChangeEntry> BLOCK_CHANGE_ENTRY = new BlockChangeEntryType();
     public static final Type<BlockChangeEntry[]> BLOCK_CHANGE_ENTRY_ARRAY = new ArrayType<>(BLOCK_CHANGE_ENTRY, UNSIGNED_VAR_INT);
     public static final Type<BedrockDataPalette> DATA_PALETTE = new DataPaletteType(true);
@@ -109,6 +106,7 @@ public class BedrockTypes {
     public static final Type<PlayerAbilities> PLAYER_ABILITIES = new PlayerAbilitiesType();
     public static final Type<CommandData[]> COMMAND_DATA_ARRAY = new CommandDataArrayType();
     public static final Type<FullContainerName> FULL_CONTAINER_NAME = new FullContainerNameType();
+    public static final Type<FullContainerName> OPTIONAL_FULL_CONTAINER_NAME = new OptionalType<>(FULL_CONTAINER_NAME);
     public static final Type<FullContainerName[]> FULL_CONTAINER_NAME_ARRAY = new ArrayType<>(FULL_CONTAINER_NAME, UNSIGNED_VAR_INT);
 
 }

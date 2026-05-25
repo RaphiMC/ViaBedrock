@@ -17,8 +17,6 @@
  */
 package net.raphimc.viabedrock.tool.generator.client;
 
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -41,13 +39,22 @@ public class BedrockPacksGenerator {
     public static void main(String[] args) throws Throwable {
         final File clientDataDir = new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data");
         final File resourcePacksDir = new File(clientDataDir, "resource_packs");
-        final File outputDir = new File("bedrock_packs");
-        outputDir.mkdirs();
-        Arrays.stream(outputDir.listFiles()).forEach(File::delete);
 
-        for (String vanillaPackName : ResourcePacksStorage.VANILLA_PACK_NAMES) {
-            final File packDir = new File(resourcePacksDir, vanillaPackName);
-            final File outputFile = new File(outputDir, vanillaPackName + ".mcpack");
+        final File resourcePacksOutputDir = new File("resource_packs");
+        resourcePacksOutputDir.mkdirs();
+        Arrays.stream(resourcePacksOutputDir.listFiles()).forEach(File::delete);
+        for (File packDir : resourcePacksDir.listFiles()) {
+            if (packDir.getName().equals("beta")) {
+                continue;
+            }
+            if (new File(packDir, "manifest.json").exists()) {
+                System.out.println("Processing pack: " + packDir.getName());
+            } else {
+                System.out.println("Skipping pack without manifest: " + packDir.getName());
+                continue;
+            }
+
+            final File outputFile = new File(resourcePacksOutputDir, packDir.getName() + ".mcpack");
 
             try (FileSystem fs = FileSystems.newFileSystem(new URI("jar:" + outputFile.toURI()), Map.of("create", "true"))) {
                 final Path fsRoot = fs.getRootDirectories().iterator().next();
@@ -65,7 +72,10 @@ public class BedrockPacksGenerator {
             }
         }
 
-        try (FileSystem fs = FileSystems.newFileSystem(new URI("jar:" + new File(outputDir, "vanilla_skin_pack.mcpack").toURI()), Map.of("create", "true"))) {
+        final File skinPacksOutputDir = new File("skin_packs");
+        skinPacksOutputDir.mkdirs();
+        Arrays.stream(skinPacksOutputDir.listFiles()).forEach(File::delete);
+        try (FileSystem fs = FileSystems.newFileSystem(new URI("jar:" + new File(skinPacksOutputDir, "vanilla.mcpack").toURI()), Map.of("create", "true"))) {
             final Path fsRoot = fs.getRootDirectories().iterator().next();
             addLicense(fsRoot);
             copyFolder(new File(clientDataDir, "skin_packs/vanilla"), fsRoot, ".");
