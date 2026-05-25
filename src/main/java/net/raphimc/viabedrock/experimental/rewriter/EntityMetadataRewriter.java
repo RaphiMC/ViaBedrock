@@ -629,8 +629,8 @@ public class EntityMetadataRewriter {
             }
             case DATA_WAITING -> {
                 if (entity.javaType().is(EntityTypes1_21_11.AREA_EFFECT_CLOUD)) {
-                    boolean isWaiting = (boolean) entityData.getValue();
-                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WAITING), VersionedTypes.V26_1.entityDataTypes().booleanType, isWaiting));
+                    int isWaiting = readNumber(entityData).intValue();
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WAITING), VersionedTypes.V26_1.entityDataTypes().booleanType, isWaiting != 0));
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received DATA_WAITING for non-AREA_EFFECT_CLOUD entity " + entity.type());
                 }
