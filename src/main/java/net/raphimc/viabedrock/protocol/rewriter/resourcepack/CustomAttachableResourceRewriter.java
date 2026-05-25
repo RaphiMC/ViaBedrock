@@ -20,7 +20,6 @@ package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import com.viaversion.viaversion.util.GsonUtil;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.resourcepack.content.Content;
@@ -31,8 +30,8 @@ import org.cube.converter.converter.enums.RotationType;
 import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
 import org.cube.converter.model.impl.java.JavaItemModel;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter {
 
@@ -47,10 +46,10 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
     }
 
     @Override
-    protected void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<ItemDefinition> javaItemDefinitions) {
+    public void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
         for (Map.Entry<String, AttachableDefinitions.AttachableDefinition> attachableEntry : resourcePackStorage.getAttachables().attachables().entrySet()) {
             final AttachableDefinitions.AttachableDefinition attachableDefinition = attachableEntry.getValue();
-            final ItemDefinition javaItemDefinition = new ItemDefinition(attachableEntry.getKey());
+            final Map<String, JsonObject> javaModelDefinitions = new HashMap<>();
             for (String bedrockPath : attachableDefinition.attachableData().getTextures().values()) {
                 for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
                     final Content.LazyImage texture = pack.content().getShortnameImage(bedrockPath);
@@ -71,7 +70,7 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
 
                 final String javaTexturePath = this.getJavaTexturePath(attachableDefinition.attachableData().getTextures().get(modelEntry.getKey()));
                 final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.POST_1_21_11);
-                final JsonObject itemModel = GsonUtil.getGson().fromJson(itemModelData.compile().toString(), JsonObject.class);
+                final JsonObject itemModel = itemModelData.compile();
 
                 final JsonObject display = new JsonObject();
                 final JsonArray scaling = new JsonArray();
@@ -94,10 +93,10 @@ public class CustomAttachableResourceRewriter extends ItemModelResourceRewriter 
                 itemModel.add("display", display);
 
                 final String modelKey = attachableEntry.getKey() + "_" + modelEntry.getKey();
-                javaItemDefinition.modelDefinitions().put(modelKey, itemModel);
+                javaModelDefinitions.put(modelKey, itemModel);
                 resourcePackStorage.getConverterData().put("ca_" + attachableEntry.getKey() + '_' + modelKey, true);
             }
-            javaItemDefinitions.add(javaItemDefinition);
+            this.putItemDefinition(javaContent, attachableEntry.getKey(), javaModelDefinitions);
         }
     }
 

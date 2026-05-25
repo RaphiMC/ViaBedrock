@@ -23,12 +23,8 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.resourcepack.content.Content;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
-import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.Rewriter {
 
@@ -42,49 +38,34 @@ public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.
         this.subFolder = subFolder;
     }
 
-    @Override
-    public final void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
-        final Set<ItemDefinition> javaItemDefinitions = new HashSet<>();
-        this.apply(resourcePackStorage, javaContent, javaItemDefinitions);
-        for (ItemDefinition itemDefinition : javaItemDefinitions) {
-            final String itemPath = this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(itemDefinition.name());
-            final JsonArray modelCases = new JsonArray();
-            for (Map.Entry<String, JsonObject> modelDefinition : itemDefinition.modelDefinitions().entrySet()) {
-                final String modelPath = itemPath + '/' + StringUtil.makeIdentifierValueSafe(modelDefinition.getKey());
-                javaContent.putJson("assets/viabedrock/models/" + modelPath + ".json", modelDefinition.getValue());
-
-                final JsonObject model = new JsonObject();
-                model.addProperty("type", "minecraft:model");
-                model.addProperty("model", "viabedrock:" + modelPath);
-
-                final JsonObject caseObj = new JsonObject();
-                caseObj.addProperty("when", modelDefinition.getKey());
-                caseObj.add("model", model);
-                modelCases.add(caseObj);
-            }
+    protected void putItemDefinition(final Content javaContent, final String name, final Map<String, JsonObject> modelDefinitions) {
+        final String itemPath = this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(name);
+        final JsonArray modelCases = new JsonArray();
+        for (Map.Entry<String, JsonObject> modelDefinition : modelDefinitions.entrySet()) {
+            final String modelPath = itemPath + '/' + StringUtil.makeIdentifierValueSafe(modelDefinition.getKey());
+            javaContent.putJson("assets/viabedrock/models/" + modelPath + ".json", modelDefinition.getValue());
 
             final JsonObject model = new JsonObject();
-            model.addProperty("type", "minecraft:select");
-            model.addProperty("property", "minecraft:custom_model_data");
-            model.add("cases", modelCases);
-            final JsonObject itemDefinitionObj = new JsonObject();
-            itemDefinitionObj.add("model", model);
-            javaContent.putJson("assets/viabedrock/items/" + itemPath + ".json", itemDefinitionObj);
-        }
-    }
+            model.addProperty("type", "minecraft:model");
+            model.addProperty("model", "viabedrock:" + modelPath);
 
-    protected abstract void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent, final Set<ItemDefinition> javaItemDefinitions);
+            final JsonObject caseObj = new JsonObject();
+            caseObj.addProperty("when", modelDefinition.getKey());
+            caseObj.add("model", model);
+            modelCases.add(caseObj);
+        }
+
+        final JsonObject model = new JsonObject();
+        model.addProperty("type", "minecraft:select");
+        model.addProperty("property", "minecraft:custom_model_data");
+        model.add("cases", modelCases);
+        final JsonObject itemDefinitionObj = new JsonObject();
+        itemDefinitionObj.add("model", model);
+        javaContent.putJson("assets/viabedrock/items/" + itemPath + ".json", itemDefinitionObj);
+    }
 
     protected String getJavaTexturePath(final String bedrockPath) {
         return "item/" + this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(bedrockPath.replace("textures/", ""));
-    }
-
-    protected record ItemDefinition(String name, Map<String, JsonObject> modelDefinitions) {
-
-        protected ItemDefinition(final String name) {
-            this(name, new HashMap<>());
-        }
-
     }
 
 }
