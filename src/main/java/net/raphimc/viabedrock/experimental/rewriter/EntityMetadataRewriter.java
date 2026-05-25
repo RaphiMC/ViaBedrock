@@ -642,6 +642,14 @@ public class EntityMetadataRewriter {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received DATA_PARTICLE for non-AREA_EFFECT_CLOUD entity " + entity.type());
                 }
             }
+            case VALUE -> { // TODO: Test
+                if (entity.javaType().is(EntityTypes1_21_11.EXPERIENCE_ORB)) {
+                    int exp = readNumber(entityData).intValue();
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.VALUE), VersionedTypes.V26_1.entityDataTypes().varIntType, exp));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received VALUE for non-EXPERIENCE_ORB entity " + entity.type());
+                }
+            }
             case AUX_POWER -> {
                 if (entity.javaType().is(EntityTypes1_21_11.ARROW)) {
                     // Potion aux value used for an Arrow's trail. (Equal to the potion ID - 1)
