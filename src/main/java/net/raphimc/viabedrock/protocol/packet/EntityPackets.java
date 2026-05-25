@@ -617,6 +617,7 @@ public class EntityPackets {
                      ACTOR_GROW_UP, // TODO: Find java equivalent
                      DRINK_MILK, //TODO: Find java equivalent
                      KINETIC_DAMAGE_DEALT, //TODO: Find java equivalent
+                     HURT_WITHOUT_RECEIVING_DAMAGE, // TODO: 26.2
                      DEPRECATED_ADD_PLAYER_LEVELS, // Deprecated
                      DEPRECATED_UPDATE_STRUCTURE_FEATURE // Deprecated
                         -> wrapper.cancel();
