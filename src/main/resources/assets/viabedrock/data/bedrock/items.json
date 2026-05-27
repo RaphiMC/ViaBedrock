@@ -134,7 +134,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -149,7 +150,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -279,7 +281,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -371,6 +374,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:amethyst_cluster": {
@@ -410,6 +416,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:andesite": {
@@ -422,6 +431,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:andesite_double_slab": {
@@ -722,6 +734,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_bouncy"
+    ],
     "toughnessValue": 0
   },
   "minecraft:bamboo_button": {
@@ -829,6 +844,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_bouncy"
+    ],
     "toughnessValue": 0
   },
   "minecraft:bamboo_mosaic_double_slab": {
@@ -878,7 +896,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -1033,7 +1052,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 839,
+    "id": 841,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -1073,6 +1092,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:bat_spawn_egg": {
@@ -1124,6 +1146,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:bee_nest": {
@@ -1382,7 +1407,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -1397,7 +1423,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -1527,7 +1554,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -1537,7 +1565,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 264,
+    "id": 272,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -1592,6 +1620,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:black_concrete_powder": {
@@ -1604,6 +1635,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:black_dye": {
@@ -1628,6 +1662,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:black_harness": {
@@ -1691,6 +1728,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:black_wool": {
@@ -1705,7 +1745,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -1721,7 +1762,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:stone_crafting_materials",
-      "minecraft:stone_tool_materials"
+      "minecraft:stone_tool_materials",
+      "minecraft:sulfur_cube_archetype_regular"
     ],
     "toughnessValue": 0
   },
@@ -1857,7 +1899,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 265,
+    "id": 268,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -1912,6 +1954,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:blue_concrete_powder": {
@@ -1924,6 +1969,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:blue_dye": {
@@ -1963,6 +2011,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:blue_harness": {
@@ -1990,6 +2041,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:blue_orchid": {
@@ -2050,6 +2104,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:blue_wool": {
@@ -2064,7 +2121,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -2086,7 +2144,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 1200.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 837,
+    "id": 839,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -2144,6 +2202,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:bone_meal": {
@@ -2255,6 +2316,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:brain_coral_fan": {
@@ -2375,6 +2439,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:brick_double_slab": {
@@ -2431,7 +2498,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 266,
+    "id": 276,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -2486,6 +2553,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:brown_concrete_powder": {
@@ -2498,6 +2568,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:brown_dye": {
@@ -2537,6 +2610,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:brown_harness": {
@@ -2576,6 +2652,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:brown_shulker_box": {
@@ -2624,6 +2703,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:brown_wool": {
@@ -2638,7 +2720,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -2688,6 +2771,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:bubble_coral_fan": {
@@ -2744,7 +2830,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 267,
+    "id": 275,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -2823,6 +2909,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:calibrated_sculk_sensor": {
@@ -2921,7 +3010,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 794,
+    "id": 796,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -2988,6 +3077,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cat_spawn_egg": {
@@ -3193,7 +3285,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 831,
+    "id": 833,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -3334,7 +3426,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -3349,7 +3442,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -3479,7 +3573,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -3577,6 +3672,21 @@
     "maxStackSize": 64,
     "toughnessValue": 0
   },
+  "minecraft:chiseled_cinnabar": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1124,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
+    "toughnessValue": 0
+  },
   "minecraft:chiseled_copper": {
     "armorValue": 0,
     "attackDamage": 0,
@@ -3587,6 +3697,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:chiseled_deepslate": {
@@ -3599,6 +3712,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:chiseled_nether_bricks": {
@@ -3611,6 +3727,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:chiseled_polished_blackstone": {
@@ -3623,6 +3742,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:chiseled_quartz_block": {
@@ -3635,6 +3757,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:chiseled_red_sandstone": {
@@ -3647,6 +3772,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:chiseled_resin_bricks": {
@@ -3659,6 +3787,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_bouncy"
+    ],
     "toughnessValue": 0
   },
   "minecraft:chiseled_sandstone": {
@@ -3671,6 +3802,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:chiseled_stone_bricks": {
@@ -3684,7 +3818,23 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:stone_bricks"
+      "minecraft:stone_bricks",
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
+    "toughnessValue": 0
+  },
+  "minecraft:chiseled_sulfur": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1107,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
     ],
     "toughnessValue": 0
   },
@@ -3698,6 +3848,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:chiseled_tuff_bricks": {
@@ -3710,6 +3863,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:chorus_flower": {
@@ -3751,6 +3907,132 @@
     "maxStackSize": 64,
     "toughnessValue": 0
   },
+  "minecraft:cinnabar": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1109,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
+    "toughnessValue": 0
+  },
+  "minecraft:cinnabar_brick_double_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1121,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:cinnabar_brick_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1120,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:cinnabar_brick_stairs": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1122,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:cinnabar_brick_wall": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1123,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:cinnabar_bricks": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1119,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
+    "toughnessValue": 0
+  },
+  "minecraft:cinnabar_double_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1111,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:cinnabar_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1110,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:cinnabar_stairs": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1112,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:cinnabar_wall": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1113,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
   "minecraft:clay": {
     "armorValue": 0,
     "attackDamage": 0,
@@ -3761,6 +4043,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:clay_ball": {
@@ -3836,6 +4121,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:coal_ore": {
@@ -3848,6 +4136,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:coarse_dirt": {
@@ -3860,6 +4151,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:coast_armor_trim_smithing_template": {
@@ -3889,7 +4183,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:stone_crafting_materials",
-      "minecraft:stone_tool_materials"
+      "minecraft:stone_tool_materials",
+      "minecraft:sulfur_cube_archetype_regular"
     ],
     "toughnessValue": 0
   },
@@ -3953,7 +4248,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:stone_crafting_materials",
-      "minecraft:stone_tool_materials"
+      "minecraft:stone_tool_materials",
+      "minecraft:sulfur_cube_archetype_regular"
     ],
     "toughnessValue": 0
   },
@@ -4078,7 +4374,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 835,
+    "id": 837,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -4126,7 +4422,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 834,
+    "id": 836,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -4225,7 +4521,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 820,
+    "id": 822,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -4237,7 +4533,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 821,
+    "id": 823,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -4429,6 +4725,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:copper_boots": {
@@ -4458,6 +4757,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:copper_chain": {
@@ -4689,6 +4991,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:copper_pickaxe": {
@@ -4790,7 +5095,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 816,
+    "id": 818,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -4802,7 +5107,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 798,
+    "id": 800,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -4814,7 +5119,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 807,
+    "id": 809,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -4826,7 +5131,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 808,
+    "id": 810,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -4869,6 +5174,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cracked_deepslate_tiles": {
@@ -4881,6 +5189,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cracked_nether_bricks": {
@@ -4893,6 +5204,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cracked_polished_blackstone_bricks": {
@@ -4905,6 +5219,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cracked_stone_bricks": {
@@ -4918,7 +5235,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:stone_bricks"
+      "minecraft:stone_bricks",
+      "minecraft:sulfur_cube_archetype_regular"
     ],
     "toughnessValue": 0
   },
@@ -5115,7 +5433,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:crimson_stems",
-      "minecraft:logs"
+      "minecraft:logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -5129,6 +5448,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:crimson_planks": {
@@ -5142,7 +5464,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -5248,7 +5571,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:crimson_stems",
-      "minecraft:logs"
+      "minecraft:logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -5298,6 +5622,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cut_copper": {
@@ -5310,6 +5637,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cut_copper_slab": {
@@ -5346,6 +5676,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cut_red_sandstone_double_slab": {
@@ -5382,6 +5715,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cut_sandstone_double_slab": {
@@ -5414,7 +5750,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 268,
+    "id": 267,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -5469,6 +5805,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cyan_concrete_powder": {
@@ -5481,6 +5820,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cyan_dye": {
@@ -5505,6 +5847,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cyan_harness": {
@@ -5568,6 +5913,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:cyan_wool": {
@@ -5582,7 +5930,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -5760,7 +6109,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -5775,7 +6125,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -5881,7 +6232,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -5895,6 +6247,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:dark_prismarine_double_slab": {
@@ -6003,6 +6358,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:dead_brain_coral_fan": {
@@ -6051,6 +6409,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:dead_bubble_coral_fan": {
@@ -6099,6 +6460,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:dead_fire_coral_fan": {
@@ -6147,6 +6511,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:dead_horn_coral_fan": {
@@ -6195,6 +6562,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:dead_tube_coral_fan": {
@@ -6255,6 +6625,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deepslate_brick_double_slab": {
@@ -6315,6 +6688,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deepslate_coal_ore": {
@@ -6327,6 +6703,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deepslate_copper_ore": {
@@ -6339,6 +6718,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deepslate_diamond_ore": {
@@ -6351,6 +6733,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deepslate_emerald_ore": {
@@ -6363,6 +6748,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deepslate_gold_ore": {
@@ -6375,6 +6763,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deepslate_iron_ore": {
@@ -6387,6 +6778,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deepslate_lapis_ore": {
@@ -6399,6 +6793,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deepslate_redstone_ore": {
@@ -6411,6 +6808,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deepslate_tile_double_slab": {
@@ -6471,6 +6871,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:deny": {
@@ -6577,6 +6980,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:diamond_boots": {
@@ -6712,6 +7118,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:diamond_pickaxe": {
@@ -6758,7 +7167,7 @@
     "enchantValue": 10,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 258,
+    "id": 262,
     "isDamageable": true,
     "maxDamage": 1560,
     "maxStackSize": 1,
@@ -6797,6 +7206,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:diorite_double_slab": {
@@ -6857,6 +7269,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:dirt_with_roots": {
@@ -6869,6 +7284,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:disc_fragment_5": {
@@ -6943,7 +7361,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 814,
+    "id": 816,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -6955,7 +7373,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 803,
+    "id": 805,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -6967,7 +7385,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 804,
+    "id": 806,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -6979,7 +7397,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 805,
+    "id": 807,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -6991,7 +7409,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 806,
+    "id": 808,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -7070,6 +7488,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:dripstone_block": {
@@ -7082,6 +7503,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:dropper": {
@@ -7132,7 +7556,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 838,
+    "id": 840,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -8660,6 +9084,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:emerald_ore": {
@@ -8672,6 +9099,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:empty_map": {
@@ -8750,6 +9180,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:end_crystal": {
@@ -8758,7 +9191,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 841,
+    "id": 843,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -8822,6 +9255,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:end_stone_brick_double_slab": {
@@ -8993,6 +9429,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:exposed_copper": {
@@ -9005,6 +9444,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:exposed_copper_bars": {
@@ -9029,6 +9471,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:exposed_copper_chain": {
@@ -9128,6 +9573,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:exposed_cut_copper_slab": {
@@ -9223,7 +9671,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 300.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 796,
+    "id": 798,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -9335,6 +9783,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:fire_coral_fan": {
@@ -9677,6 +10128,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:glass": {
@@ -9745,7 +10199,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 842,
+    "id": 844,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -9836,6 +10290,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:glowstone_dust": {
@@ -9887,6 +10344,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:gold_ingot": {
@@ -9929,6 +10389,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:golden_apple": {
@@ -10162,7 +10625,7 @@
     "enchantValue": 22,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 259,
+    "id": 260,
     "isDamageable": true,
     "maxDamage": 30,
     "maxStackSize": 1,
@@ -10199,6 +10662,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:granite_double_slab": {
@@ -10259,6 +10725,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:grass_path": {
@@ -10283,6 +10752,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:gray_bundle": {
@@ -10291,7 +10763,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 269,
+    "id": 266,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -10346,6 +10818,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:gray_concrete_powder": {
@@ -10358,6 +10833,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:gray_dye": {
@@ -10382,6 +10860,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:gray_harness": {
@@ -10445,6 +10926,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:gray_wool": {
@@ -10459,7 +10943,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -10469,7 +10954,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 270,
+    "id": 265,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -10524,6 +11009,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:green_concrete_powder": {
@@ -10536,6 +11024,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:green_dye": {
@@ -10560,6 +11051,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:green_harness": {
@@ -10623,6 +11117,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:green_wool": {
@@ -10637,7 +11134,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -11100,7 +11598,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 832,
+    "id": 834,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -11112,7 +11610,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 833,
+    "id": 835,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -11176,6 +11674,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:hay_block": {
@@ -11188,6 +11689,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:heart_of_the_sea": {
@@ -11281,6 +11785,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:honey_bottle": {
@@ -11320,6 +11827,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_sticky"
+    ],
     "toughnessValue": 0
   },
   "minecraft:hopper": {
@@ -11371,6 +11881,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:horn_coral_fan": {
@@ -11467,6 +11980,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:ice_bomb": {
@@ -11653,6 +12169,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:iron_boots": {
@@ -11853,6 +12372,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:iron_pickaxe": {
@@ -11897,7 +12419,7 @@
     "enchantValue": 14,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 260,
+    "id": 258,
     "isDamageable": true,
     "maxDamage": 250,
     "maxStackSize": 1,
@@ -12419,7 +12941,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -12434,7 +12957,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -12564,7 +13088,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -12626,6 +13151,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:lapis_lazuli": {
@@ -12653,6 +13181,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:large_amethyst_bud": {
@@ -12828,7 +13359,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 810,
+    "id": 812,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -12840,7 +13371,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 811,
+    "id": 813,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -12876,7 +13407,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 836,
+    "id": 838,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -13080,7 +13611,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 271,
+    "id": 264,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -13135,6 +13666,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:light_blue_concrete_powder": {
@@ -13147,6 +13681,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:light_blue_dye": {
@@ -13171,6 +13708,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:light_blue_harness": {
@@ -13234,6 +13774,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:light_blue_wool": {
@@ -13248,7 +13791,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -13258,7 +13802,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 272,
+    "id": 270,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -13313,6 +13857,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:light_gray_concrete_powder": {
@@ -13325,6 +13872,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:light_gray_dye": {
@@ -13400,6 +13950,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:light_gray_wool": {
@@ -13414,7 +13967,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -13472,7 +14026,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 273,
+    "id": 277,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -13527,6 +14081,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:lime_concrete_powder": {
@@ -13539,6 +14096,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:lime_dye": {
@@ -13563,6 +14123,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:lime_harness": {
@@ -13626,6 +14189,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:lime_wool": {
@@ -13640,7 +14206,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -13785,7 +14352,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 300.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 795,
+    "id": 797,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -13797,7 +14364,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 300.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 818,
+    "id": 820,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -13838,7 +14405,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 274,
+    "id": 279,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -13893,6 +14460,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:magenta_concrete_powder": {
@@ -13905,6 +14475,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:magenta_dye": {
@@ -13929,6 +14502,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:magenta_harness": {
@@ -13992,6 +14568,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:magenta_wool": {
@@ -14006,7 +14585,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -14020,6 +14600,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:magma_cream": {
@@ -14185,7 +14768,8 @@
     "tags": [
       "minecraft:logs",
       "minecraft:logs_that_burn",
-      "minecraft:mangrove_logs"
+      "minecraft:mangrove_logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -14200,7 +14784,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -14343,7 +14928,8 @@
     "tags": [
       "minecraft:logs",
       "minecraft:logs_that_burn",
-      "minecraft:mangrove_logs"
+      "minecraft:mangrove_logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -14393,6 +14979,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:melon_seeds": {
@@ -14506,7 +15095,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 819,
+    "id": 821,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -14537,6 +15126,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:moss_carpet": {
@@ -14561,6 +15153,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:mossy_cobblestone_double_slab": {
@@ -14670,7 +15265,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:stone_bricks"
+      "minecraft:stone_bricks",
+      "minecraft:sulfur_cube_archetype_regular"
     ],
     "toughnessValue": 0
   },
@@ -14711,6 +15307,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:mud_brick_double_slab": {
@@ -14771,6 +15370,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:muddy_mangrove_roots": {
@@ -14783,6 +15385,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:mule_spawn_egg": {
@@ -14810,6 +15415,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:mushroom_stew": {
@@ -14923,7 +15531,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 826,
+    "id": 828,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -14938,7 +15546,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 827,
+    "id": 829,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -14968,7 +15576,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 830,
+    "id": 832,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -15043,7 +15651,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 828,
+    "id": 830,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -15103,7 +15711,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 829,
+    "id": 831,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -15168,6 +15776,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:name_tag": {
@@ -15219,6 +15830,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:nether_brick_double_slab": {
@@ -15291,6 +15905,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:nether_sprouts": {
@@ -15339,6 +15956,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:netherbrick": {
@@ -15381,6 +16001,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:netherite_boots": {
@@ -15623,6 +16246,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:netherreactor": {
@@ -15796,7 +16422,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -15811,7 +16438,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -15893,7 +16521,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -15919,6 +16548,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:ocelot_spawn_egg": {
@@ -15946,6 +16578,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:ominous_bottle": {
@@ -15966,7 +16601,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 282,
+    "id": 283,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -15990,7 +16625,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 275,
+    "id": 271,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -16045,6 +16680,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:orange_concrete_powder": {
@@ -16057,6 +16695,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:orange_dye": {
@@ -16081,6 +16722,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:orange_harness": {
@@ -16144,6 +16788,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:orange_tulip": {
@@ -16170,7 +16817,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -16196,6 +16844,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:oxidized_copper": {
@@ -16208,6 +16859,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:oxidized_copper_bars": {
@@ -16232,6 +16886,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:oxidized_copper_chain": {
@@ -16331,6 +16988,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:oxidized_cut_copper_slab": {
@@ -16391,6 +17051,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:packed_mud": {
@@ -16403,6 +17066,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:painting": {
@@ -16442,6 +17108,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:pale_moss_carpet": {
@@ -16591,7 +17260,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -16606,7 +17276,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -16736,7 +17407,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -16807,6 +17479,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:peony": {
@@ -16962,7 +17637,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 276,
+    "id": 269,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -17017,6 +17692,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:pink_concrete_powder": {
@@ -17029,6 +17707,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:pink_dye": {
@@ -17053,6 +17734,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:pink_harness": {
@@ -17128,6 +17812,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:pink_tulip": {
@@ -17154,7 +17841,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -17224,7 +17912,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 300.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 815,
+    "id": 817,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -17267,6 +17955,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:pointed_dripstone": {
@@ -17321,6 +18012,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:polished_andesite_double_slab": {
@@ -17369,6 +18063,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:polished_blackstone": {
@@ -17381,6 +18078,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:polished_blackstone_brick_double_slab": {
@@ -17441,6 +18141,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:polished_blackstone_button": {
@@ -17515,6 +18218,69 @@
     "maxStackSize": 64,
     "toughnessValue": 0
   },
+  "minecraft:polished_cinnabar": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1114,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
+    "toughnessValue": 0
+  },
+  "minecraft:polished_cinnabar_double_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1116,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:polished_cinnabar_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1115,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:polished_cinnabar_stairs": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1117,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:polished_cinnabar_wall": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1118,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
   "minecraft:polished_deepslate": {
     "armorValue": 0,
     "attackDamage": 0,
@@ -17525,6 +18291,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:polished_deepslate_double_slab": {
@@ -17585,6 +18354,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:polished_diorite_double_slab": {
@@ -17633,6 +18405,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:polished_granite_double_slab": {
@@ -17671,6 +18446,69 @@
     "maxStackSize": 64,
     "toughnessValue": 0
   },
+  "minecraft:polished_sulfur": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1097,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
+    "toughnessValue": 0
+  },
+  "minecraft:polished_sulfur_double_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1099,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:polished_sulfur_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1098,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:polished_sulfur_stairs": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1100,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:polished_sulfur_wall": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1101,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
   "minecraft:polished_tuff": {
     "armorValue": 0,
     "attackDamage": 0,
@@ -17681,6 +18519,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:polished_tuff_double_slab": {
@@ -17810,6 +18651,18 @@
     "maxStackSize": 64,
     "toughnessValue": 0
   },
+  "minecraft:potent_sulfur": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1108,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
   "minecraft:potion": {
     "armorValue": 0,
     "attackDamage": 0,
@@ -17880,6 +18733,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:prismarine_brick_double_slab": {
@@ -17916,6 +18772,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:prismarine_bricks_stairs": {
@@ -18070,6 +18929,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:pumpkin_pie": {
@@ -18117,7 +18979,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 277,
+    "id": 278,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -18172,6 +19034,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:purple_concrete_powder": {
@@ -18184,6 +19049,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:purple_dye": {
@@ -18208,6 +19076,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:purple_harness": {
@@ -18271,6 +19142,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:purple_wool": {
@@ -18285,7 +19159,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -18299,6 +19174,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:purpur_double_slab": {
@@ -18323,6 +19201,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:purpur_slab": {
@@ -18374,6 +19255,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:quartz_bricks": {
@@ -18386,6 +19270,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:quartz_double_slab": {
@@ -18410,6 +19297,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:quartz_pillar": {
@@ -18422,6 +19312,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:quartz_slab": {
@@ -18596,6 +19489,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:raw_gold": {
@@ -18620,6 +19516,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:raw_iron": {
@@ -18644,6 +19543,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:recovery_compass": {
@@ -18664,7 +19566,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 278,
+    "id": 274,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -18719,6 +19621,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:red_concrete_powder": {
@@ -18731,6 +19636,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:red_dye": {
@@ -18751,7 +19659,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 813,
+    "id": 815,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -18767,6 +19675,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:red_harness": {
@@ -18806,6 +19717,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:red_nether_brick": {
@@ -18818,6 +19732,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:red_nether_brick_double_slab": {
@@ -18879,7 +19796,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:sand"
+      "minecraft:sand",
+      "minecraft:sulfur_cube_archetype_regular"
     ],
     "toughnessValue": 0
   },
@@ -18893,6 +19811,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:red_sandstone_double_slab": {
@@ -18989,6 +19910,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:red_tulip": {
@@ -19015,7 +19939,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -19044,6 +19969,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:redstone_lamp": {
@@ -19068,6 +19996,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:redstone_torch": {
@@ -19104,6 +20035,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:repeater": {
@@ -19152,6 +20086,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_bouncy"
+    ],
     "toughnessValue": 0
   },
   "minecraft:resin_brick": {
@@ -19227,6 +20164,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_bouncy"
+    ],
     "toughnessValue": 0
   },
   "minecraft:resin_clump": {
@@ -19362,7 +20302,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:sand"
+      "minecraft:sand",
+      "minecraft:sulfur_cube_archetype_regular"
     ],
     "toughnessValue": 0
   },
@@ -19376,6 +20317,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:sandstone_double_slab": {
@@ -19432,7 +20376,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 100.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 809,
+    "id": 811,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -19475,6 +20419,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:sculk_catalyst": {
@@ -19535,6 +20482,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:sea_pickle": {
@@ -19697,6 +20647,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:shulker_box": {
@@ -19705,7 +20658,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 824,
+    "id": 826,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -19763,6 +20716,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:silverfish_spawn_egg": {
@@ -19871,6 +20827,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:slime_ball": {
@@ -19958,6 +20917,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:smooth_quartz": {
@@ -19970,6 +20932,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:smooth_quartz_double_slab": {
@@ -20018,6 +20983,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:smooth_red_sandstone_double_slab": {
@@ -20066,6 +21034,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:smooth_sandstone_double_slab": {
@@ -20114,6 +21085,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:smooth_stone_double_slab": {
@@ -20207,6 +21181,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:snow_golem_spawn_egg": {
@@ -20295,7 +21272,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:soul_fire_base_blocks"
+      "minecraft:soul_fire_base_blocks",
+      "minecraft:sulfur_cube_archetype_high_resistance"
     ],
     "toughnessValue": 0
   },
@@ -20310,7 +21288,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:soul_fire_base_blocks"
+      "minecraft:soul_fire_base_blocks",
+      "minecraft:sulfur_cube_archetype_high_resistance"
     ],
     "toughnessValue": 0
   },
@@ -20344,7 +21323,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 840,
+    "id": 842,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -20420,6 +21399,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:spore_blossom": {
@@ -20569,7 +21551,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -20584,7 +21567,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -20714,7 +21698,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -20751,7 +21736,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 822,
+    "id": 824,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -20763,7 +21748,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 823,
+    "id": 825,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -20851,6 +21836,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:stone_axe": {
@@ -20877,7 +21865,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 799,
+    "id": 801,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -20889,7 +21877,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 800,
+    "id": 802,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -20901,7 +21889,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 801,
+    "id": 803,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -20913,7 +21901,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 802,
+    "id": 804,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -20978,7 +21966,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:stone_bricks"
+      "minecraft:stone_bricks",
+      "minecraft:sulfur_cube_archetype_regular"
     ],
     "toughnessValue": 0
   },
@@ -21066,7 +22055,7 @@
     "enchantValue": 5,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 262,
+    "id": 259,
     "isDamageable": true,
     "maxDamage": 130,
     "maxStackSize": 1,
@@ -21111,7 +22100,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 797,
+    "id": 799,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -21195,7 +22184,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21211,7 +22201,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21225,6 +22216,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_bouncy"
+    ],
     "toughnessValue": 0
   },
   "minecraft:stripped_birch_log": {
@@ -21239,7 +22233,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21255,7 +22250,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21271,7 +22267,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21287,7 +22284,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21303,7 +22301,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:crimson_stems",
-      "minecraft:logs"
+      "minecraft:logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21319,7 +22318,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:crimson_stems",
-      "minecraft:logs"
+      "minecraft:logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21335,7 +22335,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21351,7 +22352,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21367,7 +22369,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21383,7 +22386,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21400,7 +22404,8 @@
     "tags": [
       "minecraft:logs",
       "minecraft:logs_that_burn",
-      "minecraft:mangrove_logs"
+      "minecraft:mangrove_logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21417,7 +22422,8 @@
     "tags": [
       "minecraft:logs",
       "minecraft:logs_that_burn",
-      "minecraft:mangrove_logs"
+      "minecraft:mangrove_logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21433,7 +22439,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21449,7 +22456,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21465,7 +22473,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21481,7 +22490,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21497,7 +22507,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21513,7 +22524,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:logs",
-      "minecraft:logs_that_burn"
+      "minecraft:logs_that_burn",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21529,7 +22541,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:warped_stems",
-      "minecraft:logs"
+      "minecraft:logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21545,7 +22558,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:warped_stems",
-      "minecraft:logs"
+      "minecraft:logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -21592,6 +22606,159 @@
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
     "id": 417,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1092,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_brick_double_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1104,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_brick_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1103,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_brick_stairs": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1105,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_brick_wall": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1106,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_bricks": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1102,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_cube_bucket": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": 794,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 1,
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_cube_spawn_egg": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": 793,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "tags": [
+      "minecraft:spawn_egg"
+    ],
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_double_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1094,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_slab": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1093,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_stairs": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1095,
+    "isDamageable": false,
+    "maxDamage": 0,
+    "maxStackSize": 64,
+    "toughnessValue": 0
+  },
+  "minecraft:sulfur_wall": {
+    "armorValue": 0,
+    "attackDamage": 0,
+    "enchantValue": 0,
+    "furnaceBurnDuration": 0.0,
+    "furnaceXPMultiplier": 0.0,
+    "id": -1096,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -21732,7 +22899,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 817,
+    "id": 819,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -21909,7 +23076,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 283,
+    "id": 284,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -22031,6 +23198,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:tube_coral_fan": {
@@ -22067,6 +23237,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:tuff_brick_double_slab": {
@@ -22127,6 +23300,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:tuff_double_slab": {
@@ -22350,6 +23526,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:vex_armor_trim_smithing_template": {
@@ -22608,7 +23787,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:warped_stems",
-      "minecraft:logs"
+      "minecraft:logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -22622,6 +23802,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:warped_planks": {
@@ -22635,7 +23818,8 @@
     "maxDamage": 0,
     "maxStackSize": 64,
     "tags": [
-      "minecraft:planks"
+      "minecraft:planks",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -22741,7 +23925,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:warped_stems",
-      "minecraft:logs"
+      "minecraft:logs",
+      "minecraft:sulfur_cube_archetype_bouncy"
     ],
     "toughnessValue": 0
   },
@@ -22779,6 +23964,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_sliding"
+    ],
     "toughnessValue": 0
   },
   "minecraft:water": {
@@ -22827,6 +24015,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_copper": {
@@ -22839,6 +24030,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_copper_bars": {
@@ -22863,6 +24057,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_copper_chain": {
@@ -22962,6 +24159,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_cut_copper_slab": {
@@ -23010,6 +24210,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_exposed_copper": {
@@ -23022,6 +24225,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_exposed_copper_bars": {
@@ -23046,6 +24252,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_exposed_copper_chain": {
@@ -23145,6 +24354,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_exposed_cut_copper_slab": {
@@ -23217,6 +24429,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_oxidized_copper": {
@@ -23229,6 +24444,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_oxidized_copper_bars": {
@@ -23253,6 +24471,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_oxidized_copper_chain": {
@@ -23352,6 +24573,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_oxidized_cut_copper_slab": {
@@ -23412,6 +24636,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_weathered_copper": {
@@ -23424,6 +24651,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_weathered_copper_bars": {
@@ -23448,6 +24678,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_weathered_copper_chain": {
@@ -23547,6 +24780,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:waxed_weathered_cut_copper_slab": {
@@ -23622,6 +24858,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:weathered_copper": {
@@ -23634,6 +24873,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:weathered_copper_bars": {
@@ -23658,6 +24900,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:weathered_copper_chain": {
@@ -23757,6 +25002,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_slow_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:weathered_cut_copper_slab": {
@@ -23841,6 +25089,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_fast_flat"
+    ],
     "toughnessValue": 0
   },
   "minecraft:wheat": {
@@ -23873,7 +25124,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 279,
+    "id": 273,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 1,
@@ -23928,6 +25179,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:white_concrete_powder": {
@@ -23940,6 +25194,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:white_dye": {
@@ -23964,6 +25221,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:white_harness": {
@@ -24027,6 +25287,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:white_tulip": {
@@ -24053,7 +25316,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
@@ -24090,7 +25354,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 284,
+    "id": 282,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -24198,7 +25462,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 300.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 825,
+    "id": 827,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -24321,7 +25585,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 300.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 812,
+    "id": 814,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -24366,7 +25630,7 @@
     "enchantValue": 0,
     "furnaceBurnDuration": 0.0,
     "furnaceXPMultiplier": 0.0,
-    "id": 793,
+    "id": 795,
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
@@ -24465,6 +25729,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:yellow_concrete_powder": {
@@ -24477,6 +25744,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:yellow_dye": {
@@ -24501,6 +25771,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:yellow_harness": {
@@ -24564,6 +25837,9 @@
     "isDamageable": false,
     "maxDamage": 0,
     "maxStackSize": 64,
+    "tags": [
+      "minecraft:sulfur_cube_archetype_regular"
+    ],
     "toughnessValue": 0
   },
   "minecraft:yellow_wool": {
@@ -24578,7 +25854,8 @@
     "maxStackSize": 64,
     "tags": [
       "minecraft:vibration_damper",
-      "minecraft:wool"
+      "minecraft:wool",
+      "minecraft:sulfur_cube_archetype_light"
     ],
     "toughnessValue": 0
   },
