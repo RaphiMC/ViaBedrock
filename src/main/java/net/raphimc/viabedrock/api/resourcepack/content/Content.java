@@ -30,6 +30,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -149,6 +150,12 @@ public abstract class Content {
         return this.put(path, baos.toByteArray());
     }
 
+    public void putAll(final Content content) {
+        for (String path : content.getFilesDeep("", "")) {
+            this.copyFrom(content, path, path);
+        }
+    }
+
     public void copyFrom(final Content content, final String sourcePath, final String targetPath) {
         this.put(targetPath, content.get(sourcePath));
     }
@@ -156,6 +163,7 @@ public abstract class Content {
     public byte[] toZip() throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream(4 * 1024 * 1024);
         final ZipOutputStream zipOutputStream = new ZipOutputStream(baos);
+        zipOutputStream.setLevel(Deflater.BEST_SPEED);
         for (String path : this.getFilesDeep("", "")) {
             final ZipEntry entry = new ZipEntry(path);
             entry.setTime(0L);

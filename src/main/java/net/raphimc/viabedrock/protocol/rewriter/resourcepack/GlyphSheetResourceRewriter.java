@@ -21,10 +21,13 @@ import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.resourcepack.content.Content;
+import net.raphimc.viabedrock.api.resourcepack.content.InMemoryContent;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.util.Locale;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 // https://wiki.bedrock.dev/concepts/emojis
 public class GlyphSheetResourceRewriter implements ResourcePackRewriter.Rewriter {
@@ -33,7 +36,12 @@ public class GlyphSheetResourceRewriter implements ResourcePackRewriter.Rewriter
     private static final int GLYPHS_PER_COLUMN = 16;
 
     @Override
-    public void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
+    public void submitTasks(final ResourcePackStorage resourcePackStorage, final Consumer<Supplier<Content>> submitter) {
+        submitter.accept(() -> this.handleGlyphSheets(resourcePackStorage));
+    }
+
+    private Content handleGlyphSheets(final ResourcePackStorage resourcePackStorage) {
+        final Content javaContent = new InMemoryContent();
         final JsonArray providers = new JsonArray();
 
         for (int i = 0; i < 0xFF; i++) {
@@ -74,6 +82,7 @@ public class GlyphSheetResourceRewriter implements ResourcePackRewriter.Rewriter
             defaultJson.add("providers", providers);
             javaContent.putJson("assets/minecraft/font/default.json", defaultJson);
         }
+        return javaContent;
     }
 
 }
