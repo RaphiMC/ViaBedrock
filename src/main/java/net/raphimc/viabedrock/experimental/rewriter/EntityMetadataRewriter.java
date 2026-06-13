@@ -17,19 +17,31 @@
  */
 package net.raphimc.viabedrock.experimental.rewriter;
 
+import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.EulerAngle;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityDataType;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
+import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
+import net.raphimc.viabedrock.api.model.entity.LivingEntity;
+import net.raphimc.viabedrock.experimental.model.entity.properties.EntityProperty;
+import net.raphimc.viabedrock.experimental.model.entity.properties.EntityPropertyList;
+import net.raphimc.viabedrock.experimental.storage.EntityPropertyTracker;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
+import net.raphimc.viabedrock.protocol.model.EntityAttribute;
+import net.raphimc.viabedrock.protocol.model.EntityProperties;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataTypesBedrock;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -68,6 +80,19 @@ public class EntityMetadataRewriter {
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SILENT), VersionedTypes.V26_1.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.SILENT)));
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.NO_GRAVITY), VersionedTypes.V26_1.entityDataTypes().booleanType, !bedrockFlags.contains(ActorFlags.HAS_GRAVITY)));
 
+                if (entity.javaType().is(EntityTypes1_21_11.END_CRYSTAL)) {
+                    boolean showBottom = bedrockFlags.contains(ActorFlags.SHOW_BOTTOM);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SHOW_BOTTOM), VersionedTypes.V26_1.entityDataTypes().booleanType, showBottom));
+                }
+
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_11.ABSTRACT_ARROW)) {
+                    byte arrowBitMask = 0;
+                    if (bedrockFlags.contains(ActorFlags.CRITICAL)) {
+                        arrowBitMask |= 0x01;
+                    }
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, arrowBitMask));
+                }
+
                 if (entity.javaType().isOrHasParent(EntityTypes1_21_11.MOB)) {
                     byte mobBitMask = 0;
                     if (bedrockFlags.contains(ActorFlags.NOAI)) {
@@ -75,6 +100,16 @@ public class EntityMetadataRewriter {
                     }
 
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.MOB_FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, mobBitMask));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_11.GHAST)) {
+                    boolean attacking = bedrockFlags.contains(ActorFlags.CHARGED);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.IS_CHARGING), VersionedTypes.V26_1.entityDataTypes().booleanType, attacking));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_11.SNOW_GOLEM)) {
+                    byte hasPumpkin = (byte) (bedrockFlags.contains(ActorFlags.SHEARED) ? 0 : 0x10);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, hasPumpkin));
                 }
 
                 if (entity.javaType().is(EntityTypes1_21_11.ALLAY)) {
@@ -101,6 +136,34 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, beeBitMask));
                 }
 
+                if (entity.javaType().is(EntityTypes1_21_11.FOX)) { // TODO: Test
+                    byte foxBitMask = 0;
+                    if (false) { // TODO: Sitting
+                       foxBitMask |= 0x01;
+                    }
+                    // 0x02: Unused
+                    if (false) { // TODO: Crouching
+                        foxBitMask |= 0x04;
+                    }
+                    if (false) { // TODO: Interested
+                        foxBitMask |= 0x08;
+                    }
+                    if (false) { // TODO: Pouncing
+                        foxBitMask |= 0x10;
+                    }
+                    if (bedrockFlags.contains(ActorFlags.SLEEPING)) {
+                        foxBitMask |= 0x20;
+                    }
+                    if (false) { // TODO: Faceplanted
+                        foxBitMask |= 0x40;
+                    }
+                    if (false) { // TODO: Defending
+                        foxBitMask |= (byte) 0x80;
+                    }
+
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, foxBitMask));
+                }
+
                 if (entity.javaType().is(EntityTypes1_21_11.OCELOT)) {
                     boolean isTrusting = bedrockFlags.contains(ActorFlags.TRUSTING);
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.TRUSTING), VersionedTypes.V26_1.entityDataTypes().booleanType, isTrusting));
@@ -118,11 +181,9 @@ public class EntityMetadataRewriter {
                     int sniffingState = 0;
                     if (bedrockFlags.contains(ActorFlags.IDLING)) {
                         sniffingState = 0;
-                    } else if (false) {
-                        //TODO: FEELING_HAPPY
+                    } else if (bedrockFlags.contains(ActorFlags.DEPRECATED_3)) { // FEELING_HAPPY
                         sniffingState = 1;
-                    } else if (false) {
-                        //TODO: SCENTING
+                    } else if (bedrockFlags.contains(ActorFlags.DEPRECATED_1)) { // SCENTING
                         sniffingState = 2;
                     } else if (bedrockFlags.contains(ActorFlags.SNIFFING)) {
                         sniffingState = 3;
@@ -130,16 +191,19 @@ public class EntityMetadataRewriter {
                         sniffingState = 4;
                     } else if (bedrockFlags.contains(ActorFlags.DIGGING)) {
                         sniffingState = 5;
-                    } else if (false) {
-                        //TODO: RISING
+                    } else if (bedrockFlags.contains(ActorFlags.DEPRECATED_2)) { // RISING
                         sniffingState = 6;
                     } else {
                         sniffingState = 0;
-                        //TODO: Currently spams a bit but thats probably because we are missing states
-                        //ViaBedrock.getPlatform().getLogger().warning("Unknown sniffer state, defaulting to IDLING.");
+                        ViaBedrock.getPlatform().getLogger().warning("Unknown sniffer state, defaulting to IDLING.");
                     }
 
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.STATE), VersionedTypes.V26_1.entityDataTypes().snifferState, sniffingState));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_11.STRIDER)) {
+                    boolean shaking =  bedrockFlags.contains(ActorFlags.SHAKING);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SUFFOCATING), VersionedTypes.V26_1.entityDataTypes().booleanType, shaking));
                 }
 
                 if (entity.javaType().is(EntityTypes1_21_11.TURTLE)) { //TODO: Test
@@ -163,8 +227,13 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, tamableBitMask));
                 }
 
-                if (entity.javaType().is(EntityTypes1_21_11.CAT)) { //TODO: Test
-                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.IS_LYING), VersionedTypes.V26_1.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.LAYING_DOWN)));
+                if (entity.javaType().is(EntityTypes1_21_11.CAT)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.IS_LYING), VersionedTypes.V26_1.entityDataTypes().booleanType, bedrockFlags.contains(ActorFlags.RESTING)));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_11.BLAZE)) {
+                    byte onFire = (byte) (bedrockFlags.contains(ActorFlags.CHARGED) ? 0x01 : 0);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, onFire));
                 }
 
                 if (entity.javaType().is(EntityTypes1_21_11.BOGGED)) {
@@ -178,6 +247,12 @@ public class EntityMetadataRewriter {
 
                     boolean ignited = bedrockFlags.contains(ActorFlags.IGNITED);
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.IS_IGNITED), VersionedTypes.V26_1.entityDataTypes().booleanType, ignited));
+                }
+
+                if (entity.javaType().is(EntityTypes1_21_11.SPIDER)) {
+                    boolean climbing = bedrockFlags.contains(ActorFlags.WALLCLIMBING);
+                    byte mask = (byte) (climbing ? 1 : 0);
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, mask));
                 }
 
                 if (entity.javaType().is(EntityTypes1_21_11.ZOGLIN)) {
@@ -283,6 +358,10 @@ public class EntityMetadataRewriter {
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.TYPE), VersionedTypes.V26_1.entityDataTypes().varIntType, javaVariant));
                     }
                     case PARROT -> { // TODO: Test when I can
+                        int javaVariant = variant;
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.VARIANT), VersionedTypes.V26_1.entityDataTypes().varIntType, javaVariant));
+                    }
+                    case CAT -> { // TODO: Test when I can
                         int javaVariant = variant;
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.VARIANT), VersionedTypes.V26_1.entityDataTypes().varIntType, javaVariant));
                     }
@@ -486,7 +565,6 @@ public class EntityMetadataRewriter {
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.LEFT_LEG_POSE), VersionedTypes.V26_1.entityDataTypes().rotationsType, leftLegPose));
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.RIGHT_LEG_POSE), VersionedTypes.V26_1.entityDataTypes().rotationsType, rightLegPose));
             }
-
             case PUFFED_STATE -> {
                 int javaPuffedState = readNumber(entityData).intValue();
                 if (entity.javaType().is(EntityTypes1_21_11.PUFFERFISH)) {
@@ -551,8 +629,8 @@ public class EntityMetadataRewriter {
             }
             case DATA_WAITING -> {
                 if (entity.javaType().is(EntityTypes1_21_11.AREA_EFFECT_CLOUD)) {
-                    boolean isWaiting = (boolean) entityData.getValue();
-                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WAITING), VersionedTypes.V26_1.entityDataTypes().booleanType, isWaiting));
+                    int isWaiting = readNumber(entityData).intValue();
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WAITING), VersionedTypes.V26_1.entityDataTypes().booleanType, isWaiting != 0));
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received DATA_WAITING for non-AREA_EFFECT_CLOUD entity " + entity.type());
                 }
@@ -562,6 +640,25 @@ public class EntityMetadataRewriter {
                     int particle_id_or_colour = readNumber(entityData).intValue(); //TODO: not sure what this is exactly
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received DATA_PARTICLE for non-AREA_EFFECT_CLOUD entity " + entity.type());
+                }
+            }
+            case VALUE -> { // TODO: Test
+                if (entity.javaType().is(EntityTypes1_21_11.EXPERIENCE_ORB)) {
+                    int exp = readNumber(entityData).intValue();
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.VALUE), VersionedTypes.V26_1.entityDataTypes().varIntType, exp));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received VALUE for non-EXPERIENCE_ORB entity " + entity.type());
+                }
+            }
+            case AUX_POWER -> {
+                if (entity.javaType().is(EntityTypes1_21_11.ARROW)) {
+                    // Potion aux value used for an Arrow's trail. (Equal to the potion ID - 1)
+                    int potionId = readNumber(entityData).byteValue() + 1;
+
+                    // TODO: Find potion by id and get color
+                    //javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.EFFECT_COLOR), VersionedTypes.V26_1.entityDataTypes().varIntType, to_do));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received AUX_POWER for non-ARROW entity " + entity.type());
                 }
             }
             case INV -> {
@@ -636,6 +733,28 @@ public class EntityMetadataRewriter {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received TARGET for non-GUARDIAN entity " + entity.type() + " with non-zero value " + targetId);
                 }
             }
+            case BLOCK_TARGET ->  {
+                if (entity.javaType().is(EntityTypes1_21_11.END_CRYSTAL)) {
+                    BlockPosition blockPosition = (BlockPosition) entityData.getValue(); // TODO: Test
+
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.BEAM_TARGET), VersionedTypes.V26_1.entityDataTypes().optionalBlockPositionType, blockPosition));
+                } else {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received BLOCK_TARGET for non-END_CRYSTAL entity " + entity.type());
+                }
+            }
+            case RESERVED_038 -> { // SCALE
+                float scale = readNumber(entityData).floatValue();
+
+                // TODO: Armor stands might have special handling
+
+                if (entity.javaType().isOrHasParent(EntityTypes1_21_11.LIVING_ENTITY) && scale != 0f) {
+                    LivingEntity livingEntity = (LivingEntity) entity;
+
+                    livingEntity.updateAttributes(new EntityAttribute("minecraft:scale", scale, (float) 1 / 16, 16));
+                }
+            }
+            case RESERVED_053 -> {} // BOUNDING_BOX_WIDTH
+            case RESERVED_054 -> {} // BOUNDING_BOX_HEIGHT
             case AGENT, BALLOON_ANCHOR -> {} // Education edition only, ignore
             default -> {
                 return false;
@@ -643,6 +762,181 @@ public class EntityMetadataRewriter {
         }
 
         return true;
+    }
+
+    public static void rewriteProperties(final UserConnection user, final Entity entity, final EntityProperties properties, final List<EntityData> javaEntityData) {
+        final EntityPropertyTracker epTracker = user.get(EntityPropertyTracker.class);
+        CompoundTag registries = BedrockProtocol.MAPPINGS.getJavaRegistries();
+        EntityPropertyList expectedProperties = epTracker.getEntityProperties(entity.type());
+        if (expectedProperties == null) {
+            //ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to find expected properties for entity " + entity.type());
+            return;
+        }
+
+        Iterator<EntityProperty> intIterator = expectedProperties.intProperties().iterator();
+
+        for (int i: properties.intProperties().values()) {
+            final EntityProperty property = intIterator.next();
+
+            if (property instanceof EntityProperty.BooleanProperty booleanProperty) {
+                boolean value = i != 0;
+
+                switch (booleanProperty.identifier()) {
+                    case "minecraft:can_move" -> {
+                        if (entity.javaType().is(EntityTypes1_21_11.HAPPY_GHAST)) {
+                            javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.STAYS_STILL), VersionedTypes.V26_1.entityDataTypes().booleanType, !value));
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().warning("Received can_move property for non-HAPPY_GHAST entity " + entity.type());
+                        }
+                    }
+                    case "minecraft:has_nectar" -> {
+                        if  (entity.javaType().is(EntityTypes1_21_11.BEE)) {
+                            byte bitmask = value ? (byte) 0x08 : 0; // TODO
+
+                            javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.FLAGS), VersionedTypes.V26_1.entityDataTypes().byteType, bitmask));
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().warning("Received has_nectar property for non-BEE entity " + entity.type());
+                        }
+                    }
+                    default -> ViaBedrock.getPlatform().getLogger().warning("Received boolean property " + booleanProperty.identifier() + " for entity " + entity.type() + " with value " + value);
+                }
+            } else if (property instanceof EntityProperty.IntProperty integerProperty) {
+                int value = i;
+
+                ViaBedrock.getPlatform().getLogger().warning("Received int property " + integerProperty.identifier() + " for entity " + entity.type() + " with value " + value);
+            } else if (property instanceof EntityProperty.EnumProperty enumProperty) {
+                String value = enumProperty.possibleValues()[i];
+
+                switch (enumProperty.identifier()) {
+                    case "minecraft:climate_variant" -> {
+                        String namespacedVariant = Key.namespaced(value);
+
+                        String registryName = switch (entity.javaType()) {
+                            case CHICKEN -> "minecraft:chicken_variant";
+                            case COW -> "minecraft:cow_variant";
+                            case PIG -> "minecraft:pig_variant";
+                            default -> {
+                                ViaBedrock.getPlatform().getLogger().warning("Received climate_variant for unsupported entity " + entity.type());
+                                yield null;
+                            }
+                        };
+                        EntityDataType variantType = switch (entity.javaType()) {
+                            case CHICKEN -> VersionedTypes.V26_1.entityDataTypes().chickenVariantType;
+                            case COW -> VersionedTypes.V26_1.entityDataTypes().cowVariantType;
+                            case PIG -> VersionedTypes.V26_1.entityDataTypes().pigVariantType;
+                            default -> null;
+                        };
+
+                        if (registryName != null && variantType != null) {
+                            CompoundTag variantRegistry = registries.getCompoundTag(registryName);
+                            // TODO: Could be cleaned up
+                            int javaVariant = -1;
+                            for (String key : variantRegistry.keySet()) {
+                                javaVariant++;
+                                if (key.equals(namespacedVariant)) {
+                                    break;
+                                }
+                            }
+
+                            if (javaVariant != -1) {
+                                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.VARIANT), variantType, javaVariant));
+                            } else {
+                                ViaBedrock.getPlatform().getLogger().warning("Failed to find variant " + namespacedVariant + " in registry " + registryName + " for entity " + entity.type());
+                            }
+                        }
+                    }
+                    case "minecraft:sound_variant" -> {
+                        String namespacedVariant = Key.namespaced(value);
+
+                        String registryName = switch (entity.javaType()) {
+                            case CHICKEN -> "minecraft:chicken_sound_variant";
+                            case COW -> "minecraft:cow_sound_variant";
+                            case PIG -> "minecraft:pig_sound_variant";
+                            case WOLF -> "minecraft:wolf_sound_variant";
+                            case CAT -> "minecraft:cat_sound_variant";
+                            default -> {
+                                ViaBedrock.getPlatform().getLogger().warning("Received sound_variant for unsupported entity " + entity.type());
+                                yield null;
+                            }
+                        };
+                        EntityDataType variantType = switch (entity.javaType()) {
+                            case CHICKEN -> VersionedTypes.V26_1.entityDataTypes().chickenSoundVariant;
+                            case COW -> VersionedTypes.V26_1.entityDataTypes().cowSoundVariant;
+                            case PIG -> VersionedTypes.V26_1.entityDataTypes().pigSoundVariant;
+                            case WOLF -> VersionedTypes.V26_1.entityDataTypes().wolfSoundVariantType;
+                            case CAT -> VersionedTypes.V26_1.entityDataTypes().catSoundVariant;
+                            default -> null;
+                        };
+
+                        if (registryName != null && variantType != null) {
+                            CompoundTag variantRegistry = registries.getCompoundTag(registryName);
+                            // TODO: Could be cleaned up
+                            int javaVariant = -1;
+                            for (String key : variantRegistry.keySet()) {
+                                javaVariant++;
+                                if (key.equals(namespacedVariant)) {
+                                    break;
+                                }
+                            }
+
+                            if (javaVariant != -1) {
+                                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SOUND_VARIANT), variantType, javaVariant));
+                            } else {
+                                ViaBedrock.getPlatform().getLogger().warning("Failed to find sound variant " + namespacedVariant + " in registry " + registryName + " for entity " + entity.type());
+                            }
+                        }
+                    }
+                    case "minecraft:chest_interaction" -> {
+                        if (entity.javaType().is(EntityTypes1_21_11.COPPER_GOLEM)) {
+                            int state = switch (value) {
+                                case "none" -> 0; // IDLE
+                                case "take" -> 1; // GETTING_ITEM
+                                case "take_fail" -> 2; // GETTING_NO_ITEM
+                                case "put" -> 3; // DROPPING_ITEM
+                                case "put_fail" -> 4; // DROPPING_NO_ITEM
+                                default -> -1;
+                            };
+
+                            if (state != -1) {
+                                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.COPPER_GOLEM_STATE), VersionedTypes.V26_1.entityDataTypes().copperGolemState, state));
+                            } else {
+                                ViaBedrock.getPlatform().getLogger().warning("Received unknown chest_interaction state " + value + " for COPPER_GOLEM entity " + entity.type());
+                            }
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().warning("Received chest_interaction for non-COPPER_GOLEM entity " + entity.type());
+                        }
+                    }
+                    case "minecraft:oxidation_level" -> {
+                        if (entity.javaType().is(EntityTypes1_21_11.COPPER_GOLEM)) {
+                            int state = switch (value) {
+                                case "unoxidized" -> 0; // UNAFFECTED
+                                case "exposed" -> 1; // EXPOSED
+                                case "weathered" -> 2; // WEATHERED
+                                case "oxidized" -> 3; // OXIDIZED
+                                default -> -1;
+                            };
+
+                            if (state != -1) {
+                                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WEATHER_STATE), VersionedTypes.V26_1.entityDataTypes().weatheringCopperState, state));
+                            } else {
+                                ViaBedrock.getPlatform().getLogger().warning("Received unknown oxidation_level state " + value + " for COPPER_GOLEM entity " + entity.type());
+                            }
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().warning("Received oxidation_level for non-COPPER_GOLEM entity " + entity.type());
+                        }
+                    }
+                    default -> ViaBedrock.getPlatform().getLogger().warning("Received enum property " + enumProperty.identifier() + " for entity " + entity.type() + " with value " + value);
+                }
+            }
+        }
+
+        Iterator<EntityProperty.FloatProperty> floatIterator = expectedProperties.floatProperties().iterator();
+
+        for (float value : properties.floatProperties().values()) {
+            final EntityProperty.FloatProperty property = floatIterator.next();
+
+            ViaBedrock.getPlatform().getLogger().warning("Received float property " + property.identifier() + " for entity " + entity.type() + " with value " + value);
+        }
     }
 
     private static Number readNumber(EntityData data) {

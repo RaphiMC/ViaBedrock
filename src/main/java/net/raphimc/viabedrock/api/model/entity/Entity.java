@@ -34,6 +34,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.DataItemType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SharedTypes_Legacy_LevelSoundEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.BossEventOperationType;
+import net.raphimc.viabedrock.protocol.model.EntityProperties;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataTypesBedrock;
@@ -118,6 +119,12 @@ public class Entity {
             }
         }
         this.onEntityDataChanged();
+    }
+
+    public final void translateEntityProperties(final EntityProperties properties, final List<EntityData> javaEntityData) {
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            EntityMetadataRewriter.rewriteProperties(user, this, properties, javaEntityData);
+        }
     }
 
     public void playSound(final SharedTypes_Legacy_LevelSoundEvent soundEvent) {
