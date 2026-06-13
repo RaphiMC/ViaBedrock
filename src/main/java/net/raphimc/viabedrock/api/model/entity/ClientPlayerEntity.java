@@ -72,6 +72,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     private boolean horizontalCollision;
     private boolean sneaking;
     private boolean sprinting;
+    private boolean gliding;
 
     // Misc data
     private GameType gameType;
@@ -361,6 +362,14 @@ public class ClientPlayerEntity extends PlayerEntity {
         final EntityAttribute newMovementAttribute = oldMovementAttribute.withModifiers(modifiers.toArray(new EntityAttribute.Modifier[0]));
         // Compute the current value, as the client only updates it when a modifier is changed by itself
         this.updateAttributes(new EntityAttribute[]{newMovementAttribute.withValue(newMovementAttribute.computeCurrentValue())});
+    }
+
+    public boolean isGliding() {
+        return this.gliding;
+    }
+
+    public void setGliding(final boolean gliding) {
+        this.gliding = gliding;
     }
 
     public GameType gameType() {
