@@ -642,5 +642,8 @@
         "value": -1
       }
     ]
-  }
+  },
+  "minecraft:noxious_gas_particle": "minecraft:noxious_gas",
+  "minecraft:sulfur_bubble_particle": null,
+  "minecraft:sulfur_cube_goo": "minecraft:sulfur_cube_goo"
 }

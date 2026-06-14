@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
@@ -42,7 +42,7 @@ public class LivingEntity extends Entity {
     protected final Map<String, EntityAttribute> attributes = new HashMap<>();
     protected final Map<String, EntityEffect> effects = new HashMap<>();
 
-    public LivingEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes1_21_11 javaType) {
+    public LivingEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes26_2 javaType) {
         super(user, uniqueId, runtimeId, type, javaId, javaUuid, javaType);
         this.attributes.put("minecraft:health", new EntityAttribute("minecraft:health", 20F, 0, 20F));
     }
@@ -99,7 +99,7 @@ public class LivingEntity extends Entity {
         if (!javaEntityData.isEmpty()) {
             final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets26_1.SET_ENTITY_DATA, this.user);
             setEntityData.write(Types.VAR_INT, this.javaId); // entity id
-            setEntityData.write(VersionedTypes.V26_1.entityDataList, javaEntityData); // entity data
+            setEntityData.write(VersionedTypes.V26_2.entityDataList, javaEntityData); // entity data
             setEntityData.send(BedrockProtocol.class);
         }
     }
@@ -165,7 +165,7 @@ public class LivingEntity extends Entity {
                 yield true;
             }
             case "minecraft:health" -> {
-                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex(EntityDataFields.HEALTH), VersionedTypes.V26_1.entityDataTypes.floatType, attribute.computeClampedValue()));
+                javaEntityData.add(new EntityData(this.getJavaEntityDataIndex(EntityDataFields.HEALTH), VersionedTypes.V26_2.entityDataTypes.floatType, attribute.computeClampedValue()));
                 javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get(Attributes.MAX_HEALTH)); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.maxValue()); // base value
                 javaAttributes.write(Types.VAR_INT, 0); // modifier count
