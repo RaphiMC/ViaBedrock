@@ -256,6 +256,8 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // enable experimental game play
                     final ChatRestrictionLevel chatRestrictionLevel = ChatRestrictionLevel.getByValue(wrapper.read(Types.BYTE), ChatRestrictionLevel.Disabled); // chat restriction level
                     wrapper.read(Types.BOOLEAN); // disabling player interactions
+                    wrapper.read(BedrockTypes.VAR_INT); // server editor connection policy
+                    wrapper.read(Types.BOOLEAN); // allow anonymous block drops in editor worlds
 
                     // Continue reading start game packet
                     wrapper.read(BedrockTypes.STRING); // level id
@@ -276,6 +278,7 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // client side generation
                     final boolean hashedRuntimeBlockIds = wrapper.read(Types.BOOLEAN); // use hashed block runtime ids
                     wrapper.read(Types.BOOLEAN); // server authoritative sounds
+                    wrapper.read(Types.BOOLEAN); // is logging chat
                     if (wrapper.read(Types.BOOLEAN)) { // has server join information
                         if (wrapper.read(Types.BOOLEAN)) { // has gathering join information
                             wrapper.read(BedrockTypes.UUID); // experience id

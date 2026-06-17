@@ -372,9 +372,9 @@ public class ClientPlayerPackets {
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemUseOnEntityTransaction.getValue()); // transaction type
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entity.runtimeId()); // entity runtime id
-            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseOnActorInventoryTransaction_ActionType.Attack.getValue()); // action type
+            wrapper.write(BedrockTypes.VAR_INT, ItemUseOnActorInventoryTransaction_ActionType.Attack.getValue()); // action type
             wrapper.write(BedrockTypes.VAR_INT, (int) inventoryContainer.getSelectedHotbarSlot()); // hotbar slot
-            wrapper.write(wrapper.user().get(ItemRewriter.class).itemType(), inventoryContainer.getSelectedHotbarItem()); // held item
+            wrapper.write(wrapper.user().get(ItemRewriter.class).newItemType(), inventoryContainer.getSelectedHotbarItem()); // held item
             wrapper.write(BedrockTypes.POSITION_3F, entityTracker.getClientPlayer().position()); // player position
             wrapper.write(BedrockTypes.POSITION_3F, Position3f.ZERO); // click position
 
@@ -402,9 +402,9 @@ public class ClientPlayerPackets {
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemUseOnEntityTransaction.getValue()); // transaction type
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entity.runtimeId()); // entity runtime id
-            wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ItemUseOnActorInventoryTransaction_ActionType.Interact.getValue()); // action type
+            wrapper.write(BedrockTypes.VAR_INT, ItemUseOnActorInventoryTransaction_ActionType.Interact.getValue()); // action type
             wrapper.write(BedrockTypes.VAR_INT, (int) inventoryContainer.getSelectedHotbarSlot()); // hotbar slot
-            wrapper.write(wrapper.user().get(ItemRewriter.class).itemType(), inventoryContainer.getSelectedHotbarItem()); // held item
+            wrapper.write(wrapper.user().get(ItemRewriter.class).newItemType(), inventoryContainer.getSelectedHotbarItem()); // held item
             wrapper.write(BedrockTypes.POSITION_3F, entityTracker.getClientPlayer().position()); // player position
             final Vector3d location = wrapper.read(Types.LOW_PRECISION_VECTOR); // location
             wrapper.write(BedrockTypes.POSITION_3F, entity.position().add((float) location.x(), (float) location.y(), (float) location.z())); // click position

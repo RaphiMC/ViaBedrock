@@ -143,6 +143,11 @@ public class WorldEffectPackets {
             });
         });
         protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_SOUND_EVENT, ClientboundPackets26_1.SOUND, wrapper -> {
+            wrapper.cancel();
+            return;
+
+            // TODO
+            /*
             final int rawSoundEvent = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // event id
             final SharedTypes_Legacy_LevelSoundEvent soundEvent = SharedTypes_Legacy_LevelSoundEvent.getByValue(rawSoundEvent);
             if (soundEvent == null) {
@@ -209,6 +214,8 @@ public class WorldEffectPackets {
             wrapper.write(Types.FLOAT, globalSound ? Integer.MAX_VALUE : MathUtil.randomFloatInclusive(configuredSound.minVolume(), configuredSound.maxVolume())); // volume
             wrapper.write(Types.FLOAT, MathUtil.randomFloatInclusive(configuredSound.minPitch(), configuredSound.maxPitch())); // pitch
             wrapper.write(Types.LONG, ThreadLocalRandom.current().nextLong()); // seed
+
+            */
         });
         protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_EVENT, ClientboundPackets26_1.LEVEL_EVENT, wrapper -> {
             final int rawLevelEvent = wrapper.read(BedrockTypes.VAR_INT); // event id

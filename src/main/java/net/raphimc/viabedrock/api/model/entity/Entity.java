@@ -121,6 +121,8 @@ public class Entity {
     }
 
     public void playSound(final SharedTypes_Legacy_LevelSoundEvent soundEvent) {
+        //TODO
+        /*
         final PacketWrapper levelSoundEvent = PacketWrapper.create(ClientboundBedrockPackets.LEVEL_SOUND_EVENT, this.user);
         levelSoundEvent.write(BedrockTypes.UNSIGNED_VAR_INT, soundEvent.getValue()); // event
         levelSoundEvent.write(BedrockTypes.POSITION_3F, this.position); // position
@@ -131,6 +133,7 @@ public class Entity {
         levelSoundEvent.write(BedrockTypes.LONG_LE, -1L); // entity unique id
         levelSoundEvent.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // fire at position
         levelSoundEvent.send(BedrockProtocol.class, false);
+        */
     }
 
     public float eyeOffset() {
