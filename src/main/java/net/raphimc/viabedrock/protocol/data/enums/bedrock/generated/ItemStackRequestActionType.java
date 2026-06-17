@@ -26,10 +26,10 @@ public enum ItemStackRequestActionType {
     CraftLoom(17),
     CraftNonImplemented_DEPRECATEDASKTYLAING(18),
     CraftResults_DEPRECATEDASKTYLAING(19),
-    ifdef(20),
+    Ifdef(20),
     TEST_INFRASTRUCTURE_ENABLED(21),
     Test(22),
-    endif(23),
+    Endif(23),
     ;
 
     private static final Int2ObjectMap<ItemStackRequestActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

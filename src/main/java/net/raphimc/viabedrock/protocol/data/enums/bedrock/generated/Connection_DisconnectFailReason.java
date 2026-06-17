@@ -146,6 +146,8 @@ public enum Connection_DisconnectFailReason {
     NonceNotFound(137),
     NonceExpired(138),
     NonceNotValid(139),
+    HostDisconnected(140),
+    EditorJoinIntentPolicyFailure(141),
     ;
 
     private static final Int2ObjectMap<Connection_DisconnectFailReason> BY_VALUE = new Int2ObjectOpenHashMap<>();

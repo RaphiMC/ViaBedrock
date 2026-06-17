@@ -178,7 +178,7 @@ public class WorldEffectPackets {
                     configuredSound = tryFindSound(wrapper.user(), soundEvent, data, entityIdentifier, isBabyMob);
                     if (configuredSound == null) { // Fallback for some special handled sounds
                         switch (soundEvent) {
-                            case AmbientBaby, MobWarningBaby, HurtBaby, DeathBaby, StepBaby, SpawnBaby -> {
+                            case AmbientBaby, MobWarningBaby, HurtBaby, DeathBaby, StepBaby -> {
                                 final SharedTypes_Legacy_LevelSoundEvent soundEventAdult = EnumUtil.getEnumConstantOrNull(SharedTypes_Legacy_LevelSoundEvent.class, soundEvent.name().replace("Baby", ""));
                                 configuredSound = tryFindSound(wrapper.user(), soundEventAdult, data, entityIdentifier, true);
                             }

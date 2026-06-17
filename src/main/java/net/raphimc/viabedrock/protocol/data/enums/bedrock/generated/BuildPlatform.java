@@ -7,14 +7,14 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 public enum BuildPlatform {
 
     Google(1),
-    iOS(2),
+    IOS(2),
     OSX(3),
     Amazon(4),
     GearVR_Deprecated(5),
     UWP(7),
     Win32(8),
     Dedicated(9),
-    tvOS_Deprecated(10),
+    TvOS_Deprecated(10),
     Sony(11),
     Nx(12),
     Xbox(13),

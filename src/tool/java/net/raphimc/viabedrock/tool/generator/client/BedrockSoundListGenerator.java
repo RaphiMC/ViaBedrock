@@ -33,65 +33,6 @@ import java.util.*;
 
 public class BedrockSoundListGenerator {
 
-    private static final Map<String, SharedTypes_Legacy_LevelSoundEvent> SOUND_EVENT_MAP = Map.ofEntries(
-            Map.entry("camera.take_picture", SharedTypes_Legacy_LevelSoundEvent.TakePicture),
-            Map.entry("leashknot.break", SharedTypes_Legacy_LevelSoundEvent.BreakLeashKnot),
-            Map.entry("leashknot.place", SharedTypes_Legacy_LevelSoundEvent.PlaceLeashKnot),
-            Map.entry("drip.lava.pointed_dripstone", SharedTypes_Legacy_LevelSoundEvent.PointedDripstoneDripLava),
-            Map.entry("cauldron_drip.water.pointed_dripstone", SharedTypes_Legacy_LevelSoundEvent.PointedDripstoneCauldronDripWater),
-            Map.entry("drip.water.pointed_dripstone", SharedTypes_Legacy_LevelSoundEvent.PointedDripstoneDripWater),
-            Map.entry("cauldron_drip.lava.pointed_dripstone", SharedTypes_Legacy_LevelSoundEvent.PointedDripstoneCauldronDripLava),
-            Map.entry("armor.repair_wolf", SharedTypes_Legacy_LevelSoundEvent.WolfArmorRepair),
-            Map.entry("armor.crack_wolf", SharedTypes_Legacy_LevelSoundEvent.WolfArmorCrack),
-            Map.entry("armor.break_wolf", SharedTypes_Legacy_LevelSoundEvent.WolfArmorBreak),
-            Map.entry("block.end_portal_frame.fill", SharedTypes_Legacy_LevelSoundEvent.EnderEyePlaced),
-            Map.entry("mob.husk.convert_to_zombie", SharedTypes_Legacy_LevelSoundEvent.ConvertHuskToZombie),
-            Map.entry("tilt_down.big_dripleaf", SharedTypes_Legacy_LevelSoundEvent.BigDripleafTiltDown),
-            Map.entry("tilt_up.big_dripleaf", SharedTypes_Legacy_LevelSoundEvent.BigDripleafTiltUp),
-            Map.entry("item.spyglass.use", SharedTypes_Legacy_LevelSoundEvent.UseSpyglass),
-            Map.entry("item.spyglass.stop_using", SharedTypes_Legacy_LevelSoundEvent.StopUsingSpyglass),
-            Map.entry("block.furnace.lit", SharedTypes_Legacy_LevelSoundEvent.FurnaceUse),
-            Map.entry("random.anvil_use", SharedTypes_Legacy_LevelSoundEvent.AnvilUse),
-            Map.entry("block.click", SharedTypes_Legacy_LevelSoundEvent.BlockClick),
-            Map.entry("block.click.fail", SharedTypes_Legacy_LevelSoundEvent.BlockClickFail),
-            Map.entry("block.sign.waxed_interact_fail", SharedTypes_Legacy_LevelSoundEvent.WaxedSignInteractFail),
-            Map.entry("power.on.sculk_sensor", SharedTypes_Legacy_LevelSoundEvent.SculkSensorPowerOn),
-            Map.entry("power.off.sculk_sensor", SharedTypes_Legacy_LevelSoundEvent.SculkSensorPowerOff),
-            Map.entry("block.composter.fill_success", SharedTypes_Legacy_LevelSoundEvent.ComposterFillLayer),
-            Map.entry("bubble.up", SharedTypes_Legacy_LevelSoundEvent.BubbleColumnUpwards),
-            Map.entry("bubble.down", SharedTypes_Legacy_LevelSoundEvent.BubbleColumnDownwards),
-            Map.entry("elderguardian.curse", SharedTypes_Legacy_LevelSoundEvent.GuardianCurse),
-            Map.entry("pick_berries.cave_vines", SharedTypes_Legacy_LevelSoundEvent.CaveVinesPickBerries),
-            Map.entry("lodestone_compass.link_compass_to_lodestone", SharedTypes_Legacy_LevelSoundEvent.LinkCompassToLodestone),
-            Map.entry("chime.amethyst_block", SharedTypes_Legacy_LevelSoundEvent.AmethystBlockChime),
-            Map.entry("block.smoker.smoke", SharedTypes_Legacy_LevelSoundEvent.SmokerUse),
-            Map.entry("block.blastfurnace.fire_crackle", SharedTypes_Legacy_LevelSoundEvent.BlastFurnaceUse),
-            Map.entry("block.bell.hit", SharedTypes_Legacy_LevelSoundEvent.Bell),
-            Map.entry("mob.armor_stand.place", SharedTypes_Legacy_LevelSoundEvent.ArmorPlace),
-            Map.entry("block.turtle_egg.attack", SharedTypes_Legacy_LevelSoundEvent.TurtleEggAttacked),
-            Map.entry("block.end_portal.spawn", SharedTypes_Legacy_LevelSoundEvent.EndPortalCreated),
-            Map.entry("mob.hoglin.converted_to_zombified", SharedTypes_Legacy_LevelSoundEvent.HoglinConvertToZombified),
-            Map.entry("smithing_table.use", SharedTypes_Legacy_LevelSoundEvent.UseSmithingTable),
-            Map.entry("item.book.put", SharedTypes_Legacy_LevelSoundEvent.LecternBookPlace),
-            Map.entry("mob.warning", SharedTypes_Legacy_LevelSoundEvent.MobWarning),
-            Map.entry("irongolem.crack", SharedTypes_Legacy_LevelSoundEvent.CrackIronGolem),
-            Map.entry("irongolem.repair", SharedTypes_Legacy_LevelSoundEvent.RepairIronGolem),
-            Map.entry("convert_mooshroom", SharedTypes_Legacy_LevelSoundEvent.MooshroomConvert),
-            Map.entry("converted_to_zombified", SharedTypes_Legacy_LevelSoundEvent.ConvertToZombified),
-            Map.entry("prepare.attack", SharedTypes_Legacy_LevelSoundEvent.PrepareAttackSpell),
-            Map.entry("drink.honey", SharedTypes_Legacy_LevelSoundEvent.HoneybottleDrink),
-            Map.entry("item.use.on", SharedTypes_Legacy_LevelSoundEvent.ItemUseOn),
-            Map.entry("break_pot", SharedTypes_Legacy_LevelSoundEvent.BreakDecoratedPot),
-            Map.entry("shatter_pot", SharedTypes_Legacy_LevelSoundEvent.ShatterDecoratedPot),
-            Map.entry("charge.sculk", SharedTypes_Legacy_LevelSoundEvent.SculkCharge),
-            Map.entry("ambient.weather.the_end_light_flash", SharedTypes_Legacy_LevelSoundEvent.TheEndLightFlash),
-            Map.entry("single_swap", SharedTypes_Legacy_LevelSoundEvent.SingleItemSwap),
-            Map.entry("multi_swap", SharedTypes_Legacy_LevelSoundEvent.MultiItemSwap),
-            Map.entry("lt.reaction.mgsalt", SharedTypes_Legacy_LevelSoundEvent.LTReactionMagnesiumSalt),
-            Map.entry("lt.reaction.epaste", SharedTypes_Legacy_LevelSoundEvent.LTReactionElephantToothpaste),
-            Map.entry("lt.reaction.epaste2", SharedTypes_Legacy_LevelSoundEvent.LTReactionElephantToothpaste2)
-    );
-
     private static final Set<String> CANCELLED_SOUNDS = Set.of(
             "imitate.panda",
             "guardian.flop",
@@ -119,20 +60,20 @@ public class BedrockSoundListGenerator {
             SharedTypes_Legacy_LevelSoundEvent.RecordNull,
             SharedTypes_Legacy_LevelSoundEvent.Note,
             // Those seem to do nothing
-            SharedTypes_Legacy_LevelSoundEvent.RecordPlaying,
+            //SharedTypes_Legacy_LevelSoundEvent.RecordPlaying,
             SharedTypes_Legacy_LevelSoundEvent.ItemFizz,
             SharedTypes_Legacy_LevelSoundEvent.MobWarningBaby,
             SharedTypes_Legacy_LevelSoundEvent.HaggleIdle,
             SharedTypes_Legacy_LevelSoundEvent.Default,
-            SharedTypes_Legacy_LevelSoundEvent.SpawnBaby,
+            //SharedTypes_Legacy_LevelSoundEvent.SpawnBaby,
             SharedTypes_Legacy_LevelSoundEvent.Scared,
             SharedTypes_Legacy_LevelSoundEvent.JumpPrevent,
-            SharedTypes_Legacy_LevelSoundEvent.Bump,
-            SharedTypes_Legacy_LevelSoundEvent.Undefined,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionGlowStick,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionGlowStick2,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionLuminol,
-            SharedTypes_Legacy_LevelSoundEvent.LTReactionSalt
+            //SharedTypes_Legacy_LevelSoundEvent.Bump,
+            SharedTypes_Legacy_LevelSoundEvent.Undefined
+            //SharedTypes_Legacy_LevelSoundEvent.LTReactionGlowStick,
+            //SharedTypes_Legacy_LevelSoundEvent.LTReactionGlowStick2,
+            //SharedTypes_Legacy_LevelSoundEvent.LTReactionLuminol,
+            //SharedTypes_Legacy_LevelSoundEvent.LTReactionSalt
     );
 
     /* Last output:
@@ -278,46 +219,17 @@ public class BedrockSoundListGenerator {
     }
 
     private static SharedTypes_Legacy_LevelSoundEvent string2SoundEvent(String s) {
-        if (SOUND_EVENT_MAP.containsKey(s)) {
-            return SOUND_EVENT_MAP.get(s);
-        } else if (CANCELLED_SOUNDS.contains(s)) {
+       if (CANCELLED_SOUNDS.contains(s)) {
             return null;
         }
         final String original = s;
 
-        if (s.startsWith("ambient.") && (s.endsWith(".additions") || s.endsWith(".mood") || s.endsWith(".loop"))) {
-            final String[] split = s.split("\\.");
-            if (split[2].equals("additions")) {
-                split[2] = "addition";
-            }
-            s = split[0] + split[2] + split[1];
-        }
-
-        if (s.startsWith("block.")) {
-            s = s.replace("block.", "");
-        } else if (s.startsWith("item.enchant.")) {
-            s = s.replace("item.enchant.", "");
-        } else if (s.startsWith("item.")) {
-            s = s.replace("item.", "");
-        } else if (s.startsWith("armor.")) {
-            s = s.replace("armor.", "");
-        } else if (s.startsWith("mob.")) {
-            s = s.replace("mob.", "");
-        } else if (s.startsWith("particle.")) {
-            s = s.replace("particle.", "");
-        }
-        if (s.endsWith(".take_result")) {
-            s = s.replace(".take_result", ".use");
-        } else if (s.endsWith(".hatch")) {
-            s += "ed";
-        }
         s = s.replace(".", "");
-        s = s.replace("horn_call", "goatcall");
 
         for (SharedTypes_Legacy_LevelSoundEvent soundEvent : SharedTypes_Legacy_LevelSoundEvent.values()) {
             if (s.equalsIgnoreCase(soundEvent.name())) {
                 return soundEvent;
-            } else if (s.replace("_", "").equalsIgnoreCase(soundEvent.name())) {
+            } else if (s.replace("_", "").equalsIgnoreCase(soundEvent.name().replace("_", ""))) {
                 return soundEvent;
             } else if (("ambient" + s).equalsIgnoreCase(soundEvent.name())) {
                 return soundEvent;

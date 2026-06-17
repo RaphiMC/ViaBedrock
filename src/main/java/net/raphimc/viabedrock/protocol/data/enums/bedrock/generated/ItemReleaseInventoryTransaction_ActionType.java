@@ -6,13 +6,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ItemReleaseInventoryTransaction_ActionType {
 
-    /**
-     * Release right click and hold style item use, like firing a bow
-     */
     Release(0),
-    /**
-     * Finish right click and hold style item use, like charging a crossbow
-     */
     Use(1),
     ;
 
