@@ -167,9 +167,9 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets26_1.CONTAINER_SET_CONTENT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
-            final BedrockItem[] items = wrapper.read(itemRewriter.itemArrayType()); // items
+            final BedrockItem[] items = wrapper.read(itemRewriter.newItemArrayType()); // items
             final FullContainerName containerName = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
-            final BedrockItem storageItem = wrapper.read(itemRewriter.itemType()); // storage item
+            final BedrockItem storageItem = wrapper.read(itemRewriter.newItemType()); // storage item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);

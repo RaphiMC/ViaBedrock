@@ -7,7 +7,7 @@ If a file is not listed here, it has been created manually and is updated manual
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
 ### data/bedrock/biomes.json
-[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/5dc2e96d4adb1e96b30b57e782ec2c59bdad4317/biome_id_map.json)
+[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/7e91146842837b2267a8e4d8bf8b8dab5e482970/biome_id_map.json)
 
 ### data/bedrock/block_id_meta_to_1_12_0_nbt.bin
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/8b72c47109e174ac7f17c3ac546748f8e49a5fdf/id_meta_to_nbt/1.12.0.bin)
@@ -36,7 +36,7 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
 ### data/bedrock/item_tags.json
-[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/e5a25957497a4520f4672a379e2a3f6b87602e37/item_tags.json)
+[PMMP/BedrockData](https://github.com/pmmp/BedrockData/blob/7e91146842837b2267a8e4d8bf8b8dab5e482970/item_tags.json)
 
 ### data/bedrock/level_sound_event_mappings.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.

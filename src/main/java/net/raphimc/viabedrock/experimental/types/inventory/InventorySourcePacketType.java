@@ -39,17 +39,16 @@ public class InventorySourcePacketType extends Type<InventorySource> {
             throw new IllegalStateException("Invalid inventory source type id: " + rawTypeId);
         }
 
+        int containerId = 0;
+        InventorySource_InventorySourceFlags flag = InventorySource_InventorySourceFlags.NoFlag;
+        if (buffer.readBoolean() && buffer.readBoolean()) containerId = buffer.readByte();
+        if (buffer.readBoolean() && buffer.readBoolean()) flag = InventorySource_InventorySourceFlags.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+
         switch (type) {
             case ContainerInventory, NonImplementedFeatureTODO -> {
-                return new InventorySource(type, BedrockTypes.VAR_INT.read(buffer), InventorySource_InventorySourceFlags.NoFlag);
+                return new InventorySource(type, containerId, InventorySource_InventorySourceFlags.NoFlag);
             }
             case WorldInteraction -> {
-                int rawSourceFlagId = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-                InventorySource_InventorySourceFlags flag = InventorySource_InventorySourceFlags.getByValue(rawSourceFlagId);
-                if (flag == null) {
-                    throw new IllegalStateException("Invalid inventory source flag id: " + rawSourceFlagId);
-                }
-
                 return new InventorySource(type, ContainerID.CONTAINER_ID_NONE.getValue(), flag);
             }
             default -> {

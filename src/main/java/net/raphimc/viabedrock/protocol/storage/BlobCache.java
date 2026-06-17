@@ -59,10 +59,10 @@ public class BlobCache extends StoredObject {
 
         final PacketWrapper clientCacheBlobStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_BLOB_STATUS, this.user());
         clientCacheBlobStatus.write(BedrockTypes.UNSIGNED_VAR_INT, missingSubSet.size()); // missing blob count
-        clientCacheBlobStatus.write(BedrockTypes.UNSIGNED_VAR_INT, ackedSubSet.size()); // acked blob count
         for (long hash : missingSubSet) {
             clientCacheBlobStatus.write(BedrockTypes.LONG_LE, hash); // missing blob hash
         }
+        clientCacheBlobStatus.write(BedrockTypes.UNSIGNED_VAR_INT, ackedSubSet.size()); // acked blob count
         for (long hash : ackedSubSet) {
             clientCacheBlobStatus.write(BedrockTypes.LONG_LE, hash); // acked blob hash
         }
