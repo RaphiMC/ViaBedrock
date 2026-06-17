@@ -545,7 +545,7 @@ public class BedrockMappingData extends MappingDataBase {
 
             for (String bedrockIdentifier : bedrockItems) {
                 if (!this.bedrockToJavaBlockItems.containsKey(bedrockIdentifier) && !this.bedrockToJavaMetaItems.containsKey(bedrockIdentifier)) {
-                    //throw new RuntimeException("Missing bedrock -> java item mapping for " + bedrockIdentifier); //TODO: Waiting for Java Edition 26.2
+                    throw new RuntimeException("Missing bedrock -> java item mapping for " + bedrockIdentifier);
                 }
             }
 

@@ -24,6 +24,3 @@ This file lists the steps necessary to update ViaBedrock.
 7. Update fields in `SkinProvider`
 8. Update changed packet contents
 9. Update rewriters
-
-## 1.26.20/26.2 TODO
-Fix all `TODO: Waiting for Java Edition 26.2`
