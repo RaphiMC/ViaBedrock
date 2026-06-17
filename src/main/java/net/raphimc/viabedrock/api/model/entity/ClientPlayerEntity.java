@@ -80,7 +80,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     private BlockBreakingInfo blockBreakingInfo;
 
     public ClientPlayerEntity(final UserConnection user, final long runtimeId, final UUID javaUuid, final PlayerAbilities abilities) {
-        super(user, runtimeId, 0, javaUuid, abilities);
+        super(user, runtimeId, 1, javaUuid, abilities);
         this.attributes.put("minecraft:movement", new EntityAttribute("minecraft:movement", 0.7F, 0F, Float.MAX_VALUE));
         this.attributes.put("minecraft:player.hunger", new EntityAttribute("minecraft:player.hunger", 20F, 0F, 20F));
         this.attributes.put("minecraft:player.saturation", new EntityAttribute("minecraft:player.saturation", 5F, 0F, 20F));

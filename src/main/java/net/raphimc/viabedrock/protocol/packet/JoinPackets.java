@@ -541,6 +541,7 @@ public class JoinPackets {
         joinGame.write(Types.VAR_INT, 0); // portal cooldown
         joinGame.write(Types.VAR_INT, 64); // sea level
         joinGame.write(Types.BOOLEAN, false); // Online mode
+        joinGame.write(Types.BOOLEAN, false); // Enforces Secure Chat
         joinGame.send(BedrockProtocol.class);
 
         clientPlayer.createTeam();

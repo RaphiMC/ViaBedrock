@@ -45,7 +45,7 @@ import java.util.logging.Level;
 
 public class EntityTracker extends StoredObject {
 
-    private final AtomicInteger ID_COUNTER = new AtomicInteger(1);
+    private final AtomicInteger ID_COUNTER = new AtomicInteger(2);
 
     private ClientPlayerEntity clientPlayerEntity = null;
     private final Long2ObjectMap<Entity> entities = new Long2ObjectOpenHashMap<>();
