@@ -101,23 +101,23 @@ public class ChatPackets {
                     String originalMessage = null;
                     try {
                         switch (type) {
-                            case chat, whisper, announcement -> {
+                            case Chat, Whisper, Announcement -> {
                                 final String sourceName = wrapper.read(BedrockTypes.STRING); // source name
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 if (localize) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
-                                if (type == TextPacketType.chat && !sourceName.isEmpty()) {
+                                if (type == TextPacketType.Chat && !sourceName.isEmpty()) {
                                     message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, message}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
-                                } else if (type == TextPacketType.whisper) {
+                                } else if (type == TextPacketType.Whisper) {
                                     message = BedrockTranslator.translate("chat.type.text", translator, new String[]{sourceName, BedrockTranslator.translate("§7§o%commands.message.display.incoming", translator, new String[]{sourceName, message})}, TranslatorOptions.SKIP_ARGS_TRANSLATION);
                                 }
 
                                 wrapper.write(Types.TAG, TextUtil.stringToNbt(message));
                                 wrapper.write(Types.BOOLEAN, false); // overlay
                             }
-                            case textObjectWhisper, textObject, textObjectAnnouncement -> {
+                            case TextObjectWhisper, TextObject, TextObjectAnnouncement -> {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
                                 rootComponent.forEach(c -> {
@@ -131,16 +131,16 @@ public class ChatPackets {
                                 wrapper.write(Types.TAG, TextUtil.stringToNbt(message)); // message
                                 wrapper.write(Types.BOOLEAN, false); // overlay
                             }
-                            case raw, systemMessage, tip -> {
+                            case Raw, SystemMessage, Tip -> {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 if (localize) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
                                 wrapper.write(Types.TAG, TextUtil.stringToNbt(message)); // message
-                                wrapper.write(Types.BOOLEAN, type == TextPacketType.tip); // overlay
+                                wrapper.write(Types.BOOLEAN, type == TextPacketType.Tip); // overlay
                             }
-                            case translate, popup, jukeboxPopup -> {
+                            case Translate, Popup, JukeboxPopup -> {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
                                 if (localize) {
@@ -148,7 +148,7 @@ public class ChatPackets {
                                 }
 
                                 wrapper.write(Types.TAG, TextUtil.stringToNbt(message)); // message
-                                wrapper.write(Types.BOOLEAN, type == TextPacketType.popup || type == TextPacketType.jukeboxPopup); // overlay
+                                wrapper.write(Types.BOOLEAN, type == TextPacketType.Popup || type == TextPacketType.JukeboxPopup); // overlay
                             }
                             default -> throw new IllegalStateException("Unhandled TextPacketType: " + type);
                         }
@@ -256,7 +256,7 @@ public class ChatPackets {
             public void register() {
                 create(Types.BOOLEAN, false); // localize
                 create(Types.UNSIGNED_BYTE, (short) 1); // message type
-                create(Types.UNSIGNED_BYTE, (short) TextPacketType.chat.getValue()); // type
+                create(Types.UNSIGNED_BYTE, (short) TextPacketType.Chat.getValue()); // type
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(EntityTracker.class).getClientPlayer().name())); // source name
                 map(Types.STRING, BedrockTypes.STRING); // message
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(AuthData.class).getXuid())); // xuid

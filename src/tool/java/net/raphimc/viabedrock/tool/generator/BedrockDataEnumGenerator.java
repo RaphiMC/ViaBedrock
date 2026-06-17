@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 public class BedrockDataEnumGenerator {
 
-    private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/c2ed9ad62f6dc9b8a307cf39e349aad79fb37a8e/html/enums.html";
+    private static final String ENUMS_URL = "https://raw.githubusercontent.com/Mojang/bedrock-protocol-docs/ba81d713aa983bb6bc26fe662a9934c5de1838a5/html/enums.html";
     private static final List<String> IGNORED_FIELDS = Arrays.asList("deprecated", "count", "_count", "total", "all", "numenchantments", "invalidenchantment", "numtagtypes", "abilitycount", "nummodes", "input_num", "total_operations", "total_operands", "numvalidversions", "num_categories", "max_disconnect_fail_reason", "numshapetypes");
     private static final Map<String, String> VALUE_REPLACEMENTS = new HashMap<>();
     private static final Pattern NUMBER_PATTERN = Pattern.compile("^\\d+$");
@@ -57,9 +57,14 @@ public class BedrockDataEnumGenerator {
             final Map<String, EnumField> enumFields = new LinkedHashMap<>();
             for (Element fieldTableRowElement : tableElements.get(1).selectXpath("table/tbody/tr")) {
                 final Elements valueElements = fieldTableRowElement.select("td");
-                final String fieldName = valueElements.get(0).ownText();
+                String fieldName = valueElements.get(0).ownText();
                 final String fieldValue = valueElements.get(1).ownText();
                 final List<String> fieldComments = Arrays.stream(valueElements.get(2).wholeOwnText().split("\n")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+
+                fieldName = fieldName.substring(0, 1).toUpperCase(Locale.ROOT) + fieldName.substring(1);
+                fieldName = fieldName.replace(" ", "");
+                fieldName = Pattern.compile("\\.(\\w)").matcher(fieldName).replaceAll(m -> m.group(1).toUpperCase(Locale.ROOT));
+
                 enumFields.put(fieldName, new EnumField(fieldName, fieldValue, fieldComments));
             }
 

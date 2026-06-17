@@ -11,8 +11,8 @@ public enum EAS_FloatAttributeOperation {
     ADD(2),
     SUBTRACT(3),
     MULTIPLY(4),
-    MINIMUM(MULTIPLY),
-    MAXIMUM(MULTIPLY),
+    MINIMUM(5),
+    MAXIMUM(6),
     ;
 
     private static final Int2ObjectMap<EAS_FloatAttributeOperation> BY_VALUE = new Int2ObjectOpenHashMap<>();
