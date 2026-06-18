@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.experimental.types.inventory;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
 import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
@@ -105,11 +106,16 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
         if (itemRewriter == null) {
             throw new IllegalStateException("ItemRewriter not found for user " + user);
         }
+
         BedrockTypes.VAR_INT.write(buffer, bedrockInventoryTransaction.legacyRequestId());
+        Types.BOOLEAN.write(buffer, bedrockInventoryTransaction.legacyRequestId() != 0);
         if (bedrockInventoryTransaction.legacyRequestId() != 0) {
             ExperimentalBedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, bedrockInventoryTransaction.legacySlots().toArray(new LegacySetItemSlotData[0]));
         }
+
+        Types.BOOLEAN.write(buffer, true);
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, bedrockInventoryTransaction.transactionType().getValue());
+        Types.BOOLEAN.write(buffer, true);
         if (bedrockInventoryTransaction.actions() != null) { //TODO: Make actions list Optional
             inventoryActionDataType.write(buffer, bedrockInventoryTransaction.actions().toArray(new InventoryActionData[0]));
         } else {
