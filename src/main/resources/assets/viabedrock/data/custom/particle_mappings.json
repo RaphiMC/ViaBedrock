@@ -648,5 +648,8 @@
   },
   "minecraft:noxious_gas_particle": "minecraft:noxious_gas",
   "minecraft:sulfur_bubble_particle": null,
-  "minecraft:sulfur_cube_goo": "minecraft:sulfur_cube_goo"
+  "minecraft:sulfur_cube_goo": "minecraft:sulfur_cube_goo",
+  "minecraft:geyser_base": "minecraft:geyser_base",
+  "minecraft:geyser_plume": "minecraft:geyser_plume",
+  "minecraft:geyser_poof": "minecraft:geyser_poof"
 }

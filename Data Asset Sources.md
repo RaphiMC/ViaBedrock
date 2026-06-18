@@ -3,7 +3,7 @@
 This file lists all the sources/code to obtain the data assets used in ViaBedrock.  
 If a file is not listed here, it has been created manually and is updated manually.
 
-### data/bedrock/biome_definitions.nbt
+### data/bedrock/biome_definitions.json
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
 ### data/bedrock/biomes.json
@@ -29,7 +29,7 @@ This file has been generated using `BedrockSoundListGenerator` using data from t
 ### data/bedrock/effects.json
 [minecraft.wiki](https://minecraft.wiki/w/Effect)
 
-### data/bedrock/entity_identifiers.nbt
+### data/bedrock/entity_identifiers.dat
 This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https://github.com/CloudburstMC/ProxyPass).
 
 ### data/bedrock/game_rules.json

@@ -7407,14 +7407,6 @@
       }
     }
   },
-  "minecraft:item.acacia_door": {
-    "block": {
-      "minecraft:acacia_door": {
-        "java_id": "minecraft:acacia_door",
-        "java_name": "tile.acacia_door.name"
-      }
-    }
-  },
   "minecraft:item.bed": {
     "block": {
       "minecraft:bed": {
@@ -7428,14 +7420,6 @@
       "minecraft:beetroot": {
         "java_id": "minecraft:beetroot_seeds",
         "java_name": "tile.beetroot.name"
-      }
-    }
-  },
-  "minecraft:item.birch_door": {
-    "block": {
-      "minecraft:birch_door": {
-        "java_id": "minecraft:birch_door",
-        "java_name": "tile.birch_door.name"
       }
     }
   },
@@ -7479,22 +7463,6 @@
       }
     }
   },
-  "minecraft:item.crimson_door": {
-    "block": {
-      "minecraft:crimson_door": {
-        "java_id": "minecraft:crimson_door",
-        "java_name": "tile.crimson_door.name"
-      }
-    }
-  },
-  "minecraft:item.dark_oak_door": {
-    "block": {
-      "minecraft:dark_oak_door": {
-        "java_id": "minecraft:dark_oak_door",
-        "java_name": "tile.dark_oak_door.name"
-      }
-    }
-  },
   "minecraft:item.flower_pot": {
     "block": {
       "minecraft:flower_pot": {
@@ -7527,35 +7495,11 @@
       }
     }
   },
-  "minecraft:item.iron_door": {
-    "block": {
-      "minecraft:iron_door": {
-        "java_id": "minecraft:iron_door",
-        "java_name": "tile.iron_door.name"
-      }
-    }
-  },
-  "minecraft:item.jungle_door": {
-    "block": {
-      "minecraft:jungle_door": {
-        "java_id": "minecraft:jungle_door",
-        "java_name": "tile.jungle_door.name"
-      }
-    }
-  },
   "minecraft:item.kelp": {
     "block": {
       "minecraft:kelp": {
         "java_id": "minecraft:kelp",
         "java_name": "tile.kelp.name"
-      }
-    }
-  },
-  "minecraft:item.mangrove_door": {
-    "block": {
-      "minecraft:mangrove_door": {
-        "java_id": "minecraft:mangrove_door",
-        "java_name": "tile.mangrove_door.name"
       }
     }
   },
@@ -7591,35 +7535,11 @@
       }
     }
   },
-  "minecraft:item.spruce_door": {
-    "block": {
-      "minecraft:spruce_door": {
-        "java_id": "minecraft:spruce_door",
-        "java_name": "tile.spruce_door.name"
-      }
-    }
-  },
-  "minecraft:item.warped_door": {
-    "block": {
-      "minecraft:warped_door": {
-        "java_id": "minecraft:warped_door",
-        "java_name": "tile.warped_door.name"
-      }
-    }
-  },
   "minecraft:item.wheat": {
     "block": {
       "minecraft:wheat": {
         "java_id": "minecraft:wheat_seeds",
         "java_name": "tile.wheat.name"
-      }
-    }
-  },
-  "minecraft:item.wooden_door": {
-    "block": {
-      "minecraft:wooden_door": {
-        "java_id": "minecraft:oak_door",
-        "java_name": "tile.wooden_door.name"
       }
     }
   },
@@ -15266,6 +15186,20 @@
     "meta": {
       "": {
         "java_id": "minecraft:zombie_villager_spawn_egg"
+      }
+    }
+  },
+  "minecraft:music_disc_bounce": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:music_disc_bounce"
+      }
+    }
+  },
+  "minecraft:sulfur_spike": {
+    "block": {
+      "minecraft:sulfur_spike": {
+        "java_id": "minecraft:sulfur_spike"
       }
     }
   }

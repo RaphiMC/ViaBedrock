@@ -11039,6 +11039,7 @@
     }
   },
   "Note": null,
+  "NoteBass": null,
   "Ominous_bottleEnd_use": {
     "": {
       "sound": "ominous_bottle.end_use",
@@ -12570,6 +12571,7 @@
       ]
     }
   },
+  "Pushed_by_player": null,
   "RaidHorn": {
     "": {
       "sound": "raid.horn",

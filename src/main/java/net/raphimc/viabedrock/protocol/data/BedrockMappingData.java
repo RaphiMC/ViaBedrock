@@ -351,20 +351,20 @@ public class BedrockMappingData extends MappingDataBase {
         }
 
         { // Biomes
-            this.bedrockBiomeDefinitions = this.readNBT("bedrock/biome_definitions.nbt");
+            this.bedrockBiomeDefinitions = SNBT.deserializeCompoundTag(this.readJson("bedrock/biome_definitions.json").toString()); // TODO: Jank
 
             final JsonObject bedrockBiomesJson = this.readJson("bedrock/biomes.json", JsonObject.class);
             this.bedrockBiomes = HashBiMap.create(bedrockBiomesJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockBiomesJson.entrySet()) {
                 final String bedrockBiomeName = entry.getKey();
-                if (!this.bedrockBiomeDefinitions.contains(bedrockBiomeName)) {
+                if (!this.bedrockBiomeDefinitions.contains(Key.namespaced(bedrockBiomeName))) {
                     throw new RuntimeException("Unknown bedrock biome: " + bedrockBiomeName);
                 }
                 this.bedrockBiomes.put(bedrockBiomeName, entry.getValue().getAsInt());
             }
 
             for (String bedrockBiomeName : this.bedrockBiomeDefinitions.keySet()) {
-                if (!this.bedrockBiomes.containsKey(bedrockBiomeName)) {
+                if (!this.bedrockBiomes.containsKey(Key.stripMinecraftNamespace(bedrockBiomeName))) {
                     throw new RuntimeException("Missing bedrock biome id mapping: " + bedrockBiomeName);
                 }
             }
