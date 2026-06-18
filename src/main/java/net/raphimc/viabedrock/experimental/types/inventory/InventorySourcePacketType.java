@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.experimental.types.inventory;
 
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
@@ -61,9 +62,20 @@ public class InventorySourcePacketType extends Type<InventorySource> {
     public void write(ByteBuf buffer, InventorySource value) {
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.type().getValue());
 
-        switch (value.type()) {
-            case ContainerInventory, NonImplementedFeatureTODO -> BedrockTypes.VAR_INT.write(buffer, value.containerId());
-            case WorldInteraction -> BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.flags().getValue());
+        Types.BOOLEAN.write(buffer, true);
+        if (value.containerId() == 0 || value.containerId() == 99999) {
+            Types.BOOLEAN.write(buffer, true);
+            buffer.writeByte(value.containerId());
+        } else {
+            Types.BOOLEAN.write(buffer, false);
+        }
+
+        Types.BOOLEAN.write(buffer, true);
+        if (value.containerId() == 2) {
+            Types.BOOLEAN.write(buffer, true);
+            BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.flags().getValue());
+        } else {
+            Types.BOOLEAN.write(buffer, false);
         }
     }
 }

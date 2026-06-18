@@ -46,7 +46,7 @@ public class BlockEntityRewriter {
 
     static {
         // TODO: Enhancement: Add missing block entities
-        //BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BED, NOOP_REWRITER); // TODO: Beds are no longer block entities on java
+        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BED, NULL_REWRITER); // TODO: Beds are no longer block entities on java
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BREWING_STAND, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.CALIBRATED_SCULK_SENSOR, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.CAMPFIRE, NOOP_REWRITER);
