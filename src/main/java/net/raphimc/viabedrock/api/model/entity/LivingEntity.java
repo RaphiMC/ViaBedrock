@@ -68,11 +68,11 @@ public class LivingEntity extends Entity {
     public final void sendAttribute(final String name) {
         final EntityAttribute attribute = this.attributes.get(name);
         if (attribute != null) {
-            this.updateAttributes(new EntityAttribute[]{attribute});
+            this.updateAttributes(attribute);
         }
     }
 
-    public final void updateAttributes(final EntityAttribute[] attributes) {
+    public final void updateAttributes(final EntityAttribute... attributes) {
         final PacketWrapper updateAttributes = PacketWrapper.create(ClientboundPackets26_1.UPDATE_ATTRIBUTES, this.user);
         this.updateAttributes(attributes, updateAttributes);
         updateAttributes.send(BedrockProtocol.class);
@@ -152,11 +152,12 @@ public class LivingEntity extends Entity {
 
     protected boolean translateAttribute(final EntityAttribute attribute, final PacketWrapper javaAttributes, final AtomicInteger attributeCount, final List<EntityData> javaEntityData) {
         return switch (attribute.name()) {
-            case "minecraft:attack_damage", "minecraft:knockback_resistance", "minecraft:movement" -> {
+            case "minecraft:attack_damage", "minecraft:knockback_resistance", "minecraft:movement", "minecraft:scale" -> {
                 javaAttributes.write(Types.VAR_INT, BedrockProtocol.MAPPINGS.getJavaEntityAttributes().get(switch (attribute.name()) {
                     case "minecraft:attack_damage" -> Attributes.ATTACK_DAMAGE;
                     case "minecraft:knockback_resistance" -> Attributes.KNOCKBACK_RESISTANCE;
                     case "minecraft:movement" -> Attributes.MOVEMENT_SPEED;
+                    case "minecraft:scale" -> Attributes.SCALE;
                     default -> throw new IllegalStateException("Unhandled entity attribute: " + attribute.name());
                 })); // attribute id
                 javaAttributes.write(Types.DOUBLE, (double) attribute.computeClampedValue()); // base value
