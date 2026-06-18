@@ -69,6 +69,7 @@ public class JoinPackets {
     private static final PacketHandler BIOME_DEFINITION_LIST_HANDLER = wrapper -> {
         if (wrapper.isCancelled()) return;
 
+        // TODO: Check namespaced
         wrapper.user().get(GameSessionStorage.class).setBedrockBiomeDefinitions((CompoundTag) wrapper.read(BedrockTypes.NETWORK_TAG)); // biome definitions
     };
 
