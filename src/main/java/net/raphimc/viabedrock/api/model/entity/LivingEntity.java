@@ -172,6 +172,7 @@ public class LivingEntity extends Entity {
                 attributeCount.incrementAndGet();
                 yield true;
             }
+            case "minecraft:air_drag_modifier", "minecraft:friction_modifier", "minecraft:bounciness" -> true; // TODO 26.2
             case "minecraft:absorption", "minecraft:follow_range", "minecraft:luck" -> true; // Ignore for generic entities
             case "minecraft:lava_movement", "minecraft:underwater_movement" -> true; // Ignore for now because Java Edition doesn't have these attributes
             default -> false;
