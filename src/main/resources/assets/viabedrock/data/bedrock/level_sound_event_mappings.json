@@ -1,5 +1,5 @@
 {
-  "Absorb_block": {
+  "absorb_block": {
     "entity:minecraft:sulfur_cube": {
       "sound": "mob.sulfur_cube.absorb",
       "volume": 0.8,
@@ -9,7 +9,7 @@
       ]
     }
   },
-  "Activate": {
+  "activate": {
     "entity:minecraft:creaking": {
       "sound": "mob.creaking.activate"
     },
@@ -20,7 +20,7 @@
       "sound": "mob.copper_golem.becoming_statue"
     }
   },
-  "AddChest": {
+  "add.chest": {
     "entity:minecraft:llama": {
       "sound": "mob.horse.armor",
       "pitch": [
@@ -72,7 +72,7 @@
       ]
     }
   },
-  "Admire": {
+  "admire": {
     "entity:minecraft:piglin": {
       "sound": "mob.piglin.admiring_item",
       "pitch": [
@@ -81,7 +81,7 @@
       ]
     }
   },
-  "Agitated": {
+  "agitated": {
     "entity:minecraft:warden": {
       "sound": "mob.warden.agitated",
       "volume": 10.0,
@@ -91,7 +91,7 @@
       ]
     }
   },
-  "Ambient": {
+  "ambient": {
     "entity:minecraft:turtle": {
       "sound": "mob.turtle.ambient",
       "pitch": [
@@ -663,7 +663,7 @@
       ]
     }
   },
-  "AmbientAggressive": {
+  "ambient.aggressive": {
     "entity:minecraft:panda": {
       "sound": "mob.panda.idle.aggressive",
       "pitch": [
@@ -672,7 +672,7 @@
       ]
     }
   },
-  "AmbientBaby": {
+  "ambient.baby": {
     "entity:minecraft:frog": {
       "sound": "mob.frog.ambient",
       "volume": 2.5,
@@ -693,7 +693,7 @@
       ]
     }
   },
-  "AmbientBasalt_deltasAdditions": {
+  "ambient.basalt_deltas.additions": {
     "": {
       "sound": "ambient.basalt_deltas.additions",
       "pitch": [
@@ -702,13 +702,13 @@
       ]
     }
   },
-  "AmbientBasalt_deltasLoop": {
+  "ambient.basalt_deltas.loop": {
     "": {
       "sound": "ambient.basalt_deltas.loop",
       "volume": 0.58
     }
   },
-  "AmbientBasalt_deltasMood": {
+  "ambient.basalt_deltas.mood": {
     "": {
       "sound": "ambient.basalt_deltas.mood",
       "volume": 0.8,
@@ -718,12 +718,12 @@
       ]
     }
   },
-  "AmbientCandle": {
+  "ambient.candle": {
     "": {
       "sound": "ambient.candle"
     }
   },
-  "AmbientCave": {
+  "ambient.cave": {
     "": {
       "sound": "ambient.cave",
       "volume": 0.7,
@@ -733,7 +733,7 @@
       ]
     }
   },
-  "AmbientCrimson_forestAdditions": {
+  "ambient.crimson_forest.additions": {
     "": {
       "sound": "ambient.crimson_forest.additions",
       "pitch": [
@@ -742,13 +742,13 @@
       ]
     }
   },
-  "AmbientCrimson_forestLoop": {
+  "ambient.crimson_forest.loop": {
     "": {
       "sound": "ambient.crimson_forest.loop",
       "volume": 0.9
     }
   },
-  "AmbientCrimson_forestMood": {
+  "ambient.crimson_forest.mood": {
     "": {
       "sound": "ambient.crimson_forest.mood",
       "volume": 0.8,
@@ -758,7 +758,7 @@
       ]
     }
   },
-  "AmbientInAir": {
+  "ambient.in.air": {
     "entity:minecraft:breeze": {
       "sound": "mob.breeze.idle_air",
       "volume": [
@@ -771,7 +771,7 @@
       ]
     }
   },
-  "AmbientInRaid": {
+  "ambient.in.raid": {
     "entity:minecraft:vindicator": {
       "sound": "mob.vindicator.idle",
       "volume": 3.0,
@@ -813,7 +813,7 @@
       ]
     }
   },
-  "AmbientInWater": {
+  "ambient.in.water": {
     "entity:minecraft:drowned": {
       "sound": "mob.drowned.say_water",
       "pitch": [
@@ -861,7 +861,7 @@
       ]
     }
   },
-  "AmbientNether_wastesAdditions": {
+  "ambient.nether_wastes.additions": {
     "": {
       "sound": "ambient.nether_wastes.additions",
       "pitch": [
@@ -870,13 +870,13 @@
       ]
     }
   },
-  "AmbientNether_wastesLoop": {
+  "ambient.nether_wastes.loop": {
     "": {
       "sound": "ambient.nether_wastes.loop",
       "volume": 0.9
     }
   },
-  "AmbientNether_wastesMood": {
+  "ambient.nether_wastes.mood": {
     "": {
       "sound": "ambient.nether_wastes.mood",
       "volume": 0.8,
@@ -886,13 +886,13 @@
       ]
     }
   },
-  "AmbientPollinate": {
+  "ambient.pollinate": {
     "entity:minecraft:bee": {
       "sound": "mob.bee.pollinate",
       "volume": 0.85
     }
   },
-  "AmbientScreamer": {
+  "ambient.screamer": {
     "entity:minecraft:goat": {
       "sound": "mob.goat.ambient.screamer",
       "pitch": [
@@ -901,7 +901,7 @@
       ]
     }
   },
-  "AmbientSoulsand_valleyAdditions": {
+  "ambient.soulsand_valley.additions": {
     "": {
       "sound": "ambient.soulsand_valley.additions",
       "pitch": [
@@ -910,13 +910,13 @@
       ]
     }
   },
-  "AmbientSoulsand_valleyLoop": {
+  "ambient.soulsand_valley.loop": {
     "": {
       "sound": "ambient.soulsand_valley.loop",
       "volume": 0.95
     }
   },
-  "AmbientSoulsand_valleyMood": {
+  "ambient.soulsand_valley.mood": {
     "": {
       "sound": "ambient.soulsand_valley.mood",
       "volume": 0.8,
@@ -926,7 +926,7 @@
       ]
     }
   },
-  "AmbientTame": {
+  "ambient.tame": {
     "entity:minecraft:cat": {
       "sound": "mob.cat.meow",
       "pitch": [
@@ -942,17 +942,17 @@
       ]
     }
   },
-  "AmbientUnderwaterEnter": {
+  "ambient.underwater.enter": {
     "": {
       "sound": "ambient.underwater.enter"
     }
   },
-  "AmbientUnderwaterExit": {
+  "ambient.underwater.exit": {
     "": {
       "sound": "ambient.underwater.exit"
     }
   },
-  "AmbientWarped_forestAdditions": {
+  "ambient.warped_forest.additions": {
     "": {
       "sound": "ambient.warped_forest.additions",
       "pitch": [
@@ -961,13 +961,13 @@
       ]
     }
   },
-  "AmbientWarped_forestLoop": {
+  "ambient.warped_forest.loop": {
     "": {
       "sound": "ambient.warped_forest.loop",
       "volume": 0.9
     }
   },
-  "AmbientWarped_forestMood": {
+  "ambient.warped_forest.mood": {
     "": {
       "sound": "ambient.warped_forest.mood",
       "volume": 0.8,
@@ -977,7 +977,7 @@
       ]
     }
   },
-  "AmbientWeatherThe_end_light_flash": {
+  "ambient.weather.the_end_light_flash": {
     "": {
       "sound": "ambient.weather.the_end_light_flash",
       "volume": 6.25,
@@ -987,7 +987,7 @@
       ]
     }
   },
-  "AmbientWorried": {
+  "ambient.worried": {
     "entity:minecraft:panda": {
       "sound": "mob.panda.idle.worried",
       "pitch": [
@@ -996,7 +996,7 @@
       ]
     }
   },
-  "Angry": {
+  "angry": {
     "entity:minecraft:zoglin": {
       "sound": "mob.zoglin.angry",
       "pitch": [
@@ -1034,22 +1034,22 @@
       ]
     }
   },
-  "Apply_effectBad_omen": {
+  "apply_effect.bad_omen": {
     "": {
       "sound": "apply_effect.bad_omen"
     }
   },
-  "Apply_effectRaid_omen": {
+  "apply_effect.raid_omen": {
     "": {
       "sound": "apply_effect.raid_omen"
     }
   },
-  "Apply_effectTrial_omen": {
+  "apply_effect.trial_omen": {
     "": {
       "sound": "apply_effect.trial_omen"
     }
   },
-  "Armor": {
+  "armor": {
     "entity:minecraft:llama": {
       "sound": "mob.llama.swag",
       "volume": 0.5
@@ -1083,37 +1083,37 @@
       "volume": 0.6
     }
   },
-  "ArmorBreak_wolf": {
+  "armor.break_wolf": {
     "": {
       "sound": "armor.break_wolf"
     }
   },
-  "ArmorCrack_wolf": {
+  "armor.crack_wolf": {
     "": {
       "sound": "armor.crack_wolf"
     }
   },
-  "ArmorEquip_chain": {
+  "armor.equip_chain": {
     "": {
       "sound": "armor.equip_chain"
     }
   },
-  "ArmorEquip_copper": {
+  "armor.equip_copper": {
     "": {
       "sound": "armor.equip_copper"
     }
   },
-  "ArmorEquip_diamond": {
+  "armor.equip_diamond": {
     "": {
       "sound": "armor.equip_diamond"
     }
   },
-  "ArmorEquip_elytra": {
+  "armor.equip_elytra": {
     "": {
       "sound": "armor.equip_elytra"
     }
   },
-  "ArmorEquip_generic": {
+  "armor.equip_generic": {
     "": {
       "sound": "armor.equip_generic"
     },
@@ -1121,37 +1121,37 @@
       "sound": "mob.happy_ghast.harness_equip"
     }
   },
-  "ArmorEquip_gold": {
+  "armor.equip_gold": {
     "": {
       "sound": "armor.equip_gold"
     }
   },
-  "ArmorEquip_iron": {
+  "armor.equip_iron": {
     "": {
       "sound": "armor.equip_iron"
     }
   },
-  "ArmorEquip_leather": {
+  "armor.equip_leather": {
     "": {
       "sound": "armor.equip_leather"
     }
   },
-  "ArmorEquip_netherite": {
+  "armor.equip_netherite": {
     "": {
       "sound": "armor.equip_netherite"
     }
   },
-  "ArmorEquip_wolf": {
+  "armor.equip_wolf": {
     "": {
       "sound": "armor.equip_wolf"
     }
   },
-  "ArmorRepair_wolf": {
+  "armor.repair_wolf": {
     "": {
       "sound": "armor.repair_wolf"
     }
   },
-  "ArmorUnequip_generic": {
+  "armor.unequip_generic": {
     "entity:minecraft:happy_ghast": {
       "sound": "mob.happy_ghast.harness_unequip"
     },
@@ -1170,12 +1170,12 @@
       "volume": 3.0
     }
   },
-  "ArmorUnequip_wolf": {
+  "armor.unequip_wolf": {
     "": {
       "sound": "armor.unequip_wolf"
     }
   },
-  "Attach": {
+  "attach": {
     "": {
       "sound": "block.click",
       "pitch": 0.7
@@ -1184,7 +1184,7 @@
       "sound": "mob.happy_ghast.goggles_down"
     }
   },
-  "Attack": {
+  "attack": {
     "entity:minecraft:fox": {
       "sound": "mob.fox.bite",
       "pitch": [
@@ -1251,7 +1251,7 @@
       ]
     }
   },
-  "AttackCritical": {
+  "attack.critical": {
     "entity:minecraft:player": {
       "sound": "game.player.attack.critical",
       "pitch": [
@@ -1260,7 +1260,7 @@
       ]
     }
   },
-  "AttackNodamage": {
+  "attack.nodamage": {
     "entity:minecraft:player": {
       "sound": "game.player.attack.nodamage",
       "pitch": [
@@ -1269,7 +1269,7 @@
       ]
     }
   },
-  "AttackStrong": {
+  "attack.strong": {
     "entity:minecraft:player": {
       "sound": "game.player.attack.strong",
       "pitch": [
@@ -1285,7 +1285,7 @@
       ]
     }
   },
-  "Balloonpop": {
+  "balloonpop": {
     "entity:minecraft:balloon": {
       "sound": "balloon.pop",
       "pitch": [
@@ -1294,49 +1294,49 @@
       ]
     }
   },
-  "BeaconActivate": {
+  "beacon.activate": {
     "": {
       "sound": "beacon.activate"
     }
   },
-  "BeaconAmbient": {
+  "beacon.ambient": {
     "": {
       "sound": "beacon.ambient"
     }
   },
-  "BeaconDeactivate": {
+  "beacon.deactivate": {
     "": {
       "sound": "beacon.deactivate"
     }
   },
-  "BeaconPower": {
+  "beacon.power": {
     "": {
       "sound": "beacon.power"
     }
   },
-  "Blast": {
+  "blast": {
     "": {
       "sound": "firework.blast"
     }
   },
-  "BlockBamboo_saplingPlace": {
+  "block.bamboo_sapling.place": {
     "": {
       "sound": "block.bamboo_sapling.place",
       "volume": 0.8,
       "pitch": 0.8
     }
   },
-  "BlockBarrelClose": {
+  "block.barrel.close": {
     "": {
       "sound": "block.barrel.close"
     }
   },
-  "BlockBarrelOpen": {
+  "block.barrel.open": {
     "": {
       "sound": "block.barrel.open"
     }
   },
-  "BlockBeehiveDrip": {
+  "block.beehive.drip": {
     "": {
       "sound": "block.beehive.drip",
       "volume": 0.3,
@@ -1346,7 +1346,7 @@
       ]
     }
   },
-  "BlockBeehiveEnter": {
+  "block.beehive.enter": {
     "": {
       "sound": "block.beehive.enter",
       "volume": 0.75,
@@ -1356,7 +1356,7 @@
       ]
     }
   },
-  "BlockBeehiveExit": {
+  "block.beehive.exit": {
     "": {
       "sound": "block.beehive.exit",
       "volume": 0.75,
@@ -1366,7 +1366,7 @@
       ]
     }
   },
-  "BlockBeehiveShear": {
+  "block.beehive.shear": {
     "": {
       "sound": "block.beehive.shear",
       "volume": 0.8,
@@ -1376,25 +1376,25 @@
       ]
     }
   },
-  "BlockBeehiveWork": {
+  "block.beehive.work": {
     "": {
       "sound": "block.beehive.work",
       "volume": 0.6
     }
   },
-  "BlockBellHit": {
+  "block.bell.hit": {
     "": {
       "sound": "block.bell.hit"
     }
   },
-  "BlockBlastfurnaceFire_crackle": {
+  "block.blastfurnace.fire_crackle": {
     "": {
       "sound": "block.blastfurnace.fire_crackle",
       "volume": 3.0,
       "pitch": 0.6
     }
   },
-  "BlockCampfireCrackle": {
+  "block.campfire.crackle": {
     "": {
       "sound": "block.campfire.crackle",
       "volume": [
@@ -1407,134 +1407,134 @@
       ]
     }
   },
-  "BlockCartography_tableUse": {
+  "block.cartography_table.use": {
     "": {
       "sound": "block.cartography_table.use",
       "volume": 0.8
     }
   },
-  "BlockClick": {
+  "block.click": {
     "": {
       "sound": "block.click"
     }
   },
-  "BlockClickFail": {
+  "block.click.fail": {
     "": {
       "sound": "block.click",
       "pitch": 1.2
     }
   },
-  "BlockComposterEmpty": {
+  "block.composter.empty": {
     "": {
       "sound": "block.composter.empty"
     }
   },
-  "BlockComposterFill": {
+  "block.composter.fill": {
     "": {
       "sound": "block.composter.fill"
     }
   },
-  "BlockComposterFill_success": {
+  "block.composter.fill_success": {
     "": {
       "sound": "block.composter.fill_success"
     }
   },
-  "BlockComposterReady": {
+  "block.composter.ready": {
     "": {
       "sound": "block.composter.ready"
     }
   },
-  "BlockCopper_bulbTurn_off": {
+  "block.copper_bulb.turn_off": {
     "": {
       "sound": "block.copper_bulb.turn_off"
     }
   },
-  "BlockCopper_bulbTurn_on": {
+  "block.copper_bulb.turn_on": {
     "": {
       "sound": "block.copper_bulb.turn_on"
     }
   },
-  "BlockCreaking_heartTrail": {
+  "block.creaking_heart.trail": {
     "": {
       "sound": "block.creaking_heart.trail"
     }
   },
-  "BlockDecorated_potInsert": {
+  "block.decorated_pot.insert": {
     "": {
       "sound": "block.decorated_pot.insert"
     }
   },
-  "BlockDecorated_potInsert_fail": {
+  "block.decorated_pot.insert_fail": {
     "": {
       "sound": "block.decorated_pot.insert_fail"
     }
   },
-  "BlockEnchanting_tableUse": {
+  "block.enchanting_table.use": {
     "": {
       "sound": "block.enchanting_table.use"
     }
   },
-  "BlockEnd_portalSpawn": {
+  "block.end_portal.spawn": {
     "": {
       "sound": "block.end_portal.spawn",
       "volume": 0.7
     }
   },
-  "BlockEnd_portal_frameFill": {
+  "block.end_portal_frame.fill": {
     "": {
       "sound": "block.end_portal_frame.fill",
       "volume": 0.3
     }
   },
-  "BlockFletching_tableUse": {
+  "block.fletching_table.use": {
     "": {
       "sound": "dig.wood",
       "volume": 12.0
     }
   },
-  "BlockFrog_spawnBreak": {
+  "block.frog_spawn.break": {
     "": {
       "sound": "break.frog_spawn",
       "volume": 0.3,
       "pitch": 0.9
     }
   },
-  "BlockFrog_spawnHatch": {
+  "block.frog_spawn.hatch": {
     "": {
       "sound": "hatch.frog_spawn",
       "volume": 1.2,
       "pitch": 0.6
     }
   },
-  "BlockFurnaceLit": {
+  "block.furnace.lit": {
     "": {
       "sound": "block.furnace.lit",
       "volume": 3.0
     }
   },
-  "BlockGrindstoneUse": {
+  "block.grindstone.use": {
     "": {
       "sound": "block.grindstone.use"
     }
   },
-  "BlockLoomUse": {
+  "block.loom.use": {
     "": {
       "sound": "block.loom.use",
       "volume": 0.75
     }
   },
-  "BlockScaffoldingClimb": {
+  "block.scaffolding.climb": {
     "": {
       "sound": "block.scaffolding.climb"
     }
   },
-  "BlockSculkSpread": {
+  "block.sculk.spread": {
     "": {
       "sound": "spread.sculk",
       "pitch": 0.9
     }
   },
-  "BlockSculk_catalystBloom": {
+  "block.sculk_catalyst.bloom": {
     "": {
       "sound": "bloom.sculk_catalyst",
       "volume": 2.0,
@@ -1544,17 +1544,17 @@
       ]
     }
   },
-  "BlockSculk_sensorPlace": {
+  "block.sculk_sensor.place": {
     "": {
       "sound": "place.sculk_sensor"
     }
   },
-  "BlockSculk_shriekerPlace": {
+  "block.sculk_shrieker.place": {
     "": {
       "sound": "place.sculk_shrieker"
     }
   },
-  "BlockSculk_shriekerShriek": {
+  "block.sculk_shrieker.shriek": {
     "": {
       "sound": "shriek.sculk_shrieker",
       "volume": 2.0,
@@ -1564,54 +1564,54 @@
       ]
     }
   },
-  "BlockSignWaxed_interact_fail": {
+  "block.sign.waxed_interact_fail": {
     "": {
       "sound": "block.sign.waxed_interact_fail"
     }
   },
-  "BlockSmithing_tableUse": {
+  "block.smithing_table.use": {
     "": {
       "sound": "smithing_table.use",
       "volume": 0.25
     }
   },
-  "BlockSmokerSmoke": {
+  "block.smoker.smoke": {
     "": {
       "sound": "block.smoker.smoke",
       "volume": 3.0
     }
   },
-  "BlockSniffer_eggCrack": {
+  "block.sniffer_egg.crack": {
     "": {
       "sound": "block.sniffer_egg.crack",
       "volume": 0.85,
       "pitch": 0.8
     }
   },
-  "BlockSniffer_eggHatch": {
+  "block.sniffer_egg.hatch": {
     "": {
       "sound": "block.sniffer_egg.hatch",
       "volume": 0.85,
       "pitch": 0.8
     }
   },
-  "BlockStonecutterUse": {
+  "block.stonecutter.use": {
     "": {
       "sound": "block.stonecutter.use",
       "volume": 0.7
     }
   },
-  "BlockSweet_berry_bushHurt": {
+  "block.sweet_berry_bush.hurt": {
     "": {
       "sound": "block.sweet_berry_bush.hurt"
     }
   },
-  "BlockSweet_berry_bushPick": {
+  "block.sweet_berry_bush.pick": {
     "": {
       "sound": "block.sweet_berry_bush.pick"
     }
   },
-  "BlockTurtle_eggAttack": {
+  "block.turtle_egg.attack": {
     "": {
       "sound": "fall.egg",
       "volume": 0.5,
@@ -1621,28 +1621,28 @@
       ]
     }
   },
-  "BlockTurtle_eggBreak": {
+  "block.turtle_egg.break": {
     "": {
       "sound": "block.turtle_egg.break",
       "volume": 0.85,
       "pitch": 0.9
     }
   },
-  "BlockTurtle_eggCrack": {
+  "block.turtle_egg.crack": {
     "": {
       "sound": "block.turtle_egg.crack",
       "volume": 0.85,
       "pitch": 0.9
     }
   },
-  "BlockTurtle_eggHatch": {
+  "block.turtle_egg.hatch": {
     "": {
       "sound": "block.turtle_egg.drop",
       "volume": 0.85,
       "pitch": 0.9
     }
   },
-  "Boost": {
+  "boost": {
     "entity:minecraft:pig": {
       "sound": "mob.pig.boost",
       "pitch": [
@@ -1651,27 +1651,27 @@
       ]
     }
   },
-  "Born": {
+  "born": {
     "entity:minecraft:turtle": {
       "sound": "mob.turtle_baby.born"
     }
   },
-  "BottleDragonbreath": {
+  "bottle.dragonbreath": {
     "": {
       "sound": "bottle.dragonbreath"
     }
   },
-  "BottleEmpty": {
+  "bottle.empty": {
     "": {
       "sound": "bottle.empty"
     }
   },
-  "BottleFill": {
+  "bottle.fill": {
     "": {
       "sound": "bottle.fill"
     }
   },
-  "Bounce": {
+  "bounce": {
     "entity:minecraft:sulfur_cube": {
       "sound": "mob.sulfur_cube.bounce",
       "volume": 0.8,
@@ -1681,7 +1681,7 @@
       ]
     }
   },
-  "Bow": {
+  "bow": {
     "": {
       "sound": "random.bow",
       "pitch": [
@@ -1690,7 +1690,7 @@
       ]
     }
   },
-  "BowHit": {
+  "bow.hit": {
     "": {
       "sound": "random.bowhit",
       "pitch": [
@@ -1699,7 +1699,7 @@
       ]
     }
   },
-  "Break": {
+  "break": {
     "": {
       "sound": "random.break",
       "pitch": 0.9
@@ -2372,17 +2372,17 @@
       "sound": "block.shelf.break"
     }
   },
-  "BreakBlock": {
+  "break.block": {
     "entity:minecraft:wither": {
       "sound": "mob.wither.break_block"
     }
   },
-  "Break_pot": {
+  "break_pot": {
     "block:decorated_pot": {
       "sound": "break.decorated_pot"
     }
   },
-  "Breathe": {
+  "breathe": {
     "entity:minecraft:horse": {
       "sound": "mob.horse.breathe",
       "volume": 0.8,
@@ -2415,13 +2415,13 @@
       ]
     }
   },
-  "Breeze_wind_chargeBurst": {
+  "breeze_wind_charge.burst": {
     "": {
       "sound": "breeze_wind_charge.burst",
       "pitch": 1.2
     }
   },
-  "Brush": {
+  "brush": {
     "block:suspicious_sand": {
       "sound": "brush.suspicious_sand",
       "pitch": [
@@ -2437,7 +2437,7 @@
       ]
     }
   },
-  "Brush_completed": {
+  "brush_completed": {
     "block:suspicious_sand": {
       "sound": "brush_completed.suspicious_sand",
       "pitch": [
@@ -2453,7 +2453,7 @@
       ]
     }
   },
-  "BubbleDown": {
+  "bubble.down": {
     "": {
       "sound": "bubble.down",
       "volume": [
@@ -2466,7 +2466,7 @@
       ]
     }
   },
-  "BubbleDowninside": {
+  "bubble.downinside": {
     "": {
       "sound": "bubble.downinside",
       "volume": [
@@ -2479,7 +2479,7 @@
       ]
     }
   },
-  "BubblePop": {
+  "bubble.pop": {
     "": {
       "sound": "bubble.pop",
       "volume": [
@@ -2492,7 +2492,7 @@
       ]
     }
   },
-  "BubbleUp": {
+  "bubble.up": {
     "": {
       "sound": "bubble.up",
       "volume": [
@@ -2505,7 +2505,7 @@
       ]
     }
   },
-  "BubbleUpinside": {
+  "bubble.upinside": {
     "": {
       "sound": "bubble.upinside",
       "volume": [
@@ -2518,82 +2518,82 @@
       ]
     }
   },
-  "BucketEmptyFish": {
+  "bucket.empty.fish": {
     "": {
       "sound": "bucket.empty_fish"
     }
   },
-  "BucketEmptyLand_animal": {
+  "bucket.empty.land_animal": {
     "": {
       "sound": "item.sulfur_cube.empty"
     }
   },
-  "BucketEmptyLava": {
+  "bucket.empty.lava": {
     "": {
       "sound": "bucket.empty_lava"
     }
   },
-  "BucketEmptyPowder_snow": {
+  "bucket.empty.powder_snow": {
     "": {
       "sound": "bucket.empty_powder_snow"
     }
   },
-  "BucketEmptyWater": {
+  "bucket.empty.water": {
     "": {
       "sound": "bucket.empty_water"
     }
   },
-  "BucketFillFish": {
+  "bucket.fill.fish": {
     "": {
       "sound": "bucket.fill_fish"
     }
   },
-  "BucketFillLand_animal": {
+  "bucket.fill.land_animal": {
     "": {
       "sound": "item.sulfur_cube.fill"
     }
   },
-  "BucketFillLava": {
+  "bucket.fill.lava": {
     "": {
       "sound": "bucket.fill_lava"
     }
   },
-  "BucketFillPowder_snow": {
+  "bucket.fill.powder_snow": {
     "": {
       "sound": "bucket.fill_powder_snow"
     }
   },
-  "BucketFillWater": {
+  "bucket.fill.water": {
     "": {
       "sound": "bucket.fill_water"
     }
   },
-  "BulletHit": {
+  "bullet.hit": {
     "": {
       "sound": "mob.shulker.bullet.hit"
     }
   },
-  "BundleDrop_contents": {
+  "bundle.drop_contents": {
     "": {
       "sound": "bundle.drop_contents"
     }
   },
-  "BundleInsert": {
+  "bundle.insert": {
     "": {
       "sound": "bundle.insert"
     }
   },
-  "BundleInsert_fail": {
+  "bundle.insert_fail": {
     "": {
       "sound": "bundle.insert_fail"
     }
   },
-  "BundleRemove_one": {
+  "bundle.remove_one": {
     "": {
       "sound": "bundle.remove_one"
     }
   },
-  "Burp": {
+  "burp": {
     "": {
       "sound": "random.burp",
       "volume": 0.5,
@@ -2603,7 +2603,7 @@
       ]
     }
   },
-  "ButtonClick_off": {
+  "button.click_off": {
     "block:nether_wood": {
       "sound": "click_off.nether_wood_button",
       "pitch": 0.5
@@ -2637,7 +2637,7 @@
       "pitch": 0.5
     }
   },
-  "ButtonClick_on": {
+  "button.click_on": {
     "block:nether_wood": {
       "sound": "click_on.nether_wood_button",
       "pitch": 0.6
@@ -2671,17 +2671,17 @@
       "pitch": 0.6
     }
   },
-  "CakeAdd_candle": {
+  "cake.add_candle": {
     "": {
       "sound": "cake.add_candle"
     }
   },
-  "CameraTake_picture": {
+  "camera.take_picture": {
     "": {
       "sound": "camera.take_picture"
     }
   },
-  "Cant_breed": {
+  "cant_breed": {
     "entity:minecraft:panda": {
       "sound": "mob.panda.cant_breed",
       "pitch": [
@@ -2690,7 +2690,7 @@
       ]
     }
   },
-  "CastSpell": {
+  "cast.spell": {
     "entity:minecraft:evocation_illager": {
       "sound": "mob.evocation_illager.cast_spell",
       "pitch": [
@@ -2699,7 +2699,7 @@
       ]
     }
   },
-  "Cauldron_dripLavaPointed_dripstone": {
+  "cauldron_drip.lava.pointed_dripstone": {
     "": {
       "sound": "cauldron_drip.lava.pointed_dripstone",
       "volume": 2.0,
@@ -2709,7 +2709,7 @@
       ]
     }
   },
-  "Cauldron_dripWaterPointed_dripstone": {
+  "cauldron_drip.water.pointed_dripstone": {
     "": {
       "sound": "cauldron_drip.water.pointed_dripstone",
       "volume": 2.0,
@@ -2719,7 +2719,7 @@
       ]
     }
   },
-  "Celebrate": {
+  "celebrate": {
     "entity:minecraft:vindicator": {
       "sound": "mob.vindicator.celebrate",
       "pitch": [
@@ -2763,7 +2763,7 @@
       ]
     }
   },
-  "Charge": {
+  "charge": {
     "entity:minecraft:breeze": {
       "sound": "mob.breeze.charge"
     },
@@ -2775,12 +2775,12 @@
       ]
     }
   },
-  "ChargeSculk": {
+  "charge.sculk": {
     "": {
       "sound": "charge.sculk"
     }
   },
-  "ChestClosed": {
+  "chest.closed": {
     "": {
       "sound": "random.chestclosed",
       "volume": 0.5,
@@ -2811,7 +2811,7 @@
       ]
     }
   },
-  "ChestOpen": {
+  "chest.open": {
     "": {
       "sound": "random.chestopen",
       "volume": 0.5,
@@ -2842,7 +2842,7 @@
       ]
     }
   },
-  "ChimeAmethyst_block": {
+  "chime.amethyst_block": {
     "": {
       "sound": "chime.amethyst_block",
       "pitch": [
@@ -2851,68 +2851,68 @@
       ]
     }
   },
-  "Chorusdeath": {
+  "chorusdeath": {
     "": {
       "sound": "block.chorusflower.death"
     }
   },
-  "Chorusgrow": {
+  "chorusgrow": {
     "": {
       "sound": "block.chorusflower.grow"
     }
   },
-  "Close": {
+  "close": {
     "block:eyeblossom": {
       "sound": "block.eyeblossom.close"
     }
   },
-  "Close_long": {
+  "close_long": {
     "block:eyeblossom": {
       "sound": "block.eyeblossom.close_long"
     }
   },
-  "ConduitActivate": {
+  "conduit.activate": {
     "": {
       "sound": "conduit.activate"
     }
   },
-  "ConduitAmbient": {
+  "conduit.ambient": {
     "": {
       "sound": "conduit.ambient"
     }
   },
-  "ConduitAttack": {
+  "conduit.attack": {
     "": {
       "sound": "conduit.attack"
     }
   },
-  "ConduitDeactivate": {
+  "conduit.deactivate": {
     "": {
       "sound": "conduit.deactivate"
     }
   },
-  "ConduitShort": {
+  "conduit.short": {
     "": {
       "sound": "conduit.short"
     }
   },
-  "Convert_mooshroom": {
+  "convert_mooshroom": {
     "": {
       "sound": "mob.mooshroom.convert"
     }
   },
-  "Convert_to_drowned": {},
-  "Convert_to_frog": {
+  "convert_to_drowned": {},
+  "convert_to_frog": {
     "": {
       "sound": "mob.tadpole.convert_to_frog"
     }
   },
-  "Convert_to_stray": {
+  "convert_to_stray": {
     "": {
       "sound": "mob.skeleton.convert_to_stray"
     }
   },
-  "Converted_to_zombified": {
+  "converted_to_zombified": {
     "": {
       "sound": "mob.piglin.converted_to_zombified",
       "pitch": [
@@ -2921,7 +2921,7 @@
       ]
     }
   },
-  "CopperWaxOff": {
+  "copper.wax.off": {
     "": {
       "sound": "copper.wax.off",
       "pitch": [
@@ -2930,7 +2930,7 @@
       ]
     }
   },
-  "CopperWaxOn": {
+  "copper.wax.on": {
     "": {
       "sound": "copper.wax.on",
       "pitch": [
@@ -2939,7 +2939,7 @@
       ]
     }
   },
-  "CrafterCraft": {
+  "crafter.craft": {
     "": {
       "sound": "crafter.craft",
       "pitch": [
@@ -2948,14 +2948,14 @@
       ]
     }
   },
-  "CrafterDisable_slot": {
+  "crafter.disable_slot": {
     "": {
       "sound": "crafter.disable_slot",
       "volume": 0.4,
       "pitch": 0.75
     }
   },
-  "CrafterFail": {
+  "crafter.fail": {
     "": {
       "sound": "crafter.fail",
       "pitch": [
@@ -2964,7 +2964,7 @@
       ]
     }
   },
-  "Creaking_heart_spawn": {
+  "creaking_heart_spawn": {
     "entity:minecraft:creaking": {
       "sound": "mob.creaking.spawn"
     },
@@ -2972,42 +2972,42 @@
       "sound": "block.creaking_heart.spawn_mob"
     }
   },
-  "CrossbowLoadingEnd": {
+  "crossbow.loading.end": {
     "": {
       "sound": "crossbow.loading.middle"
     }
   },
-  "CrossbowLoadingMiddle": {
+  "crossbow.loading.middle": {
     "": {
       "sound": "crossbow.loading.middle"
     }
   },
-  "CrossbowLoadingStart": {
+  "crossbow.loading.start": {
     "": {
       "sound": "crossbow.loading.start"
     }
   },
-  "CrossbowQuick_chargeEnd": {
+  "crossbow.quick_charge.end": {
     "": {
       "sound": "crossbow.quick_charge.end"
     }
   },
-  "CrossbowQuick_chargeMiddle": {
+  "crossbow.quick_charge.middle": {
     "": {
       "sound": "crossbow.quick_charge.middle"
     }
   },
-  "CrossbowQuick_chargeStart": {
+  "crossbow.quick_charge.start": {
     "": {
       "sound": "crossbow.quick_charge.start"
     }
   },
-  "CrossbowShoot": {
+  "crossbow.shoot": {
     "": {
       "sound": "crossbow.shoot"
     }
   },
-  "Dash_ready": {
+  "dash_ready": {
     "": {
       "sound": "mob.camel.dash_ready"
     },
@@ -3027,7 +3027,7 @@
       "volume": 3.0
     }
   },
-  "Deactivate": {
+  "deactivate": {
     "entity:minecraft:copper_golem": {
       "sound": "mob.copper_golem.becoming_statue"
     },
@@ -3038,7 +3038,7 @@
       "sound": "block.shelf.deactivate"
     }
   },
-  "Death": {
+  "death": {
     "entity:minecraft:squid": {
       "sound": "mob.squid.death",
       "volume": 0.4,
@@ -3709,7 +3709,7 @@
       ]
     }
   },
-  "DeathBaby": {
+  "death.baby": {
     "entity:minecraft:turtle": {
       "sound": "mob.turtle_baby.death",
       "pitch": [
@@ -3718,7 +3718,7 @@
       ]
     }
   },
-  "DeathInWater": {
+  "death.in.water": {
     "entity:minecraft:player": {
       "sound": "game.player.die",
       "pitch": [
@@ -3763,7 +3763,7 @@
       ]
     }
   },
-  "DeathMidVolume": {
+  "death.mid.volume": {
     "entity:minecraft:wither": {
       "sound": "mob.wither.death",
       "volume": 0.75,
@@ -3773,7 +3773,7 @@
       ]
     }
   },
-  "DeathMinVolume": {
+  "death.min.volume": {
     "entity:minecraft:wither": {
       "sound": "mob.wither.death",
       "volume": 0.5,
@@ -3783,7 +3783,7 @@
       ]
     }
   },
-  "DeathScreamer": {
+  "death.screamer": {
     "entity:minecraft:goat": {
       "sound": "mob.goat.death.screamer",
       "pitch": [
@@ -3792,7 +3792,7 @@
       ]
     }
   },
-  "DeathToZombie": {
+  "death.to.zombie": {
     "entity:minecraft:pig": {
       "sound": "mob.pig.death",
       "pitch": [
@@ -3815,8 +3815,8 @@
       ]
     }
   },
-  "Default": null,
-  "Deny": {
+  "default": null,
+  "deny": {
     "": {
       "sound": "block.false_permissions",
       "volume": 0.8,
@@ -3826,7 +3826,7 @@
       ]
     }
   },
-  "Detach": {
+  "detach": {
     "": {
       "sound": "block.bowhit",
       "volume": 0.4,
@@ -3839,7 +3839,7 @@
       "sound": "mob.happy_ghast.goggles_up"
     }
   },
-  "Disappeared": {
+  "disappeared": {
     "entity:minecraft:wandering_trader": {
       "sound": "mob.wanderingtrader.disappeared",
       "pitch": [
@@ -3848,7 +3848,7 @@
       ]
     }
   },
-  "DoorClose": {
+  "door.close": {
     "block:nether_wood": {
       "sound": "close.nether_wood_door",
       "pitch": [
@@ -3895,7 +3895,7 @@
       ]
     }
   },
-  "DoorOpen": {
+  "door.open": {
     "block:nether_wood": {
       "sound": "open.nether_wood_door",
       "pitch": [
@@ -3946,7 +3946,7 @@
       ]
     }
   },
-  "Drink": {
+  "drink": {
     "entity:minecraft:turtle": {
       "sound": "random.drink",
       "volume": 0.35,
@@ -4510,7 +4510,7 @@
       ]
     }
   },
-  "DrinkHoney": {
+  "drink.honey": {
     "entity:minecraft:bee": {
       "sound": "random.drink_honey",
       "volume": 0.5,
@@ -4520,7 +4520,7 @@
       ]
     }
   },
-  "DrinkMilk": {
+  "drink.milk": {
     "entity:minecraft:wandering_trader": {
       "sound": "mob.wanderingtrader.drink_milk",
       "pitch": [
@@ -4529,7 +4529,7 @@
       ]
     }
   },
-  "DripLavaPointed_dripstone": {
+  "drip.lava.pointed_dripstone": {
     "": {
       "sound": "drip.lava.pointed_dripstone",
       "volume": [
@@ -4538,7 +4538,7 @@
       ]
     }
   },
-  "DripWaterPointed_dripstone": {
+  "drip.water.pointed_dripstone": {
     "": {
       "sound": "drip.water.pointed_dripstone",
       "volume": [
@@ -4547,7 +4547,7 @@
       ]
     }
   },
-  "DropSlot": {
+  "drop.slot": {
     "": {
       "sound": "random.pop",
       "volume": 0.3,
@@ -4557,7 +4557,7 @@
       ]
     }
   },
-  "Eat": {
+  "eat": {
     "entity:minecraft:turtle": {
       "sound": "random.eat",
       "volume": [
@@ -5370,7 +5370,7 @@
       ]
     }
   },
-  "Eject_block": {
+  "eject_block": {
     "entity:minecraft:sulfur_cube": {
       "sound": "mob.sulfur_cube.eject",
       "volume": 0.8,
@@ -5380,12 +5380,12 @@
       ]
     }
   },
-  "ElderguardianCurse": {
+  "elderguardian.curse": {
     "entity:minecraft:player": {
       "sound": "mob.elderguardian.curse"
     }
   },
-  "ElemconstructOpen": {
+  "elemconstruct.open": {
     "": {
       "sound": "elemconstruct.active",
       "volume": 0.25,
@@ -5395,7 +5395,7 @@
       ]
     }
   },
-  "EnderchestClosed": {
+  "enderchest.closed": {
     "": {
       "sound": "random.enderchestclosed",
       "volume": 0.5,
@@ -5405,7 +5405,7 @@
       ]
     }
   },
-  "EnderchestOpen": {
+  "enderchest.open": {
     "": {
       "sound": "random.enderchestopen",
       "volume": 0.5,
@@ -5415,7 +5415,7 @@
       ]
     }
   },
-  "Explode": {
+  "explode": {
     "": {
       "sound": "random.explode",
       "volume": 4.0
@@ -5429,12 +5429,12 @@
       ]
     }
   },
-  "ExtinguishCandle": {
+  "extinguish.candle": {
     "": {
       "sound": "extinguish.candle"
     }
   },
-  "ExtinguishFire": {
+  "extinguish.fire": {
     "": {
       "sound": "random.fizz",
       "volume": 0.5,
@@ -5444,7 +5444,7 @@
       ]
     }
   },
-  "Fall": {
+  "fall": {
     "block:soul_sand": {
       "sound": "fall.soul_sand",
       "volume": 0.4
@@ -5852,7 +5852,7 @@
       "volume": 0.4
     }
   },
-  "FallBig": {
+  "fall.big": {
     "entity:minecraft:turtle": {
       "sound": "damage.fallbig",
       "volume": 0.75
@@ -6138,7 +6138,7 @@
       "volume": 0.75
     }
   },
-  "FallSmall": {
+  "fall.small": {
     "entity:minecraft:turtle": {
       "sound": "damage.fallsmall",
       "volume": 0.75
@@ -6424,7 +6424,7 @@
       "volume": 0.75
     }
   },
-  "Fang": {
+  "fang": {
     "entity:minecraft:evocation_fang": {
       "sound": "mob.evocation_fangs.attack",
       "volume": 0.8,
@@ -6434,7 +6434,7 @@
       ]
     }
   },
-  "Fence_gateClose": {
+  "fence_gate.close": {
     "block:nether_wood": {
       "sound": "close.nether_wood_fence_gate",
       "pitch": [
@@ -6464,7 +6464,7 @@
       ]
     }
   },
-  "Fence_gateOpen": {
+  "fence_gate.open": {
     "block:nether_wood": {
       "sound": "open.nether_wood_fence_gate",
       "pitch": [
@@ -6494,7 +6494,7 @@
       ]
     }
   },
-  "Fire": {
+  "fire": {
     "": {
       "sound": "fire.fire",
       "volume": [
@@ -6507,7 +6507,7 @@
       ]
     }
   },
-  "Fizz": {
+  "fizz": {
     "": {
       "sound": "random.fizz",
       "volume": 0.5,
@@ -7085,7 +7085,7 @@
       ]
     }
   },
-  "Flap": {
+  "flap": {
     "entity:minecraft:ender_dragon": {
       "sound": "mob.enderdragon.flap",
       "volume": 80.0,
@@ -7103,7 +7103,7 @@
       ]
     }
   },
-  "Flop": {
+  "flop": {
     "entity:minecraft:pufferfish": {
       "sound": "mob.fish.flop"
     },
@@ -7134,7 +7134,7 @@
       ]
     }
   },
-  "Fly": {
+  "fly": {
     "entity:minecraft:parrot": {
       "sound": "mob.parrot.fly",
       "pitch": [
@@ -7143,12 +7143,12 @@
       ]
     }
   },
-  "Freeze": {
+  "freeze": {
     "entity:minecraft:creaking": {
       "sound": "mob.creaking.freeze"
     }
   },
-  "Fuse": {
+  "fuse": {
     "entity:minecraft:sulfur_cube": {
       "sound": "random.fuse",
       "pitch": 0.5
@@ -7158,7 +7158,7 @@
       "pitch": 0.5
     }
   },
-  "Gallop": {
+  "gallop": {
     "entity:minecraft:horse": {
       "sound": "mob.horse.gallop",
       "volume": 0.45,
@@ -7200,39 +7200,39 @@
       ]
     }
   },
-  "Geyser_continuous_eruption_active": {
+  "geyser_continuous_eruption_active": {
     "": {
       "sound": "block.potent_sulfur.geyser_continuous_eruption_active",
       "volume": 2.0
     }
   },
-  "Geyser_continuous_eruption_start": {
+  "geyser_continuous_eruption_start": {
     "": {
       "sound": "block.potent_sulfur.geyser_continuous_eruption_start"
     }
   },
-  "Geyser_eruption_active": {
+  "geyser_eruption_active": {
     "": {
       "sound": "block.potent_sulfur.geyser_eruption_active",
       "volume": 2.0
     }
   },
-  "Geyser_eruption_start": {
+  "geyser_eruption_start": {
     "": {
       "sound": "block.potent_sulfur.geyser_eruption_start"
     }
   },
-  "Glass": {
+  "glass": {
     "": {
       "sound": "random.glass"
     }
   },
-  "Glow_squidInk_squirt": {
+  "glow_squid.ink_squirt": {
     "": {
       "sound": "mob.glow_squid.ink_squirt"
     }
   },
-  "GlowstickUse": {
+  "glowstick.use": {
     "entity:minecraft:balloon": {
       "sound": "fire.ignite",
       "pitch": [
@@ -7241,7 +7241,7 @@
       ]
     }
   },
-  "Growl": {
+  "growl": {
     "entity:minecraft:wolf": {
       "sound": "mob.wolf.growl",
       "pitch": [
@@ -7250,7 +7250,7 @@
       ]
     }
   },
-  "Haggle": {
+  "haggle": {
     "entity:minecraft:wandering_trader": {
       "sound": "mob.wanderingtrader.haggle",
       "pitch": [
@@ -7273,8 +7273,8 @@
       ]
     }
   },
-  "HaggleIdle": null,
-  "HaggleNo": {
+  "haggle.idle": null,
+  "haggle.no": {
     "entity:minecraft:wandering_trader": {
       "sound": "mob.wanderingtrader.no",
       "pitch": [
@@ -7297,7 +7297,7 @@
       ]
     }
   },
-  "HaggleYes": {
+  "haggle.yes": {
     "entity:minecraft:wandering_trader": {
       "sound": "mob.wanderingtrader.yes",
       "pitch": [
@@ -7320,13 +7320,13 @@
       ]
     }
   },
-  "Heartbeat": {
+  "heartbeat": {
     "entity:minecraft:warden": {
       "sound": "mob.warden.heartbeat",
       "volume": 5.0
     }
   },
-  "HeavyStep": {
+  "heavy.step": {
     "entity:minecraft:horse": {
       "sound": "mob.horse.wood",
       "volume": 0.45,
@@ -7368,7 +7368,7 @@
       ]
     }
   },
-  "Hit": {
+  "hit": {
     "block:soul_sand": {
       "sound": "hit.soul_sand",
       "volume": 0.21,
@@ -7911,60 +7911,60 @@
       "pitch": 0.5
     }
   },
-  "Horn_break": {
+  "horn_break": {
     "": {
       "sound": "mob.goat.horn_break"
     }
   },
-  "Horn_call0": {
+  "horn_call0": {
     "": {
       "sound": "horn.call.0",
       "volume": 16.0
     }
   },
-  "Horn_call1": {
+  "horn_call1": {
     "": {
       "sound": "horn.call.1",
       "volume": 16.0
     }
   },
-  "Horn_call2": {
+  "horn_call2": {
     "": {
       "sound": "horn.call.2",
       "volume": 16.0
     }
   },
-  "Horn_call3": {
+  "horn_call3": {
     "": {
       "sound": "horn.call.3",
       "volume": 16.0
     }
   },
-  "Horn_call4": {
+  "horn_call4": {
     "": {
       "sound": "horn.call.4",
       "volume": 16.0
     }
   },
-  "Horn_call5": {
+  "horn_call5": {
     "": {
       "sound": "horn.call.5",
       "volume": 16.0
     }
   },
-  "Horn_call6": {
+  "horn_call6": {
     "": {
       "sound": "horn.call.6",
       "volume": 16.0
     }
   },
-  "Horn_call7": {
+  "horn_call7": {
     "": {
       "sound": "horn.call.7",
       "volume": 16.0
     }
   },
-  "Hurt": {
+  "hurt": {
     "entity:minecraft:turtle": {
       "sound": "mob.turtle.hurt",
       "pitch": [
@@ -8642,7 +8642,7 @@
       ]
     }
   },
-  "HurtBaby": {
+  "hurt.baby": {
     "entity:minecraft:turtle": {
       "sound": "mob.turtle_baby.hurt",
       "pitch": [
@@ -8651,7 +8651,7 @@
       ]
     }
   },
-  "HurtInWater": {
+  "hurt.in.water": {
     "entity:minecraft:pufferfish": {
       "sound": "mob.fish.hurt",
       "pitch": [
@@ -8724,7 +8724,7 @@
       ]
     }
   },
-  "HurtReduced": {
+  "hurt.reduced": {
     "entity:minecraft:wolf": {
       "sound": "armor.damage_wolf",
       "pitch": [
@@ -8740,7 +8740,7 @@
       ]
     }
   },
-  "HurtScreamer": {
+  "hurt.screamer": {
     "entity:minecraft:goat": {
       "sound": "mob.goat.hurt.screamer",
       "pitch": [
@@ -8749,7 +8749,7 @@
       ]
     }
   },
-  "IcebombHit": {
+  "icebomb.hit": {
     "": {
       "sound": "random.glass",
       "pitch": [
@@ -8758,7 +8758,7 @@
       ]
     }
   },
-  "Ignite": {
+  "ignite": {
     "": {
       "sound": "fire.ignite",
       "pitch": [
@@ -8767,293 +8767,293 @@
       ]
     }
   },
-  "ImitateBlaze": {
+  "imitate.blaze": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.blaze",
       "volume": 0.4,
       "pitch": 1.8
     }
   },
-  "ImitateBogged": {
+  "imitate.bogged": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.bogged",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
-  "ImitateBreeze": {
+  "imitate.breeze": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.breeze",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
-  "ImitateCamel_husk": {
+  "imitate.camel_husk": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.camel_husk",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
-  "ImitateCave_spider": {
+  "imitate.cave_spider": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.spider",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "ImitateCreaking": {
+  "imitate.creaking": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.creaking"
     }
   },
-  "ImitateCreeper": {
+  "imitate.creeper": {
     "entity:minecraft:parrot": {
       "sound": "imitate.fuse",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "ImitateDrowned": {
+  "imitate.drowned": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.drowned",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "ImitateElder_guardian": {
+  "imitate.elder_guardian": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.guardian",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
-  "ImitateEnder_dragon": {
+  "imitate.ender_dragon": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.enderdragon",
       "volume": 0.2,
       "pitch": 1.8
     }
   },
-  "ImitateEnderman": {
+  "imitate.enderman": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.endermen",
       "volume": 0.5,
       "pitch": 1.7
     }
   },
-  "ImitateEndermite": {
+  "imitate.endermite": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.endermite",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
-  "ImitateEvocation_illager": {
+  "imitate.evocation_illager": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.evocation_illager",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "ImitateGhast": {
+  "imitate.ghast": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.ghast",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
-  "ImitateGuardian": {
+  "imitate.guardian": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.guardian",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
-  "ImitateHappy_ghast": {
+  "imitate.happy_ghast": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.happy_ghast",
       "pitch": 1.7
     }
   },
-  "ImitateHusk": {
+  "imitate.husk": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.husk",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "ImitateMagma_cube": {
+  "imitate.magma_cube": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.magmacube",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "ImitateParched": {
+  "imitate.parched": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.parched",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
-  "ImitatePhantom": {
+  "imitate.phantom": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.phantom",
       "volume": 0.7,
       "pitch": 1.5
     }
   },
-  "ImitatePillager": {
+  "imitate.pillager": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.pillager",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
-  "ImitatePolar_bear": {
+  "imitate.polar_bear": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.polarbear",
       "volume": 0.7,
       "pitch": 0.8
     }
   },
-  "ImitateRavager": {
+  "imitate.ravager": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.ravager",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
-  "ImitateShulker": {
+  "imitate.shulker": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.shulker",
       "volume": 0.4,
       "pitch": 1.7
     }
   },
-  "ImitateSilverfish": {
+  "imitate.silverfish": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.silverfish",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
-  "ImitateSkeleton": {
+  "imitate.skeleton": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.skeleton",
       "pitch": 1.7
     }
   },
-  "ImitateSlime": {
+  "imitate.slime": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.slime",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "ImitateSpider": {
+  "imitate.spider": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.spider",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "ImitateStray": {
+  "imitate.stray": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.stray",
       "volume": 0.6,
       "pitch": 1.6
     }
   },
-  "ImitateVex": {
+  "imitate.vex": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.vex",
       "volume": 0.8,
       "pitch": 1.6
     }
   },
-  "ImitateVindication_illager": {
+  "imitate.vindication_illager": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.vindicator",
       "volume": 0.6,
       "pitch": 1.7
     }
   },
-  "ImitateWarden": {
+  "imitate.warden": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.warden",
       "volume": 0.8,
       "pitch": 1.8
     }
   },
-  "ImitateWitch": {
+  "imitate.witch": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.witch",
       "volume": 0.5,
       "pitch": 1.8
     }
   },
-  "ImitateWither": {
+  "imitate.wither": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.wither",
       "volume": 0.2,
       "pitch": 1.8
     }
   },
-  "ImitateWither_skeleton": {
+  "imitate.wither_skeleton": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.wither_skeleton",
       "volume": 0.7,
       "pitch": 1.8
     }
   },
-  "ImitateWolf": {
+  "imitate.wolf": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.wolf",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "ImitateZoglin": {
+  "imitate.zoglin": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.zoglin",
       "volume": 0.7,
       "pitch": 1.7
     }
   },
-  "ImitateZombie": {
+  "imitate.zombie": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.zombie",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "ImitateZombie_pigman": {
+  "imitate.zombie_pigman": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.zombiepig",
       "volume": 0.4,
       "pitch": 1.8
     }
   },
-  "ImitateZombie_villager": {
+  "imitate.zombie_villager": {
     "entity:minecraft:parrot": {
       "sound": "mob.imitate.zombie_villager",
       "volume": 0.6,
       "pitch": 1.8
     }
   },
-  "Insert": {
+  "insert": {
     "block:chiseled_bookshelf": {
       "sound": "insert.chiseled_bookshelf"
     }
   },
-  "Insert_enchanted": {
+  "insert_enchanted": {
     "block:chiseled_bookshelf": {
       "sound": "insert_enchanted.chiseled_bookshelf"
     }
   },
-  "IrongolemCrack": {
+  "irongolem.crack": {
     "entity:minecraft:iron_golem": {
       "sound": "mob.irongolem.crack",
       "pitch": [
@@ -9062,7 +9062,7 @@
       ]
     }
   },
-  "IrongolemRepair": {
+  "irongolem.repair": {
     "entity:minecraft:iron_golem": {
       "sound": "mob.irongolem.repair",
       "pitch": [
@@ -9071,125 +9071,125 @@
       ]
     }
   },
-  "ItemBookPut": {
+  "item.book.put": {
     "": {
       "sound": "item.book.put",
       "volume": 1.2
     }
   },
-  "ItemCopper_spearAttack_hit": {
+  "item.copper_spear.attack_hit": {
     "": {
       "sound": "item.spear.attack_hit"
     }
   },
-  "ItemCopper_spearAttack_miss": {
+  "item.copper_spear.attack_miss": {
     "": {
       "sound": "item.spear.attack_miss"
     }
   },
-  "ItemCopper_spearUse": {
+  "item.copper_spear.use": {
     "": {
       "sound": "item.spear.use"
     }
   },
-  "ItemDiamond_spearAttack_hit": {
+  "item.diamond_spear.attack_hit": {
     "": {
       "sound": "item.spear.attack_hit"
     }
   },
-  "ItemDiamond_spearAttack_miss": {
+  "item.diamond_spear.attack_miss": {
     "": {
       "sound": "item.spear.attack_miss"
     }
   },
-  "ItemDiamond_spearUse": {
+  "item.diamond_spear.use": {
     "": {
       "sound": "item.spear.use"
     }
   },
-  "ItemEnchantLunge1": {
+  "item.enchant.lunge1": {
     "": {
       "sound": "item.enchant.lunge1"
     }
   },
-  "ItemEnchantLunge2": {
+  "item.enchant.lunge2": {
     "": {
       "sound": "item.enchant.lunge2"
     }
   },
-  "ItemEnchantLunge3": {
+  "item.enchant.lunge3": {
     "": {
       "sound": "item.enchant.lunge3"
     }
   },
-  "ItemFizz": null,
-  "ItemGolden_spearAttack_hit": {
+  "item.fizz": null,
+  "item.golden_spear.attack_hit": {
     "": {
       "sound": "item.spear.attack_hit"
     }
   },
-  "ItemGolden_spearAttack_miss": {
+  "item.golden_spear.attack_miss": {
     "": {
       "sound": "item.spear.attack_miss"
     }
   },
-  "ItemGolden_spearUse": {
+  "item.golden_spear.use": {
     "": {
       "sound": "item.spear.use"
     }
   },
-  "ItemIron_spearAttack_hit": {
+  "item.iron_spear.attack_hit": {
     "": {
       "sound": "item.spear.attack_hit"
     }
   },
-  "ItemIron_spearAttack_miss": {
+  "item.iron_spear.attack_miss": {
     "": {
       "sound": "item.spear.attack_miss"
     }
   },
-  "ItemIron_spearUse": {
+  "item.iron_spear.use": {
     "": {
       "sound": "item.spear.use"
     }
   },
-  "ItemNetherite_spearAttack_hit": {
+  "item.netherite_spear.attack_hit": {
     "": {
       "sound": "item.spear.attack_hit"
     }
   },
-  "ItemNetherite_spearAttack_miss": {
+  "item.netherite_spear.attack_miss": {
     "": {
       "sound": "item.spear.attack_miss"
     }
   },
-  "ItemNetherite_spearUse": {
+  "item.netherite_spear.use": {
     "": {
       "sound": "item.spear.use"
     }
   },
-  "ItemShieldBlock": {
+  "item.shield.block": {
     "": {
       "sound": "item.shield.block",
       "volume": 0.7
     }
   },
-  "ItemSpearAttack_hit": {
+  "item.spear.attack_hit": {
     "": {
       "sound": "item.spear.attack_hit"
     }
   },
-  "ItemSpearAttack_miss": {
+  "item.spear.attack_miss": {
     "": {
       "sound": "item.spear.attack_miss"
     }
   },
-  "ItemSpearUse": {
+  "item.spear.use": {
     "": {
       "sound": "item.spear.use"
     }
   },
-  "ItemSpyglassStop_using": {
+  "item.spyglass.stop_using": {
     "": {
       "sound": "item.spyglass.stop_using",
       "volume": 0.5,
@@ -9199,7 +9199,7 @@
       ]
     }
   },
-  "ItemSpyglassUse": {
+  "item.spyglass.use": {
     "": {
       "sound": "item.spyglass.use",
       "volume": 0.5,
@@ -9209,64 +9209,64 @@
       ]
     }
   },
-  "ItemStone_spearAttack_hit": {
+  "item.stone_spear.attack_hit": {
     "": {
       "sound": "item.spear.attack_hit"
     }
   },
-  "ItemStone_spearAttack_miss": {
+  "item.stone_spear.attack_miss": {
     "": {
       "sound": "item.spear.attack_miss"
     }
   },
-  "ItemStone_spearUse": {
+  "item.stone_spear.use": {
     "": {
       "sound": "item.spear.use"
     }
   },
-  "ItemTridentHit": {
+  "item.trident.hit": {
     "": {
       "sound": "item.trident.hit"
     }
   },
-  "ItemTridentHit_ground": {
+  "item.trident.hit_ground": {
     "": {
       "sound": "item.trident.hit_ground"
     }
   },
-  "ItemTridentReturn": {
+  "item.trident.return": {
     "": {
       "sound": "item.trident.return",
       "volume": 10.0
     }
   },
-  "ItemTridentRiptide_1": {
+  "item.trident.riptide_1": {
     "": {
       "sound": "item.trident.riptide_1"
     }
   },
-  "ItemTridentRiptide_2": {
+  "item.trident.riptide_2": {
     "": {
       "sound": "item.trident.riptide_2"
     }
   },
-  "ItemTridentRiptide_3": {
+  "item.trident.riptide_3": {
     "": {
       "sound": "item.trident.riptide_3"
     }
   },
-  "ItemTridentThrow": {
+  "item.trident.throw": {
     "": {
       "sound": "item.trident.throw"
     }
   },
-  "ItemTridentThunder": {
+  "item.trident.thunder": {
     "": {
       "sound": "item.trident.thunder",
       "volume": 5.0
     }
   },
-  "ItemUseOn": {
+  "item.use.on": {
     "block:soul_sand": {
       "sound": "use.soul_sand",
       "pitch": 0.8
@@ -9643,22 +9643,22 @@
       "pitch": 0.8
     }
   },
-  "ItemWooden_spearAttack_hit": {
+  "item.wooden_spear.attack_hit": {
     "": {
       "sound": "item.wooden_spear.attack_hit"
     }
   },
-  "ItemWooden_spearAttack_miss": {
+  "item.wooden_spear.attack_miss": {
     "": {
       "sound": "item.wooden_spear.attack_miss"
     }
   },
-  "ItemWooden_spearUse": {
+  "item.wooden_spear.use": {
     "": {
       "sound": "item.wooden_spear.use"
     }
   },
-  "Item_given": {
+  "item_given": {
     "": {
       "sound": "mob.allay.item_given",
       "pitch": [
@@ -9667,7 +9667,7 @@
       ]
     }
   },
-  "Item_taken": {
+  "item_taken": {
     "": {
       "sound": "mob.allay.item_taken",
       "pitch": [
@@ -9676,12 +9676,12 @@
       ]
     }
   },
-  "Item_thrown": {
+  "item_thrown": {
     "": {
       "sound": "mob.allay.item_thrown"
     }
   },
-  "Jump": {
+  "jump": {
     "block:soul_sand": {
       "sound": "jump.soul_sand",
       "volume": 0.12
@@ -10143,8 +10143,8 @@
       "volume": 0.12
     }
   },
-  "JumpPrevent": null,
-  "Jump_to_block": {
+  "jump.prevent": null,
+  "jump_to_block": {
     "": {
       "sound": "component.jump_to_block"
     },
@@ -10156,7 +10156,7 @@
       ]
     }
   },
-  "Land": {
+  "land": {
     "block:soul_sand": {
       "sound": "land.soul_sand",
       "volume": 0.14
@@ -10600,17 +10600,17 @@
       "volume": 0.14
     }
   },
-  "LargeBlast": {
+  "large.blast": {
     "": {
       "sound": "firework.large_blast"
     }
   },
-  "Launch": {
+  "launch": {
     "": {
       "sound": "firework.launch"
     }
   },
-  "Lava": {
+  "lava": {
     "": {
       "sound": "liquid.lava",
       "volume": [
@@ -10623,7 +10623,7 @@
       ]
     }
   },
-  "LavaPop": {
+  "lava.pop": {
     "": {
       "sound": "liquid.lavapop",
       "volume": [
@@ -10636,51 +10636,51 @@
       ]
     }
   },
-  "Lay_egg": {
+  "lay_egg": {
     "": {
       "sound": "block.turtle_egg.drop",
       "volume": 0.3,
       "pitch": 0.9
     }
   },
-  "Lay_spawn": {
+  "lay_spawn": {
     "": {
       "sound": "mob.frog.lay_spawn",
       "volume": 0.3,
       "pitch": 0.9
     }
   },
-  "LeadBreak": {
+  "lead.break": {
     "": {
       "sound": "lead.break"
     }
   },
-  "LeadLeash": {
+  "lead.leash": {
     "": {
       "sound": "leashknot.place"
     }
   },
-  "LeadUnleash": {
+  "lead.unleash": {
     "": {
       "sound": "leashknot.break"
     }
   },
-  "LeashknotBreak": {
+  "leashknot.break": {
     "": {
       "sound": "leashknot.break"
     }
   },
-  "LeashknotPlace": {
+  "leashknot.place": {
     "": {
       "sound": "leashknot.place"
     }
   },
-  "Levelup": {
+  "levelup": {
     "": {
       "sound": "random.levelup"
     }
   },
-  "Listening": {
+  "listening": {
     "entity:minecraft:warden": {
       "sound": "mob.warden.listening",
       "volume": 10.0,
@@ -10690,7 +10690,7 @@
       ]
     }
   },
-  "Listening_angry": {
+  "listening_angry": {
     "entity:minecraft:warden": {
       "sound": "mob.warden.listening_angry",
       "volume": 10.0,
@@ -10700,7 +10700,7 @@
       ]
     }
   },
-  "Lodestone_compassLink_compass_to_lodestone": {
+  "lodestone_compass.link_compass_to_lodestone": {
     "": {
       "sound": "lodestone_compass.link_compass_to_lodestone",
       "pitch": [
@@ -10709,7 +10709,7 @@
       ]
     }
   },
-  "LtReactionBleach": {
+  "lt.reaction.bleach": {
     "": {
       "sound": "lt.reaction.fire",
       "volume": 6.0,
@@ -10719,7 +10719,7 @@
       ]
     }
   },
-  "LtReactionEpaste": {
+  "lt.reaction.epaste": {
     "": {
       "sound": "random.fizz",
       "pitch": [
@@ -10728,7 +10728,7 @@
       ]
     }
   },
-  "LtReactionEpaste2": {
+  "lt.reaction.epaste2": {
     "": {
       "sound": "mob.blaze.shoot",
       "pitch": [
@@ -10737,7 +10737,7 @@
       ]
     }
   },
-  "LtReactionFertilizer": {
+  "lt.reaction.fertilizer": {
     "": {
       "sound": "step.gravel",
       "pitch": [
@@ -10746,7 +10746,7 @@
       ]
     }
   },
-  "LtReactionFire": {
+  "lt.reaction.fire": {
     "": {
       "sound": "lt.reaction.fire",
       "volume": 2.0,
@@ -10756,7 +10756,7 @@
       ]
     }
   },
-  "LtReactionFireball": {
+  "lt.reaction.fireball": {
     "": {
       "sound": "mob.ghast.fireball",
       "pitch": [
@@ -10765,7 +10765,7 @@
       ]
     }
   },
-  "LtReactionIcebomb": {
+  "lt.reaction.icebomb": {
     "": {
       "sound": "mob.wither.break_block",
       "volume": 0.5,
@@ -10775,7 +10775,7 @@
       ]
     }
   },
-  "LtReactionMgsalt": {
+  "lt.reaction.mgsalt": {
     "": {
       "sound": "mob.skeleton.step",
       "pitch": [
@@ -10784,7 +10784,7 @@
       ]
     }
   },
-  "LtReactionMiscexplosion": {
+  "lt.reaction.miscexplosion": {
     "": {
       "sound": "ambient.weather.lightning.impact",
       "pitch": [
@@ -10793,7 +10793,7 @@
       ]
     }
   },
-  "LtReactionMiscfire": {
+  "lt.reaction.miscfire": {
     "": {
       "sound": "random.explode",
       "pitch": [
@@ -10802,7 +10802,7 @@
       ]
     }
   },
-  "LtReactionMiscmystical": {
+  "lt.reaction.miscmystical": {
     "": {
       "sound": "random.fizz",
       "pitch": [
@@ -10811,7 +10811,7 @@
       ]
     }
   },
-  "LtReactionMiscmystical2": {
+  "lt.reaction.miscmystical2": {
     "": {
       "sound": "random.fuse",
       "pitch": [
@@ -10820,7 +10820,7 @@
       ]
     }
   },
-  "LtReactionProduct": {
+  "lt.reaction.product": {
     "": {
       "sound": "random.pop",
       "pitch": [
@@ -10829,22 +10829,22 @@
       ]
     }
   },
-  "MaceHeavy_smash_ground": {
+  "mace.heavy_smash_ground": {
     "": {
       "sound": "mace.heavy_smash_ground"
     }
   },
-  "MaceSmash_air": {
+  "mace.smash_air": {
     "": {
       "sound": "mace.smash_air"
     }
   },
-  "MaceSmash_ground": {
+  "mace.smash_ground": {
     "": {
       "sound": "mace.smash_ground"
     }
   },
-  "Mad": {
+  "mad": {
     "entity:minecraft:ender_dragon": {
       "sound": "mob.enderdragon.growl",
       "volume": 80.0,
@@ -10924,37 +10924,37 @@
       ]
     }
   },
-  "Milk": {
+  "milk": {
     "": {
       "sound": "mob.cow.milk"
     }
   },
-  "MilkScreamer": {
+  "milk.screamer": {
     "": {
       "sound": "mob.goat.milk.screamer"
     }
   },
-  "Milk_suspiciously": {
+  "milk_suspiciously": {
     "": {
       "sound": "mob.mooshroom.suspicious_milk"
     }
   },
-  "MobArmadilloBrush": {
+  "mob.armadillo.brush": {
     "": {
       "sound": "mob.armadillo.brush"
     }
   },
-  "MobArmadilloScute_drop": {
+  "mob.armadillo.scute_drop": {
     "": {
       "sound": "mob.armadillo.scute_drop"
     }
   },
-  "MobArmor_standPlace": {
+  "mob.armor_stand.place": {
     "": {
       "sound": "mob.armor_stand.place"
     }
   },
-  "MobHoglinConverted_to_zombified": {
+  "mob.hoglin.converted_to_zombified": {
     "": {
       "sound": "mob.hoglin.converted_to_zombified",
       "pitch": [
@@ -10963,7 +10963,7 @@
       ]
     }
   },
-  "MobHuskConvert_to_zombie": {
+  "mob.husk.convert_to_zombie": {
     "": {
       "sound": "mob.husk.convert_to_zombie",
       "pitch": [
@@ -10972,7 +10972,7 @@
       ]
     }
   },
-  "MobPigDeath": {
+  "mob.pig.death": {
     "": {
       "sound": "mob.pig.death",
       "pitch": [
@@ -10981,34 +10981,34 @@
       ]
     }
   },
-  "MobPlayerHurt_drown": {
+  "mob.player.hurt_drown": {
     "": {
       "sound": "mob.player.hurt_drown"
     }
   },
-  "MobPlayerHurt_freeze": {
+  "mob.player.hurt_freeze": {
     "": {
       "sound": "mob.player.hurt_freeze"
     }
   },
-  "MobPlayerHurt_on_fire": {
+  "mob.player.hurt_on_fire": {
     "": {
       "sound": "mob.player.hurt_on_fire"
     }
   },
-  "MobWarning": {
+  "mob.warning": {
     "entity:minecraft:polar_bear": {
       "sound": "mob.polarbear.warning",
       "volume": 1.2
     }
   },
-  "MobWarningBaby": null,
-  "Multi_swap": {
+  "mob.warning.baby": null,
+  "multi_swap": {
     "block:shelf": {
       "sound": "block.shelf.multi_swap"
     }
   },
-  "Nearby_close": {
+  "nearby_close": {
     "entity:minecraft:warden": {
       "sound": "mob.warden.nearby_close",
       "volume": 5.0,
@@ -11018,7 +11018,7 @@
       ]
     }
   },
-  "Nearby_closer": {
+  "nearby_closer": {
     "entity:minecraft:warden": {
       "sound": "mob.warden.nearby_closer",
       "volume": 5.0,
@@ -11028,7 +11028,7 @@
       ]
     }
   },
-  "Nearby_closest": {
+  "nearby_closest": {
     "entity:minecraft:warden": {
       "sound": "mob.warden.nearby_closest",
       "volume": 5.0,
@@ -11038,9 +11038,8 @@
       ]
     }
   },
-  "Note": null,
-  "NoteBass": null,
-  "Ominous_bottleEnd_use": {
+  "note": null,
+  "ominous_bottle.end_use": {
     "": {
       "sound": "ominous_bottle.end_use",
       "pitch": [
@@ -11049,7 +11048,7 @@
       ]
     }
   },
-  "Ominous_item_spawnerAbout_to_spawn_item": {
+  "ominous_item_spawner.about_to_spawn_item": {
     "": {
       "sound": "ominous_item_spawner.about_to_spawn_item",
       "pitch": [
@@ -11058,7 +11057,7 @@
       ]
     }
   },
-  "Ominous_item_spawnerSpawn_item": {
+  "ominous_item_spawner.spawn_item": {
     "": {
       "sound": "ominous_item_spawner.spawn_item",
       "pitch": [
@@ -11067,7 +11066,7 @@
       ]
     }
   },
-  "Ominous_item_spawnerSpawn_item_begin": {
+  "ominous_item_spawner.spawn_item_begin": {
     "": {
       "sound": "ominous_item_spawner.spawn_item_begin",
       "pitch": [
@@ -11076,17 +11075,17 @@
       ]
     }
   },
-  "Open": {
+  "open": {
     "block:eyeblossom": {
       "sound": "block.eyeblossom.open"
     }
   },
-  "Open_long": {
+  "open_long": {
     "block:eyeblossom": {
       "sound": "block.eyeblossom.open_long"
     }
   },
-  "Panic": {
+  "panic": {
     "entity:minecraft:strider": {
       "sound": "mob.strider.panic",
       "pitch": [
@@ -11095,7 +11094,7 @@
       ]
     }
   },
-  "Pant": {
+  "pant": {
     "entity:minecraft:wolf": {
       "sound": "mob.wolf.panting",
       "pitch": [
@@ -11104,7 +11103,7 @@
       ]
     }
   },
-  "ParticleSoul_escapeLoud": {
+  "particle.soul_escape.loud": {
     "": {
       "sound": "particle.soul_escape",
       "volume": [
@@ -11117,7 +11116,7 @@
       ]
     }
   },
-  "ParticleSoul_escapeQuiet": {
+  "particle.soul_escape.quiet": {
     "": {
       "sound": "particle.soul_escape",
       "volume": [
@@ -11130,12 +11129,12 @@
       ]
     }
   },
-  "Pause_growth": {
+  "pause_growth": {
     "": {
       "sound": "mob.pause_growth"
     }
   },
-  "Pick_berriesCave_vines": {
+  "pick_berries.cave_vines": {
     "": {
       "sound": "pick_berries.cave_vines",
       "pitch": [
@@ -11144,17 +11143,17 @@
       ]
     }
   },
-  "Pickup": {
+  "pickup": {
     "block:chiseled_bookshelf": {
       "sound": "pickup.chiseled_bookshelf"
     }
   },
-  "Pickup_enchanted": {
+  "pickup_enchanted": {
     "block:chiseled_bookshelf": {
       "sound": "pickup_enchanted.chiseled_bookshelf"
     }
   },
-  "PistonIn": {
+  "piston.in": {
     "": {
       "sound": "tile.piston.in",
       "volume": 0.5,
@@ -11164,7 +11163,7 @@
       ]
     }
   },
-  "PistonOut": {
+  "piston.out": {
     "": {
       "sound": "tile.piston.out",
       "volume": 0.5,
@@ -11174,7 +11173,7 @@
       ]
     }
   },
-  "Place": {
+  "place": {
     "block:soul_sand": {
       "sound": "place.soul_sand",
       "pitch": [
@@ -11832,19 +11831,19 @@
       ]
     }
   },
-  "Place_in_water": {
+  "place_in_water": {
     "block:dried_ghast": {
       "sound": "block.dried_ghast.place_in_water",
       "volume": 0.8,
       "pitch": 0.96
     }
   },
-  "Place_item": {
+  "place_item": {
     "block:shelf": {
       "sound": "block.shelf.place_item"
     }
   },
-  "Plop": {
+  "plop": {
     "entity:minecraft:sniffer": {
       "sound": "mob.sniffer.plop",
       "pitch": [
@@ -11860,7 +11859,7 @@
       ]
     }
   },
-  "Pop": {
+  "pop": {
     "": {
       "sound": "random.pop",
       "volume": 0.25,
@@ -11870,7 +11869,7 @@
       ]
     }
   },
-  "Portal": {
+  "portal": {
     "": {
       "sound": "portal.portal",
       "volume": 0.25,
@@ -11880,17 +11879,17 @@
       ]
     }
   },
-  "PortalTravel": {
+  "portal.travel": {
     "": {
       "sound": "portal.travel"
     }
   },
-  "PotionBrewed": {
+  "potion.brewed": {
     "": {
       "sound": "random.potion.brewed"
     }
   },
-  "PowerOff": {
+  "power.off": {
     "": {
       "sound": "random.click",
       "pitch": 0.5
@@ -12166,7 +12165,7 @@
       "pitch": 0.5
     }
   },
-  "PowerOffSculk_sensor": {
+  "power.off.sculk_sensor": {
     "": {
       "sound": "power.off.sculk_sensor",
       "volume": 0.62,
@@ -12176,7 +12175,7 @@
       ]
     }
   },
-  "PowerOn": {
+  "power.on": {
     "": {
       "sound": "random.click",
       "pitch": 0.6
@@ -12452,7 +12451,7 @@
       "pitch": 0.6
     }
   },
-  "PowerOnSculk_sensor": {
+  "power.on.sculk_sensor": {
     "": {
       "sound": "power.on.sculk_sensor",
       "volume": 0.73,
@@ -12462,17 +12461,17 @@
       ]
     }
   },
-  "Pre_ram": {
+  "pre_ram": {
     "": {
       "sound": "mob.goat.prepare_ram"
     }
   },
-  "Pre_ramScreamer": {
+  "pre_ram.screamer": {
     "": {
       "sound": "mob.goat.prepare_ram.screamer"
     }
   },
-  "PrepareAttack": {
+  "prepare.attack": {
     "entity:minecraft:evocation_illager": {
       "sound": "mob.evocation_illager.prepare_attack",
       "pitch": [
@@ -12481,7 +12480,7 @@
       ]
     }
   },
-  "PrepareSummon": {
+  "prepare.summon": {
     "entity:minecraft:evocation_illager": {
       "sound": "mob.evocation_illager.prepare_summon",
       "pitch": [
@@ -12490,7 +12489,7 @@
       ]
     }
   },
-  "PrepareWololo": {
+  "prepare.wololo": {
     "entity:minecraft:evocation_illager": {
       "sound": "mob.evocation_illager.prepare_wololo",
       "pitch": [
@@ -12499,7 +12498,7 @@
       ]
     }
   },
-  "Presneeze": {
+  "presneeze": {
     "entity:minecraft:panda": {
       "sound": "mob.panda.presneeze",
       "pitch": [
@@ -12508,7 +12507,7 @@
       ]
     }
   },
-  "Pressure_plateClick_off": {
+  "pressure_plate.click_off": {
     "": {
       "sound": "click_off.metal_pressure_plate"
     },
@@ -12528,7 +12527,7 @@
       "sound": "click_off.stone_pressure_plate"
     }
   },
-  "Pressure_plateClick_on": {
+  "pressure_plate.click_on": {
     "": {
       "sound": "click_on.metal_pressure_plate"
     },
@@ -12548,12 +12547,12 @@
       "sound": "click_on.stone_pressure_plate"
     }
   },
-  "PumpkinCarve": {
+  "pumpkin.carve": {
     "": {
       "sound": "pumpkin.carve"
     }
   },
-  "Purr": {
+  "purr": {
     "entity:minecraft:cat": {
       "sound": "mob.cat.purr",
       "pitch": [
@@ -12562,7 +12561,7 @@
       ]
     }
   },
-  "Purreow": {
+  "purreow": {
     "entity:minecraft:cat": {
       "sound": "mob.cat.purreow",
       "pitch": [
@@ -12571,30 +12570,29 @@
       ]
     }
   },
-  "Pushed_by_player": null,
-  "RaidHorn": {
+  "raid.horn": {
     "": {
       "sound": "raid.horn",
       "volume": 12.0
     }
   },
-  "Ram_impact": {
+  "ram_impact": {
     "": {
       "sound": "mob.goat.ram_impact"
     }
   },
-  "Ram_impactScreamer": {
+  "ram_impact.screamer": {
     "": {
       "sound": "mob.goat.ram_impact.screamer"
     }
   },
-  "RandomAnvil_use": {
+  "random.anvil_use": {
     "": {
       "sound": "random.anvil_use",
       "volume": 0.6
     }
   },
-  "Reappeared": {
+  "reappeared": {
     "entity:minecraft:wandering_trader": {
       "sound": "mob.wanderingtrader.reappeared",
       "pitch": [
@@ -12603,123 +12601,123 @@
       ]
     }
   },
-  "Record11": {
+  "record.11": {
     "": {
       "sound": "record.11"
     }
   },
-  "Record13": {
+  "record.13": {
     "": {
       "sound": "record.13"
     }
   },
-  "Record5": {
+  "record.5": {
     "": {
       "sound": "record.5"
     }
   },
-  "RecordBlocks": {
+  "record.blocks": {
     "": {
       "sound": "record.blocks"
     }
   },
-  "RecordBounce": {
+  "record.bounce": {
     "": {
       "sound": "record.bounce"
     }
   },
-  "RecordCat": {
+  "record.cat": {
     "": {
       "sound": "record.cat"
     }
   },
-  "RecordChirp": {
+  "record.chirp": {
     "": {
       "sound": "record.chirp"
     }
   },
-  "RecordCreator": {
+  "record.creator": {
     "": {
       "sound": "record.creator"
     }
   },
-  "RecordCreator_music_box": {
+  "record.creator_music_box": {
     "": {
       "sound": "record.creator_music_box"
     }
   },
-  "RecordFar": {
+  "record.far": {
     "": {
       "sound": "record.far"
     }
   },
-  "RecordLava_chicken": {
+  "record.lava_chicken": {
     "": {
       "sound": "record.lava_chicken"
     }
   },
-  "RecordMall": {
+  "record.mall": {
     "": {
       "sound": "record.mall"
     }
   },
-  "RecordMellohi": {
+  "record.mellohi": {
     "": {
       "sound": "record.mellohi"
     }
   },
-  "RecordNull": null,
-  "RecordOtherside": {
+  "record.null": null,
+  "record.otherside": {
     "": {
       "sound": "record.otherside"
     }
   },
-  "RecordPigstep": {
+  "record.pigstep": {
     "": {
       "sound": "record.pigstep"
     }
   },
-  "RecordPrecipice": {
+  "record.precipice": {
     "": {
       "sound": "record.precipice"
     }
   },
-  "RecordRelic": {
+  "record.relic": {
     "": {
       "sound": "record.relic"
     }
   },
-  "RecordStal": {
+  "record.stal": {
     "": {
       "sound": "record.stal"
     }
   },
-  "RecordStrad": {
+  "record.strad": {
     "": {
       "sound": "record.strad"
     }
   },
-  "RecordTears": {
+  "record.tears": {
     "": {
       "sound": "record.tears"
     }
   },
-  "RecordWait": {
+  "record.wait": {
     "": {
       "sound": "record.wait"
     }
   },
-  "RecordWard": {
+  "record.ward": {
     "": {
       "sound": "record.ward"
     }
   },
-  "Reflect": {
+  "reflect": {
     "entity:minecraft:breeze": {
       "sound": "mob.breeze.deflect"
     }
   },
-  "Remedy": {
+  "remedy": {
     "": {
       "sound": "mob.zombie.remedy",
       "volume": [
@@ -12732,12 +12730,12 @@
       ]
     }
   },
-  "Reset_growth": {
+  "reset_growth": {
     "": {
       "sound": "mob.reset_growth"
     }
   },
-  "Respawn_anchorAmbient": {
+  "respawn_anchor.ambient": {
     "": {
       "sound": "respawn_anchor.ambient",
       "pitch": [
@@ -12746,7 +12744,7 @@
       ]
     }
   },
-  "Respawn_anchorCharge": {
+  "respawn_anchor.charge": {
     "": {
       "sound": "respawn_anchor.charge",
       "pitch": [
@@ -12755,7 +12753,7 @@
       ]
     }
   },
-  "Respawn_anchorDeplete": {
+  "respawn_anchor.deplete": {
     "": {
       "sound": "respawn_anchor.deplete",
       "pitch": [
@@ -12764,7 +12762,7 @@
       ]
     }
   },
-  "Respawn_anchorSet_spawn": {
+  "respawn_anchor.set_spawn": {
     "": {
       "sound": "respawn_anchor.set_spawn",
       "pitch": [
@@ -12773,7 +12771,7 @@
       ]
     }
   },
-  "Retreat": {
+  "retreat": {
     "entity:minecraft:hoglin": {
       "sound": "mob.hoglin.retreat",
       "pitch": [
@@ -12789,7 +12787,7 @@
       ]
     }
   },
-  "Roar": {
+  "roar": {
     "entity:minecraft:ravager": {
       "sound": "mob.ravager.roar",
       "pitch": [
@@ -12802,7 +12800,7 @@
       "volume": 10.0
     }
   },
-  "Saddle": {
+  "saddle": {
     "": {
       "sound": "mob.horse.leather",
       "volume": 0.5
@@ -12854,7 +12852,7 @@
       "volume": 3.0
     }
   },
-  "Saddle_in_water": {
+  "saddle_in_water": {
     "entity:minecraft:zombie_nautilus": {
       "sound": "mob.nautilus.saddle_underwater",
       "volume": 3.0
@@ -12864,8 +12862,8 @@
       "volume": 3.0
     }
   },
-  "Scared": null,
-  "Scrape": {
+  "scared": null,
+  "scrape": {
     "": {
       "sound": "scrape",
       "pitch": [
@@ -12874,7 +12872,7 @@
       ]
     }
   },
-  "Screech": {
+  "screech": {
     "entity:minecraft:fox": {
       "sound": "mob.fox.screech",
       "volume": 2.0,
@@ -12884,7 +12882,7 @@
       ]
     }
   },
-  "Shake": {
+  "shake": {
     "entity:minecraft:wolf": {
       "sound": "mob.wolf.shake",
       "pitch": [
@@ -12893,17 +12891,17 @@
       ]
     }
   },
-  "Shatter_pot": {
+  "shatter_pot": {
     "block:decorated_pot": {
       "sound": "shatter.decorated_pot"
     }
   },
-  "Shear": {
+  "shear": {
     "": {
       "sound": "mob.sheep.shear"
     }
   },
-  "Shoot": {
+  "shoot": {
     "entity:minecraft:wither": {
       "sound": "mob.wither.shoot",
       "volume": 3.0
@@ -12963,7 +12961,7 @@
       ]
     }
   },
-  "ShulkerClose": {
+  "shulker.close": {
     "entity:minecraft:shulker": {
       "sound": "mob.shulker.close",
       "pitch": [
@@ -12972,7 +12970,7 @@
       ]
     }
   },
-  "ShulkerOpen": {
+  "shulker.open": {
     "entity:minecraft:shulker": {
       "sound": "mob.shulker.open",
       "pitch": [
@@ -12981,7 +12979,7 @@
       ]
     }
   },
-  "ShulkerboxClosed": {
+  "shulkerbox.closed": {
     "": {
       "sound": "random.shulkerboxclosed",
       "volume": 0.5,
@@ -12991,7 +12989,7 @@
       ]
     }
   },
-  "ShulkerboxOpen": {
+  "shulkerbox.open": {
     "": {
       "sound": "random.shulkerboxopen",
       "volume": 0.5,
@@ -13001,12 +12999,12 @@
       ]
     }
   },
-  "Single_swap": {
+  "single_swap": {
     "block:shelf": {
       "sound": "block.shelf.single_swap"
     }
   },
-  "Sleep": {
+  "sleep": {
     "entity:minecraft:fox": {
       "sound": "mob.fox.sleep",
       "pitch": [
@@ -13015,7 +13013,7 @@
       ]
     }
   },
-  "Slime_landing": {
+  "slime_landing": {
     "entity:minecraft:sulfur_cube": {
       "sound": "mob.sulfur_cube.landing",
       "volume": 0.8,
@@ -13039,12 +13037,12 @@
       ]
     }
   },
-  "Smithing_tableUse": {
+  "smithing_table.use": {
     "": {
       "sound": "smithing_table.use"
     }
   },
-  "Sneeze": {
+  "sneeze": {
     "entity:minecraft:panda": {
       "sound": "mob.panda.sneeze",
       "pitch": [
@@ -13053,19 +13051,19 @@
       ]
     }
   },
-  "Sonic_boom": {
+  "sonic_boom": {
     "": {
       "sound": "mob.warden.sonic_boom",
       "volume": 3.0
     }
   },
-  "Sonic_charge": {
+  "sonic_charge": {
     "": {
       "sound": "mob.warden.sonic_charge",
       "volume": 3.0
     }
   },
-  "SparklerActive": {
+  "sparkler.active": {
     "": {
       "sound": "sparkler.active",
       "volume": 0.25,
@@ -13075,7 +13073,7 @@
       ]
     }
   },
-  "SparklerUse": {
+  "sparkler.use": {
     "entity:minecraft:balloon": {
       "sound": "random.fizz",
       "pitch": [
@@ -13084,7 +13082,7 @@
       ]
     }
   },
-  "Spawn": {
+  "spawn": {
     "entity:minecraft:wither": {
       "sound": "mob.wither.spawn"
     },
@@ -13099,7 +13097,7 @@
       ]
     }
   },
-  "Splash": {
+  "splash": {
     "": {
       "sound": "random.splash",
       "volume": 0.25,
@@ -13636,17 +13634,17 @@
       ]
     }
   },
-  "SpongeAbsorb": {
+  "sponge.absorb": {
     "": {
       "sound": "sponge.absorb"
     }
   },
-  "SquidInk_squirt": {
+  "squid.ink_squirt": {
     "": {
       "sound": "mob.squid.ink_squirt"
     }
   },
-  "SquishBig": {
+  "squish.big": {
     "entity:minecraft:sulfur_cube": {
       "sound": "mob.sulfur_cube.jump",
       "volume": 0.8,
@@ -13670,7 +13668,7 @@
       ]
     }
   },
-  "SquishSmall": {
+  "squish.small": {
     "entity:minecraft:sulfur_cube": {
       "sound": "mob.sulfur_cube.small.jump",
       "volume": 0.8,
@@ -13694,17 +13692,17 @@
       ]
     }
   },
-  "Stare": {
+  "stare": {
     "entity:minecraft:enderman": {
       "sound": "mob.endermen.stare"
     }
   },
-  "State_change": {
+  "state_change": {
     "block:dried_ghast": {
       "sound": "block.dried_ghast.state_change"
     }
   },
-  "Step": {
+  "step": {
     "block:soul_sand": {
       "sound": "step.soul_sand",
       "volume": 0.15
@@ -14411,18 +14409,18 @@
       "volume": 0.17
     }
   },
-  "StepBaby": {
+  "step.baby": {
     "entity:minecraft:turtle": {
       "sound": "mob.turtle_baby.step"
     }
   },
-  "Step_lava": {
+  "step_lava": {
     "entity:minecraft:strider": {
       "sound": "mob.strider.step_lava",
       "volume": 0.2
     }
   },
-  "Step_sand": {
+  "step_sand": {
     "entity:minecraft:camel": {
       "sound": "mob.camel.step_sand",
       "pitch": [
@@ -14438,7 +14436,7 @@
       ]
     }
   },
-  "Stun": {
+  "stun": {
     "entity:minecraft:ravager": {
       "sound": "mob.ravager.stun",
       "pitch": [
@@ -14447,7 +14445,7 @@
       ]
     }
   },
-  "Swim": {
+  "swim": {
     "entity:minecraft:turtle": {
       "sound": "mob.turtle.swim",
       "pitch": [
@@ -14976,7 +14974,7 @@
       ]
     }
   },
-  "Swoop": {
+  "swoop": {
     "entity:minecraft:phantom": {
       "sound": "mob.phantom.swoop",
       "volume": 10.0,
@@ -14986,7 +14984,7 @@
       ]
     }
   },
-  "Takeoff": {
+  "takeoff": {
     "entity:minecraft:bat": {
       "sound": "mob.bat.takeoff",
       "volume": 0.05,
@@ -14996,7 +14994,7 @@
       ]
     }
   },
-  "Teleport": {
+  "teleport": {
     "": {
       "sound": "mob.shulker.teleport"
     },
@@ -15022,7 +15020,7 @@
       ]
     }
   },
-  "Tempt": {
+  "tempt": {
     "entity:minecraft:cat": {
       "sound": "mob.cat.beg_for_food",
       "volume": 0.7
@@ -15035,13 +15033,13 @@
       ]
     }
   },
-  "Thorns": {
+  "thorns": {
     "": {
       "sound": "damage.thorns",
       "volume": 0.5
     }
   },
-  "Throw": {
+  "throw": {
     "entity:minecraft:iron_golem": {
       "sound": "mob.irongolem.throw"
     },
@@ -15057,7 +15055,7 @@
       "sound": "mob.witch.throw"
     }
   },
-  "Thunder": {
+  "thunder": {
     "entity:minecraft:lightning_bolt": {
       "sound": "ambient.weather.thunder",
       "volume": 1000.0,
@@ -15067,7 +15065,7 @@
       ]
     }
   },
-  "Tilt_downBig_dripleaf": {
+  "tilt_down.big_dripleaf": {
     "": {
       "sound": "tilt_down.big_dripleaf",
       "pitch": [
@@ -15076,7 +15074,7 @@
       ]
     }
   },
-  "Tilt_upBig_dripleaf": {
+  "tilt_up.big_dripleaf": {
     "": {
       "sound": "tilt_up.big_dripleaf",
       "pitch": [
@@ -15085,7 +15083,7 @@
       ]
     }
   },
-  "Tongue": {
+  "tongue": {
     "": {
       "sound": "mob.frog.tongue",
       "pitch": [
@@ -15094,7 +15092,7 @@
       ]
     }
   },
-  "TrapdoorClose": {
+  "trapdoor.close": {
     "block:nether_wood": {
       "sound": "close.nether_wood_trapdoor",
       "pitch": [
@@ -15141,7 +15139,7 @@
       ]
     }
   },
-  "TrapdoorOpen": {
+  "trapdoor.open": {
     "block:nether_wood": {
       "sound": "open.nether_wood_trapdoor",
       "pitch": [
@@ -15188,7 +15186,7 @@
       ]
     }
   },
-  "Trial_spawnerAmbient": {
+  "trial_spawner.ambient": {
     "": {
       "sound": "trial_spawner.ambient",
       "volume": [
@@ -15201,7 +15199,7 @@
       ]
     }
   },
-  "Trial_spawnerAmbient_ominous": {
+  "trial_spawner.ambient_ominous": {
     "": {
       "sound": "trial_spawner.ambient_ominous",
       "volume": [
@@ -15214,17 +15212,17 @@
       ]
     }
   },
-  "Trial_spawnerCharge_activate": {
+  "trial_spawner.charge_activate": {
     "": {
       "sound": "trial_spawner.charge_activate"
     }
   },
-  "Trial_spawnerClose_shutter": {
+  "trial_spawner.close_shutter": {
     "": {
       "sound": "trial_spawner.close_shutter"
     }
   },
-  "Trial_spawnerDetect_player": {
+  "trial_spawner.detect_player": {
     "": {
       "sound": "trial_spawner.detect_player",
       "pitch": [
@@ -15233,7 +15231,7 @@
       ]
     }
   },
-  "Trial_spawnerEject_item": {
+  "trial_spawner.eject_item": {
     "": {
       "sound": "trial_spawner.eject_item",
       "pitch": [
@@ -15242,12 +15240,12 @@
       ]
     }
   },
-  "Trial_spawnerOpen_shutter": {
+  "trial_spawner.open_shutter": {
     "": {
       "sound": "trial_spawner.open_shutter"
     }
   },
-  "Trial_spawnerSpawn_mob": {
+  "trial_spawner.spawn_mob": {
     "": {
       "sound": "trial_spawner.spawn_mob",
       "pitch": [
@@ -15256,7 +15254,7 @@
       ]
     }
   },
-  "Tripod": {
+  "tripod": {
     "": {
       "sound": "dig.stone",
       "volume": 2.0,
@@ -15266,30 +15264,30 @@
       ]
     }
   },
-  "Twinkle": {
+  "twinkle": {
     "": {
       "sound": "firework.twinkle"
     }
   },
-  "UiCartography_tableTake_result": {
+  "ui.cartography_table.take_result": {
     "": {
       "sound": "ui.cartography_table.take_result",
       "volume": 0.8
     }
   },
-  "UiLoomTake_result": {
+  "ui.loom.take_result": {
     "": {
       "sound": "ui.loom.take_result",
       "volume": 0.65
     }
   },
-  "UiStonecutterTake_result": {
+  "ui.stonecutter.take_result": {
     "": {
       "sound": "ui.stonecutter.take_result"
     }
   },
-  "Undefined": null,
-  "Unfect": {
+  "undefined": null,
+  "unfect": {
     "": {
       "sound": "mob.zombie.unfect",
       "volume": [
@@ -15302,12 +15300,12 @@
       ]
     }
   },
-  "Unfreeze": {
+  "unfreeze": {
     "entity:minecraft:creaking": {
       "sound": "mob.creaking.unfreeze"
     }
   },
-  "Unsaddle": {
+  "unsaddle": {
     "entity:minecraft:camel": {
       "sound": "mob.unsaddle"
     },
@@ -15335,7 +15333,7 @@
       "sound": "mob.unsaddle"
     }
   },
-  "VaultActivate": {
+  "vault.activate": {
     "": {
       "sound": "vault.activate",
       "pitch": [
@@ -15344,7 +15342,7 @@
       ]
     }
   },
-  "VaultAmbient": {
+  "vault.ambient": {
     "": {
       "sound": "vault.ambient",
       "volume": [
@@ -15357,12 +15355,12 @@
       ]
     }
   },
-  "VaultClose_shutter": {
+  "vault.close_shutter": {
     "": {
       "sound": "vault.close_shutter"
     }
   },
-  "VaultDeactivate": {
+  "vault.deactivate": {
     "": {
       "sound": "vault.deactivate",
       "pitch": [
@@ -15371,7 +15369,7 @@
       ]
     }
   },
-  "VaultEject_item": {
+  "vault.eject_item": {
     "": {
       "sound": "vault.eject_item",
       "pitch": [
@@ -15380,7 +15378,7 @@
       ]
     }
   },
-  "VaultInsert_item": {
+  "vault.insert_item": {
     "": {
       "sound": "vault.insert_item",
       "pitch": [
@@ -15389,7 +15387,7 @@
       ]
     }
   },
-  "VaultInsert_item_fail": {
+  "vault.insert_item_fail": {
     "": {
       "sound": "vault.insert_item_fail",
       "pitch": [
@@ -15398,17 +15396,17 @@
       ]
     }
   },
-  "VaultOpen_shutter": {
+  "vault.open_shutter": {
     "": {
       "sound": "vault.open_shutter"
     }
   },
-  "VaultReject_rewarded_player": {
+  "vault.reject_rewarded_player": {
     "": {
       "sound": "vault.reject_rewarded_player"
     }
   },
-  "Warn": {
+  "warn": {
     "entity:minecraft:ghast": {
       "sound": "mob.ghast.charge",
       "volume": 5.0,
@@ -15418,7 +15416,7 @@
       ]
     }
   },
-  "Water": {
+  "water": {
     "": {
       "sound": "liquid.water",
       "volume": [
@@ -15431,7 +15429,7 @@
       ]
     }
   },
-  "Whine": {
+  "whine": {
     "entity:minecraft:wolf": {
       "sound": "mob.wolf.whine",
       "pitch": [
@@ -15440,7 +15438,7 @@
       ]
     }
   },
-  "Wind_chargeBurst": {
+  "wind_charge.burst": {
     "": {
       "sound": "wind_charge.burst"
     }
