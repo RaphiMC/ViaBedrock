@@ -55,48 +55,19 @@ public class BedrockSoundListGenerator {
             "note.bass"
     );
 
-    private static final Set<SharedTypes_Legacy_LevelSoundEvent> SPECIAL_SOUNDS = Set.of(
+    private static final Set<String> SPECIAL_SOUNDS = Set.of(
             // Mapped in code
-            SharedTypes_Legacy_LevelSoundEvent.RecordNull,
-            SharedTypes_Legacy_LevelSoundEvent.Note,
+            "record.null",
+            "note",
             // Those seem to do nothing
-            //SharedTypes_Legacy_LevelSoundEvent.RecordPlaying,
-            SharedTypes_Legacy_LevelSoundEvent.ItemFizz,
-            SharedTypes_Legacy_LevelSoundEvent.MobWarningBaby,
-            SharedTypes_Legacy_LevelSoundEvent.HaggleIdle,
-            SharedTypes_Legacy_LevelSoundEvent.Default,
-            //SharedTypes_Legacy_LevelSoundEvent.SpawnBaby,
-            SharedTypes_Legacy_LevelSoundEvent.Scared,
-            SharedTypes_Legacy_LevelSoundEvent.JumpPrevent,
-            //SharedTypes_Legacy_LevelSoundEvent.Bump,
-            SharedTypes_Legacy_LevelSoundEvent.Undefined
-            //SharedTypes_Legacy_LevelSoundEvent.LTReactionGlowStick,
-            //SharedTypes_Legacy_LevelSoundEvent.LTReactionGlowStick2,
-            //SharedTypes_Legacy_LevelSoundEvent.LTReactionLuminol,
-            //SharedTypes_Legacy_LevelSoundEvent.LTReactionSalt
+            "item.fizz",
+            "mob.warning.baby",
+            "haggle.idle",
+            "default",
+            "scared",
+            "jump.prevent",
+            "undefined"
     );
-
-    /* Last output:
-        Unknown block sound: normal
-        Unknown sound: jump.ladder
-        Unknown sound: jump.metal
-        Unknown sound: mob.irongolem.say
-        Unknown sound: land.ladder
-        Unknown sound: mob.attack
-        Unknown sound: mob.attack
-        Unknown sound: mob.piglin.attack
-        Unknown sound: use.powder_snow
-        Unknown sound: use.azalea
-        Unknown sound: use.azalea_leaves
-        Unknown sound: use.anvil
-        Unknown sound: use.big_dripleaf
-        Unknown sound: nearby_closest.warden
-        Unknown sound: mob.zombie.converted_to_drowned
-        Unknown sound: block.dried_ghast.hit
-        Unknown sound: nearby_close.warden
-        Unknown sound: mob.cow.death
-        Unknown sound: nearby_closer.warden
-    */
 
     public static void main(String[] args) throws Throwable {
         final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
@@ -185,29 +156,29 @@ public class BedrockSoundListGenerator {
         }
 
         for (Map.Entry<String, Map<String, SoundDefinitions.ConfiguredSound>> entry : mapping.entrySet()) {
-            SharedTypes_Legacy_LevelSoundEvent soundEvent = string2SoundEvent(entry.getKey());
-            if (soundEvent != null) {
-                if (levelSoundMappings.has(soundEvent.name())) {
-                    System.out.println("Duplicate sound event: " + soundEvent.name() + " (" + entry.getKey() + ")");
-                    continue;
-                }
-                JsonObject sounds = new JsonObject();
-                for (Map.Entry<String, SoundDefinitions.ConfiguredSound> soundEntry : entry.getValue().entrySet()) {
-                    if (!soundList.has(soundEntry.getValue().sound())) {
-                        System.out.println("Unknown sound: " + soundEntry.getValue().sound());
-                        continue;
-                    }
-                    sounds.add(soundEntry.getKey(), soundEntry.getValue().toJson());
-                }
-                levelSoundMappings.add(soundEvent.name(), sounds);
-            }
-        }
-        for (SharedTypes_Legacy_LevelSoundEvent soundEvent : SPECIAL_SOUNDS) {
-            if (levelSoundMappings.has(soundEvent.name())) {
-                System.out.println("Duplicate sound event: " + soundEvent.name());
+            if (CANCELLED_SOUNDS.contains(entry.getKey())) continue;
+
+            if (levelSoundMappings.has(entry.getKey())) {
+                System.out.println("Duplicate sound event: " + entry.getKey());
                 continue;
             }
-            levelSoundMappings.add(soundEvent.name(), null);
+            JsonObject sounds = new JsonObject();
+            for (Map.Entry<String, SoundDefinitions.ConfiguredSound> soundEntry : entry.getValue().entrySet()) {
+                if (!soundList.has(soundEntry.getValue().sound())) {
+                    System.out.println("Unknown sound: " + soundEntry.getValue().sound());
+                    continue;
+                }
+                sounds.add(soundEntry.getKey(), soundEntry.getValue().toJson());
+            }
+            levelSoundMappings.add(entry.getKey(), sounds);
+
+        }
+        for (String soundEvent : SPECIAL_SOUNDS) {
+            if (levelSoundMappings.has(soundEvent)) {
+                System.out.println("Duplicate sound event: " + soundEvent);
+                continue;
+            }
+            levelSoundMappings.add(soundEvent, null);
         }
 
         final Map<String, JsonElement> sortedJson = new TreeMap<>();
@@ -217,27 +188,4 @@ public class BedrockSoundListGenerator {
         final String json2 = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create().toJson(levelSoundMappings);
         Files.writeString(new File("level_sound_event_mappings.json").toPath(), json2);
     }
-
-    private static SharedTypes_Legacy_LevelSoundEvent string2SoundEvent(String s) {
-       if (CANCELLED_SOUNDS.contains(s)) {
-            return null;
-        }
-        final String original = s;
-
-        s = s.replace(".", "");
-
-        for (SharedTypes_Legacy_LevelSoundEvent soundEvent : SharedTypes_Legacy_LevelSoundEvent.values()) {
-            if (s.equalsIgnoreCase(soundEvent.name())) {
-                return soundEvent;
-            } else if (s.replace("_", "").equalsIgnoreCase(soundEvent.name().replace("_", ""))) {
-                return soundEvent;
-            } else if (("ambient" + s).equalsIgnoreCase(soundEvent.name())) {
-                return soundEvent;
-            }
-        }
-
-        System.err.println("Unknown sound event: " + original);
-        return null;
-    }
-
 }

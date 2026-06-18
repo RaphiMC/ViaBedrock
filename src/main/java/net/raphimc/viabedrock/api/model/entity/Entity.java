@@ -120,11 +120,9 @@ public class Entity {
         this.onEntityDataChanged();
     }
 
-    public void playSound(final SharedTypes_Legacy_LevelSoundEvent soundEvent) {
-        //TODO
-        /*
+    public void playSound(final String soundEvent) {
         final PacketWrapper levelSoundEvent = PacketWrapper.create(ClientboundBedrockPackets.LEVEL_SOUND_EVENT, this.user);
-        levelSoundEvent.write(BedrockTypes.UNSIGNED_VAR_INT, soundEvent.getValue()); // event
+        levelSoundEvent.write(BedrockTypes.STRING, soundEvent); // event
         levelSoundEvent.write(BedrockTypes.POSITION_3F, this.position); // position
         levelSoundEvent.write(BedrockTypes.VAR_INT, 0); // data
         levelSoundEvent.write(BedrockTypes.STRING, this.type); // entity identifier
@@ -133,7 +131,6 @@ public class Entity {
         levelSoundEvent.write(BedrockTypes.LONG_LE, -1L); // entity unique id
         levelSoundEvent.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // fire at position
         levelSoundEvent.send(BedrockProtocol.class, false);
-        */
     }
 
     public float eyeOffset() {

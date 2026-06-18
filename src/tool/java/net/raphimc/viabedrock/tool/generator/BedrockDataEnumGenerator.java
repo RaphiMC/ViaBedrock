@@ -17,6 +17,9 @@
  */
 package net.raphimc.viabedrock.tool.generator;
 
+import com.viaversion.viaversion.libs.gson.Gson;
+import com.viaversion.viaversion.libs.gson.JsonElement;
+import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.codegen.CodeGen;
 import net.raphimc.viabedrock.codegen.model.Javadoc;
 import net.raphimc.viabedrock.codegen.model.member.impl.Field;
@@ -28,6 +31,7 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -54,6 +58,25 @@ public class BedrockDataEnumGenerator {
             if (tableElements.isEmpty()) continue;
 
             final String enumName = tableElements.get(0).ownText();
+
+            if (enumName.equalsIgnoreCase("SharedTypes::Legacy::LevelSoundEvent")) {
+                //Parse to new json file
+                final Map<String, String> enumFields = new TreeMap<>();
+                for (Element fieldTableRowElement : tableElements.get(1).selectXpath("table/tbody/tr")) {
+                    final Elements valueElements = fieldTableRowElement.select("td");
+                    String fieldName = valueElements.get(0).ownText();
+                    final String fieldValue = valueElements.get(1).ownText();
+
+                    fieldName = fieldName.replace(" ", "");
+
+                    enumFields.put(fieldName, fieldValue);
+                }
+
+                final String json = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create().toJson(enumFields);
+                Files.writeString(new File("level_sound_events.json").toPath(), json);
+                continue;
+            }
+
             final Map<String, EnumField> enumFields = new LinkedHashMap<>();
             for (Element fieldTableRowElement : tableElements.get(1).selectXpath("table/tbody/tr")) {
                 final Elements valueElements = fieldTableRowElement.select("td");
@@ -61,9 +84,7 @@ public class BedrockDataEnumGenerator {
                 final String fieldValue = valueElements.get(1).ownText();
                 final List<String> fieldComments = Arrays.stream(valueElements.get(2).wholeOwnText().split("\n")).map(String::trim).filter(s -> !s.isEmpty()).toList();
 
-                fieldName = fieldName.substring(0, 1).toUpperCase(Locale.ROOT) + fieldName.substring(1);
                 fieldName = fieldName.replace(" ", "");
-                fieldName = Pattern.compile("\\.(\\w)").matcher(fieldName).replaceAll(m -> m.group(1).toUpperCase(Locale.ROOT));
 
                 enumFields.put(fieldName, new EnumField(fieldName, fieldValue, fieldComments));
             }
