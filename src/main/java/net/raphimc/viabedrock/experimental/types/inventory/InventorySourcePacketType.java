@@ -63,7 +63,7 @@ public class InventorySourcePacketType extends Type<InventorySource> {
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.type().getValue());
 
         Types.BOOLEAN.write(buffer, true);
-        if (value.containerId() == 0 || value.containerId() == 99999) {
+        if (value.type() == InventorySourceType.ContainerInventory || value.type() == InventorySourceType.NonImplementedFeatureTODO) {
             Types.BOOLEAN.write(buffer, true);
             buffer.writeByte(value.containerId());
         } else {
@@ -71,7 +71,7 @@ public class InventorySourcePacketType extends Type<InventorySource> {
         }
 
         Types.BOOLEAN.write(buffer, true);
-        if (value.containerId() == 2) {
+        if (value.type() == InventorySourceType.WorldInteraction) {
             Types.BOOLEAN.write(buffer, true);
             BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.flags().getValue());
         } else {
