@@ -22,13 +22,13 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.mcstructs.text.serializer.TextComponentCodec;
-import com.viaversion.viaversion.protocols.v1_21_11to26_1.Protocol1_21_11To26_1;
+import com.viaversion.viaversion.protocols.v26_1to26_2.Protocol26_1To26_2;
 
 public class ProtocolConstants {
 
-    public static final ProtocolVersion JAVA_VERSION = ProtocolVersion.v26_1;
-    public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol1_21_11To26_1.class;
-    public static final int JAVA_PACK_VERSION = 84;
+    public static final ProtocolVersion JAVA_VERSION = ProtocolVersion.v26_2;
+    public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol26_1To26_2.class;
+    public static final int JAVA_PACK_VERSION = 88;
     public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V26_1;
     public static final int JAVA_AIR_ID = 0;
 

@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.minecraft.Vector3d;
 import com.viaversion.viaversion.api.minecraft.Vector3f;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
@@ -75,7 +75,7 @@ public class CustomEntity extends Entity {
     private boolean spawned;
 
     public CustomEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final EntityDefinitions.EntityDefinition entityDefinition) {
-        super(user, uniqueId, runtimeId, type, javaId, UUID.randomUUID(), EntityTypes1_21_11.INTERACTION);
+        super(user, uniqueId, runtimeId, type, javaId, UUID.randomUUID(), EntityTypes26_2.INTERACTION);
         this.entityDefinition = entityDefinition;
 
         final MutableObjectBinding variableBinding = new MutableObjectBinding();
@@ -177,11 +177,11 @@ public class CustomEntity extends Entity {
             data.set(StructuredDataKey.ITEM_MODEL, CustomEntityResourceRewriter.getItemModel(this.entityDefinition.identifier()));
             data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomEntityResourceRewriter.getCustomModelData(model.key()));
             final StructuredItem item = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), 1, data);
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.ITEM_STACK), VersionedTypes.V26_1.entityDataTypes.itemType, item));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.ITEM_STACK), VersionedTypes.V26_2.entityDataTypes.itemType, item));
 
             final float scale = (float) resourcePackStorage.getConverterData().get("ce_" + converterKey + "_scale");
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.SCALE), VersionedTypes.V26_1.entityDataTypes.vector3FType, new Vector3f(scale, scale, scale)));
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.TRANSLATION), VersionedTypes.V26_1.entityDataTypes.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.SCALE), VersionedTypes.V26_2.entityDataTypes.vector3FType, new Vector3f(scale, scale, scale)));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.TRANSLATION), VersionedTypes.V26_2.entityDataTypes.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
 
             final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets26_1.ADD_ENTITY, this.user);
             addEntity.write(Types.VAR_INT, partEntity.javaId()); // entity id
@@ -199,7 +199,7 @@ public class CustomEntity extends Entity {
 
             final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets26_1.SET_ENTITY_DATA, this.user);
             setEntityData.write(Types.VAR_INT, partEntity.javaId()); // entity id
-            setEntityData.write(VersionedTypes.V26_1.entityDataList, javaEntityData); // entity data
+            setEntityData.write(VersionedTypes.V26_2.entityDataList, javaEntityData); // entity data
             setEntityData.send(BedrockProtocol.class);
         }
     }
@@ -311,7 +311,7 @@ public class CustomEntity extends Entity {
     private class ItemDisplayEntity extends Entity {
 
         public ItemDisplayEntity(final int javaId) {
-            super(CustomEntity.this.user, 0L, 0L, null, javaId, UUID.randomUUID(), EntityTypes1_21_11.ITEM_DISPLAY);
+            super(CustomEntity.this.user, 0L, 0L, null, javaId, UUID.randomUUID(), EntityTypes26_2.ITEM_DISPLAY);
         }
 
         public void updatePositionAndRotation() {

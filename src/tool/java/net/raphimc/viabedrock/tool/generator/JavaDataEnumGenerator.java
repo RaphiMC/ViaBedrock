@@ -42,7 +42,7 @@ import java.util.zip.ZipInputStream;
 public class JavaDataEnumGenerator {
 
     private static final String MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
-    private static final String VERSION_ID = "26.1";
+    private static final String VERSION_ID = "26.2";
 
     public static void main(String[] args) throws Throwable {
         final JsonObject metaObj = JsonParser.parseReader(new InputStreamReader(new URL(MANIFEST_URL).openStream())).getAsJsonObject();

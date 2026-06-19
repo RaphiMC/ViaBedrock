@@ -2343,6 +2343,13 @@
       }
     }
   },
+  "minecraft:chiseled_cinnabar": {
+    "block": {
+      "minecraft:chiseled_cinnabar": {
+        "java_id": "minecraft:chiseled_cinnabar"
+      }
+    }
+  },
   "minecraft:chiseled_copper": {
     "block": {
       "minecraft:chiseled_copper": {
@@ -2406,6 +2413,13 @@
       }
     }
   },
+  "minecraft:chiseled_sulfur": {
+    "block": {
+      "minecraft:chiseled_sulfur": {
+        "java_id": "minecraft:chiseled_sulfur"
+      }
+    }
+  },
   "minecraft:chiseled_tuff": {
     "block": {
       "minecraft:chiseled_tuff": {
@@ -2438,6 +2452,78 @@
     "block": {
       "minecraft:chorus_plant": {
         "java_id": "minecraft:chorus_plant"
+      }
+    }
+  },
+  "minecraft:cinnabar": {
+    "block": {
+      "minecraft:cinnabar": {
+        "java_id": "minecraft:cinnabar"
+      }
+    }
+  },
+  "minecraft:cinnabar_brick_double_slab": {
+    "block": {
+      "minecraft:cinnabar_brick_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:cinnabar_brick_slab",
+        "java_name": "tile.cinnabar_brick_double_slab.name"
+      }
+    }
+  },
+  "minecraft:cinnabar_brick_slab": {
+    "block": {
+      "minecraft:cinnabar_brick_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:cinnabar_brick_slab"
+      }
+    }
+  },
+  "minecraft:cinnabar_brick_stairs": {
+    "block": {
+      "minecraft:cinnabar_brick_stairs": {
+        "java_id": "minecraft:cinnabar_brick_stairs"
+      }
+    }
+  },
+  "minecraft:cinnabar_brick_wall": {
+    "block": {
+      "minecraft:cinnabar_brick_wall": {
+        "java_id": "minecraft:cinnabar_brick_wall"
+      }
+    }
+  },
+  "minecraft:cinnabar_bricks": {
+    "block": {
+      "minecraft:cinnabar_bricks": {
+        "java_id": "minecraft:cinnabar_bricks"
+      }
+    }
+  },
+  "minecraft:cinnabar_double_slab": {
+    "block": {
+      "minecraft:cinnabar_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:cinnabar_slab",
+        "java_name": "tile.cinnabar_double_slab.name"
+      }
+    }
+  },
+  "minecraft:cinnabar_slab": {
+    "block": {
+      "minecraft:cinnabar_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:cinnabar_slab"
+      }
+    }
+  },
+  "minecraft:cinnabar_stairs": {
+    "block": {
+      "minecraft:cinnabar_stairs": {
+        "java_id": "minecraft:cinnabar_stairs"
+      }
+    }
+  },
+  "minecraft:cinnabar_wall": {
+    "block": {
+      "minecraft:cinnabar_wall": {
+        "java_id": "minecraft:cinnabar_wall"
       }
     }
   },
@@ -10601,6 +10687,42 @@
       }
     }
   },
+  "minecraft:polished_cinnabar": {
+    "block": {
+      "minecraft:polished_cinnabar": {
+        "java_id": "minecraft:polished_cinnabar"
+      }
+    }
+  },
+  "minecraft:polished_cinnabar_double_slab": {
+    "block": {
+      "minecraft:polished_cinnabar_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:polished_cinnabar_slab",
+        "java_name": "tile.polished_cinnabar_double_slab.name"
+      }
+    }
+  },
+  "minecraft:polished_cinnabar_slab": {
+    "block": {
+      "minecraft:polished_cinnabar_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:polished_cinnabar_slab"
+      }
+    }
+  },
+  "minecraft:polished_cinnabar_stairs": {
+    "block": {
+      "minecraft:polished_cinnabar_stairs": {
+        "java_id": "minecraft:polished_cinnabar_stairs"
+      }
+    }
+  },
+  "minecraft:polished_cinnabar_wall": {
+    "block": {
+      "minecraft:polished_cinnabar_wall": {
+        "java_id": "minecraft:polished_cinnabar_wall"
+      }
+    }
+  },
   "minecraft:polished_deepslate": {
     "block": {
       "minecraft:polished_deepslate": {
@@ -10695,6 +10817,42 @@
       }
     }
   },
+  "minecraft:polished_sulfur": {
+    "block": {
+      "minecraft:polished_sulfur": {
+        "java_id": "minecraft:polished_sulfur"
+      }
+    }
+  },
+  "minecraft:polished_sulfur_double_slab": {
+    "block": {
+      "minecraft:polished_sulfur_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:polished_sulfur_slab",
+        "java_name": "tile.polished_sulfur_double_slab.name"
+      }
+    }
+  },
+  "minecraft:polished_sulfur_slab": {
+    "block": {
+      "minecraft:polished_sulfur_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:polished_sulfur_slab"
+      }
+    }
+  },
+  "minecraft:polished_sulfur_stairs": {
+    "block": {
+      "minecraft:polished_sulfur_stairs": {
+        "java_id": "minecraft:polished_sulfur_stairs"
+      }
+    }
+  },
+  "minecraft:polished_sulfur_wall": {
+    "block": {
+      "minecraft:polished_sulfur_wall": {
+        "java_id": "minecraft:polished_sulfur_wall"
+      }
+    }
+  },
   "minecraft:polished_tuff": {
     "block": {
       "minecraft:polished_tuff": {
@@ -10772,6 +10930,13 @@
       "minecraft:potatoes": {
         "java_id": "minecraft:potato",
         "java_name": "tile.potatoes.name"
+      }
+    }
+  },
+  "minecraft:potent_sulfur": {
+    "block": {
+      "minecraft:potent_sulfur": {
+        "java_id": "minecraft:potent_sulfur"
       }
     }
   },
@@ -13302,6 +13467,92 @@
     "meta": {
       "": {
         "java_id": "minecraft:sugar_cane"
+      }
+    }
+  },
+  "minecraft:sulfur": {
+    "block": {
+      "minecraft:sulfur": {
+        "java_id": "minecraft:sulfur"
+      }
+    }
+  },
+  "minecraft:sulfur_brick_double_slab": {
+    "block": {
+      "minecraft:sulfur_brick_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:sulfur_brick_slab",
+        "java_name": "tile.sulfur_brick_double_slab.name"
+      }
+    }
+  },
+  "minecraft:sulfur_brick_slab": {
+    "block": {
+      "minecraft:sulfur_brick_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:sulfur_brick_slab"
+      }
+    }
+  },
+  "minecraft:sulfur_brick_stairs": {
+    "block": {
+      "minecraft:sulfur_brick_stairs": {
+        "java_id": "minecraft:sulfur_brick_stairs"
+      }
+    }
+  },
+  "minecraft:sulfur_brick_wall": {
+    "block": {
+      "minecraft:sulfur_brick_wall": {
+        "java_id": "minecraft:sulfur_brick_wall"
+      }
+    }
+  },
+  "minecraft:sulfur_bricks": {
+    "block": {
+      "minecraft:sulfur_bricks": {
+        "java_id": "minecraft:sulfur_bricks"
+      }
+    }
+  },
+  "minecraft:sulfur_cube_bucket": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:sulfur_cube_bucket"
+      }
+    }
+  },
+  "minecraft:sulfur_cube_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:sulfur_cube_spawn_egg"
+      }
+    }
+  },
+  "minecraft:sulfur_double_slab": {
+    "block": {
+      "minecraft:sulfur_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:sulfur_slab",
+        "java_name": "tile.sulfur_double_slab.name"
+      }
+    }
+  },
+  "minecraft:sulfur_slab": {
+    "block": {
+      "minecraft:sulfur_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:sulfur_slab"
+      }
+    }
+  },
+  "minecraft:sulfur_stairs": {
+    "block": {
+      "minecraft:sulfur_stairs": {
+        "java_id": "minecraft:sulfur_stairs"
+      }
+    }
+  },
+  "minecraft:sulfur_wall": {
+    "block": {
+      "minecraft:sulfur_wall": {
+        "java_id": "minecraft:sulfur_wall"
       }
     }
   },

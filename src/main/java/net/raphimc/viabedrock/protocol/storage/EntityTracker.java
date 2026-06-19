@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.ChunkPosition;
 import com.viaversion.viaversion.api.minecraft.Vector3d;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -45,7 +45,7 @@ import java.util.logging.Level;
 
 public class EntityTracker extends StoredObject {
 
-    private final AtomicInteger ID_COUNTER = new AtomicInteger(1);
+    private final AtomicInteger ID_COUNTER = new AtomicInteger(2);
 
     private ClientPlayerEntity clientPlayerEntity = null;
     private final Long2ObjectMap<Entity> entities = new Long2ObjectOpenHashMap<>();
@@ -57,13 +57,13 @@ public class EntityTracker extends StoredObject {
         super(user);
     }
 
-    public Entity addEntity(final long uniqueId, final long runtimeId, final String type, final EntityTypes1_21_11 javaType) {
+    public Entity addEntity(final long uniqueId, final long runtimeId, final String type, final EntityTypes26_2 javaType) {
         final UUID javaUuid = UUID.randomUUID();
-        if (javaType.isOrHasParent(EntityTypes1_21_11.ABSTRACT_HORSE)) {
+        if (javaType.isOrHasParent(EntityTypes26_2.ABSTRACT_HORSE)) {
             return this.addEntity(new AbstractHorseEntity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
-        } else if (javaType.isOrHasParent(EntityTypes1_21_11.MOB)) {
+        } else if (javaType.isOrHasParent(EntityTypes26_2.MOB)) {
             return this.addEntity(new MobEntity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
-        } else if (javaType.isOrHasParent(EntityTypes1_21_11.LIVING_ENTITY)) {
+        } else if (javaType.isOrHasParent(EntityTypes26_2.LIVING_ENTITY)) {
             return this.addEntity(new LivingEntity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
         } else {
             return this.addEntity(new Entity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
@@ -125,7 +125,7 @@ public class EntityTracker extends StoredObject {
         final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets26_1.ADD_ENTITY, this.user());
         spawnEntity.write(Types.VAR_INT, javaId); // entity id
         spawnEntity.write(Types.UUID, UUID.randomUUID()); // uuid
-        spawnEntity.write(Types.VAR_INT, blockState.identifier().equals("frame") ? EntityTypes1_21_11.ITEM_FRAME.getId() : EntityTypes1_21_11.GLOW_ITEM_FRAME.getId()); // type id
+        spawnEntity.write(Types.VAR_INT, blockState.identifier().equals("frame") ? EntityTypes26_2.ITEM_FRAME.getId() : EntityTypes26_2.GLOW_ITEM_FRAME.getId()); // type id
         spawnEntity.write(Types.DOUBLE, (double) position.x()); // x
         spawnEntity.write(Types.DOUBLE, (double) position.y()); // y
         spawnEntity.write(Types.DOUBLE, (double) position.z()); // z
