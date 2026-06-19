@@ -145,8 +145,8 @@ public class PacketFactory {
     public static void writeJavaContainerSetContent(final PacketWrapper wrapper, final Container container) {
         wrapper.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
         wrapper.write(Types.VAR_INT, 0); // revision
-        wrapper.write(VersionedTypes.V26_1.itemArray, container.getJavaItems()); // items
-        wrapper.write(VersionedTypes.V26_1.item, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
+        wrapper.write(VersionedTypes.V26_2.itemArray, container.getJavaItems()); // items
+        wrapper.write(VersionedTypes.V26_2.item, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
     }
 
     public static void writeJavaLevelParticles(final PacketWrapper wrapper, final Position3f position, final BedrockMappingData.JavaParticle particle) {
@@ -160,7 +160,7 @@ public class PacketFactory {
         wrapper.write(Types.FLOAT, particle.offsetZ()); // offset z
         wrapper.write(Types.FLOAT, particle.speed()); // speed
         wrapper.write(Types.INT, particle.count()); // count
-        wrapper.write(VersionedTypes.V26_1.particle, particle.particle().copy()); // particle data
+        wrapper.write(VersionedTypes.V26_2.particle, particle.particle().copy()); // particle data
     }
 
 }

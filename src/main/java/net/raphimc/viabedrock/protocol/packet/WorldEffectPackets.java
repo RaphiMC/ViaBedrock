@@ -233,7 +233,7 @@ public class WorldEffectPackets {
                         case IconCrack, Food -> {
                             final BedrockItem bedrockItem = new BedrockItem(data >> 16, (short) (data & 0xFFFF), (byte) 1);
                             final Particle particle = new Particle(javaParticle.particle().id());
-                            particle.add(VersionedTypes.V26_1.item, wrapper.user().get(ItemRewriter.class).javaItem(bedrockItem)); // item
+                            particle.add(VersionedTypes.V26_2.item, wrapper.user().get(ItemRewriter.class).javaItem(bedrockItem)); // item
                             yield javaParticle.withParticle(particle);
                         }
                         case Terrain, BrushDust -> {
