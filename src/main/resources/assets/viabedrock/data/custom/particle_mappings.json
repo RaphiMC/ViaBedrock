@@ -388,6 +388,7 @@
   "minecraft:nautilus_bubbles_particle": "minecraft:bubble",
   "minecraft:nectar_drip_particle": "minecraft:falling_nectar",
   "minecraft:note_particle": "minecraft:note",
+  "minecraft:noxious_gas_particle": "minecraft:noxious_gas",
   "minecraft:obsidian_glow_dust_particle": "minecraft:dripping_obsidian_tear",
   "minecraft:obsidian_tear_particle": "minecraft:dripping_obsidian_tear",
   "minecraft:ominous_spawning_particle": "minecraft:ominous_spawning",
@@ -574,6 +575,8 @@
       }
     ]
   },
+  "minecraft:sulfur_bubble_particle": "minecraft:sulfur_bubbles",
+  "minecraft:sulfur_cube_goo": "minecraft:sulfur_cube_goo",
   "minecraft:totem_manual": "minecraft:totem_of_undying",
   "minecraft:totem_particle": {
     "particle": "minecraft:totem_of_undying",
@@ -642,8 +645,5 @@
         "value": -1
       }
     ]
-  },
-  "minecraft:noxious_gas_particle": "minecraft:noxious_gas",
-  "minecraft:sulfur_bubble_particle": null,
-  "minecraft:sulfur_cube_goo": "minecraft:sulfur_cube_goo"
+  }
 }

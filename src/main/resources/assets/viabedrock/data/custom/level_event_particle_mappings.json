@@ -282,5 +282,5 @@
   "GreenFlame": "minecraft:copper_fire_flame",
   "PauseMobGrowth": "minecraft:pause_mob_growth",
   "ResetMobGrowth": "minecraft:reset_mob_growth",
-  "SulfurCube": null
+  "SulfurCube": "minecraft:sulfur_cube_goo"
 }

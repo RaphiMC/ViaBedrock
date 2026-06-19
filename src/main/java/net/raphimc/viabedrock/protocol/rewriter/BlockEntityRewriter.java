@@ -46,7 +46,6 @@ public class BlockEntityRewriter {
 
     static {
         // TODO: Enhancement: Add missing block entities
-        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BED, NOOP_REWRITER); // TODO: Beds are no longer block entities on java
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BREWING_STAND, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.CALIBRATED_SCULK_SENSOR, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.CAMPFIRE, NOOP_REWRITER);
@@ -63,6 +62,7 @@ public class BlockEntityRewriter {
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BANNER, new BannerBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BARREL, new LootableContainerBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BEACON, new BeaconBlockEntityRewriter());
+        BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BED, new BedBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BEEHIVE, new BeehiveBlockEntityRewriter());
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BELL, NOOP_REWRITER);
         BLOCK_ENTITY_REWRITERS.put(CustomBlockTags.BLAST_FURNACE, new FurnaceBlockEntityRewriter());

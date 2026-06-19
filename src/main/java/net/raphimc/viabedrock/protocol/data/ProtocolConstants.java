@@ -28,7 +28,7 @@ public class ProtocolConstants {
 
     public static final ProtocolVersion JAVA_VERSION = ProtocolVersion.v26_2;
     public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol26_1To26_2.class;
-    public static final int JAVA_PACK_VERSION = 84;
+    public static final int JAVA_PACK_VERSION = 88;
     public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V26_1;
     public static final int JAVA_AIR_ID = 0;
 

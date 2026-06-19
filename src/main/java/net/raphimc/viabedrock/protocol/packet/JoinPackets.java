@@ -124,7 +124,7 @@ public class JoinPackets {
                         wrapper.write(Types.UUID, protocolInfo.getUuid()); // uuid
                         wrapper.write(Types.STRING, protocolInfo.getUsername()); // username
                         wrapper.write(Types.PROFILE_PROPERTY_ARRAY, new GameProfile.Property[0]); // properties
-                        wrapper.write(Types.UUID, UUID.randomUUID()); // Session ID
+                        wrapper.write(Types.UUID, UUID.randomUUID()); // session id
 
                         ClientboundBaseProtocol1_7.onLoginSuccess(wrapper.user());
                         sendClientCacheStatus(wrapper.user());
@@ -540,8 +540,8 @@ public class JoinPackets {
         joinGame.write(Types.OPTIONAL_GLOBAL_POSITION, null); // last death location
         joinGame.write(Types.VAR_INT, 0); // portal cooldown
         joinGame.write(Types.VAR_INT, 64); // sea level
-        joinGame.write(Types.BOOLEAN, false); // Online mode
-        joinGame.write(Types.BOOLEAN, false); // Enforces Secure Chat
+        joinGame.write(Types.BOOLEAN, false); // online mode
+        joinGame.write(Types.BOOLEAN, false); // enforces secure chat
         joinGame.send(BedrockProtocol.class);
 
         clientPlayer.createTeam();
