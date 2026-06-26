@@ -184,6 +184,7 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     PLAYER_VIDEO_CAPTURE(MinecraftPacketIds.PlayerVideoCapturePacket.getValue()),
     PLAYER_UPDATE_ENTITY_OVERRIDES(MinecraftPacketIds.PlayerUpdateEntityOverridesPacket.getValue()),
     PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue()),
+    SYNC_WORLD_CLOCKS(MinecraftPacketIds.SyncWorldClocks.getValue()),
     CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue()),
     PRIMITIVE_SHAPES(MinecraftPacketIds.PrimitiveShapesPacket.getValue()),
     DATA_STORE(MinecraftPacketIds.ClientboundDataStore.getValue()),
@@ -196,7 +197,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     CAMERA_SPLINE(MinecraftPacketIds.CameraSpline.getValue()),
     CAMERA_AIM_ASSIST_ACTOR_PRIORITY(MinecraftPacketIds.CameraAimAssistActorPriority.getValue()),
     LOCATOR_BAR(MinecraftPacketIds.LocatorBarPacket.getValue()),
-    SYNC_WORLD_CLOCKS(MinecraftPacketIds.SyncWorldClocks.getValue()),
     ATTRIBUTE_LAYER_SYNC(MinecraftPacketIds.ClientboundAttributeLayerSyncPacket.getValue()),
     SERVER_STORE_INFO(MinecraftPacketIds.ServerStoreInfo.getValue()),
     SERVER_PRESENCE_INFO(MinecraftPacketIds.ServerPresenceInfo.getValue());

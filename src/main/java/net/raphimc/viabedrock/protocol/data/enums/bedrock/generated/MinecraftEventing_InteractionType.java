@@ -22,6 +22,7 @@ public enum MinecraftEventing_InteractionType {
     PetSleep(14),
     Trusting(15),
     Commanding(16),
+    Equipping(17),
     ;
 
     private static final Int2ObjectMap<MinecraftEventing_InteractionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

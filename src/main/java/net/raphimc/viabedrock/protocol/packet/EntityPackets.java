@@ -438,7 +438,7 @@ public class EntityPackets {
                     wrapper.write(Types.VAR_INT, 0); // source direct id
                     wrapper.write(Types.BOOLEAN, false); // has source position
                     if (entity != entityTracker.getClientPlayer()) {
-                        entity.playSound(SharedTypes_Legacy_LevelSoundEvent.Hurt);
+                        entity.playSound("hurt");
                     }
                 }
                 case DEATH -> {
@@ -454,7 +454,7 @@ public class EntityPackets {
                         playerCombatKill.send(BedrockProtocol.class);
                     }
                     if (entity != entityTracker.getClientPlayer()) {
-                        entity.playSound(SharedTypes_Legacy_LevelSoundEvent.Death);
+                        entity.playSound("death");
                     }
                 }
                 default -> {
@@ -581,11 +581,11 @@ public class EntityPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.MOB_ARMOR_EQUIPMENT, ClientboundPackets26_1.SET_EQUIPMENT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
-            final BedrockItem head = wrapper.read(itemRewriter.itemType()); // head
-            final BedrockItem chest = wrapper.read(itemRewriter.itemType()); // chest
-            final BedrockItem legs = wrapper.read(itemRewriter.itemType()); // legs
-            final BedrockItem feet = wrapper.read(itemRewriter.itemType()); // feet
-            final BedrockItem body = wrapper.read(itemRewriter.itemType()); // body
+            final BedrockItem head = wrapper.read(itemRewriter.newItemType()); // head
+            final BedrockItem chest = wrapper.read(itemRewriter.newItemType()); // chest
+            final BedrockItem legs = wrapper.read(itemRewriter.newItemType()); // legs
+            final BedrockItem feet = wrapper.read(itemRewriter.newItemType()); // feet
+            final BedrockItem body = wrapper.read(itemRewriter.newItemType()); // body
 
             final Entity entity = wrapper.user().get(EntityTracker.class).getEntityByRid(entityRuntimeId);
             if (entity == null || entity instanceof ClientPlayerEntity) {

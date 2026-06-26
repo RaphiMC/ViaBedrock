@@ -134,7 +134,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> javaSounds;
     private BiMap<String, Integer> javaParticles;
     private Map<String, String> bedrockBlockSounds;
-    private Map<SharedTypes_Legacy_LevelSoundEvent, Map<String, SoundDefinitions.ConfiguredSound>> bedrockLevelSoundEvents;
+    private Map<String, Map<String, SoundDefinitions.ConfiguredSound>> bedrockLevelSoundEvents;
     private Map<NoteBlockInstrument, String> bedrockNoteBlockInstrumentSounds;
     private Map<String, JavaSound> bedrockToJavaSounds;
     private Map<String, JavaParticle> bedrockToJavaParticles;
@@ -351,20 +351,20 @@ public class BedrockMappingData extends MappingDataBase {
         }
 
         { // Biomes
-            this.bedrockBiomeDefinitions = this.readNBT("bedrock/biome_definitions.nbt");
+            this.bedrockBiomeDefinitions = SNBT.deserializeCompoundTag(this.readJson("bedrock/biome_definitions.json").toString()); // TODO: Jank
 
             final JsonObject bedrockBiomesJson = this.readJson("bedrock/biomes.json", JsonObject.class);
             this.bedrockBiomes = HashBiMap.create(bedrockBiomesJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockBiomesJson.entrySet()) {
                 final String bedrockBiomeName = entry.getKey();
-                if (!this.bedrockBiomeDefinitions.contains(bedrockBiomeName)) {
+                if (!this.bedrockBiomeDefinitions.contains(Key.namespaced(bedrockBiomeName))) {
                     throw new RuntimeException("Unknown bedrock biome: " + bedrockBiomeName);
                 }
                 this.bedrockBiomes.put(bedrockBiomeName, entry.getValue().getAsInt());
             }
 
             for (String bedrockBiomeName : this.bedrockBiomeDefinitions.keySet()) {
-                if (!this.bedrockBiomes.containsKey(bedrockBiomeName)) {
+                if (!this.bedrockBiomes.containsKey(Key.stripMinecraftNamespace(bedrockBiomeName))) {
                     throw new RuntimeException("Missing bedrock biome id mapping: " + bedrockBiomeName);
                 }
             }
@@ -753,12 +753,11 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             final JsonObject bedrockLevelSoundEventMappingsJson = this.readJson("bedrock/level_sound_event_mappings.json");
-            this.bedrockLevelSoundEvents = new EnumMap<>(SharedTypes_Legacy_LevelSoundEvent.class);
-            final Set<SharedTypes_Legacy_LevelSoundEvent> unmappedLevelSoundEvents = EnumSet.noneOf(SharedTypes_Legacy_LevelSoundEvent.class);
+            this.bedrockLevelSoundEvents = new HashMap<>();
+            final Set<String> unmappedLevelSoundEvents = new HashSet<>();
             for (Map.Entry<String, JsonElement> entry : bedrockLevelSoundEventMappingsJson.entrySet()) {
-                final SharedTypes_Legacy_LevelSoundEvent soundEvent = SharedTypes_Legacy_LevelSoundEvent.valueOf(entry.getKey());
                 if (entry.getValue().isJsonNull()) {
-                    unmappedLevelSoundEvents.add(soundEvent);
+                    unmappedLevelSoundEvents.add(entry.getKey());
                     continue;
                 }
                 final JsonObject soundData = entry.getValue().getAsJsonObject();
@@ -788,13 +787,13 @@ public class BedrockMappingData extends MappingDataBase {
                         soundEvents.put(keySplit[1], configuredSound);
                     }
                 }
-                this.bedrockLevelSoundEvents.put(soundEvent, soundEvents);
+                this.bedrockLevelSoundEvents.put(entry.getKey(), soundEvents);
             }
-            for (SharedTypes_Legacy_LevelSoundEvent levelSoundEvent : SharedTypes_Legacy_LevelSoundEvent.values()) {
+            /*for (SharedTypes_Legacy_LevelSoundEvent levelSoundEvent : SharedTypes_Legacy_LevelSoundEvent.values()) {
                 if (!this.bedrockLevelSoundEvents.containsKey(levelSoundEvent) && !unmappedLevelSoundEvents.contains(levelSoundEvent)) {
                     throw new RuntimeException("Missing bedrock -> java level sound event mapping for " + levelSoundEvent.name());
                 }
-            }
+            }*/
 
             final JsonObject bedrockNoteBlockInstrumentMappingsJson = this.readJson("custom/note_block_instrument_mappings.json");
             this.bedrockNoteBlockInstrumentSounds = new EnumMap<>(NoteBlockInstrument.class);
@@ -1197,7 +1196,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockBlockSounds;
     }
 
-    public Map<SharedTypes_Legacy_LevelSoundEvent, Map<String, SoundDefinitions.ConfiguredSound>> getBedrockLevelSoundEvents() {
+    public Map<String, Map<String, SoundDefinitions.ConfiguredSound>> getBedrockLevelSoundEvents() {
         return this.bedrockLevelSoundEvents;
     }
 
