@@ -184,9 +184,8 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     PLAYER_VIDEO_CAPTURE(MinecraftPacketIds.PlayerVideoCapturePacket.getValue()),
     PLAYER_UPDATE_ENTITY_OVERRIDES(MinecraftPacketIds.PlayerUpdateEntityOverridesPacket.getValue()),
     PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue()),
-    SYNC_WORLD_CLOCKS(MinecraftPacketIds.SyncWorldClocks.getValue());
-
-    /*CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue()),
+    SYNC_WORLD_CLOCKS(MinecraftPacketIds.SyncWorldClocks.getValue()),
+    CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue()),
     PRIMITIVE_SHAPES(MinecraftPacketIds.PrimitiveShapesPacket.getValue()),
     DATA_STORE(MinecraftPacketIds.ClientboundDataStore.getValue()),
     GRAPHICS_OVERRIDE_PARAMETER(MinecraftPacketIds.GraphicsParameterOverridePacket.getValue()),
@@ -200,7 +199,7 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     LOCATOR_BAR(MinecraftPacketIds.LocatorBarPacket.getValue()),
     ATTRIBUTE_LAYER_SYNC(MinecraftPacketIds.ClientboundAttributeLayerSyncPacket.getValue()),
     SERVER_STORE_INFO(MinecraftPacketIds.ServerStoreInfo.getValue()),
-    SERVER_PRESENCE_INFO(MinecraftPacketIds.ServerPresenceInfo.getValue());*/
+    SERVER_PRESENCE_INFO(MinecraftPacketIds.ServerPresenceInfo.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
 
