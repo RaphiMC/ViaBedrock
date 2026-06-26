@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ public record CommandData(String name, String description, int flags, byte permi
         public EnumData(final String name, final Set<String> values, final boolean soft) {
             this.name = name;
             this.values = new HashMap<>();
-            for (final String value : values) {
+            for (String value : values) {
                 this.values.put(value, new HashSet<>());
             }
             this.soft = soft;
@@ -47,13 +47,13 @@ public record CommandData(String name, String description, int flags, byte permi
         }
 
         public void addValues(final Set<String> values) {
-            for (final String value : values) {
+            for (String value : values) {
                 this.values.put(value, new HashSet<>());
             }
         }
 
         public void removeValues(final Set<String> values) {
-            for (final String value : values) {
+            for (String value : values) {
                 this.values.remove(value);
             }
         }

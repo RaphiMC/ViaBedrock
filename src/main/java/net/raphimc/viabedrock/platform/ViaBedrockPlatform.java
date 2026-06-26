@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,10 @@ import java.util.logging.Logger;
 public interface ViaBedrockPlatform {
 
     default void init(final File configFile) {
-        final ViaBedrockConfig config = new ViaBedrockConfig(configFile, this.getLogger());
+        this.init(new ViaBedrockConfig(configFile, this.getLogger()));
+    }
+
+    default void init(final net.raphimc.viabedrock.platform.ViaBedrockConfig config) {
         config.reload();
         Via.getManager().getConfigurationProvider().register(config);
         ViaBedrock.init(this, config);

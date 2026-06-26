@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,10 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-public record PlayerAbilities(long uniqueEntityId, byte playerPermission, byte commandPermission, Map<SerializedAbilitiesData_SerializedAbilitiesLayer, AbilitiesLayer> abilityLayers) {
+public record PlayerAbilities(long entityUniqueId, byte playerPermission, byte commandPermission, Map<SerializedAbilitiesData_SerializedAbilitiesLayer, AbilitiesLayer> abilityLayers) {
 
-    public PlayerAbilities(final long uniqueEntityId, final byte playerPermission, final byte commandPermission) {
-        this(uniqueEntityId, playerPermission, commandPermission, new EnumMap<>(SerializedAbilitiesData_SerializedAbilitiesLayer.class));
+    public PlayerAbilities(final long entityUniqueId, final byte playerPermission, final byte commandPermission) {
+        this(entityUniqueId, playerPermission, commandPermission, new EnumMap<>(SerializedAbilitiesData_SerializedAbilitiesLayer.class));
 
         final Set<AbilitiesIndex> abilitiesSet = EnumSet.allOf(AbilitiesIndex.class);
         abilitiesSet.remove(AbilitiesIndex.Invalid);

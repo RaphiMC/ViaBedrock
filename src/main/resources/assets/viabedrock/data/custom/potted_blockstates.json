@@ -49,6 +49,7 @@
   "minecraft:dead_bush": "minecraft:potted_dead_bush",
   "minecraft:fern": "minecraft:potted_fern",
   "minecraft:flowering_azalea": "minecraft:potted_flowering_azalea_bush",
+  "minecraft:golden_dandelion": "minecraft:potted_golden_dandelion",
   "minecraft:jungle_sapling[stage=0]": "minecraft:potted_jungle_sapling",
   "minecraft:jungle_sapling[stage=1]": "minecraft:potted_jungle_sapling",
   "minecraft:lily_of_the_valley": "minecraft:potted_lily_of_the_valley",

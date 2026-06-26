@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -12,13 +11,16 @@ public enum SerializedAbilitiesData_SerializedAbilitiesLayer {
     Spectator(2),
     Commands(3),
     Editor(4),
-    LoadingScreen(5);
+    LoadingScreen(5),
+    ;
 
     private static final Int2ObjectMap<SerializedAbilitiesData_SerializedAbilitiesLayer> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (SerializedAbilitiesData_SerializedAbilitiesLayer value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -28,6 +30,24 @@ public enum SerializedAbilitiesData_SerializedAbilitiesLayer {
 
     public static SerializedAbilitiesData_SerializedAbilitiesLayer getByValue(final int value, final SerializedAbilitiesData_SerializedAbilitiesLayer fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static SerializedAbilitiesData_SerializedAbilitiesLayer getByName(final String name) {
+        for (SerializedAbilitiesData_SerializedAbilitiesLayer value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static SerializedAbilitiesData_SerializedAbilitiesLayer getByName(final String name, final SerializedAbilitiesData_SerializedAbilitiesLayer fallback) {
+        for (SerializedAbilitiesData_SerializedAbilitiesLayer value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

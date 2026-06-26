@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -11,13 +10,16 @@ public enum SharedTypes_Legacy_Difficulty {
     Easy(1),
     Normal(2),
     Hard(3),
-    Unknown(5);
+    Unknown(5),
+    ;
 
     private static final Int2ObjectMap<SharedTypes_Legacy_Difficulty> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (SharedTypes_Legacy_Difficulty value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -27,6 +29,24 @@ public enum SharedTypes_Legacy_Difficulty {
 
     public static SharedTypes_Legacy_Difficulty getByValue(final int value, final SharedTypes_Legacy_Difficulty fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static SharedTypes_Legacy_Difficulty getByName(final String name) {
+        for (SharedTypes_Legacy_Difficulty value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static SharedTypes_Legacy_Difficulty getByName(final String name, final SharedTypes_Legacy_Difficulty fallback) {
+        for (SharedTypes_Legacy_Difficulty value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

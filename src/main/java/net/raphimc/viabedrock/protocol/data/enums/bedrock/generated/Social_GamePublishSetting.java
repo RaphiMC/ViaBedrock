@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -11,13 +10,16 @@ public enum Social_GamePublishSetting {
     InviteOnly(1),
     FriendsOnly(2),
     FriendsOfFriends(3),
-    Public(4);
+    Public(4),
+    ;
 
     private static final Int2ObjectMap<Social_GamePublishSetting> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (Social_GamePublishSetting value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -27,6 +29,24 @@ public enum Social_GamePublishSetting {
 
     public static Social_GamePublishSetting getByValue(final int value, final Social_GamePublishSetting fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static Social_GamePublishSetting getByName(final String name) {
+        for (Social_GamePublishSetting value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static Social_GamePublishSetting getByName(final String name, final Social_GamePublishSetting fallback) {
+        for (Social_GamePublishSetting value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

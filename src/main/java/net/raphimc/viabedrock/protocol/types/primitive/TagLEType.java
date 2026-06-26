@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ import net.raphimc.viabedrock.api.io.LittleEndianByteBufOutputStream;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 public class TagLEType extends Type<Tag> {
 
@@ -43,7 +44,7 @@ public class TagLEType extends Type<Tag> {
             BedrockTypes.UTF8_STRING.read(buffer);
             return TagRegistry.read(id, new LittleEndianByteBufInputStream(buffer), TagLimiter.noop(), 0);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -59,7 +60,7 @@ public class TagLEType extends Type<Tag> {
         try {
             value.write(new LittleEndianByteBufOutputStream(buffer));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 

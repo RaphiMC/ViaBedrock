@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,10 @@ package net.raphimc.viabedrock.protocol.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public record EntityEffect(String identifier, int amplifier, AtomicInteger duration, boolean showParticles) {
+public record EntityEffect(String identifier, int amplifier, AtomicInteger duration, boolean showParticles, boolean ambient) {
 
-    public EntityEffect(final String identifier, final int amplifier, final int duration, final boolean showParticles) {
-        this(identifier, amplifier, new AtomicInteger(duration), showParticles);
+    public EntityEffect(final String identifier, final int amplifier, final int duration, final boolean showParticles, final boolean ambient) {
+        this(identifier, amplifier, new AtomicInteger(duration), showParticles, ambient);
     }
 
 }

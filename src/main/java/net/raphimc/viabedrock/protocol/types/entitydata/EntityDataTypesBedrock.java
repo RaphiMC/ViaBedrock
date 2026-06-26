@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ public enum EntityDataTypesBedrock implements EntityDataType {
     FLOAT(DataItemType.Float, BedrockTypes.FLOAT_LE),
     STRING(DataItemType.String, BedrockTypes.STRING),
     TAG(DataItemType.CompoundTag, BedrockTypes.NETWORK_TAG),
-    POSITION_3I(DataItemType.Pos, BedrockTypes.POSITION_3I),
+    BLOCK_POSITION(DataItemType.Pos, BedrockTypes.BLOCK_POSITION),
     LONG(DataItemType.Int64, BedrockTypes.VAR_LONG),
     POSITION_3F(DataItemType.Vec3, BedrockTypes.POSITION_3F);
 

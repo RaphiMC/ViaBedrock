@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,11 @@ package net.raphimc.viabedrock.protocol.types.entitydata;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.model.EntityProperties;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class EntityPropertiesType extends Type<EntityProperties> {
 
@@ -43,11 +42,11 @@ public class EntityPropertiesType extends Type<EntityProperties> {
             intProperties.put(index, value);
         }
         final int floatPropertiesLength = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
-        final Map<Integer, Float> floatProperties = new HashMap<>(floatPropertiesLength);
+        final Int2ObjectMap<Float> floatProperties = new Int2ObjectOpenHashMap<>(floatPropertiesLength);
         for (int i = 0; i < floatPropertiesLength; i++) {
             final int index = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
             final float value = BedrockTypes.FLOAT_LE.readPrimitive(buffer);
-            floatProperties.put(index, value);
+            floatProperties.put(index, (Float) value);
         }
         return new EntityProperties(intProperties, floatProperties);
     }
@@ -55,15 +54,15 @@ public class EntityPropertiesType extends Type<EntityProperties> {
     @Override
     public void write(ByteBuf buffer, EntityProperties value) {
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.intProperties().size());
-        value.intProperties().forEach((i, v) -> {
-            BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, i);
-            BedrockTypes.VAR_INT.writePrimitive(buffer, v);
-        });
+        for (Int2IntMap.Entry entry : value.intProperties().int2IntEntrySet()) {
+            BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, entry.getIntKey());
+            BedrockTypes.VAR_INT.writePrimitive(buffer, entry.getIntValue());
+        }
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.floatProperties().size());
-        value.floatProperties().forEach((i, v) -> {
-            BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, i);
-            BedrockTypes.FLOAT_LE.writePrimitive(buffer, v);
-        });
+        for (Int2ObjectMap.Entry<Float> entry : value.floatProperties().int2ObjectEntrySet()) {
+            BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, entry.getIntKey());
+            BedrockTypes.FLOAT_LE.writePrimitive(buffer, entry.getValue());
+        }
     }
 
 }

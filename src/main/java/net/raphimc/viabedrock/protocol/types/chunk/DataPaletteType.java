@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
         if (isRuntime) {
             final IntList palette = new IntArrayList(size);
             for (int i = 0; i < size; i++) {
-                palette.add(BedrockTypes.VAR_INT.read(buffer).intValue());
+                palette.add(BedrockTypes.VAR_INT.readPrimitive(buffer));
             }
             return new BedrockDataPalette(palette, bitArray);
         } else {
@@ -104,7 +104,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
 
         if (isRuntime) {
             for (int i = 0; i < value.size(); i++) {
-                BedrockTypes.VAR_INT.write(buffer, value.idByIndex(i));
+                BedrockTypes.VAR_INT.writePrimitive(buffer, value.idByIndex(i));
             }
         } else {
             for (int i = 0; i < value.size(); i++) {

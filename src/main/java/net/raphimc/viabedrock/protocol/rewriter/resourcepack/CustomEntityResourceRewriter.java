@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,51 +17,64 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
-import net.raphimc.viabedrock.api.model.resourcepack.EntityDefinitions;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
+import com.viaversion.viaversion.util.Key;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.Content;
+import net.raphimc.viabedrock.api.resourcepack.definition.EntityDefinitions;
+import net.raphimc.viabedrock.api.util.StringUtil;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import org.cube.converter.converter.enums.RotationType;
 import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
 import org.cube.converter.model.impl.java.JavaItemModel;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
 
+    private static final String SUB_FOLDER = "entities";
+
+    public static ItemModel getItemModel(final String entityIdentifier) {
+        return new ItemModel(Key.of("viabedrock", SUB_FOLDER + '/' + StringUtil.makeIdentifierValueSafe(entityIdentifier)));
+    }
+
     public CustomEntityResourceRewriter() {
-        super("entity", "entity");
+        super(SUB_FOLDER);
     }
 
     @Override
-    protected void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList) {
-        for (Map.Entry<String, EntityDefinitions.EntityDefinition> entityEntry : resourcePacksStorage.getEntities().entities().entrySet()) {
-            for (String bedrockPath : entityEntry.getValue().entityData().getTextures().values()) {
-                for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
-                    final ResourcePack.Content bedrockContent = pack.content();
-                    final ResourcePack.Content.LazyImage texture = bedrockContent.getShortnameImage(bedrockPath);
-                    if (texture != null) {
-                        javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(bedrockPath) + ".png", texture);
-                        break;
-                    }
-                }
-            }
+    public void submitTasks(final ResourcePackStorage resourcePackStorage, final Consumer<Supplier<Content>> submitter) {
+        for (EntityDefinitions.EntityDefinition entityDefinition : resourcePackStorage.getEntities().entities().values()) {
+            submitter.accept(() -> this.handleEntityDefinition(resourcePackStorage, entityDefinition));
+        }
+    }
 
-            final EntityDefinitions.EntityDefinition entityDefinition = entityEntry.getValue();
-            for (Map.Entry<String, String> modelEntry : entityDefinition.entityData().getGeometries().entrySet()) {
-                final BedrockGeometryModel bedrockGeometry = resourcePacksStorage.getModels().entityModels().get(modelEntry.getValue());
-                if (bedrockGeometry == null) continue;
-
-                for (Map.Entry<String, String> textureEntry : entityDefinition.entityData().getTextures().entrySet()) {
-                    final String javaTexturePath = this.getJavaTexturePath(textureEntry.getValue());
-                    final String key = entityEntry.getKey() + "_" + modelEntry.getKey() + "_" + textureEntry.getKey();
-                    final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + javaTexturePath, RotationType.HACKY_POST_1_21_6);
-                    resourcePacksStorage.getConverterData().put("ce_" + key + "_scale", itemModelData.getScale());
-                    javaContent.putString("assets/viabedrock/models/" + this.getJavaModelName(key) + ".json", itemModelData.compile().toString());
-                    modelsList.add(key);
+    private Content handleEntityDefinition(final ResourcePackStorage resourcePackStorage, final EntityDefinitions.EntityDefinition entityDefinition) {
+        final ItemModelContent javaContent = new ItemModelContent(entityDefinition.identifier());
+        for (String bedrockPath : entityDefinition.entityData().getTextures().values()) {
+            for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
+                final Content.LazyImage texture = pack.content().getShortnameImage(bedrockPath);
+                if (texture != null) {
+                    javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(bedrockPath) + ".png", texture);
+                    break;
                 }
             }
         }
+        for (Map.Entry<String, String> modelEntry : entityDefinition.entityData().getGeometries().entrySet()) {
+            final BedrockGeometryModel bedrockGeometry = resourcePackStorage.getModels().entityModels().get(modelEntry.getValue());
+            if (bedrockGeometry != null) {
+                for (Map.Entry<String, String> textureEntry : entityDefinition.entityData().getTextures().entrySet()) {
+                    final String modelKey = modelEntry.getKey() + "_" + textureEntry.getKey();
+                    final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + this.getJavaTexturePath(textureEntry.getValue()), RotationType.POST_1_21_11);
+                    javaContent.putModel(modelKey, itemModelData.compile());
+                    resourcePackStorage.getConverterData().put("ce_" + entityDefinition.identifier() + '_' + modelKey + "_scale", itemModelData.getScale());
+                }
+            }
+        }
+        javaContent.generateItemDefinition();
+        return javaContent;
     }
 
 }

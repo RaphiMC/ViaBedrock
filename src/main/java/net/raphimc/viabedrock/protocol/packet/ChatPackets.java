@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@ import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_5to1_21_6.packet.ServerboundPackets1_21_6;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ServerboundPackets26_1;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.serializer.BedrockComponentSerializer;
@@ -57,12 +57,9 @@ public class ChatPackets {
         @Override
         protected void register() {
             map(Types.STRING, BedrockTypes.STRING, c -> '/' + c); // command
-            handler(wrapper -> {
-                final UUID uuid = wrapper.user().getProtocolInfo().getUuid();
-                wrapper.write(BedrockTypes.COMMAND_ORIGIN_DATA, new CommandOriginData(CommandOriginType.Player, uuid, "")); // origin
-            });
+            handler(wrapper -> wrapper.write(BedrockTypes.COMMAND_ORIGIN_DATA, new CommandOriginData(CommandOriginType.Player, UUID.randomUUID(), ""))); // origin
             create(Types.BOOLEAN, false); // is internal
-            create(BedrockTypes.VAR_INT, ProtocolConstants.BEDROCK_COMMAND_VERSION); // version
+            create(BedrockTypes.STRING, ProtocolConstants.BEDROCK_COMMAND_VERSION); // version
             handler(PacketWrapper::clearInputBuffer);
             handler(wrapper -> {
                 final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
@@ -78,7 +75,7 @@ public class ChatPackets {
                     final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                     if (!gameSession.areCommandsEnabled() || (gameSession.getChatRestrictionLevel() == ChatRestrictionLevel.Disabled && clientPlayer.abilities().playerPermission() <= PlayerPermissionLevel.Member.getValue())) {
                         wrapper.cancel();
-                        PacketFactory.sendJavaSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTexts().get("commands.generic.disabled")));
+                        PacketFactory.sendJavaSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePackStorage.class).getTexts().get("commands.generic.disabled")));
                     }
                 }
             });
@@ -86,27 +83,28 @@ public class ChatPackets {
     };
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets1_21_9.SYSTEM_CHAT, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.TEXT, ClientboundPackets26_1.SYSTEM_CHAT, new PacketHandlers() {
             @Override
             public void register() {
                 handler(wrapper -> {
-                    final byte rawType = wrapper.read(Types.BYTE); // type
+                    final boolean localize = wrapper.read(Types.BOOLEAN); // localize
+                    wrapper.read(Types.UNSIGNED_BYTE); // message type
+                    final short rawType = wrapper.read(Types.UNSIGNED_BYTE); // text packet type
                     final TextPacketType type = TextPacketType.getByValue(rawType);
                     if (type == null) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown TextPacketType: " + rawType);
                         wrapper.cancel();
                         return;
                     }
-                    final boolean needsTranslation = wrapper.read(Types.BOOLEAN); // needs translation
 
-                    final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTexts().lookup();
+                    final Function<String, String> translator = wrapper.user().get(ResourcePackStorage.class).getTexts().lookup();
                     String originalMessage = null;
                     try {
                         switch (type) {
                             case Chat, Whisper, Announcement -> {
                                 final String sourceName = wrapper.read(BedrockTypes.STRING); // source name
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
-                                if (needsTranslation) {
+                                if (localize) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
@@ -126,7 +124,7 @@ public class ChatPackets {
                                     if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
                                 });
                                 message = rootComponent.asString();
-                                if (needsTranslation) {
+                                if (localize) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
@@ -135,7 +133,7 @@ public class ChatPackets {
                             }
                             case Raw, SystemMessage, Tip -> {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
-                                if (needsTranslation) {
+                                if (localize) {
                                     message = BedrockTranslator.translate(message, translator, new Object[0]);
                                 }
 
@@ -145,7 +143,7 @@ public class ChatPackets {
                             case Translate, Popup, JukeboxPopup -> {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
-                                if (needsTranslation) {
+                                if (localize) {
                                     message = BedrockTranslator.translate(message, translator, parameters);
                                 }
 
@@ -161,25 +159,29 @@ public class ChatPackets {
                 });
                 read(BedrockTypes.STRING); // xuid
                 read(BedrockTypes.STRING); // platform online id
-                read(BedrockTypes.STRING); // filtered message
+                read(BedrockTypes.OPTIONAL_STRING); // filtered message
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets1_21_9.SYSTEM_CHAT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.COMMAND_OUTPUT, ClientboundPackets26_1.SYSTEM_CHAT, wrapper -> {
             final CommandOriginData originData = wrapper.read(BedrockTypes.COMMAND_ORIGIN_DATA); // origin
-            final CommandOutputType type = CommandOutputType.getByValue(wrapper.read(Types.BYTE), CommandOutputType.None); // type
-            wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // success count
+            final String rawType = wrapper.read(BedrockTypes.STRING); // type
+            final CommandOutputType type = CommandOutputType.getByName(rawType); // type
+            if (type == null) { // Bedrock client disconnects if the type is not valid
+                throw new IllegalStateException("Unknown CommandOutputType: " + rawType);
+            }
+            wrapper.read(BedrockTypes.UNSIGNED_INT_LE); // success count
 
             if (originData.type() != CommandOriginType.Player) { // Bedrock client ignores non player origins
                 wrapper.cancel();
                 return;
             }
 
-            final Function<String, String> translator = wrapper.user().get(ResourcePacksStorage.class).getTexts().lookup();
+            final Function<String, String> translator = wrapper.user().get(ResourcePackStorage.class).getTexts().lookup();
             final StringBuilder message = new StringBuilder();
             final int messageCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // message count
             for (int i = 0; i < messageCount; i++) {
-                final boolean successful = wrapper.read(Types.BOOLEAN); // is successful
                 final String messageId = wrapper.read(BedrockTypes.STRING); // message id
+                final boolean successful = wrapper.read(Types.BOOLEAN); // is successful
                 final String[] parameters = wrapper.read(BedrockTypes.STRING_ARRAY); // parameters
 
                 message.append(successful ? "§r" : "§c");
@@ -188,9 +190,7 @@ public class ChatPackets {
                     message.append("\n");
                 }
             }
-            if (type == CommandOutputType.DataSet) {
-                wrapper.read(BedrockTypes.STRING); // data
-            }
+            wrapper.read(BedrockTypes.OPTIONAL_STRING); // data set
 
             wrapper.write(Types.TAG, TextUtil.stringToNbt(message.toString()));
             wrapper.write(Types.BOOLEAN, false); // overlay
@@ -200,7 +200,7 @@ public class ChatPackets {
                     final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
                     wrapper.user().put(new CommandsStorage(wrapper.user(), commands));
                     wrapper.cancel(); // Will be sent when the java player is ready
-                }, ClientboundPackets1_21_9.COMMANDS, (PacketHandler) wrapper -> {
+                }, ClientboundPackets26_1.COMMANDS, (PacketHandler) wrapper -> {
                     final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
                     final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
                     wrapper.user().put(commandsStorage);
@@ -251,30 +251,31 @@ public class ChatPackets {
             }
         });
 
-        protocol.registerServerbound(ServerboundPackets1_21_6.CHAT, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
+        protocol.registerServerbound(ServerboundPackets26_1.CHAT, ServerboundBedrockPackets.TEXT, new PacketHandlers() {
             @Override
             public void register() {
-                create(Types.BYTE, (byte) TextPacketType.Chat.getValue()); // type
-                create(Types.BOOLEAN, false); // needs translation
+                create(Types.BOOLEAN, false); // localize
+                create(Types.UNSIGNED_BYTE, (short) 1); // message type
+                create(Types.UNSIGNED_BYTE, (short) TextPacketType.Chat.getValue()); // type
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(EntityTracker.class).getClientPlayer().name())); // source name
                 map(Types.STRING, BedrockTypes.STRING); // message
                 handler(wrapper -> wrapper.write(BedrockTypes.STRING, wrapper.user().get(AuthData.class).getXuid())); // xuid
                 create(BedrockTypes.STRING, ""); // platform online id
-                create(BedrockTypes.STRING, ""); // filtered message
+                create(BedrockTypes.OPTIONAL_STRING, null); // filtered message
                 handler(PacketWrapper::clearInputBuffer);
                 handler(wrapper -> {
                     final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
                     final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                     if (gameSession.getChatRestrictionLevel() != ChatRestrictionLevel.None || clientPlayer.abilities().getBooleanValue(AbilitiesIndex.Muted)) {
                         wrapper.cancel();
-                        PacketFactory.sendJavaSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePacksStorage.class).getTexts().get("permissions.chatmute")));
+                        PacketFactory.sendJavaSystemChat(wrapper.user(), TextUtil.stringToNbt("§e" + wrapper.user().get(ResourcePackStorage.class).getTexts().get("permissions.chatmute")));
                     }
                 });
             }
         });
-        protocol.registerServerbound(ServerboundPackets1_21_6.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, CHAT_COMMAND_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_21_6.CHAT_COMMAND_SIGNED, ServerboundBedrockPackets.COMMAND_REQUEST, CHAT_COMMAND_HANDLER);
-        protocol.registerServerbound(ServerboundPackets1_21_6.COMMAND_SUGGESTION, null, wrapper -> {
+        protocol.registerServerbound(ServerboundPackets26_1.CHAT_COMMAND, ServerboundBedrockPackets.COMMAND_REQUEST, CHAT_COMMAND_HANDLER);
+        protocol.registerServerbound(ServerboundPackets26_1.CHAT_COMMAND_SIGNED, ServerboundBedrockPackets.COMMAND_REQUEST, CHAT_COMMAND_HANDLER);
+        protocol.registerServerbound(ServerboundPackets26_1.COMMAND_SUGGESTION, null, wrapper -> {
             wrapper.cancel();
             final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
             if (commandsStorage == null) return;
@@ -287,7 +288,7 @@ public class ChatPackets {
 
             final Suggestions suggestions = commandsStorage.complete(command);
 
-            final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets1_21_9.COMMAND_SUGGESTIONS, wrapper.user());
+            final PacketWrapper tabComplete = PacketWrapper.create(ClientboundPackets26_1.COMMAND_SUGGESTIONS, wrapper.user());
             tabComplete.write(Types.VAR_INT, id); // transaction id
             tabComplete.write(Types.VAR_INT, suggestions.getRange().getStart()); // start index
             tabComplete.write(Types.VAR_INT, suggestions.getRange().getLength()); // length

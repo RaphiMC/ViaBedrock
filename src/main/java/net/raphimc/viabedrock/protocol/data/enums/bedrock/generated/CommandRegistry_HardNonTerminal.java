@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -93,18 +92,22 @@ public enum CommandRegistry_HardNonTerminal {
     BlockStateValues(0x100053),
     BlockStateArray(0x100054),
     BlockStateArrayCont(0x100055),
-    Command(0x100056),
-    SlashCommand(0x100057),
-    CodeBuilderArg(0x100058),
-    CodeBuilderArgs(0x100059),
-    CodeBuilderSelectParam(0x10005a),
-    CodeBuilderSelector(0x10005b);
+    ClockTimeMarkerName(0x100056),
+    Command(0x100057),
+    SlashCommand(0x100058),
+    CodeBuilderArg(0x100059),
+    CodeBuilderArgs(0x10005a),
+    CodeBuilderSelectParam(0x10005b),
+    CodeBuilderSelector(0x10005c),
+    ;
 
     private static final Int2ObjectMap<CommandRegistry_HardNonTerminal> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (CommandRegistry_HardNonTerminal value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -114,6 +117,24 @@ public enum CommandRegistry_HardNonTerminal {
 
     public static CommandRegistry_HardNonTerminal getByValue(final int value, final CommandRegistry_HardNonTerminal fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static CommandRegistry_HardNonTerminal getByName(final String name) {
+        for (CommandRegistry_HardNonTerminal value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static CommandRegistry_HardNonTerminal getByName(final String name, final CommandRegistry_HardNonTerminal fallback) {
+        for (CommandRegistry_HardNonTerminal value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

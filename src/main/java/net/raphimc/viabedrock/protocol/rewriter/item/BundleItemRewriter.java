@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ public class BundleItemRewriter implements ItemRewriter.NbtRewriter {
             javaItems[i] = javaItems[javaItems.length - i - 1];
             javaItems[javaItems.length - i - 1] = temp;
         }
-        javaItem.dataContainer().set(VersionedTypes.V1_21_9.structuredDataKeys.bundleContents, javaItems);
+        javaItem.dataContainer().set(VersionedTypes.V26_2.structuredDataKeys().bundleContents, javaItems);
     }
 
 }

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -13,13 +12,16 @@ public enum InventoryLeftTabPocketIndex {
     RecipeItems(3),
     RecipeEquipment(4),
     RecipeConstruction(5),
-    RecipeSearch(6);
+    RecipeSearch(6),
+    ;
 
     private static final Int2ObjectMap<InventoryLeftTabPocketIndex> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (InventoryLeftTabPocketIndex value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -29,6 +31,24 @@ public enum InventoryLeftTabPocketIndex {
 
     public static InventoryLeftTabPocketIndex getByValue(final int value, final InventoryLeftTabPocketIndex fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static InventoryLeftTabPocketIndex getByName(final String name) {
+        for (InventoryLeftTabPocketIndex value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static InventoryLeftTabPocketIndex getByName(final String name, final InventoryLeftTabPocketIndex fallback) {
+        for (InventoryLeftTabPocketIndex value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

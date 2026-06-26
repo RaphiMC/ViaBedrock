@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -9,13 +8,16 @@ public enum StructureTemplateResponseType {
 
     None(0),
     Export(1),
-    Query(2);
+    Query(2),
+    ;
 
     private static final Int2ObjectMap<StructureTemplateResponseType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (StructureTemplateResponseType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -25,6 +27,24 @@ public enum StructureTemplateResponseType {
 
     public static StructureTemplateResponseType getByValue(final int value, final StructureTemplateResponseType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static StructureTemplateResponseType getByName(final String name) {
+        for (StructureTemplateResponseType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static StructureTemplateResponseType getByName(final String name, final StructureTemplateResponseType fallback) {
+        for (StructureTemplateResponseType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -12,13 +11,16 @@ public enum CreativeItemCategory {
     Equipment(3),
     Items(4),
     ItemCommandOnly(5),
-    Undefined(6);
+    Undefined(6),
+    ;
 
     private static final Int2ObjectMap<CreativeItemCategory> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (CreativeItemCategory value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -28,6 +30,24 @@ public enum CreativeItemCategory {
 
     public static CreativeItemCategory getByValue(final int value, final CreativeItemCategory fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static CreativeItemCategory getByName(final String name) {
+        for (CreativeItemCategory value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static CreativeItemCategory getByName(final String name, final CreativeItemCategory fallback) {
+        for (CreativeItemCategory value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ public class BitSets {
 
     public static BitSet create(final int length, final Enum<?>... setBits) {
         final BitSet bitSet = new BitSet(length);
-        for (final Enum<?> setBit : setBits) {
+        for (Enum<?> setBit : setBits) {
             bitSet.set(setBit.ordinal());
         }
         return bitSet;
@@ -31,7 +31,7 @@ public class BitSets {
 
     public static BitSet create(final int length, final int... setBits) {
         final BitSet bitSet = new BitSet(length);
-        for (final int setBit : setBits) {
+        for (int setBit : setBits) {
             bitSet.set(setBit);
         }
         return bitSet;

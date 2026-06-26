@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,20 +22,22 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.protocol.Protocol;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.mcstructs.text.serializer.TextComponentCodec;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.Protocol1_21_7To1_21_9;
+import com.viaversion.viaversion.protocols.v26_1to26_2.Protocol26_1To26_2;
 
 public class ProtocolConstants {
 
-    public static final ProtocolVersion JAVA_VERSION = ProtocolVersion.v1_21_9;
-    public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol1_21_7To1_21_9.class;
-    public static final int JAVA_PACK_VERSION = 69;
-    public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V1_21_9;
+    public static final ProtocolVersion JAVA_VERSION = ProtocolVersion.v26_2;
+    public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol26_1To26_2.class;
+    public static final int JAVA_PACK_VERSION = 88;
+    public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V26_1;
+    public static final int JAVA_AIR_ID = 0;
 
-    public static final String BEDROCK_VERSION_NAME = "1.21.124";
-    public static final int BEDROCK_PROTOCOL_VERSION = 860;
+    public static final String BEDROCK_VERSION_NAME = "1.26.30";
+    public static final int BEDROCK_PROTOCOL_VERSION = 1001;
     public static final int BEDROCK_RAKNET_PROTOCOL_VERSION = 11;
-    public static final int BEDROCK_DEFAULT_PORT = 19132;
-    public static final int BEDROCK_COMMAND_VERSION = 44;
+    public static final int BEDROCK_RAKNET_DEFAULT_PORT = 19132;
+    public static final int BEDROCK_NETHERNET_DEFAULT_PORT = 7551;
+    public static final String BEDROCK_COMMAND_VERSION = "latest";
     public static final byte BEDROCK_REQUEST_CHUNK_RADIUS_MAX_RADIUS = 28;
 
     public static final int LAST_BLOCK_ITEM_ID = 255;

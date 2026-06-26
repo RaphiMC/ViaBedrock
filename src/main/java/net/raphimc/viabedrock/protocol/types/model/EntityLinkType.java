@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,8 @@ public class EntityLinkType extends Type<EntityLink> {
 
     @Override
     public void write(ByteBuf buffer, EntityLink value) {
-        BedrockTypes.VAR_LONG.write(buffer, value.fromUniqueEntityId());
-        BedrockTypes.VAR_LONG.write(buffer, value.toUniqueEntityId());
+        BedrockTypes.VAR_LONG.write(buffer, value.fromEntityUniqueId());
+        BedrockTypes.VAR_LONG.write(buffer, value.toEntityUniqueId());
         buffer.writeByte(value.type());
         buffer.writeBoolean(value.immediate());
         buffer.writeBoolean(value.riderInitiated());

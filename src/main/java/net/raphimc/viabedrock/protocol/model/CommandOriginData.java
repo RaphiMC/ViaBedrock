@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,10 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandOrigi
 
 import java.util.UUID;
 
-public record CommandOriginData(CommandOriginType type, UUID uuid, String requestId, long event) {
+public record CommandOriginData(CommandOriginType type, UUID uuid, String requestId, long uniquePlayerId) {
 
     public CommandOriginData(final CommandOriginType type, final UUID uuid, final String requestId) {
-        this(type, uuid, requestId, -1);
+        this(type, uuid, requestId, 0);
     }
 
 }

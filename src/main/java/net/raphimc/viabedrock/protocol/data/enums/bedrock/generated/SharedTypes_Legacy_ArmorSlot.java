@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -11,13 +10,16 @@ public enum SharedTypes_Legacy_ArmorSlot {
     Torso(1),
     Legs(2),
     Feet(3),
-    Body(4);
+    Body(4),
+    ;
 
     private static final Int2ObjectMap<SharedTypes_Legacy_ArmorSlot> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (SharedTypes_Legacy_ArmorSlot value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -27,6 +29,24 @@ public enum SharedTypes_Legacy_ArmorSlot {
 
     public static SharedTypes_Legacy_ArmorSlot getByValue(final int value, final SharedTypes_Legacy_ArmorSlot fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static SharedTypes_Legacy_ArmorSlot getByName(final String name) {
+        for (SharedTypes_Legacy_ArmorSlot value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static SharedTypes_Legacy_ArmorSlot getByName(final String name, final SharedTypes_Legacy_ArmorSlot fallback) {
+        for (SharedTypes_Legacy_ArmorSlot value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

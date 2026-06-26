@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -10,13 +9,16 @@ public enum PlayerPermissionLevel {
     Visitor(0),
     Member(1),
     Operator(2),
-    Custom(3);
+    Custom(3),
+    ;
 
     private static final Int2ObjectMap<PlayerPermissionLevel> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (PlayerPermissionLevel value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -26,6 +28,24 @@ public enum PlayerPermissionLevel {
 
     public static PlayerPermissionLevel getByValue(final int value, final PlayerPermissionLevel fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static PlayerPermissionLevel getByName(final String name) {
+        for (PlayerPermissionLevel value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static PlayerPermissionLevel getByName(final String name, final PlayerPermissionLevel fallback) {
+        for (PlayerPermissionLevel value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

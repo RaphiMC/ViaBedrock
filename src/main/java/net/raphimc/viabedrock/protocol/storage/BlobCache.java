@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,10 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.longs.LongArrayList;
+import com.viaversion.viaversion.libs.fastutil.longs.LongList;
 import io.netty.buffer.ByteBufUtil;
 import net.jpountz.xxhash.XXHash64;
 import net.jpountz.xxhash.XXHashFactory;
@@ -31,19 +35,15 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class BlobCache extends StoredObject {
 
     private static final XXHash64 XXHASH64 = XXHashFactory.fastestInstance().hash64();
 
-    private final Map<Long, CompletableFuture<byte[]>> pending = new HashMap<>();
-    private final List<Long> missing = new ArrayList<>();
-    private final List<Long> acked = new ArrayList<>();
+    private final Long2ObjectMap<CompletableFuture<byte[]>> pending = new Long2ObjectOpenHashMap<>();
+    private final LongList missing = new LongArrayList();
+    private final LongList acked = new LongArrayList();
 
     public BlobCache(final UserConnection user) {
         super(user);
@@ -54,15 +54,15 @@ public class BlobCache extends StoredObject {
             return;
         }
 
-        final List<Long> missingSubSet = this.missing.subList(0, Math.min(1024, this.missing.size()));
-        final List<Long> ackedSubSet = this.acked.subList(0, Math.min(1024, this.acked.size()));
+        final LongList missingSubSet = this.missing.subList(0, Math.min(1024, this.missing.size()));
+        final LongList ackedSubSet = this.acked.subList(0, Math.min(1024, this.acked.size()));
 
         final PacketWrapper clientCacheBlobStatus = PacketWrapper.create(ServerboundBedrockPackets.CLIENT_CACHE_BLOB_STATUS, this.user());
         clientCacheBlobStatus.write(BedrockTypes.UNSIGNED_VAR_INT, missingSubSet.size()); // missing blob count
-        clientCacheBlobStatus.write(BedrockTypes.UNSIGNED_VAR_INT, ackedSubSet.size()); // acked blob count
         for (long hash : missingSubSet) {
             clientCacheBlobStatus.write(BedrockTypes.LONG_LE, hash); // missing blob hash
         }
+        clientCacheBlobStatus.write(BedrockTypes.UNSIGNED_VAR_INT, ackedSubSet.size()); // acked blob count
         for (long hash : ackedSubSet) {
             clientCacheBlobStatus.write(BedrockTypes.LONG_LE, hash); // acked blob hash
         }
@@ -126,7 +126,7 @@ public class BlobCache extends StoredObject {
                 for (long hash : hashes) {
                     output.write(Via.getManager().getProviders().get(BlobCacheProvider.class).getBlob(hash));
                 }
-            } catch (final IOException ignored) {
+            } catch (IOException ignored) {
             }
             return CompletableFuture.completedFuture(output.toByteArray());
         }

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -191,13 +190,16 @@ public enum PlayerActionType {
     /**
      * Used to inform the server that we are predicting using an item.
      */
-    StartUsingItem(37);
+    StartUsingItem(37),
+    ;
 
     private static final Int2ObjectMap<PlayerActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (PlayerActionType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -207,6 +209,24 @@ public enum PlayerActionType {
 
     public static PlayerActionType getByValue(final int value, final PlayerActionType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static PlayerActionType getByName(final String name) {
+        for (PlayerActionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static PlayerActionType getByName(final String name, final PlayerActionType fallback) {
+        for (PlayerActionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -24,13 +23,16 @@ public enum ItemUseMethod {
     Dyed(13),
     Traded(14),
     BrushingCompleted(15),
-    OpenedVault(16);
+    OpenedVault(16),
+    ;
 
     private static final Int2ObjectMap<ItemUseMethod> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ItemUseMethod value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -40,6 +42,24 @@ public enum ItemUseMethod {
 
     public static ItemUseMethod getByValue(final int value, final ItemUseMethod fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ItemUseMethod getByName(final String name) {
+        for (ItemUseMethod value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ItemUseMethod getByName(final String name, final ItemUseMethod fallback) {
+        for (ItemUseMethod value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ public enum Direction {
     }
 
     public static Direction getFromVerticalId(final int verticalId) {
-        for (final Direction direction : values()) {
+        for (Direction direction : values()) {
             if (direction.verticalId == verticalId) {
                 return direction;
             }
@@ -61,7 +61,7 @@ public enum Direction {
     public static Direction getFromHorizontalId(final int horizontalId) {
         if (horizontalId == -1) return null;
 
-        for (final Direction direction : values()) {
+        for (Direction direction : values()) {
             if (direction.horizontalId == horizontalId) {
                 return direction;
             }

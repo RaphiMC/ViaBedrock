@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -12,13 +11,16 @@ public enum StructureBlockType {
     Load(2),
     Corner(3),
     Invalid(4),
-    Export(5);
+    Export(5),
+    ;
 
     private static final Int2ObjectMap<StructureBlockType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (StructureBlockType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -28,6 +30,24 @@ public enum StructureBlockType {
 
     public static StructureBlockType getByValue(final int value, final StructureBlockType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static StructureBlockType getByName(final String name) {
+        for (StructureBlockType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static StructureBlockType getByName(final String name, final StructureBlockType fallback) {
+        for (StructureBlockType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

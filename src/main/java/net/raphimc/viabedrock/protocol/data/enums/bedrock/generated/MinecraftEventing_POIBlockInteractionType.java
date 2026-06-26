@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -32,13 +31,16 @@ public enum MinecraftEventing_POIBlockInteractionType {
     BookOpened(22),
     Disenchant(23),
     Repair(24),
-    DisenchantAndRepair(25);
+    DisenchantAndRepair(25),
+    ;
 
     private static final Int2ObjectMap<MinecraftEventing_POIBlockInteractionType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (MinecraftEventing_POIBlockInteractionType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -48,6 +50,24 @@ public enum MinecraftEventing_POIBlockInteractionType {
 
     public static MinecraftEventing_POIBlockInteractionType getByValue(final int value, final MinecraftEventing_POIBlockInteractionType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static MinecraftEventing_POIBlockInteractionType getByName(final String name) {
+        for (MinecraftEventing_POIBlockInteractionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static MinecraftEventing_POIBlockInteractionType getByName(final String name, final MinecraftEventing_POIBlockInteractionType fallback) {
+        for (MinecraftEventing_POIBlockInteractionType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

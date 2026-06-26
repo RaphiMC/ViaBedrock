@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -16,13 +15,16 @@ public enum PlayStatus {
     LoginFailed_EditionMismatchVanillaToEdu(6),
     LoginFailed_ServerFullSubClient(7),
     LoginFailed_EditorMismatchEditorToVanilla(8),
-    LoginFailed_EditorMismatchVanillaToEditor(9);
+    LoginFailed_EditorMismatchVanillaToEditor(9),
+    ;
 
     private static final Int2ObjectMap<PlayStatus> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (PlayStatus value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -32,6 +34,24 @@ public enum PlayStatus {
 
     public static PlayStatus getByValue(final int value, final PlayStatus fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static PlayStatus getByName(final String name) {
+        for (PlayStatus value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static PlayStatus getByName(final String name, final PlayStatus fallback) {
+        for (PlayStatus value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

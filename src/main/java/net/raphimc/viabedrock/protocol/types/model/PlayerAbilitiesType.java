@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
 
     @Override
     public PlayerAbilities read(ByteBuf buffer) {
-        final long uniqueEntityId = buffer.readLongLE();
+        final long entityUniqueId = buffer.readLongLE();
         final byte playerPermission = buffer.readByte();
         final byte commandPermission = buffer.readByte();
 
@@ -55,17 +55,17 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
             }
         }
 
-        return new PlayerAbilities(uniqueEntityId, playerPermission, commandPermission, abilityLayers);
+        return new PlayerAbilities(entityUniqueId, playerPermission, commandPermission, abilityLayers);
     }
 
     @Override
     public void write(ByteBuf buffer, PlayerAbilities value) {
-        buffer.writeLongLE(value.uniqueEntityId());
+        buffer.writeLongLE(value.entityUniqueId());
         buffer.writeByte(value.playerPermission());
         buffer.writeByte(value.commandPermission());
 
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.abilityLayers().size());
-        for (final Map.Entry<SerializedAbilitiesData_SerializedAbilitiesLayer, PlayerAbilities.AbilitiesLayer> entry : value.abilityLayers().entrySet()) {
+        for (Map.Entry<SerializedAbilitiesData_SerializedAbilitiesLayer, PlayerAbilities.AbilitiesLayer> entry : value.abilityLayers().entrySet()) {
             buffer.writeShortLE(entry.getKey().getValue());
             buffer.writeIntLE(EnumUtil.getIntBitmaskFromEnumSet(entry.getValue().abilitiesSet(), AbilitiesIndex::getValue));
             buffer.writeIntLE(EnumUtil.getIntBitmaskFromEnumSet(entry.getValue().abilityValues(), AbilitiesIndex::getValue));

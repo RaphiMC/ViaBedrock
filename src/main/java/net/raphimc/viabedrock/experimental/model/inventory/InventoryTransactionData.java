@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,7 @@ package net.raphimc.viabedrock.experimental.model.inventory;
 
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemReleaseInventoryTransaction_ActionType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseInventoryTransaction_ActionType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseInventoryTransaction_PredictedResult;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseOnActorInventoryTransaction_ActionType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
@@ -46,7 +43,8 @@ public interface InventoryTransactionData {
             Position3f playerPosition,
             Position3f clickPosition,
             int blockRuntimeId,
-            ItemUseInventoryTransaction_PredictedResult predictedResult
+            ItemUseInventoryTransaction_PredictedResult predictedResult,
+            ItemUseInventoryTransaction_ClientCooldownState clientCooldownState
     ) implements InventoryTransactionData {}
 
     // UseItemOnEntityTransactionData represents an inventory transaction data object sent when the client uses an item on an entity.

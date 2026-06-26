@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,10 @@ import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 
 public class BedrockBiomeArray implements DataPalette, Cloneable {
 
-    private byte[] biomes;
+    private final byte[] biomes;
 
     public BedrockBiomeArray() {
-        this.biomes = new byte[256];
+        this.biomes = new byte[16 * 16];
     }
 
     public BedrockBiomeArray(final byte[] biomes) {
@@ -75,22 +75,13 @@ public class BedrockBiomeArray implements DataPalette, Cloneable {
     }
 
     @Override
-    public void replaceId(final int oldId, final int newId) {
-        for (int i = 0; i < this.size(); i++) {
-            if (this.idAt(i) == oldId) {
-                this.setIdAt(i, newId);
-            }
-        }
-    }
-
-    @Override
     public int size() {
         return this.biomes.length;
     }
 
     @Override
     public void clear() {
-        this.biomes = new byte[this.biomes.length];
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,12 @@ package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 import com.viaversion.viaversion.api.minecraft.item.data.CustomModelData1_21_4;
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.InMemoryContent;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.Rewriter {
 
@@ -34,50 +33,53 @@ public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.
         return new CustomModelData1_21_4(new float[0], new boolean[0], new String[]{key}, new int[0]);
     }
 
-    private final String name;
     private final String subFolder;
 
-    public ItemModelResourceRewriter(final String name, final String subFolder) {
-        this.name = name;
+    public ItemModelResourceRewriter(final String subFolder) {
         this.subFolder = subFolder;
-    }
-
-    @Override
-    public final void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent) {
-        final Set<String> modelsList = new HashSet<>();
-        this.apply(resourcePacksStorage, javaContent, modelsList);
-        if (!modelsList.isEmpty()) {
-            final JsonArray cases = new JsonArray();
-            for (String modelKey : modelsList) {
-                final JsonObject caseObj = new JsonObject();
-                caseObj.addProperty("when", modelKey);
-
-                final JsonObject model = new JsonObject();
-                model.addProperty("type", "minecraft:model");
-                model.addProperty("model", "viabedrock:" + this.getJavaModelName(modelKey));
-                caseObj.add("model", model);
-
-                cases.add(caseObj);
-            }
-
-            final JsonObject itemDefinition = new JsonObject();
-            final JsonObject model = new JsonObject();
-            model.addProperty("type", "minecraft:select");
-            model.addProperty("property", "minecraft:custom_model_data");
-            model.add("cases", cases);
-            itemDefinition.add("model", model);
-            javaContent.putJson("assets/viabedrock/items/" + this.name + ".json", itemDefinition);
-        }
-    }
-
-    protected abstract void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent, final Set<String> modelsList);
-
-    protected String getJavaModelName(final String bedrockName) {
-        return this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(bedrockName);
     }
 
     protected String getJavaTexturePath(final String bedrockPath) {
         return "item/" + this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(bedrockPath.replace("textures/", ""));
+    }
+
+    protected class ItemModelContent extends InMemoryContent {
+
+        private final Map<String, String> modelDefinitions = new HashMap<>();
+        private final String itemPath;
+
+        protected ItemModelContent(final String itemName) {
+            this.itemPath = ItemModelResourceRewriter.this.subFolder + '/' + StringUtil.makeIdentifierValueSafe(itemName);
+        }
+
+        protected void putModel(final String name, final JsonObject json) {
+            final String modelPath = this.itemPath + '/' + StringUtil.makeIdentifierValueSafe(name);
+            this.modelDefinitions.put(name, modelPath);
+            this.putJson("assets/viabedrock/models/" + modelPath + ".json", json);
+        }
+
+        protected void generateItemDefinition() {
+            final JsonArray modelCases = new JsonArray();
+            for (Map.Entry<String, String> modelDefinition : this.modelDefinitions.entrySet()) {
+                final JsonObject model = new JsonObject();
+                model.addProperty("type", "minecraft:model");
+                model.addProperty("model", "viabedrock:" + modelDefinition.getValue());
+
+                final JsonObject caseObj = new JsonObject();
+                caseObj.addProperty("when", modelDefinition.getKey());
+                caseObj.add("model", model);
+                modelCases.add(caseObj);
+            }
+
+            final JsonObject model = new JsonObject();
+            model.addProperty("type", "minecraft:select");
+            model.addProperty("property", "minecraft:custom_model_data");
+            model.add("cases", modelCases);
+            final JsonObject itemDefinitionObj = new JsonObject();
+            itemDefinitionObj.add("model", model);
+            this.putJson("assets/viabedrock/items/" + this.itemPath + ".json", itemDefinitionObj);
+        }
+
     }
 
 }

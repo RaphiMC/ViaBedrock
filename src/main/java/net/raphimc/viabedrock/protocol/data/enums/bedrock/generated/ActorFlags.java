@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -132,13 +131,20 @@ public enum ActorFlags {
     WASD_FREE_CAMERA_CONTROLLED(122),
     DOES_SERVER_AUTH_ONLY_DISMOUNT(123),
     BODY_ROTATION_ALWAYS_FOLLOWS_HEAD(124),
-    CAN_USE_VERTICAL_MOVEMENT_ACTION(125);
+    CAN_USE_VERTICAL_MOVEMENT_ACTION(125),
+    ROTATION_LOCKED_TO_VEHICLE(126),
+    USES_LEGACY_FRICTION(127),
+    USES_UNIFORM_AIR_DRAG(128),
+    NAMEPLATE_DEPTH_TESTED(129),
+    ;
 
     private static final Int2ObjectMap<ActorFlags> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ActorFlags value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -148,6 +154,24 @@ public enum ActorFlags {
 
     public static ActorFlags getByValue(final int value, final ActorFlags fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ActorFlags getByName(final String name) {
+        for (ActorFlags value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ActorFlags getByName(final String name, final ActorFlags fallback) {
+        for (ActorFlags value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

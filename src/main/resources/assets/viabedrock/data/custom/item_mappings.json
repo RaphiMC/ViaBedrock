@@ -1934,6 +1934,13 @@
       }
     }
   },
+  "minecraft:camel_husk_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:camel_husk_spawn_egg"
+      }
+    }
+  },
   "minecraft:camel_spawn_egg": {
     "meta": {
       "": {
@@ -2336,6 +2343,13 @@
       }
     }
   },
+  "minecraft:chiseled_cinnabar": {
+    "block": {
+      "minecraft:chiseled_cinnabar": {
+        "java_id": "minecraft:chiseled_cinnabar"
+      }
+    }
+  },
   "minecraft:chiseled_copper": {
     "block": {
       "minecraft:chiseled_copper": {
@@ -2399,6 +2413,13 @@
       }
     }
   },
+  "minecraft:chiseled_sulfur": {
+    "block": {
+      "minecraft:chiseled_sulfur": {
+        "java_id": "minecraft:chiseled_sulfur"
+      }
+    }
+  },
   "minecraft:chiseled_tuff": {
     "block": {
       "minecraft:chiseled_tuff": {
@@ -2431,6 +2452,78 @@
     "block": {
       "minecraft:chorus_plant": {
         "java_id": "minecraft:chorus_plant"
+      }
+    }
+  },
+  "minecraft:cinnabar": {
+    "block": {
+      "minecraft:cinnabar": {
+        "java_id": "minecraft:cinnabar"
+      }
+    }
+  },
+  "minecraft:cinnabar_brick_double_slab": {
+    "block": {
+      "minecraft:cinnabar_brick_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:cinnabar_brick_slab",
+        "java_name": "tile.cinnabar_brick_double_slab.name"
+      }
+    }
+  },
+  "minecraft:cinnabar_brick_slab": {
+    "block": {
+      "minecraft:cinnabar_brick_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:cinnabar_brick_slab"
+      }
+    }
+  },
+  "minecraft:cinnabar_brick_stairs": {
+    "block": {
+      "minecraft:cinnabar_brick_stairs": {
+        "java_id": "minecraft:cinnabar_brick_stairs"
+      }
+    }
+  },
+  "minecraft:cinnabar_brick_wall": {
+    "block": {
+      "minecraft:cinnabar_brick_wall": {
+        "java_id": "minecraft:cinnabar_brick_wall"
+      }
+    }
+  },
+  "minecraft:cinnabar_bricks": {
+    "block": {
+      "minecraft:cinnabar_bricks": {
+        "java_id": "minecraft:cinnabar_bricks"
+      }
+    }
+  },
+  "minecraft:cinnabar_double_slab": {
+    "block": {
+      "minecraft:cinnabar_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:cinnabar_slab",
+        "java_name": "tile.cinnabar_double_slab.name"
+      }
+    }
+  },
+  "minecraft:cinnabar_slab": {
+    "block": {
+      "minecraft:cinnabar_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:cinnabar_slab"
+      }
+    }
+  },
+  "minecraft:cinnabar_stairs": {
+    "block": {
+      "minecraft:cinnabar_stairs": {
+        "java_id": "minecraft:cinnabar_stairs"
+      }
+    }
+  },
+  "minecraft:cinnabar_wall": {
+    "block": {
+      "minecraft:cinnabar_wall": {
+        "java_id": "minecraft:cinnabar_wall"
       }
     }
   },
@@ -2908,6 +3001,13 @@
       }
     }
   },
+  "minecraft:copper_nautilus_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:copper_nautilus_armor"
+      }
+    }
+  },
   "minecraft:copper_nugget": {
     "meta": {
       "": {
@@ -2933,6 +3033,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:copper_shovel"
+      }
+    }
+  },
+  "minecraft:copper_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:copper_spear"
       }
     }
   },
@@ -4012,6 +4119,13 @@
       }
     }
   },
+  "minecraft:diamond_nautilus_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:diamond_nautilus_armor"
+      }
+    }
+  },
   "minecraft:diamond_ore": {
     "block": {
       "minecraft:diamond_ore": {
@@ -4030,6 +4144,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:diamond_shovel"
+      }
+    }
+  },
+  "minecraft:diamond_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:diamond_spear"
       }
     }
   },
@@ -6220,6 +6341,13 @@
       }
     }
   },
+  "minecraft:golden_dandelion": {
+    "block": {
+      "minecraft:golden_dandelion": {
+        "java_id": "minecraft:golden_dandelion"
+      }
+    }
+  },
   "minecraft:golden_helmet": {
     "meta": {
       "": {
@@ -6248,6 +6376,13 @@
       }
     }
   },
+  "minecraft:golden_nautilus_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:golden_nautilus_armor"
+      }
+    }
+  },
   "minecraft:golden_pickaxe": {
     "meta": {
       "": {
@@ -6266,6 +6401,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:golden_shovel"
+      }
+    }
+  },
+  "minecraft:golden_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:golden_spear"
       }
     }
   },
@@ -7209,6 +7351,13 @@
       }
     }
   },
+  "minecraft:iron_nautilus_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:iron_nautilus_armor"
+      }
+    }
+  },
   "minecraft:iron_nugget": {
     "meta": {
       "": {
@@ -7237,6 +7386,13 @@
       }
     }
   },
+  "minecraft:iron_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:iron_spear"
+      }
+    }
+  },
   "minecraft:iron_sword": {
     "meta": {
       "": {
@@ -7248,14 +7404,6 @@
     "block": {
       "minecraft:iron_trapdoor[open_bit=0]": {
         "java_id": "minecraft:iron_trapdoor"
-      }
-    }
-  },
-  "minecraft:item.acacia_door": {
-    "block": {
-      "minecraft:acacia_door": {
-        "java_id": "minecraft:acacia_door",
-        "java_name": "tile.acacia_door.name"
       }
     }
   },
@@ -7272,14 +7420,6 @@
       "minecraft:beetroot": {
         "java_id": "minecraft:beetroot_seeds",
         "java_name": "tile.beetroot.name"
-      }
-    }
-  },
-  "minecraft:item.birch_door": {
-    "block": {
-      "minecraft:birch_door": {
-        "java_id": "minecraft:birch_door",
-        "java_name": "tile.birch_door.name"
       }
     }
   },
@@ -7323,22 +7463,6 @@
       }
     }
   },
-  "minecraft:item.crimson_door": {
-    "block": {
-      "minecraft:crimson_door": {
-        "java_id": "minecraft:crimson_door",
-        "java_name": "tile.crimson_door.name"
-      }
-    }
-  },
-  "minecraft:item.dark_oak_door": {
-    "block": {
-      "minecraft:dark_oak_door": {
-        "java_id": "minecraft:dark_oak_door",
-        "java_name": "tile.dark_oak_door.name"
-      }
-    }
-  },
   "minecraft:item.flower_pot": {
     "block": {
       "minecraft:flower_pot": {
@@ -7371,35 +7495,11 @@
       }
     }
   },
-  "minecraft:item.iron_door": {
-    "block": {
-      "minecraft:iron_door": {
-        "java_id": "minecraft:iron_door",
-        "java_name": "tile.iron_door.name"
-      }
-    }
-  },
-  "minecraft:item.jungle_door": {
-    "block": {
-      "minecraft:jungle_door": {
-        "java_id": "minecraft:jungle_door",
-        "java_name": "tile.jungle_door.name"
-      }
-    }
-  },
   "minecraft:item.kelp": {
     "block": {
       "minecraft:kelp": {
         "java_id": "minecraft:kelp",
         "java_name": "tile.kelp.name"
-      }
-    }
-  },
-  "minecraft:item.mangrove_door": {
-    "block": {
-      "minecraft:mangrove_door": {
-        "java_id": "minecraft:mangrove_door",
-        "java_name": "tile.mangrove_door.name"
       }
     }
   },
@@ -7435,35 +7535,11 @@
       }
     }
   },
-  "minecraft:item.spruce_door": {
-    "block": {
-      "minecraft:spruce_door": {
-        "java_id": "minecraft:spruce_door",
-        "java_name": "tile.spruce_door.name"
-      }
-    }
-  },
-  "minecraft:item.warped_door": {
-    "block": {
-      "minecraft:warped_door": {
-        "java_id": "minecraft:warped_door",
-        "java_name": "tile.warped_door.name"
-      }
-    }
-  },
   "minecraft:item.wheat": {
     "block": {
       "minecraft:wheat": {
         "java_id": "minecraft:wheat_seeds",
         "java_name": "tile.wheat.name"
-      }
-    }
-  },
-  "minecraft:item.wooden_door": {
-    "block": {
-      "minecraft:wooden_door": {
-        "java_id": "minecraft:oak_door",
-        "java_name": "tile.wooden_door.name"
       }
     }
   },
@@ -9275,6 +9351,13 @@
       }
     }
   },
+  "minecraft:nautilus_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:nautilus_spawn_egg"
+      }
+    }
+  },
   "minecraft:nether_brick": {
     "block": {
       "minecraft:nether_brick": {
@@ -9402,6 +9485,13 @@
       }
     }
   },
+  "minecraft:netherite_horse_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:netherite_horse_armor"
+      }
+    }
+  },
   "minecraft:netherite_ingot": {
     "meta": {
       "": {
@@ -9413,6 +9503,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:netherite_leggings"
+      }
+    }
+  },
+  "minecraft:netherite_nautilus_armor": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:netherite_nautilus_armor"
       }
     }
   },
@@ -9434,6 +9531,13 @@
     "meta": {
       "": {
         "java_id": "minecraft:netherite_shovel"
+      }
+    }
+  },
+  "minecraft:netherite_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:netherite_spear"
       }
     }
   },
@@ -10083,6 +10187,13 @@
       }
     }
   },
+  "minecraft:parched_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:parched_spawn_egg"
+      }
+    }
+  },
   "minecraft:parrot_spawn_egg": {
     "meta": {
       "": {
@@ -10496,6 +10607,42 @@
       }
     }
   },
+  "minecraft:polished_cinnabar": {
+    "block": {
+      "minecraft:polished_cinnabar": {
+        "java_id": "minecraft:polished_cinnabar"
+      }
+    }
+  },
+  "minecraft:polished_cinnabar_double_slab": {
+    "block": {
+      "minecraft:polished_cinnabar_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:polished_cinnabar_slab",
+        "java_name": "tile.polished_cinnabar_double_slab.name"
+      }
+    }
+  },
+  "minecraft:polished_cinnabar_slab": {
+    "block": {
+      "minecraft:polished_cinnabar_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:polished_cinnabar_slab"
+      }
+    }
+  },
+  "minecraft:polished_cinnabar_stairs": {
+    "block": {
+      "minecraft:polished_cinnabar_stairs": {
+        "java_id": "minecraft:polished_cinnabar_stairs"
+      }
+    }
+  },
+  "minecraft:polished_cinnabar_wall": {
+    "block": {
+      "minecraft:polished_cinnabar_wall": {
+        "java_id": "minecraft:polished_cinnabar_wall"
+      }
+    }
+  },
   "minecraft:polished_deepslate": {
     "block": {
       "minecraft:polished_deepslate": {
@@ -10590,6 +10737,42 @@
       }
     }
   },
+  "minecraft:polished_sulfur": {
+    "block": {
+      "minecraft:polished_sulfur": {
+        "java_id": "minecraft:polished_sulfur"
+      }
+    }
+  },
+  "minecraft:polished_sulfur_double_slab": {
+    "block": {
+      "minecraft:polished_sulfur_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:polished_sulfur_slab",
+        "java_name": "tile.polished_sulfur_double_slab.name"
+      }
+    }
+  },
+  "minecraft:polished_sulfur_slab": {
+    "block": {
+      "minecraft:polished_sulfur_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:polished_sulfur_slab"
+      }
+    }
+  },
+  "minecraft:polished_sulfur_stairs": {
+    "block": {
+      "minecraft:polished_sulfur_stairs": {
+        "java_id": "minecraft:polished_sulfur_stairs"
+      }
+    }
+  },
+  "minecraft:polished_sulfur_wall": {
+    "block": {
+      "minecraft:polished_sulfur_wall": {
+        "java_id": "minecraft:polished_sulfur_wall"
+      }
+    }
+  },
   "minecraft:polished_tuff": {
     "block": {
       "minecraft:polished_tuff": {
@@ -10667,6 +10850,13 @@
       "minecraft:potatoes": {
         "java_id": "minecraft:potato",
         "java_name": "tile.potatoes.name"
+      }
+    }
+  },
+  "minecraft:potent_sulfur": {
+    "block": {
+      "minecraft:potent_sulfur": {
+        "java_id": "minecraft:potent_sulfur"
       }
     }
   },
@@ -12947,6 +13137,13 @@
       }
     }
   },
+  "minecraft:stone_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:stone_spear"
+      }
+    }
+  },
   "minecraft:stone_stairs": {
     "block": {
       "minecraft:stone_stairs": {
@@ -13190,6 +13387,92 @@
     "meta": {
       "": {
         "java_id": "minecraft:sugar_cane"
+      }
+    }
+  },
+  "minecraft:sulfur": {
+    "block": {
+      "minecraft:sulfur": {
+        "java_id": "minecraft:sulfur"
+      }
+    }
+  },
+  "minecraft:sulfur_brick_double_slab": {
+    "block": {
+      "minecraft:sulfur_brick_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:sulfur_brick_slab",
+        "java_name": "tile.sulfur_brick_double_slab.name"
+      }
+    }
+  },
+  "minecraft:sulfur_brick_slab": {
+    "block": {
+      "minecraft:sulfur_brick_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:sulfur_brick_slab"
+      }
+    }
+  },
+  "minecraft:sulfur_brick_stairs": {
+    "block": {
+      "minecraft:sulfur_brick_stairs": {
+        "java_id": "minecraft:sulfur_brick_stairs"
+      }
+    }
+  },
+  "minecraft:sulfur_brick_wall": {
+    "block": {
+      "minecraft:sulfur_brick_wall": {
+        "java_id": "minecraft:sulfur_brick_wall"
+      }
+    }
+  },
+  "minecraft:sulfur_bricks": {
+    "block": {
+      "minecraft:sulfur_bricks": {
+        "java_id": "minecraft:sulfur_bricks"
+      }
+    }
+  },
+  "minecraft:sulfur_cube_bucket": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:sulfur_cube_bucket"
+      }
+    }
+  },
+  "minecraft:sulfur_cube_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:sulfur_cube_spawn_egg"
+      }
+    }
+  },
+  "minecraft:sulfur_double_slab": {
+    "block": {
+      "minecraft:sulfur_double_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:sulfur_slab",
+        "java_name": "tile.sulfur_double_slab.name"
+      }
+    }
+  },
+  "minecraft:sulfur_slab": {
+    "block": {
+      "minecraft:sulfur_slab[minecraft:vertical_half=bottom]": {
+        "java_id": "minecraft:sulfur_slab"
+      }
+    }
+  },
+  "minecraft:sulfur_stairs": {
+    "block": {
+      "minecraft:sulfur_stairs": {
+        "java_id": "minecraft:sulfur_stairs"
+      }
+    }
+  },
+  "minecraft:sulfur_wall": {
+    "block": {
+      "minecraft:sulfur_wall": {
+        "java_id": "minecraft:sulfur_wall"
       }
     }
   },
@@ -14723,6 +15006,13 @@
       }
     }
   },
+  "minecraft:wooden_spear": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:wooden_spear"
+      }
+    }
+  },
   "minecraft:wooden_sword": {
     "meta": {
       "": {
@@ -14871,6 +15161,13 @@
       }
     }
   },
+  "minecraft:zombie_nautilus_spawn_egg": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:zombie_nautilus_spawn_egg"
+      }
+    }
+  },
   "minecraft:zombie_pigman_spawn_egg": {
     "meta": {
       "": {
@@ -14889,6 +15186,20 @@
     "meta": {
       "": {
         "java_id": "minecraft:zombie_villager_spawn_egg"
+      }
+    }
+  },
+  "minecraft:music_disc_bounce": {
+    "meta": {
+      "": {
+        "java_id": "minecraft:music_disc_bounce"
+      }
+    }
+  },
+  "minecraft:sulfur_spike": {
+    "block": {
+      "minecraft:sulfur_spike": {
+        "java_id": "minecraft:sulfur_spike"
       }
     }
   }

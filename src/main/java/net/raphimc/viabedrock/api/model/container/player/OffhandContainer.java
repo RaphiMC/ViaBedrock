@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,8 +45,8 @@ public class OffhandContainer extends InventorySubContainer {
         super.onSlotChanged(slot, oldItem, newItem);
         if (slot == 0) {
             final PacketWrapper mobEquipment = PacketWrapper.create(ServerboundBedrockPackets.MOB_EQUIPMENT, this.user);
-            mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // runtime entity id
-            mobEquipment.write(this.user.get(ItemRewriter.class).itemType(), newItem); // item
+            mobEquipment.write(BedrockTypes.UNSIGNED_VAR_LONG, this.user.get(EntityTracker.class).getClientPlayer().runtimeId()); // entity runtime id
+            mobEquipment.write(this.user.get(ItemRewriter.class).newItemType(), newItem); // item
             mobEquipment.write(Types.BYTE, (byte) 1); // slot
             mobEquipment.write(Types.BYTE, (byte) 0); // selected slot
             mobEquipment.write(Types.BYTE, this.containerId); // container id

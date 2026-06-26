@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,18 @@ public interface BedrockChunkSection extends ChunkSection, Cloneable {
     @Override
     @Deprecated
     default void setNonAirBlocksCount(final int nonAirBlocksCount) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    @Deprecated
+    default int getFluidCount() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    @Deprecated
+    default void setFluidCount(final int fluidCount) {
         throw new UnsupportedOperationException();
     }
 

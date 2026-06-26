@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,14 @@ import java.util.UUID;
 
 public class StringUtil {
 
+    private static final String IDENTIFIER_INVALID_VALUE_CHARS = Identifier.VALID_VALUE_CHARS.replace("[", "[^").replace("]*", "]");
+
+    public static String makeIdentifierValueSafe(final String s) {
+        return s.replace(':', '/').replaceAll(IDENTIFIER_INVALID_VALUE_CHARS, "_");
+    }
+
     /**
-     * Encodes a UUID into a 16 character long minecraft invisible string
+     * Encodes a UUID into a 16 character long Minecraft invisible string
      *
      * @param uuid The uuid to encode
      * @return The encoded string
@@ -34,7 +40,7 @@ public class StringUtil {
     }
 
     /**
-     * Encodes a long into an 8 character long minecraft invisible string
+     * Encodes a long into an 8 character long Minecraft invisible string
      *
      * @param bits The long to encode
      * @return The encoded string
@@ -50,11 +56,6 @@ public class StringUtil {
             builder.append('§').append(c);
         }
         return builder.toString();
-    }
-
-    public static String makeIdentifierValueSafe(final String s) {
-        final String invalidCharsRegex = Identifier.VALID_VALUE_CHARS.replace("[", "[^").replace("]*", "]");
-        return s.replace(":", "/").replaceAll(invalidCharsRegex, "_");
     }
 
 }

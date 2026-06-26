@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ public enum Relative {
     @SafeVarargs
     public static Set<Relative> union(final Set<Relative>... sets) {
         final EnumSet<Relative> result = EnumSet.noneOf(Relative.class);
-        for (final Set<Relative> set : sets) {
+        for (Set<Relative> set : sets) {
             result.addAll(set);
         }
         return Collections.unmodifiableSet(result);

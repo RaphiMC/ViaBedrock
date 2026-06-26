@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -10,13 +9,16 @@ public enum LegacyTelemetryEventPacket_AgentResult {
     ActionFail(0),
     ActionSuccess(1),
     QueryResultFalse(2),
-    QueryResultTrue(3);
+    QueryResultTrue(3),
+    ;
 
     private static final Int2ObjectMap<LegacyTelemetryEventPacket_AgentResult> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (LegacyTelemetryEventPacket_AgentResult value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -26,6 +28,24 @@ public enum LegacyTelemetryEventPacket_AgentResult {
 
     public static LegacyTelemetryEventPacket_AgentResult getByValue(final int value, final LegacyTelemetryEventPacket_AgentResult fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static LegacyTelemetryEventPacket_AgentResult getByName(final String name) {
+        for (LegacyTelemetryEventPacket_AgentResult value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static LegacyTelemetryEventPacket_AgentResult getByName(final String name, final LegacyTelemetryEventPacket_AgentResult fallback) {
+        for (LegacyTelemetryEventPacket_AgentResult value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

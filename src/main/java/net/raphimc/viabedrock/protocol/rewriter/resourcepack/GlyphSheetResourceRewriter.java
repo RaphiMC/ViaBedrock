@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,15 @@ package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
 import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.Content;
+import net.raphimc.viabedrock.api.resourcepack.content.InMemoryContent;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.util.Locale;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 // https://wiki.bedrock.dev/concepts/emojis
 public class GlyphSheetResourceRewriter implements ResourcePackRewriter.Rewriter {
@@ -32,7 +36,12 @@ public class GlyphSheetResourceRewriter implements ResourcePackRewriter.Rewriter
     private static final int GLYPHS_PER_COLUMN = 16;
 
     @Override
-    public void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent) {
+    public void submitTasks(final ResourcePackStorage resourcePackStorage, final Consumer<Supplier<Content>> submitter) {
+        submitter.accept(() -> this.handleGlyphSheets(resourcePackStorage));
+    }
+
+    private Content handleGlyphSheets(final ResourcePackStorage resourcePackStorage) {
+        final Content javaContent = new InMemoryContent();
         final JsonArray providers = new JsonArray();
 
         for (int i = 0; i < 0xFF; i++) {
@@ -40,12 +49,12 @@ public class GlyphSheetResourceRewriter implements ResourcePackRewriter.Rewriter
             final String bedrockPath = "font/" + pageName;
             final String javaPath = "font/" + pageName.toLowerCase(Locale.ROOT);
 
-            for (ResourcePack pack : resourcePacksStorage.getPackStackTopToBottom()) {
-                final ResourcePack.Content bedrockContent = pack.content();
+            for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
+                final Content bedrockContent = pack.content();
                 if (!bedrockContent.contains(bedrockPath)) continue;
 
                 javaContent.copyFrom(bedrockContent, bedrockPath, "assets/viabedrock/textures/" + javaPath);
-                final ResourcePack.Content.LazyImage image = bedrockContent.getImage(bedrockPath);
+                final Content.LazyImage image = bedrockContent.getImage(bedrockPath);
                 final int glyphHeight = image.getImage().getHeight() / GLYPHS_PER_COLUMN;
 
                 final JsonObject glyphPage = new JsonObject();
@@ -73,6 +82,7 @@ public class GlyphSheetResourceRewriter implements ResourcePackRewriter.Rewriter
             defaultJson.add("providers", providers);
             javaContent.putJson("assets/minecraft/font/default.json", defaultJson);
         }
+        return javaContent;
     }
 
 }

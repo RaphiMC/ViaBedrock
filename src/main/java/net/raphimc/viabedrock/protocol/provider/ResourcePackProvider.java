@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,14 @@
 package net.raphimc.viabedrock.protocol.provider;
 
 import com.viaversion.viaversion.api.platform.providers.Provider;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 
 public abstract class ResourcePackProvider implements Provider {
 
-    public abstract boolean hasPack(final ResourcePack pack) throws Exception;
+    public abstract boolean has(final ResourcePack.Key key);
 
-    public abstract void loadPack(final ResourcePack pack) throws Exception;
+    public abstract ResourcePack load(final ResourcePack.Key key) throws Exception;
 
-    public abstract void addPack(final ResourcePack pack) throws Exception;
+    public abstract void save(final ResourcePack resourcePack) throws Exception;
 
 }

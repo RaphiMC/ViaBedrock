@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -10,13 +9,16 @@ public enum RecipeUnlockingRequirement_UnlockingContext {
     None(0),
     AlwaysUnlocked(1),
     PlayerInWater(2),
-    PlayerHasManyItems(3);
+    PlayerHasManyItems(3),
+    ;
 
     private static final Int2ObjectMap<RecipeUnlockingRequirement_UnlockingContext> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (RecipeUnlockingRequirement_UnlockingContext value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -26,6 +28,24 @@ public enum RecipeUnlockingRequirement_UnlockingContext {
 
     public static RecipeUnlockingRequirement_UnlockingContext getByValue(final int value, final RecipeUnlockingRequirement_UnlockingContext fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static RecipeUnlockingRequirement_UnlockingContext getByName(final String name) {
+        for (RecipeUnlockingRequirement_UnlockingContext value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static RecipeUnlockingRequirement_UnlockingContext getByName(final String name, final RecipeUnlockingRequirement_UnlockingContext fallback) {
+        for (RecipeUnlockingRequirement_UnlockingContext value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -18,13 +17,16 @@ public enum Tag_Type {
     String(8),
     List(9),
     Compound(10),
-    IntArray(11);
+    IntArray(11),
+    ;
 
     private static final Int2ObjectMap<Tag_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (Tag_Type value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -34,6 +36,24 @@ public enum Tag_Type {
 
     public static Tag_Type getByValue(final int value, final Tag_Type fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static Tag_Type getByName(final String name) {
+        for (Tag_Type value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static Tag_Type getByName(final String name, final Tag_Type fallback) {
+        for (Tag_Type value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

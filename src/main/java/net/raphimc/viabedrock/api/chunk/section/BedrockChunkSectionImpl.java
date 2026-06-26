@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,9 +44,9 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
             return this.blockPalettes.size();
         } else if (type == PaletteType.BIOMES) {
             return this.biomePalette != null ? 1 : 0;
+        } else {
+            return 0;
         }
-
-        return 0;
     }
 
     @Override
@@ -55,9 +55,9 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
             return this.blockPalettes;
         } else if (type == PaletteType.BIOMES) {
             return this.biomePalette != null ? Collections.singletonList(this.biomePalette) : Collections.emptyList();
+        } else {
+            return Collections.emptyList();
         }
-
-        return Collections.emptyList();
     }
 
     @Override

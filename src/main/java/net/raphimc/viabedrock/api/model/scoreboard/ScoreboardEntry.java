@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.api.util.StringUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.storage.PlayerListStorage;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -30,37 +30,37 @@ import java.util.UUID;
 public class ScoreboardEntry {
 
     private IdentityDefinition_Type type;
-    private Long uniqueEntityId;
+    private Long entityUniqueId;
     private String fakePlayerName;
 
     private int score;
     private String javaName;
 
-    public ScoreboardEntry(final int score, final IdentityDefinition_Type type, final Long uniqueEntityId, final String fakePlayerName) {
-        this.updateTarget(type, uniqueEntityId, fakePlayerName);
+    public ScoreboardEntry(final int score, final IdentityDefinition_Type type, final Long entityUniqueId, final String fakePlayerName) {
+        this.updateTarget(type, entityUniqueId, fakePlayerName);
         this.score = score;
     }
 
     public boolean isSameTarget(final ScoreboardEntry entry) {
-        return this.type == entry.type && Objects.equals(this.uniqueEntityId, entry.uniqueEntityId) && Objects.equals(this.fakePlayerName, entry.fakePlayerName);
+        return this.type == entry.type && Objects.equals(this.entityUniqueId, entry.entityUniqueId) && Objects.equals(this.fakePlayerName, entry.fakePlayerName);
     }
 
-    public void updateTarget(final IdentityDefinition_Type type, final Long uniqueEntityId, final String fakePlayerName) {
+    public void updateTarget(final IdentityDefinition_Type type, final Long entityUniqueId, final String fakePlayerName) {
         this.type = type;
-        this.uniqueEntityId = uniqueEntityId;
+        this.entityUniqueId = entityUniqueId;
         this.fakePlayerName = fakePlayerName;
     }
 
     public boolean isValid() {
-        return this.uniqueEntityId != null || this.fakePlayerName != null;
+        return this.entityUniqueId != null || this.fakePlayerName != null;
     }
 
     public IdentityDefinition_Type type() {
         return this.type;
     }
 
-    public Long uniqueEntityId() {
-        return this.uniqueEntityId;
+    public Long entityUniqueId() {
+        return this.entityUniqueId;
     }
 
     public String fakePlayerName() {
@@ -83,14 +83,14 @@ public class ScoreboardEntry {
         switch (this.type) {
             case Player -> {
                 final PlayerListStorage playerList = user.get(PlayerListStorage.class);
-                final Pair<UUID, String> player = playerList.getPlayer(this.uniqueEntityId);
+                final Pair<UUID, String> player = playerList.getPlayer(this.entityUniqueId);
                 if (player != null) {
                     this.javaName = player.value();
                 } else {
-                    this.javaName = StringUtil.encodeLong(this.uniqueEntityId) + user.get(ResourcePacksStorage.class).getTexts().get("commands.scoreboard.players.offlinePlayerName");
+                    this.javaName = StringUtil.encodeLong(this.entityUniqueId) + user.get(ResourcePackStorage.class).getTexts().get("commands.scoreboard.players.offlinePlayerName");
                 }
             }
-            case Entity -> this.javaName = String.valueOf(this.uniqueEntityId);
+            case Entity -> this.javaName = String.valueOf(this.entityUniqueId);
             case FakePlayer -> this.javaName = this.fakePlayerName;
         }
     }

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -28,14 +27,15 @@ public enum AnimatePacket_Action {
      * Unused
      */
     MagicCriticalHit(5),
-    RowRight(128),
-    RowLeft(129);
+    ;
 
     private static final Int2ObjectMap<AnimatePacket_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (AnimatePacket_Action value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -45,6 +45,24 @@ public enum AnimatePacket_Action {
 
     public static AnimatePacket_Action getByValue(final int value, final AnimatePacket_Action fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static AnimatePacket_Action getByName(final String name) {
+        for (AnimatePacket_Action value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static AnimatePacket_Action getByName(final String name, final AnimatePacket_Action fallback) {
+        for (AnimatePacket_Action value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

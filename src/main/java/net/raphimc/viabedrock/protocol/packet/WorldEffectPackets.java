@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,15 +26,17 @@ import com.viaversion.viaversion.api.minecraft.Particle;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.Entity;
-import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.SoundDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.TextDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
@@ -46,7 +48,8 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ParticleType
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SharedTypes_Legacy_LevelSoundEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.PositionSourceType;
-import net.raphimc.viabedrock.protocol.data.enums.java.SoundSource;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.SoundSource;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
@@ -54,6 +57,7 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.BreakingTracker;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.Map;
@@ -67,11 +71,12 @@ public class WorldEffectPackets {
     private static final boolean LEVEL_SOUND_DEBUG_LOG = false;
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.PLAY_SOUND, ClientboundPackets1_21_9.SOUND, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.PLAY_SOUND, ClientboundPackets26_1.SOUND, wrapper -> {
             final String name = wrapper.read(BedrockTypes.STRING); // sound name
             final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
             final float volume = wrapper.read(BedrockTypes.FLOAT_LE); // volume
             final float pitch = wrapper.read(BedrockTypes.FLOAT_LE); // pitch
+            wrapper.read(BedrockTypes.OPTIONAL_UNSIGNED_LONG_LE); // server sound handle
 
             final BedrockMappingData.JavaSound javaSound = BedrockProtocol.MAPPINGS.getBedrockToJavaSounds().get(name);
             if (javaSound == null) {
@@ -89,7 +94,7 @@ public class WorldEffectPackets {
             wrapper.write(Types.FLOAT, pitch); // pitch
             wrapper.write(Types.LONG, ThreadLocalRandom.current().nextLong()); // seed
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.STOP_SOUND, ClientboundPackets1_21_9.STOP_SOUND, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.STOP_SOUND, ClientboundPackets26_1.STOP_SOUND, wrapper -> {
             final String name = wrapper.read(BedrockTypes.STRING); // sound name
             final boolean stopAll = wrapper.read(Types.BOOLEAN); // stop all
             wrapper.read(Types.BOOLEAN); // stop music | Ignored because it seems to do nothing
@@ -108,13 +113,13 @@ public class WorldEffectPackets {
                 wrapper.write(Types.STRING, javaSound.identifier()); // sound identifier
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SPAWN_PARTICLE_EFFECT, ClientboundPackets1_21_9.LEVEL_PARTICLES, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.SPAWN_PARTICLE_EFFECT, ClientboundPackets26_1.LEVEL_PARTICLES, wrapper -> {
             final Dimension dimension = Dimension.getByValue(wrapper.read(Types.BYTE)); // dimension
             if (dimension != wrapper.user().get(ChunkTracker.class).getDimension()) {
                 wrapper.cancel();
                 return;
             }
-            wrapper.read(BedrockTypes.VAR_LONG); // unique entity id
+            wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final String effectIdentifier = wrapper.read(BedrockTypes.STRING); // effect name
             if (wrapper.read(Types.BOOLEAN)) { // has molang variables
@@ -138,11 +143,11 @@ public class WorldEffectPackets {
                 default -> javaParticle;
             });
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_SOUND_EVENT, ClientboundPackets1_21_9.SOUND, wrapper -> {
-            final int rawSoundEvent = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // event id
-            final SharedTypes_Legacy_LevelSoundEvent soundEvent = SharedTypes_Legacy_LevelSoundEvent.getByValue(rawSoundEvent);
-            if (soundEvent == null) {
-                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown SharedTypes_Legacy_LevelSoundEvent: " + rawSoundEvent);
+        protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_SOUND_EVENT, ClientboundPackets26_1.SOUND, wrapper -> {
+
+            final String soundEvent = wrapper.read(BedrockTypes.STRING);
+            if (soundEvent == null ||  soundEvent.isEmpty()) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown SoundEvent");
                 wrapper.cancel();
                 return;
             }
@@ -151,18 +156,19 @@ public class WorldEffectPackets {
             final String entityIdentifier = wrapper.read(BedrockTypes.STRING); // entity identifier
             final boolean isBabyMob = wrapper.read(Types.BOOLEAN); // is baby mob
             final boolean isGlobal = wrapper.read(Types.BOOLEAN); // is global sound
-            wrapper.read(BedrockTypes.LONG_LE); // unique entity id
+            wrapper.read(BedrockTypes.LONG_LE); // entity unique id
+            wrapper.read(BedrockTypes.OPTIONAL_POSITION_3F); // fire at position
 
             final boolean globalSound = isGlobal || Float.isNaN(position.x()) || Float.isNaN(position.y()) || Float.isNaN(position.z());
             SoundDefinitions.ConfiguredSound configuredSound;
             switch (soundEvent) {
-                case RecordNull -> {
-                    wrapper.setPacketType(ClientboundPackets1_21_9.STOP_SOUND);
+                case "record.null" -> {
+                    wrapper.setPacketType(ClientboundPackets26_1.STOP_SOUND);
                     wrapper.write(Types.BYTE, (byte) 1); // flags
                     wrapper.write(Types.VAR_INT, SoundSource.RECORDS.ordinal()); // category id
                     return;
                 }
-                case Note -> {
+                case "note" -> {
                     final NoteBlockInstrument noteBlockInstrument = NoteBlockInstrument.getByValue(data >> 8, NoteBlockInstrument.Harp);
                     final String noteBlockSound = BedrockProtocol.MAPPINGS.getBedrockNoteBlockInstrumentSounds().get(noteBlockInstrument);
                     final int key = data & 0xFF;
@@ -172,13 +178,13 @@ public class WorldEffectPackets {
                 default -> {
                     configuredSound = tryFindSound(wrapper.user(), soundEvent, data, entityIdentifier, isBabyMob);
                     if (configuredSound == null) { // Fallback for some special handled sounds
-                        switch (soundEvent) {
-                            case AmbientBaby, MobWarningBaby, HurtBaby, DeathBaby, StepBaby, SpawnBaby -> {
+                        /*switch (soundEvent) {
+                            case AmbientBaby, MobWarningBaby, HurtBaby, DeathBaby, StepBaby -> {
                                 final SharedTypes_Legacy_LevelSoundEvent soundEventAdult = EnumUtil.getEnumConstantOrNull(SharedTypes_Legacy_LevelSoundEvent.class, soundEvent.name().replace("Baby", ""));
                                 configuredSound = tryFindSound(wrapper.user(), soundEventAdult, data, entityIdentifier, true);
                             }
                             case AmbientInWater, AmbientInAir -> configuredSound = tryFindSound(wrapper.user(), SharedTypes_Legacy_LevelSoundEvent.Ambient, data, entityIdentifier, isBabyMob);
-                        }
+                        }*/
                     }
                     if (configuredSound == null) {
                         if (LEVEL_SOUND_DEBUG_LOG) {
@@ -205,13 +211,13 @@ public class WorldEffectPackets {
             wrapper.write(Types.FLOAT, MathUtil.randomFloatInclusive(configuredSound.minPitch(), configuredSound.maxPitch())); // pitch
             wrapper.write(Types.LONG, ThreadLocalRandom.current().nextLong()); // seed
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_EVENT, ClientboundPackets1_21_9.LEVEL_EVENT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_EVENT, ClientboundPackets26_1.LEVEL_EVENT, wrapper -> {
             final int rawLevelEvent = wrapper.read(BedrockTypes.VAR_INT); // event id
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             int data = wrapper.read(BedrockTypes.VAR_INT); // data
 
             if ((rawLevelEvent & LevelEvent.ParticleLegacyEvent.getValue()) != 0 || rawLevelEvent == LevelEvent.ParticleGenericSpawn.getValue()) {
-                wrapper.setPacketType(ClientboundPackets1_21_9.LEVEL_PARTICLES);
+                wrapper.setPacketType(ClientboundPackets26_1.LEVEL_PARTICLES);
                 final int rawParticleType = rawLevelEvent == LevelEvent.ParticleGenericSpawn.getValue() ? data : rawLevelEvent & ~LevelEvent.ParticleLegacyEvent.getValue();
                 final ParticleType particleType = ParticleType.getByValue(rawParticleType);
                 if (particleType == null) {
@@ -228,7 +234,7 @@ public class WorldEffectPackets {
                         case IconCrack, Food -> {
                             final BedrockItem bedrockItem = new BedrockItem(data >> 16, (short) (data & 0xFFFF), (byte) 1);
                             final Particle particle = new Particle(javaParticle.particle().id());
-                            particle.add(VersionedTypes.V1_21_9.item, wrapper.user().get(ItemRewriter.class).javaItem(bedrockItem)); // item
+                            particle.add(VersionedTypes.V26_2.item, wrapper.user().get(ItemRewriter.class).javaItem(bedrockItem)); // item
                             yield javaParticle.withParticle(particle);
                         }
                         case Terrain, BrushDust -> {
@@ -359,7 +365,7 @@ public class WorldEffectPackets {
                         }); // data
                         wrapper.write(Types.BOOLEAN, false); // global
                     } else if (levelEventMapping instanceof BedrockMappingData.JavaSound javaSound) {
-                        wrapper.setPacketType(ClientboundPackets1_21_9.SOUND);
+                        wrapper.setPacketType(ClientboundPackets26_1.SOUND);
                         wrapper.write(Types.SOUND_EVENT, Holder.of(javaSound.id())); // sound id
                         wrapper.write(Types.VAR_INT, javaSound.category().ordinal()); // category
                         wrapper.write(Types.INT, (int) (position.x() * 8F)); // x
@@ -374,7 +380,7 @@ public class WorldEffectPackets {
                         }); // pitch
                         wrapper.write(Types.LONG, ThreadLocalRandom.current().nextLong()); // seed
                     } else if (levelEventMapping instanceof BedrockMappingData.JavaParticle javaParticle) {
-                        wrapper.setPacketType(ClientboundPackets1_21_9.LEVEL_PARTICLES);
+                        wrapper.setPacketType(ClientboundPackets26_1.LEVEL_PARTICLES);
                         PacketFactory.writeJavaLevelParticles(wrapper, switch (levelEvent) {
                             case ParticlesCrackBlockDown -> new Position3f(MathUtil.floor(position.x()) + 0.5F, MathUtil.floor(position.y()), MathUtil.floor(position.z()) + 0.5F);
                             case ParticlesCrackBlockUp -> new Position3f(MathUtil.floor(position.x()) + 0.5F, MathUtil.floor(position.y()) + 1F, MathUtil.floor(position.z()) + 0.5F);
@@ -409,7 +415,7 @@ public class WorldEffectPackets {
                 }
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_EVENT_GENERIC, ClientboundPackets1_21_9.LEVEL_PARTICLES, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_EVENT_GENERIC, ClientboundPackets26_1.LEVEL_PARTICLES, wrapper -> {
             final int rawLevelEvent = wrapper.read(BedrockTypes.VAR_INT); // event id
             final CompoundTag data = (CompoundTag) wrapper.read(BedrockTypes.COMPOUND_TAG_VALUE); // data
 
@@ -501,7 +507,7 @@ public class WorldEffectPackets {
                     final Position3f position = new Position3f(data.getFloat("originX"), data.getFloat("originY"), data.getFloat("originZ"));
                     final Particle particle = new Particle(BedrockProtocol.MAPPINGS.getJavaParticles().get("minecraft:sculk_soul"));
                     PacketFactory.writeJavaLevelParticles(wrapper, new Position3f(position.x() + 0.5F, position.y() + 1.15F, position.z() + 0.5F), new BedrockMappingData.JavaParticle(particle, 0F, 0F, 0F, 0F, 0));
-                    final PacketWrapper sound = PacketWrapper.create(ClientboundPackets1_21_9.SOUND, wrapper.user());
+                    final PacketWrapper sound = PacketWrapper.create(ClientboundPackets26_1.SOUND, wrapper.user());
                     sound.write(Types.SOUND_EVENT, Holder.of((int) BedrockProtocol.MAPPINGS.getJavaSounds().get("minecraft:block.sculk_catalyst.bloom"))); // sound id
                     sound.write(Types.VAR_INT, SoundSource.BLOCKS.ordinal()); // category
                     sound.write(Types.INT, (int) (position.x() * 8F)); // x
@@ -513,7 +519,7 @@ public class WorldEffectPackets {
                     sound.send(BedrockProtocol.class);
                 }
                 case SculkCharge -> {
-                    wrapper.setPacketType(ClientboundPackets1_21_9.LEVEL_EVENT);
+                    wrapper.setPacketType(ClientboundPackets26_1.LEVEL_EVENT);
                     wrapper.write(Types.INT, net.raphimc.viabedrock.protocol.data.enums.java.LevelEvent.PARTICLES_SCULK_CHARGE.getValue()); // event id
                     wrapper.write(Types.BLOCK_POSITION1_14, new BlockPosition(data.getInt("x"), data.getInt("y"), data.getInt("z"))); // position
                     wrapper.write(Types.INT, (data.getShort("charge") << 6) | (data.getShort("facing") & 0x3F)); // data
@@ -535,8 +541,20 @@ public class WorldEffectPackets {
                     PacketFactory.writeJavaLevelParticles(wrapper, position, new BedrockMappingData.JavaParticle(particle, 0F, 0F, 0F, 0F, 7));
                 }
                 case SleepingPlayers -> {
-                    // This shows the amount of players currently sleeping when in a bed
-                    wrapper.cancel(); // TODO: Implement translation
+                    wrapper.setPacketType(ClientboundPackets26_1.SYSTEM_CHAT);
+                    final TextDefinitions textDefinitions = wrapper.user().get(ResourcePackStorage.class).getTexts();
+                    if (data.getInt("ableToSleep") != 0) {
+                        final int playerCount = data.getInt("overworldPlayerCount");
+                        final int sleepingPlayerCount = data.getInt("sleepingPlayerCount");
+                        if (sleepingPlayerCount < playerCount) {
+                            wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.translate("multiplayer.playersSleeping", sleepingPlayerCount, playerCount))); // message
+                        } else {
+                            wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.get("multiplayer.playersSkippingNight"))); // message
+                        }
+                    } else {
+                        wrapper.write(Types.TAG, TextUtil.stringToNbt(textDefinitions.get("multiplayer.playersSleepingNotPossible"))); // message
+                    }
+                    wrapper.write(Types.BOOLEAN, true); // overlay
                 }
                 case ParticleCreakingHeartTrail -> {
                     wrapper.cancel();
@@ -570,7 +588,7 @@ public class WorldEffectPackets {
                 }
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.BLOCK_EVENT, ClientboundPackets1_21_9.BLOCK_EVENT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.BLOCK_EVENT, ClientboundPackets26_1.BLOCK_EVENT, wrapper -> {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = wrapper.user().get(BlockStateRewriter.class);
             final BlockPosition position = wrapper.passthroughAndMap(BedrockTypes.BLOCK_POSITION, Types.BLOCK_POSITION1_14); // position
@@ -585,7 +603,7 @@ public class WorldEffectPackets {
                 return;
             }
             switch (tag) {
-                case "chest", "trapped_chest", "ender_chest", "shulker_box" -> {
+                case CustomBlockTags.CHEST, CustomBlockTags.TRAPPED_CHEST, CustomBlockTags.ENDER_CHEST, CustomBlockTags.SHULKER_BOX -> {
                     if (type == 1) { // open / close
                         wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
                         wrapper.write(Types.UNSIGNED_BYTE, (short) MathUtil.clamp(data, 0, 255)); // event data
@@ -595,7 +613,7 @@ public class WorldEffectPackets {
                         return;
                     }
                 }
-                case "note_block" -> {
+                case CustomBlockTags.NOTE_BLOCK -> {
                     final NoteBlockInstrument noteBlockInstrument = NoteBlockInstrument.getByValue(type);
                     if (noteBlockInstrument != null) {
                         wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
@@ -606,7 +624,7 @@ public class WorldEffectPackets {
                         return;
                     }
                 }
-                case "mob_spawner" -> {
+                case CustomBlockTags.MOB_SPAWNER -> {
                     if (type == 1) { // set spawn delay
                         wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
                         wrapper.write(Types.UNSIGNED_BYTE, (short) MathUtil.clamp(data, 0, 255)); // event data
@@ -616,7 +634,7 @@ public class WorldEffectPackets {
                         return;
                     }
                 }
-                case "end_gateway" -> {
+                case CustomBlockTags.END_GATEWAY -> {
                     if (type == 1) { // set cooldown
                         wrapper.write(Types.UNSIGNED_BYTE, (short) type); // event type
                         wrapper.write(Types.UNSIGNED_BYTE, (short) MathUtil.clamp(data, 0, 255)); // event data
@@ -636,11 +654,7 @@ public class WorldEffectPackets {
         });
     }
 
-    private static SoundDefinitions.ConfiguredSound tryFindSound(final UserConnection user, final SharedTypes_Legacy_LevelSoundEvent soundEvent, final int data, final String entityIdentifier, final boolean isBabyMob) {
-        if (soundEvent == null) {
-            return null;
-        }
-
+    private static SoundDefinitions.ConfiguredSound tryFindSound(final UserConnection user, final String soundEvent, final int data, final String entityIdentifier, final boolean isBabyMob) {
         final Map<String, SoundDefinitions.ConfiguredSound> soundEvents = BedrockProtocol.MAPPINGS.getBedrockLevelSoundEvents().get(soundEvent);
         if (soundEvents == null) {
             return null;
@@ -660,13 +674,13 @@ public class WorldEffectPackets {
                     configuredSound = soundEvents.get(blockSound);
                 } else {
                     if (LEVEL_SOUND_DEBUG_LOG) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing " + soundEvent.name() + " sound for " + blockState.namespacedIdentifier());
+                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing " + soundEvent + " sound for " + blockState.namespacedIdentifier());
                     }
                     configuredSound = soundEvents.get("stone");
                 }
             } else {
                 if (LEVEL_SOUND_DEBUG_LOG) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state (" + soundEvent.name() + " level sound event): " + data);
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state (" + soundEvent + " level sound event): " + data);
                 }
                 configuredSound = soundEvents.get("stone");
             }

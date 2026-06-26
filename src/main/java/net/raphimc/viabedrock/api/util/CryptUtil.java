@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ public class CryptUtil {
         try {
             EC_KEYFACTORY = KeyFactory.getInstance("EC");
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Could not create EllipticCurve KeyFactory", e);
+            throw new RuntimeException("Failed to create EllipticCurve KeyFactory", e);
         }
     }
 
@@ -47,14 +47,18 @@ public class CryptUtil {
         try {
             return (ECPublicKey) EC_KEYFACTORY.generatePublic(new X509EncodedKeySpec(bytes));
         } catch (InvalidKeySpecException e) {
-            throw new RuntimeException("Could not decode public key", e);
+            throw new RuntimeException("Failed to decode public key", e);
         }
     }
 
-    public static KeyPair generateEcdsa384KeyPair() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        final KeyPairGenerator secp384r1 = KeyPairGenerator.getInstance("EC");
-        secp384r1.initialize(new ECGenParameterSpec("secp384r1"));
-        return secp384r1.generateKeyPair();
+    public static KeyPair generateEcdsa384KeyPair() {
+        try {
+            final KeyPairGenerator secp384r1 = KeyPairGenerator.getInstance("EC");
+            secp384r1.initialize(new ECGenParameterSpec("secp384r1"));
+            return secp384r1.generateKeyPair();
+        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+            throw new RuntimeException("Failed to generate key pair", e);
+        }
     }
 
 }

@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -27,13 +26,16 @@ public enum ComplexInventoryTransaction_Type {
      * Sent when releasing right click on a chargeable item like a bow or finishing charging like a crossbow. This is different than canceling item use early which would be in Player Auth Input.<br>
      * See ItemReleaseInventoryTransaction::ActionType for which it is.
      */
-    ItemReleaseTransaction(4);
+    ItemReleaseTransaction(4),
+    ;
 
     private static final Int2ObjectMap<ComplexInventoryTransaction_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ComplexInventoryTransaction_Type value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -43,6 +45,24 @@ public enum ComplexInventoryTransaction_Type {
 
     public static ComplexInventoryTransaction_Type getByValue(final int value, final ComplexInventoryTransaction_Type fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ComplexInventoryTransaction_Type getByName(final String name) {
+        for (ComplexInventoryTransaction_Type value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ComplexInventoryTransaction_Type getByName(final String name, final ComplexInventoryTransaction_Type fallback) {
+        for (ComplexInventoryTransaction_Type value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

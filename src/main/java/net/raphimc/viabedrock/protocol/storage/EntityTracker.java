@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,40 +22,48 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.ChunkPosition;
 import com.viaversion.viaversion.api.minecraft.Vector3d;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
+import com.viaversion.viaversion.libs.fastutil.objects.Object2IntMap;
+import com.viaversion.viaversion.libs.fastutil.objects.Object2IntOpenHashMap;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 public class EntityTracker extends StoredObject {
 
-    private final AtomicInteger ID_COUNTER = new AtomicInteger(1);
+    private final AtomicInteger ID_COUNTER = new AtomicInteger(2);
 
     private ClientPlayerEntity clientPlayerEntity = null;
-    private final Map<Long, Entity> entities = new HashMap<>();
-    private final Map<Long, Long> runtimeIdToUniqueId = new HashMap<>();
-    private final Map<Integer, Long> javaIdToUniqueId = new HashMap<>();
-    private final Map<BlockPosition, Integer> itemFrames = new HashMap<>();
+    private final Long2ObjectMap<Entity> entities = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<Long> runtimeIdToUniqueId = new Long2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<Long> javaIdToUniqueId = new Int2ObjectOpenHashMap<>();
+    private final Object2IntMap<BlockPosition> itemFrames = new Object2IntOpenHashMap<>();
 
     public EntityTracker(final UserConnection user) {
         super(user);
     }
 
-    public Entity addEntity(final long uniqueId, final long runtimeId, final String type, final EntityTypes1_21_9 javaType) {
+    public Entity addEntity(final long uniqueId, final long runtimeId, final String type, final EntityTypes26_2 javaType) {
         final UUID javaUuid = UUID.randomUUID();
-        if (javaType.isOrHasParent(EntityTypes1_21_9.ABSTRACT_HORSE)) {
+        if (javaType.isOrHasParent(EntityTypes26_2.ABSTRACT_HORSE)) {
             return this.addEntity(new AbstractHorseEntity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
-        } else if (javaType.isOrHasParent(EntityTypes1_21_9.MOB)) {
+        } else if (javaType.isOrHasParent(EntityTypes26_2.MOB)) {
             return this.addEntity(new MobEntity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
-        } else if (javaType.isOrHasParent(EntityTypes1_21_9.LIVING_ENTITY)) {
+        } else if (javaType.isOrHasParent(EntityTypes26_2.LIVING_ENTITY)) {
             return this.addEntity(new LivingEntity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
         } else {
             return this.addEntity(new Entity(this.user(), uniqueId, runtimeId, type, this.getNextJavaEntityId(), javaUuid, javaType));
@@ -67,23 +75,23 @@ public class EntityTracker extends StoredObject {
     }
 
     public <T extends Entity> T addEntity(final T entity, final boolean updateTeam) {
-        if (entity instanceof ClientPlayerEntity) {
-            this.clientPlayerEntity = (ClientPlayerEntity) entity;
+        if (entity instanceof ClientPlayerEntity clientPlayerEntity) {
+            this.clientPlayerEntity = clientPlayerEntity;
         }
 
         final Entity prevEntity = this.entities.put(entity.uniqueId(), entity);
         if (prevEntity != null) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate unique entity ID: " + entity.uniqueId());
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate entity unique ID: " + entity.uniqueId());
             this.removeEntity(prevEntity);
-            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21_9.REMOVE_ENTITIES, this.user());
+            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets26_1.REMOVE_ENTITIES, this.user());
             removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{prevEntity.javaId()}); // entity ids
             removeEntities.send(BedrockProtocol.class);
         }
-        if (this.javaIdToUniqueId.put(entity.javaId(), entity.uniqueId()) != null) {
+        if (this.javaIdToUniqueId.put(entity.javaId(), (Long) entity.uniqueId()) != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate Java entity ID: " + entity.javaId());
         }
-        if (this.runtimeIdToUniqueId.putIfAbsent(entity.runtimeId(), entity.uniqueId()) != null) {
-            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate runtime entity ID: " + entity.runtimeId());
+        if (this.runtimeIdToUniqueId.putIfAbsent(entity.runtimeId(), (Long) entity.uniqueId()) != null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Duplicate entity runtime ID: " + entity.runtimeId());
         }
 
         if (updateTeam && entity instanceof PlayerEntity player) {
@@ -114,14 +122,14 @@ public class EntityTracker extends StoredObject {
         final int javaId = this.getNextJavaEntityId();
         this.itemFrames.put(position, javaId);
 
-        final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets1_21_9.ADD_ENTITY, this.user());
+        final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets26_1.ADD_ENTITY, this.user());
         spawnEntity.write(Types.VAR_INT, javaId); // entity id
         spawnEntity.write(Types.UUID, UUID.randomUUID()); // uuid
-        spawnEntity.write(Types.VAR_INT, blockState.identifier().equals("frame") ? EntityTypes1_21_9.ITEM_FRAME.getId() : EntityTypes1_21_9.GLOW_ITEM_FRAME.getId()); // type id
+        spawnEntity.write(Types.VAR_INT, blockState.identifier().equals("frame") ? EntityTypes26_2.ITEM_FRAME.getId() : EntityTypes26_2.GLOW_ITEM_FRAME.getId()); // type id
         spawnEntity.write(Types.DOUBLE, (double) position.x()); // x
         spawnEntity.write(Types.DOUBLE, (double) position.y()); // y
         spawnEntity.write(Types.DOUBLE, (double) position.z()); // z
-        spawnEntity.write(Types.MOVEMENT_VECTOR, Vector3d.ZERO); // velocity
+        spawnEntity.write(Types.LOW_PRECISION_VECTOR, Vector3d.ZERO); // velocity
         spawnEntity.write(Types.BYTE, (byte) 0); // pitch
         spawnEntity.write(Types.BYTE, (byte) 0); // yaw
         spawnEntity.write(Types.BYTE, (byte) 0); // head yaw
@@ -129,31 +137,22 @@ public class EntityTracker extends StoredObject {
         spawnEntity.send(BedrockProtocol.class);
     }
 
-    public int getItemFrameId(final BlockPosition position) {
-        return this.itemFrames.getOrDefault(position, -1);
-    }
-
     public void removeItemFrame(final BlockPosition position) {
-        final Integer javaId = this.itemFrames.remove(position);
-        if (javaId == null) {
-            return;
+        if (this.itemFrames.containsKey(position)) {
+            final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets26_1.REMOVE_ENTITIES, this.user());
+            removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{this.itemFrames.getInt(position)}); // entity ids
+            removeEntities.send(BedrockProtocol.class);
         }
-
-        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets1_21_9.REMOVE_ENTITIES, this.user());
-        removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{javaId}); // entity ids
-        removeEntities.send(BedrockProtocol.class);
     }
 
     public void removeItemFrame(final ChunkPosition chunkPos) {
         final List<BlockPosition> toRemove = new ArrayList<>();
-        for (final Map.Entry<BlockPosition, Integer> entry : this.itemFrames.entrySet()) {
-            final BlockPosition position = entry.getKey();
+        for (BlockPosition position : this.itemFrames.keySet()) {
             if (position.x() >> 4 == chunkPos.chunkX() && position.z() >> 4 == chunkPos.chunkZ()) {
                 toRemove.add(position);
             }
         }
-
-        for (final BlockPosition position : toRemove) {
+        for (BlockPosition position : toRemove) {
             this.removeItemFrame(position);
         }
     }

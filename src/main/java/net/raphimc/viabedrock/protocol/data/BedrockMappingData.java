@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
 import com.viaversion.viaversion.api.minecraft.Particle;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_9;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
@@ -50,13 +50,15 @@ import net.raphimc.viabedrock.api.chunk.blockstate.BlockStateUpgrader;
 import net.raphimc.viabedrock.api.item.ItemUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.api.model.resourcepack.SoundDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
+import net.raphimc.viabedrock.api.resourcepack.content.ZipContent;
+import net.raphimc.viabedrock.api.resourcepack.definition.SoundDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.FileSystemUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
-import net.raphimc.viabedrock.protocol.data.enums.java.SoundSource;
+import net.raphimc.viabedrock.protocol.data.enums.java.generated.SoundSource;
+import net.raphimc.viabedrock.protocol.data.generated.java.RegistryKeys;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.io.DataInputStream;
@@ -72,7 +74,9 @@ import java.util.zip.GZIPInputStream;
 public class BedrockMappingData extends MappingDataBase {
 
     // Bedrock misc
-    private Map<String, ResourcePack> bedrockVanillaResourcePacks;
+    private Map<ResourcePack.Key, ResourcePack> bedrockResourcePacks;
+    private Map<ResourcePack.Key, ResourcePack> bedrockSkinPacks;
+    private List<ResourcePack> bedrockVanillaResourcePacks;
     private Map<String, Object> bedrockGameRules;
 
     // Java misc
@@ -86,11 +90,12 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<BlockState, Integer> javaBlockStates;
     private Set<BedrockBlockState> bedrockBlockStates;
     private Map<BlockState, BlockState> bedrockToJavaBlockStates;
-    private Map<String, String> bedrockBlockTags;
-    private Map<String, Map<String, Set<String>>> bedrockBlockTraits;
+    private Map<String, String> bedrockCustomBlockTags;
+    private Map<String, Map<String, Map<String, Set<String>>>> bedrockBlockTraits;
     private BiMap<String, Integer> bedrockLegacyBlocks;
     private Int2ObjectMap<BedrockBlockState> bedrockLegacyBlockStates;
     private IntSet javaPreWaterloggedBlockStates;
+    private IntSet javaFluidBlockStates;
     private Int2IntMap javaPottedBlockStates;
     private Map<String, IntSet> javaHeightMapBlockStates;
 
@@ -105,7 +110,8 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> javaItems;
     private Set<String> bedrockBlockItems;
     private Set<String> bedrockMetaItems;
-    private Map<String, String> bedrockItemTags;
+    private Map<String, Set<String>> bedrockItemTags;
+    private Map<String, String> bedrockCustomItemTags;
     private Map<String, Map<BlockState, JavaItemMapping>> bedrockToJavaBlockItems;
     private Map<String, Map<Integer, JavaItemMapping>> bedrockToJavaMetaItems;
     private Map<ContainerType, Integer> bedrockToJavaContainers;
@@ -114,10 +120,10 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> bedrockEntities;
     private Map<ActorDataIDs, DataItemType> bedrockEntityDataTypes;
     private Map<ActorFlags, String> bedrockEntityFlagMoLangQueries;
-    private Map<String, EntityTypes1_21_9> bedrockToJavaEntities;
+    private Map<String, EntityTypes26_2> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
     private BiMap<String, Integer> javaEntityAttributes;
-    private Map<EntityTypes1_21_9, List<String>> javaEntityData;
+    private Map<EntityTypes26_2, List<String>> javaEntityDataFields;
 
     // Entity Effects
     private BiMap<String, Integer> javaEffects;
@@ -128,7 +134,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> javaSounds;
     private BiMap<String, Integer> javaParticles;
     private Map<String, String> bedrockBlockSounds;
-    private Map<SharedTypes_Legacy_LevelSoundEvent, Map<String, SoundDefinitions.ConfiguredSound>> bedrockLevelSoundEvents;
+    private Map<String, Map<String, SoundDefinitions.ConfiguredSound>> bedrockLevelSoundEvents;
     private Map<NoteBlockInstrument, String> bedrockNoteBlockInstrumentSounds;
     private Map<String, JavaSound> bedrockToJavaSounds;
     private Map<String, JavaParticle> bedrockToJavaParticles;
@@ -140,6 +146,7 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, String> bedrockToJavaBannerPatterns;
     private BiMap<String, String> bedrockToJavaPaintings;
     private Map<SharedTypes_Legacy_ActorDamageCause, String> bedrockToJavaDamageCauses;
+    private Map<Enchant_Type, String> bedrockToJavaEnchantments;
 
     public BedrockMappingData() {
         super(BedrockProtocolVersion.bedrockLatest.getName(), ProtocolConstants.JAVA_VERSION.getName());
@@ -154,17 +161,34 @@ public class BedrockMappingData extends MappingDataBase {
         final JsonObject javaViaMappingJson = this.readJson("java/via_mappings.json");
 
         { // Bedrock misc
-            this.bedrockVanillaResourcePacks = new HashMap<>();
+            this.bedrockResourcePacks = new HashMap<>();
             try {
-                for (Map.Entry<Path, byte[]> entry : FileSystemUtil.getFilesInDirectory("assets/viabedrock/vanilla_packs").entrySet()) {
-                    final String packName = entry.getKey().getFileName().toString().replace(".mcpack", "");
-                    final ResourcePack resourcePack = new ResourcePack(null, null, new byte[0], packName, "", false, false, false, null, 0, PackType.Resources);
-                    resourcePack.setCompressedDataLength(entry.getValue().length, entry.getValue().length);
-                    resourcePack.processDataChunk(0, entry.getValue());
-                    this.bedrockVanillaResourcePacks.put(packName, resourcePack);
+                for (Map.Entry<Path, byte[]> entry : FileSystemUtil.getFilesInDirectory("assets/viabedrock/resource_packs").entrySet()) {
+                    final ResourcePack resourcePack = new ResourcePack(new ZipContent(entry.getValue()));
+                    this.bedrockResourcePacks.put(resourcePack.key(), resourcePack);
                 }
             } catch (Exception e) {
-                this.getLogger().log(Level.SEVERE, "Failed to load vanilla resource packs", e);
+                this.getLogger().log(Level.SEVERE, "Failed to load resource packs", e);
+            }
+
+            this.bedrockSkinPacks = new HashMap<>();
+            try {
+                for (Map.Entry<Path, byte[]> entry : FileSystemUtil.getFilesInDirectory("assets/viabedrock/skin_packs").entrySet()) {
+                    final ResourcePack resourcePack = new ResourcePack(new ZipContent(entry.getValue()));
+                    this.bedrockSkinPacks.put(resourcePack.key(), resourcePack);
+                }
+            } catch (Exception e) {
+                this.getLogger().log(Level.SEVERE, "Failed to load skin packs", e);
+            }
+
+            final JsonArray bedrockVanillaResourcePacksJson = this.readJson("custom/vanilla_resource_packs.json", JsonArray.class);
+            this.bedrockVanillaResourcePacks = new ArrayList<>(bedrockVanillaResourcePacksJson.size());
+            for (JsonElement entry : bedrockVanillaResourcePacksJson) {
+                final ResourcePack.Key key = ResourcePack.Key.fromString(entry.getAsString());
+                if (!this.bedrockResourcePacks.containsKey(key)) {
+                    throw new RuntimeException("Unknown bedrock vanilla resource pack: " + key);
+                }
+                this.bedrockVanillaResourcePacks.add(this.bedrockResourcePacks.get(key));
             }
 
             final JsonObject bedrockGameRulesJson = this.readJson("bedrock/game_rules.json");
@@ -228,17 +252,17 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            final JsonObject bedrockBlockTagsJson = this.readJson("custom/block_tags.json");
-            this.bedrockBlockTags = new HashMap<>();
-            for (Map.Entry<String, JsonElement> entry : bedrockBlockTagsJson.entrySet()) {
+            final JsonObject bedrockCustomBlockTagsJson = this.readJson("custom/block_tags.json");
+            this.bedrockCustomBlockTags = new HashMap<>();
+            for (Map.Entry<String, JsonElement> entry : bedrockCustomBlockTagsJson.entrySet()) {
                 final String tagName = entry.getKey();
-                for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
-                    final String bedrockIdentifier = tagValueJson.getAsString();
+                for (JsonElement itemIdentifierJson : entry.getValue().getAsJsonArray()) {
+                    final String bedrockIdentifier = itemIdentifierJson.getAsString();
                     if (!bedrockBlockStatesByIdentifier.containsKey(bedrockIdentifier)) {
                         throw new RuntimeException("Unknown bedrock block: " + bedrockIdentifier);
                     }
-                    if (this.bedrockBlockTags.put(bedrockIdentifier, tagName) != null) {
-                        throw new RuntimeException("Duplicate bedrock block tag for " + bedrockIdentifier);
+                    if (this.bedrockCustomBlockTags.put(bedrockIdentifier, tagName) != null) {
+                        throw new RuntimeException("Duplicate bedrock custom block tag for " + bedrockIdentifier);
                     }
                 }
             }
@@ -247,20 +271,31 @@ public class BedrockMappingData extends MappingDataBase {
             this.bedrockBlockTraits = new HashMap<>(bedrockBlockTraitsJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockBlockTraitsJson.entrySet()) {
                 final String traitName = entry.getKey();
-                final JsonObject traitStatesJson = entry.getValue().getAsJsonObject();
-                final Map<String, Set<String>> traitStates = new HashMap<>(traitStatesJson.size());
-                for (Map.Entry<String, JsonElement> traitStatesEntry : traitStatesJson.entrySet()) {
-                    final JsonArray statesJson = traitStatesEntry.getValue().getAsJsonArray();
-                    final Set<String> states = new LinkedHashSet<>(statesJson.size());
-                    for (JsonElement stateJson : statesJson) {
-                        if (!states.add(stateJson.getAsString())) {
-                            throw new RuntimeException("Duplicate bedrock block trait state for " + traitName + ": " + stateJson.getAsString());
+                final JsonObject enabledStatesJson = entry.getValue().getAsJsonObject();
+                final Map<String, Map<String, Set<String>>> traitStateProperties = new HashMap<>(enabledStatesJson.size());
+                for (Map.Entry<String, JsonElement> enabledStatesEntry : enabledStatesJson.entrySet()) {
+                    final String enabledStateName = enabledStatesEntry.getKey();
+                    final JsonObject propertiesJson = enabledStatesEntry.getValue().getAsJsonObject();
+                    final Map<String, Set<String>> properties = new HashMap<>(propertiesJson.size());
+                    for (Map.Entry<String, JsonElement> propertiesEntry : propertiesJson.entrySet()) {
+                        final String propertyName = propertiesEntry.getKey();
+                        final JsonArray valuesJson = propertiesEntry.getValue().getAsJsonArray();
+                        final Set<String> values = new LinkedHashSet<>(valuesJson.size());
+                        for (JsonElement valueJson : valuesJson) {
+                            if (!values.add(valueJson.getAsString())) {
+                                throw new RuntimeException("Duplicate value for property " + propertyName + " in enabled state " + enabledStateName + " of trait " + traitName);
+                            }
+                        }
+                        if (properties.put(propertyName, values) != null) {
+                            throw new RuntimeException("Duplicate property " + propertyName + " in enabled state " + enabledStateName + " of trait " + traitName);
                         }
                     }
-                    traitStates.put(traitStatesEntry.getKey(), states);
+                    if (traitStateProperties.put(enabledStateName, properties) != null) {
+                        throw new RuntimeException("Duplicate enabled state " + enabledStateName + " for trait " + traitName);
+                    }
                 }
-                if (this.bedrockBlockTraits.put(traitName, traitStates) != null) {
-                    throw new RuntimeException("Duplicate bedrock block trait for " + traitName);
+                if (this.bedrockBlockTraits.put(traitName, traitStateProperties) != null) {
+                    throw new RuntimeException("Duplicate bedrock block trait " + traitName);
                 }
             }
 
@@ -272,7 +307,7 @@ public class BedrockMappingData extends MappingDataBase {
 
             this.buildLegacyBlockStateMappings();
 
-            final JsonArray javaPreWaterloggedBlockStatesJson = this.readJson("custom/pre_waterlogged_blockstates.json").getAsJsonArray("blockstates");
+            final JsonArray javaPreWaterloggedBlockStatesJson = this.readJson("custom/pre_waterlogged_blockstates.json", JsonArray.class);
             this.javaPreWaterloggedBlockStates = new IntOpenHashSet(javaPreWaterloggedBlockStatesJson.size());
             for (JsonElement stateJson : javaPreWaterloggedBlockStatesJson) {
                 final BlockState javaBlockState = BlockState.fromString(stateJson.getAsString());
@@ -280,6 +315,13 @@ public class BedrockMappingData extends MappingDataBase {
                     throw new RuntimeException("Unknown java block state: " + javaBlockState.toBlockStateString());
                 }
                 this.javaPreWaterloggedBlockStates.add(this.javaBlockStates.get(javaBlockState).intValue());
+            }
+
+            this.javaFluidBlockStates = new IntOpenHashSet(this.javaPreWaterloggedBlockStates);
+            for (Map.Entry<BlockState, Integer> entry : this.javaBlockStates.entrySet()) {
+                if (entry.getKey().hasProperty("waterlogged", "true") || entry.getKey().namespacedIdentifier().equals("minecraft:lava")) {
+                    this.javaFluidBlockStates.add(entry.getValue().intValue());
+                }
             }
 
             final JsonObject javaPottedBlockStatesJson = this.readJson("custom/potted_blockstates.json");
@@ -309,20 +351,20 @@ public class BedrockMappingData extends MappingDataBase {
         }
 
         { // Biomes
-            this.bedrockBiomeDefinitions = this.readNBT("bedrock/biome_definitions.nbt");
+            this.bedrockBiomeDefinitions = SNBT.deserializeCompoundTag(this.readJson("bedrock/biome_definitions.json").toString()); // TODO: Jank
 
             final JsonObject bedrockBiomesJson = this.readJson("bedrock/biomes.json", JsonObject.class);
             this.bedrockBiomes = HashBiMap.create(bedrockBiomesJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockBiomesJson.entrySet()) {
                 final String bedrockBiomeName = entry.getKey();
-                if (!this.bedrockBiomeDefinitions.contains(bedrockBiomeName)) {
+                if (!this.bedrockBiomeDefinitions.contains(Key.namespaced(bedrockBiomeName))) {
                     throw new RuntimeException("Unknown bedrock biome: " + bedrockBiomeName);
                 }
                 this.bedrockBiomes.put(bedrockBiomeName, entry.getValue().getAsInt());
             }
 
             for (String bedrockBiomeName : this.bedrockBiomeDefinitions.keySet()) {
-                if (!this.bedrockBiomes.containsKey(bedrockBiomeName)) {
+                if (!this.bedrockBiomes.containsKey(Key.stripMinecraftNamespace(bedrockBiomeName))) {
                     throw new RuntimeException("Missing bedrock biome id mapping: " + bedrockBiomeName);
                 }
             }
@@ -380,17 +422,35 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
 
-            final JsonObject bedrockItemTagsJson = this.readJson("custom/item_tags.json");
+            final JsonObject bedrockItemTagsJson = this.readJson("bedrock/item_tags.json");
             this.bedrockItemTags = new HashMap<>();
             for (Map.Entry<String, JsonElement> entry : bedrockItemTagsJson.entrySet()) {
                 final String tagName = entry.getKey();
-                for (JsonElement tagValueJson : entry.getValue().getAsJsonArray()) {
-                    final String bedrockIdentifier = tagValueJson.getAsString();
+                for (JsonElement itemIdentifierJson : entry.getValue().getAsJsonArray()) {
+                    final String bedrockIdentifier = itemIdentifierJson.getAsString();
                     if (!bedrockItems.contains(bedrockIdentifier)) {
                         throw new RuntimeException("Unknown bedrock item: " + bedrockIdentifier);
                     }
-                    if (this.bedrockItemTags.put(bedrockIdentifier, tagName) != null) {
-                        throw new RuntimeException("Duplicate bedrock item tag for " + bedrockIdentifier);
+                    if (!this.bedrockItemTags.containsKey(bedrockIdentifier)) {
+                        this.bedrockItemTags.put(bedrockIdentifier, new HashSet<>());
+                    }
+                    if (!this.bedrockItemTags.get(bedrockIdentifier).add(tagName)) {
+                        throw new RuntimeException("Duplicate bedrock item tag " + tagName + " for " + bedrockIdentifier);
+                    }
+                }
+            }
+
+            final JsonObject bedrockCustomItemTagsJson = this.readJson("custom/item_tags.json");
+            this.bedrockCustomItemTags = new HashMap<>();
+            for (Map.Entry<String, JsonElement> entry : bedrockCustomItemTagsJson.entrySet()) {
+                final String tagName = entry.getKey();
+                for (JsonElement itemIdentifierJson : entry.getValue().getAsJsonArray()) {
+                    final String bedrockIdentifier = itemIdentifierJson.getAsString();
+                    if (!bedrockItems.contains(bedrockIdentifier)) {
+                        throw new RuntimeException("Unknown bedrock item: " + bedrockIdentifier);
+                    }
+                    if (this.bedrockCustomItemTags.put(bedrockIdentifier, tagName) != null) {
+                        throw new RuntimeException("Duplicate bedrock custom item tag for " + bedrockIdentifier);
                     }
                 }
             }
@@ -575,8 +635,8 @@ public class BedrockMappingData extends MappingDataBase {
                     continue;
                 }
                 final String javaIdentifier = entry.getValue().getAsString();
-                EntityTypes1_21_9 javaEntityType = null;
-                for (EntityTypes1_21_9 type : EntityTypes1_21_9.values()) {
+                EntityTypes26_2 javaEntityType = null;
+                for (EntityTypes26_2 type : EntityTypes26_2.values()) {
                     if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
                         javaEntityType = type;
                         break;
@@ -605,32 +665,32 @@ public class BedrockMappingData extends MappingDataBase {
                 this.javaEntityAttributes.put(Key.namespaced(javaEntityAttributesJson.get(i).getAsString()), i);
             }
 
-            final JsonObject javaEntityDataJson = this.readJson("java/entity_data.json");
-            this.javaEntityData = new EnumMap<>(EntityTypes1_21_9.class);
-            for (Map.Entry<String, JsonElement> entry : javaEntityDataJson.entrySet()) {
-                if (EnumUtil.getEnumConstantOrNull(EntityTypes1_21_9.class, entry.getKey()) == null) {
+            final JsonObject javaEntityDataFieldsJson = this.readJson("java/entity_data_fields.json");
+            this.javaEntityDataFields = new EnumMap<>(EntityTypes26_2.class);
+            for (Map.Entry<String, JsonElement> entry : javaEntityDataFieldsJson.entrySet()) {
+                if (EnumUtil.getEnumConstantOrNull(EntityTypes26_2.class, entry.getKey()) == null) {
                     throw new RuntimeException("Unknown java entity type: " + entry.getKey());
                 }
             }
-            for (EntityTypes1_21_9 type : EntityTypes1_21_9.values()) {
+            for (EntityTypes26_2 type : EntityTypes26_2.values()) {
                 if (type.isAbstractType()) continue;
-                final EntityTypes1_21_9 realType = type;
-                final List<String> entityData = new ArrayList<>();
+                final EntityTypes26_2 realType = type;
+                final List<String> allEntityTypeFields = new ArrayList<>();
                 do {
-                    final JsonArray entityDataArray = javaEntityDataJson.getAsJsonArray(type.name());
-                    if (entityDataArray != null) {
-                        final List<String> entityTypeData = new ArrayList<>(entityDataArray.size());
-                        for (JsonElement entry : entityDataArray) {
-                            if (entityData.contains(entry.getAsString()) || entityTypeData.contains(entry.getAsString())) {
-                                throw new IllegalStateException("Duplicate entity data for " + realType.name() + ": " + entry.getAsString());
+                    final JsonArray entityTypeFieldsJson = javaEntityDataFieldsJson.getAsJsonArray(type.name());
+                    if (entityTypeFieldsJson != null) {
+                        final List<String> entityTypeFields = new ArrayList<>(entityTypeFieldsJson.size());
+                        for (JsonElement entry : entityTypeFieldsJson) {
+                            if (allEntityTypeFields.contains(entry.getAsString()) || entityTypeFields.contains(entry.getAsString())) {
+                                throw new IllegalStateException("Duplicate entity data field for " + realType.name() + ": " + entry.getAsString());
                             } else {
-                                entityTypeData.add(entry.getAsString());
+                                entityTypeFields.add(entry.getAsString());
                             }
                         }
-                        entityData.addAll(0, entityTypeData);
+                        allEntityTypeFields.addAll(0, entityTypeFields);
                     }
-                } while ((type = (EntityTypes1_21_9) type.getParent()) != null);
-                this.javaEntityData.put(realType, entityData);
+                } while ((type = (EntityTypes26_2) type.getParent()) != null);
+                this.javaEntityDataFields.put(realType, allEntityTypeFields);
             }
         }
 
@@ -693,12 +753,11 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             final JsonObject bedrockLevelSoundEventMappingsJson = this.readJson("bedrock/level_sound_event_mappings.json");
-            this.bedrockLevelSoundEvents = new EnumMap<>(SharedTypes_Legacy_LevelSoundEvent.class);
-            final Set<SharedTypes_Legacy_LevelSoundEvent> unmappedLevelSoundEvents = EnumSet.noneOf(SharedTypes_Legacy_LevelSoundEvent.class);
+            this.bedrockLevelSoundEvents = new HashMap<>();
+            final Set<String> unmappedLevelSoundEvents = new HashSet<>();
             for (Map.Entry<String, JsonElement> entry : bedrockLevelSoundEventMappingsJson.entrySet()) {
-                final SharedTypes_Legacy_LevelSoundEvent soundEvent = SharedTypes_Legacy_LevelSoundEvent.valueOf(entry.getKey());
                 if (entry.getValue().isJsonNull()) {
-                    unmappedLevelSoundEvents.add(soundEvent);
+                    unmappedLevelSoundEvents.add(entry.getKey());
                     continue;
                 }
                 final JsonObject soundData = entry.getValue().getAsJsonObject();
@@ -728,15 +787,15 @@ public class BedrockMappingData extends MappingDataBase {
                         soundEvents.put(keySplit[1], configuredSound);
                     }
                 }
-                this.bedrockLevelSoundEvents.put(soundEvent, soundEvents);
+                this.bedrockLevelSoundEvents.put(entry.getKey(), soundEvents);
             }
-            for (SharedTypes_Legacy_LevelSoundEvent levelSoundEvent : SharedTypes_Legacy_LevelSoundEvent.values()) {
+            /*for (SharedTypes_Legacy_LevelSoundEvent levelSoundEvent : SharedTypes_Legacy_LevelSoundEvent.values()) {
                 if (!this.bedrockLevelSoundEvents.containsKey(levelSoundEvent) && !unmappedLevelSoundEvents.contains(levelSoundEvent)) {
                     throw new RuntimeException("Missing bedrock -> java level sound event mapping for " + levelSoundEvent.name());
                 }
-            }
+            }*/
 
-            final JsonObject bedrockNoteBlockInstrumentMappingsJson = this.readJson("bedrock/note_block_instrument_mappings.json");
+            final JsonObject bedrockNoteBlockInstrumentMappingsJson = this.readJson("custom/note_block_instrument_mappings.json");
             this.bedrockNoteBlockInstrumentSounds = new EnumMap<>(NoteBlockInstrument.class);
             for (Map.Entry<String, JsonElement> entry : bedrockNoteBlockInstrumentMappingsJson.entrySet()) {
                 final NoteBlockInstrument instrument = NoteBlockInstrument.valueOf(entry.getKey());
@@ -770,15 +829,10 @@ public class BedrockMappingData extends MappingDataBase {
 
             final JsonObject bedrockToJavaSoundMappingsJson = this.readJson("custom/sound_mappings.json");
             this.bedrockToJavaSounds = new HashMap<>(bedrockToJavaSoundMappingsJson.size());
-            final Set<String> unmappedSounds = new HashSet<>();
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaSoundMappingsJson.entrySet()) {
                 final String bedrockIdentifier = entry.getKey();
                 if (!bedrockSounds.containsKey(bedrockIdentifier)) {
                     throw new IllegalStateException("Unknown bedrock sound: " + bedrockIdentifier);
-                }
-                if (entry.getValue().isJsonNull()) {
-                    unmappedSounds.add(bedrockIdentifier);
-                    continue;
                 }
                 final String javaIdentifier = entry.getValue().getAsString();
                 if (!this.javaSounds.containsKey(javaIdentifier)) {
@@ -788,7 +842,7 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockToJavaSounds.put(bedrockIdentifier, javaSoundMapping);
             }
             for (String bedrockIdentifier : bedrockSounds.keySet()) {
-                if (!this.bedrockToJavaSounds.containsKey(bedrockIdentifier) && !unmappedSounds.contains(bedrockIdentifier)) {
+                if (!this.bedrockToJavaSounds.containsKey(bedrockIdentifier)) {
                     throw new IllegalStateException("Missing bedrock -> java sound mapping for " + bedrockIdentifier);
                 }
             }
@@ -898,17 +952,18 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockToJavaExperimentalFeatures.put(entry.getKey(), entry.getValue().getAsString());
             }
 
+            final CompoundTag javaBannerPatternRegistry = this.javaRegistries.getCompoundTag(RegistryKeys.BANNER_PATTERN);
             final JsonObject bedrockToJavaBannerPatternMappingsJson = this.readJson("custom/banner_pattern_mappings.json");
             this.bedrockToJavaBannerPatterns = HashBiMap.create(bedrockToJavaBannerPatternMappingsJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaBannerPatternMappingsJson.entrySet()) {
                 final String javaIdentifier = entry.getValue().getAsString();
-                if (!this.javaRegistries.getCompoundTag("minecraft:banner_pattern").contains(javaIdentifier)) {
+                if (!javaBannerPatternRegistry.contains(javaIdentifier)) {
                     throw new RuntimeException("Unknown java banner pattern: " + javaIdentifier);
                 }
                 this.bedrockToJavaBannerPatterns.put(entry.getKey(), javaIdentifier);
             }
 
-            final CompoundTag javaPaintingVariantRegistry = this.javaRegistries.getCompoundTag("minecraft:painting_variant");
+            final CompoundTag javaPaintingVariantRegistry = this.javaRegistries.getCompoundTag(RegistryKeys.PAINTING_VARIANT);
             final JsonObject bedrockToJavaPaintingMappingsJson = this.readJson("custom/painting_mappings.json");
             this.bedrockToJavaPaintings = HashBiMap.create(bedrockToJavaPaintingMappingsJson.size());
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaPaintingMappingsJson.entrySet()) {
@@ -919,14 +974,14 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockToJavaPaintings.put(entry.getKey(), javaIdentifier);
             }
 
-            final CompoundTag javaDamageTypeRegistry = this.javaRegistries.getCompoundTag("minecraft:damage_type");
+            final CompoundTag javaDamageTypeRegistry = this.javaRegistries.getCompoundTag(RegistryKeys.DAMAGE_TYPE);
             final JsonObject bedrockToJavaDamageCauseMappingsJson = this.readJson("custom/damage_cause_mappings.json");
             this.bedrockToJavaDamageCauses = new EnumMap<>(SharedTypes_Legacy_ActorDamageCause.class);
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaDamageCauseMappingsJson.entrySet()) {
                 final SharedTypes_Legacy_ActorDamageCause damageCause = SharedTypes_Legacy_ActorDamageCause.valueOf(entry.getKey());
                 final String javaIdentifier = entry.getValue().getAsString();
                 if (!javaDamageTypeRegistry.contains(javaIdentifier)) {
-                    throw new RuntimeException("Unknown java damage cause: " + javaIdentifier);
+                    throw new RuntimeException("Unknown java damage type: " + javaIdentifier);
                 }
                 this.bedrockToJavaDamageCauses.put(damageCause, javaIdentifier);
             }
@@ -935,10 +990,37 @@ public class BedrockMappingData extends MappingDataBase {
                     throw new RuntimeException("Missing bedrock -> java damage cause mapping for " + actorDamageCause.name());
                 }
             }
+
+            final CompoundTag javaEnchantmentRegistry = this.javaRegistries.getCompoundTag(RegistryKeys.ENCHANTMENT);
+            final JsonObject bedrockToJavaEnchantmentMappingsJson = this.readJson("custom/enchantment_mappings.json");
+            this.bedrockToJavaEnchantments = new EnumMap<>(Enchant_Type.class);
+            for (Map.Entry<String, JsonElement> entry : bedrockToJavaEnchantmentMappingsJson.entrySet()) {
+                final Enchant_Type enchantType = Enchant_Type.valueOf(entry.getKey());
+                final String javaIdentifier = entry.getValue().getAsString();
+                if (!javaEnchantmentRegistry.contains(javaIdentifier)) {
+                    throw new RuntimeException("Unknown java enchantment: " + javaIdentifier);
+                }
+                this.bedrockToJavaEnchantments.put(enchantType, javaIdentifier);
+            }
+            for (Enchant_Type enchantType : Enchant_Type.values()) {
+                if (!this.bedrockToJavaEnchantments.containsKey(enchantType)) {
+                    throw new RuntimeException("Missing bedrock -> java enchantment mapping for " + enchantType.name());
+                }
+            }
         }
+
+        DataValues.validate();
     }
 
-    public Map<String, ResourcePack> getBedrockVanillaResourcePacks() {
+    public Map<ResourcePack.Key, ResourcePack> getBedrockResourcePacks() {
+        return this.bedrockResourcePacks;
+    }
+
+    public Map<ResourcePack.Key, ResourcePack> getBedrockSkinPacks() {
+        return this.bedrockSkinPacks;
+    }
+
+    public List<ResourcePack> getBedrockVanillaResourcePacks() {
         return this.bedrockVanillaResourcePacks;
     }
 
@@ -978,11 +1060,11 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaBlockStates;
     }
 
-    public Map<String, String> getBedrockBlockTags() {
-        return this.bedrockBlockTags;
+    public Map<String, String> getBedrockCustomBlockTags() {
+        return this.bedrockCustomBlockTags;
     }
 
-    public Map<String, Map<String, Set<String>>> getBedrockBlockTraits() {
+    public Map<String, Map<String, Map<String, Set<String>>>> getBedrockBlockTraits() {
         return this.bedrockBlockTraits;
     }
 
@@ -996,6 +1078,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public IntSet getJavaPreWaterloggedBlockStates() {
         return this.javaPreWaterloggedBlockStates;
+    }
+
+    public IntSet getJavaFluidBlockStates() {
+        return this.javaFluidBlockStates;
     }
 
     public Int2IntMap getJavaPottedBlockStates() {
@@ -1038,8 +1124,12 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockMetaItems;
     }
 
-    public Map<String, String> getBedrockItemTags() {
+    public Map<String, Set<String>> getBedrockItemTags() {
         return this.bedrockItemTags;
+    }
+
+    public Map<String, String> getBedrockCustomItemTags() {
+        return this.bedrockCustomItemTags;
     }
 
     public Map<String, Map<BlockState, JavaItemMapping>> getBedrockToJavaBlockItems() {
@@ -1066,7 +1156,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockEntityFlagMoLangQueries;
     }
 
-    public Map<String, EntityTypes1_21_9> getBedrockToJavaEntities() {
+    public Map<String, EntityTypes26_2> getBedrockToJavaEntities() {
         return this.bedrockToJavaEntities;
     }
 
@@ -1078,8 +1168,8 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaEntityAttributes;
     }
 
-    public Map<EntityTypes1_21_9, List<String>> getJavaEntityData() {
-        return this.javaEntityData;
+    public Map<EntityTypes26_2, List<String>> getJavaEntityDataFields() {
+        return this.javaEntityDataFields;
     }
 
     public BiMap<String, Integer> getJavaEffects() {
@@ -1106,7 +1196,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockBlockSounds;
     }
 
-    public Map<SharedTypes_Legacy_LevelSoundEvent, Map<String, SoundDefinitions.ConfiguredSound>> getBedrockLevelSoundEvents() {
+    public Map<String, Map<String, SoundDefinitions.ConfiguredSound>> getBedrockLevelSoundEvents() {
         return this.bedrockLevelSoundEvents;
     }
 
@@ -1146,41 +1236,31 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaDamageCauses;
     }
 
+    public Map<Enchant_Type, String> getBedrockToJavaEnchantments() {
+        return this.bedrockToJavaEnchantments;
+    }
+
     @Override
     protected Logger getLogger() {
         return ViaBedrock.getPlatform().getLogger();
-    }
-
-    private ResourcePack readResourcePack(String file, final UUID uuid, final String version) {
-        file = "assets/viabedrock/data/" + file;
-        try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
-            final byte[] bytes = inputStream.readAllBytes();
-            final ResourcePack resourcePack = new ResourcePack(uuid, version, new byte[0], "", "", false, false, false, null, 0, PackType.Resources);
-            resourcePack.setCompressedDataLength(bytes.length, bytes.length);
-            resourcePack.processDataChunk(0, bytes);
-            return resourcePack;
-        } catch (Exception e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
-            return null;
-        }
     }
 
     private CompoundTag readNBT(String file) {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open " + file);
+                this.getLogger().severe("Failed to open " + file);
                 return null;
             }
 
             return NBTIO.readTag(new DataInputStream(new GZIPInputStream(inputStream)), TagLimiter.noop(), true, CompoundTag.class);
         } catch (IOException e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
+            this.getLogger().log(Level.SEVERE, "Failed to read " + file, e);
             return null;
         }
     }
 
-    private JsonObject readJson(String file) {
+    private JsonObject readJson(final String file) {
         return this.readJson(file, JsonObject.class);
     }
 
@@ -1188,13 +1268,13 @@ public class BedrockMappingData extends MappingDataBase {
         file = "assets/viabedrock/data/" + file;
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(file)) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open " + file);
+                this.getLogger().severe("Failed to open " + file);
                 return null;
             }
 
             return GsonUtil.getGson().fromJson(new InputStreamReader(inputStream), classOfT);
         } catch (IOException e) {
-            this.getLogger().log(Level.SEVERE, "Could not read " + file, e);
+            this.getLogger().log(Level.SEVERE, "Failed to read " + file, e);
             return null;
         }
     }
@@ -1231,7 +1311,7 @@ public class BedrockMappingData extends MappingDataBase {
                         if (!this.javaItems.containsKey(identifier)) {
                             throw new IllegalStateException("Unknown java item: " + identifier);
                         }
-                        particle.add(VersionedTypes.V1_21_9.item, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
+                        particle.add(VersionedTypes.V26_2.item, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
                     }
                     default -> throw new IllegalStateException("Unknown particle argument type: " + type);
                 }
@@ -1243,7 +1323,7 @@ public class BedrockMappingData extends MappingDataBase {
     private void buildLegacyBlockStateMappings() {
         try (final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("assets/viabedrock/data/bedrock/block_id_meta_to_1_12_0_nbt.bin")) {
             if (inputStream == null) {
-                this.getLogger().severe("Could not open block_id_meta_to_1_12_0_nbt.bin");
+                this.getLogger().severe("Failed to open block_id_meta_to_1_12_0_nbt.bin");
                 return;
             }
             final byte[] bytes = inputStream.readAllBytes();
@@ -1272,7 +1352,7 @@ public class BedrockMappingData extends MappingDataBase {
                 }
             }
         } catch (Exception e) {
-            this.getLogger().log(Level.SEVERE, "Could not read block_id_meta_to_1_12_0_nbt.bin", e);
+            this.getLogger().log(Level.SEVERE, "Failed to read block_id_meta_to_1_12_0_nbt.bin", e);
             this.bedrockLegacyBlockStates = null;
         }
     }

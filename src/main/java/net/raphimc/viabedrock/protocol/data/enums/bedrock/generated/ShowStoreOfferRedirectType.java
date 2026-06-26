@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -9,13 +8,16 @@ public enum ShowStoreOfferRedirectType {
 
     MarketplaceOffer(0),
     DressingRoomOffer(1),
-    ThirdPartyServerPage(2);
+    ThirdPartyServerPage(2),
+    ;
 
     private static final Int2ObjectMap<ShowStoreOfferRedirectType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ShowStoreOfferRedirectType value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -25,6 +27,24 @@ public enum ShowStoreOfferRedirectType {
 
     public static ShowStoreOfferRedirectType getByValue(final int value, final ShowStoreOfferRedirectType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ShowStoreOfferRedirectType getByName(final String name) {
+        for (ShowStoreOfferRedirectType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ShowStoreOfferRedirectType getByName(final String name, final ShowStoreOfferRedirectType fallback) {
+        for (ShowStoreOfferRedirectType value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

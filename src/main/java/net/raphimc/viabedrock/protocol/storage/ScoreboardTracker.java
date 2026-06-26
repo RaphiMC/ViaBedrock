@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ public class ScoreboardTracker implements StorableObject {
     }
 
     public Pair<ScoreboardObjective, ScoreboardEntry> getEntry(final long scoreboardId) {
-        for (final ScoreboardObjective objective : this.objectives.values()) {
+        for (ScoreboardObjective objective : this.objectives.values()) {
             final ScoreboardEntry entry = objective.getEntry(scoreboardId);
             if (entry != null) {
                 return new Pair<>(objective, entry);
@@ -56,9 +56,9 @@ public class ScoreboardTracker implements StorableObject {
         return null;
     }
 
-    public Pair<ScoreboardObjective, ScoreboardEntry> getEntryForPlayer(final long uniqueEntityId) {
-        for (final ScoreboardObjective objective : this.objectives.values()) {
-            final ScoreboardEntry entry = objective.getEntryForPlayer(uniqueEntityId);
+    public Pair<ScoreboardObjective, ScoreboardEntry> getEntryForPlayer(final long entityUniqueId) {
+        for (ScoreboardObjective objective : this.objectives.values()) {
+            final ScoreboardEntry entry = objective.getEntryForPlayer(entityUniqueId);
             if (entry != null) {
                 return new Pair<>(objective, entry);
             }

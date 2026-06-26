@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,20 @@
 package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
-import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.model.resourcepack.ResourcePack;
-import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
+import net.raphimc.viabedrock.api.resourcepack.content.Content;
+import net.raphimc.viabedrock.api.resourcepack.content.InMemoryContent;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomAttachableResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomEntityResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.GlyphSheetResourceRewriter;
-import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.concurrent.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ResourcePackRewriter {
 
@@ -45,26 +44,29 @@ public class ResourcePackRewriter {
         REWRITERS.add(new CustomEntityResourceRewriter());
     }
 
-    public static ResourcePack.Content bedrockToJava(final ResourcePacksStorage resourcePacksStorage) {
-        final ResourcePack.Content javaContent = new ResourcePack.Content();
+    public static Content bedrockToJava(final ResourcePackStorage resourcePackStorage) throws InterruptedException {
+        final ExecutorService executor = new ForkJoinPool(Runtime.getRuntime().availableProcessors(), pool -> {
+            final ForkJoinWorkerThread thread = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+            thread.setName("ViaBedrock ResourcePack Rewriter");
+            return thread;
+        }, null, true);
+        final List<CompletableFuture<Content>> tasks = new ArrayList<>();
 
+        final Consumer<Supplier<Content>> submitter = task -> tasks.add(CompletableFuture.supplyAsync(task, executor));
         for (Rewriter rewriter : REWRITERS) {
-            rewriter.apply(resourcePacksStorage, javaContent);
+            rewriter.submitTasks(resourcePackStorage, submitter);
+        }
+        executor.shutdown();
+        if (!executor.awaitTermination(1, TimeUnit.MINUTES)) {
+            executor.shutdownNow();
+            throw new RuntimeException("Resource pack rewriting tasks did not complete within the timeout");
         }
 
+        final Content javaContent = new InMemoryContent();
+        for (CompletableFuture<Content> task : tasks) {
+            javaContent.putAll(task.getNow(null));
+        }
         javaContent.putJson("pack.mcmeta", createPackManifest());
-
-        final ChannelStorage channelStorage = resourcePacksStorage.user().get(ChannelStorage.class);
-        if (channelStorage.hasChannel(ViaBedrockUtilityInterface.CONFIRM_CHANNEL)) {
-            for (ResourcePack pack : resourcePacksStorage.getPacks()) {
-                try {
-                    javaContent.put("bedrock/" + pack.packId() + ".mcpack", pack.content().toZip());
-                } catch (IOException e) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to put bedrock pack " + pack.packId() + " into java resource pack", e);
-                }
-            }
-        }
-
         return javaContent;
     }
 
@@ -80,7 +82,7 @@ public class ResourcePackRewriter {
 
     public interface Rewriter {
 
-        void apply(final ResourcePacksStorage resourcePacksStorage, final ResourcePack.Content javaContent);
+        void submitTasks(final ResourcePackStorage resourcePackStorage, final Consumer<Supplier<Content>> submitter);
 
     }
 

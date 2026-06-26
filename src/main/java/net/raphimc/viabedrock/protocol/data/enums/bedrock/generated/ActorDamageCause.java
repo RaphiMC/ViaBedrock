@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -41,13 +40,16 @@ public enum ActorDamageCause {
     RamAttack(30),
     SonicBoom(31),
     Campfire(32),
-    SoulCampfire(33);
+    SoulCampfire(33),
+    ;
 
     private static final Int2ObjectMap<ActorDamageCause> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (ActorDamageCause value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -57,6 +59,24 @@ public enum ActorDamageCause {
 
     public static ActorDamageCause getByValue(final int value, final ActorDamageCause fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static ActorDamageCause getByName(final String name) {
+        for (ActorDamageCause value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static ActorDamageCause getByName(final String name, final ActorDamageCause fallback) {
+        for (ActorDamageCause value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

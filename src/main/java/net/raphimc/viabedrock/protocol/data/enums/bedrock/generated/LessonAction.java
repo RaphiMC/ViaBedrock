@@ -1,5 +1,4 @@
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT!
-
 package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
@@ -9,13 +8,16 @@ public enum LessonAction {
 
     Start(0),
     Complete(1),
-    Restart(2);
+    Restart(2),
+    ;
 
     private static final Int2ObjectMap<LessonAction> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
         for (LessonAction value : values()) {
-            if (!BY_VALUE.containsKey(value.value)) BY_VALUE.put(value.value, value);
+            if (!BY_VALUE.containsKey(value.value)) {
+                BY_VALUE.put(value.value, value);
+            }
         }
     }
 
@@ -25,6 +27,24 @@ public enum LessonAction {
 
     public static LessonAction getByValue(final int value, final LessonAction fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
+    }
+
+    public static LessonAction getByName(final String name) {
+        for (LessonAction value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static LessonAction getByName(final String name, final LessonAction fallback) {
+        for (LessonAction value : values()) {
+            if (value.name().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return fallback;
     }
 
     private final int value;

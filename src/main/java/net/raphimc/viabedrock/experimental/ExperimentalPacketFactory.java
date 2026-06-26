@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ public class ExperimentalPacketFactory {
 
     public static void sendBedrockPlayerAction(final UserConnection user, long entityId, PlayerActionType actionType, BlockPosition position, BlockPosition resultPosition, int face) {
         final PacketWrapper startItemUseOn = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, user);
-        startItemUseOn.write(BedrockTypes.UNSIGNED_VAR_LONG, entityId); // runtime entity id
+        startItemUseOn.write(BedrockTypes.UNSIGNED_VAR_LONG, entityId); // entity runtime id
         startItemUseOn.write(BedrockTypes.VAR_INT, actionType.getValue()); // action type
         startItemUseOn.write(BedrockTypes.BLOCK_POSITION, position); // block position
         startItemUseOn.write(BedrockTypes.BLOCK_POSITION, resultPosition); // result position

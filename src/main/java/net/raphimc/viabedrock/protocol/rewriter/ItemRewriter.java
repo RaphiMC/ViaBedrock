@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
-import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
+import com.viaversion.viaversion.api.type.OptionalType;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
@@ -36,21 +36,24 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntSortedSet;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
-import net.raphimc.viabedrock.api.model.resourcepack.ItemDefinitions;
+import net.raphimc.viabedrock.api.resourcepack.definition.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.TextUtil;
+import net.raphimc.viabedrock.experimental.rewriter.ExperimentalItemRewriter;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemVersion;
+import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomItemTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.rewriter.item.BundleItemRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomAttachableResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
-import net.raphimc.viabedrock.protocol.storage.ResourcePacksStorage;
+import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 import net.raphimc.viabedrock.protocol.types.item.BedrockItemType;
+import net.raphimc.viabedrock.protocol.types.item.NetworkItemStackDescriptorType;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,11 +69,15 @@ public class ItemRewriter extends StoredObject {
     private final Set<String> componentItems;
     private final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates;
     private final Type<BedrockItem> itemType;
+    private final Type<BedrockItem> optionalItemType;
     private final Type<BedrockItem[]> itemArrayType;
+    private final Type<BedrockItem> newItemType;
+    private final Type<BedrockItem> optionalNewItemType;
+    private final Type<BedrockItem[]> newItemArrayType;
 
     static {
         // TODO: Add missing item nbt rewriters
-        ITEM_NBT_REWRITERS.put("bundle", new BundleItemRewriter());
+        ITEM_NBT_REWRITERS.put(CustomItemTags.BUNDLE, new BundleItemRewriter());
     }
 
     public ItemRewriter(final UserConnection user, final ItemEntry[] itemEntries) {
@@ -106,7 +113,11 @@ public class ItemRewriter extends StoredObject {
         }
 
         this.itemType = new BedrockItemType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false);
+        this.optionalItemType = new OptionalType<>(this.itemType);
         this.itemArrayType = new ArrayType<>(this.itemType, BedrockTypes.UNSIGNED_VAR_INT);
+        this.newItemType = new NetworkItemStackDescriptorType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false);
+        this.optionalNewItemType = new OptionalType<>(this.newItemType);
+        this.newItemArrayType = new ArrayType<>(this.newItemType, BedrockTypes.UNSIGNED_VAR_INT);
     }
 
     public Item javaItem(final BedrockItem bedrockItem) {
@@ -162,31 +173,31 @@ public class ItemRewriter extends StoredObject {
                 // TODO: Update: Fix this
             }
             if (javaItemMapping.name() != null) {
-                final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
-                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get(javaItemMapping.name())));
+                final ResourcePackStorage resourcePackStorage = this.user().get(ResourcePackStorage.class);
+                data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePackStorage.getTexts().get(javaItemMapping.name())));
                 data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Mapped item: " + identifier)});
             }
             javaItem = new StructuredItem(javaItemMapping.id(), bedrockItem.amount(), data);
         } else {
-            final ResourcePacksStorage resourcePacksStorage = this.user().get(ResourcePacksStorage.class);
-            final ItemDefinitions.ItemDefinition itemDefinition = resourcePacksStorage.getItems().get(identifier);
+            final ResourcePackStorage resourcePackStorage = this.user().get(ResourcePackStorage.class);
+            final ItemDefinitions.ItemDefinition itemDefinition = resourcePackStorage.getItems().get(identifier);
             final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
 
             if (itemDefinition != null) {
                 if (itemDefinition.displayNameComponent() != null) {
-                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().translate(itemDefinition.displayNameComponent())));
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePackStorage.getTexts().translate(itemDefinition.displayNameComponent())));
                 } else if (this.componentItems.contains(identifier)) {
-                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier))));
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePackStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier))));
                 } else {
-                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePacksStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier) + ".name")));
+                    data.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(resourcePackStorage.getTexts().get("item." + Key.stripMinecraftNamespace(identifier) + ".name")));
                 }
 
-                if (resourcePacksStorage.getAttachables().attachables().containsKey(identifier) && resourcePacksStorage.isLoadedOnJavaClient() && resourcePacksStorage.getConverterData().containsKey("ca_" + identifier + "_default")) {
-                    data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(Key.of("viabedrock:attachable")));
-                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomAttachableResourceRewriter.getCustomModelData(identifier + "_default"));
-                } else if (itemDefinition.iconComponent() != null && resourcePacksStorage.isLoadedOnJavaClient()) {
-                    data.set(StructuredDataKey.ITEM_MODEL, new ItemModel(Key.of("viabedrock:item_texture")));
-                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomItemTextureResourceRewriter.getCustomModelData(itemDefinition.iconComponent() + "_0"));
+                if (resourcePackStorage.getAttachables().attachables().containsKey(identifier) && resourcePackStorage.isLoadedOnJavaClient() && resourcePackStorage.getConverterData().containsKey("ca_" + identifier + "_default")) {
+                    data.set(StructuredDataKey.ITEM_MODEL, CustomAttachableResourceRewriter.getItemModel(identifier));
+                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomAttachableResourceRewriter.getCustomModelData("default"));
+                } else if (itemDefinition.iconComponent() != null && resourcePackStorage.isLoadedOnJavaClient()) {
+                    data.set(StructuredDataKey.ITEM_MODEL, CustomItemTextureResourceRewriter.getItemModel(itemDefinition.iconComponent()));
+                    data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomItemTextureResourceRewriter.getCustomModelData("0"));
                 } else {
                     data.set(StructuredDataKey.LORE, new Tag[]{TextUtil.stringToNbt("§7[ViaBedrock] Custom item: " + identifier)});
                 }
@@ -206,7 +217,11 @@ public class ItemRewriter extends StoredObject {
             }
         }
 
-        final String tag = BedrockProtocol.MAPPINGS.getBedrockItemTags().get(identifier);
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            ExperimentalItemRewriter.handleItem(this.user(), bedrockItem, bedrockTag, javaItem);
+        }
+
+        final String tag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(identifier);
         if (ITEM_NBT_REWRITERS.containsKey(tag)) {
             ITEM_NBT_REWRITERS.get(tag).toJava(this.user(), bedrockItem, javaItem);
         }
@@ -252,8 +267,24 @@ public class ItemRewriter extends StoredObject {
         return this.itemType;
     }
 
+    public Type<BedrockItem> optionalItemType() {
+        return this.optionalItemType;
+    }
+
     public Type<BedrockItem[]> itemArrayType() {
         return this.itemArrayType;
+    }
+
+    public Type<BedrockItem> newItemType() {
+        return this.newItemType;
+    }
+
+    public Type<BedrockItem> optionalNewItemType() {
+        return this.optionalNewItemType;
+    }
+
+    public Type<BedrockItem[]> newItemArrayType() {
+        return this.newItemArrayType;
     }
 
     public interface NbtRewriter {

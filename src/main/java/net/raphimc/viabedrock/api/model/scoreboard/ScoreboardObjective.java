@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,23 +20,21 @@ package net.raphimc.viabedrock.api.model.scoreboard;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundPackets1_21_9;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
+import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
+import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ObjectiveSortOrder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ScoreboardObjective {
 
     private final String name;
-    private final Map<Long, ScoreboardEntry> entries;
     private final ObjectiveSortOrder sortOrder;
+    private final Long2ObjectMap<ScoreboardEntry> entries = new Long2ObjectOpenHashMap<>();
 
     public ScoreboardObjective(final String name, final ObjectiveSortOrder sortOrder) {
         this.name = name;
-        this.entries = new HashMap<>();
         this.sortOrder = sortOrder;
     }
 
@@ -54,9 +52,9 @@ public class ScoreboardObjective {
         return null;
     }
 
-    public ScoreboardEntry getEntryForPlayer(final long uniqueEntityId) {
+    public ScoreboardEntry getEntryForPlayer(final long entityUniqueId) {
         for (ScoreboardEntry value : this.entries.values()) {
-            if (value.uniqueEntityId() != null && value.type() == IdentityDefinition_Type.Player && uniqueEntityId == value.uniqueEntityId()) {
+            if (value.entityUniqueId() != null && value.type() == IdentityDefinition_Type.Player && entityUniqueId == value.entityUniqueId()) {
                 return value;
             }
         }
@@ -85,7 +83,7 @@ public class ScoreboardObjective {
     }
 
     private void updateEntry0(final UserConnection user, final ScoreboardEntry entry) {
-        final PacketWrapper setScore = PacketWrapper.create(ClientboundPackets1_21_9.SET_SCORE, user);
+        final PacketWrapper setScore = PacketWrapper.create(ClientboundPackets26_1.SET_SCORE, user);
         setScore.write(Types.STRING, entry.javaName()); // player name
         setScore.write(Types.STRING, this.name); // objective name
         setScore.write(Types.VAR_INT, this.sortOrder == ObjectiveSortOrder.Ascending ? -entry.score() : entry.score()); // score
@@ -95,7 +93,7 @@ public class ScoreboardObjective {
     }
 
     private void removeEntry0(final UserConnection user, final ScoreboardEntry entry) {
-        final PacketWrapper resetScore = PacketWrapper.create(ClientboundPackets1_21_9.RESET_SCORE, user);
+        final PacketWrapper resetScore = PacketWrapper.create(ClientboundPackets26_1.RESET_SCORE, user);
         resetScore.write(Types.STRING, entry.javaName()); // player name
         resetScore.write(Types.OPTIONAL_STRING, this.name); // objective name
         resetScore.send(BedrockProtocol.class);

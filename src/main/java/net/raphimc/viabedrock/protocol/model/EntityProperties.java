@@ -1,6 +1,6 @@
 /*
  * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
- * Copyright (C) 2023-2025 RK_01/RaphiMC and contributors
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,7 @@
 package net.raphimc.viabedrock.protocol.model;
 
 import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
+import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 
-import java.util.Map;
-
-public record EntityProperties(Int2IntMap intProperties, Map<Integer, Float> floatProperties) {
+public record EntityProperties(Int2IntMap intProperties, Int2ObjectMap<Float> floatProperties) {
 }
