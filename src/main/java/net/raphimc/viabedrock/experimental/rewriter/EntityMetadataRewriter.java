@@ -62,6 +62,9 @@ public class EntityMetadataRewriter {
                 if (bedrockFlags.contains(ActorFlags.INVISIBLE)) {
                     javaBitMask |= (1 << 5);
                 }
+                if (bedrockFlags.contains(ActorFlags.GLIDING)) {
+                    javaBitMask |= (byte) (1 << 7);
+                }
 
                 javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.SHARED_FLAGS), VersionedTypes.V26_2.entityDataTypes().byteType, javaBitMask));
 
@@ -286,42 +289,6 @@ public class EntityMetadataRewriter {
                         int javaVariant = variant;
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.VARIANT), VersionedTypes.V26_2.entityDataTypes().varIntType, javaVariant));
                     }
-                    case AXOLOTL -> {
-                        int javaVariant = switch (variant) {
-                            case 0 -> 0; // LUCY
-                            case 1 -> 3; // CYAN
-                            case 2 -> 2; // GOLD
-                            case 3 -> 1; // WILD
-                            case 4 -> 4; // BLUE
-                            default -> {
-                                ViaBedrock.getPlatform().getLogger().warning("Unknown axolotl variant " + variant + ", defaulting to LUCY.");
-                                yield 2;
-                            }
-                        };
-                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaVariant));
-                    }
-                    case MOOSHROOM -> {
-                        int javaVariant = switch (variant) {
-                            case 0 -> 0; // RED
-                            case 1 -> 1; // BROWN
-                            default -> {
-                                ViaBedrock.getPlatform().getLogger().warning("Unknown mooshroom variant " + variant + ", defaulting to RED.");
-                                yield 0;
-                            }
-                        };
-                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TYPE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaVariant));
-                    }
-                    case SLIME, MAGMA_CUBE -> {
-                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("SIZE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, variant));
-                    }
-                    case RABBIT -> { // TODO: Test when I can
-                        int javaVariant = variant;
-                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("TYPE"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaVariant));
-                    }
-                    case PARROT -> { // TODO: Test when I can
-                        int javaVariant = variant;
-                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("VARIANT"), VersionedTypes.V1_21_9.entityDataTypes().varIntType, javaVariant));
-                    }
                     default -> {
                         if (variant != 0) { // For some reason bedrock seems to send variant 0 for many entities that don't have variants
                             ViaBedrock.getPlatform().getLogger().warning("Received non-zero VARIANT " + variant + " for unsupported entity " + entity.type());
@@ -336,11 +303,6 @@ public class EntityMetadataRewriter {
                 switch (entity.javaType()) {
                     case WOLF, CAT -> {
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.COLLAR_COLOR), VersionedTypes.V26_2.entityDataTypes().varIntType, javaColorIndex));
-                    }
-                    case SHEEP -> { // TODO: This seems to get overwritten by the entity flags sheared value, need to combine both
-                        byte sheepBitMask = 0;
-                        sheepBitMask |= (byte) (javaColorIndex & 0x0F); // Lower 4 bits for color
-                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WOOL), VersionedTypes.V26_2.entityDataTypes().byteType, sheepBitMask));
                     }
                     case SHEEP -> { // TODO: This seems to get overwritten by the entity flags sheared value, need to combine both
                         byte sheepBitMask = 0;
