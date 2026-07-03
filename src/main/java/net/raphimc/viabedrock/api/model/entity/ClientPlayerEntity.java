@@ -436,7 +436,6 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.blockBreakingInfo = blockBreakingInfo;
     }
 
-
     public void setRequestedDismount(final boolean requestedDismount) {
         this.requestedDismount = requestedDismount;
     }
