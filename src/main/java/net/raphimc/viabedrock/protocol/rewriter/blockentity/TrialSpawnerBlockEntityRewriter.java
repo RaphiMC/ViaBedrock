@@ -22,7 +22,7 @@ import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
@@ -42,7 +42,7 @@ public class TrialSpawnerBlockEntityRewriter implements BlockEntityRewriter.Rewr
 
         if (bedrockTag.getCompoundTag("spawn_data").get("TypeId") instanceof StringTag entityIdentifierTag) {
             final String bedrockEntityIdentifier = entityIdentifierTag.getValue();
-            final EntityTypes1_21_11 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(bedrockEntityIdentifier));
+            final EntityTypes26_2 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(bedrockEntityIdentifier));
             if (javaEntityType != null) {
                 final CompoundTag spawnData = new CompoundTag();
                 final CompoundTag entityTag = new CompoundTag();
