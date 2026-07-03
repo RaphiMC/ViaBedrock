@@ -307,7 +307,7 @@ public class EntityMetadataRewriter {
                     case SHEEP -> { // TODO: This seems to get overwritten by the entity flags sheared value, need to combine both
                         byte sheepBitMask = 0;
                         sheepBitMask |= javaColorIndex & 0x0F; // Lower 4 bits for color
-                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex("WOOL"), VersionedTypes.V1_21_9.entityDataTypes().byteType, sheepBitMask));
+                        javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WOOL), VersionedTypes.V26_2.entityDataTypes().byteType, sheepBitMask));
                     }
                     default -> {
                         if (javaColorIndex != 0) { // For some reason bedrock seems to send color index 0 for many entities that don't have colors
