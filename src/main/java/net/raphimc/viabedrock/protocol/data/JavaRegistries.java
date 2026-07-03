@@ -21,6 +21,7 @@ import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.ListTag;
 import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.libs.fastutil.ints.IntIntPair;
+import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.resourcepack.definition.BiomeDefinitions;
 import net.raphimc.viabedrock.api.resourcepack.definition.FogDefinitions;
@@ -81,7 +82,7 @@ public class JavaRegistries {
         final Map<String, Object> moodSound = BedrockProtocol.MAPPINGS.getBedrockToJavaBiomeExtraData().get("mood_sound");
 
         for (String bedrockBiomeName : BedrockProtocol.MAPPINGS.getBedrockBiomes().keySet()) {
-            final CompoundTag bedrockBiome = biomeDefinitions.getCompoundTag(bedrockBiomeName);
+            final CompoundTag bedrockBiome = biomeDefinitions.getCompoundTag(Key.namespaced(bedrockBiomeName));
             final BiomeDefinitions.BiomeDefinition bedrockBiomeDefinition = resourcePackStorage.getBiomes().get(bedrockBiomeName);
             final FogDefinitions.FogDefinition bedrockFogDefinition = bedrockBiomeDefinition != null ? resourcePackStorage.getFogs().get(bedrockBiomeDefinition.fog()) : null;
             if (bedrockBiome == null) {
@@ -89,7 +90,7 @@ public class JavaRegistries {
                 continue;
             }
 
-            final String javaIdentifier = "minecraft:" + bedrockBiomeName;
+            final String javaIdentifier = Key.namespaced(bedrockBiomeName);
             final CompoundTag javaBiome = new CompoundTag();
             javaBiome.put("temperature", bedrockBiome.get("temperature"));
             javaBiome.put("downfall", bedrockBiome.get("downfall"));
@@ -102,10 +103,10 @@ public class JavaRegistries {
             javaBiome.put("attributes", attributes);
 
             final ListTag<CompoundTag> ambientParticles = new ListTag<>(CompoundTag.class);
-            final float blue_spores = bedrockBiome.getFloat("blue_spores");
-            final float white_ash = bedrockBiome.getFloat("white_ash");
-            final float red_spores = bedrockBiome.getFloat("red_spores");
-            final float ash = bedrockBiome.getFloat("ash");
+            final float blue_spores = bedrockBiome.getDoubleTag("blueSporeDensity").asFloat();
+            final float white_ash = bedrockBiome.getDoubleTag("whiteAshDensity").asFloat();
+            final float red_spores = bedrockBiome.getDoubleTag("redSporeDensity").asFloat();
+            final float ash = bedrockBiome.getDoubleTag("ashDensity").asFloat();
             if (blue_spores > 0) {
                 ambientParticles.add(createBiomeParticle("minecraft:warped_spore", blue_spores / 10F));
             } else if (white_ash > 0) {
@@ -127,7 +128,7 @@ public class JavaRegistries {
             if (bedrockBiomeDefinition != null && bedrockBiomeDefinition.skyColor() != null) {
                 attributes.putInt("minecraft:visual/sky_color", bedrockBiomeDefinition.skyColor());
             } else {
-                attributes.putInt("minecraft:visual/sky_color", getSkyColor(bedrockBiome.getFloatTag("temperature").asFloat()));
+                attributes.putInt("minecraft:visual/sky_color", getSkyColor(bedrockBiome.getDoubleTag("temperature").asFloat()));
             }
             if (bedrockFogDefinition != null && bedrockFogDefinition.colors().containsKey("air")) {
                 attributes.putInt("minecraft:visual/fog_color", bedrockFogDefinition.colors().get("air"));

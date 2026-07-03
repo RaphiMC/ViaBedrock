@@ -6,7 +6,6 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum InventorySourceType {
 
-    InvalidInventory(Integer.MAX_VALUE),
     ContainerInventory(0),
     GlobalInventory(1),
     WorldInteraction(2),

@@ -37,7 +37,7 @@ public class BedBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         int javaBlockState = user.get(ChunkTracker.class).getJavaBlockState(bedrockBlockEntity.position());
         javaBlockState += color.javaId() * 16;
 
-        return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, new CompoundTag()), javaBlockState);
+        return new BlockEntityWithBlockState(new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, null), javaBlockState);
     }
 
 }

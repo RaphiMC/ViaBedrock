@@ -21,6 +21,7 @@ public class RegistryKeys {
     public static final String PAINTING_VARIANT = "minecraft:painting_variant";
     public static final String PIG_SOUND_VARIANT = "minecraft:pig_sound_variant";
     public static final String PIG_VARIANT = "minecraft:pig_variant";
+    public static final String SULFUR_CUBE_ARCHETYPE = "minecraft:sulfur_cube_archetype";
     public static final String TEST_ENVIRONMENT = "minecraft:test_environment";
     public static final String TEST_INSTANCE = "minecraft:test_instance";
     public static final String TIMELINE = "minecraft:timeline";

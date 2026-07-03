@@ -98,6 +98,7 @@ public class EntityDataFields {
     public static final String LIVING_ENTITY_FLAGS = "LIVING_ENTITY_FLAGS";
     public static final String LOYALTY = "LOYALTY";
     public static final String MAIN_GENE = "MAIN_GENE";
+    public static final String MAX_FUSE = "MAX_FUSE";
     public static final String MOB_FLAGS = "MOB_FLAGS";
     public static final String MOISTNESS_LEVEL = "MOISTNESS_LEVEL";
     public static final String MOVING = "MOVING";

@@ -36,5 +36,6 @@
     "showRecipeMessages": true,
     "playersSleepingPercentage": 100,
     "projectilesCanBreakBlocks": true,
-    "tntExplosionDropDecay": false
+    "tntExplosionDropDecay": false,
+    "playerWaypoints": true
 }

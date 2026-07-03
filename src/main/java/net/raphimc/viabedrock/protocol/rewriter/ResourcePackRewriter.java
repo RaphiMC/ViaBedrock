@@ -29,6 +29,9 @@ import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ResourcePackRewriter {
 
@@ -41,10 +44,27 @@ public class ResourcePackRewriter {
         REWRITERS.add(new CustomEntityResourceRewriter());
     }
 
-    public static Content bedrockToJava(final ResourcePackStorage resourcePackStorage) {
-        final Content javaContent = new InMemoryContent();
+    public static Content bedrockToJava(final ResourcePackStorage resourcePackStorage) throws InterruptedException {
+        final ExecutorService executor = new ForkJoinPool(Runtime.getRuntime().availableProcessors(), pool -> {
+            final ForkJoinWorkerThread thread = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+            thread.setName("ViaBedrock ResourcePack Rewriter");
+            return thread;
+        }, null, true);
+        final List<CompletableFuture<Content>> tasks = new ArrayList<>();
+
+        final Consumer<Supplier<Content>> submitter = task -> tasks.add(CompletableFuture.supplyAsync(task, executor));
         for (Rewriter rewriter : REWRITERS) {
-            rewriter.apply(resourcePackStorage, javaContent);
+            rewriter.submitTasks(resourcePackStorage, submitter);
+        }
+        executor.shutdown();
+        if (!executor.awaitTermination(1, TimeUnit.MINUTES)) {
+            executor.shutdownNow();
+            throw new RuntimeException("Resource pack rewriting tasks did not complete within the timeout");
+        }
+
+        final Content javaContent = new InMemoryContent();
+        for (CompletableFuture<Content> task : tasks) {
+            javaContent.putAll(task.getNow(null));
         }
         javaContent.putJson("pack.mcmeta", createPackManifest());
         return javaContent;
@@ -62,7 +82,7 @@ public class ResourcePackRewriter {
 
     public interface Rewriter {
 
-        void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent);
+        void submitTasks(final ResourcePackStorage resourcePackStorage, final Consumer<Supplier<Content>> submitter);
 
     }
 

@@ -41,6 +41,13 @@ import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class PacketFactory {
+    public static void sendJavaBlockDestroyProgress(final UserConnection user, final int id, final BlockPosition position, final int stage) {
+        final PacketWrapper blockDestruction = PacketWrapper.create(ClientboundPackets26_1.BLOCK_DESTRUCTION, user);
+        blockDestruction.write(Types.VAR_INT, id); // id
+        blockDestruction.write(Types.BLOCK_POSITION1_14, position); // position
+        blockDestruction.write(Types.BYTE, (byte) stage); // destroy stage
+        blockDestruction.send(BedrockProtocol.class);
+    }
 
     public static void sendJavaSystemChat(final UserConnection user, final Tag message) {
         final PacketWrapper systemChat = PacketWrapper.create(ClientboundPackets26_1.SYSTEM_CHAT, user);
@@ -145,8 +152,8 @@ public class PacketFactory {
     public static void writeJavaContainerSetContent(final PacketWrapper wrapper, final Container container) {
         wrapper.write(Types.VAR_INT, (int) container.javaContainerId()); // container id
         wrapper.write(Types.VAR_INT, 0); // revision
-        wrapper.write(VersionedTypes.V26_1.itemArray, container.getJavaItems()); // items
-        wrapper.write(VersionedTypes.V26_1.item, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
+        wrapper.write(VersionedTypes.V26_2.itemArray, container.getJavaItems()); // items
+        wrapper.write(VersionedTypes.V26_2.item, wrapper.user().get(InventoryTracker.class).getHudContainer().getJavaItem(0)); // cursor item
     }
 
     public static void writeJavaLevelParticles(final PacketWrapper wrapper, final Position3f position, final BedrockMappingData.JavaParticle particle) {
@@ -160,7 +167,7 @@ public class PacketFactory {
         wrapper.write(Types.FLOAT, particle.offsetZ()); // offset z
         wrapper.write(Types.FLOAT, particle.speed()); // speed
         wrapper.write(Types.INT, particle.count()); // count
-        wrapper.write(VersionedTypes.V26_1.particle, particle.particle().copy()); // particle data
+        wrapper.write(VersionedTypes.V26_2.particle, particle.particle().copy()); // particle data
     }
 
 }

@@ -45,8 +45,8 @@ public class InventoryActionDataType extends Type<InventoryActionData> {
         }
         final InventorySource source = ExperimentalBedrockTypes.INVENTORY_SOURCE.read(buffer);
         final int slot = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-        final BedrockItem fromItem = itemRewriter.itemType().read(buffer);
-        final BedrockItem toItem = itemRewriter.itemType().read(buffer);
+        final BedrockItem fromItem = itemRewriter.newItemType().read(buffer);
+        final BedrockItem toItem = itemRewriter.newItemType().read(buffer);
 
         return new InventoryActionData(source, slot, fromItem, toItem);
     }
@@ -59,7 +59,7 @@ public class InventoryActionDataType extends Type<InventoryActionData> {
         }
         ExperimentalBedrockTypes.INVENTORY_SOURCE.write(buffer, value.source());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.slot());
-        itemRewriter.itemType().write(buffer, value.fromItem());
-        itemRewriter.itemType().write(buffer, value.toItem());
+        itemRewriter.newItemType().write(buffer, value.fromItem());
+        itemRewriter.newItemType().write(buffer, value.toItem());
     }
 }

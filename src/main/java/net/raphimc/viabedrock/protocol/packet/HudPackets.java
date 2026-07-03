@@ -350,6 +350,7 @@ public class HudPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.BOSS_EVENT, ClientboundPackets26_1.BOSS_EVENT, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final long bossEntityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // boss entity unique id
+            final long playerId  = wrapper.read(BedrockTypes.VAR_LONG);
             final int rawUpdateType = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // update type
             final BossEventUpdateType updateType = BossEventUpdateType.getByValue(rawUpdateType);
             if (updateType == null) {
@@ -357,6 +358,12 @@ public class HudPackets {
                 wrapper.cancel();
                 return;
             }
+
+            final String bossName = wrapper.read(BedrockTypes.STRING);
+            final String filteredBossName = wrapper.read(BedrockTypes.STRING);
+            final float healthPercent = wrapper.read(BedrockTypes.FLOAT_LE);
+            final int color = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+            final int overlay = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
 
             final Entity entity = entityTracker.getEntityByUid(bossEntityUniqueId);
             if (entity == null) {
@@ -369,13 +376,10 @@ public class HudPackets {
                     if (!entity.hasBossBar()) {
                         entity.setHasBossBar(true);
                         wrapper.write(Types.VAR_INT, BossEventOperationType.ADD.ordinal()); // operation
-                        wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePackStorage.class).getTexts().translate(wrapper.read(BedrockTypes.STRING)))); // name
-                        wrapper.read(BedrockTypes.STRING); // filtered name
-                        wrapper.write(Types.FLOAT, wrapper.read(BedrockTypes.FLOAT_LE)); // progress
-                        wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // darken screen | Does nothing in Bedrock Edition
-                        wrapper.write(Types.VAR_INT, MathUtil.getOrFallback(wrapper.read(BedrockTypes.UNSIGNED_VAR_INT), 0, 5, 0)); // color
-                        wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // overlay | Does nothing in Bedrock Edition
-                        wrapper.write(Types.VAR_INT, 0); // overlay
+                        wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePackStorage.class).getTexts().translate(bossName))); // name
+                        wrapper.write(Types.FLOAT, healthPercent); // progress
+                        wrapper.write(Types.VAR_INT, MathUtil.getOrFallback(color, 0, 5, 0)); // color
+                        wrapper.write(Types.VAR_INT, overlay); // overlay
                         wrapper.write(Types.UNSIGNED_BYTE, (short) 0); // flags
                     } else {
                         wrapper.cancel();
@@ -387,25 +391,16 @@ public class HudPackets {
                 }
                 case Update_Percent -> {
                     wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_PROGRESS.ordinal()); // operation
-                    wrapper.write(Types.FLOAT, wrapper.read(BedrockTypes.FLOAT_LE)); // progress
+                    wrapper.write(Types.FLOAT, healthPercent); // progress
                 }
                 case Update_Name -> {
                     wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_NAME.ordinal()); // operation
-                    wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePackStorage.class).getTexts().translate(wrapper.read(BedrockTypes.STRING)))); // name
-                    wrapper.read(BedrockTypes.STRING); // filtered name
+                    wrapper.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePackStorage.class).getTexts().translate(bossName))); // name
                 }
-                case Update_Properties -> {
+                case Update_Properties, Update_Style -> {
                     wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_STYLE.ordinal()); // operation
-                    wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // darken screen | Does nothing in Bedrock Edition
-                    wrapper.write(Types.VAR_INT, MathUtil.getOrFallback(wrapper.read(BedrockTypes.UNSIGNED_VAR_INT), 0, 5, 0)); // color
-                    wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // overlay | Does nothing in Bedrock Edition
-                    wrapper.write(Types.VAR_INT, 0); // overlay
-                }
-                case Update_Style -> {
-                    wrapper.write(Types.VAR_INT, BossEventOperationType.UPDATE_STYLE.ordinal()); // operation
-                    wrapper.write(Types.VAR_INT, MathUtil.getOrFallback(wrapper.read(BedrockTypes.UNSIGNED_VAR_INT), 0, 5, 0)); // color
-                    wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // overlay | Does nothing in Bedrock Edition
-                    wrapper.write(Types.VAR_INT, 0); // overlay
+                    wrapper.write(Types.VAR_INT, MathUtil.getOrFallback(color, 0, 5, 0)); // color
+                    wrapper.write(Types.VAR_INT, overlay); // overlay
                 }
                 case PlayerAdded, PlayerRemoved, Query -> wrapper.cancel();
                 default -> throw new IllegalStateException("Unhandled BossEventUpdateType: " + updateType);

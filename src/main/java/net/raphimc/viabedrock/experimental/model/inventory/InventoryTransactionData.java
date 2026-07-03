@@ -19,10 +19,7 @@ package net.raphimc.viabedrock.experimental.model.inventory;
 
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemReleaseInventoryTransaction_ActionType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseInventoryTransaction_ActionType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseInventoryTransaction_PredictedResult;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemUseOnActorInventoryTransaction_ActionType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
@@ -47,7 +44,7 @@ public interface InventoryTransactionData {
             Position3f clickPosition,
             int blockRuntimeId,
             ItemUseInventoryTransaction_PredictedResult predictedResult,
-            byte clientCooldownState
+            ItemUseInventoryTransaction_ClientCooldownState clientCooldownState
     ) implements InventoryTransactionData {}
 
     // UseItemOnEntityTransactionData represents an inventory transaction data object sent when the client uses an item on an entity.

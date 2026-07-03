@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.packet;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.minecraft.GameProfile;
 import com.viaversion.viaversion.api.minecraft.Vector3d;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes1_21_11;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
@@ -94,7 +94,7 @@ public class OtherPlayerPackets {
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(Types.UUID, uuid); // uuid
-            wrapper.write(Types.VAR_INT, EntityTypes1_21_11.PLAYER.getId()); // type id
+            wrapper.write(Types.VAR_INT, EntityTypes26_2.PLAYER.getId()); // type id
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y()); // y
             wrapper.write(Types.DOUBLE, (double) position.z()); // z
@@ -109,7 +109,7 @@ public class OtherPlayerPackets {
             final PacketWrapper setEquipment = PacketWrapper.create(ClientboundPackets26_1.SET_EQUIPMENT, wrapper.user());
             setEquipment.write(Types.VAR_INT, entity.javaId()); // entity id
             setEquipment.write(Types.BYTE, (byte) EquipmentSlot.MAINHAND.ordinal()); // slot
-            setEquipment.write(VersionedTypes.V26_1.item, itemRewriter.javaItem(item)); // item
+            setEquipment.write(VersionedTypes.V26_2.item, itemRewriter.javaItem(item)); // item
             setEquipment.send(BedrockProtocol.class);
 
             entity.sendInitialEntityData();
@@ -135,7 +135,7 @@ public class OtherPlayerPackets {
                 wrapper.cancel();
                 return;
             }
-            if (!entity.javaType().isOrHasParent(EntityTypes1_21_11.PLAYER)) {
+            if (!entity.javaType().isOrHasParent(EntityTypes26_2.PLAYER)) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received move player packet for non-player entity: " + entity.javaType());
                 wrapper.cancel();
                 return;

@@ -78,6 +78,7 @@ public enum MinecraftEventing_AchievementIds {
     StayHydrated(114),
     MobKabob(115),
     AdventuringTime(116),
+    UhOh(117),
     ;
 
     private static final Int2ObjectMap<MinecraftEventing_AchievementIds> BY_VALUE = new Int2ObjectOpenHashMap<>();

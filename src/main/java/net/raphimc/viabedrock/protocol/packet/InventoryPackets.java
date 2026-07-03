@@ -167,9 +167,9 @@ public class InventoryPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets26_1.CONTAINER_SET_CONTENT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
-            final BedrockItem[] items = wrapper.read(itemRewriter.itemArrayType()); // items
+            final BedrockItem[] items = wrapper.read(itemRewriter.newItemArrayType()); // items
             final FullContainerName containerName = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
-            final BedrockItem storageItem = wrapper.read(itemRewriter.itemType()); // storage item
+            final BedrockItem storageItem = wrapper.read(itemRewriter.newItemType()); // storage item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             final Container container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);
@@ -197,7 +197,7 @@ public class InventoryPackets {
                     wrapper.write(Types.VAR_INT, 0); // revision
                     wrapper.write(Types.SHORT, (short) container.javaSlot(slot)); // slot
                 }
-                wrapper.write(VersionedTypes.V26_1.item, container.getJavaItem(slot)); // item
+                wrapper.write(VersionedTypes.V26_2.item, container.getJavaItem(slot)); // item
             } else {
                 wrapper.cancel();
             }
@@ -394,7 +394,7 @@ public class InventoryPackets {
                     case Body -> EquipmentSlot.BODY;
                 };
                 wrapper.write(Types.BYTE, (byte) (equipmentSlot.ordinal() | (i < (size - 1) ? Byte.MIN_VALUE : 0))); // slot
-                wrapper.write(VersionedTypes.V26_1.item, wrapper.user().get(ItemRewriter.class).javaItem(item)); // item
+                wrapper.write(VersionedTypes.V26_2.item, wrapper.user().get(ItemRewriter.class).javaItem(item)); // item
             }
         });
 
@@ -436,7 +436,7 @@ public class InventoryPackets {
         protocol.registerServerbound(ServerboundPackets26_1.SET_CREATIVE_MODE_SLOT, null, wrapper -> {
             wrapper.cancel();
             final short slot = wrapper.read(Types.SHORT); // slot
-            final Item item = wrapper.read(VersionedTypes.V26_1.lengthPrefixedItem); // item
+            final Item item = wrapper.read(VersionedTypes.V26_2.lengthPrefixedItem); // item
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             if (inventoryTracker.getPendingCloseContainer() != null) {

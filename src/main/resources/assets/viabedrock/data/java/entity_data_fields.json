@@ -16,6 +16,9 @@
   "ABSTRACT_CHESTED_HORSE": [
     "CHEST"
   ],
+  "ABSTRACT_CUBE_MOB": [
+    "SIZE"
+  ],
   "ABSTRACT_FISH": [
     "FROM_BUCKET"
   ],
@@ -341,9 +344,6 @@
   "SKELETON": [
     "STRAY_CONVERSION"
   ],
-  "SLIME": [
-    "SIZE"
-  ],
   "SNIFFER": [
     "STATE",
     "DROP_SEED_AT_TICK"
@@ -360,6 +360,10 @@
   "STRIDER": [
     "BOOST_TIME",
     "SUFFOCATING"
+  ],
+  "SULFUR_CUBE": [
+    "MAX_FUSE",
+    "FROM_BUCKET"
   ],
   "TADPOLE": [
     "AGE_LOCKED"

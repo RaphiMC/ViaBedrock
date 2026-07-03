@@ -8,6 +8,7 @@ public enum MovementEffectType {
 
     GLIDE_BOOST(0),
     DOLPHIN_BOOST(1),
+    GEYSER_BOOST(2),
     ;
 
     private static final Int2ObjectMap<MovementEffectType> BY_VALUE = new Int2ObjectOpenHashMap<>();

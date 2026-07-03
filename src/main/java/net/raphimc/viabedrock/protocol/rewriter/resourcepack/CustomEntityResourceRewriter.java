@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.protocol.rewriter.resourcepack;
 
 import com.viaversion.viaversion.api.minecraft.item.data.ItemModel;
-import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.resourcepack.content.Content;
@@ -29,8 +28,9 @@ import org.cube.converter.converter.enums.RotationType;
 import org.cube.converter.model.impl.bedrock.BedrockGeometryModel;
 import org.cube.converter.model.impl.java.JavaItemModel;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
 
@@ -45,32 +45,36 @@ public class CustomEntityResourceRewriter extends ItemModelResourceRewriter {
     }
 
     @Override
-    public void apply(final ResourcePackStorage resourcePackStorage, final Content javaContent) {
-        for (Map.Entry<String, EntityDefinitions.EntityDefinition> entityEntry : resourcePackStorage.getEntities().entities().entrySet()) {
-            final EntityDefinitions.EntityDefinition entityDefinition = entityEntry.getValue();
-            final Map<String, JsonObject> javaModelDefinitions = new HashMap<>();
-            for (String bedrockPath : entityDefinition.entityData().getTextures().values()) {
-                for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
-                    final Content.LazyImage texture = pack.content().getShortnameImage(bedrockPath);
-                    if (texture != null) {
-                        javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(bedrockPath) + ".png", texture);
-                        break;
-                    }
-                }
-            }
-            for (Map.Entry<String, String> modelEntry : entityDefinition.entityData().getGeometries().entrySet()) {
-                final BedrockGeometryModel bedrockGeometry = resourcePackStorage.getModels().entityModels().get(modelEntry.getValue());
-                if (bedrockGeometry != null) {
-                    for (Map.Entry<String, String> textureEntry : entityDefinition.entityData().getTextures().entrySet()) {
-                        final String modelKey = modelEntry.getKey() + "_" + textureEntry.getKey();
-                        final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + this.getJavaTexturePath(textureEntry.getValue()), RotationType.POST_1_21_11);
-                        javaModelDefinitions.put(modelKey, itemModelData.compile());
-                        resourcePackStorage.getConverterData().put("ce_" + entityEntry.getKey() + '_' + modelKey + "_scale", itemModelData.getScale());
-                    }
-                }
-            }
-            this.putItemDefinition(javaContent, entityEntry.getKey(), javaModelDefinitions);
+    public void submitTasks(final ResourcePackStorage resourcePackStorage, final Consumer<Supplier<Content>> submitter) {
+        for (EntityDefinitions.EntityDefinition entityDefinition : resourcePackStorage.getEntities().entities().values()) {
+            submitter.accept(() -> this.handleEntityDefinition(resourcePackStorage, entityDefinition));
         }
+    }
+
+    private Content handleEntityDefinition(final ResourcePackStorage resourcePackStorage, final EntityDefinitions.EntityDefinition entityDefinition) {
+        final ItemModelContent javaContent = new ItemModelContent(entityDefinition.identifier());
+        for (String bedrockPath : entityDefinition.entityData().getTextures().values()) {
+            for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
+                final Content.LazyImage texture = pack.content().getShortnameImage(bedrockPath);
+                if (texture != null) {
+                    javaContent.putPngImage("assets/viabedrock/textures/" + this.getJavaTexturePath(bedrockPath) + ".png", texture);
+                    break;
+                }
+            }
+        }
+        for (Map.Entry<String, String> modelEntry : entityDefinition.entityData().getGeometries().entrySet()) {
+            final BedrockGeometryModel bedrockGeometry = resourcePackStorage.getModels().entityModels().get(modelEntry.getValue());
+            if (bedrockGeometry != null) {
+                for (Map.Entry<String, String> textureEntry : entityDefinition.entityData().getTextures().entrySet()) {
+                    final String modelKey = modelEntry.getKey() + "_" + textureEntry.getKey();
+                    final JavaItemModel itemModelData = bedrockGeometry.toJavaItemModel("viabedrock:" + this.getJavaTexturePath(textureEntry.getValue()), RotationType.POST_1_21_11);
+                    javaContent.putModel(modelKey, itemModelData.compile());
+                    resourcePackStorage.getConverterData().put("ce_" + entityDefinition.identifier() + '_' + modelKey + "_scale", itemModelData.getScale());
+                }
+            }
+        }
+        javaContent.generateItemDefinition();
+        return javaContent;
     }
 
 }

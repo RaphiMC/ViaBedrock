@@ -233,7 +233,7 @@ public class ExperimentalFeatures {
                             Position3f.ZERO, // click position
                             0, // block runtime id
                             ItemUseInventoryTransaction_PredictedResult.Failure,
-                            (byte) 0 // TODO: client cooldown state
+                            ItemUseInventoryTransaction_ClientCooldownState.Off
                     )
             );
             wrapper.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
@@ -318,7 +318,7 @@ public class ExperimentalFeatures {
                             clickPosition,
                             chunkTracker.getBlockState(position),
                             ItemUseInventoryTransaction_PredictedResult.Success,
-                            (byte) 0 // TODO: client cooldown state
+                            ItemUseInventoryTransaction_ClientCooldownState.Off
                     )
             );
             transactionPacket.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);

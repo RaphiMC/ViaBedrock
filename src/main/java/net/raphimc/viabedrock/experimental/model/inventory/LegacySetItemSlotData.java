@@ -17,5 +17,7 @@
  */
 package net.raphimc.viabedrock.experimental.model.inventory;
 
-public record LegacySetItemSlotData(byte containerId, byte[] slots) {
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
+
+public record LegacySetItemSlotData(ContainerEnumName container, byte[] slots) {
 }

@@ -61,10 +61,7 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 public class JoinPackets {
@@ -72,6 +69,7 @@ public class JoinPackets {
     private static final PacketHandler BIOME_DEFINITION_LIST_HANDLER = wrapper -> {
         if (wrapper.isCancelled()) return;
 
+        // TODO: Check namespaced
         wrapper.user().get(GameSessionStorage.class).setBedrockBiomeDefinitions((CompoundTag) wrapper.read(BedrockTypes.NETWORK_TAG)); // biome definitions
     };
 
@@ -127,6 +125,7 @@ public class JoinPackets {
                         wrapper.write(Types.UUID, protocolInfo.getUuid()); // uuid
                         wrapper.write(Types.STRING, protocolInfo.getUsername()); // username
                         wrapper.write(Types.PROFILE_PROPERTY_ARRAY, new GameProfile.Property[0]); // properties
+                        wrapper.write(Types.UUID, UUID.randomUUID()); // session id
 
                         ClientboundBaseProtocol1_7.onLoginSuccess(wrapper.user());
                         sendClientCacheStatus(wrapper.user());
@@ -258,6 +257,8 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // enable experimental game play
                     final ChatRestrictionLevel chatRestrictionLevel = ChatRestrictionLevel.getByValue(wrapper.read(Types.BYTE), ChatRestrictionLevel.Disabled); // chat restriction level
                     wrapper.read(Types.BOOLEAN); // disabling player interactions
+                    wrapper.read(BedrockTypes.VAR_INT); // server editor connection policy
+                    wrapper.read(Types.BOOLEAN); // allow anonymous block drops in editor worlds
 
                     // Continue reading start game packet
                     wrapper.read(BedrockTypes.STRING); // level id
@@ -278,6 +279,7 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // client side generation
                     final boolean hashedRuntimeBlockIds = wrapper.read(Types.BOOLEAN); // use hashed block runtime ids
                     wrapper.read(Types.BOOLEAN); // server authoritative sounds
+                    wrapper.read(Types.BOOLEAN); // is logging chat
                     if (wrapper.read(Types.BOOLEAN)) { // has server join information
                         if (wrapper.read(Types.BOOLEAN)) { // has gathering join information
                             wrapper.read(BedrockTypes.UUID); // experience id
@@ -542,7 +544,8 @@ public class JoinPackets {
         joinGame.write(Types.OPTIONAL_GLOBAL_POSITION, null); // last death location
         joinGame.write(Types.VAR_INT, 0); // portal cooldown
         joinGame.write(Types.VAR_INT, 64); // sea level
-        joinGame.write(Types.BOOLEAN, false); // enforce secure chat
+        joinGame.write(Types.BOOLEAN, false); // online mode
+        joinGame.write(Types.BOOLEAN, false); // enforces secure chat
         joinGame.send(BedrockProtocol.class);
 
         clientPlayer.createTeam();

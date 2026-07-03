@@ -3,13 +3,16 @@ package net.raphimc.viabedrock.protocol.data.generated.java;
 
 public class Attributes {
 
+    public static final String AIR_DRAG_MODIFIER = "minecraft:air_drag_modifier";
     public static final String ARMOR = "minecraft:armor";
     public static final String ARMOR_TOUGHNESS = "minecraft:armor_toughness";
     public static final String ATTACK_DAMAGE = "minecraft:attack_damage";
     public static final String ATTACK_KNOCKBACK = "minecraft:attack_knockback";
     public static final String ATTACK_SPEED = "minecraft:attack_speed";
+    public static final String BELOW_NAME_DISTANCE = "minecraft:below_name_distance";
     public static final String BLOCK_BREAK_SPEED = "minecraft:block_break_speed";
     public static final String BLOCK_INTERACTION_RANGE = "minecraft:block_interaction_range";
+    public static final String BOUNCINESS = "minecraft:bounciness";
     public static final String BURNING_TIME = "minecraft:burning_time";
     public static final String CAMERA_DISTANCE = "minecraft:camera_distance";
     public static final String ENTITY_INTERACTION_RANGE = "minecraft:entity_interaction_range";
@@ -17,6 +20,7 @@ public class Attributes {
     public static final String FALL_DAMAGE_MULTIPLIER = "minecraft:fall_damage_multiplier";
     public static final String FLYING_SPEED = "minecraft:flying_speed";
     public static final String FOLLOW_RANGE = "minecraft:follow_range";
+    public static final String FRICTION_MODIFIER = "minecraft:friction_modifier";
     public static final String GRAVITY = "minecraft:gravity";
     public static final String JUMP_STRENGTH = "minecraft:jump_strength";
     public static final String KNOCKBACK_RESISTANCE = "minecraft:knockback_resistance";
@@ -26,6 +30,7 @@ public class Attributes {
     public static final String MINING_EFFICIENCY = "minecraft:mining_efficiency";
     public static final String MOVEMENT_EFFICIENCY = "minecraft:movement_efficiency";
     public static final String MOVEMENT_SPEED = "minecraft:movement_speed";
+    public static final String NAME_TAG_DISTANCE = "minecraft:name_tag_distance";
     public static final String OXYGEN_BONUS = "minecraft:oxygen_bonus";
     public static final String SAFE_FALL_DISTANCE = "minecraft:safe_fall_distance";
     public static final String SCALE = "minecraft:scale";

@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ControlScheme_Scheme {
 
-    locked_player_relative_strafe(0),
-    camera_relative(1),
-    camera_relative_strafe(2),
-    player_relative(3),
-    player_relative_strafe(4),
+    Locked_player_relative_strafe(0),
+    Camera_relative(1),
+    Camera_relative_strafe(2),
+    Player_relative(3),
+    Player_relative_strafe(4),
     ;
 
     private static final Int2ObjectMap<ControlScheme_Scheme> BY_VALUE = new Int2ObjectOpenHashMap<>();
