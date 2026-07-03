@@ -464,7 +464,13 @@ public class ClientPlayerPackets {
                 clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StartJumping);
             }
 
-            if (clientPlayer.isOnGround() && clientPlayer.isGliding()) {
+            if (clientPlayer.isGliding() && (
+                    clientPlayer.isOnGround() ||
+                    clientPlayer.effects().containsKey("minecraft:levitation") ||
+                    clientPlayer.entityFlags().contains(ActorFlags.WALLCLIMBING) ||
+                    clientPlayer.entityFlags().contains(ActorFlags.IN_ASCENDABLE_BLOCK) ||
+                    clientPlayer.entityFlags().contains(ActorFlags.IN_SCAFFOLDING)
+            )) {
                 clientPlayer.setGliding(false);
                 clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StopGliding);
             }
