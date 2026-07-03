@@ -306,7 +306,7 @@ public class EntityMetadataRewriter {
                     }
                     case SHEEP -> { // TODO: This seems to get overwritten by the entity flags sheared value, need to combine both
                         byte sheepBitMask = 0;
-                        sheepBitMask |= javaColorIndex & 0x0F; // Lower 4 bits for color
+                        sheepBitMask |= (byte) (javaColorIndex & 0x0F); // Lower 4 bits for color
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WOOL), VersionedTypes.V26_2.entityDataTypes().byteType, sheepBitMask));
                     }
                     default -> {
