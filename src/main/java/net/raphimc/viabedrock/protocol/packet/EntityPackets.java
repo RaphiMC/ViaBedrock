@@ -434,8 +434,8 @@ public class EntityPackets {
                     wrapper.setPacketType(ClientboundPackets26_1.DAMAGE_EVENT);
                     wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
                     wrapper.write(Types.VAR_INT, RegistryUtil.getRegistryIndex(damageTypeRegistry, damageTypeEntry)); // source type
-                    wrapper.write(Types.VAR_INT, 0); // source cause id
-                    wrapper.write(Types.VAR_INT, 0); // source direct id
+                    wrapper.write(Types.OPTIONAL_VAR_INT, null); // source cause id
+                    wrapper.write(Types.OPTIONAL_VAR_INT, null); // source direct id
                     wrapper.write(Types.BOOLEAN, false); // has source position
                     if (entity != entityTracker.getClientPlayer()) {
                         entity.playSound("hurt");
