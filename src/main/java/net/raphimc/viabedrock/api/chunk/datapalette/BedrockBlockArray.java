@@ -18,10 +18,9 @@
 package net.raphimc.viabedrock.api.chunk.datapalette;
 
 import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
-import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 import com.viaversion.viaversion.api.minecraft.chunks.NibbleArray;
 
-public class BedrockBlockArray implements DataPalette, Cloneable {
+public class BedrockBlockArray implements DefaultedDataPalette, Cloneable {
 
     private final byte[] blocks;
     private final NibbleArray data;
