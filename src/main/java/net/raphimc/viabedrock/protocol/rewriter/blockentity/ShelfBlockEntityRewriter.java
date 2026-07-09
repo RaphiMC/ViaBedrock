@@ -36,16 +36,19 @@ public class ShelfBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         final CompoundTag javaTag = new CompoundTag();
 
         final ListTag<CompoundTag> bedrockItemList = bedrockTag.getListTag("Items", CompoundTag.class);
-        final ListTag<CompoundTag> javaItemList = new ListTag<>(CompoundTag.class);
-        final ItemRewriter itemRewriter = user.get(ItemRewriter.class);
-        for (int i = 0; i < 3; i++) {
-            final CompoundTag bedrockItemTag = bedrockItemList.get(i);
-            final CompoundTag javaItemTag = itemRewriter.javaItem(bedrockItemTag);
-            if (javaItemTag == null) continue;
-            javaItemTag.put("Slot", new ByteTag((byte) i));
-            javaItemList.add(javaItemTag);
+        if (bedrockItemList != null) {
+            final ListTag<CompoundTag> javaItemList = new ListTag<>(CompoundTag.class);
+            final ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+            final int count = Math.min(3, bedrockItemList.size());
+            for (int i = 0; i < count; i++) {
+                final CompoundTag bedrockItemTag = bedrockItemList.get(i);
+                final CompoundTag javaItemTag = itemRewriter.javaItem(bedrockItemTag);
+                if (javaItemTag == null) continue;
+                javaItemTag.put("Slot", new ByteTag((byte) i));
+                javaItemList.add(javaItemTag);
+            }
+            javaTag.put("Items", javaItemList);
         }
-        javaTag.put("Items", javaItemList);
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }
