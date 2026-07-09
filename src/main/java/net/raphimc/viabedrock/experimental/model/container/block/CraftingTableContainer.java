@@ -196,7 +196,7 @@ public class CraftingTableContainer extends ExperimentalContainer {
                 nextRequestId,
                 actions,
                 List.of(),
-                TextProcessingEventOrigin.unknown
+                TextProcessingEventOrigin.Unknown
         );
 
         inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, prevCursorContainer, prevContainers)); // Store the request to track it later

@@ -103,7 +103,7 @@ public abstract class ExperimentalContainer {
                 clickContext.inventoryRequestTracker.nextRequestId(),
                 itemActions,
                 List.of(),
-                TextProcessingEventOrigin.unknown
+                TextProcessingEventOrigin.Unknown
         );
 
         clickContext.inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, revision, clickContext.prevCursorContainer, clickContext.prevContainers)); // Store the request to track it later

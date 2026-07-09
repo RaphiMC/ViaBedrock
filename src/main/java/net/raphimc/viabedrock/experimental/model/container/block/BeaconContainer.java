@@ -162,7 +162,7 @@ public class BeaconContainer extends ExperimentalContainer {
                         )
                 ),
                 List.of(),
-                TextProcessingEventOrigin.unknown
+                TextProcessingEventOrigin.Unknown
         );
 
         List<ExperimentalContainer> prevContainers = new ArrayList<>();

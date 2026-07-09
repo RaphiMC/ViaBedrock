@@ -434,7 +434,7 @@ public class ExperimentalFeatures {
             if (wrapper.isCancelled()) return;
             final InventoryContainer inventoryContainer = wrapper.user().get(ExperimentalInventoryTracker.class).getInventoryContainer();
             wrapper.set(BedrockTypes.VAR_INT, 1, (int) inventoryContainer.getSelectedHotbarSlot()); // hotbar slot
-            wrapper.set(wrapper.user().get(ItemRewriter.class).itemType(), 0, inventoryContainer.getSelectedHotbarItem()); // held item
+            wrapper.set(wrapper.user().get(ItemRewriter.class).newItemType(), 0, inventoryContainer.getSelectedHotbarItem()); // held item
         });
         protocol.registerServerbound(ServerboundPackets26_1.SET_BEACON, null, wrapper -> {
             wrapper.cancel();
@@ -598,9 +598,9 @@ public class ExperimentalFeatures {
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_CONTENT, ClientboundPackets26_1.CONTAINER_SET_CONTENT, wrapper -> {
             final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
             final int containerId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // container id
-            final BedrockItem[] items = wrapper.read(itemRewriter.itemArrayType()); // items
+            final BedrockItem[] items = wrapper.read(itemRewriter.newItemArrayType()); // items
             final FullContainerName containerName = wrapper.read(BedrockTypes.FULL_CONTAINER_NAME); // container name
-            final BedrockItem storageItem = wrapper.read(itemRewriter.itemType()); // storage item
+            final BedrockItem storageItem = wrapper.read(itemRewriter.newItemType()); // storage item
 
             final ExperimentalInventoryTracker inventoryTracker = wrapper.user().get(ExperimentalInventoryTracker.class);
             final ExperimentalContainer container = inventoryTracker.getContainerClientbound((byte) containerId, containerName, storageItem);

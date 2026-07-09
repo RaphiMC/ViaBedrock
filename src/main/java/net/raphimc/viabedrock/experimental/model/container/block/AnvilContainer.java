@@ -146,7 +146,7 @@ public class AnvilContainer extends ExperimentalContainer {
             )));
 
             List<String> filterStrings = new ArrayList<>();
-            TextProcessingEventOrigin origin = TextProcessingEventOrigin.unknown;
+            TextProcessingEventOrigin origin = TextProcessingEventOrigin.Unknown;
             if (!this.getRenameText().isEmpty()) {
                 filterStrings.add(this.getRenameText());
                 origin = TextProcessingEventOrigin.AnvilText;

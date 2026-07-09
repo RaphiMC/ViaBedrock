@@ -154,7 +154,7 @@ public class EnchantmentContainer extends ExperimentalContainer {
                 reqId,
                 actions,
                 List.of(),
-                TextProcessingEventOrigin.unknown
+                TextProcessingEventOrigin.Unknown
         );
 
         inventoryRequestTracker.addRequest(new InventoryRequestStorage(request, 0, prevCursorContainer, prevContainers)); // Store the request to track it later
