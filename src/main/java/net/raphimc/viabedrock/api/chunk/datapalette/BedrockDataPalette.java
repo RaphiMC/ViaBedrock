@@ -19,7 +19,6 @@ package net.raphimc.viabedrock.api.chunk.datapalette;
 
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
-import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 import com.viaversion.viaversion.libs.fastutil.ints.IntArrayList;
 import com.viaversion.viaversion.libs.fastutil.ints.IntList;
 import com.viaversion.viaversion.libs.fastutil.objects.Object2IntFunction;
@@ -28,7 +27,7 @@ import net.raphimc.viabedrock.api.chunk.bitarray.BitArrayVersion;
 
 import java.util.List;
 
-public class BedrockDataPalette implements DataPalette, Cloneable {
+public class BedrockDataPalette implements DefaultedDataPalette, Cloneable {
 
     private final IntList palette;
     private BitArray bitArray;

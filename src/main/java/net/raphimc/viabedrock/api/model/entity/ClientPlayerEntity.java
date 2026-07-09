@@ -27,6 +27,7 @@ import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
@@ -72,6 +73,10 @@ public class ClientPlayerEntity extends PlayerEntity {
     private boolean horizontalCollision;
     private boolean sneaking;
     private boolean sprinting;
+    private boolean gliding;
+
+    // Riding
+    private boolean requestedDismount = false;
 
     // Misc data
     private GameType gameType;
@@ -97,6 +102,16 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.prevPosition = this.position;
         this.prevOnGround = this.onGround;
         this.prevInputFlags = this.inputFlags;
+
+        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+            // TODO: Experimental
+
+            if (this.mountRuntimeId != -1 && this.sneaking && !this.requestedDismount) {
+                // Dismount entity
+                ExperimentalPacketFactory.sendBedrockDismount(this.user, this.mountRuntimeId);
+                this.requestedDismount = true;
+            }
+        }
     }
 
     public void sendPlayerPositionPacketToClient(final Set<Relative> relatives) {
@@ -363,6 +378,14 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.updateAttributes(new EntityAttribute[]{newMovementAttribute.withValue(newMovementAttribute.computeCurrentValue())});
     }
 
+    public boolean isGliding() {
+        return this.gliding;
+    }
+
+    public void setGliding(final boolean gliding) {
+        this.gliding = gliding;
+    }
+
     public GameType gameType() {
         return this.gameType;
     }
@@ -420,6 +443,10 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     public void setBlockBreakingInfo(final BlockBreakingInfo blockBreakingInfo) {
         this.blockBreakingInfo = blockBreakingInfo;
+    }
+
+    public void setRequestedDismount(final boolean requestedDismount) {
+        this.requestedDismount = requestedDismount;
     }
 
     @Override

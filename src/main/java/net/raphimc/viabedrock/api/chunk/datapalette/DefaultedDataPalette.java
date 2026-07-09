@@ -15,8 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.protocol.model;
+package net.raphimc.viabedrock.api.chunk.datapalette;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorLinkType;
+import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
+import com.viaversion.viaversion.api.minecraft.chunks.DataPalette;
 
-public record EntityLink(long fromEntityUniqueId, long toEntityUniqueId, ActorLinkType type, boolean immediate, boolean riderInitiated, float vehicleAngularVelocity) { }
+import java.util.function.IntConsumer;
+import java.util.function.IntPredicate;
+
+public interface DefaultedDataPalette extends DataPalette {
+
+    @Override
+    default void forEachMatchingCoordinate(IntPredicate idPredicate, IntConsumer coordinateConsumer) {
+        for (int idx = 0; idx < ChunkSection.SIZE; idx++) {
+            if (idPredicate.test(idAt(idx))) {
+                coordinateConsumer.accept(idx);
+            }
+        }
+    }
+
+}

@@ -43,7 +43,7 @@ public class BreakingTracker extends StoredObject {
 
             // Clamped this to 0-10 instead of 0-9 because we don't want the animation to be stuck at stage 9 (we want it to stop after that).
             // We're doing this because breaking animation doesn't seem to actually be cleared from the client cache until StopBlockCracking is sent.
-            int progress = (int) Math.max(0, Math.min(10, ((System.currentTimeMillis() - info.startTime()) / (double) ((65535 / info.breakTime()) * 50)) * 10));
+            int progress = info.breakTime() <= 0 ? 10 : (int) Math.max(0, Math.min(10, ((System.currentTimeMillis() - info.startTime()) / (double) ((65535 / info.breakTime()) * 50)) * 10));
             if (progress != info.prevProgress()) {
                 PacketFactory.sendJavaBlockDestroyProgress(user(), info.breakId(), new BlockPosition((int) position3f.x(), (int) position3f.y(), (int) position3f.z()), progress);
             }
