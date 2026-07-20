@@ -40,7 +40,8 @@ public class TrialSpawnerBlockEntityRewriter implements BlockEntityRewriter.Rewr
 
         // TODO: More testing needed
 
-        if (bedrockTag.getCompoundTag("spawn_data").get("TypeId") instanceof StringTag entityIdentifierTag) {
+        final CompoundTag spawnDataTag = bedrockTag.getCompoundTag("spawn_data");
+        if (spawnDataTag != null && spawnDataTag.get("TypeId") instanceof StringTag entityIdentifierTag) {
             final String bedrockEntityIdentifier = entityIdentifierTag.getValue();
             final EntityTypes26_2 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(Key.namespaced(bedrockEntityIdentifier));
             if (javaEntityType != null) {
