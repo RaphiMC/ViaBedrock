@@ -5,7 +5,7 @@ plugins {
 idea {
     module {
         ["run"].each {
-            excludeDirs << layout.projectDirectory.file("$it").asFile
+            excludeDirs += file("${projectDir}/$it")
         }
     }
 }

@@ -3,7 +3,7 @@ plugins {
 }
 
 sourceSets.configureEach {
-    it.classTokenReplacer {
+    classTokenReplacer {
         property("\${version}", project.version)
         property("\${commit_hash}", latestCommitHash().get())
     }

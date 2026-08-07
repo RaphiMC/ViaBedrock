@@ -26,5 +26,5 @@ signing {
 }
 
 tasks.withType(PublishToMavenRepository).configureEach {
-    it.dependsOn(tasks.withType(Sign))
+    dependsOn(tasks.withType(Sign))
 }
