@@ -152,6 +152,7 @@ public enum ActorFlags {
     USES_LEGACY_FRICTION(127),
     USES_UNIFORM_AIR_DRAG(128),
     NAMEPLATE_DEPTH_TESTED(129),
+    NOT_PICKABLE_FROM_INSIDE(130),
     ;
 
     private static final Int2ObjectMap<ActorFlags> BY_VALUE = new Int2ObjectOpenHashMap<>();

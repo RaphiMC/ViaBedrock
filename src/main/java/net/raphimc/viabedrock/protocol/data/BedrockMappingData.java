@@ -1004,6 +1004,7 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockToJavaEnchantments.put(enchantType, javaIdentifier);
             }
             for (Enchant_Type enchantType : Enchant_Type.values()) {
+                if (enchantType == Enchant_Type.NumEnchantments || enchantType == Enchant_Type.InvalidEnchantment) continue;
                 if (!this.bedrockToJavaEnchantments.containsKey(enchantType)) {
                     throw new RuntimeException("Missing bedrock -> java enchantment mapping for " + enchantType.name());
                 }
