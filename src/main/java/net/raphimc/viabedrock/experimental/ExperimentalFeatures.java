@@ -47,6 +47,8 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ClientboundMapItemDataPacket_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.GameMode;
@@ -59,7 +61,6 @@ import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
-import net.raphimc.viabedrock.protocol.types.model.EntityLinkType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,13 +137,13 @@ public class ExperimentalFeatures {
                         null,
                         List.of(
                                 new InventoryActionData(
-                                        new InventorySource(InventorySourceType.WorldInteraction, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySource_InventorySourceFlags.NoFlag),
+                                        new InventorySource(InventorySourceType.World_Interaction, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySource_InventorySourceFlags.No_Flag),
                                         0,
                                         BedrockItem.empty(),
                                         predictedAmount
                                 ),
                                 new InventoryActionData(
-                                        new InventorySource(InventorySourceType.ContainerInventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.NoFlag),
+                                        new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.No_Flag),
                                         inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
                                         currentItem,
                                         predictedToItem
@@ -281,7 +282,7 @@ public class ExperimentalFeatures {
                     null,
                     List.of(
                             new InventoryActionData(
-                                    new InventorySource(InventorySourceType.ContainerInventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.NoFlag),
+                                    new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.No_Flag),
                                     inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
                                     inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
                                     predictedToItem
@@ -330,7 +331,7 @@ public class ExperimentalFeatures {
 
             if (inventoryTransaction.actions() != null && !inventoryTransaction.actions().isEmpty()) {
                 for (InventoryActionData action : inventoryTransaction.actions()) {
-                    if (action.source().type() == InventorySourceType.ContainerInventory) {
+                    if (action.source().type() == InventorySourceType.Container_Inventory) {
                         Container container = inventoryTracker.getContainerClientbound((byte) action.source().containerId(), null, null);
 
                         if (container != null) {

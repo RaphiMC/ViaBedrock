@@ -9,6 +9,7 @@ public enum NewInteractionModel {
     Touch(0),
     Crosshair(1),
     Classic(2),
+    Count(3),
     ;
 
     private static final Int2ObjectMap<NewInteractionModel> BY_VALUE = new Int2ObjectOpenHashMap<>();

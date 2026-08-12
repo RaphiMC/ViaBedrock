@@ -50,6 +50,8 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.DataValues;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.Difficulty;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;

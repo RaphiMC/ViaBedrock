@@ -7,8 +7,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 public enum ItemUseInventoryTransaction_TriggerType {
 
     Unknown(0),
-    PlayerInput(1),
-    SimulationTick(2),
+    Player_Input(1),
+    Simulation_Tick(2),
     ;
 
     private static final Int2ObjectMap<ItemUseInventoryTransaction_TriggerType> BY_VALUE = new Int2ObjectOpenHashMap<>();

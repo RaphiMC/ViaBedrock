@@ -12,7 +12,7 @@ public enum GameType {
     Adventure(2),
     Default(5),
     Spectator(6),
-    WorldDefault(Survival),
+    WorldDefault(0),
     ;
 
     private static final Int2ObjectMap<GameType> BY_VALUE = new Int2ObjectOpenHashMap<>();

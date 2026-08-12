@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.api.model.container.player;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 public class HudContainer extends InventoryRedirectContainer {

@@ -48,6 +48,8 @@ public enum Enchant_Type {
     Density(39),
     Breach(40),
     Lunge(41),
+    NumEnchantments(42),
+    InvalidEnchantment(43),
     ;
 
     private static final Int2ObjectMap<Enchant_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();

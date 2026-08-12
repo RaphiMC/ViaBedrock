@@ -49,8 +49,8 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ServerboundLoadingScreenPacketType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SpawnPositionType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SubChunkPacket_HeightMapDataType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SubChunkPacket_SubChunkRequestResult;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SubChunkPacketPayload_HeightMapDataType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SubChunkPacketPayload_SubChunkRequestResult;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.data.enums.java.RespawnKeepFlag;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomBlockTags;
@@ -319,25 +319,25 @@ public class WorldPackets {
 
             for (long i = 0; i < count; i++) {
                 final BlockPosition offset = wrapper.read(BedrockTypes.SUB_CHUNK_OFFSET); // offset
-                final SubChunkPacket_SubChunkRequestResult result = SubChunkPacket_SubChunkRequestResult.getByValue(wrapper.read(Types.BYTE), SubChunkPacket_SubChunkRequestResult.Undefined); // result
-                final byte[] data = result != SubChunkPacket_SubChunkRequestResult.SuccessAllAir || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
-                final SubChunkPacket_HeightMapDataType heightmapResult = SubChunkPacket_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacket_HeightMapDataType.NoData); // heightmap result
-                if (heightmapResult == SubChunkPacket_HeightMapDataType.HasData) {
+                final SubChunkPacketPayload_SubChunkRequestResult result = SubChunkPacketPayload_SubChunkRequestResult.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_SubChunkRequestResult.Undefined); // result
+                final byte[] data = result != SubChunkPacketPayload_SubChunkRequestResult.SuccessAllAir || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
+                final SubChunkPacketPayload_HeightMapDataType heightmapResult = SubChunkPacketPayload_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_HeightMapDataType.NoData); // heightmap result
+                if (heightmapResult == SubChunkPacketPayload_HeightMapDataType.HasData) {
                     wrapper.read(new ByteArrayType(256)); // heightmap data
                 }
-                final SubChunkPacket_HeightMapDataType renderHeightmapResult = SubChunkPacket_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacket_HeightMapDataType.NoData); // render heightmap result
-                if (renderHeightmapResult == SubChunkPacket_HeightMapDataType.HasData) {
+                final SubChunkPacketPayload_HeightMapDataType renderHeightmapResult = SubChunkPacketPayload_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_HeightMapDataType.NoData); // render heightmap result
+                if (renderHeightmapResult == SubChunkPacketPayload_HeightMapDataType.HasData) {
                     wrapper.read(new ByteArrayType(256)); // render heightmap data
                 }
 
                 final BlockPosition absolute = new BlockPosition(center.x() + offset.x(), center.y() + offset.y(), center.z() + offset.z());
                 final Consumer<byte[]> dataConsumer = combinedData -> {
                     try {
-                        if (result == SubChunkPacket_SubChunkRequestResult.SuccessAllAir) {
+                        if (result == SubChunkPacketPayload_SubChunkRequestResult.SuccessAllAir) {
                             if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), new BedrockChunkSectionImpl(), new ArrayList<>())) {
                                 chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
                             }
-                        } else if (result == SubChunkPacket_SubChunkRequestResult.Success) {
+                        } else if (result == SubChunkPacketPayload_SubChunkRequestResult.Success) {
                             final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
 
                             BedrockChunkSection section = new BedrockChunkSectionImpl();

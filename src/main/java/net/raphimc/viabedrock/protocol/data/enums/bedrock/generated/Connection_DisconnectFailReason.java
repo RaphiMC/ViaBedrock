@@ -148,6 +148,12 @@ public enum Connection_DisconnectFailReason {
     NonceNotValid(139),
     HostDisconnected(140),
     EditorJoinIntentPolicyFailure(141),
+    NetherNetIdentityNotAllowed(142),
+    InvalidName(143),
+    ExpiredToken(144),
+    HostAcceptsNoTypeOfAuth(145),
+    NotAuthenticatedFastFail(146),
+    EditorNotAllowed(147),
     ;
 
     private static final Int2ObjectMap<Connection_DisconnectFailReason> BY_VALUE = new Int2ObjectOpenHashMap<>();

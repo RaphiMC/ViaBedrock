@@ -79,6 +79,15 @@ public enum MinecraftEventing_AchievementIds {
     MobKabob(115),
     AdventuringTime(116),
     UhOh(117),
+    GettingWood(118),
+    BenchMaking(119),
+    TimeToMine(120),
+    HotTopic(121),
+    AcquireHardware(122),
+    GettingAnUpgrade(123),
+    MonsterHunter(124),
+    Diamonds(125),
+    PlethoraOfCats(126),
     ;
 
     private static final Int2ObjectMap<MinecraftEventing_AchievementIds> BY_VALUE = new Int2ObjectOpenHashMap<>();

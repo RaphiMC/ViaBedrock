@@ -24,7 +24,7 @@ import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomItemTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;

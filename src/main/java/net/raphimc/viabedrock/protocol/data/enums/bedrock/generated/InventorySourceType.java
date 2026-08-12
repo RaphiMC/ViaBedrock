@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum InventorySourceType {
 
-    ContainerInventory(0),
-    GlobalInventory(1),
-    WorldInteraction(2),
-    CreativeInventory(3),
-    NonImplementedFeatureTODO(99999),
+    Container_Inventory(0),
+    Global_Inventory(1),
+    World_Interaction(2),
+    Creative_Inventory(3),
+    Non_Implemented_Feature_TODO(99999),
     ;
 
     private static final Int2ObjectMap<InventorySourceType> BY_VALUE = new Int2ObjectOpenHashMap<>();

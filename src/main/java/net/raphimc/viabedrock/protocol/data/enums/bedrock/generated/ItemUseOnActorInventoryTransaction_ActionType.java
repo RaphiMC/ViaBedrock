@@ -8,7 +8,7 @@ public enum ItemUseOnActorInventoryTransaction_ActionType {
 
     Interact(0),
     Attack(1),
-    ItemInteract(2),
+    Item_Interact(2),
     ;
 
     private static final Int2ObjectMap<ItemUseOnActorInventoryTransaction_ActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -30,7 +30,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.MemoryTier;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.BuildPlatform;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GraphicsMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InputMode;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.UIProfile;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.UIProfile;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.storage.AuthData;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;

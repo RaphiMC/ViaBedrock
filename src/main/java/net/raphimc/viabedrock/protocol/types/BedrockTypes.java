@@ -24,7 +24,7 @@ import com.viaversion.viaversion.api.type.OptionalType;
 import com.viaversion.viaversion.api.type.Type;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Tag_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.Tag_Type;
 import net.raphimc.viabedrock.protocol.model.*;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;

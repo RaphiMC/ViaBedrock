@@ -10,9 +10,9 @@ public enum Rotation {
     Rotate90(1),
     Rotate180(2),
     Rotate270(3),
-    Clockwise90(Rotate90),
-    Clockwise180(Rotate180),
-    CounterClockwise90(Rotate270),
+    Clockwise90(1),
+    Clockwise180(2),
+    CounterClockwise90(3),
     ;
 
     private static final Int2ObjectMap<Rotation> BY_VALUE = new Int2ObjectOpenHashMap<>();

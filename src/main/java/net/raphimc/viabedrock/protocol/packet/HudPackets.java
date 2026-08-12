@@ -36,6 +36,7 @@ import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardObjective;
 import net.raphimc.viabedrock.api.util.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.ObjectiveAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.BossEventOperationType;
@@ -252,7 +253,7 @@ public class HudPackets {
             final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
 
             final byte rawAction = wrapper.read(Types.BYTE); // action
-            final ScorePacketType action = ScorePacketType.getByValue(rawAction);
+            final ScorePacketEntryAction action = ScorePacketEntryAction.getByValue(rawAction);
             if (action == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ScorePacketType: " + rawAction);
                 return;
@@ -265,7 +266,7 @@ public class HudPackets {
 
                 final ScoreboardEntry entry;
                 switch (action) {
-                    case Change -> {
+                    case ChangeEntity, ChangePlayer, ChangeFakePlayer -> {
                         final byte rawType = wrapper.read(Types.BYTE); // type
                         final IdentityDefinition_Type type = IdentityDefinition_Type.getByValue(rawType, IdentityDefinition_Type.Invalid);
                         Long entityUniqueId = null;
@@ -279,7 +280,7 @@ public class HudPackets {
                         entry = new ScoreboardEntry(score, type, entityUniqueId, fakePlayerName);
                     }
                     case Remove -> entry = null;
-                    default -> throw new IllegalStateException("Unhandled ScorePacketType: " + action);
+                    default -> throw new IllegalStateException("Unhandled ScorePacketEntryAction: " + action);
                 }
 
                 final ScoreboardObjective objective = scoreboardTracker.getObjective(objectiveName);
