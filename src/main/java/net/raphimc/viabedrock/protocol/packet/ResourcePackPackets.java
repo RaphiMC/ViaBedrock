@@ -156,7 +156,7 @@ public class ResourcePackPackets {
             if (loadStateTracker == null || !loadStateTracker.hasJavaClientAccepted()) {
                 final PacketWrapper resourcePackClientResponse = wrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE);
                 resourcePackClientResponse.write(Types.BYTE, (byte) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
-                resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // downloading packs
+                resourcePackClientResponse.write(BedrockTypes.STRING, "resourcepackstackfinished"); // #blameMojang
                 resourcePackClientResponse.sendToServer(BedrockProtocol.class);
             }
         });
@@ -213,16 +213,16 @@ public class ResourcePackPackets {
                         resourcePackStorage.setLoadedOnJavaClient();
                     }
                     wrapper.write(Types.BYTE, (byte) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
-                    wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // downloading packs
+                    wrapper.write(BedrockTypes.STRING, "resourcepackstackfinished"); // #blameMojang
                 }
                 case FAILED_DOWNLOAD, FAILED_RELOAD, DISCARDED -> {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Client resource pack download/load failed");
                     wrapper.write(Types.BYTE, (byte) ResourcePackResponse.ResourcePackStackFinished.getValue()); // status
-                    wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // downloading packs
+                    wrapper.write(BedrockTypes.STRING, "resourcepackstackfinished"); // #blameMojang
                 }
                 case DECLINED, INVALID_URL -> {
                     wrapper.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
-                    wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // downloading packs
+                    wrapper.write(BedrockTypes.STRING, "downloadingfinished"); // #blameMojang
                 }
                 case ACCEPTED -> {
                     final ResourcePackLoadStateTracker loadStateTracker = wrapper.user().get(ResourcePackLoadStateTracker.class);
@@ -232,7 +232,7 @@ public class ResourcePackPackets {
                         loadStateTracker.loadRequestedResourcePacks().thenAccept(v -> {
                             final PacketWrapper resourcePackClientResponse = PacketWrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, wrapper.user());
                             resourcePackClientResponse.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
-                            resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // downloading packs
+                            resourcePackClientResponse.write(BedrockTypes.STRING, "downloadingfinished"); // #blameMojang
                             resourcePackClientResponse.scheduleSendToServer(BedrockProtocol.class);
                         }).exceptionally(e -> {
                             BedrockProtocol.kickForIllegalState(wrapper.user(), "One of the server resource packs failed to load. Try again later or decline the resource packs.", e);
@@ -240,7 +240,7 @@ public class ResourcePackPackets {
                         });
                     } else {
                         wrapper.write(Types.BYTE, (byte) ResourcePackResponse.DownloadingFinished.getValue()); // status
-                        wrapper.write(BedrockTypes.SHORT_LE_STRING_ARRAY, new String[0]); // downloading packs
+                        wrapper.write(BedrockTypes.STRING, "downloadingfinished"); // #blameMojang
                     }
                 }
                 case DOWNLOADED -> wrapper.cancel();

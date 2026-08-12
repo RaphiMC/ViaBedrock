@@ -210,12 +210,18 @@ public class WorldPackets {
                 return;
             }
 
+
+            int subChunkLimit = -1;
+            if (wrapper.read(Types.BOOLEAN)) {
+                subChunkLimit = wrapper.read(BedrockTypes.VAR_INT);
+            }
+
             final int startY = chunkTracker.getMinY() >> 4;
             final int endY = chunkTracker.getMaxY() >> 4;
             int requestSectionCount = 0;
-            if (sectionCount == -2) {
+            /*if (sectionCount == -2) {
                 requestSectionCount = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE) + 1; // count
-            } else if (sectionCount == -1) {
+            } else*/ if (sectionCount == -1) {
                 requestSectionCount = endY - startY;
             }
 
@@ -320,13 +326,18 @@ public class WorldPackets {
             for (long i = 0; i < count; i++) {
                 final BlockPosition offset = wrapper.read(BedrockTypes.SUB_CHUNK_OFFSET); // offset
                 final SubChunkPacketPayload_SubChunkRequestResult result = SubChunkPacketPayload_SubChunkRequestResult.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_SubChunkRequestResult.Undefined); // result
-                final byte[] data = result != SubChunkPacketPayload_SubChunkRequestResult.SuccessAllAir || !cachingEnabled ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // data
+                byte[] data;
+                if (wrapper.read(Types.BOOLEAN) && (result != SubChunkPacketPayload_SubChunkRequestResult.SuccessAllAir || !cachingEnabled)) {
+                    data = wrapper.read(BedrockTypes.BYTE_ARRAY);
+                } else {
+                    data = new byte[0];
+                }
                 final SubChunkPacketPayload_HeightMapDataType heightmapResult = SubChunkPacketPayload_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_HeightMapDataType.NoData); // heightmap result
-                if (heightmapResult == SubChunkPacketPayload_HeightMapDataType.HasData) {
+                if (wrapper.read(Types.BOOLEAN) && heightmapResult == SubChunkPacketPayload_HeightMapDataType.HasData) {
                     wrapper.read(new ByteArrayType(256)); // heightmap data
                 }
                 final SubChunkPacketPayload_HeightMapDataType renderHeightmapResult = SubChunkPacketPayload_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_HeightMapDataType.NoData); // render heightmap result
-                if (renderHeightmapResult == SubChunkPacketPayload_HeightMapDataType.HasData) {
+                if (wrapper.read(Types.BOOLEAN) && renderHeightmapResult == SubChunkPacketPayload_HeightMapDataType.HasData) {
                     wrapper.read(new ByteArrayType(256)); // render heightmap data
                 }
 
@@ -367,7 +378,7 @@ public class WorldPackets {
                     }
                 };
 
-                if (cachingEnabled) {
+                if (wrapper.read(Types.BOOLEAN) && cachingEnabled) {
                     final long hash = wrapper.read(BedrockTypes.LONG_LE); // blob id
                     wrapper.user().get(BlobCache.class).getBlob(hash).thenAccept(blob -> {
                         if (data.length == 0) {

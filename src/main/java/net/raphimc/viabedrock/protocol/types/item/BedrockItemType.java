@@ -49,9 +49,9 @@ public class BedrockItemType extends Type<BedrockItem> {
         final BedrockItem item = new BedrockItem(id);
         item.setAmount(buffer.readUnsignedShortLE());
         item.setData(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
-        if (buffer.readBoolean()) {
+        /*if (buffer.readBoolean()) {
             item.setNetId(BedrockTypes.VAR_INT.read(buffer));
-        }
+        }*/
         item.setBlockRuntimeId(BedrockTypes.VAR_INT.read(buffer));
 
         final IntSortedSet validBlockStates = this.blockItemValidBlockStates.get(item.identifier());

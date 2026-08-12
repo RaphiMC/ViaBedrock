@@ -395,7 +395,10 @@ public class ExperimentalFeatures {
         });
 
         protocol.registerClientbound(ClientboundBedrockPackets.MAP_ITEM_DATA, ClientboundPackets26_1.MAP_ITEM_DATA, wrapper -> {
-            MapTracker mapTracker = wrapper.user().get(MapTracker.class);
+            wrapper.cancel();
+            wrapper.clearPacket();
+            // TODO
+            /*MapTracker mapTracker = wrapper.user().get(MapTracker.class);
 
             final long mapId = wrapper.read(BedrockTypes.VAR_LONG); // map id
             final int typeFlags = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // type flags
@@ -574,7 +577,7 @@ public class ExperimentalFeatures {
             } else {
                 //ViaBedrock.getPlatform().getLogger().warning("Sent empty map data for map id: " + mapId);
                 //TODO: Bedrock requests map data if it doesnt have it, so we need to send something
-            }
+            }*/
         });
     }
 

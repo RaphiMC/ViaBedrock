@@ -19,9 +19,12 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SharedTypes_persona_ArmSizeType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SharedTypes_persona_PieceType;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,7 @@ public class SkinType extends Type<SkinData> {
         super(SkinData.class);
     }
 
+    // TODO
     @Override
     public SkinData read(ByteBuf buffer) {
         final String skinId = BedrockTypes.STRING.read(buffer);
@@ -55,15 +59,16 @@ public class SkinType extends Type<SkinData> {
         final String animationData = BedrockTypes.STRING.read(buffer);
         final String capeId = BedrockTypes.STRING.read(buffer);
         final String fullSkinId = BedrockTypes.STRING.read(buffer);
-        final String armSize = BedrockTypes.STRING.read(buffer);
-        final String skinColor = BedrockTypes.STRING.read(buffer);
+
+        final String armSize = SharedTypes_persona_ArmSizeType.getByValue(buffer.readIntLE()).name();
+        final String skinColor = new Color(buffer.readIntLE(), true).toString();
 
         final int piecesLength = buffer.readIntLE();
         final List<SkinData.PersonaPieceData> personaPieces = new ArrayList<>(piecesLength);
         for (int i = 0; i < piecesLength; i++) {
             final String id = BedrockTypes.STRING.read(buffer);
-            final String type = BedrockTypes.STRING.read(buffer);
-            final String packId = BedrockTypes.STRING.read(buffer);
+            final String type = SharedTypes_persona_PieceType.getByValue(buffer.readIntLE()).name();
+            final String packId = BedrockTypes.UUID.read(buffer).toString();
             final boolean defaultPiece = buffer.readBoolean();
             final String productId = BedrockTypes.STRING.read(buffer);
             personaPieces.add(new SkinData.PersonaPieceData(id, type, packId, defaultPiece, productId));
@@ -72,11 +77,10 @@ public class SkinType extends Type<SkinData> {
         final int tintsLength = buffer.readIntLE();
         final List<SkinData.PersonaPieceTintData> tintColors = new ArrayList<>(tintsLength);
         for (int i = 0; i < tintsLength; i++) {
-            final String type = BedrockTypes.STRING.read(buffer);
-            final List<String> colors = new ArrayList<>();
-            final int colorsLength = buffer.readIntLE();
-            for (int i2 = 0; i2 < colorsLength; i2++) {
-                colors.add(BedrockTypes.STRING.read(buffer));
+            final String type = SharedTypes_persona_PieceType.getByValue(buffer.readIntLE()).name();
+            final List<String> colors = new ArrayList<>(4);
+            for (int i2 = 0; i2 < 4; i2++) {
+                colors.add(new Color(buffer.readIntLE(), true).toString());
             }
             tintColors.add(new SkinData.PersonaPieceTintData(type, colors));
         }
@@ -87,11 +91,14 @@ public class SkinType extends Type<SkinData> {
         final boolean primaryUser = buffer.readBoolean();
         final boolean overridingPlayerAppearance = buffer.readBoolean();
 
+        boolean trusted = "true".equalsIgnoreCase(BedrockTypes.STRING.read(buffer));
+        String profileHash = BedrockTypes.STRING.read(buffer);
+
         return new SkinData(skinId, playFabId, skinResourcePatch, skinData, animations, capeData, geometryData, geometryDataEngineVersion, animationData, premium, persona, capeOnClassic, primaryUser, capeId, fullSkinId, armSize, skinColor, personaPieces, tintColors, overridingPlayerAppearance);
     }
 
     @Override
-    public void write(ByteBuf buffer, SkinData value) {
+    public void write(ByteBuf buffer, SkinData value) { // TODO: I havent bothered updating this as it isnt used
         BedrockTypes.STRING.write(buffer, value.skinId());
         BedrockTypes.STRING.write(buffer, value.playFabId());
         BedrockTypes.STRING.write(buffer, value.skinResourcePatch());
