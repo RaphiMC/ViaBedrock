@@ -20,8 +20,9 @@ public enum MolangVersion {
     DeprecateOldBlockQueryNames(10),
     DeprecatedSnifferAndCamelQueries(11),
     LeafSupportingInFirstSolidBlockBelow(12),
+    NumValidVersions(14),
     Latest(13),
-    HardcodedMolang(Latest),
+    HardcodedMolang(13),
     ;
 
     private static final Int2ObjectMap<MolangVersion> BY_VALUE = new Int2ObjectOpenHashMap<>();

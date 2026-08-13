@@ -6,13 +6,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ClientCameraAimAssistPacketAction {
 
-    /**
-     * Sets aim-assist to use the settings from a CameraPresets aim_assist field
-     */
     SetFromCameraPreset(0),
-    /**
-     * Clears aim-assist settings
-     */
     Clear(1),
     ;
 

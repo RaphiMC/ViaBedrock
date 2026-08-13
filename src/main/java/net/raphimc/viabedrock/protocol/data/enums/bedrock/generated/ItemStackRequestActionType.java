@@ -13,8 +13,8 @@ public enum ItemStackRequestActionType {
     Destroy(4),
     Consume(5),
     Create(6),
-    PlaceInItemContainer_DEPRECATED(7),
-    TakeFromItemContainer_DEPRECATED(8),
+    PlaceInItemContainer(7),
+    TakeFromItemContainer(8),
     ScreenLabTableCombine(9),
     ScreenBeaconPayment(10),
     ScreenHUDMineBlock(11),
@@ -24,12 +24,8 @@ public enum ItemStackRequestActionType {
     CraftRecipeOptional(15),
     CraftRepairAndDisenchant(16),
     CraftLoom(17),
-    CraftNonImplemented_DEPRECATEDASKTYLAING(18),
-    CraftResults_DEPRECATEDASKTYLAING(19),
-    Ifdef(20),
-    TEST_INFRASTRUCTURE_ENABLED(21),
-    Test(22),
-    Endif(23),
+    CraftNonImplemented(18),
+    CraftResults(19),
     ;
 
     private static final Int2ObjectMap<ItemStackRequestActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

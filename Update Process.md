@@ -17,10 +17,11 @@ This file lists the steps necessary to update ViaBedrock.
 ## Bedrock Edition Update
 1. Add new vanilla resource packs to `assets/viabedrock/data/custom/vanilla_resource_packs.json`
 2. Update and run `BedrockDataEnumGenerator` to generate the data enums
-3. Update `assets/viabedrock/data` (See `Data Asset Sources.md`) and `BedrockMappingData`
-4. Update data in the `protocol/data` package
-5. Run `MappingDataGenerator` to generate the mapping classes
-6. Update hardcoded blockstates: Search all files for `new BlockState("`
-7. Update fields in `SkinProvider`
-8. Update changed packet contents
-9. Update rewriters
+3. Update manual enums (Thank you Mojang)
+4. Update `assets/viabedrock/data` (See `Data Asset Sources.md`) and `BedrockMappingData`
+5. Update data in the `protocol/data` package
+6. Run `MappingDataGenerator` to generate the mapping classes
+7. Update hardcoded blockstates: Search all files for `new BlockState("`
+8. Update fields in `SkinProvider`
+9. Update changed packet contents
+10. Update rewriters

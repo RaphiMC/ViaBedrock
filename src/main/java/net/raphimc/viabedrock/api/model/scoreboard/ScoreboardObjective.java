@@ -24,7 +24,7 @@ import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.IdentityDefinition_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ObjectiveSortOrder;
 
 public class ScoreboardObjective {

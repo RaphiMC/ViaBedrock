@@ -56,6 +56,7 @@ import net.raphimc.viabedrock.api.resourcepack.definition.SoundDefinitions;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.FileSystemUtil;
 import net.raphimc.viabedrock.api.util.JsonUtil;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.*;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.SoundSource;
 import net.raphimc.viabedrock.protocol.data.generated.java.RegistryKeys;
@@ -1003,6 +1004,7 @@ public class BedrockMappingData extends MappingDataBase {
                 this.bedrockToJavaEnchantments.put(enchantType, javaIdentifier);
             }
             for (Enchant_Type enchantType : Enchant_Type.values()) {
+                if (enchantType == Enchant_Type.NumEnchantments || enchantType == Enchant_Type.InvalidEnchantment) continue;
                 if (!this.bedrockToJavaEnchantments.containsKey(enchantType)) {
                     throw new RuntimeException("Missing bedrock -> java enchantment mapping for " + enchantType.name());
                 }

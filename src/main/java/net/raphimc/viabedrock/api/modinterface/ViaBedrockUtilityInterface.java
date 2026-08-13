@@ -24,7 +24,7 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundConfigurationPackets1_21_9;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ActorDataIDs;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
 

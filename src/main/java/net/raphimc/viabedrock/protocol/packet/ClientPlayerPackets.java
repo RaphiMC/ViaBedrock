@@ -39,6 +39,9 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.*;
@@ -279,16 +282,16 @@ public class ClientPlayerPackets {
             switch (action) {
                 case START_SPRINTING -> {
                     clientPlayer.setSprinting(true);
-                    clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StartSprinting);
+                    clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartSprinting);
                 }
                 case STOP_SPRINTING -> {
                     clientPlayer.setSprinting(false);
-                    clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StopSprinting);
+                    clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StopSprinting);
                 }
                 case START_FALL_FLYING -> {
                     if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
                         clientPlayer.setGliding(true);
-                        clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StartGliding);
+                        clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartGliding);
                     }
                 }
                 default -> throw new IllegalStateException("Unhandled PlayerCommandAction: " + action);
@@ -461,7 +464,7 @@ public class ClientPlayerPackets {
             clientPlayer.tick();
 
             if (prevOnGround && clientPlayer.inputFlags().contains(InputFlag.JUMP)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StartJumping);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartJumping);
             }
 
             if (clientPlayer.isGliding() && (
@@ -472,7 +475,7 @@ public class ClientPlayerPackets {
                     clientPlayer.entityFlags().contains(ActorFlags.IN_SCAFFOLDING)
             )) {
                 clientPlayer.setGliding(false);
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.StopGliding);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StopGliding);
             }
 
             if (!clientPlayer.isInitiallySpawned() || clientPlayer.isDead()) {
@@ -480,47 +483,47 @@ public class ClientPlayerPackets {
                 return;
             }
 
-            clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.BlockBreakingDelayEnabled);
+            clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.BlockBreakingDelayEnabled);
             if (clientPlayer.isOnGround()) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.VerticalCollision);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.VerticalCollision);
             }
             if (clientPlayer.horizontalCollision()) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.HorizontalCollision);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.HorizontalCollision);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.FORWARD)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.Up);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.Up);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.BACKWARD)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.Down);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.Down);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.LEFT)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.Left);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.Left);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.RIGHT)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.Right);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.Right);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.JUMP)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.JumpDown, PlayerAuthInputPacket_InputData.Jumping, PlayerAuthInputPacket_InputData.WantUp, PlayerAuthInputPacket_InputData.JumpCurrentRaw);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.JumpDown, PlayerAuthInputPacketPayload_InputData.Jumping, PlayerAuthInputPacketPayload_InputData.WantUp, PlayerAuthInputPacketPayload_InputData.JumpCurrentRaw);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.SHIFT)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.SneakDown, PlayerAuthInputPacket_InputData.Sneaking, PlayerAuthInputPacket_InputData.WantDown, PlayerAuthInputPacket_InputData.SneakCurrentRaw);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.SneakDown, PlayerAuthInputPacketPayload_InputData.Sneaking, PlayerAuthInputPacketPayload_InputData.WantDown, PlayerAuthInputPacketPayload_InputData.SneakCurrentRaw);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.SPRINT)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.SprintDown, PlayerAuthInputPacket_InputData.Sprinting);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.SprintDown, PlayerAuthInputPacketPayload_InputData.Sprinting);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.JUMP) && !prevInputFlags.contains(InputFlag.JUMP)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.JumpPressedRaw);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.JumpPressedRaw);
             }
             if (prevInputFlags.contains(InputFlag.JUMP) && !clientPlayer.inputFlags().contains(InputFlag.JUMP)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.JumpReleasedRaw);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.JumpReleasedRaw);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.SHIFT) && !prevInputFlags.contains(InputFlag.SHIFT)) {
                 clientPlayer.setSneaking(true);
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.SneakPressedRaw, PlayerAuthInputPacket_InputData.StartSneaking);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.SneakPressedRaw, PlayerAuthInputPacketPayload_InputData.StartSneaking);
             }
             if (prevInputFlags.contains(InputFlag.SHIFT) && !clientPlayer.inputFlags().contains(InputFlag.SHIFT)) {
                 clientPlayer.setSneaking(false);
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.SneakReleasedRaw, PlayerAuthInputPacket_InputData.StopSneaking);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.SneakReleasedRaw, PlayerAuthInputPacketPayload_InputData.StopSneaking);
             }
 
             final Position3f positionDelta = clientPlayer.position().subtract(prevPosition);
@@ -550,7 +553,8 @@ public class ClientPlayerPackets {
             wrapper.write(BedrockTypes.POSITION_3F, clientPlayer.position()); // position
             wrapper.write(BedrockTypes.POSITION_2F, MathUtil.calculateMovementDirections(clientPlayer.authInputData(), clientPlayer.isSneaking())); // move vector
             wrapper.write(BedrockTypes.FLOAT_LE, clientPlayer.rotation().z()); // head yaw
-            wrapper.write(BedrockTypes.UNSIGNED_VAR_BIG_INTEGER, EnumUtil.getBigBitmaskFromEnumSet(clientPlayer.authInputData(), PlayerAuthInputPacket_InputData::getValue)); // input flags
+            wrapper.write(Types.BOOLEAN, true);
+            wrapper.write(BedrockTypes.UNSIGNED_VAR_BIG_INTEGER, EnumUtil.getBigBitmaskFromEnumSet(clientPlayer.authInputData(), PlayerAuthInputPacketPayload_InputData::getValue)); // input flags
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, InputMode.Mouse.getValue()); // input mode
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ClientPlayMode.Screen.getValue()); // play mode
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, NewInteractionModel.Touch.getValue()); // interaction mode
@@ -558,7 +562,10 @@ public class ClientPlayerPackets {
             wrapper.write(BedrockTypes.FLOAT_LE, clientPlayer.rotation().y()); // interact yaw
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, (long) clientPlayer.age()); // tick
             wrapper.write(BedrockTypes.POSITION_3F, velocity); // delta
-            if (clientPlayer.authInputData().contains(PlayerAuthInputPacket_InputData.PerformBlockActions)) {
+            wrapper.write(Types.BOOLEAN, false); // Item Use Transaction
+            wrapper.write(Types.BOOLEAN, false); // Item Stack Request
+            if (clientPlayer.authInputData().contains(PlayerAuthInputPacketPayload_InputData.PerformBlockActions)) {
+                wrapper.write(Types.BOOLEAN, true);
                 wrapper.write(BedrockTypes.VAR_INT, clientPlayer.authInputBlockActions().size()); // player block actions count
                 for (ClientPlayerEntity.AuthInputBlockAction blockAction : clientPlayer.authInputBlockActions()) {
                     wrapper.write(BedrockTypes.VAR_INT, blockAction.action().getValue()); // action
@@ -570,7 +577,11 @@ public class ClientPlayerPackets {
                         }
                     }
                 }
+            } else {
+                wrapper.write(Types.BOOLEAN, false);
             }
+            wrapper.write(Types.BOOLEAN, false); // Vehicle Rotation
+            wrapper.write(Types.BOOLEAN, false); // Client Predicted Vehicle
             wrapper.write(BedrockTypes.POSITION_2F, new Position2f(0F, 0F)); // analog move vector
             wrapper.write(BedrockTypes.POSITION_3F, MathUtil.calculateCameraOrientation(clientPlayer.rotation().y(), clientPlayer.rotation().x())); // camera orientation
             wrapper.write(BedrockTypes.POSITION_2F, MathUtil.calculateMovementDirections(clientPlayer.authInputData(), false)); // raw move vector
@@ -585,7 +596,7 @@ public class ClientPlayerPackets {
             final boolean flying = (flags & AbilitiesFlag.FLYING.getBit()) != 0;
             if (flying != clientPlayer.abilities().getBooleanValue(AbilitiesIndex.Flying)) {
                 clientPlayer.abilities().getOrCreateCacheLayer().setAbility(AbilitiesIndex.Flying, flying);
-                clientPlayer.addAuthInputData(flying ? PlayerAuthInputPacket_InputData.StartFlying : PlayerAuthInputPacket_InputData.StopFlying);
+                clientPlayer.addAuthInputData(flying ? PlayerAuthInputPacketPayload_InputData.StartFlying : PlayerAuthInputPacketPayload_InputData.StopFlying);
             }
         });
         protocol.registerServerbound(ServerboundPackets26_1.CHANGE_GAME_MODE, ServerboundBedrockPackets.SET_PLAYER_GAME_TYPE, new PacketHandlers() {
@@ -627,7 +638,7 @@ public class ClientPlayerPackets {
                     clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.CrackBlock, blockBreakingInfo.position(), blockBreakingInfo.direction().ordinal()));
                 }
             } else {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacket_InputData.MissedSwing);
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.MissedSwing);
             }
         });
     }

@@ -9,7 +9,7 @@ public enum ItemUseInventoryTransaction_ActionType {
     Place(0),
     Use(1),
     Destroy(2),
-    UseAsAttack(3),
+    Use_As_Attack(3),
     ;
 
     private static final Int2ObjectMap<ItemUseInventoryTransaction_ActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

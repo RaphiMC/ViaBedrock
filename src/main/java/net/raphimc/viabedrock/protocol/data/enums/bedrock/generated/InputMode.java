@@ -10,7 +10,8 @@ public enum InputMode {
     Mouse(1),
     Touch(2),
     GamePad(3),
-    MotionController_Deprecated(4),
+    MotionController(4),
+    Count(5),
     ;
 
     private static final Int2ObjectMap<InputMode> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,7 +6,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum TextProcessingEventOrigin {
 
-    Unknown(-1),
+    unknown(-1),
     ServerChatPublic(0),
     ServerChatWhisper(1),
     SignText(2),

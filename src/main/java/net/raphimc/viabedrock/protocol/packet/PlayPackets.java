@@ -59,6 +59,18 @@ public class PlayPackets {
                         wrapper.cancel();
                     }
                 });
+                handler(wrapper -> {
+                    if (wrapper.read(Types.BOOLEAN)) { // Gatherings Configuration
+                        wrapper.read(BedrockTypes.UUID); // experienceId
+                        wrapper.read(BedrockTypes.STRING); // experienceName
+                        wrapper.read(BedrockTypes.UUID); // worldId
+                        wrapper.read(BedrockTypes.STRING); // worldName
+                        wrapper.read(BedrockTypes.STRING); // creatorId
+                        wrapper.read(BedrockTypes.UUID); // targetId
+                        wrapper.read(BedrockTypes.STRING); // scenarioId
+                        wrapper.read(BedrockTypes.STRING); // serverId
+                    }
+                });
             }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.GAME_RULES_CHANGED, null, wrapper -> {

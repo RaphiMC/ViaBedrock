@@ -46,7 +46,6 @@ public class NetworkItemStackDescriptorType extends Type<BedrockItem> {
         item.setAmount(buffer.readUnsignedShortLE());
         item.setData(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
         if (buffer.readBoolean()) {
-            BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // net id variant
             item.setNetId(BedrockTypes.VAR_INT.read(buffer));
         }
         item.setBlockRuntimeId(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
@@ -93,7 +92,6 @@ public class NetworkItemStackDescriptorType extends Type<BedrockItem> {
         if (this.writeItemNetId) {
             buffer.writeBoolean(value.netId() != null);
             if (value.netId() != null) {
-                BedrockTypes.UNSIGNED_VAR_INT.write(buffer, 0); // net id variant
                 BedrockTypes.VAR_INT.write(buffer, value.netId());
             }
         } else {

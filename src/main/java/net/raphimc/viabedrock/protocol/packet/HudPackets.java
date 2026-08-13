@@ -36,6 +36,7 @@ import net.raphimc.viabedrock.api.model.scoreboard.ScoreboardObjective;
 import net.raphimc.viabedrock.api.util.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.IdentityDefinition_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.ObjectiveAction;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.BossEventOperationType;
@@ -60,7 +61,12 @@ public class HudPackets {
             final PlayerListStorage playerListStorage = wrapper.user().get(PlayerListStorage.class);
             final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
 
-            final byte rawAction = wrapper.read(Types.BYTE); // action
+            wrapper.cancel();
+            wrapper.clearPacket();
+            return;
+
+            // TODO
+            /*final byte rawAction = wrapper.read(Types.BYTE); // action
             final PlayerListPacketType action = PlayerListPacketType.getByValue(rawAction);
             if (action == null) { // Bedrock client crashes if the action is not valid
                 throw new IllegalStateException("Unknown PlayerListPacketType: " + rawAction);
@@ -153,7 +159,7 @@ public class HudPackets {
                     PacketFactory.sendJavaCustomChatCompletions(wrapper.user(), CustomChatCompletionsAction.REMOVE, names.toArray(new String[0]));
                 }
                 default -> throw new IllegalStateException("Unhandled PlayerListPacketType: " + action);
-            }
+            }*/
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SET_TITLE, null, wrapper -> {
             final int rawType = wrapper.read(BedrockTypes.VAR_INT); // type
@@ -251,35 +257,53 @@ public class HudPackets {
             wrapper.cancel();
             final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
 
-            final byte rawAction = wrapper.read(Types.BYTE); // action
-            final ScorePacketType action = ScorePacketType.getByValue(rawAction);
+            /*final byte rawAction = wrapper.read(Types.BYTE); // action
+            final ScorePacketEntryAction action = ScorePacketEntryAction.getByValue(rawAction);
             if (action == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ScorePacketType: " + rawAction);
                 return;
-            }
+            }*/
             final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // count
             for (int i = 0; i < count; i++) {
+                ScorePacketEntryAction action = ScorePacketEntryAction.getByValue(wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)); // action
+                wrapper.read(BedrockTypes.STRING); // type name #blameMojang
                 final long scoreboardId = wrapper.read(BedrockTypes.VAR_LONG); // scoreboard id
-                final String objectiveName = wrapper.read(BedrockTypes.STRING); // objective name
-                final int score = wrapper.read(BedrockTypes.INT_LE); // score
 
+                //final String objectiveName = wrapper.read(BedrockTypes.STRING); // objective name
+
+                final String objectiveName;
                 final ScoreboardEntry entry;
+                boolean resetAll = false;
+
                 switch (action) {
-                    case Change -> {
-                        final byte rawType = wrapper.read(Types.BYTE); // type
-                        final IdentityDefinition_Type type = IdentityDefinition_Type.getByValue(rawType, IdentityDefinition_Type.Invalid);
-                        Long entityUniqueId = null;
-                        String fakePlayerName = null;
-                        switch (type) {
-                            case Player, Entity -> entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
-                            case FakePlayer -> fakePlayerName = wrapper.read(BedrockTypes.STRING); // fake player name
-                            case Invalid -> throw new IllegalStateException("Invalid IdentityDefinition_Type: " + rawType); // Bedrock client disconnects if the type is not valid
-                            default -> throw new IllegalStateException("Unhandled IdentityDefinition_Type: " + rawType);
+                    case Remove -> {
+                        if (wrapper.read(Types.BOOLEAN)) {
+                            objectiveName = wrapper.read(BedrockTypes.STRING);
+                        } else {
+                            objectiveName = null;
+                            resetAll = true;
                         }
-                        entry = new ScoreboardEntry(score, type, entityUniqueId, fakePlayerName);
+                        entry = null;
                     }
-                    case Remove -> entry = null;
-                    default -> throw new IllegalStateException("Unhandled ScorePacketType: " + action);
+                    case ChangePlayer, ChangeEntity -> {
+                        objectiveName = wrapper.read(BedrockTypes.STRING);
+                        final int score = wrapper.read(BedrockTypes.INT_LE); // score
+                        final long entityId = wrapper.read(BedrockTypes.VAR_LONG); // Entity Id
+                        IdentityDefinition_Type type = action == ScorePacketEntryAction.ChangePlayer ? IdentityDefinition_Type.Player : IdentityDefinition_Type.Entity;
+                        entry = new ScoreboardEntry(score, type, entityId, null);
+                    }
+                    case ChangeFakePlayer -> {
+                        objectiveName = wrapper.read(BedrockTypes.STRING);
+                        final int score = wrapper.read(BedrockTypes.INT_LE); // score
+                        final String name = wrapper.read(BedrockTypes.STRING); // Fake Player Name
+                        entry = new ScoreboardEntry(score, IdentityDefinition_Type.FakePlayer, null, "");
+                    }
+                    default -> throw new IllegalStateException("Unhandled ScorePacketEntryAction: " + action);
+                }
+
+                if (resetAll) {
+                    // TODO
+                    return;
                 }
 
                 final ScoreboardObjective objective = scoreboardTracker.getObjective(objectiveName);
@@ -314,6 +338,11 @@ public class HudPackets {
             final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // count
             for (int i = 0; i < count; i++) {
                 final long scoreboardId = wrapper.read(BedrockTypes.VAR_LONG); // scoreboard id
+                if (wrapper.read(Types.BOOLEAN)) {
+                    wrapper.read(BedrockTypes.VAR_LONG); // playerId
+                    // TODO: Only update if it points to the client player? wtf is this for mojang
+                }
+
                 final Pair<ScoreboardObjective, ScoreboardEntry> entry = scoreboardTracker.getEntry(scoreboardId);
                 switch (action) {
                     case Update -> {

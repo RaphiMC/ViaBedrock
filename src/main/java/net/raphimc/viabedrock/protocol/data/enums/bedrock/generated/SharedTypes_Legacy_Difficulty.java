@@ -10,6 +10,7 @@ public enum SharedTypes_Legacy_Difficulty {
     Easy(1),
     Normal(2),
     Hard(3),
+    Count(4),
     Unknown(5),
     ;
 

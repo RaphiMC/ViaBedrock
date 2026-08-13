@@ -651,5 +651,8 @@
   "minecraft:sulfur_cube_goo": "minecraft:sulfur_cube_goo",
   "minecraft:geyser_base": "minecraft:geyser_base",
   "minecraft:geyser_plume": "minecraft:geyser_plume",
-  "minecraft:geyser_poof": "minecraft:geyser_poof"
+  "minecraft:geyser_poof": "minecraft:geyser_poof",
+  "minecraft:orange_poplar_leaves_particle": null,
+  "minecraft:red_poplar_leaves_particle": null,
+  "minecraft:yellow_poplar_leaves_particle": null
 }
