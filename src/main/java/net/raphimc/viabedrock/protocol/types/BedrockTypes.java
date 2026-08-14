@@ -58,7 +58,6 @@ public class BedrockTypes {
     public static final UnsignedVarIntType UNSIGNED_VAR_INT = new UnsignedVarIntType();
     public static final VarLongType VAR_LONG = new VarLongType();
     public static final UnsignedVarLongType UNSIGNED_VAR_LONG = new UnsignedVarLongType();
-    public static final Type<BigInteger> UNSIGNED_VAR_BIG_INTEGER = new UnsignedVarBigIntegerType();
     public static final Type<Long[]> LONG_ARRAY = new ArrayType<>(LONG_LE, UNSIGNED_VAR_INT);
     public static final Type<byte[]> BYTE_ARRAY = new ByteArrayType();
     public static final Type<String> ASCII_STRING = new AsciiStringType();
@@ -79,10 +78,8 @@ public class BedrockTypes {
     public static final Type<Position3f> POSITION_3F = new Position3fType();
     public static final Type<Position3f> OPTIONAL_POSITION_3F = new OptionalType<>(POSITION_3F);
     public static final Type<Position2f> POSITION_2F = new Position2fType();
-    public static final Type<GameRule> GAME_RULE = new GameRuleType(false);
+    public static final Type<GameRule> GAME_RULE = new GameRuleType();
     public static final Type<GameRule[]> GAME_RULE_ARRAY = new ArrayType<>(GAME_RULE, UNSIGNED_VAR_INT);
-    public static final Type<GameRule> VAR_INT_GAME_RULE = new GameRuleType(true);
-    public static final Type<GameRule[]> VAR_INT_GAME_RULE_ARRAY = new ArrayType<>(VAR_INT_GAME_RULE, UNSIGNED_VAR_INT);
     public static final Type<Experiment> EXPERIMENT = new ExperimentType();
     public static final Type<Experiment[]> EXPERIMENT_ARRAY = new ArrayType<>(EXPERIMENT, UNSIGNED_INT_LE);
     public static final Type<EducationUriResource> EDUCATION_URI_RESOURCE = new EducationUriResourceType();

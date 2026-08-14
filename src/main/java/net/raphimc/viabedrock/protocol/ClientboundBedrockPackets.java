@@ -184,7 +184,8 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     PLAYER_VIDEO_CAPTURE(MinecraftPacketIds.PlayerVideoCapturePacket.getValue()),
     PLAYER_UPDATE_ENTITY_OVERRIDES(MinecraftPacketIds.PlayerUpdateEntityOverridesPacket.getValue()),
     PLAYER_LOCATION(MinecraftPacketIds.PlayerLocation.getValue()),
-    SYNC_WORLD_CLOCKS(MinecraftPacketIds.SyncWorldClocks.getValue());
+    SYNC_WORLD_CLOCKS(MinecraftPacketIds.SyncWorldClocks.getValue()),
+    VOXEL_SHAPES(MinecraftPacketIds.VoxelShapesPacket.getValue());
 //    CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue()),
 //    PRIMITIVE_SHAPES(MinecraftPacketIds.PrimitiveShapesPacket.getValue()),
 //    DATA_STORE(MinecraftPacketIds.ClientboundDataStore.getValue()),
@@ -193,7 +194,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
 //    DATA_DRIVEN_UI_CLOSE_SCREEN(MinecraftPacketIds.ClientboundDataDrivenUICloseScreen.getValue()),
 //    DATA_DRIVEN_UI_RELOAD(MinecraftPacketIds.ClientboundDataDrivenUIReload.getValue()),
 //    TEXTURE_SHIFT(MinecraftPacketIds.ClientboundTextureShiftPacket.getValue()),
-//    VOXEL_SHAPES(MinecraftPacketIds.VoxelShapesPacket.getValue()),
 //    CAMERA_SPLINE(MinecraftPacketIds.CameraSpline.getValue()),
 //    CAMERA_AIM_ASSIST_ACTOR_PRIORITY(MinecraftPacketIds.CameraAimAssistActorPriority.getValue()),
 //    LOCATOR_BAR(MinecraftPacketIds.LocatorBarPacket.getValue()),

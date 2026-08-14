@@ -27,8 +27,12 @@ public class EntityDataType extends EntityDataTypeTemplate {
 
     @Override
     public EntityData read(ByteBuf buffer) {
-        final int index = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-        final int rawDataItemType = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
+        final int index = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // id
+        final int rawDataItemType = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // oneOf
+        final int typev2 = buffer.readByte(); // type
+        if (rawDataItemType != typev2) { // #blameMojang
+            throw new IllegalStateException("DataItemType mismatch: " + rawDataItemType + " != " + typev2);
+        }
         final DataItemType dataItemType = DataItemType.getByValue(rawDataItemType, DataItemType.Unknown);
         if (dataItemType == DataItemType.Unknown) { // Bedrock client disconnects if the data item type is not valid
             throw new IllegalStateException("Unknown DataItemType: " + rawDataItemType);
@@ -39,9 +43,10 @@ public class EntityDataType extends EntityDataTypeTemplate {
 
     @Override
     public void write(ByteBuf buffer, EntityData value) {
-        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.id());
-        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.dataType().typeId());
-        value.dataType().type().write(buffer, value.value());
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.id()); // id
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.dataType().typeId()); // oneOf
+        buffer.writeByte(value.dataType().typeId()); // type
+        value.dataType().type().write(buffer, value.value()); // value
     }
 
 }

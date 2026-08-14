@@ -266,7 +266,6 @@ public class EntityPackets {
 
                 entity.setPosition(new Position3f(x, y, z));
 
-                wrapper.clearPacket();
                 if (teleported) {
                     wrapper.setPacketType(ClientboundPackets26_1.PLAYER_POSITION);
                     entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);

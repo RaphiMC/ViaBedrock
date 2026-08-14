@@ -51,7 +51,6 @@ import net.raphimc.viabedrock.protocol.data.DataValues;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.Difficulty;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractPacket_Action;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
@@ -152,8 +151,9 @@ public class JoinPackets {
                         final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                         if (clientPlayer.isInitiallySpawned()) return;
 
+
                         final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
-                        interact.write(Types.UNSIGNED_BYTE, (short) InteractPacket_Action.InteractUpdate.getValue()); // action
+                        interact.write(Types.UNSIGNED_BYTE, (short) InteractPacketPayload_Action.InteractUpdate.getValue()); // action
                         interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target entity runtime id
                         interact.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // position
                         interact.sendToServer(BedrockProtocol.class);
@@ -234,7 +234,7 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.VAR_INT); // platform broadcast mode
                     final boolean commandsEnabled = wrapper.read(Types.BOOLEAN); // commands enabled
                     wrapper.read(Types.BOOLEAN); // texture packs required
-                    final GameRule[] gameRules = wrapper.read(BedrockTypes.VAR_INT_GAME_RULE_ARRAY); // game rules
+                    final GameRule[] gameRules = wrapper.read(BedrockTypes.GAME_RULE_ARRAY); // game rules
                     final Experiment[] experiments = wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
                     wrapper.read(Types.BOOLEAN); // experiments previously toggled
                     wrapper.read(Types.BOOLEAN); // bonus chest enabled
