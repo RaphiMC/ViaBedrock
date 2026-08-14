@@ -359,7 +359,9 @@ public class BedrockMappingData extends MappingDataBase {
             for (Map.Entry<String, JsonElement> entry : bedrockBiomesJson.entrySet()) {
                 final String bedrockBiomeName = entry.getKey();
                 if (!this.bedrockBiomeDefinitions.contains(Key.namespaced(bedrockBiomeName))) {
-                    throw new RuntimeException("Unknown bedrock biome: " + bedrockBiomeName);
+                    if (!bedrockBiomeName.equals("dappled_forest")) { // TODO
+                        throw new RuntimeException("Unknown bedrock biome: " + bedrockBiomeName);
+                    }
                 }
                 this.bedrockBiomes.put(bedrockBiomeName, entry.getValue().getAsInt());
             }
@@ -767,7 +769,9 @@ public class BedrockMappingData extends MappingDataBase {
                     final String[] keySplit = soundEventEntry.getKey().split(":", 2);
                     if (keySplit[0].equals("entity")) {
                         if (!this.bedrockEntities.containsKey(keySplit[1])) {
-                            throw new RuntimeException("Unknown bedrock entity: " + keySplit[1]);
+                            if (!keySplit[1].equals("minecraft:cushion")) { // TODO
+                                throw new RuntimeException("Unknown bedrock entity: " + keySplit[1]);
+                            }
                         }
                     } else if (keySplit[0].equals("block")) {
                         if (!this.bedrockBlockSounds.containsValue(keySplit[1])) {

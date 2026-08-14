@@ -25,7 +25,7 @@ import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPa
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.InteractPacket_Action;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacketPayload_Action;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerActionType;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -44,7 +44,7 @@ public class ExperimentalPacketFactory {
 
     public static void sendBedrockDismount(final UserConnection user, long entityRId) {
         final PacketWrapper dismountPacket = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, user);
-        dismountPacket.write(Types.UNSIGNED_BYTE, (short) InteractPacket_Action.StopRiding.getValue()); // action
+        dismountPacket.write(Types.UNSIGNED_BYTE, (short) InteractPacketPayload_Action.StopRiding.getValue()); // action
         dismountPacket.write(BedrockTypes.UNSIGNED_VAR_LONG, entityRId); // target entity runtime id
         dismountPacket.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // position
         dismountPacket.sendToServer(BedrockProtocol.class);

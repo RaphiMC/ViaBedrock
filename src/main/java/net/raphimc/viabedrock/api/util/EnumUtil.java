@@ -76,15 +76,4 @@ public class EnumUtil {
         return bitmask;
     }
 
-    public static <T extends Enum<T>> BigInteger getBigBitmaskFromEnumSet(final Set<T> set, final ToIntFunction<T> bitGetter) {
-        BigInteger bitmask = BigInteger.ZERO;
-        for (T constant : set) {
-            final int bit = bitGetter.applyAsInt(constant);
-            if (bit >= 0) {
-                bitmask = bitmask.setBit(bit);
-            }
-        }
-        return bitmask;
-    }
-
 }

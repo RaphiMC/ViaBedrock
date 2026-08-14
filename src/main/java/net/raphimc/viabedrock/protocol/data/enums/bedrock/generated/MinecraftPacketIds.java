@@ -227,6 +227,7 @@ public enum MinecraftPacketIds {
     ContainerRegistryCleanup(317),
     MovementEffect(318),
     SetMovementAuthorityMode(319),
+    VoxelShapesPacket(337),
     CameraAimAssistActorPriority(339),
     CameraAimAssistPresets(320),
     ClientCameraAimAssist(321),
