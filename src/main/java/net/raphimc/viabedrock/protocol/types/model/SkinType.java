@@ -43,13 +43,13 @@ public class SkinType extends Type<SkinData> {
         final String skinResourcePatch = BedrockTypes.STRING.read(buffer);
         final BufferedImage skinData = BedrockTypes.IMAGE.read(buffer);
 
-        final int animationCount = buffer.readIntLE();
+        final int animationCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final List<SkinData.AnimationData> animations = new ArrayList<>(animationCount);
         for (int i = 0; i < animationCount; i++) {
             final BufferedImage image = BedrockTypes.IMAGE.read(buffer);
-            final int type = buffer.readIntLE();
+            final int type = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
             final float frames = buffer.readFloatLE();
-            final int expression = buffer.readIntLE();
+            final int expression = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
             animations.add(new SkinData.AnimationData(image, type, frames, expression));
         }
 
@@ -60,10 +60,10 @@ public class SkinType extends Type<SkinData> {
         final String capeId = BedrockTypes.STRING.read(buffer);
         final String fullSkinId = BedrockTypes.STRING.read(buffer);
 
-        final String armSize = SharedTypes_persona_ArmSizeType.getByValue(buffer.readIntLE()).name();
+        final String armSize = SharedTypes_persona_ArmSizeType.getByValue(buffer.readUnsignedByte()).name();
         final String skinColor = new Color(buffer.readIntLE(), true).toString();
 
-        final int piecesLength = buffer.readIntLE();
+        final int piecesLength = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final List<SkinData.PersonaPieceData> personaPieces = new ArrayList<>(piecesLength);
         for (int i = 0; i < piecesLength; i++) {
             final String id = BedrockTypes.STRING.read(buffer);
@@ -74,10 +74,10 @@ public class SkinType extends Type<SkinData> {
             personaPieces.add(new SkinData.PersonaPieceData(id, type, packId, defaultPiece, productId));
         }
 
-        final int tintsLength = buffer.readIntLE();
+        final int tintsLength = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final List<SkinData.PersonaPieceTintData> tintColors = new ArrayList<>(tintsLength);
         for (int i = 0; i < tintsLength; i++) {
-            final String type = SharedTypes_persona_PieceType.getByValue(buffer.readIntLE()).name();
+            final String type = SharedTypes_persona_PieceType.getByName(BedrockTypes.STRING.read(buffer)).name();
             final List<String> colors = new ArrayList<>(4);
             for (int i2 = 0; i2 < 4; i2++) {
                 colors.add(new Color(buffer.readIntLE(), true).toString());
