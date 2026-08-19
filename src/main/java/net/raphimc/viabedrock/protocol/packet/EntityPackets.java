@@ -139,7 +139,7 @@ public class EntityPackets {
 
             final long entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
-            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // item
+            final BedrockItem item = wrapper.read(itemRewriter.newItemType()); // item
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
