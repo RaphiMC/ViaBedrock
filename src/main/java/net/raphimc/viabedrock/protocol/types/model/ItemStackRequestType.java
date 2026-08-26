@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.protocol.types.model;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ItemStackRequestActionType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.model.inventory.ItemStackRequest;
@@ -53,11 +54,24 @@ public class ItemStackRequestType extends Type<ItemStackRequest> {
         final List<ItemStackRequestAction> actions = value.actions();
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, actions.size()); // actions count
         for (ItemStackRequestAction action : actions) {
-            buffer.writeByte(action.type().getValue()); // action type
+            BedrockTypes.UNSIGNED_VAR_INT.write(buffer, wireTypeId(action.type())); // action type
+            buffer.writeByte(action.type().getValue()); // legacy action type
             this.writeAction(buffer, action);
         }
         BedrockTypes.STRING_ARRAY.write(buffer, value.filterStrings()); // filter strings
         buffer.writeIntLE(value.filterStringCause()); // filter string cause
+    }
+
+    /**
+     * 1.26.40 dropped the two deprecated item container actions from the enum, which shifted every id after them
+     * down by two. The generated enum still holds the old numbering, which is now only used for the legacy id.
+     *
+     * @param type The action type
+     * @return The id the current protocol uses for it
+     */
+    private static int wireTypeId(final ItemStackRequestActionType type) {
+        final int legacyId = type.getValue();
+        return legacyId >= ItemStackRequestActionType.ScreenLabTableCombine.getValue() ? legacyId - 2 : legacyId;
     }
 
     private void writeAction(final ByteBuf buffer, final ItemStackRequestAction action) {
@@ -93,15 +107,14 @@ public class ItemStackRequestType extends Type<ItemStackRequest> {
         } else if (action instanceof ItemStackRequestAction.CraftRecipeAuto craftRecipeAuto) {
             BedrockTypes.UNSIGNED_VAR_INT.write(buffer, craftRecipeAuto.recipeNetworkId()); // recipe network id
             buffer.writeByte(craftRecipeAuto.repetitions()); // repetitions
-            buffer.writeByte(craftRecipeAuto.repetitions()); // repetitions, sent twice by the vanilla client
-            buffer.writeByte(0); // ingredient count
+            BedrockTypes.UNSIGNED_VAR_INT.write(buffer, 0); // ingredient count
         } else if (action instanceof ItemStackRequestAction.CraftRecipeOptional craftRecipeOptional) {
             BedrockTypes.UNSIGNED_VAR_INT.write(buffer, craftRecipeOptional.recipeNetworkId()); // recipe network id
             buffer.writeIntLE(craftRecipeOptional.filterStringIndex()); // filter string index
         } else if (action instanceof ItemStackRequestAction.CraftRepairAndDisenchant craftRepairAndDisenchant) {
-            BedrockTypes.UNSIGNED_VAR_INT.write(buffer, craftRepairAndDisenchant.recipeNetworkId()); // recipe network id
-            BedrockTypes.VAR_INT.write(buffer, craftRepairAndDisenchant.repairCost()); // repair cost
+            buffer.writeIntLE(craftRepairAndDisenchant.recipeNetworkId()); // recipe network id
             buffer.writeByte(craftRepairAndDisenchant.repetitions()); // repetitions
+            BedrockTypes.VAR_INT.write(buffer, craftRepairAndDisenchant.repairCost()); // repair cost
         } else if (action instanceof ItemStackRequestAction.CraftLoom craftLoom) {
             BedrockTypes.STRING.write(buffer, craftLoom.patternId()); // pattern id
             buffer.writeByte(craftLoom.repetitions()); // repetitions
@@ -111,7 +124,7 @@ public class ItemStackRequestType extends Type<ItemStackRequest> {
         } else if (action instanceof ItemStackRequestAction.MineBlock mineBlock) {
             BedrockTypes.VAR_INT.write(buffer, mineBlock.hotbarSlot()); // hotbar slot
             BedrockTypes.VAR_INT.write(buffer, mineBlock.predictedDurability()); // predicted durability
-            BedrockTypes.VAR_INT.write(buffer, mineBlock.stackNetworkId()); // stack network id
+            buffer.writeIntLE(mineBlock.stackNetworkId()); // stack network id
         } else {
             throw new IllegalArgumentException("Unhandled item stack request action: " + action.getClass().getSimpleName());
         }

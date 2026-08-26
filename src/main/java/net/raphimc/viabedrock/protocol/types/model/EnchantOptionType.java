@@ -40,14 +40,14 @@ public class EnchantOptionType extends Type<EnchantOption> {
         for (int i = 0; i < 3; i++) {
             final int count = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // enchantment count
             for (int j = 0; j < count; j++) {
-                final int id = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // id
+                final int id = buffer.readUnsignedByte(); // id
                 final int level = buffer.readUnsignedByte(); // level
                 enchantments.putIfAbsent(id, level);
             }
         }
 
         final String name = BedrockTypes.STRING.read(buffer); // name
-        final int optionId = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // option id
+        final int optionId = BedrockTypes.VAR_INT.read(buffer); // option id
         return new EnchantOption(cost, enchantments, name, optionId);
     }
 

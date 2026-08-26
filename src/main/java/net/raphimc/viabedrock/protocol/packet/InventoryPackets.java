@@ -451,7 +451,7 @@ public class InventoryPackets {
 
         final int groupCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // group count
         for (int i = 0; i < groupCount; i++) {
-            wrapper.read(BedrockTypes.INT_LE); // category id
+            wrapper.read(Types.UNSIGNED_BYTE); // category
             wrapper.read(BedrockTypes.STRING); // category name
             wrapper.read(itemRewriter.itemTypeWithoutNetId()); // icon
         }
@@ -751,10 +751,10 @@ public class InventoryPackets {
             wrapper.cancel();
             final byte containerId = wrapper.read(Types.BYTE); // container id
             wrapper.read(Types.BYTE); // container type
-            wrapper.read(BedrockTypes.VAR_INT); // slot count
-            final int tier = wrapper.read(BedrockTypes.VAR_INT); // trade tier
-            wrapper.read(BedrockTypes.VAR_LONG); // trader entity unique id
-            wrapper.read(BedrockTypes.VAR_LONG); // player entity unique id
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // slot count
+            final int tier = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // trade tier
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // trader entity unique id
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // player entity unique id
             wrapper.read(BedrockTypes.STRING); // display name
             wrapper.read(Types.BOOLEAN); // new trading ui
             wrapper.read(Types.BOOLEAN); // economic trades

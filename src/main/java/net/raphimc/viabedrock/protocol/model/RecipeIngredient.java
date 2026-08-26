@@ -22,17 +22,16 @@ package net.raphimc.viabedrock.protocol.model;
  * concrete set of items.
  *
  * @param type       The way this ingredient is described
- * @param intId      The runtime item id, only set for {@link Type#INT_ID_META}
  * @param identifier The item identifier, only set for {@link Type#STRING_ID_META}
  * @param tag        The item tag, only set for {@link Type#TAG}
  * @param meta       The item meta, or {@link #WILDCARD_META} if any meta matches
  * @param count      How many items of this kind the recipe consumes
  */
-public record RecipeIngredient(Type type, int intId, String identifier, String tag, int meta, int count) {
+public record RecipeIngredient(Type type, String identifier, String tag, int meta, int count) {
 
     public static final int WILDCARD_META = 0x7FFF;
 
-    public static final RecipeIngredient EMPTY = new RecipeIngredient(Type.EMPTY, 0, null, null, 0, 0);
+    public static final RecipeIngredient EMPTY = new RecipeIngredient(Type.EMPTY, null, null, 0, 0);
 
     public enum Type {
 
@@ -40,10 +39,6 @@ public record RecipeIngredient(Type type, int intId, String identifier, String t
          * An empty slot.
          */
         EMPTY,
-        /**
-         * A specific item, identified by its runtime id.
-         */
-        INT_ID_META,
         /**
          * A Molang expression. Can't be evaluated, so it matches anything.
          */

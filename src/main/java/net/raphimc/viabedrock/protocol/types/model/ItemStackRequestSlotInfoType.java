@@ -33,7 +33,7 @@ public class ItemStackRequestSlotInfoType extends Type<ItemStackRequestSlotInfo>
         return new ItemStackRequestSlotInfo(
                 BedrockTypes.FULL_CONTAINER_NAME.read(buffer), // container name
                 buffer.readUnsignedByte(), // slot
-                BedrockTypes.VAR_INT.read(buffer) // stack network id
+                buffer.readIntLE() // stack network id
         );
     }
 
@@ -41,7 +41,7 @@ public class ItemStackRequestSlotInfoType extends Type<ItemStackRequestSlotInfo>
     public void write(final ByteBuf buffer, final ItemStackRequestSlotInfo value) {
         BedrockTypes.FULL_CONTAINER_NAME.write(buffer, value.containerName()); // container name
         buffer.writeByte(value.slot()); // slot
-        BedrockTypes.VAR_INT.write(buffer, value.stackNetworkId()); // stack network id
+        buffer.writeIntLE(value.stackNetworkId()); // stack network id
     }
 
 }

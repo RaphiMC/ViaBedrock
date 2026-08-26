@@ -172,7 +172,11 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity getEntityByRid(final long runtimeId) {
-        return this.entities.get((long) this.runtimeIdToUniqueId.get(runtimeId));
+        final Long uniqueId = this.runtimeIdToUniqueId.get(runtimeId);
+        if (uniqueId == null) { // The server can reference entities which were never spawned for us
+            return null;
+        }
+        return this.entities.get(uniqueId.longValue());
     }
 
     public Entity getEntityByUid(final long uniqueId) {
@@ -180,7 +184,11 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity getEntityByJid(final int javaId) {
-        return this.entities.get((long) this.javaIdToUniqueId.get(javaId));
+        final Long uniqueId = this.javaIdToUniqueId.get(javaId);
+        if (uniqueId == null) {
+            return null;
+        }
+        return this.entities.get(uniqueId.longValue());
     }
 
     public ClientPlayerEntity getClientPlayer() {

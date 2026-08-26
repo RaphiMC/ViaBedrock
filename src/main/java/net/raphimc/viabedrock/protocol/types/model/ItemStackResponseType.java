@@ -42,7 +42,7 @@ public class ItemStackResponseType extends Type<ItemStackResponse> {
         final int requestId = BedrockTypes.VAR_INT.read(buffer); // request id
 
         final List<ItemStackResponse.ContainerInfo> containerInfos = new ArrayList<>();
-        if (result == ItemStackNetResult.Success) {
+        if (buffer.readBoolean()) { // has containers
             final int containerCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // container count
             for (int i = 0; i < containerCount; i++) {
                 containerInfos.add(readContainerInfo(buffer));
@@ -62,11 +62,15 @@ public class ItemStackResponseType extends Type<ItemStackResponse> {
         final int slotCount = BedrockTypes.UNSIGNED_VAR_INT.read(buffer); // slot count
         final List<ItemStackResponse.SlotInfo> slots = new ArrayList<>(slotCount);
         for (int i = 0; i < slotCount; i++) {
+            final int slot = buffer.readUnsignedByte(); // slot
+            final int hotbarSlot = buffer.readUnsignedByte(); // hotbar slot
+            final int count = buffer.readUnsignedByte(); // count
+            final int stackNetworkId = buffer.readBoolean() ? BedrockTypes.VAR_INT.read(buffer) : 0; // stack network id
             slots.add(new ItemStackResponse.SlotInfo(
-                    buffer.readUnsignedByte(), // slot
-                    buffer.readUnsignedByte(), // hotbar slot
-                    buffer.readUnsignedByte(), // count
-                    BedrockTypes.VAR_INT.read(buffer), // stack network id
+                    slot,
+                    hotbarSlot,
+                    count,
+                    stackNetworkId,
                     BedrockTypes.STRING.read(buffer), // custom name
                     BedrockTypes.STRING.read(buffer), // filtered custom name
                     BedrockTypes.VAR_INT.read(buffer) // durability correction
