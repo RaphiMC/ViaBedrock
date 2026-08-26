@@ -37,8 +37,8 @@ public class BedrockItemType extends Type<BedrockItem> {
     }
 
     /**
-     * @param hasNetIdField Whether the serialized form contains the net id field at all. Some packets (like the
-     *                      creative content) use a variant of this type which omits it entirely.
+     * @param hasNetIdField Whether the serialized form contains the net id field. Bedrock has two shapes of this
+     *                      structure, one with the field and one without, and different packets use different ones.
      */
     public BedrockItemType(final int blockingId, final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates, final boolean writeItemNetId, final boolean hasNetIdField) {
         super(BedrockItem.class);
@@ -59,9 +59,9 @@ public class BedrockItemType extends Type<BedrockItem> {
         final BedrockItem item = new BedrockItem(id);
         item.setAmount(buffer.readUnsignedShortLE());
         item.setData(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
-        /*if (buffer.readBoolean()) {
+        if (this.hasNetIdField && buffer.readBoolean()) {
             item.setNetId(BedrockTypes.VAR_INT.read(buffer));
-        }*/
+        }
         item.setBlockRuntimeId(BedrockTypes.VAR_INT.read(buffer));
 
         final IntSortedSet validBlockStates = this.blockItemValidBlockStates.get(item.identifier());

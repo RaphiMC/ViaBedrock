@@ -441,6 +441,32 @@ public class InventoryPackets {
         containerSetData.send(BedrockProtocol.class);
     }
 
+    /**
+     * Reads the creative items the server offers.
+     *
+     * @throws RuntimeException If the packet doesn't have the expected layout
+     */
+    private static void readCreativeContent(final PacketWrapper wrapper) {
+        final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
+
+        final int groupCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // group count
+        for (int i = 0; i < groupCount; i++) {
+            wrapper.read(BedrockTypes.INT_LE); // category id
+            wrapper.read(BedrockTypes.STRING); // category name
+            wrapper.read(itemRewriter.itemTypeWithoutNetId()); // icon
+        }
+
+        final int itemCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // item count
+        final Map<Integer, BedrockItem> creativeItems = new LinkedHashMap<>();
+        for (int i = 0; i < itemCount; i++) {
+            final int netId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // creative net id
+            final BedrockItem item = wrapper.read(itemRewriter.itemTypeWithoutNetId()); // item
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // group id
+            creativeItems.put(netId, item);
+        }
+        wrapper.user().get(CreativeContentTracker.class).setCreativeItems(creativeItems);
+    }
+
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets26_1.OPEN_SCREEN, wrapper -> {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
@@ -734,7 +760,13 @@ public class InventoryPackets {
             wrapper.read(Types.BOOLEAN); // economic trades
             final Tag offersTag = wrapper.read(BedrockTypes.NETWORK_TAG); // offers
 
-            final TradeOffers tradeOffers = readTradeOffers(wrapper.user(), containerId, tier, offersTag);
+            final TradeOffers tradeOffers;
+            try {
+                tradeOffers = readTradeOffers(wrapper.user(), containerId, tier, offersTag);
+            } catch (Throwable e) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to read the villager trades", e);
+                return;
+            }
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             inventoryTracker.setTradeOffers(tradeOffers);
 
@@ -780,7 +812,13 @@ public class InventoryPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.PLAYER_ENCHANT_OPTIONS, null, wrapper -> {
             wrapper.cancel();
-            final EnchantOption[] enchantOptions = wrapper.read(BedrockTypes.ENCHANT_OPTION_ARRAY); // options
+            final EnchantOption[] enchantOptions;
+            try {
+                enchantOptions = wrapper.read(BedrockTypes.ENCHANT_OPTION_ARRAY); // options
+            } catch (Throwable e) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to read the enchantment options", e);
+                return;
+            }
 
             final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
             inventoryTracker.setEnchantOptions(enchantOptions);
@@ -826,28 +864,25 @@ public class InventoryPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.CREATIVE_CONTENT, null, wrapper -> {
             wrapper.cancel();
-            final ItemRewriter itemRewriter = wrapper.user().get(ItemRewriter.class);
-
-            final int groupCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // group count
-            for (int i = 0; i < groupCount; i++) {
-                wrapper.read(BedrockTypes.INT_LE); // category id
-                wrapper.read(BedrockTypes.STRING); // category name
-                wrapper.read(itemRewriter.itemTypeWithoutNetId()); // icon
+            try {
+                readCreativeContent(wrapper);
+            } catch (Throwable e) {
+                // Without the creative items the player just can't create items in creative mode, which is a lot
+                // better than dropping the connection over it
+                wrapper.user().get(CreativeContentTracker.class).clear();
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to read the creative content", e);
             }
-
-            final int itemCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // item count
-            final Map<Integer, BedrockItem> creativeItems = new LinkedHashMap<>();
-            for (int i = 0; i < itemCount; i++) {
-                final int netId = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // creative net id
-                final BedrockItem item = wrapper.read(itemRewriter.itemTypeWithoutNetId()); // item
-                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // group id
-                creativeItems.put(netId, item);
-            }
-            wrapper.user().get(CreativeContentTracker.class).setCreativeItems(creativeItems);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.ITEM_STACK_RESPONSE, null, wrapper -> {
             wrapper.cancel();
-            final ItemStackResponse[] responses = wrapper.read(BedrockTypes.ITEM_STACK_RESPONSE_ARRAY); // responses
+            final ItemStackResponse[] responses;
+            try {
+                responses = wrapper.read(BedrockTypes.ITEM_STACK_RESPONSE_ARRAY); // responses
+            } catch (Throwable e) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to read an item stack response", e);
+                resyncOpenScreen(wrapper.user());
+                return;
+            }
 
             final ItemStackRequestTracker itemStackRequestTracker = wrapper.user().get(ItemStackRequestTracker.class);
             for (ItemStackResponse response : responses) {
