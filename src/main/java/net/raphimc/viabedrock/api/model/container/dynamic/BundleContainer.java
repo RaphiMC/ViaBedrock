@@ -20,6 +20,7 @@ package net.raphimc.viabedrock.api.model.container.dynamic;
 import com.viaversion.nbt.tag.IntTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -45,7 +46,10 @@ public class BundleContainer extends Container {
     public Item getJavaItem(final int slot) {
         final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
-            throw new IllegalStateException("Failed to find bundle in any container");
+            // The server can send the contents of a bundle which isn't in any container we know about, for example
+            // because it is still on its way to us. Dropping the connection over that would be a lot worse than
+            // not rendering the bundle.
+            return StructuredItem.empty();
         }
 
         return holdingContainer.key().getJavaItem(holdingContainer.value());
@@ -55,7 +59,7 @@ public class BundleContainer extends Container {
     public Item[] getJavaItems() {
         final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
-            throw new IllegalStateException("Failed to find bundle in any container");
+            return StructuredItem.emptyArray(this.size());
         }
 
         return holdingContainer.key().getJavaItems();
@@ -80,7 +84,7 @@ public class BundleContainer extends Container {
     public int javaSlot(final int slot) {
         final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
-            throw new IllegalStateException("Failed to find bundle in any container");
+            return -1; // Not part of any screen the Java client has open
         }
 
         return holdingContainer.key().javaSlot(holdingContainer.value());
@@ -90,7 +94,7 @@ public class BundleContainer extends Container {
     public byte javaContainerId() {
         final Pair<Container, Integer> holdingContainer = this.findHoldingContainer();
         if (holdingContainer == null) {
-            throw new IllegalStateException("Failed to find bundle in any container");
+            return (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue();
         }
 
         return holdingContainer.key().javaContainerId();
