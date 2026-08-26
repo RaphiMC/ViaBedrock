@@ -15,14 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.types.inventory;
+package net.raphimc.viabedrock.protocol.types.inventory;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
-import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
-import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
+import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -43,7 +42,7 @@ public class InventoryActionDataType extends Type<InventoryActionData> {
         if (itemRewriter == null) {
             throw new IllegalStateException("ItemRewriter not found for user " + user);
         }
-        final InventorySource source = ExperimentalBedrockTypes.INVENTORY_SOURCE.read(buffer);
+        final InventorySource source = BedrockTypes.INVENTORY_SOURCE.read(buffer);
         final int slot = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final BedrockItem fromItem = itemRewriter.newItemType().read(buffer);
         final BedrockItem toItem = itemRewriter.newItemType().read(buffer);
@@ -57,7 +56,7 @@ public class InventoryActionDataType extends Type<InventoryActionData> {
         if (itemRewriter == null) {
             throw new IllegalStateException("ItemRewriter not found for user " + user);
         }
-        ExperimentalBedrockTypes.INVENTORY_SOURCE.write(buffer, value.source());
+        BedrockTypes.INVENTORY_SOURCE.write(buffer, value.source());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.slot());
         itemRewriter.newItemType().write(buffer, value.fromItem());
         itemRewriter.newItemType().write(buffer, value.toItem());

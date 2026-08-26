@@ -15,32 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.types.inventory;
+package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.experimental.model.inventory.LegacySetItemSlotData;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
+import net.raphimc.viabedrock.protocol.model.inventory.ItemStackRequestSlotInfo;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class LegacySetItemSlotDataType extends Type<LegacySetItemSlotData> {
+public class ItemStackRequestSlotInfoType extends Type<ItemStackRequestSlotInfo> {
 
-    public LegacySetItemSlotDataType() {
-        super(LegacySetItemSlotData.class);
+    public ItemStackRequestSlotInfoType() {
+        super(ItemStackRequestSlotInfo.class);
     }
 
     @Override
-    public LegacySetItemSlotData read(ByteBuf buffer) {
-        final byte containerId = buffer.readByte();
-        final byte[] slots = BedrockTypes.BYTE_ARRAY.read(buffer);
-
-        return new LegacySetItemSlotData(ContainerEnumName.getByValue(containerId), slots);
+    public ItemStackRequestSlotInfo read(final ByteBuf buffer) {
+        return new ItemStackRequestSlotInfo(
+                BedrockTypes.FULL_CONTAINER_NAME.read(buffer), // container name
+                buffer.readUnsignedByte(), // slot
+                BedrockTypes.VAR_INT.read(buffer) // stack network id
+        );
     }
 
     @Override
-    public void write(ByteBuf buffer, LegacySetItemSlotData value) {
-        buffer.writeByte(value.container().getValue());
-        BedrockTypes.BYTE_ARRAY.write(buffer, value.slots());
+    public void write(final ByteBuf buffer, final ItemStackRequestSlotInfo value) {
+        BedrockTypes.FULL_CONTAINER_NAME.write(buffer, value.containerName()); // container name
+        buffer.writeByte(value.slot()); // slot
+        BedrockTypes.VAR_INT.write(buffer, value.stackNetworkId()); // stack network id
     }
+
 }

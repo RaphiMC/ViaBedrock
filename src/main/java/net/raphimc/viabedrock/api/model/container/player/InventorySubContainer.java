@@ -20,11 +20,19 @@ package net.raphimc.viabedrock.api.model.container.player;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 
 public abstract class InventorySubContainer extends InventoryRedirectContainer {
 
     public InventorySubContainer(final UserConnection user, final byte containerId, final ContainerType type, final int size) {
         super(user, containerId, type, size);
+    }
+
+    @Override
+    public boolean setItem(final int slot, final BedrockItem item) {
+        // Armor and offhand slots are not part of any other Java menu, so the Java client can't be told about changes
+        // while a menu is open. The whole player inventory is resynced once the menu is closed.
+        return super.setItem(slot, item) && this.user.get(InventoryTracker.class).getCurrentMenuContainer() == null;
     }
 
     @Override

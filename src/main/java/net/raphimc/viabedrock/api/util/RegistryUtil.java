@@ -36,4 +36,21 @@ public class RegistryUtil {
         throw new IllegalArgumentException("Entry not found in registry");
     }
 
+    /**
+     * @param registry The registry to search in
+     * @param key      The namespaced key of the entry
+     * @return The index of the entry or -1 if the registry doesn't contain it
+     */
+    public static int getRegistryIndex(final CompoundTag registry, final String key) {
+        int index = 0;
+        for (Map.Entry<String, Tag> tagEntry : registry.entrySet()) {
+            if (tagEntry.getKey().equals(key)) {
+                return index;
+            }
+            index++;
+        }
+
+        return -1;
+    }
+
 }

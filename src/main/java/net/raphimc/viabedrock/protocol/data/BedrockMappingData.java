@@ -116,6 +116,7 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, Map<BlockState, JavaItemMapping>> bedrockToJavaBlockItems;
     private Map<String, Map<Integer, JavaItemMapping>> bedrockToJavaMetaItems;
     private Map<ContainerType, Integer> bedrockToJavaContainers;
+    private BiMap<String, Integer> javaMenus;
 
     // Entities
     private BiMap<String, Integer> bedrockEntities;
@@ -128,6 +129,7 @@ public class BedrockMappingData extends MappingDataBase {
 
     // Entity Effects
     private BiMap<String, Integer> javaEffects;
+    private BiMap<String, Integer> javaPotions;
     private BiMap<String, Integer> bedrockEffects;
     private Map<String, String> bedrockToJavaEffects;
 
@@ -554,8 +556,11 @@ public class BedrockMappingData extends MappingDataBase {
 
             final JsonArray javaMenusJson = javaViaMappingJson.get("menus").getAsJsonArray();
             final List<String> javaMenus = new ArrayList<>(javaMenusJson.size());
+            this.javaMenus = HashBiMap.create(javaMenusJson.size());
             for (JsonElement menuJson : javaMenusJson) {
-                javaMenus.add(Key.namespaced(menuJson.getAsString()));
+                final String menu = Key.namespaced(menuJson.getAsString());
+                this.javaMenus.put(menu, javaMenus.size());
+                javaMenus.add(menu);
             }
 
             final JsonObject bedrockToJavaContainersJson = this.readJson("custom/container_mappings.json");
@@ -694,6 +699,16 @@ public class BedrockMappingData extends MappingDataBase {
                     }
                 } while ((type = (EntityTypes26_2) type.getParent()) != null);
                 this.javaEntityDataFields.put(realType, allEntityTypeFields);
+            }
+        }
+
+        { // Potions
+            // The potion registry is not sent to the client and not part of the ViaVersion mappings, so the ids come
+            // from a manually maintained data file. New potions are appended to the registry, so existing ids are stable.
+            final JsonArray javaPotionsJson = this.readJson("java/potions.json", JsonArray.class);
+            this.javaPotions = HashBiMap.create(javaPotionsJson.size());
+            for (int i = 0; i < javaPotionsJson.size(); i++) {
+                this.javaPotions.put(javaPotionsJson.get(i).getAsString(), i);
             }
         }
 
@@ -1150,6 +1165,10 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaContainers;
     }
 
+    public BiMap<String, Integer> getJavaMenus() {
+        return this.javaMenus;
+    }
+
     public BiMap<String, Integer> getBedrockEntities() {
         return this.bedrockEntities;
     }
@@ -1176,6 +1195,10 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<EntityTypes26_2, List<String>> getJavaEntityDataFields() {
         return this.javaEntityDataFields;
+    }
+
+    public BiMap<String, Integer> getJavaPotions() {
+        return this.javaPotions;
     }
 
     public BiMap<String, Integer> getJavaEffects() {

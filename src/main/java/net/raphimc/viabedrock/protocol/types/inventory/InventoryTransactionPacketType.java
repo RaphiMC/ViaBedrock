@@ -15,18 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.types.inventory;
+package net.raphimc.viabedrock.protocol.types.inventory;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
-import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
-import net.raphimc.viabedrock.experimental.model.inventory.InventoryTransactionData;
-import net.raphimc.viabedrock.experimental.model.inventory.LegacySetItemSlotData;
-import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
+import net.raphimc.viabedrock.protocol.model.inventory.BedrockInventoryTransaction;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryTransactionData;
+import net.raphimc.viabedrock.protocol.model.inventory.LegacySetItemSlotData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -56,7 +55,7 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
         LegacySetItemSlotData[] legacySlots = new LegacySetItemSlotData[0];
         if (buffer.readBoolean()) {
             if (legacyRequestId < -1 && (legacyRequestId & 1) == 0) {
-                legacySlots = ExperimentalBedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.read(buffer);
+                legacySlots = BedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.read(buffer);
             }
         }
 
@@ -111,7 +110,7 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
         BedrockTypes.VAR_INT.write(buffer, bedrockInventoryTransaction.legacyRequestId());
         Types.BOOLEAN.write(buffer, bedrockInventoryTransaction.legacyRequestId() != 0);
         if (bedrockInventoryTransaction.legacyRequestId() != 0) {
-            ExperimentalBedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, bedrockInventoryTransaction.legacySlots().toArray(new LegacySetItemSlotData[0]));
+            BedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, bedrockInventoryTransaction.legacySlots().toArray(new LegacySetItemSlotData[0]));
         }
 
         Types.BOOLEAN.write(buffer, true);

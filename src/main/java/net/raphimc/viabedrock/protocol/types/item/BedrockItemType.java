@@ -30,13 +30,23 @@ public class BedrockItemType extends Type<BedrockItem> {
     private final int blockingId;
     private final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates;
     private final boolean writeItemNetId;
+    private final boolean hasNetIdField;
 
     public BedrockItemType(final int blockingId, final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates, final boolean writeItemNetId) {
+        this(blockingId, blockItemValidBlockStates, writeItemNetId, true);
+    }
+
+    /**
+     * @param hasNetIdField Whether the serialized form contains the net id field at all. Some packets (like the
+     *                      creative content) use a variant of this type which omits it entirely.
+     */
+    public BedrockItemType(final int blockingId, final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates, final boolean writeItemNetId, final boolean hasNetIdField) {
         super(BedrockItem.class);
 
         this.blockingId = blockingId;
         this.blockItemValidBlockStates = blockItemValidBlockStates;
         this.writeItemNetId = writeItemNetId;
+        this.hasNetIdField = hasNetIdField;
     }
 
     @Override
@@ -98,13 +108,15 @@ public class BedrockItemType extends Type<BedrockItem> {
         BedrockTypes.VAR_INT.write(buffer, value.identifier());
         buffer.writeShortLE(value.amount());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, (int) value.data());
-        if (this.writeItemNetId) {
-            buffer.writeBoolean(value.netId() != null);
-            if (value.netId() != null) {
-                BedrockTypes.VAR_INT.write(buffer, value.netId());
+        if (this.hasNetIdField) {
+            if (this.writeItemNetId) {
+                buffer.writeBoolean(value.netId() != null);
+                if (value.netId() != null) {
+                    BedrockTypes.VAR_INT.write(buffer, value.netId());
+                }
+            } else {
+                buffer.writeBoolean(false);
             }
-        } else {
-            buffer.writeBoolean(false);
         }
         BedrockTypes.VAR_INT.write(buffer, value.blockRuntimeId());
 

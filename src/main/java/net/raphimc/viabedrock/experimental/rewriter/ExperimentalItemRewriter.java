@@ -42,10 +42,6 @@ public class ExperimentalItemRewriter {
 
         if (bedrockTag != null) {
 
-            if (bedrockTag.get("Damage") instanceof NumberTag durability)  {
-                javaItem.dataContainer().set(StructuredDataKey.DAMAGE, durability.asInt());
-            }
-
             if (bedrockTag.get("map_uuid") instanceof NumberTag uuidTag) {
                 MapTracker mapTracker = user.get(MapTracker.class);
                 final long uuid = uuidTag.asLong();
@@ -59,51 +55,6 @@ public class ExperimentalItemRewriter {
                 }
 
                 javaItem.dataContainer().set(StructuredDataKey.MAP_ID, map.getJavaId());
-            }
-
-            if (bedrockTag.get("ench") instanceof ListTag<?> enchantments) {
-
-                StructuredData<Enchantments> enchantmentsData = javaItem.dataContainer().getData(StructuredDataKey.ENCHANTMENTS1_21_5);
-                Enchantments javaEnchantments;
-                if (enchantmentsData == null || enchantmentsData.isEmpty()) {
-                    javaEnchantments = new Enchantments(true);
-                } else {
-                    javaEnchantments = enchantmentsData.value();
-                }
-
-                //TODO: Empty list gives an enchantment glint, but no entries in lore
-                for (Tag enchantment : enchantments) {
-                    if (enchantment instanceof CompoundTag compoundTag) {
-                        //id and lvl must be a short. Else bedrock defaults to protection (id 0) and lvl 0 (TODO: implement the fallback)
-                        if (compoundTag.get("id") instanceof ShortTag idTag && compoundTag.get("lvl") instanceof ShortTag levelTag) {
-                            Enchant_Type bedrockId = Enchant_Type.getByValue(idTag.asInt());
-                            int level = levelTag.asInt();
-
-                            if (bedrockId == null) {
-                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown enchantment with id " + idTag.asInt() + " and level " + level);
-                                continue;
-                            }
-
-                            String javaEnchantmentId = BedrockProtocol.MAPPINGS.getBedrockToJavaEnchantments().get(bedrockId);
-
-                            //Update the java item with the enchantment
-                            if (javaEnchantmentId != null) {
-                                CompoundTag enchantmentsRegistry = (CompoundTag) BedrockProtocol.MAPPINGS.getJavaRegistries().get("minecraft:enchantment");
-                                CompoundTag enchantmentEntry = (CompoundTag) enchantmentsRegistry.get(javaEnchantmentId);
-                                if (enchantmentEntry == null) {
-                                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Enchantment entry is null for enchantment " + javaEnchantmentId);
-                                } else {
-                                    int javaId = RegistryUtil.getRegistryIndex(enchantmentsRegistry, enchantmentEntry);
-                                    javaEnchantments.add(javaId, level);
-                                }
-                            } else {
-                                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown enchantment with id " + bedrockId + " and level " + level);
-                            }
-                        }
-                    }
-                }
-
-                javaItem.dataContainer().set(StructuredDataKey.ENCHANTMENTS1_21_5, javaEnchantments);
             }
 
         }

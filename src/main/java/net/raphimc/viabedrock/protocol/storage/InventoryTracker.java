@@ -25,6 +25,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.IntObjectPair;
 import net.lenni0451.mcstructs_bedrock.forms.Form;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.api.model.container.ContainerSlot;
+import net.raphimc.viabedrock.api.model.container.MenuContainer;
 import net.raphimc.viabedrock.api.model.container.dynamic.BundleContainer;
 import net.raphimc.viabedrock.api.model.container.player.ArmorContainer;
 import net.raphimc.viabedrock.api.model.container.player.HudContainer;
@@ -39,13 +41,18 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomItemTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.EnchantOption;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.TradeOffers;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -58,6 +65,10 @@ public class InventoryTracker extends StoredObject {
     private final Map<FullContainerName, BundleContainer> dynamicContainerRegistry = new HashMap<>();
 
     private Container currentContainer = null;
+    private EnchantOption[] enchantOptions = new EnchantOption[0];
+    private TradeOffers tradeOffers = null;
+    private String itemRenameText = null;
+    private TradeOffers.Offer selectedTrade = null;
     private Container pendingCloseContainer = null;
     private IntObjectPair<Form> currentForm = null;
 
@@ -91,6 +102,92 @@ public class InventoryTracker extends StoredObject {
         return null;
     }
 
+    /**
+     * Resolves a slot of the Java screen which is currently open to the Bedrock container and slot it belongs to.
+     *
+     * @param javaSlot The slot index as sent by the Java client
+     * @return The resolved container slot or null if the slot can't be mapped to a Bedrock container
+     */
+    public ContainerSlot resolveJavaSlot(final int javaSlot) {
+        if (javaSlot < 0) { // Clicks outside of the screen
+            return null;
+        }
+
+        final MenuContainer menuContainer = this.getCurrentMenuContainer();
+        if (menuContainer != null) {
+            final int inventorySlot = menuContainer.bedrockPlayerInventorySlot(javaSlot);
+            if (inventorySlot != -1) {
+                return new ContainerSlot(this.inventoryContainer, inventorySlot);
+            }
+            final int containerSlot = menuContainer.bedrockSlot(javaSlot);
+            if (containerSlot == -1) {
+                return null;
+            }
+            return new ContainerSlot(menuContainer, containerSlot);
+        }
+
+        // The player inventory screen
+        if (javaSlot == 0) { // Crafting result
+            return new ContainerSlot(this.hudContainer, HudContainer.CRAFTING_RESULT);
+        } else if (javaSlot <= 4) { // 2x2 crafting grid
+            return new ContainerSlot(this.hudContainer, HudContainer.CRAFTING_INPUT_START + (javaSlot - 1));
+        } else if (javaSlot <= 8) { // Armor
+            return new ContainerSlot(this.armorContainer, javaSlot - 5);
+        } else if (javaSlot <= 35) { // Main inventory
+            return new ContainerSlot(this.inventoryContainer, javaSlot);
+        } else if (javaSlot <= 44) { // Hotbar
+            return new ContainerSlot(this.inventoryContainer, javaSlot - 36);
+        } else if (javaSlot == 45) { // Offhand
+            return new ContainerSlot(this.offhandContainer, 0);
+        }
+        return null;
+    }
+
+    /**
+     * @return The slot holding the item the player is currently dragging around
+     */
+    public ContainerSlot getCursorSlot() {
+        return new ContainerSlot(this.hudContainer, HudContainer.CURSOR);
+    }
+
+    /**
+     * @return All containers whose slots can be part of the currently open Java screen
+     */
+    public List<Container> getOpenContainers() {
+        final List<Container> containers = new ArrayList<>(4);
+        final MenuContainer menuContainer = this.getCurrentMenuContainer();
+        if (menuContainer != null) {
+            containers.add(menuContainer);
+            containers.add(this.inventoryContainer);
+        } else {
+            containers.add(this.inventoryContainer);
+            containers.add(this.armorContainer);
+            containers.add(this.offhandContainer);
+        }
+        containers.add(this.hudContainer); // Holds the cursor item, which is part of every screen
+        return containers;
+    }
+
+    /**
+     * Resolves a slot which was addressed by the server in an item stack response back to the container it belongs to.
+     *
+     * @param containerName The Bedrock container name
+     * @param requestSlot   The slot index within that container
+     * @return The resolved container slot or null if the slot is not part of any open container
+     */
+    public ContainerSlot resolveBedrockSlot(final FullContainerName containerName, final int requestSlot) {
+        for (Container container : this.getOpenContainers()) {
+            for (int slot = 0; slot < container.size(); slot++) {
+                if (container.bedrockRequestSlot(slot) != requestSlot) continue;
+                final FullContainerName name = container.bedrockFullContainerName(slot);
+                if (name != null && name.name() == containerName.name() && Objects.equals(name.dynamicId(), containerName.dynamicId())) {
+                    return new ContainerSlot(container, slot);
+                }
+            }
+        }
+        return null;
+    }
+
     public BundleContainer getDynamicContainer(final FullContainerName containerName) {
         return this.dynamicContainerRegistry.get(containerName);
     }
@@ -113,8 +210,18 @@ public class InventoryTracker extends StoredObject {
         if (serverInitiated) {
             PacketFactory.sendBedrockContainerClose(this.user(), this.currentContainer.containerId(), ContainerType.NONE);
         }
+        final boolean wasMenuContainer = (serverInitiated ? this.currentContainer : this.pendingCloseContainer) instanceof MenuContainer;
         this.currentContainer = null;
         this.pendingCloseContainer = null;
+        this.enchantOptions = new EnchantOption[0];
+        this.tradeOffers = null;
+        this.itemRenameText = null;
+        this.selectedTrade = null;
+        if (wasMenuContainer) {
+            // While a menu was open, the player inventory slots which are not part of the menu were not synced to the
+            // Java client, so the whole player inventory has to be resent once the menu is closed.
+            PacketFactory.sendJavaContainerSetContent(this.user(), this.inventoryContainer);
+        }
     }
 
     public void closeCurrentForm() {
@@ -182,6 +289,16 @@ public class InventoryTracker extends StoredObject {
         return this.currentContainer;
     }
 
+    /**
+     * @return The currently open container if it is displayed as a dedicated Java menu, otherwise null
+     */
+    public MenuContainer getCurrentMenuContainer() {
+        if (this.currentContainer instanceof MenuContainer menuContainer) {
+            return menuContainer;
+        }
+        return null;
+    }
+
     public void setCurrentContainer(final Container container) {
         if (this.isContainerOpen()) {
             throw new IllegalStateException("There is already another container open");
@@ -191,6 +308,50 @@ public class InventoryTracker extends StoredObject {
 
     public Container getPendingCloseContainer() {
         return this.pendingCloseContainer;
+    }
+
+    /**
+     * @return The trade the Java client selected, or null if it didn't select one
+     */
+    public TradeOffers.Offer getSelectedTrade() {
+        return this.selectedTrade;
+    }
+
+    public void setSelectedTrade(final TradeOffers.Offer selectedTrade) {
+        this.selectedTrade = selectedTrade;
+    }
+
+    /**
+     * @return The name the player typed into the anvil, or null if they didn't rename anything
+     */
+    public String getItemRenameText() {
+        return this.itemRenameText;
+    }
+
+    public void setItemRenameText(final String itemRenameText) {
+        this.itemRenameText = itemRenameText;
+    }
+
+    /**
+     * @return The trades the server sent for the currently open (or about to open) trading screen
+     */
+    public TradeOffers getTradeOffers() {
+        return this.tradeOffers;
+    }
+
+    public void setTradeOffers(final TradeOffers tradeOffers) {
+        this.tradeOffers = tradeOffers;
+    }
+
+    /**
+     * @return The enchantments the currently open enchanting table offers
+     */
+    public EnchantOption[] getEnchantOptions() {
+        return this.enchantOptions;
+    }
+
+    public void setEnchantOptions(final EnchantOption[] enchantOptions) {
+        this.enchantOptions = enchantOptions;
     }
 
     public IntObjectPair<Form> getCurrentForm() {

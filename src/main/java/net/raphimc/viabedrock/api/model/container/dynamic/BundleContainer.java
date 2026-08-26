@@ -23,6 +23,7 @@ import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.api.model.container.Container;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomItemTags;
@@ -93,6 +94,16 @@ public class BundleContainer extends Container {
         }
 
         return holdingContainer.key().javaContainerId();
+    }
+
+    @Override
+    public FullContainerName bedrockFullContainerName(final int slot) {
+        return this.containerName;
+    }
+
+    @Override
+    public ContainerEnumName bedrockContainerName(final int slot) {
+        return this.containerName.name();
     }
 
     public Item[] getJavaBundleItems() {

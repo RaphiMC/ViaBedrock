@@ -25,8 +25,10 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.api.model.container.MenuContainer;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacketPayload_Action;
@@ -52,6 +54,11 @@ public class InventoryContainer extends Container {
     @Override
     public Item[] getJavaItems() {
         final InventoryTracker inventoryTracker = this.user.get(InventoryTracker.class);
+        final MenuContainer menuContainer = inventoryTracker.getCurrentMenuContainer();
+        if (menuContainer != null) { // The player inventory is rendered as part of the open menu
+            return menuContainer.getJavaItems();
+        }
+
         final Item[] inventoryItems = super.getJavaItems();
         final Item[] armorItems = inventoryTracker.getArmorContainer().getActualJavaItems();
         final Item[] offhandItems = inventoryTracker.getOffhandContainer().getActualJavaItems();
@@ -80,6 +87,13 @@ public class InventoryContainer extends Container {
 
     @Override
     public int javaSlot(final int slot) {
+        // While a menu is open on the Java client, the player inventory is part of that menu and has to be addressed
+        // with the menu's container id and slot indices.
+        final MenuContainer menuContainer = this.user.get(InventoryTracker.class).getCurrentMenuContainer();
+        if (menuContainer != null) {
+            return menuContainer.javaPlayerInventorySlot(slot);
+        }
+
         if (slot < 9) {
             return 36 + slot;
         } else {
@@ -89,7 +103,20 @@ public class InventoryContainer extends Container {
 
     @Override
     public byte javaContainerId() {
+        final MenuContainer menuContainer = this.user.get(InventoryTracker.class).getCurrentMenuContainer();
+        if (menuContainer != null) {
+            return menuContainer.javaContainerId();
+        }
         return (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue();
+    }
+
+    @Override
+    public ContainerEnumName bedrockContainerName(final int slot) {
+        if (slot < 9) {
+            return ContainerEnumName.HotbarContainer;
+        } else {
+            return ContainerEnumName.InventoryContainer;
+        }
     }
 
     public byte getSelectedHotbarSlot() {

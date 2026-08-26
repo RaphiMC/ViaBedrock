@@ -19,22 +19,22 @@ package net.raphimc.viabedrock.protocol.data.enums;
 
 public enum DyeColor {
 
-    WHITE(16777215),
-    ORANGE(16738335),
-    MAGENTA(16711935),
-    LIGHT_BLUE(10141901),
-    YELLOW(16776960),
-    LIME(12582656),
-    PINK(16738740),
-    GRAY(8421504),
-    LIGHT_GRAY(13882323),
-    CYAN(65535),
-    PURPLE(10494192),
-    BLUE(255),
-    BROWN(9127187),
-    GREEN(65280),
-    RED(16711680),
-    BLACK(0);
+    WHITE(16777215, 15790320),
+    ORANGE(16738335, 15435844),
+    MAGENTA(16711935, 12801229),
+    LIGHT_BLUE(10141901, 6719955),
+    YELLOW(16776960, 14602026),
+    LIME(12582656, 4312372),
+    PINK(16738740, 14188952),
+    GRAY(8421504, 4408131),
+    LIGHT_GRAY(13882323, 11250603),
+    CYAN(65535, 2651799),
+    PURPLE(10494192, 8073150),
+    BLUE(255, 2437522),
+    BROWN(9127187, 5320730),
+    GREEN(65280, 3887386),
+    RED(16711680, 11743532),
+    BLACK(0, 1973019);
 
     private static final DyeColor[] JAVA_VALUES = new DyeColor[values().length];
     private static final DyeColor[] BEDROCK_VALUES = new DyeColor[values().length];
@@ -47,9 +47,11 @@ public enum DyeColor {
     }
 
     private final int signColor;
+    private final int fireworkColor;
 
-    DyeColor(final int signColor) {
+    DyeColor(final int signColor, final int fireworkColor) {
         this.signColor = signColor;
+        this.fireworkColor = fireworkColor;
     }
 
     public static DyeColor getByJavaId(final int id, final DyeColor fallback) {
@@ -98,6 +100,13 @@ public enum DyeColor {
 
     public int signColor() {
         return this.signColor | 0xFF000000;
+    }
+
+    /**
+     * @return The rgb value Java Edition uses to render firework explosions of this color
+     */
+    public int fireworkColor() {
+        return this.fireworkColor;
     }
 
     public byte javaId() {

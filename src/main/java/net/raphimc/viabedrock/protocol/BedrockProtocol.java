@@ -47,6 +47,7 @@ import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
+import net.raphimc.viabedrock.protocol.rewriter.InventoryTransactionRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.task.*;
 
@@ -154,6 +155,10 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         user.put(new PlayerListStorage());
         user.put(new ScoreboardTracker());
         user.put(new InventoryTracker(user));
+        user.put(new ItemStackRequestTracker(user));
+        user.put(new CreativeContentTracker(user));
+        user.put(new RecipeTracker(user));
+        user.put(new InventoryTransactionRewriter(user));
         user.put(new BreakingTracker(user));
 
         if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {

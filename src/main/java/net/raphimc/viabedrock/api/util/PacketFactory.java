@@ -26,19 +26,39 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.gson.JsonNull;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
+import net.raphimc.viabedrock.api.inventory.InventoryOperation;
 import net.raphimc.viabedrock.api.model.container.Container;
+import net.raphimc.viabedrock.api.model.container.ContainerSlot;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySource_InventorySourceFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerActionType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ServerboundLoadingScreenPacketType;
 import net.raphimc.viabedrock.protocol.data.enums.java.EntityEvent;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.CustomChatCompletionsAction;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.inventory.BedrockInventoryTransaction;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
+import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryTransactionData;
+import net.raphimc.viabedrock.protocol.rewriter.InventoryTransactionRewriter;
+import net.raphimc.viabedrock.protocol.storage.EntityTracker;
+import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
+import net.raphimc.viabedrock.protocol.storage.ItemStackRequestTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class PacketFactory {
     public static void sendJavaBlockDestroyProgress(final UserConnection user, final int id, final BlockPosition position, final int stage) {
@@ -129,6 +149,77 @@ public class PacketFactory {
         containerClose.write(Types.BYTE, (byte) containerType.getValue()); // type
         containerClose.write(Types.BOOLEAN, false); // server initiated
         containerClose.sendToServer(BedrockProtocol.class);
+    }
+
+    /**
+     * Sends the given inventory change to the server using whichever inventory protocol it uses.
+     *
+     * <p>This has to be called before the change is applied to the containers, because both protocols describe the
+     * change relative to the current state.</p>
+     *
+     * @param newItems   The new content of every slot which changed
+     * @param operations The operations which describe the change
+     */
+    public static void sendBedrockInventoryChange(final UserConnection user, final Map<ContainerSlot, BedrockItem> newItems, final List<InventoryOperation> operations) {
+        if (user.get(GameSessionStorage.class).isInventoryServerAuthoritative()) {
+            user.get(ItemStackRequestTracker.class).sendRequest(operations);
+        } else {
+            sendBedrockInventoryTransaction(user, newItems, operations);
+        }
+    }
+
+    public static void sendBedrockPlayerAction(final UserConnection user, final PlayerActionType actionType, final BlockPosition position, final BlockPosition resultPosition, final int face) {
+        final PacketWrapper playerAction = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, user);
+        playerAction.write(BedrockTypes.UNSIGNED_VAR_LONG, user.get(EntityTracker.class).getClientPlayer().runtimeId()); // entity runtime id
+        playerAction.write(BedrockTypes.VAR_INT, actionType.getValue()); // action type
+        playerAction.write(BedrockTypes.BLOCK_POSITION, position); // block position
+        playerAction.write(BedrockTypes.BLOCK_POSITION, resultPosition); // result position
+        playerAction.write(BedrockTypes.VAR_INT, face); // face
+        playerAction.sendToServer(BedrockProtocol.class);
+    }
+
+    /**
+     * Sends the given inventory change to a server which uses client authoritative inventories. Those servers expect
+     * the client to tell them what the inventory looked like before and after the change.
+     *
+     * @param newItems   The new content of every slot which changed
+     * @param operations The operations which describe the change
+     */
+    public static void sendBedrockInventoryTransaction(final UserConnection user, final Map<ContainerSlot, BedrockItem> newItems, final List<InventoryOperation> operations) {
+        final List<InventoryActionData> actions = new ArrayList<>(newItems.size() + operations.size());
+        for (Map.Entry<ContainerSlot, BedrockItem> entry : newItems.entrySet()) {
+            final ContainerSlot containerSlot = entry.getKey();
+            actions.add(new InventoryActionData(
+                    new InventorySource(InventorySourceType.Container_Inventory, containerSlot.container().containerId(), InventorySource_InventorySourceFlags.No_Flag),
+                    containerSlot.slot(),
+                    containerSlot.getItem(),
+                    entry.getValue()
+            ));
+        }
+        for (InventoryOperation operation : operations) {
+            if (!(operation instanceof InventoryOperation.Drop drop)) continue;
+            final BedrockItem droppedItem = drop.source().getItem().copy();
+            droppedItem.setAmount(drop.count());
+            actions.add(new InventoryActionData(
+                    new InventorySource(InventorySourceType.World_Interaction, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySource_InventorySourceFlags.No_Flag),
+                    0,
+                    BedrockItem.empty(),
+                    droppedItem
+            ));
+        }
+        if (actions.isEmpty()) {
+            return;
+        }
+
+        final PacketWrapper inventoryTransaction = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, user);
+        inventoryTransaction.write(user.get(InventoryTransactionRewriter.class).getInventoryTransactionType(), new BedrockInventoryTransaction(
+                0, // legacy request id
+                null,
+                actions,
+                ComplexInventoryTransaction_Type.NormalTransaction,
+                new InventoryTransactionData.NormalTransactionData()
+        ));
+        inventoryTransaction.sendToServer(BedrockProtocol.class);
     }
 
     public static void sendBedrockLoadingScreen(final UserConnection user, final ServerboundLoadingScreenPacketType type, final Long loadingScreenId) {

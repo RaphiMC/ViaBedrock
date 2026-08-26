@@ -15,27 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.api.model.container.player;
+package net.raphimc.viabedrock.protocol.model.inventory;
 
-import com.viaversion.viaversion.api.connection.UserConnection;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 
-public class ArmorContainer extends InventorySubContainer {
-
-    public ArmorContainer(final UserConnection user) {
-        super(user, (byte) ContainerID.CONTAINER_ID_ARMOR.getValue(), ContainerType.ARMOR, 4);
-    }
-
-    @Override
-    public int javaSlot(final int slot) {
-        return 5 + slot;
-    }
-
-    @Override
-    public ContainerEnumName bedrockContainerName(final int slot) {
-        return ContainerEnumName.ArmorContainer;
-    }
-
+public record LegacySetItemSlotData(ContainerEnumName container, byte[] slots) {
 }

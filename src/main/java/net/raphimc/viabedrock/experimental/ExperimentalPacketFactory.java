@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.experimental;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v1_21_9to1_21_11.packet.ClientboundPackets1_21_11;
@@ -26,21 +25,10 @@ import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InteractPacketPayload_Action;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerActionType;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class ExperimentalPacketFactory {
-
-    public static void sendBedrockPlayerAction(final UserConnection user, long entityId, PlayerActionType actionType, BlockPosition position, BlockPosition resultPosition, int face) {
-        final PacketWrapper startItemUseOn = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, user);
-        startItemUseOn.write(BedrockTypes.UNSIGNED_VAR_LONG, entityId); // entity runtime id
-        startItemUseOn.write(BedrockTypes.VAR_INT, actionType.getValue()); // action type
-        startItemUseOn.write(BedrockTypes.BLOCK_POSITION, position); // block position
-        startItemUseOn.write(BedrockTypes.BLOCK_POSITION, resultPosition); // result position
-        startItemUseOn.write(BedrockTypes.VAR_INT, face); // face
-        startItemUseOn.sendToServer(BedrockProtocol.class);
-    }
 
     public static void sendBedrockDismount(final UserConnection user, long entityRId) {
         final PacketWrapper dismountPacket = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, user);

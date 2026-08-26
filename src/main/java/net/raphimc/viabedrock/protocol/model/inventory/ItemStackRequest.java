@@ -15,10 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.model.inventory;
+package net.raphimc.viabedrock.protocol.model.inventory;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySource_InventorySourceFlags;
+import java.util.List;
 
-public record InventorySource(InventorySourceType type, int containerId, InventorySource_InventorySourceFlags flags) {
+/**
+ * A single request of the Bedrock ItemStackRequest packet.
+ *
+ * @param requestId         The client generated request id. Client generated ids are negative and odd.
+ * @param actions           The actions which make up this request
+ * @param filterStrings     Strings which have to be filtered by the server (anvil/cartography/book text)
+ * @param filterStringCause The reason why the strings have to be filtered
+ */
+public record ItemStackRequest(int requestId, List<ItemStackRequestAction> actions, String[] filterStrings, int filterStringCause) {
+
+    public ItemStackRequest(final int requestId, final List<ItemStackRequestAction> actions) {
+        this(requestId, actions, new String[0], 0);
+    }
+
 }

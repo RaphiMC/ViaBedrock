@@ -76,6 +76,8 @@ public class ItemRewriter extends StoredObject {
     private final Type<BedrockItem> newItemType;
     private final Type<BedrockItem> optionalNewItemType;
     private final Type<BedrockItem[]> newItemArrayType;
+    private final Type<BedrockItem> itemTypeWithoutNetId;
+    private final Type<BedrockItem[]> itemArrayTypeWithoutNetId;
 
     static {
         // TODO: Add missing item nbt rewriters
@@ -120,6 +122,8 @@ public class ItemRewriter extends StoredObject {
         this.newItemType = new NetworkItemStackDescriptorType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false);
         this.optionalNewItemType = new OptionalType<>(this.newItemType);
         this.newItemArrayType = new ArrayType<>(this.newItemType, BedrockTypes.UNSIGNED_VAR_INT);
+        this.itemTypeWithoutNetId = new BedrockItemType(this.items.getOrDefault("minecraft:shield", 0), this.blockItemValidBlockStates, false, false);
+        this.itemArrayTypeWithoutNetId = new ArrayType<>(this.itemTypeWithoutNetId, BedrockTypes.UNSIGNED_VAR_INT);
     }
 
     public Item javaItem(final BedrockItem bedrockItem) {
@@ -171,8 +175,7 @@ public class ItemRewriter extends StoredObject {
         if (javaItemMapping != null) {
             final StructuredDataContainer data = ProtocolConstants.createStructuredDataContainer();
             if (javaItemMapping.overrideTag() != null) {
-                // javaTag.setValue(this.overrideTag.copy().getValue());
-                // TODO: Update: Fix this
+                ItemDataRewriter.applyMappedData(javaItemMapping.overrideTag(), data);
             }
             if (javaItemMapping.name() != null) {
                 final ResourcePackStorage resourcePackStorage = this.user().get(ResourcePackStorage.class);
@@ -210,17 +213,10 @@ public class ItemRewriter extends StoredObject {
             javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), bedrockItem.amount(), data);
         }
 
-        final CompoundTag bedrockTag = bedrockItem.tag();
-        if (bedrockTag != null) {
-            if (bedrockTag.get("display") instanceof CompoundTag display) {
-                if (display.contains("Name")) { // Bedrock client defaults to empty string if the type is wrong
-                    javaItem.dataContainer().set(StructuredDataKey.CUSTOM_NAME, TextUtil.stringToNbt(display.getString("Name", "")));
-                }
-            }
-        }
+        ItemDataRewriter.toJava(this.user(), bedrockItem, javaItem);
 
         if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-            ExperimentalItemRewriter.handleItem(this.user(), bedrockItem, bedrockTag, javaItem);
+            ExperimentalItemRewriter.handleItem(this.user(), bedrockItem, bedrockItem.tag(), javaItem);
         }
 
         final String tag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(identifier);
@@ -231,35 +227,53 @@ public class ItemRewriter extends StoredObject {
         return javaItem;
     }
 
-    public CompoundTag javaItem(final CompoundTag bedrockTag) {
-        final CompoundTag javaTag = new CompoundTag();
-
+    /**
+     * Reads an item from the NBT form Bedrock Edition uses in block entities and trade offers.
+     *
+     * @param bedrockTag The item tag
+     * @return The item or null if the tag doesn't describe a valid item
+     */
+    public BedrockItem bedrockItem(final CompoundTag bedrockTag) {
         if (bedrockTag == null) {
             return null;
         }
 
-        String bedrockId = bedrockTag.getString("Name");
+        final String bedrockId = bedrockTag.getString("Name");
         if (bedrockId == null || bedrockId.isEmpty()) {
             return null;
         }
 
-        Integer id = this.items.get(bedrockId);
+        final Integer id = this.items.get(bedrockId);
         if (id == null) {
             ViaBedrock.getPlatform().getLogger().warning("Could not find item " + bedrockId);
             return null;
         }
 
-        BedrockItem item = new BedrockItem(
+        final BedrockItem item = new BedrockItem(
                 id,
-                (short) 0,
+                bedrockTag.getShort("Damage", (short) 0),
                 bedrockTag.getByte("Count"),
                 bedrockTag.getCompoundTag("tag")
         );
-        if (item.isEmpty()) {
+        return item.isEmpty() ? null : item;
+    }
+
+    /**
+     * @param bedrockTag The item tag
+     * @return The translated item or null if the tag doesn't describe a valid item
+     */
+    public Item javaItemFromTag(final CompoundTag bedrockTag) {
+        final BedrockItem bedrockItem = this.bedrockItem(bedrockTag);
+        return bedrockItem != null ? this.javaItem(bedrockItem) : null;
+    }
+
+    public CompoundTag javaItem(final CompoundTag bedrockTag) {
+        final CompoundTag javaTag = new CompoundTag();
+
+        final Item javaItem = this.javaItemFromTag(bedrockTag);
+        if (javaItem == null) {
             return null;
         }
-
-        Item javaItem = this.javaItem(item);
 
         String javaId = BedrockProtocol.MAPPINGS.getJavaItems().inverse().get(javaItem.identifier());
         javaTag.put("id", new StringTag(javaId));
@@ -318,6 +332,17 @@ public class ItemRewriter extends StoredObject {
 
     public Type<BedrockItem> optionalNewItemType() {
         return this.optionalNewItemType;
+    }
+
+    /**
+     * @return The item type used by packets which serialize items without the net id field, like the creative content
+     */
+    public Type<BedrockItem> itemTypeWithoutNetId() {
+        return this.itemTypeWithoutNetId;
+    }
+
+    public Type<BedrockItem[]> itemArrayTypeWithoutNetId() {
+        return this.itemArrayTypeWithoutNetId;
     }
 
     public Type<BedrockItem[]> newItemArrayType() {

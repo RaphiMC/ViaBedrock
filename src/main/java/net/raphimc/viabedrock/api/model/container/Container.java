@@ -22,9 +22,12 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.libs.mcstructs.text.TextComponent;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
-import net.raphimc.viabedrock.protocol.data.enums.java.generated.ContainerInput;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
+import net.raphimc.viabedrock.protocol.model.inventory.ItemStackRequestSlotInfo;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
 import java.util.Arrays;
@@ -61,13 +64,9 @@ public abstract class Container {
         this.validBlockTags = validBlockTags;
     }
 
-    public boolean handleClick(final int revision, final short slot, final byte button, final ContainerInput action) {
-        return false;
-    }
-
     public void clearItems() {
-        for (int i = 0; i < this.items.length; i++) {
-            this.items[i] = BedrockItem.empty();
+        for (int i = 0; i < this.size(); i++) {
+            this.setItem(i, BedrockItem.empty());
         }
     }
 
@@ -76,7 +75,7 @@ public abstract class Container {
     }
 
     public Item[] getJavaItems() {
-        return this.user.get(ItemRewriter.class).javaItems(this.items);
+        return this.user.get(ItemRewriter.class).javaItems(this.getItems());
     }
 
     public BedrockItem getItem(final int slot) {
@@ -123,6 +122,20 @@ public abstract class Container {
         return this.items.length;
     }
 
+    /**
+     * @return The amount of slots the Java client expects for this container
+     */
+    public int javaSize() {
+        return this.size();
+    }
+
+    /**
+     * @return The Java menu type id of this container or -1 if this container is not displayed as a Java menu
+     */
+    public int javaMenuType() {
+        return BedrockProtocol.MAPPINGS.getBedrockToJavaContainers().getOrDefault(this.type, -1);
+    }
+
     public byte containerId() {
         return this.containerId;
     }
@@ -139,8 +152,50 @@ public abstract class Container {
         return this.position;
     }
 
+    /**
+     * @param slot The Bedrock slot of this container
+     * @return The Bedrock container name which addresses the given slot in item stack requests
+     */
+    public ContainerEnumName bedrockContainerName(final int slot) {
+        return ContainerEnumName.LevelEntityContainer;
+    }
+
+    /**
+     * @param slot The Bedrock slot of this container
+     * @return The slot index which addresses the given slot in item stack requests
+     */
+    public int bedrockRequestSlot(final int slot) {
+        return slot;
+    }
+
+    /**
+     * @param slot The Bedrock slot of this container
+     * @return The full container name which addresses the given slot in item stack requests
+     */
+    public FullContainerName bedrockFullContainerName(final int slot) {
+        final ContainerEnumName containerName = this.bedrockContainerName(slot);
+        return containerName != null ? new FullContainerName(containerName, null) : null;
+    }
+
+    /**
+     * @param slot The Bedrock slot of this container
+     * @return The slot info which addresses the given slot in item stack requests
+     */
+    public ItemStackRequestSlotInfo requestSlotInfo(final int slot) {
+        final FullContainerName containerName = this.bedrockFullContainerName(slot);
+        if (containerName == null) {
+            throw new IllegalArgumentException("Slot " + slot + " of " + this.type + " can't be addressed in item stack requests");
+        }
+        final BedrockItem item = this.getItem(slot);
+        final Integer netId = item.isEmpty() ? null : item.netId();
+        return new ItemStackRequestSlotInfo(containerName, this.bedrockRequestSlot(slot), netId != null ? netId : 0);
+    }
+
     public boolean isValidBlockTag(final String tag) {
-        if (tag == null) {
+        if (this.validBlockTags.isEmpty()) {
+            // Blocks without a block entity (crafting tables, anvils, ...) can't be identified by a tag
+            return true;
+        } else if (tag == null) {
             return false;
         } else {
             return this.validBlockTags.contains(tag);

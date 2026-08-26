@@ -15,9 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.model.inventory;
+package net.raphimc.viabedrock.protocol.model.inventory;
 
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public record LegacySetItemSlotData(ContainerEnumName container, byte[] slots) {
+/**
+ * Identifies a single slot within a Bedrock container for an {@link ItemStackRequest}.
+ *
+ * @param containerName    The container the slot belongs to
+ * @param slot             The slot index within the container
+ * @param stackNetworkId   The net id of the item which is currently expected to be in that slot
+ */
+public record ItemStackRequestSlotInfo(FullContainerName containerName, int slot, int stackNetworkId) {
+
+    public ItemStackRequestSlotInfo(final ContainerEnumName containerName, final int slot, final int stackNetworkId) {
+        this(new FullContainerName(containerName, null), slot, stackNetworkId);
+    }
+
 }
