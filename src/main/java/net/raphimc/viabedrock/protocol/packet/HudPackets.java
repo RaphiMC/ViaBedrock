@@ -268,7 +268,7 @@ public class HudPackets {
 
                 switch (action) {
                     case Remove -> {
-                        if (wrapper.read(Types.BOOLEAN) && wrapper.read(Types.BOOLEAN) /* #blameMojang */) {
+                        if (wrapper.read(Types.BOOLEAN)) {
                             objectiveName = wrapper.read(BedrockTypes.STRING);
                         } else {
                             objectiveName = null;

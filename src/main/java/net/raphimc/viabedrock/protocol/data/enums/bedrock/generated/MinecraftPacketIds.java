@@ -237,6 +237,7 @@ public enum MinecraftPacketIds {
     PlayerUpdateEntityOverridesPacket(325),
     PlayerLocation(326),
     SyncWorldClocks(344),
+    ClientboundUpdateSoundDataPacket(348),
     SendPartyDestinationCookie(349),
     PartyDestinationCookieResponse(350),
     ;

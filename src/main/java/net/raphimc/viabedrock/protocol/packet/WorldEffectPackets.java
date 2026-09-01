@@ -69,6 +69,49 @@ public class WorldEffectPackets {
     private static final boolean LEVEL_SOUND_DEBUG_LOG = false;
 
     public static void register(final BedrockProtocol protocol) {
+        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SOUND_DATA, null, wrapper -> {
+            wrapper.read(BedrockTypes.UNSIGNED_LONG_LE); // server sound handle
+
+            if (wrapper.read(Types.BOOLEAN)) { // Stop Sound
+                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+            }
+
+            if (wrapper.read(Types.BOOLEAN)) { // Set Volume
+                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+
+                final float volume = wrapper.read(BedrockTypes.FLOAT_LE); // volume
+            }
+
+            if (wrapper.read(Types.BOOLEAN)) { // Set Pitch
+                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+
+                final float pitch = wrapper.read(BedrockTypes.FLOAT_LE); // pitch
+            }
+
+            if  (wrapper.read(Types.BOOLEAN)) { // Set Fade
+                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+
+                final float targetVolume = wrapper.read(BedrockTypes.FLOAT_LE); // targetVolume
+                final float duration = wrapper.read(BedrockTypes.FLOAT_LE); // duration
+            }
+
+            if (wrapper.read(Types.BOOLEAN)) { // Set SeekTo
+                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+
+                final float seconds = wrapper.read(BedrockTypes.FLOAT_LE); // seconds
+            }
+
+            if (wrapper.read(Types.BOOLEAN)) { // Set Pause
+                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+            }
+
+            if (wrapper.read(Types.BOOLEAN)) { // Set Resume
+                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+            }
+
+            wrapper.cancel();
+            // TODO: Server handle based sound manager
+        });
         protocol.registerClientbound(ClientboundBedrockPackets.PLAY_SOUND, ClientboundPackets26_1.SOUND, wrapper -> {
             final String name = wrapper.read(BedrockTypes.STRING); // sound name
             final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
