@@ -31,6 +31,7 @@ import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.GameMode;
@@ -66,7 +67,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     // Server Authoritative Movement
     private Position3f prevPosition;
     private boolean prevOnGround;
-    private final Set<PlayerAuthInputPacket_InputData> authInputData = EnumSet.noneOf(PlayerAuthInputPacket_InputData.class);
+    private final Set<PlayerAuthInputPacketPayload_InputData> authInputData = EnumSet.noneOf(PlayerAuthInputPacketPayload_InputData.class);
     private final List<AuthInputBlockAction> authInputBlockActions = new ArrayList<>();
     private Set<InputFlag> inputFlags = EnumSet.noneOf(InputFlag.class);
     private Set<InputFlag> prevInputFlags = EnumSet.noneOf(InputFlag.class);
@@ -225,7 +226,7 @@ public class ClientPlayerEntity extends PlayerEntity {
             if (!this.initiallySpawned) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received teleport confirm for teleport id " + teleportId + " but player is not spawned yet");
             }
-            this.authInputData.add(PlayerAuthInputPacket_InputData.HandledTeleport);
+            this.authInputData.add(PlayerAuthInputPacketPayload_InputData.HandledTeleport);
         }
     }
 
@@ -237,15 +238,15 @@ public class ClientPlayerEntity extends PlayerEntity {
         return this.prevOnGround;
     }
 
-    public Set<PlayerAuthInputPacket_InputData> authInputData() {
+    public Set<PlayerAuthInputPacketPayload_InputData> authInputData() {
         return this.authInputData;
     }
 
-    public void addAuthInputData(final PlayerAuthInputPacket_InputData data) {
+    public void addAuthInputData(final PlayerAuthInputPacketPayload_InputData data) {
         this.authInputData.add(data);
     }
 
-    public void addAuthInputData(final PlayerAuthInputPacket_InputData... data) {
+    public void addAuthInputData(final PlayerAuthInputPacketPayload_InputData... data) {
         this.authInputData.addAll(Arrays.asList(data));
     }
 
@@ -254,7 +255,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void addAuthInputBlockAction(final AuthInputBlockAction blockAction) {
-        this.authInputData.add(PlayerAuthInputPacket_InputData.PerformBlockActions);
+        this.authInputData.add(PlayerAuthInputPacketPayload_InputData.PerformBlockActions);
         this.authInputBlockActions.add(blockAction);
     }
 

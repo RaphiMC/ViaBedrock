@@ -57,7 +57,7 @@ public class RakNetStatusProtocol extends AbstractSimpleProtocol {
             if (!Arrays.equals(offlineMessageDataId, OFFLINE_MESSAGE_DATA_ID)) {
                 throw new IllegalStateException("Invalid offline message data id");
             }
-            final byte[] data = wrapper.read(Types.SHORT_BYTE_ARRAY); // ping response data
+            final byte[] data = wrapper.read(Types.REMAINING_BYTES); // ping response data TODO: More testing needed
 
             final JsonObject statusResponse = new JsonObject();
             statusResponse.addProperty("description", "");

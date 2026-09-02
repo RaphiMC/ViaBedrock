@@ -139,7 +139,7 @@ public class EntityPackets {
 
             final long entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // entity unique id
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
-            final BedrockItem item = wrapper.read(itemRewriter.itemType()); // item
+            final BedrockItem item = wrapper.read(itemRewriter.newItemType()); // item
             final Position3f position = wrapper.read(BedrockTypes.POSITION_3F); // position
             final Position3f motion = wrapper.read(BedrockTypes.POSITION_3F); // motion
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
@@ -235,16 +235,22 @@ public class EntityPackets {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
 
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
-            final int flags = wrapper.read(BedrockTypes.UNSIGNED_SHORT_LE); // flags
-            final boolean hasX = (flags & 1) != 0;
-            final boolean hasY = (flags & 2) != 0;
-            final boolean hasZ = (flags & 4) != 0;
-            final boolean hasPitch = (flags & 8) != 0;
-            final boolean hasYaw = (flags & 16) != 0;
-            final boolean hasHeadYaw = (flags & 32) != 0;
-            final boolean onGround = (flags & 64) != 0;
-            final boolean teleported = (flags & 128) != 0; // If the position shouldn't be interpolated
-            final boolean forceMoveLocalEntity = (flags & 256) != 0;
+            final boolean hasX = wrapper.read(Types.BOOLEAN);
+            final float x = hasX ? wrapper.read(BedrockTypes.FLOAT_LE) : 0;
+            final boolean hasY = wrapper.read(Types.BOOLEAN);
+            final float y = hasY ? wrapper.read(BedrockTypes.FLOAT_LE) : 0;
+            final boolean hasZ = wrapper.read(Types.BOOLEAN);
+            final float z = hasZ ? wrapper.read(BedrockTypes.FLOAT_LE) : 0;
+            final boolean hasPitch = wrapper.read(Types.BOOLEAN);
+            final byte pitch = hasPitch ? wrapper.read(Types.BYTE) : 0;
+            final boolean hasYaw = wrapper.read(Types.BOOLEAN);
+            final byte yaw = hasYaw ? wrapper.read(Types.BYTE) : 0;
+            final boolean hasHeadYaw = wrapper.read(Types.BOOLEAN);
+            final byte headYaw = hasHeadYaw ? wrapper.read(Types.BYTE) : 0;
+            final boolean onGround = wrapper.read(Types.BOOLEAN);
+            final boolean teleported = wrapper.read(Types.BOOLEAN); // If the position shouldn't be interpolated
+            final boolean forceMoveLocalEntity = wrapper.read(Types.BOOLEAN);
+            wrapper.read(Types.BOOLEAN); // force completion
 
             final Entity entity = entityTracker.getEntityByRid(entityRuntimeId);
             if (entity == null) {
@@ -258,21 +264,8 @@ public class EntityPackets {
                     return;
                 }
 
-                float x = 0F;
-                float y = 0F;
-                float z = 0F;
-                if (hasX) {
-                    x = wrapper.read(BedrockTypes.FLOAT_LE);
-                }
-                if (hasY) {
-                    y = wrapper.read(BedrockTypes.FLOAT_LE);
-                }
-                if (hasZ) {
-                    z = wrapper.read(BedrockTypes.FLOAT_LE);
-                }
                 entity.setPosition(new Position3f(x, y, z));
 
-                wrapper.clearPacket();
                 if (teleported) {
                     wrapper.setPacketType(ClientboundPackets26_1.PLAYER_POSITION);
                     entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
@@ -292,22 +285,22 @@ public class EntityPackets {
             }
 
             if (hasX) {
-                entity.setPosition(new Position3f(wrapper.read(BedrockTypes.FLOAT_LE), entity.position().y(), entity.position().z()));
+                entity.setPosition(new Position3f(x, entity.position().y(), entity.position().z()));
             }
             if (hasY) {
-                entity.setPosition(new Position3f(entity.position().x(), wrapper.read(BedrockTypes.FLOAT_LE), entity.position().z()));
+                entity.setPosition(new Position3f(entity.position().x(), y, entity.position().z()));
             }
             if (hasZ) {
-                entity.setPosition(new Position3f(entity.position().x(), entity.position().y(), wrapper.read(BedrockTypes.FLOAT_LE)));
+                entity.setPosition(new Position3f(entity.position().x(), entity.position().y(), z));
             }
             if (hasPitch) {
-                entity.setRotation(new Position3f(MathUtil.byte2Float(wrapper.read(Types.BYTE)), entity.rotation().y(), entity.rotation().z()));
+                entity.setRotation(new Position3f(MathUtil.byte2Float(pitch), entity.rotation().y(), entity.rotation().z()));
             }
             if (hasYaw) {
-                entity.setRotation(new Position3f(entity.rotation().x(), MathUtil.byte2Float(wrapper.read(Types.BYTE)), entity.rotation().z()));
+                entity.setRotation(new Position3f(entity.rotation().x(), MathUtil.byte2Float(yaw), entity.rotation().z()));
             }
             if (hasHeadYaw) {
-                entity.setRotation(new Position3f(entity.rotation().x(), entity.rotation().y(), MathUtil.byte2Float(wrapper.read(Types.BYTE))));
+                entity.setRotation(new Position3f(entity.rotation().x(), entity.rotation().y(), MathUtil.byte2Float(headYaw)));
                 PacketFactory.sendJavaRotateHead(wrapper.user(), entity);
             }
             entity.setOnGround(onGround);

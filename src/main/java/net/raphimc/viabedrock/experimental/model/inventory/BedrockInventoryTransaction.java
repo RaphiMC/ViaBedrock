@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.experimental.model.inventory;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ComplexInventoryTransaction_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
 
 import java.util.List;
 

@@ -15,7 +15,7 @@ public enum DataItemType {
     Pos(6),
     Int64(7),
     Vec3(8),
-    Unknown(9),
+    Unknown(-1) // Added manually
     ;
 
     private static final Int2ObjectMap<DataItemType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -302,6 +302,9 @@
         1.2
       ]
     },
+    "block:poplar_leaves": {
+      "sound": "block.poplar_leaves.ambient"
+    },
     "entity:minecraft:glow_squid": {
       "sound": "mob.glow_squid.ambient",
       "volume": 0.4,
@@ -1993,6 +1996,11 @@
       "sound": "break.wet_sponge",
       "pitch": 0.8
     },
+    "block:straw_bed": {
+      "sound": "block.straw_bed.break",
+      "volume": 0.8,
+      "pitch": 1.2
+    },
     "block:resin": {
       "sound": "block.resin.break",
       "pitch": 0.8
@@ -2068,6 +2076,11 @@
     "block:small_amethyst_bud": {
       "sound": "break.small_amethyst_bud"
     },
+    "block:shelf_mushroom": {
+      "sound": "block.shelf_mushroom.break",
+      "volume": 0.8,
+      "pitch": 1.2
+    },
     "block:bamboo_sapling": {
       "sound": "block.bamboo_sapling.break",
       "pitch": [
@@ -2135,6 +2148,10 @@
         1.0
       ]
     },
+    "block:sulfur_spike": {
+      "sound": "block.sulfur_spike.break",
+      "pitch": 0.8
+    },
     "block:lantern": {
       "sound": "block.lantern.break",
       "pitch": [
@@ -2160,6 +2177,11 @@
         0.8,
         1.0
       ]
+    },
+    "block:poplar_leaves": {
+      "sound": "block.poplar_leaves.break",
+      "volume": 0.8,
+      "pitch": 1.2
     },
     "block:mud": {
       "sound": "block.mud.break",
@@ -3554,6 +3576,13 @@
         1.2
       ]
     },
+    "entity:minecraft:cushion": {
+      "sound": "entity.cushion.break",
+      "pitch": [
+        0.8,
+        1.2
+      ]
+    },
     "entity:minecraft:item": {
       "sound": "game.player.die",
       "pitch": [
@@ -3842,6 +3871,15 @@
   "disappeared": {
     "entity:minecraft:wandering_trader": {
       "sound": "mob.wanderingtrader.disappeared",
+      "pitch": [
+        0.8,
+        1.2
+      ]
+    }
+  },
+  "dismount": {
+    "entity:minecraft:cushion": {
+      "sound": "entity.cushion.get_up",
       "pitch": [
         0.8,
         1.2
@@ -5618,6 +5656,10 @@
     "block:wet_sponge": {
       "sound": "step.wet_sponge"
     },
+    "block:straw_bed": {
+      "sound": "block.straw_bed.fall",
+      "pitch": 0.75
+    },
     "block:resin": {
       "sound": "block.resin.fall",
       "volume": 0.5,
@@ -5664,6 +5706,10 @@
     "block:small_amethyst_bud": {
       "sound": "fall.amethyst_cluster"
     },
+    "block:shelf_mushroom": {
+      "sound": "block.shelf_mushroom.fall",
+      "pitch": 0.75
+    },
     "block:netherite": {
       "sound": "fall.netherite",
       "volume": 0.4
@@ -5706,6 +5752,10 @@
       "sound": "fall.nether_gold_ore",
       "volume": 0.4
     },
+    "block:sulfur_spike": {
+      "sound": "block.sulfur_spike.fall",
+      "pitch": 0.75
+    },
     "block:lantern": {
       "sound": "block.lantern.fall",
       "volume": 0.4
@@ -5722,12 +5772,16 @@
       "sound": "fall.chain",
       "volume": 0.4
     },
+    "block:poplar_leaves": {
+      "sound": "block.poplar_leaves.fall",
+      "pitch": 0.75
+    },
     "block:mud": {
       "sound": "block.mud.fall",
       "volume": 0.4
     },
     "block:copper_golem_statue": {
-      "sound": "block.copper_golem_statue.hit"
+      "sound": "block.copper_golem_statue.fall"
     },
     "block:calcite": {
       "sound": "fall.calcite"
@@ -7600,6 +7654,11 @@
       "volume": 0.3,
       "pitch": 0.5
     },
+    "block:straw_bed": {
+      "sound": "block.straw_bed.hit",
+      "volume": 0.3,
+      "pitch": 0.5
+    },
     "block:resin": {
       "sound": "block.resin.hit",
       "volume": 0.25,
@@ -7726,6 +7785,11 @@
       "volume": 0.23,
       "pitch": 0.5
     },
+    "block:sulfur_spike": {
+      "sound": "block.sulfur_spike.hit",
+      "volume": 0.5,
+      "pitch": 0.5
+    },
     "block:lantern": {
       "sound": "block.lantern.hit",
       "volume": 0.25,
@@ -7745,6 +7809,10 @@
       "sound": "hit.chain",
       "volume": 0.3,
       "pitch": 0.5
+    },
+    "block:poplar_leaves": {
+      "sound": "block.poplar_leaves.hit",
+      "pitch": 0.8
     },
     "block:mud": {
       "sound": "block.mud.hit",
@@ -9879,6 +9947,10 @@
       "volume": 0.12,
       "pitch": 1.1
     },
+    "block:straw_bed": {
+      "sound": "block.straw_bed.jump",
+      "volume": 0.4
+    },
     "block:resin": {
       "sound": "block.resin.step",
       "volume": 0.12,
@@ -9936,6 +10008,10 @@
     "block:small_amethyst_bud": {
       "sound": "step.amethyst_cluster"
     },
+    "block:shelf_mushroom": {
+      "sound": "block.shelf_mushroom.land",
+      "volume": 0.4
+    },
     "block:netherite": {
       "sound": "jump.netherite",
       "volume": 0.14
@@ -9980,6 +10056,10 @@
       "sound": "jump.nether_gold_ore",
       "volume": 0.12
     },
+    "block:sulfur_spike": {
+      "sound": "block.sulfur_spike.step",
+      "volume": 0.4
+    },
     "block:mud_bricks": {
       "sound": "block.mud_bricks.step",
       "volume": 0.05
@@ -9990,6 +10070,10 @@
     "block:chain": {
       "sound": "jump.chain",
       "volume": 0.12
+    },
+    "block:poplar_leaves": {
+      "sound": "block.poplar_leaves.jump",
+      "volume": 0.4
     },
     "block:mud": {
       "sound": "block.mud.step",
@@ -10344,6 +10428,10 @@
       "sound": "step.wet_sponge",
       "volume": 0.4
     },
+    "block:straw_bed": {
+      "sound": "block.straw_bed.land",
+      "volume": 0.4
+    },
     "block:resin": {
       "sound": "block.resin.step",
       "volume": 0.4
@@ -10395,6 +10483,10 @@
     "block:small_amethyst_bud": {
       "sound": "step.amethyst_cluster"
     },
+    "block:shelf_mushroom": {
+      "sound": "block.shelf_mushroom.land",
+      "volume": 0.4
+    },
     "block:netherite": {
       "sound": "land.netherite",
       "volume": 0.16
@@ -10437,6 +10529,9 @@
       "sound": "land.nether_gold_ore",
       "volume": 0.14
     },
+    "block:sulfur_spike": {
+      "sound": "block.sulfur_spike.land"
+    },
     "block:lantern": {
       "sound": "block.lantern.fall",
       "volume": 0.2
@@ -10452,6 +10547,10 @@
     "block:chain": {
       "sound": "land.chain",
       "volume": 0.22
+    },
+    "block:poplar_leaves": {
+      "sound": "block.poplar_leaves.land",
+      "volume": 0.4
     },
     "block:mud": {
       "sound": "block.mud.fall",
@@ -11003,6 +11102,15 @@
     }
   },
   "mob.warning.baby": null,
+  "mount": {
+    "entity:minecraft:cushion": {
+      "sound": "entity.cushion.sit",
+      "pitch": [
+        0.8,
+        1.2
+      ]
+    }
+  },
   "multi_swap": {
     "block:shelf": {
       "sound": "block.shelf.multi_swap"
@@ -11451,6 +11559,10 @@
       "sound": "place.wet_sponge",
       "pitch": 0.8
     },
+    "block:straw_bed": {
+      "sound": "block.straw_bed.place",
+      "pitch": 0.8
+    },
     "block:resin": {
       "sound": "block.resin.place",
       "pitch": 0.8
@@ -11526,6 +11638,10 @@
     "block:small_amethyst_bud": {
       "sound": "place.small_amethyst_bud"
     },
+    "block:shelf_mushroom": {
+      "sound": "block.shelf_mushroom.place",
+      "pitch": 0.8
+    },
     "block:bamboo_sapling": {
       "sound": "block.bamboo_sapling.place",
       "pitch": [
@@ -11598,6 +11714,10 @@
         1.0
       ]
     },
+    "block:sulfur_spike": {
+      "sound": "block.sulfur_spike.place",
+      "pitch": 0.8
+    },
     "block:lantern": {
       "sound": "block.lantern.place",
       "pitch": [
@@ -11623,6 +11743,10 @@
         0.8,
         1.0
       ]
+    },
+    "block:poplar_leaves": {
+      "sound": "block.poplar_leaves.place",
+      "pitch": 0.8
     },
     "block:mud": {
       "sound": "block.mud.place",
@@ -13095,6 +13219,13 @@
         0.8,
         1.2
       ]
+    },
+    "entity:minecraft:cushion": {
+      "sound": "entity.cushion.place",
+      "pitch": [
+        0.8,
+        1.2
+      ]
     }
   },
   "splash": {
@@ -13973,6 +14104,10 @@
       "sound": "step.wet_sponge",
       "volume": 0.2
     },
+    "block:straw_bed": {
+      "sound": "block.straw_bed.step",
+      "volume": 0.3
+    },
     "entity:minecraft:polar_bear": {
       "sound": "mob.polarbear.step",
       "volume": 0.7
@@ -14073,6 +14208,10 @@
     "block:small_amethyst_bud": {
       "sound": "step.amethyst_cluster"
     },
+    "block:shelf_mushroom": {
+      "sound": "block.shelf_mushroom.step",
+      "volume": 0.3
+    },
     "entity:minecraft:zombie": {
       "sound": "mob.zombie.step",
       "volume": 0.45
@@ -14159,6 +14298,10 @@
       "sound": "step.nether_gold_ore",
       "volume": 0.18
     },
+    "block:sulfur_spike": {
+      "sound": "block.sulfur_spike.step",
+      "volume": 0.3
+    },
     "entity:minecraft:warden": {
       "sound": "mob.warden.step",
       "volume": 10.0
@@ -14197,6 +14340,10 @@
       "sound": "mob.llama.step",
       "volume": 0.15
     },
+    "block:poplar_leaves": {
+      "sound": "block.poplar_leaves.step",
+      "volume": 0.3
+    },
     "block:mud": {
       "sound": "block.mud.step",
       "volume": 0.1
@@ -14206,7 +14353,7 @@
       "volume": 0.25
     },
     "block:copper_golem_statue": {
-      "sound": "block.copper_golem_statue.hit"
+      "sound": "block.copper_golem_statue.step"
     },
     "block:calcite": {
       "sound": "step.calcite"
@@ -14434,6 +14581,11 @@
         0.8,
         1.2
       ]
+    }
+  },
+  "straw_bed.break_leave": {
+    "block:straw_bed": {
+      "sound": "block.straw_bed.break_leave"
     }
   },
   "stun": {

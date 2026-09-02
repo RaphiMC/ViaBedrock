@@ -41,9 +41,9 @@ public enum CurrentCmdVersion {
     SummonCommandDefaultRotation(32),
     PositionalDimensionFiltering(33),
     CommandSelectorHasItemFilterNoLongerCallsSameItemFunction(34),
-    AgentSweepingBlockTest(CommandSelectorHasItemFilterNoLongerCallsSameItemFunction),
+    AgentSweepingBlockTest(34),
     BlockStateEquals(35),
-    CommandPositionFix(BlockStateEquals),
+    CommandPositionFix(35),
     CommandSelectorHasItemFilterUsesDataAsDamageForSelectingDamageableItems(36),
     ExecuteDetectConditionSubcommandNotAllowNonLoadedBlocks(37),
     RemoveSuicideKeyword(38),
@@ -53,7 +53,8 @@ public enum CurrentCmdVersion {
     LocateStructureOutput(42),
     PostBlockFlattening(43),
     TestForBlockCommandDoesNotIgnoreBlockState(44),
-    Latest(49),
+    Count(51),
+    Latest(50),
     ;
 
     private static final Int2ObjectMap<CurrentCmdVersion> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -26,6 +26,7 @@ import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
 import net.raphimc.viabedrock.experimental.model.inventory.InventoryTransactionData;
 import net.raphimc.viabedrock.experimental.model.inventory.LegacySetItemSlotData;
 import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;

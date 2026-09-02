@@ -15202,5 +15202,134 @@
         "java_id": "minecraft:sulfur_spike"
       }
     }
+  },
+  "minecraft:black_cushion": {
+    "meta": { "": { "java_id": "minecraft:black_carpet" } }
+  },
+  "minecraft:blue_cushion": {
+    "meta": { "": { "java_id": "minecraft:blue_carpet" } }
+  },
+  "minecraft:brown_cushion": {
+    "meta": { "": { "java_id": "minecraft:brown_carpet" } }
+  },
+  "minecraft:cyan_cushion": {
+    "meta": { "": { "java_id": "minecraft:cyan_carpet" } }
+  },
+  "minecraft:gray_cushion": {
+    "meta": { "": { "java_id": "minecraft:gray_carpet" } }
+  },
+  "minecraft:green_cushion": {
+    "meta": { "": { "java_id": "minecraft:green_carpet" } }
+  },
+  "minecraft:light_blue_cushion": {
+    "meta": { "": { "java_id": "minecraft:light_blue_carpet" } }
+  },
+  "minecraft:light_gray_cushion": {
+    "meta": { "": { "java_id": "minecraft:light_gray_carpet" } }
+  },
+  "minecraft:lime_cushion": {
+    "meta": { "": { "java_id": "minecraft:lime_carpet" } }
+  },
+  "minecraft:magenta_cushion": {
+    "meta": { "": { "java_id": "minecraft:magenta_carpet" } }
+  },
+  "minecraft:orange_cushion": {
+    "meta": { "": { "java_id": "minecraft:orange_carpet" } }
+  },
+  "minecraft:pink_cushion": {
+    "meta": { "": { "java_id": "minecraft:pink_carpet" } }
+  },
+  "minecraft:purple_cushion": {
+    "meta": { "": { "java_id": "minecraft:purple_carpet" } }
+  },
+  "minecraft:red_cushion": {
+    "meta": { "": { "java_id": "minecraft:red_carpet" } }
+  },
+  "minecraft:white_cushion": {
+    "meta": { "": { "java_id": "minecraft:white_carpet" } }
+  },
+  "minecraft:yellow_cushion": {
+    "meta": { "": { "java_id": "minecraft:yellow_carpet" } }
+  },
+  "minecraft:orange_poplar_leaves": {
+    "block": { "minecraft:orange_poplar_leaves": { "java_id": "minecraft:pale_oak_leaves" } }
+  },
+  "minecraft:poplar_boat": {
+    "meta": { "": { "java_id": "minecraft:pale_oak_boat" } }
+  },
+  "minecraft:poplar_button": {
+    "block": { "minecraft:poplar_button": { "java_id": "minecraft:pale_oak_button" } }
+  },
+  "minecraft:poplar_chest_boat": {
+    "meta": { "": { "java_id": "minecraft:pale_oak_chest_boat" } }
+  },
+  "minecraft:poplar_door": {
+    "block": { "minecraft:poplar_door": { "java_id": "minecraft:pale_oak_door" } }
+  },
+  "minecraft:poplar_double_slab": {
+    "block": { "minecraft:poplar_double_slab[minecraft:vertical_half=bottom]": { "java_id": "minecraft:pale_oak_planks" } }
+  },
+  "minecraft:poplar_fence": {
+    "block": { "minecraft:poplar_fence": { "java_id": "minecraft:pale_oak_fence" } }
+  },
+  "minecraft:poplar_fence_gate": {
+    "block": { "minecraft:poplar_fence_gate[open_bit=0]": { "java_id": "minecraft:pale_oak_fence_gate" } }
+  },
+  "minecraft:poplar_hanging_sign": {
+    "block": { "minecraft:poplar_hanging_sign": { "java_id": "minecraft:pale_oak_hanging_sign" } }
+  },
+  "minecraft:poplar_log": {
+    "block": { "minecraft:poplar_log[pillar_axis=y]": { "java_id": "minecraft:pale_oak_log" } }
+  },
+  "minecraft:poplar_planks": {
+    "block": { "minecraft:poplar_planks": { "java_id": "minecraft:pale_oak_planks" } }
+  },
+  "minecraft:poplar_pressure_plate": {
+    "block": { "minecraft:poplar_pressure_plate": { "java_id": "minecraft:pale_oak_pressure_plate" } }
+  },
+  "minecraft:poplar_sapling": {
+    "block": { "minecraft:poplar_sapling": { "java_id": "minecraft:pale_oak_sapling" } }
+  },
+  "minecraft:poplar_shelf": {
+    "block": { "minecraft:poplar_shelf": { "java_id": "minecraft:pale_oak_shelf" } }
+  },
+  "minecraft:poplar_sign": {
+    "meta": { "": { "java_id": "minecraft:pale_oak_sign" } }
+  },
+  "minecraft:poplar_slab": {
+    "block": { "minecraft:poplar_slab[minecraft:vertical_half=bottom]": { "java_id": "minecraft:pale_oak_slab" } }
+  },
+  "minecraft:poplar_stairs": {
+    "block": { "minecraft:poplar_stairs": { "java_id": "minecraft:pale_oak_stairs" } }
+  },
+  "minecraft:poplar_standing_sign": {
+    "block": { "minecraft:poplar_standing_sign": { "java_id": "minecraft:pale_oak_sign" } }
+  },
+  "minecraft:poplar_trapdoor": {
+    "block": { "minecraft:poplar_trapdoor[open_bit=0]": { "java_id": "minecraft:pale_oak_trapdoor" } }
+  },
+  "minecraft:poplar_wall_sign": {
+    "block": { "minecraft:poplar_wall_sign": { "java_id": "minecraft:pale_oak_sign" } }
+  },
+  "minecraft:poplar_wood": {
+    "block": { "minecraft:poplar_wood[pillar_axis=y]": { "java_id": "minecraft:pale_oak_wood" } }
+  },
+  "minecraft:red_poplar_leaves": {
+    "block": { "minecraft:red_poplar_leaves": { "java_id": "minecraft:pale_oak_leaves" } }
+  },
+  "minecraft:stripped_poplar_log": {
+    "block": { "minecraft:stripped_poplar_log[pillar_axis=y]": { "java_id": "minecraft:stripped_pale_oak_log" } }
+  },
+  "minecraft:stripped_poplar_wood": {
+    "block": { "minecraft:stripped_poplar_wood[pillar_axis=y]": { "java_id": "minecraft:stripped_pale_oak_wood" } }
+  },
+  "minecraft:yellow_poplar_leaves": {
+    "block": { "minecraft:yellow_poplar_leaves": { "java_id": "minecraft:pale_oak_leaves" } }
+  },
+  "minecraft:item.straw_bed": {
+    "block": { "minecraft:straw_bed": { "java_id": "minecraft:yellow_bed" } }
+  },
+  "minecraft:straw_bed": {
+    "meta": { "": { "java_id": "minecraft:yellow_bed" } }
   }
 }

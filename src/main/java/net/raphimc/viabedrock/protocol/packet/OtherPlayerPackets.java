@@ -124,7 +124,7 @@ public class OtherPlayerPackets {
             final PlayerPositionModeComponent_PositionMode mode = PlayerPositionModeComponent_PositionMode.getByValue(wrapper.read(Types.BYTE), PlayerPositionModeComponent_PositionMode.OnlyHeadRot); // mode
             final boolean onGround = wrapper.read(Types.BOOLEAN); // on ground
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // riding entity runtime id
-            if (mode == PlayerPositionModeComponent_PositionMode.Teleport) {
+            if (wrapper.read(Types.BOOLEAN) && mode == PlayerPositionModeComponent_PositionMode.Teleport) {
                 wrapper.read(BedrockTypes.INT_LE); // teleportation cause
                 wrapper.read(BedrockTypes.INT_LE); // entity type
             }
@@ -179,7 +179,6 @@ public class OtherPlayerPackets {
             final SkinData skin = wrapper.read(BedrockTypes.SKIN); // skin
             wrapper.read(BedrockTypes.STRING); // new skin name
             wrapper.read(BedrockTypes.STRING); // old skin name
-            wrapper.read(Types.BOOLEAN); // trusted skin
 
             Via.getManager().getProviders().get(SkinProvider.class).setSkin(wrapper.user(), uuid, skin);
         });

@@ -50,6 +50,7 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.DataValues;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.Difficulty;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
@@ -150,8 +151,9 @@ public class JoinPackets {
                         final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
                         if (clientPlayer.isInitiallySpawned()) return;
 
+
                         final PacketWrapper interact = PacketWrapper.create(ServerboundBedrockPackets.INTERACT, wrapper.user());
-                        interact.write(Types.UNSIGNED_BYTE, (short) InteractPacket_Action.InteractUpdate.getValue()); // action
+                        interact.write(Types.UNSIGNED_BYTE, (short) InteractPacketPayload_Action.InteractUpdate.getValue()); // action
                         interact.write(BedrockTypes.UNSIGNED_VAR_LONG, 0L); // target entity runtime id
                         interact.write(BedrockTypes.OPTIONAL_POSITION_3F, null); // position
                         interact.sendToServer(BedrockProtocol.class);
@@ -220,7 +222,7 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // created in world editor
                     wrapper.read(Types.BOOLEAN); // exported from world editor
                     final int currentTime = wrapper.read(BedrockTypes.VAR_INT); // day cycle stop time
-                    wrapper.read(BedrockTypes.VAR_INT); // education edition offers
+                    wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // education edition offers
                     wrapper.read(Types.BOOLEAN); // education features enabled
                     wrapper.read(BedrockTypes.STRING); // education product id
                     final float rainLevel = wrapper.read(BedrockTypes.FLOAT_LE); // rain level
@@ -232,12 +234,12 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.VAR_INT); // platform broadcast mode
                     final boolean commandsEnabled = wrapper.read(Types.BOOLEAN); // commands enabled
                     wrapper.read(Types.BOOLEAN); // texture packs required
-                    final GameRule[] gameRules = wrapper.read(BedrockTypes.VAR_INT_GAME_RULE_ARRAY); // game rules
+                    final GameRule[] gameRules = wrapper.read(BedrockTypes.GAME_RULE_ARRAY); // game rules
                     final Experiment[] experiments = wrapper.read(BedrockTypes.EXPERIMENT_ARRAY); // experiments
                     wrapper.read(Types.BOOLEAN); // experiments previously toggled
                     wrapper.read(Types.BOOLEAN); // bonus chest enabled
                     wrapper.read(Types.BOOLEAN); // start with map enabled
-                    final int playerPermission = wrapper.read(BedrockTypes.VAR_INT); // player permission
+                    final int playerPermission = wrapper.read(Types.BYTE); // player permission
                     final int chunkTickRange = wrapper.read(BedrockTypes.INT_LE); // server chunk tick range
                     wrapper.read(Types.BOOLEAN); // behavior pack locked
                     wrapper.read(Types.BOOLEAN); // resource pack locked
@@ -279,7 +281,6 @@ public class JoinPackets {
                     wrapper.read(Types.BOOLEAN); // client side generation
                     final boolean hashedRuntimeBlockIds = wrapper.read(Types.BOOLEAN); // use hashed block runtime ids
                     wrapper.read(Types.BOOLEAN); // server authoritative sounds
-                    wrapper.read(Types.BOOLEAN); // is logging chat
                     if (wrapper.read(Types.BOOLEAN)) { // has server join information
                         if (wrapper.read(Types.BOOLEAN)) { // has gathering join information
                             wrapper.read(BedrockTypes.UUID); // experience id
@@ -415,6 +416,7 @@ public class JoinPackets {
                         final int minimumHeight = wrapper.read(BedrockTypes.VAR_INT); // minimum height
                         wrapper.read(BedrockTypes.VAR_INT); // generator type
                         wrapper.read(BedrockTypes.VAR_INT); // dimension type
+                        wrapper.read(BedrockTypes.UUID); // pack id
                         if (dimensionIdentifier.equals(Dimension.OVERWORLD.getKey())) { // Bedrock client currently only supports overworld
                             gameSession.putBedrockDimensionDefinition(dimensionIdentifier, new IntIntImmutablePair(minimumHeight, maximumHeight));
                         }

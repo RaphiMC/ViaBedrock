@@ -41,19 +41,19 @@ public class InventorySourcePacketType extends Type<InventorySource> {
         }
 
         int containerId = 0;
-        InventorySource_InventorySourceFlags flag = InventorySource_InventorySourceFlags.NoFlag;
+        InventorySource_InventorySourceFlags flag = InventorySource_InventorySourceFlags.No_Flag;
         if (buffer.readBoolean() && buffer.readBoolean()) containerId = buffer.readByte();
         if (buffer.readBoolean() && buffer.readBoolean()) flag = InventorySource_InventorySourceFlags.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
 
         switch (type) {
-            case ContainerInventory, NonImplementedFeatureTODO -> {
-                return new InventorySource(type, containerId, InventorySource_InventorySourceFlags.NoFlag);
+            case Container_Inventory, Non_Implemented_Feature_TODO -> {
+                return new InventorySource(type, containerId, InventorySource_InventorySourceFlags.No_Flag);
             }
-            case WorldInteraction -> {
+            case World_Interaction -> {
                 return new InventorySource(type, ContainerID.CONTAINER_ID_NONE.getValue(), flag);
             }
             default -> {
-                return new InventorySource(type, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySource_InventorySourceFlags.NoFlag);
+                return new InventorySource(type, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySource_InventorySourceFlags.No_Flag);
             }
         }
     }
@@ -63,7 +63,7 @@ public class InventorySourcePacketType extends Type<InventorySource> {
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.type().getValue());
 
         Types.BOOLEAN.write(buffer, true);
-        if (value.type() == InventorySourceType.ContainerInventory || value.type() == InventorySourceType.NonImplementedFeatureTODO) {
+        if (value.type() == InventorySourceType.Container_Inventory || value.type() == InventorySourceType.Non_Implemented_Feature_TODO) {
             Types.BOOLEAN.write(buffer, true);
             buffer.writeByte(value.containerId());
         } else {
@@ -71,7 +71,7 @@ public class InventorySourcePacketType extends Type<InventorySource> {
         }
 
         Types.BOOLEAN.write(buffer, true);
-        if (value.type() == InventorySourceType.WorldInteraction) {
+        if (value.type() == InventorySourceType.World_Interaction) {
             Types.BOOLEAN.write(buffer, true);
             BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.flags().getValue());
         } else {
