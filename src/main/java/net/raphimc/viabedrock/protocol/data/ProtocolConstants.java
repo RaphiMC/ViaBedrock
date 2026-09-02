@@ -32,8 +32,8 @@ public class ProtocolConstants {
     public static final TextComponentCodec JAVA_TEXT_COMPONENT_SERIALIZER = TextComponentCodec.V26_1;
     public static final int JAVA_AIR_ID = 0;
 
-    public static final String BEDROCK_VERSION_NAME = "1.26.44"; // Mojank hotfix
-    public static final int BEDROCK_PROTOCOL_VERSION = 2168;
+    public static final String BEDROCK_VERSION_NAME = "1.26.45"; // Mojank hotfix 2
+    public static final int BEDROCK_PROTOCOL_VERSION = 2169;
     public static final int BEDROCK_RAKNET_PROTOCOL_VERSION = 11;
     public static final int BEDROCK_RAKNET_DEFAULT_PORT = 19132;
     public static final int BEDROCK_NETHERNET_DEFAULT_PORT = 7551;
