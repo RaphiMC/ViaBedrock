@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum StructureRedstoneSaveMode {
 
-    savestomemory(0),
-    savestodisk(1),
+    SavesToMemory(0),
+    SavesToDisk(1),
     ;
 
     private static final Int2ObjectMap<StructureRedstoneSaveMode> BY_VALUE = new Int2ObjectOpenHashMap<>();

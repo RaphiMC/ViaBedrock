@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PacketCompressionAlgorithm {
 
-    zlib(0),
-    snappy(1),
-    none(65535),
+    ZLib(0),
+    Snappy(1),
+    None(65535),
     ;
 
     private static final Int2ObjectMap<PacketCompressionAlgorithm> BY_VALUE = new Int2ObjectOpenHashMap<>();

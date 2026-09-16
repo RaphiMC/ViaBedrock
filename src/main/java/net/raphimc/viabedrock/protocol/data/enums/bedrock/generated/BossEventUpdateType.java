@@ -6,15 +6,15 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum BossEventUpdateType {
 
-    add(0),
-    playeradded(1),
-    remove(2),
-    playerremoved(3),
-    update_percent(4),
-    update_name(5),
-    update_properties(6),
-    update_style(7),
-    query(8),
+    Add(0),
+    PlayerAdded(1),
+    Remove(2),
+    PlayerRemoved(3),
+    Update_Percent(4),
+    Update_Name(5),
+    Update_Properties(6),
+    Update_Style(7),
+    Query(8),
     ;
 
     private static final Int2ObjectMap<BossEventUpdateType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,12 +6,12 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum CommandPermissionLevel {
 
-    any(0),
-    gamedirectors(1),
-    admin(2),
-    host(3),
-    owner(4),
-    internal(5),
+    Any(0),
+    GameDirectors(1),
+    Admin(2),
+    Host(3),
+    Owner(4),
+    Internal(5),
     ;
 
     private static final Int2ObjectMap<CommandPermissionLevel> BY_VALUE = new Int2ObjectOpenHashMap<>();

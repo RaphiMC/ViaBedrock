@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum TrustedSkinFlag {
 
-    unset(0),
-    false(1),
-    true(2),
+    Unset(0),
+    False(1),
+    True(2),
     ;
 
     private static final Int2ObjectMap<TrustedSkinFlag> BY_VALUE = new Int2ObjectOpenHashMap<>();

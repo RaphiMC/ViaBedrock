@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum InventoryLayout {
 
-    none(0),
-    inventoryonly(1),
-    default(2),
-    recipebookonly(3),
+    None(0),
+    InventoryOnly(1),
+    Default(2),
+    RecipeBookOnly(3),
     ;
 
     private static final Int2ObjectMap<InventoryLayout> BY_VALUE = new Int2ObjectOpenHashMap<>();

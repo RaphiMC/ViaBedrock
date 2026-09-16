@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ModalFormCancelReason {
 
-    userclosed(0),
-    userbusy(1),
+    UserClosed(0),
+    UserBusy(1),
     ;
 
     private static final Int2ObjectMap<ModalFormCancelReason> BY_VALUE = new Int2ObjectOpenHashMap<>();

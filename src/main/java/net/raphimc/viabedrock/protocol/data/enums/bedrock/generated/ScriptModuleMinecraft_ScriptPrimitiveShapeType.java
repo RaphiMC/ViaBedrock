@@ -6,16 +6,16 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ScriptModuleMinecraft_ScriptPrimitiveShapeType {
 
-    line(0),
-    box(1),
-    sphere(2),
-    circle(3),
-    text(4),
-    arrow(5),
-    cylinder(6),
-    pyramid(7),
-    ellipsoid(8),
-    cone(9),
+    Line(0),
+    Box(1),
+    Sphere(2),
+    Circle(3),
+    Text(4),
+    Arrow(5),
+    Cylinder(6),
+    Pyramid(7),
+    Ellipsoid(8),
+    Cone(9),
     ;
 
     private static final Int2ObjectMap<ScriptModuleMinecraft_ScriptPrimitiveShapeType> BY_VALUE = new Int2ObjectOpenHashMap<>();

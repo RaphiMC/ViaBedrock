@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ShowStoreOfferRedirectType {
 
-    marketplaceoffer(0),
-    dressingroomoffer(1),
-    thirdpartyserverpage(2),
+    MarketplaceOffer(0),
+    DressingRoomOffer(1),
+    ThirdPartyServerPage(2),
     ;
 
     private static final Int2ObjectMap<ShowStoreOfferRedirectType> BY_VALUE = new Int2ObjectOpenHashMap<>();

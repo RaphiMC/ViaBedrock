@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum LabTablePacketPayload_Type {
 
-    startcombine(0),
-    startreaction(1),
-    reset(2),
+    StartCombine(0),
+    StartReaction(1),
+    Reset(2),
     ;
 
     private static final Int2ObjectMap<LabTablePacketPayload_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();

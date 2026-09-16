@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ChatRestrictionLevel {
 
-    none(0),
-    dropped(1),
-    disabled(2),
+    None(0),
+    Dropped(1),
+    Disabled(2),
     ;
 
     private static final Int2ObjectMap<ChatRestrictionLevel> BY_VALUE = new Int2ObjectOpenHashMap<>();

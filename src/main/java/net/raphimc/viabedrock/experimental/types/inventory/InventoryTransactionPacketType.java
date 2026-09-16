@@ -27,7 +27,6 @@ import net.raphimc.viabedrock.experimental.model.inventory.InventoryTransactionD
 import net.raphimc.viabedrock.experimental.model.inventory.LegacySetItemSlotData;
 import net.raphimc.viabedrock.experimental.types.ExperimentalBedrockTypes;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -70,8 +69,8 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
             case NormalTransaction ->  new InventoryTransactionData.NormalTransactionData();
             case InventoryMismatch -> new InventoryTransactionData.MismatchTransactionData();
             case ItemUseTransaction -> new InventoryTransactionData.UseItemTransactionData(
-                    ItemUseInventoryTransaction_ActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
-                    ItemUseInventoryTransaction_TriggerType.getByValue(buffer.readByte()),
+                    ItemUseActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
+                    ItemUseTriggerType.getByValue(buffer.readByte()),
                     BedrockTypes.BLOCK_POSITION.read(buffer),
                     buffer.readByte(),
                     BedrockTypes.VAR_INT.read(buffer),
@@ -79,19 +78,19 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
                     BedrockTypes.POSITION_3F.read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer),
                     BedrockTypes.UNSIGNED_VAR_INT.read(buffer),
-                    ItemUseInventoryTransaction_PredictedResult.getByValue(buffer.readByte()),
-                    ItemUseInventoryTransaction_ClientCooldownState.getByValue(buffer.readByte())
+                    ItemUsePredictedResult.getByValue(buffer.readByte()),
+                    ItemUseClientCooldownState.getByValue(buffer.readByte())
             );
             case ItemUseOnEntityTransaction -> new InventoryTransactionData.UseItemOnEntityTransactionData(
                     BedrockTypes.UNSIGNED_VAR_LONG.read(buffer),
-                    ItemUseOnActorInventoryTransaction_ActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
+                    ItemUseOnActorActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
                     BedrockTypes.VAR_INT.read(buffer),
                     itemRewriter.newItemType().read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer)
             );
             case ItemReleaseTransaction -> new InventoryTransactionData.ReleaseItemTransactionData(
-                    ItemReleaseInventoryTransaction_ActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
+                    ItemReleaseActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
                     BedrockTypes.VAR_INT.read(buffer),
                     itemRewriter.newItemType().read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer)

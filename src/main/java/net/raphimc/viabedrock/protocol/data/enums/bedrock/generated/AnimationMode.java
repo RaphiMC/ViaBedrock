@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum AnimationMode {
 
-    none(0),
-    layers(1),
-    blocks(2),
+    None(0),
+    Layers(1),
+    Blocks(2),
     ;
 
     private static final Int2ObjectMap<AnimationMode> BY_VALUE = new Int2ObjectOpenHashMap<>();

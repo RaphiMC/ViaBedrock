@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ServerWaypointGroup_Action {
 
-    none(0),
-    add(1),
-    remove(2),
-    update(3),
+    None(0),
+    Add(1),
+    Remove(2),
+    Update(3),
     ;
 
     private static final Int2ObjectMap<ServerWaypointGroup_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();

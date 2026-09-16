@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum Mirror {
 
-    none(0),
-    x(1),
-    z(2),
-    xz(3),
+    None(0),
+    X(1),
+    Z(2),
+    XZ(3),
     ;
 
     private static final Int2ObjectMap<Mirror> BY_VALUE = new Int2ObjectOpenHashMap<>();

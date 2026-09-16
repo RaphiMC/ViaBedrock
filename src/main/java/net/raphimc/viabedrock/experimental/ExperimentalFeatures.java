@@ -49,7 +49,6 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ClientboundMapItemDataPacket_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.GameMode;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.InteractionHand;
@@ -96,7 +95,7 @@ public class ExperimentalFeatures {
                         null,
                         ComplexInventoryTransaction_Type.ItemReleaseTransaction,
                         new InventoryTransactionData.ReleaseItemTransactionData(
-                                ItemReleaseInventoryTransaction_ActionType.Release,
+                                ItemReleaseActionType.Release,
                                 inventoryContainer.getSelectedHotbarSlot(),
                                 inventoryContainer.getSelectedHotbarItem(),
                                 wrapper.user().get(EntityTracker.class).getClientPlayer().position()
@@ -137,13 +136,13 @@ public class ExperimentalFeatures {
                         null,
                         List.of(
                                 new InventoryActionData(
-                                        new InventorySource(InventorySourceType.World_Interaction, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySource_InventorySourceFlags.No_Flag),
+                                        new InventorySource(InventorySourceType.World_Interaction, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySourceFlags.No_Flag),
                                         0,
                                         BedrockItem.empty(),
                                         predictedAmount
                                 ),
                                 new InventoryActionData(
-                                        new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.No_Flag),
+                                        new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySourceFlags.No_Flag),
                                         inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
                                         currentItem,
                                         predictedToItem
@@ -205,8 +204,8 @@ public class ExperimentalFeatures {
                     null,
                     ComplexInventoryTransaction_Type.ItemUseTransaction,
                     new InventoryTransactionData.UseItemTransactionData(
-                            ItemUseInventoryTransaction_ActionType.Use,
-                            ItemUseInventoryTransaction_TriggerType.Unknown,
+                            ItemUseActionType.Use,
+                            ItemUseTriggerType.Unknown,
                             new BlockPosition(0, 0, 0), // block position
                             255, // block face
                             inventoryContainer.getSelectedHotbarSlot(),
@@ -214,8 +213,8 @@ public class ExperimentalFeatures {
                             entityTracker.getClientPlayer().position(),
                             Position3f.ZERO, // click position
                             0, // block runtime id
-                            ItemUseInventoryTransaction_PredictedResult.Failure,
-                            ItemUseInventoryTransaction_ClientCooldownState.Off
+                            ItemUsePredictedResult.Failure,
+                            ItemUseClientCooldownState.Off
                     )
             );
             wrapper.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
@@ -282,7 +281,7 @@ public class ExperimentalFeatures {
                     null,
                     List.of(
                             new InventoryActionData(
-                                    new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.No_Flag),
+                                    new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySourceFlags.No_Flag),
                                     inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
                                     inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
                                     predictedToItem
@@ -290,8 +289,8 @@ public class ExperimentalFeatures {
                     ),
                     ComplexInventoryTransaction_Type.ItemUseTransaction,
                     new InventoryTransactionData.UseItemTransactionData(
-                            ItemUseInventoryTransaction_ActionType.Place,
-                            ItemUseInventoryTransaction_TriggerType.PlayerInput,
+                            ItemUseActionType.Place,
+                            ItemUseTriggerType.Player_Input,
                             position,
                             faceInt,
                             inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
@@ -299,8 +298,8 @@ public class ExperimentalFeatures {
                             clientPlayer.position(),
                             clickPosition,
                             chunkTracker.getBlockState(position),
-                            ItemUseInventoryTransaction_PredictedResult.Success,
-                            ItemUseInventoryTransaction_ClientCooldownState.Off
+                            ItemUsePredictedResult.Success,
+                            ItemUseClientCooldownState.Off
                     )
             );
             transactionPacket.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);

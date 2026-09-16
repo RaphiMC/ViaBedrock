@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum GraphicsMode {
 
-    simple(0),
-    fancy(1),
-    advanced(2),
-    raytraced(3),
+    Simple(0),
+    Fancy(1),
+    Advanced(2),
+    RayTraced(3),
     ;
 
     private static final Int2ObjectMap<GraphicsMode> BY_VALUE = new Int2ObjectOpenHashMap<>();

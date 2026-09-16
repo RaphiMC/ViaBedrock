@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum NewInteractionModel {
 
-    touch(0),
-    crosshair(1),
-    classic(2),
-    count(3),
+    Touch(0),
+    Crosshair(1),
+    Classic(2),
+    Count(3),
     ;
 
     private static final Int2ObjectMap<NewInteractionModel> BY_VALUE = new Int2ObjectOpenHashMap<>();

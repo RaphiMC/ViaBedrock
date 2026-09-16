@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SimulationType {
 
-    game(0),
-    editor(1),
-    test(2),
-    invalid(3),
+    Game(0),
+    Editor(1),
+    Test(2),
+    INVALID(3),
     ;
 
     private static final Int2ObjectMap<SimulationType> BY_VALUE = new Int2ObjectOpenHashMap<>();

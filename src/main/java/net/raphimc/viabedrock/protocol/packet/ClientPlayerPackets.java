@@ -283,16 +283,16 @@ public class ClientPlayerPackets {
             switch (action) {
                 case START_SPRINTING -> {
                     clientPlayer.setSprinting(true);
-                    clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartSprinting);
+                    clientPlayer.addAuthInputData(PlayerAuthInputData.StartSprinting);
                 }
                 case STOP_SPRINTING -> {
                     clientPlayer.setSprinting(false);
-                    clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StopSprinting);
+                    clientPlayer.addAuthInputData(PlayerAuthInputData.StopSprinting);
                 }
                 case START_FALL_FLYING -> {
                     if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
                         clientPlayer.setGliding(true);
-                        clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartGliding);
+                        clientPlayer.addAuthInputData(PlayerAuthInputData.StartGliding);
                     }
                 }
                 default -> throw new IllegalStateException("Unhandled PlayerCommandAction: " + action);
@@ -385,7 +385,7 @@ public class ClientPlayerPackets {
             wrapper.write(Types.BOOLEAN, true); // has transaction data
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entity.runtimeId()); // entity runtime id
-            wrapper.write(BedrockTypes.VAR_INT, ItemUseOnActorInventoryTransaction_ActionType.Attack.getValue()); // action type
+            wrapper.write(BedrockTypes.VAR_INT, ItemUseOnActorActionType.Attack.getValue()); // action type
             wrapper.write(BedrockTypes.VAR_INT, (int) inventoryContainer.getSelectedHotbarSlot()); // hotbar slot
             wrapper.write(wrapper.user().get(ItemRewriter.class).newItemType(), inventoryContainer.getSelectedHotbarItem()); // held item
             wrapper.write(BedrockTypes.POSITION_3F, entityTracker.getClientPlayer().position()); // player position
@@ -418,7 +418,7 @@ public class ClientPlayerPackets {
             wrapper.write(Types.BOOLEAN, true); // has transaction data
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entity.runtimeId()); // entity runtime id
-            wrapper.write(BedrockTypes.VAR_INT, ItemUseOnActorInventoryTransaction_ActionType.Interact.getValue()); // action type
+            wrapper.write(BedrockTypes.VAR_INT, ItemUseOnActorActionType.Interact.getValue()); // action type
             wrapper.write(BedrockTypes.VAR_INT, (int) inventoryContainer.getSelectedHotbarSlot()); // hotbar slot
             wrapper.write(wrapper.user().get(ItemRewriter.class).newItemType(), inventoryContainer.getSelectedHotbarItem()); // held item
             wrapper.write(BedrockTypes.POSITION_3F, entityTracker.getClientPlayer().position()); // player position
@@ -465,7 +465,7 @@ public class ClientPlayerPackets {
             clientPlayer.tick();
 
             if (prevOnGround && clientPlayer.inputFlags().contains(InputFlag.JUMP)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartJumping);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.StartJumping);
             }
 
             if (clientPlayer.isGliding() && (
@@ -476,7 +476,7 @@ public class ClientPlayerPackets {
                     clientPlayer.entityFlags().contains(ActorFlags.IN_SCAFFOLDING)
             )) {
                 clientPlayer.setGliding(false);
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StopGliding);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.StopGliding);
             }
 
             if (!clientPlayer.isInitiallySpawned() || clientPlayer.isDead()) {
@@ -484,47 +484,47 @@ public class ClientPlayerPackets {
                 return;
             }
 
-            clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.BlockBreakingDelayEnabled);
+            clientPlayer.addAuthInputData(PlayerAuthInputData.BlockBreakingDelayEnabled);
             if (clientPlayer.isOnGround()) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.VerticalCollision);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.VerticalCollision);
             }
             if (clientPlayer.horizontalCollision()) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.HorizontalCollision);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.HorizontalCollision);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.FORWARD)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.Up);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.Up);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.BACKWARD)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.Down);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.Down);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.LEFT)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.Left);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.Left);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.RIGHT)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.Right);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.Right);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.JUMP)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.JumpDown, PlayerAuthInputPacketPayload_InputData.Jumping, PlayerAuthInputPacketPayload_InputData.WantUp, PlayerAuthInputPacketPayload_InputData.JumpCurrentRaw);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.JumpDown, PlayerAuthInputData.Jumping, PlayerAuthInputData.WantUp, PlayerAuthInputData.JumpCurrentRaw);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.SHIFT)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.SneakDown, PlayerAuthInputPacketPayload_InputData.Sneaking, PlayerAuthInputPacketPayload_InputData.WantDown, PlayerAuthInputPacketPayload_InputData.SneakCurrentRaw);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.SneakDown, PlayerAuthInputData.Sneaking, PlayerAuthInputData.WantDown, PlayerAuthInputData.SneakCurrentRaw);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.SPRINT)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.SprintDown, PlayerAuthInputPacketPayload_InputData.Sprinting);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.SprintDown, PlayerAuthInputData.Sprinting);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.JUMP) && !prevInputFlags.contains(InputFlag.JUMP)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.JumpPressedRaw);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.JumpPressedRaw);
             }
             if (prevInputFlags.contains(InputFlag.JUMP) && !clientPlayer.inputFlags().contains(InputFlag.JUMP)) {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.JumpReleasedRaw);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.JumpReleasedRaw);
             }
             if (clientPlayer.inputFlags().contains(InputFlag.SHIFT) && !prevInputFlags.contains(InputFlag.SHIFT)) {
                 clientPlayer.setSneaking(true);
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.SneakPressedRaw, PlayerAuthInputPacketPayload_InputData.StartSneaking);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.SneakPressedRaw, PlayerAuthInputData.StartSneaking);
             }
             if (prevInputFlags.contains(InputFlag.SHIFT) && !clientPlayer.inputFlags().contains(InputFlag.SHIFT)) {
                 clientPlayer.setSneaking(false);
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.SneakReleasedRaw, PlayerAuthInputPacketPayload_InputData.StopSneaking);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.SneakReleasedRaw, PlayerAuthInputData.StopSneaking);
             }
 
             final Position3f positionDelta = clientPlayer.position().subtract(prevPosition);
@@ -556,7 +556,7 @@ public class ClientPlayerPackets {
             wrapper.write(BedrockTypes.FLOAT_LE, clientPlayer.rotation().z()); // head yaw
             wrapper.write(Types.BOOLEAN, true); // input flags present
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, clientPlayer.authInputData().size()); // input flags count
-            for (PlayerAuthInputPacketPayload_InputData inputData : PlayerAuthInputPacketPayload_InputData.values()) {
+            for (PlayerAuthInputData inputData : PlayerAuthInputData.values()) {
                 if (clientPlayer.authInputData().contains(inputData)) {
                     wrapper.write(BedrockTypes.VAR_INT, inputData.getValue()); // input flag
                 }
@@ -573,7 +573,7 @@ public class ClientPlayerPackets {
             wrapper.write(Types.BOOLEAN, true); // item stack request optional reflected
             wrapper.write(Types.BOOLEAN, false); // no item stack request
             wrapper.write(Types.BOOLEAN, true); // block actions optional reflected
-            final boolean hasBlockActions = clientPlayer.authInputData().contains(PlayerAuthInputPacketPayload_InputData.PerformBlockActions);
+            final boolean hasBlockActions = clientPlayer.authInputData().contains(PlayerAuthInputData.PerformBlockActions);
             wrapper.write(Types.BOOLEAN, hasBlockActions);
             if (hasBlockActions) {
                 wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, clientPlayer.authInputBlockActions().size()); // player block actions count
@@ -601,7 +601,7 @@ public class ClientPlayerPackets {
             final boolean flying = (flags & AbilitiesFlag.FLYING.getBit()) != 0;
             if (flying != clientPlayer.abilities().getBooleanValue(AbilitiesIndex.Flying)) {
                 clientPlayer.abilities().getOrCreateCacheLayer().setAbility(AbilitiesIndex.Flying, flying);
-                clientPlayer.addAuthInputData(flying ? PlayerAuthInputPacketPayload_InputData.StartFlying : PlayerAuthInputPacketPayload_InputData.StopFlying);
+                clientPlayer.addAuthInputData(flying ? PlayerAuthInputData.StartFlying : PlayerAuthInputData.StopFlying);
             }
         });
         protocol.registerServerbound(ServerboundPackets26_3.CHANGE_GAME_MODE, ServerboundBedrockPackets.SET_PLAYER_GAME_TYPE, new PacketHandlers() {
@@ -643,7 +643,7 @@ public class ClientPlayerPackets {
                     clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.CrackBlock, blockBreakingInfo.position(), blockBreakingInfo.direction().ordinal()));
                 }
             } else {
-                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.MissedSwing);
+                clientPlayer.addAuthInputData(PlayerAuthInputData.MissedSwing);
             }
         });
     }

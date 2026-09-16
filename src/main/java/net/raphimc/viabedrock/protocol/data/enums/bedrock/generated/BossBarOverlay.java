@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum BossBarOverlay {
 
-    progress(0),
-    notched_6(1),
-    notched_10(2),
-    notched_12(3),
-    notched_20(4),
+    PROGRESS(0),
+    NOTCHED_6(1),
+    NOTCHED_10(2),
+    NOTCHED_12(3),
+    NOTCHED_20(4),
     ;
 
     private static final Int2ObjectMap<BossBarOverlay> BY_VALUE = new Int2ObjectOpenHashMap<>();

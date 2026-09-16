@@ -6,12 +6,12 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum StructureBlockType {
 
-    data(0),
-    save(1),
-    load(2),
-    corner(3),
-    invalid(4),
-    export(5),
+    Data(0),
+    Save(1),
+    Load(2),
+    Corner(3),
+    Invalid(4),
+    Export(5),
     ;
 
     private static final Int2ObjectMap<StructureBlockType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum BiomeTemperatureCategory {
 
-    medium(0),
-    warm(1),
-    lukewarm(2),
-    cold(3),
-    frozen(4),
+    Medium(0),
+    Warm(1),
+    Lukewarm(2),
+    Cold(3),
+    Frozen(4),
     ;
 
     private static final Int2ObjectMap<BiomeTemperatureCategory> BY_VALUE = new Int2ObjectOpenHashMap<>();

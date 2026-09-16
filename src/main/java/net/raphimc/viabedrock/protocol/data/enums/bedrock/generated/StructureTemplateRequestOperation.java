@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum StructureTemplateRequestOperation {
 
-    none(0),
-    exportfromsavemode(1),
-    exportfromloadmode(2),
-    querysavedstructure(3),
+    None(0),
+    ExportFromSaveMode(1),
+    ExportFromLoadMode(2),
+    QuerySavedStructure(3),
     ;
 
     private static final Int2ObjectMap<StructureTemplateRequestOperation> BY_VALUE = new Int2ObjectOpenHashMap<>();

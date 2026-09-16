@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum StructureTemplateResponseType {
 
-    none(0),
-    export(1),
-    query(2),
+    None(0),
+    Export(1),
+    Query(2),
     ;
 
     private static final Int2ObjectMap<StructureTemplateResponseType> BY_VALUE = new Int2ObjectOpenHashMap<>();

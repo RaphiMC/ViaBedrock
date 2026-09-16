@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum CodeBuilderStorageQueryOptions_Operation {
 
-    none(0),
-    get(1),
-    set(2),
-    reset(3),
+    None(0),
+    Get(1),
+    Set(2),
+    Reset(3),
     ;
 
     private static final Int2ObjectMap<CodeBuilderStorageQueryOptions_Operation> BY_VALUE = new Int2ObjectOpenHashMap<>();

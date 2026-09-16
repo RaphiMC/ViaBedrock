@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PlayerListPacketType {
 
-    add(0),
-    remove(1),
+    Add(0),
+    Remove(1),
     ;
 
     private static final Int2ObjectMap<PlayerListPacketType> BY_VALUE = new Int2ObjectOpenHashMap<>();

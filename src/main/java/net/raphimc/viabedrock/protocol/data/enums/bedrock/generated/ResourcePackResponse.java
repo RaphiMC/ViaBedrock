@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ResourcePackResponse {
 
-    cancel(1),
-    downloading(2),
-    downloadingfinished(3),
-    resourcepackstackfinished(4),
+    Cancel(1),
+    Downloading(2),
+    DownloadingFinished(3),
+    ResourcePackStackFinished(4),
     ;
 
     private static final Int2ObjectMap<ResourcePackResponse> BY_VALUE = new Int2ObjectOpenHashMap<>();

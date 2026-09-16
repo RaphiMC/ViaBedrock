@@ -6,22 +6,22 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum CommandOriginType {
 
-    player(0),
-    commandblock(1),
-    minecartcommandblock(2),
-    devconsole(3),
-    test(4),
-    automationplayer(5),
-    clientautomation(6),
-    dedicatedserver(7),
-    entity(8),
-    virtual(9),
-    gameargument(10),
-    entityserver(11),
-    precompiled(12),
-    gamedirectorentityserver(13),
-    scripting(14),
-    executecontext(15),
+    Player(0),
+    CommandBlock(1),
+    MinecartCommandBlock(2),
+    DevConsole(3),
+    Test(4),
+    AutomationPlayer(5),
+    ClientAutomation(6),
+    DedicatedServer(7),
+    Entity(8),
+    Virtual(9),
+    GameArgument(10),
+    EntityServer(11),
+    Precompiled(12),
+    GameDirectorEntityServer(13),
+    Scripting(14),
+    ExecuteContext(15),
     ;
 
     private static final Int2ObjectMap<CommandOriginType> BY_VALUE = new Int2ObjectOpenHashMap<>();

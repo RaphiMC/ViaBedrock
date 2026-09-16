@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SharedTypes_Legacy_ArmorSlot {
 
-    head(0),
-    torso(1),
-    legs(2),
-    feet(3),
-    body(4),
+    Head(0),
+    Torso(1),
+    Legs(2),
+    Feet(3),
+    Body(4),
     ;
 
     private static final Int2ObjectMap<SharedTypes_Legacy_ArmorSlot> BY_VALUE = new Int2ObjectOpenHashMap<>();

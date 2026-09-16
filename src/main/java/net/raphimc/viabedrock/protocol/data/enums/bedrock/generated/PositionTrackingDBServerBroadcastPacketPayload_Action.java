@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PositionTrackingDBServerBroadcastPacketPayload_Action {
 
-    update(0),
-    destroy(1),
-    notfound(2),
+    Update(0),
+    Destroy(1),
+    NotFound(2),
     ;
 
     private static final Int2ObjectMap<PositionTrackingDBServerBroadcastPacketPayload_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();

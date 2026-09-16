@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SpawnBiomeType {
 
-    default(0),
-    userdefined(1),
+    Default(0),
+    UserDefined(1),
     ;
 
     private static final Int2ObjectMap<SpawnBiomeType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,12 +6,12 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum CodeBuilderExecutionState_CodeStatus {
 
-    none(0),
-    notstarted(1),
-    inprogress(2),
-    paused(3),
-    error(4),
-    succeeded(5),
+    None(0),
+    NotStarted(1),
+    InProgress(2),
+    Paused(3),
+    Error(4),
+    Succeeded(5),
     ;
 
     private static final Int2ObjectMap<CodeBuilderExecutionState_CodeStatus> BY_VALUE = new Int2ObjectOpenHashMap<>();

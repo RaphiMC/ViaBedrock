@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PhotoType {
 
-    portfolio(0),
-    photoitem(1),
-    book(2),
+    Portfolio(0),
+    PhotoItem(1),
+    Book(2),
     ;
 
     private static final Int2ObjectMap<PhotoType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -50,7 +50,7 @@ import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.DataValues;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.Dimension;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.Difficulty;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Difficulty;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.GameEventType;
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
@@ -218,7 +218,7 @@ public class JoinPackets {
                     final Difficulty difficulty = Difficulty.getByValue(wrapper.read(BedrockTypes.VAR_INT), Difficulty.Unknown); // difficulty
                     wrapper.read(BedrockTypes.BLOCK_POSITION); // default spawn position
                     wrapper.read(Types.BOOLEAN); // achievements disabled
-                    final Editor_WorldType editorWorldType = Editor_WorldType.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // world editor type
+                    final EditorWorldType editorWorldType = EditorWorldType.getByValue(wrapper.read(BedrockTypes.VAR_INT)); // world editor type
                     wrapper.read(Types.BOOLEAN); // created in world editor
                     wrapper.read(Types.BOOLEAN); // exported from world editor
                     final int currentTime = wrapper.read(BedrockTypes.VAR_INT); // day cycle stop time
@@ -318,7 +318,7 @@ public class JoinPackets {
                     wrapper.read(BedrockTypes.STRING); // world id
                     wrapper.read(BedrockTypes.STRING); // owner id
 
-                    if (editorWorldType == Editor_WorldType.EditorProject) {
+                    if (editorWorldType == EditorWorldType.EditorProject) {
                         final PacketWrapper disconnect = PacketWrapper.create(ClientboundConfigurationPackets26_3.DISCONNECT, wrapper.user());
                         PacketFactory.writeJavaDisconnect(wrapper, resourcePackStorage.getTexts().get("disconnectionScreen.editor.mismatchEditorWorld"));
                         disconnect.send(BedrockProtocol.class);

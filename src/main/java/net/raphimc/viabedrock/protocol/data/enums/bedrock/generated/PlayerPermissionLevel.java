@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PlayerPermissionLevel {
 
-    visitor(0),
-    member(1),
-    operator(2),
-    custom(3),
+    Visitor(0),
+    Member(1),
+    Operator(2),
+    Custom(3),
     ;
 
     private static final Int2ObjectMap<PlayerPermissionLevel> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum persona_AnimatedTextureType {
 
-    none(0),
-    face(1),
-    body32x32(2),
-    body128x128(3),
+    None(0),
+    Face(1),
+    Body32x32(2),
+    Body128x128(3),
     ;
 
     private static final Int2ObjectMap<persona_AnimatedTextureType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,16 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ClientPlayMode {
 
-    normal(0),
-    teaser(1),
-    screen(2),
-    viewer(3),
-    reality(4),
-    placement(5),
-    livingroom(6),
-    exitlevel(7),
-    exitlevellivingroom(8),
-    nummodes(9),
+    Normal(0),
+    Teaser(1),
+    Screen(2),
+    ExitLevel(7),
+    NumModes(9),
     ;
 
     private static final Int2ObjectMap<ClientPlayMode> BY_VALUE = new Int2ObjectOpenHashMap<>();

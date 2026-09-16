@@ -35,7 +35,7 @@ import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.DataValues;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Connection_DisconnectFailReason;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.DisconnectFailReason;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.MinecraftPacketIds;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketViolationSeverity;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketViolationType;
@@ -54,7 +54,7 @@ import java.util.logging.Level;
 public class MultiStatePackets {
 
     private static final PacketHandler DISCONNECT_HANDLER = wrapper -> {
-        final Connection_DisconnectFailReason disconnectReason = Connection_DisconnectFailReason.getByValue(wrapper.read(BedrockTypes.VAR_INT), Connection_DisconnectFailReason.Unknown); // reason
+        final DisconnectFailReason disconnectReason = DisconnectFailReason.getByValue(wrapper.read(BedrockTypes.VAR_INT), DisconnectFailReason.Unknown); // reason
         final boolean hasMessage = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT) == 0; // has message
         if (hasMessage) {
             final Map<String, String> translations = BedrockProtocol.MAPPINGS.getBedrockResourcePacks().get(DataValues.VANILLA_RESOURCE_PACK_KEY).content().getLang("texts/en_US.lang");

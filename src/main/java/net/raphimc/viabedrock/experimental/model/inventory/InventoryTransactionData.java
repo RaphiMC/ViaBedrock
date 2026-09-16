@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.experimental.model.inventory;
 
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -34,8 +33,8 @@ public interface InventoryTransactionData {
 
     // UseItemTransactionData represents an inventory transaction data object sent when the client uses an item on a block.
     record UseItemTransactionData(
-            ItemUseInventoryTransaction_ActionType actionType,
-            ItemUseInventoryTransaction_TriggerType triggerType,
+            ItemUseActionType actionType,
+            ItemUseTriggerType triggerType,
             BlockPosition blockPosition,
             int face,
             int hotbarSlot,
@@ -43,14 +42,14 @@ public interface InventoryTransactionData {
             Position3f playerPosition,
             Position3f clickPosition,
             int blockRuntimeId,
-            ItemUseInventoryTransaction_PredictedResult predictedResult,
-            ItemUseInventoryTransaction_ClientCooldownState clientCooldownState
+            ItemUsePredictedResult predictedResult,
+            ItemUseClientCooldownState clientCooldownState
     ) implements InventoryTransactionData {}
 
     // UseItemOnEntityTransactionData represents an inventory transaction data object sent when the client uses an item on an entity.
     record UseItemOnEntityTransactionData(
             long entityRuntimeId,
-            ItemUseOnActorInventoryTransaction_ActionType actionType,
+            ItemUseOnActorActionType actionType,
             int hotbarSlot,
             BedrockItem itemInHand,
             Position3f playerPosition,
@@ -60,7 +59,7 @@ public interface InventoryTransactionData {
     // ReleaseItemTransactionData represents an inventory transaction data object sent when the client releases the item it was using,
     // for example when stopping while eating or stopping the charging of a bow.
     record ReleaseItemTransactionData(
-            ItemReleaseInventoryTransaction_ActionType actionType,
+            ItemReleaseActionType actionType,
             int hotbarSlot,
             BedrockItem itemInHand,
             Position3f headPosition

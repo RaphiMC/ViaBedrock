@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum MultiplayerSettingsPacketType {
 
-    enablemultiplayer(0),
-    disablemultiplayer(1),
-    refreshjoincode(2),
+    EnableMultiplayer(0),
+    DisableMultiplayer(1),
+    RefreshJoincode(2),
     ;
 
     private static final Int2ObjectMap<MultiplayerSettingsPacketType> BY_VALUE = new Int2ObjectOpenHashMap<>();

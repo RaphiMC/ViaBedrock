@@ -6,15 +6,15 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PackType {
 
-    invalid(0),
-    addon(1),
-    cached(2),
-    copyprotected(3),
-    behavior(4),
-    personapiece(5),
-    resources(6),
-    skins(7),
-    worldtemplate(8),
+    Invalid(0),
+    Addon(1),
+    Cached(2),
+    CopyProtected(3),
+    Behavior(4),
+    PersonaPiece(5),
+    Resources(6),
+    Skins(7),
+    WorldTemplate(8),
     ;
 
     private static final Int2ObjectMap<PackType> BY_VALUE = new Int2ObjectOpenHashMap<>();

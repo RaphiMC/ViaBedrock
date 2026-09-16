@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ShowCreditsPacketPayload_CreditsState {
 
-    start(0),
-    finished(1),
+    Start(0),
+    Finished(1),
     ;
 
     private static final Int2ObjectMap<ShowCreditsPacketPayload_CreditsState> BY_VALUE = new Int2ObjectOpenHashMap<>();

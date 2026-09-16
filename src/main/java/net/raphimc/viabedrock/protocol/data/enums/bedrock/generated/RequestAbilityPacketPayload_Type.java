@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum RequestAbilityPacketPayload_Type {
 
-    unset(0),
-    bool(1),
-    float(2),
+    Unset(0),
+    Bool(1),
+    Float(2),
     ;
 
     private static final Int2ObjectMap<RequestAbilityPacketPayload_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();

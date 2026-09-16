@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum AnimatePacketPayload_Action {
 
-    noaction(0),
-    swing(1),
-    wakeup(3),
-    criticalhit(4),
-    magiccriticalhit(5),
+    NoAction(0),
+    Swing(1),
+    WakeUp(3),
+    CriticalHit(4),
+    MagicCriticalHit(5),
     ;
 
     private static final Int2ObjectMap<AnimatePacketPayload_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();

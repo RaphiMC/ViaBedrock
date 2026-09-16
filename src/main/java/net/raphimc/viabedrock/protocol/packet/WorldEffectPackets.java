@@ -69,7 +69,7 @@ public class WorldEffectPackets {
     private static final boolean LEVEL_SOUND_DEBUG_LOG = false;
 
     public static void register(final BedrockProtocol protocol) {
-        protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SOUND_DATA, null, wrapper -> {
+        /*protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SOUND_DATA, null, wrapper -> {
             wrapper.read(BedrockTypes.UNSIGNED_LONG_LE); // server sound handle
 
             if (wrapper.read(Types.BOOLEAN)) { // Stop Sound
@@ -111,7 +111,7 @@ public class WorldEffectPackets {
 
             wrapper.cancel();
             // TODO: Server handle based sound manager
-        });
+        });*/
         protocol.registerClientbound(ClientboundBedrockPackets.PLAY_SOUND, ClientboundPackets26_3.SOUND, wrapper -> {
             final String name = wrapper.read(BedrockTypes.STRING); // sound name
             final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position

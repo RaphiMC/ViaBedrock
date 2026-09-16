@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ScoreboardIdentityPacketType {
 
-    update(0),
-    remove(1),
+    Update(0),
+    Remove(1),
     ;
 
     private static final Int2ObjectMap<ScoreboardIdentityPacketType> BY_VALUE = new Int2ObjectOpenHashMap<>();

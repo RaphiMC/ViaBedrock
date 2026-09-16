@@ -6,13 +6,13 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum GeneratorType {
 
-    legacy(0),
-    overworld(1),
-    flat(2),
-    nether(3),
-    theend(4),
-    void(5),
-    undefined(6),
+    Legacy(0),
+    Overworld(1),
+    Flat(2),
+    Nether(3),
+    TheEnd(4),
+    Void(5),
+    Undefined(6),
     ;
 
     private static final Int2ObjectMap<GeneratorType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,13 +6,13 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum InventoryLeftTabPocketIndex {
 
-    none(0),
-    survival(1),
-    recipenature(2),
-    recipeitems(3),
-    recipeequipment(4),
-    recipeconstruction(5),
-    recipesearch(6),
+    None(0),
+    Survival(1),
+    RecipeNature(2),
+    RecipeItems(3),
+    RecipeEquipment(4),
+    RecipeConstruction(5),
+    RecipeSearch(6),
     ;
 
     private static final Int2ObjectMap<InventoryLeftTabPocketIndex> BY_VALUE = new Int2ObjectOpenHashMap<>();

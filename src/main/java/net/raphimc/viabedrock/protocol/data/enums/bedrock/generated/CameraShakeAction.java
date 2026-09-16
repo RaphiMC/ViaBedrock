@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum CameraShakeAction {
 
-    add(0),
-    stop(1),
+    Add(0),
+    Stop(1),
     ;
 
     private static final Int2ObjectMap<CameraShakeAction> BY_VALUE = new Int2ObjectOpenHashMap<>();

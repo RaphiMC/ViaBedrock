@@ -6,15 +6,15 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ActorSwingSource {
 
-    none(0),
-    build(1),
-    mine(2),
-    interact(3),
-    attack(4),
-    useitem(5),
-    throwitem(6),
-    dropitem(7),
-    event(8),
+    None(0),
+    Build(1),
+    Mine(2),
+    Interact(3),
+    Attack(4),
+    UseItem(5),
+    ThrowItem(6),
+    DropItem(7),
+    Event(8),
     ;
 
     private static final Int2ObjectMap<ActorSwingSource> BY_VALUE = new Int2ObjectOpenHashMap<>();

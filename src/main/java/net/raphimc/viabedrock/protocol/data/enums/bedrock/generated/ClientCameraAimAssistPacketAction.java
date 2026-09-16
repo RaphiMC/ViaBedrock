@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ClientCameraAimAssistPacketAction {
 
-    setfromcamerapreset(0),
-    clear(1),
+    SetFromCameraPreset(0),
+    Clear(1),
     ;
 
     private static final Int2ObjectMap<ClientCameraAimAssistPacketAction> BY_VALUE = new Int2ObjectOpenHashMap<>();

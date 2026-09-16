@@ -23,7 +23,7 @@ import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.experimental.model.inventory.InventorySource;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySource_InventorySourceFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceFlags;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class InventorySourcePacketType extends Type<InventorySource> {
@@ -41,19 +41,19 @@ public class InventorySourcePacketType extends Type<InventorySource> {
         }
 
         int containerId = 0;
-        InventorySource_InventorySourceFlags flag = InventorySource_InventorySourceFlags.No_Flag;
+        InventorySourceFlags flag = InventorySourceFlags.No_Flag;
         if (buffer.readBoolean() && buffer.readBoolean()) containerId = buffer.readByte();
-        if (buffer.readBoolean() && buffer.readBoolean()) flag = InventorySource_InventorySourceFlags.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        if (buffer.readBoolean() && buffer.readBoolean()) flag = InventorySourceFlags.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
 
         switch (type) {
             case Container_Inventory, Non_Implemented_Feature_TODO -> {
-                return new InventorySource(type, containerId, InventorySource_InventorySourceFlags.No_Flag);
+                return new InventorySource(type, containerId, InventorySourceFlags.No_Flag);
             }
             case World_Interaction -> {
                 return new InventorySource(type, ContainerID.CONTAINER_ID_NONE.getValue(), flag);
             }
             default -> {
-                return new InventorySource(type, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySource_InventorySourceFlags.No_Flag);
+                return new InventorySource(type, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySourceFlags.No_Flag);
             }
         }
     }
