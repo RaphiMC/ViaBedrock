@@ -35,7 +35,7 @@ import java.util.List;
 public class Util {
 
     public static ResourcePackStorage getClientResourcePacks(final File clientDataDir) throws IOException {
-        final File resourcePacksDir = new File(clientDataDir, "resource_packs");
+        final File resourcePacksDir = new File(clientDataDir, "resource_packs_unpacked");
         final long start = System.currentTimeMillis();
 
         final byte[] data = JsonSorter.class.getResourceAsStream("/assets/viabedrock/data/custom/vanilla_resource_packs.json").readAllBytes();

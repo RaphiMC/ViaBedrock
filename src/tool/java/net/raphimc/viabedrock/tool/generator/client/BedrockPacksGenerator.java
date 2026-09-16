@@ -37,8 +37,8 @@ public class BedrockPacksGenerator {
             """;
 
     public static void main(String[] args) throws Throwable {
-        final File clientDataDir = new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data");
-        final File resourcePacksDir = new File(clientDataDir, "resource_packs");
+        final File clientDataDir = new File("/home/exterminate/Games/mc/MCBedrockWindows/1.26.5101/data/");
+        final File resourcePacksDir = new File(clientDataDir, "resource_packs_unpacked");
 
         final File resourcePacksOutputDir = new File("resource_packs");
         resourcePacksOutputDir.mkdirs();
@@ -101,6 +101,24 @@ public class BedrockPacksGenerator {
         final File folder = new File(packDir, folderPath);
         if (folder.exists()) {
             final Path sourcePath = folder.toPath();
+            final Path targetPath = targetRoot.resolve(folderPath);
+            Files.walk(sourcePath).forEach(path -> {
+                try {
+                    Path resolvedTargetPath = targetPath.resolve(sourcePath.relativize(path).toString());
+                    if (Files.isDirectory(path)) {
+                        Files.createDirectories(resolvedTargetPath);
+                    } else {
+                        Files.copy(path, resolvedTargetPath);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+        final File extractedFolder = new File(packDir, "__brarchive/" + folderPath);
+        if (extractedFolder.exists()) {
+            final Path sourcePath = extractedFolder.toPath();
             final Path targetPath = targetRoot.resolve(folderPath);
             Files.walk(sourcePath).forEach(path -> {
                 try {

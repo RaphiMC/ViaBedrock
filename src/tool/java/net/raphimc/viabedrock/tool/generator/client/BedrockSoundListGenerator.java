@@ -69,7 +69,7 @@ public class BedrockSoundListGenerator {
     );
 
     public static void main(String[] args) throws Throwable {
-        final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(new File("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
+        final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(new File("/home/exterminate/Games/mc/MCBedrockWindows/1.26.5101/data/"));
 
         final JsonObject soundList = new JsonObject();
         final Set<String> soundsWithoutCategory = new HashSet<>();

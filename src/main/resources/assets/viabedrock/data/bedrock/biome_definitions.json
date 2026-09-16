@@ -106,7 +106,9 @@
             "forest",
             "monster",
             "overworld",
-            "bee_habitat"
+            "bee_habitat",
+            "has_structure_abandoned_camp",
+            "oak_forest"
         ],
         "chunkGenData": null
     },
@@ -246,7 +248,8 @@
             "monster",
             "mountain",
             "overworld",
-            "spawns_cold_variant_farm_animals"
+            "spawns_cold_variant_farm_animals",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -412,7 +415,8 @@
             "monster",
             "mutated",
             "overworld",
-            "bee_habitat"
+            "bee_habitat",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -499,7 +503,8 @@
             "overworld",
             "taiga",
             "has_structure_trail_ruins",
-            "spawns_cold_variant_farm_animals"
+            "spawns_cold_variant_farm_animals",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -558,7 +563,8 @@
             "swamp",
             "spawns_slimes_on_surface",
             "slime",
-            "swamp_water_huge_mushroom"
+            "swamp_water_huge_mushroom",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -587,7 +593,8 @@
             "monster",
             "overworld",
             "spawns_jungle_mobs",
-            "spawns_warm_variant_farm_animals"
+            "spawns_warm_variant_farm_animals",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -1103,7 +1110,8 @@
             "mutated",
             "bee_habitat",
             "overworld_generation",
-            "has_structure_trail_ruins"
+            "has_structure_trail_ruins",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -1131,7 +1139,8 @@
             "forest",
             "monster",
             "overworld",
-            "bee_habitat"
+            "bee_habitat",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -1308,7 +1317,8 @@
             "overworld",
             "taiga",
             "has_structure_trail_ruins",
-            "spawns_cold_variant_farm_animals"
+            "spawns_cold_variant_farm_animals",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -1369,7 +1379,8 @@
             "overworld",
             "taiga",
             "has_structure_trail_ruins",
-            "spawns_cold_variant_farm_animals"
+            "spawns_cold_variant_farm_animals",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -1400,7 +1411,8 @@
             "rare",
             "taiga",
             "has_structure_trail_ruins",
-            "spawns_cold_variant_farm_animals"
+            "spawns_cold_variant_farm_animals",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -1546,7 +1558,8 @@
             "overworld",
             "savanna",
             "spawns_savanna_mobs",
-            "spawns_warm_variant_farm_animals"
+            "spawns_warm_variant_farm_animals",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -1698,7 +1711,8 @@
             "stone",
             "spawns_mesa_mobs",
             "spawns_warm_variant_farm_animals",
-            "surface_mineshaft"
+            "surface_mineshaft",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -1791,7 +1805,8 @@
             "spawns_warm_variant_farm_animals",
             "spawns_warm_variant_frogs",
             "fast_fishing",
-            "high_seas"
+            "high_seas",
+            "temperate_ocean"
         ],
         "chunkGenData": null
     },
@@ -1821,7 +1836,8 @@
             "warm",
             "spawns_warm_variant_farm_animals",
             "fast_fishing",
-            "high_seas"
+            "high_seas",
+            "temperate_ocean"
         ],
         "chunkGenData": null
     },
@@ -1850,7 +1866,8 @@
             "overworld",
             "spawns_warm_variant_farm_animals",
             "fast_fishing",
-            "high_seas"
+            "high_seas",
+            "temperate_ocean"
         ],
         "chunkGenData": null
     },
@@ -1880,7 +1897,8 @@
             "overworld",
             "spawns_warm_variant_farm_animals",
             "fast_fishing",
-            "high_seas"
+            "high_seas",
+            "temperate_ocean"
         ],
         "chunkGenData": null
     },
@@ -2063,7 +2081,8 @@
             "monster",
             "overworld",
             "spawns_jungle_mobs",
-            "spawns_warm_variant_farm_animals"
+            "spawns_warm_variant_farm_animals",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -2323,7 +2342,8 @@
             "monster",
             "overworld",
             "meadow",
-            "bee_habitat"
+            "bee_habitat",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -2485,7 +2505,8 @@
             "monster",
             "overworld",
             "cherry_grove",
-            "bee_habitat"
+            "bee_habitat",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -2510,7 +2531,8 @@
         "tags": [
             "monster",
             "overworld",
-            "pale_garden"
+            "pale_garden",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     },
@@ -2537,6 +2559,35 @@
             "sulfur_caves",
             "overworld",
             "monster"
+        ],
+        "chunkGenData": null
+    },
+    "minecraft:dappled_forest": {
+        "id": null,
+        "temperature": 0.6,
+        "downfall": 0.6,
+        "redSporeDensity": 0.0,
+        "blueSporeDensity": 0.0,
+        "ashDensity": 0.0,
+        "whiteAshDensity": 0.0,
+        "foliageSnow": 0.0,
+        "depth": 0.1,
+        "scale": 0.2,
+        "mapWaterColor": {
+            "a": 166,
+            "r": 96,
+            "g": 183,
+            "b": 255
+        },
+        "rain": true,
+        "tags": [
+            "animal",
+            "dappled_forest",
+            "monster",
+            "forest",
+            "overworld",
+            "spawns_cold_variant_farm_animals",
+            "has_structure_abandoned_camp"
         ],
         "chunkGenData": null
     }

@@ -55,6 +55,20 @@ public class SoundDefinitions {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse sound_definitions.json in pack " + pack.key(), e);
                 }
             }
+            if (pack.content().contains("__brarchive/sounds/sound_definitions.json")) {
+                try {
+                    JsonObject soundDefinitions = pack.content().getJson("__brarchive/sounds/sound_definitions.json");
+                    soundDefinitions = soundDefinitions.has("sound_definitions") ? soundDefinitions.getAsJsonObject("sound_definitions") : soundDefinitions;
+                    for (Map.Entry<String, JsonElement> entry : soundDefinitions.entrySet()) {
+                        final JsonObject entryData = entry.getValue().getAsJsonObject();
+                        final String category = entryData.has("category") ? entryData.get("category").getAsString() : null;
+                        final SoundDefinition soundDefinition = new SoundDefinition(entry.getKey(), category);
+                        this.soundDefinitions.put(entry.getKey(), soundDefinition);
+                    }
+                } catch (Throwable e) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse sound_definitions.json in pack " + pack.key(), e);
+                }
+            }
             if (pack.content().contains("sounds.json")) {
                 try {
                     final JsonObject sounds = pack.content().getJson("sounds.json");

@@ -4,7 +4,7 @@ This file lists all the sources/code to obtain the data assets used in ViaBedroc
 If a file is not listed here, it has been created manually and is updated manually.
 
 ### data/bedrock/biome_definitions.json
-[CloudburstMC/Data](https://github.com/CloudburstMC/Data/blob/619483eb88140f46b8933506c6263861c0d8fa43/stripped_biome_definitions.json)
+[CloudburstMC/Data](https://github.com/CloudburstMC/Data/blob/a8a4341d7763d6eb8547cff3ca46b4153d60163d/stripped_biome_definitions.json)
 
 ### data/bedrock/biomes.json
 [Kaooot/bedrock-network-data](https://github.com/Kaooot/bedrock-network-data/blob/6abdab1f549ffafdd627f4d4de34709a0e981345/release/1.26.40/biomes.json)
@@ -16,7 +16,7 @@ If a file is not listed here, it has been created manually and is updated manual
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5/block_legacy_id_map.json)
 
 ### data/bedrock/block_palette.nbt
-[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/5da8f379b48dfd4f05248f570eb3685be7c81e09/core/src/main/resources/bedrock/block_palette.26_40.nbt)
+[GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/50115039af4cd92e50545075d3a13eea6880cf88/core/src/main/resources/bedrock/block_palette.26_50.nbt)
 
 ### data/bedrock/block_sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
@@ -45,7 +45,7 @@ This file has been generated using `BedrockSoundListGenerator` using data from t
 This file has been generated using `BedrockParticleListGenerator` using data from the official bedrock client's assets folder.
 
 ### data/bedrock/runtime_item_states.json
-[CloudburstMC/Data](https://github.com/CloudburstMC/Data/blob/619483eb88140f46b8933506c6263861c0d8fa43/runtime_item_states.json)
+[CloudburstMC/Data](https://github.com/CloudburstMC/Data/blob/a8a4341d7763d6eb8547cff3ca46b4153d60163d/runtime_item_states.json)
 
 ### data/bedrock/sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
