@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SpawnPositionType {
 
-    PlayerRespawn(0),
-    WorldSpawn(1),
+    playerrespawn(0),
+    worldspawn(1),
     ;
 
     private static final Int2ObjectMap<SpawnPositionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ActorBlockSyncMessage_MessageId {
 
-    NONE(0),
-    CREATE(1),
-    DESTROY(2),
+    none(0),
+    create(1),
+    destroy(2),
     ;
 
     private static final Int2ObjectMap<ActorBlockSyncMessage_MessageId> BY_VALUE = new Int2ObjectOpenHashMap<>();

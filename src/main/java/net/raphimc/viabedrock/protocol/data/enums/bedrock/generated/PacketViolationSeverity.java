@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PacketViolationSeverity {
 
-    Unknown(-1),
-    Warning(0),
-    FinalWarning(1),
-    TerminatingConnection(2),
+    unknown(-1),
+    warning(0),
+    finalwarning(1),
+    terminatingconnection(2),
     ;
 
     private static final Int2ObjectMap<PacketViolationSeverity> BY_VALUE = new Int2ObjectOpenHashMap<>();

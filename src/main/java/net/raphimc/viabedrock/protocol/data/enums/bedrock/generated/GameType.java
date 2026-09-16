@@ -6,13 +6,13 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum GameType {
 
-    Undefined(-1),
-    Survival(0),
-    Creative(1),
-    Adventure(2),
-    Default(5),
-    Spectator(6),
-    WorldDefault(0),
+    undefined(-1),
+    survival(0),
+    creative(1),
+    adventure(2),
+    default(5),
+    spectator(6),
+    worlddefault(0),
     ;
 
     private static final Int2ObjectMap<GameType> BY_VALUE = new Int2ObjectOpenHashMap<>();

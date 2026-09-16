@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SharedTypes_VillageType {
 
-    Desert(0),
-    Ice(1),
-    Savanna(2),
-    Taiga(3),
-    Default(4),
+    desert(0),
+    ice(1),
+    savanna(2),
+    taiga(3),
+    default(4),
     ;
 
     private static final Int2ObjectMap<SharedTypes_VillageType> BY_VALUE = new Int2ObjectOpenHashMap<>();

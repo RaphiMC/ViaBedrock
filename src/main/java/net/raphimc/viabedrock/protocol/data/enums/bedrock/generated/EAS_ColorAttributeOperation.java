@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum EAS_ColorAttributeOperation {
 
-    OVERRIDE(0),
-    ALPHA_BLEND(1),
-    ADD(2),
-    SUBTRACT(3),
-    MULTIPLY(4),
+    override(0),
+    alpha_blend(1),
+    add(2),
+    subtract(3),
+    multiply(4),
     ;
 
     private static final Int2ObjectMap<EAS_ColorAttributeOperation> BY_VALUE = new Int2ObjectOpenHashMap<>();

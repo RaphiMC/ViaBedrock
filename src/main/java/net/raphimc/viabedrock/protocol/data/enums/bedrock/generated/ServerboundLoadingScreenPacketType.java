@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ServerboundLoadingScreenPacketType {
 
-    Unknown(0),
-    StartLoadingScreen(1),
-    EndLoadingScreen(2),
+    unknown(0),
+    startloadingscreen(1),
+    endloadingscreen(2),
     ;
 
     private static final Int2ObjectMap<ServerboundLoadingScreenPacketType> BY_VALUE = new Int2ObjectOpenHashMap<>();

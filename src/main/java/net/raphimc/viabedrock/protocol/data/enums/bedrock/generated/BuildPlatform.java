@@ -6,21 +6,21 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum BuildPlatform {
 
-    Google(1),
-    iOS(2),
-    OSX(3),
-    Amazon(4),
-    GearVR(5),
-    UWP(7),
-    Win32(8),
-    Dedicated(9),
-    tvOS(10),
-    Sony(11),
-    Nx(12),
-    Xbox(13),
-    WindowsPhone(14),
-    Linux(15),
-    Unknown(-1),
+    google(1),
+    ios(2),
+    osx(3),
+    amazon(4),
+    gearvr(5),
+    uwp(7),
+    win32(8),
+    dedicated(9),
+    tvos(10),
+    sony(11),
+    nintendo(12),
+    xbox(13),
+    windowsphone(14),
+    linux(15),
+    unknown(-1),
     ;
 
     private static final Int2ObjectMap<BuildPlatform> BY_VALUE = new Int2ObjectOpenHashMap<>();

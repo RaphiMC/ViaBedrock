@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum MapItemTrackedActor_Type {
 
-    Entity(0),
-    BlockEntity(1),
-    Other(2),
+    entity(0),
+    blockentity(1),
+    other(2),
     ;
 
     private static final Int2ObjectMap<MapItemTrackedActor_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();

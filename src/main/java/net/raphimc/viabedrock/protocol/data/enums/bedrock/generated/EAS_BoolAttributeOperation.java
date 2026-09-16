@@ -6,14 +6,14 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum EAS_BoolAttributeOperation {
 
-    OVERRIDE(0),
-    ALPHA_BLEND(1),
-    AND(2),
-    NAND(3),
-    OR(4),
-    NOR(5),
-    XOR(6),
-    XNOR(7),
+    override(0),
+    alpha_blend(1),
+    and(2),
+    nand(3),
+    or(4),
+    nor(5),
+    xor(6),
+    xnor(7),
     ;
 
     private static final Int2ObjectMap<EAS_BoolAttributeOperation> BY_VALUE = new Int2ObjectOpenHashMap<>();

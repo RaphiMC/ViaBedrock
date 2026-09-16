@@ -6,19 +6,19 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum HudElement {
 
-    PaperDoll(0),
-    Armor(1),
-    ToolTips(2),
-    TouchControls(3),
-    Crosshair(4),
-    HotBar(5),
-    Health(6),
-    ProgressBar(7),
-    Hunger(8),
-    AirBubbles(9),
-    HorseHealth(10),
-    StatusEffects(11),
-    ItemText(12),
+    paperdoll(0),
+    armor(1),
+    tooltips(2),
+    touchcontrols(3),
+    crosshair(4),
+    hotbar(5),
+    health(6),
+    progressbar(7),
+    hunger(8),
+    airbubbles(9),
+    horsehealth(10),
+    statuseffects(11),
+    itemtext(12),
     ;
 
     private static final Int2ObjectMap<HudElement> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum AttributeOperands {
 
-    OPERAND_MIN(0),
-    OPERAND_MAX(1),
-    OPERAND_CURRENT(2),
-    TOTAL_OPERANDS(3),
-    OPERAND_INVALID(3),
+    operand_min(0),
+    operand_max(1),
+    operand_current(2),
+    total_operands(3),
+    operand_invalid(3),
     ;
 
     private static final Int2ObjectMap<AttributeOperands> BY_VALUE = new Int2ObjectOpenHashMap<>();

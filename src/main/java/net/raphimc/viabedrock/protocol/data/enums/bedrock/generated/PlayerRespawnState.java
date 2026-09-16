@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PlayerRespawnState {
 
-    SearchingForSpawn(0),
-    ReadyToSpawn(1),
-    ClientReadyToSpawn(2),
+    searchingforspawn(0),
+    readytospawn(1),
+    clientreadytospawn(2),
     ;
 
     private static final Int2ObjectMap<PlayerRespawnState> BY_VALUE = new Int2ObjectOpenHashMap<>();

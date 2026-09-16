@@ -4,34 +4,31 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock.generated;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
-public enum Editor_WorldType {
+public enum EAS_NoiseAlignmentType {
 
-    noneditor(0),
-    editorproject(1),
-    editortestlevel(2),
-    editorrealmsupload(3),
+    minlocaltransitionend(0),
     ;
 
-    private static final Int2ObjectMap<Editor_WorldType> BY_VALUE = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<EAS_NoiseAlignmentType> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
     static {
-        for (Editor_WorldType value : values()) {
+        for (EAS_NoiseAlignmentType value : values()) {
             if (!BY_VALUE.containsKey(value.value)) {
                 BY_VALUE.put(value.value, value);
             }
         }
     }
 
-    public static Editor_WorldType getByValue(final int value) {
+    public static EAS_NoiseAlignmentType getByValue(final int value) {
         return BY_VALUE.get(value);
     }
 
-    public static Editor_WorldType getByValue(final int value, final Editor_WorldType fallback) {
+    public static EAS_NoiseAlignmentType getByValue(final int value, final EAS_NoiseAlignmentType fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
-    public static Editor_WorldType getByName(final String name) {
-        for (Editor_WorldType value : values()) {
+    public static EAS_NoiseAlignmentType getByName(final String name) {
+        for (EAS_NoiseAlignmentType value : values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -39,8 +36,8 @@ public enum Editor_WorldType {
         return null;
     }
 
-    public static Editor_WorldType getByName(final String name, final Editor_WorldType fallback) {
-        for (Editor_WorldType value : values()) {
+    public static EAS_NoiseAlignmentType getByName(final String name, final EAS_NoiseAlignmentType fallback) {
+        for (EAS_NoiseAlignmentType value : values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -50,11 +47,11 @@ public enum Editor_WorldType {
 
     private final int value;
 
-    Editor_WorldType(final Editor_WorldType value) {
+    EAS_NoiseAlignmentType(final EAS_NoiseAlignmentType value) {
         this(value.value);
     }
 
-    Editor_WorldType(final int value) {
+    EAS_NoiseAlignmentType(final int value) {
         this.value = value;
     }
 

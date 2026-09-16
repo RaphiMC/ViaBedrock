@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum MobEffectPacketPayload_Event {
 
-    Invalid(0),
-    Add(1),
-    Update(2),
-    Remove(3),
+    invalid(0),
+    add(1),
+    update(2),
+    remove(3),
     ;
 
     private static final Int2ObjectMap<MobEffectPacketPayload_Event> BY_VALUE = new Int2ObjectOpenHashMap<>();

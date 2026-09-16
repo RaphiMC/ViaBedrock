@@ -6,13 +6,13 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum EAS_FloatAttributeOperation {
 
-    OVERRIDE(0),
-    ALPHA_BLEND(1),
-    ADD(2),
-    SUBTRACT(3),
-    MULTIPLY(4),
-    MINIMUM(5),
-    MAXIMUM(6),
+    override(0),
+    alpha_blend(1),
+    add(2),
+    subtract(3),
+    multiply(4),
+    minimum(5),
+    maximum(6),
     ;
 
     private static final Int2ObjectMap<EAS_FloatAttributeOperation> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,15 +6,15 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ContainerID {
 
-    CONTAINER_ID_NONE(-1),
-    CONTAINER_ID_INVENTORY(0),
-    CONTAINER_ID_FIRST(1),
-    CONTAINER_ID_LAST(100),
-    CONTAINER_ID_OFFHAND(119),
-    CONTAINER_ID_ARMOR(120),
-    CONTAINER_ID_SELECTION_SLOTS(122),
-    CONTAINER_ID_PLAYER_ONLY_UI(124),
-    CONTAINER_ID_REGISTRY(125),
+    container_id_none(-1),
+    container_id_inventory(0),
+    container_id_first(1),
+    container_id_last(100),
+    container_id_offhand(119),
+    container_id_armor(120),
+    container_id_selection_slots(122),
+    container_id_player_only_ui(124),
+    container_id_registry(125),
     ;
 
     private static final Int2ObjectMap<ContainerID> BY_VALUE = new Int2ObjectOpenHashMap<>();

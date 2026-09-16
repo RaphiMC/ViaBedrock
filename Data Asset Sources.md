@@ -66,7 +66,7 @@ This file has been dumped from a vanilla server using a fabric mod.
 This file has been dumped from a vanilla server using a fabric mod.
 
 ### data/java/via_mappings.json
-[ViaVersion/Mappings](https://github.com/ViaVersion/Mappings/blob/248db97b3e3aa16dbdc13690e77de073c721ff9f/mappings/mapping-26.2.json)
+[ViaVersion/Mappings](https://github.com/ViaVersion/Mappings/blob/e999640a3742e87080972cf13b15e329d5fada32/mappings/mapping-26.3.json)
 
 ### block_state_upgrade_schema/*
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)

@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ObjectiveSortOrder {
 
-    Ascending(0),
-    Descending(1),
+    ascending(0),
+    descending(1),
     ;
 
     private static final Int2ObjectMap<ObjectiveSortOrder> BY_VALUE = new Int2ObjectOpenHashMap<>();

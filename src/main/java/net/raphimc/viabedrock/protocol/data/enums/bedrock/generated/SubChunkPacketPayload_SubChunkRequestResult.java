@@ -6,13 +6,13 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SubChunkPacketPayload_SubChunkRequestResult {
 
-    Undefined(0),
-    Success(1),
-    LevelChunkDoesntExist(2),
-    WrongDimension(3),
-    PlayerDoesntExist(4),
-    IndexOutOfBounds(5),
-    SuccessAllAir(6),
+    undefined(0),
+    success(1),
+    levelchunkdoesntexist(2),
+    wrongdimension(3),
+    playerdoesntexist(4),
+    indexoutofbounds(5),
+    successallair(6),
     ;
 
     private static final Int2ObjectMap<SubChunkPacketPayload_SubChunkRequestResult> BY_VALUE = new Int2ObjectOpenHashMap<>();

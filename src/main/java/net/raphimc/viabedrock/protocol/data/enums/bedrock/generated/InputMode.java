@@ -6,12 +6,12 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum InputMode {
 
-    Undefined(0),
-    Mouse(1),
-    Touch(2),
-    GamePad(3),
-    MotionController(4),
-    Count(5),
+    undefined(0),
+    mouse(1),
+    touch(2),
+    gamepad(3),
+    motioncontroller(4),
+    count(5),
     ;
 
     private static final Int2ObjectMap<InputMode> BY_VALUE = new Int2ObjectOpenHashMap<>();

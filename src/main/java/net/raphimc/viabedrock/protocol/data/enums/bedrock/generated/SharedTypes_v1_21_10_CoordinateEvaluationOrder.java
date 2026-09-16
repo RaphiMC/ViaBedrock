@@ -6,12 +6,12 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SharedTypes_v1_21_10_CoordinateEvaluationOrder {
 
-    XYZ(0),
-    XZY(1),
-    YXZ(2),
-    YZX(3),
-    ZXY(4),
-    ZYX(5),
+    xyz(0),
+    xzy(1),
+    yxz(2),
+    yzx(3),
+    zxy(4),
+    zyx(5),
     ;
 
     private static final Int2ObjectMap<SharedTypes_v1_21_10_CoordinateEvaluationOrder> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SubChunkPacketPayload_HeightMapDataType {
 
-    NoData(0),
-    HasData(1),
-    AllTooHigh(2),
-    AllTooLow(3),
-    AllCopied(4),
+    nodata(0),
+    hasdata(1),
+    alltoohigh(2),
+    alltoolow(3),
+    allcopied(4),
     ;
 
     private static final Int2ObjectMap<SubChunkPacketPayload_HeightMapDataType> BY_VALUE = new Int2ObjectOpenHashMap<>();

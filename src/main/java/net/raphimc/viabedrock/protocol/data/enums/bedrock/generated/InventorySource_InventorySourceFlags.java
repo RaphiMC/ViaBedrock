@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum InventorySource_InventorySourceFlags {
 
-    No_Flag(0),
-    World_Interaction_Random(1),
+    no_flag(0),
+    world_interaction_random(1),
     ;
 
     private static final Int2ObjectMap<InventorySource_InventorySourceFlags> BY_VALUE = new Int2ObjectOpenHashMap<>();

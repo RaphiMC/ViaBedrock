@@ -6,13 +6,13 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum NpcRequestPacketPayload_RequestType {
 
-    SetActions(0),
-    ExecuteAction(1),
-    ExecuteClosingCommands(2),
-    SetName(3),
-    SetSkin(4),
-    SetInteractText(5),
-    ExecuteOpeningCommands(6),
+    setactions(0),
+    executeaction(1),
+    executeclosingcommands(2),
+    setname(3),
+    setskin(4),
+    setinteracttext(5),
+    executeopeningcommands(6),
     ;
 
     private static final Int2ObjectMap<NpcRequestPacketPayload_RequestType> BY_VALUE = new Int2ObjectOpenHashMap<>();

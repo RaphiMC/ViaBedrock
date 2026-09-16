@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SharedTypes_persona_ArmSizeType {
 
-    Slim(0),
-    Wide(1),
+    slim(0),
+    wide(1),
     ;
 
     private static final Int2ObjectMap<SharedTypes_persona_ArmSizeType> BY_VALUE = new Int2ObjectOpenHashMap<>();

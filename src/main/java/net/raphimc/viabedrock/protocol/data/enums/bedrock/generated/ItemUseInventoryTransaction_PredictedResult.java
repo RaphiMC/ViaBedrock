@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ItemUseInventoryTransaction_PredictedResult {
 
-    Failure(0),
-    Success(1),
+    failure(0),
+    success(1),
     ;
 
     private static final Int2ObjectMap<ItemUseInventoryTransaction_PredictedResult> BY_VALUE = new Int2ObjectOpenHashMap<>();

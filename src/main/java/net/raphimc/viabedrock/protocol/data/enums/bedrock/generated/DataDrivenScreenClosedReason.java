@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum DataDrivenScreenClosedReason {
 
-    ProgrammaticClose(0),
-    ProgrammaticCloseAll(1),
-    ClientCanceled(2),
-    UserBusy(3),
-    InvalidForm(4),
+    programmaticclose(0),
+    programmaticcloseall(1),
+    clientcanceled(2),
+    userbusy(3),
+    invalidform(4),
     ;
 
     private static final Int2ObjectMap<DataDrivenScreenClosedReason> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ServerEditorConnectionPolicy {
 
-    MatchWorldType(0),
-    EditorOnly(1),
-    VanillaOnly(2),
-    Mixed(3),
+    matchworldtype(0),
+    editoronly(1),
+    vanillaonly(2),
+    mixed(3),
     ;
 
     private static final Int2ObjectMap<ServerEditorConnectionPolicy> BY_VALUE = new Int2ObjectOpenHashMap<>();

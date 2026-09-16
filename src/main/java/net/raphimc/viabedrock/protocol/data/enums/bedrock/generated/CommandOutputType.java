@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum CommandOutputType {
 
-    None(0),
-    LastOutput(1),
-    Silent(2),
-    AllOutput(3),
-    DataSet(4),
+    none(0),
+    lastoutput(1),
+    silent(2),
+    alloutput(3),
+    dataset(4),
     ;
 
     private static final Int2ObjectMap<CommandOutputType> BY_VALUE = new Int2ObjectOpenHashMap<>();

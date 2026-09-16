@@ -6,13 +6,13 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SharedTypes_v1_21_10_RandomDistributionType {
 
-    SingleValued(0),
-    Uniform(1),
-    Gaussian(2),
-    InverseGaussian(3),
-    FixedGrid(4),
-    JitteredGrid(5),
-    Triangle(6),
+    singlevalued(0),
+    uniform(1),
+    gaussian(2),
+    inversegaussian(3),
+    fixedgrid(4),
+    jitteredgrid(5),
+    triangle(6),
     ;
 
     private static final Int2ObjectMap<SharedTypes_v1_21_10_RandomDistributionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

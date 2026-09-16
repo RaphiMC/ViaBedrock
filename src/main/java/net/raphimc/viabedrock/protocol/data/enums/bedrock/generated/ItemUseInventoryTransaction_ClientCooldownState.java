@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ItemUseInventoryTransaction_ClientCooldownState {
 
-    Off(0),
-    On(1),
+    off(0),
+    on(1),
     ;
 
     private static final Int2ObjectMap<ItemUseInventoryTransaction_ClientCooldownState> BY_VALUE = new Int2ObjectOpenHashMap<>();

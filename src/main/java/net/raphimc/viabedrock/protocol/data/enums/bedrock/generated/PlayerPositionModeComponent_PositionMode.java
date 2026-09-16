@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PlayerPositionModeComponent_PositionMode {
 
-    Normal(0),
-    Respawn(1),
-    Teleport(2),
-    OnlyHeadRot(3),
+    normal(0),
+    respawn(1),
+    teleport(2),
+    onlyheadrot(3),
     ;
 
     private static final Int2ObjectMap<PlayerPositionModeComponent_PositionMode> BY_VALUE = new Int2ObjectOpenHashMap<>();

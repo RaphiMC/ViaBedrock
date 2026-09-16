@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ItemReleaseInventoryTransaction_ActionType {
 
-    Release(0),
-    Use(1),
+    release(0),
+    use(1),
     ;
 
     private static final Int2ObjectMap<ItemReleaseInventoryTransaction_ActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

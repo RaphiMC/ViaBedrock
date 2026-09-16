@@ -6,14 +6,14 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum BossBarColor {
 
-    PINK(0),
-    BLUE(1),
-    RED(2),
-    GREEN(3),
-    YELLOW(4),
-    PURPLE(5),
-    REBECCA_PURPLE(6),
-    WHITE(7),
+    pink(0),
+    blue(1),
+    red(2),
+    green(3),
+    yellow(4),
+    purple(5),
+    rebecca_purple(6),
+    white(7),
     ;
 
     private static final Int2ObjectMap<BossBarColor> BY_VALUE = new Int2ObjectOpenHashMap<>();

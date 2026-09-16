@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum persona_AnimationExpression {
 
-    Linear(0),
-    Blinking(1),
+    linear(0),
+    blinking(1),
     ;
 
     private static final Int2ObjectMap<persona_AnimationExpression> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum CodeBuilderStorageQueryOptions_Category {
 
-    None(0),
-    CodeStatus(1),
-    Instantiation(2),
+    none(0),
+    codestatus(1),
+    instantiation(2),
     ;
 
     private static final Int2ObjectMap<CodeBuilderStorageQueryOptions_Category> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SoftEnumUpdateType {
 
-    Add(0),
-    Remove(1),
-    Replace(2),
+    add(0),
+    remove(1),
+    replace(2),
     ;
 
     private static final Int2ObjectMap<SoftEnumUpdateType> BY_VALUE = new Int2ObjectOpenHashMap<>();

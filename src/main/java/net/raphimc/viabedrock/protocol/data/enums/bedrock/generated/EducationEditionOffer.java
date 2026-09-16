@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum EducationEditionOffer {
 
-    None(0),
-    RestOfWorld(1),
-    China_Deprecated(2),
+    none(0),
+    restofworld(1),
+    china_deprecated(2),
     ;
 
     private static final Int2ObjectMap<EducationEditionOffer> BY_VALUE = new Int2ObjectOpenHashMap<>();

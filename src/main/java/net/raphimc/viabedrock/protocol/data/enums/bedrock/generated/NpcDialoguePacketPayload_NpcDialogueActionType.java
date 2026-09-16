@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum NpcDialoguePacketPayload_NpcDialogueActionType {
 
-    Open(0),
-    Close(1),
+    open(0),
+    close(1),
     ;
 
     private static final Int2ObjectMap<NpcDialoguePacketPayload_NpcDialogueActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum RecipeUnlockingRequirement_UnlockingContext {
 
-    None(0),
-    AlwaysUnlocked(1),
-    PlayerInWater(2),
-    PlayerHasManyItems(3),
+    none(0),
+    alwaysunlocked(1),
+    playerinwater(2),
+    playerhasmanyitems(3),
     ;
 
     private static final Int2ObjectMap<RecipeUnlockingRequirement_UnlockingContext> BY_VALUE = new Int2ObjectOpenHashMap<>();

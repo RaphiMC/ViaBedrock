@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ClientboundDebugRendererPacketPayload_PayloadType {
 
-    Invalid(0),
-    ClearDebugMarkers(1),
-    AddDebugMarkerCube(2),
+    invalid(0),
+    cleardebugmarkers(1),
+    adddebugmarkercube(2),
     ;
 
     private static final Int2ObjectMap<ClientboundDebugRendererPacketPayload_PayloadType> BY_VALUE = new Int2ObjectOpenHashMap<>();

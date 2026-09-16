@@ -6,13 +6,13 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum Rotation {
 
-    None(0),
-    Rotate90(1),
-    Rotate180(2),
-    Rotate270(3),
-    Clockwise90(1),
-    Clockwise180(2),
-    CounterClockwise90(3),
+    none(0),
+    rotate90(1),
+    rotate180(2),
+    rotate270(3),
+    clockwise90(1),
+    clockwise180(2),
+    counterclockwise90(3),
     ;
 
     private static final Int2ObjectMap<Rotation> BY_VALUE = new Int2ObjectOpenHashMap<>();

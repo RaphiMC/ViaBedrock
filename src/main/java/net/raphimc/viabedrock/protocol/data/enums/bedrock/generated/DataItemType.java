@@ -6,16 +6,15 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum DataItemType {
 
-    Byte(0),
-    Short(1),
-    Int(2),
-    Float(3),
-    String(4),
-    CompoundTag(5),
-    Pos(6),
-    Int64(7),
-    Vec3(8),
-    Unknown(-1) // Added manually
+    byte(0),
+    short(1),
+    int(2),
+    float(3),
+    string(4),
+    compoundtag(5),
+    pos(6),
+    int64(7),
+    vec3(8),
     ;
 
     private static final Int2ObjectMap<DataItemType> BY_VALUE = new Int2ObjectOpenHashMap<>();

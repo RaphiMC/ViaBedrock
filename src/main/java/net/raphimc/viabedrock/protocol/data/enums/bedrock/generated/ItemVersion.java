@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ItemVersion {
 
-    Legacy(0),
-    DataDriven(1),
-    None(2),
+    legacy(0),
+    datadriven(1),
+    none(2),
     ;
 
     private static final Int2ObjectMap<ItemVersion> BY_VALUE = new Int2ObjectOpenHashMap<>();

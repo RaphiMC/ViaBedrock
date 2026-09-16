@@ -22,8 +22,8 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
-import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ClientboundConfigurationPackets1_21_9;
+import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundConfigurationPackets26_3;
+import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,7 +39,7 @@ public class KeepAliveTask implements Runnable {
                     if (!info.getChannel().isActive()) return;
 
                     try {
-                        final PacketWrapper keepAlive = PacketWrapper.create(info.getProtocolInfo().getServerState() == State.PLAY ? ClientboundPackets26_1.KEEP_ALIVE : ClientboundConfigurationPackets1_21_9.KEEP_ALIVE, info);
+                        final PacketWrapper keepAlive = PacketWrapper.create(info.getProtocolInfo().getServerState() == State.PLAY ? ClientboundPackets26_3.KEEP_ALIVE : ClientboundConfigurationPackets26_3.KEEP_ALIVE, info);
                         keepAlive.write(Types.LONG, ThreadLocalRandom.current().nextLong()); // id
                         keepAlive.send(BedrockProtocol.class);
                     } catch (Throwable e) {

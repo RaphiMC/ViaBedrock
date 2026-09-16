@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ItemStackRequestCereal_ItemDescriptorType {
 
-    Empty(0),
-    ItemName(1),
-    Molang(2),
-    ItemTag(3),
+    empty(0),
+    itemname(1),
+    molang(2),
+    itemtag(3),
     ;
 
     private static final Int2ObjectMap<ItemStackRequestCereal_ItemDescriptorType> BY_VALUE = new Int2ObjectOpenHashMap<>();

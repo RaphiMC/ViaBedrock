@@ -6,7 +6,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PositionTrackingDBClientRequestPacketPayload_Action {
 
-    Query(0),
+    query(0),
     ;
 
     private static final Int2ObjectMap<PositionTrackingDBClientRequestPacketPayload_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();

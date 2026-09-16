@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PlayerLocationPacketPayload_Type {
 
-    PLAYER_LOCATION_COORDINATES(0),
-    PLAYER_LOCATION_HIDE(1),
+    player_location_coordinates(0),
+    player_location_hide(1),
     ;
 
     private static final Int2ObjectMap<PlayerLocationPacketPayload_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();

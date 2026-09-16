@@ -6,12 +6,12 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum AttributeModifierOperation {
 
-    OPERATION_ADDITION(0),
-    OPERATION_MULTIPLY_BASE(1),
-    OPERATION_MULTIPLY_TOTAL(2),
-    OPERATION_CAP(3),
-    TOTAL_OPERATIONS(4),
-    OPERATION_INVALID(4),
+    operation_addition(0),
+    operation_multiply_base(1),
+    operation_multiply_total(2),
+    operation_cap(3),
+    total_operations(4),
+    operation_invalid(4),
     ;
 
     private static final Int2ObjectMap<AttributeModifierOperation> BY_VALUE = new Int2ObjectOpenHashMap<>();

@@ -6,12 +6,12 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SharedTypes_Legacy_Difficulty {
 
-    Peaceful(0),
-    Easy(1),
-    Normal(2),
-    Hard(3),
-    Count(4),
-    Unknown(5),
+    peaceful(0),
+    easy(1),
+    normal(2),
+    hard(3),
+    count(4),
+    unknown(5),
     ;
 
     private static final Int2ObjectMap<SharedTypes_Legacy_Difficulty> BY_VALUE = new Int2ObjectOpenHashMap<>();

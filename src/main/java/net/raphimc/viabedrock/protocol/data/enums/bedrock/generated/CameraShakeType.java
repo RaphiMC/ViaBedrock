@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum CameraShakeType {
 
-    Positional(0),
-    Rotational(1),
+    positional(0),
+    rotational(1),
     ;
 
     private static final Int2ObjectMap<CameraShakeType> BY_VALUE = new Int2ObjectOpenHashMap<>();

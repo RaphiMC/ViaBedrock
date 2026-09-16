@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ScorePacketEntryAction {
 
-    Remove(0),
-    ChangePlayer(1),
-    ChangeEntity(2),
-    ChangeFakePlayer(3),
+    remove(0),
+    changeplayer(1),
+    changeentity(2),
+    changefakeplayer(3),
     ;
 
     private static final Int2ObjectMap<ScorePacketEntryAction> BY_VALUE = new Int2ObjectOpenHashMap<>();

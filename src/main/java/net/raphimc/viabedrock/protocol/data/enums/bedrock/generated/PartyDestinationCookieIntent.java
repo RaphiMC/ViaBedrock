@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PartyDestinationCookieIntent {
 
-    Notify(0),
-    OptIn(1),
-    OptOut(2),
+    notify(0),
+    optin(1),
+    optout(2),
     ;
 
     private static final Int2ObjectMap<PartyDestinationCookieIntent> BY_VALUE = new Int2ObjectOpenHashMap<>();

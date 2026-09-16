@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ClientboundTextureShiftPacketPayload_Action {
 
-    Invalid(0),
-    Initialize(1),
-    Start(2),
-    SetEnabled(3),
-    Sync(4),
+    invalid(0),
+    initialize(1),
+    start(2),
+    setenabled(3),
+    sync(4),
     ;
 
     private static final Int2ObjectMap<ClientboundTextureShiftPacketPayload_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();

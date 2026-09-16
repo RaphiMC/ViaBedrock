@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum LessonAction {
 
-    Start(0),
-    Complete(1),
-    Restart(2),
+    start(0),
+    complete(1),
+    restart(2),
     ;
 
     private static final Int2ObjectMap<LessonAction> BY_VALUE = new Int2ObjectOpenHashMap<>();

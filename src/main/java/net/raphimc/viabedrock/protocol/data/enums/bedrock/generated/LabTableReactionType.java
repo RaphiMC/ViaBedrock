@@ -6,19 +6,19 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum LabTableReactionType {
 
-    None(0),
-    IceBomb(1),
-    Bleach(2),
-    ElephantToothpaste(3),
-    Fertilizer(4),
-    HeatBlock(5),
-    MagnesiumSalts(6),
-    MiscFire(7),
-    MiscExplosion(8),
-    MiscLava(9),
-    MiscMystical(10),
-    MiscSmoke(11),
-    MiscLargeSmoke(12),
+    none(0),
+    icebomb(1),
+    bleach(2),
+    elephanttoothpaste(3),
+    fertilizer(4),
+    heatblock(5),
+    magnesiumsalts(6),
+    miscfire(7),
+    miscexplosion(8),
+    misclava(9),
+    miscmystical(10),
+    miscsmoke(11),
+    misclargesmoke(12),
     ;
 
     private static final Int2ObjectMap<LabTableReactionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

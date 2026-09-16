@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ItemUseInventoryTransaction_ActionType {
 
-    Place(0),
-    Use(1),
-    Destroy(2),
-    Use_As_Attack(3),
+    place(0),
+    use(1),
+    destroy(2),
+    use_as_attack(3),
     ;
 
     private static final Int2ObjectMap<ItemUseInventoryTransaction_ActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

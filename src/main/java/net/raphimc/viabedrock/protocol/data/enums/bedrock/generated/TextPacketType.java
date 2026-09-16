@@ -10,14 +10,14 @@ public enum TextPacketType {
     chat(1),
     translate(2),
     popup(3),
-    jukeboxPopup(4),
+    jukeboxpopup(4),
     tip(5),
-    systemMessage(6),
+    systemmessage(6),
     whisper(7),
     announcement(8),
-    textObjectWhisper(9),
-    textObject(10),
-    textObjectAnnouncement(11),
+    textobjectwhisper(9),
+    textobject(10),
+    textobjectannouncement(11),
     ;
 
     private static final Int2ObjectMap<TextPacketType> BY_VALUE = new Int2ObjectOpenHashMap<>();

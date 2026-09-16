@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ItemUseOnActorInventoryTransaction_ActionType {
 
-    Interact(0),
-    Attack(1),
-    Item_Interact(2),
+    interact(0),
+    attack(1),
+    item_interact(2),
     ;
 
     private static final Int2ObjectMap<ItemUseOnActorInventoryTransaction_ActionType> BY_VALUE = new Int2ObjectOpenHashMap<>();

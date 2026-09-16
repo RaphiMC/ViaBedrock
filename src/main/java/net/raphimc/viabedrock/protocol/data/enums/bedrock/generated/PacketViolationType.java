@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum PacketViolationType {
 
-    Unknown(-1),
-    PacketMalformed(0),
+    unknown(-1),
+    packetmalformed(0),
     ;
 
     private static final Int2ObjectMap<PacketViolationType> BY_VALUE = new Int2ObjectOpenHashMap<>();

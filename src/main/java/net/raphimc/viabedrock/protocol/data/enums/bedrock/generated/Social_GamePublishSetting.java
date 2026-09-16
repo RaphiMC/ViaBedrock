@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum Social_GamePublishSetting {
 
-    NoMultiPlay(0),
-    InviteOnly(1),
-    FriendsOnly(2),
-    FriendsOfFriends(3),
-    Public(4),
+    nomultiplay(0),
+    inviteonly(1),
+    friendsonly(2),
+    friendsoffriends(3),
+    public(4),
     ;
 
     private static final Int2ObjectMap<Social_GamePublishSetting> BY_VALUE = new Int2ObjectOpenHashMap<>();

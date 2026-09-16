@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum ActorLinkType {
 
-    None(0),
-    Riding(1),
-    Passenger(2),
+    none(0),
+    riding(1),
+    passenger(2),
     ;
 
     private static final Int2ObjectMap<ActorLinkType> BY_VALUE = new Int2ObjectOpenHashMap<>();

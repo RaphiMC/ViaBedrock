@@ -6,15 +6,15 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SetTitlePacketPayload_TitleType {
 
-    Clear(0),
-    Reset(1),
-    Title(2),
-    Subtitle(3),
-    Actionbar(4),
-    Times(5),
-    TitleTextObject(6),
-    SubtitleTextObject(7),
-    ActionbarTextObject(8),
+    clear(0),
+    reset(1),
+    title(2),
+    subtitle(3),
+    actionbar(4),
+    times(5),
+    titletextobject(6),
+    subtitletextobject(7),
+    actionbartextobject(8),
     ;
 
     private static final Int2ObjectMap<SetTitlePacketPayload_TitleType> BY_VALUE = new Int2ObjectOpenHashMap<>();

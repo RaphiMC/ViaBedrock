@@ -6,10 +6,10 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SimpleEventPacketPayload_Subtype {
 
-    UninitializedSubtype(0),
-    EnableCommands(1),
-    DisableCommands(2),
-    UnlockWorldTemplateSettings(3),
+    uninitializedsubtype(0),
+    enablecommands(1),
+    disablecommands(2),
+    unlockworldtemplatesettings(3),
     ;
 
     private static final Int2ObjectMap<SimpleEventPacketPayload_Subtype> BY_VALUE = new Int2ObjectOpenHashMap<>();

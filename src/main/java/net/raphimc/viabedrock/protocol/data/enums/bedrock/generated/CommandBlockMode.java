@@ -6,9 +6,9 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum CommandBlockMode {
 
-    Normal(0),
-    Repeating(1),
-    Chain(2),
+    normal(0),
+    repeating(1),
+    chain(2),
     ;
 
     private static final Int2ObjectMap<CommandBlockMode> BY_VALUE = new Int2ObjectOpenHashMap<>();

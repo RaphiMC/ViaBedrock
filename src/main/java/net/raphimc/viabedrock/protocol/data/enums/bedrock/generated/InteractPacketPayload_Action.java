@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum InteractPacketPayload_Action {
 
-    Invalid(0),
-    StopRiding(3),
-    InteractUpdate(4),
-    NpcOpen(5),
-    OpenInventory(6),
+    invalid(0),
+    stopriding(3),
+    interactupdate(4),
+    npcopen(5),
+    openinventory(6),
     ;
 
     private static final Int2ObjectMap<InteractPacketPayload_Action> BY_VALUE = new Int2ObjectOpenHashMap<>();

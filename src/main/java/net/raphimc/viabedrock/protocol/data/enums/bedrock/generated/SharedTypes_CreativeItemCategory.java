@@ -6,13 +6,13 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SharedTypes_CreativeItemCategory {
 
-    All(0),
-    Construction(1),
-    Nature(2),
-    Equipment(3),
-    Items(4),
-    ItemCommandOnly(5),
-    Undefined(6),
+    all(0),
+    construction(1),
+    nature(2),
+    equipment(3),
+    items(4),
+    itemcommandonly(5),
+    undefined(6),
     ;
 
     private static final Int2ObjectMap<SharedTypes_CreativeItemCategory> BY_VALUE = new Int2ObjectOpenHashMap<>();

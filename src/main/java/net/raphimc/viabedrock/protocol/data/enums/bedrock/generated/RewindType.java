@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum RewindType {
 
-    Player(0),
-    Vehicle(1),
+    player(0),
+    vehicle(1),
     ;
 
     private static final Int2ObjectMap<RewindType> BY_VALUE = new Int2ObjectOpenHashMap<>();

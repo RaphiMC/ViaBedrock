@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum AgentAnimation {
 
-    ArmSwing(0),
-    Shrug(1),
+    armswing(0),
+    shrug(1),
     ;
 
     private static final Int2ObjectMap<AgentAnimation> BY_VALUE = new Int2ObjectOpenHashMap<>();

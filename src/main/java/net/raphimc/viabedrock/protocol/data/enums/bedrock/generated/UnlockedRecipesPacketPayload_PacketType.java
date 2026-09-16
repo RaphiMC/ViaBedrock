@@ -6,11 +6,11 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum UnlockedRecipesPacketPayload_PacketType {
 
-    Empty(0),
-    InitiallyUnlockedRecipes(1),
-    NewlyUnlockedRecipes(2),
-    RemoveUnlockedRecipes(3),
-    RemoveAllUnlockedRecipes(4),
+    empty(0),
+    initiallyunlockedrecipes(1),
+    newlyunlockedrecipes(2),
+    removeunlockedrecipes(3),
+    removeallunlockedrecipes(4),
     ;
 
     private static final Int2ObjectMap<UnlockedRecipesPacketPayload_PacketType> BY_VALUE = new Int2ObjectOpenHashMap<>();

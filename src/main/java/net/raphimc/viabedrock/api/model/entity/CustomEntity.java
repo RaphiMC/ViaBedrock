@@ -22,13 +22,14 @@ import com.viaversion.viaversion.api.minecraft.Vector3d;
 import com.viaversion.viaversion.api.minecraft.Vector3f;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataContainer;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_3;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
+import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
+import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
 import net.raphimc.viabedrock.api.resourcepack.definition.EntityDefinitions;
@@ -75,7 +76,7 @@ public class CustomEntity extends Entity {
     private boolean spawned;
 
     public CustomEntity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final EntityDefinitions.EntityDefinition entityDefinition) {
-        super(user, uniqueId, runtimeId, type, javaId, UUID.randomUUID(), EntityTypes26_2.INTERACTION);
+        super(user, uniqueId, runtimeId, type, javaId, UUID.randomUUID(), EntityTypes26_3.INTERACTION);
         this.entityDefinition = entityDefinition;
 
         final MutableObjectBinding variableBinding = new MutableObjectBinding();
@@ -177,13 +178,13 @@ public class CustomEntity extends Entity {
             data.set(StructuredDataKey.ITEM_MODEL, CustomEntityResourceRewriter.getItemModel(this.entityDefinition.identifier()));
             data.set(StructuredDataKey.CUSTOM_MODEL_DATA1_21_4, CustomEntityResourceRewriter.getCustomModelData(model.key()));
             final StructuredItem item = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), 1, data);
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.ITEM_STACK), VersionedTypes.V26_2.entityDataTypes.itemType, item));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.ITEM_STACK), VersionedTypes.V26_3.entityDataTypes.itemType, item));
 
             final float scale = (float) resourcePackStorage.getConverterData().get("ce_" + converterKey + "_scale");
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.SCALE), VersionedTypes.V26_2.entityDataTypes.vector3FType, new Vector3f(scale, scale, scale)));
-            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.TRANSLATION), VersionedTypes.V26_2.entityDataTypes.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.SCALE), VersionedTypes.V26_3.entityDataTypes.vector3FType, new Vector3f(scale, scale, scale)));
+            javaEntityData.add(new EntityData(partEntity.getJavaEntityDataIndex(EntityDataFields.TRANSLATION), VersionedTypes.V26_3.entityDataTypes.vector3FType, new Vector3f(0F, scale * 0.5F, 0F)));
 
-            final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets26_1.ADD_ENTITY, this.user);
+            final PacketWrapper addEntity = PacketWrapper.create(ClientboundPackets26_3.ADD_ENTITY, this.user);
             addEntity.write(Types.VAR_INT, partEntity.javaId()); // entity id
             addEntity.write(Types.UUID, partEntity.javaUuid()); // uuid
             addEntity.write(Types.VAR_INT, partEntity.javaType().getId()); // type id
@@ -197,9 +198,9 @@ public class CustomEntity extends Entity {
             addEntity.write(Types.VAR_INT, 0); // data
             addEntity.send(BedrockProtocol.class);
 
-            final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets26_1.SET_ENTITY_DATA, this.user);
+            final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets26_3.SET_ENTITY_DATA, this.user);
             setEntityData.write(Types.VAR_INT, partEntity.javaId()); // entity id
-            setEntityData.write(VersionedTypes.V26_2.entityDataList, javaEntityData); // entity data
+            setEntityData.write(VersionedTypes.V26_3.entityDataList, javaEntityData); // entity data
             setEntityData.send(BedrockProtocol.class);
         }
     }
@@ -211,7 +212,7 @@ public class CustomEntity extends Entity {
             entityIds[i] = partEntities.get(i).javaId();
         }
         this.partEntities.clear();
-        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets26_1.REMOVE_ENTITIES, this.user);
+        final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets26_3.REMOVE_ENTITIES, this.user);
         removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, entityIds); // entity ids
         removeEntities.send(BedrockProtocol.class);
     }
@@ -311,11 +312,11 @@ public class CustomEntity extends Entity {
     private class ItemDisplayEntity extends Entity {
 
         public ItemDisplayEntity(final int javaId) {
-            super(CustomEntity.this.user, 0L, 0L, null, javaId, UUID.randomUUID(), EntityTypes26_2.ITEM_DISPLAY);
+            super(CustomEntity.this.user, 0L, 0L, null, javaId, UUID.randomUUID(), EntityTypes26_3.ITEM_DISPLAY);
         }
 
         public void updatePositionAndRotation() {
-            final PacketWrapper entityPositionSync = PacketWrapper.create(ClientboundPackets26_1.ENTITY_POSITION_SYNC, this.user);
+            final PacketWrapper entityPositionSync = PacketWrapper.create(ClientboundPackets26_3.ENTITY_POSITION_SYNC, this.user);
             entityPositionSync.write(Types.VAR_INT, this.javaId()); // entity id
             entityPositionSync.write(Types.DOUBLE, (double) CustomEntity.this.position.x()); // x
             entityPositionSync.write(Types.DOUBLE, (double) CustomEntity.this.position.y()); // y

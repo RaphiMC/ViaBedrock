@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum SharedTypes_v1_21_90_CameraPreset_AudioListener {
 
-    Camera(0),
-    Player(1),
+    camera(0),
+    player(1),
     ;
 
     private static final Int2ObjectMap<SharedTypes_v1_21_90_CameraPreset_AudioListener> BY_VALUE = new Int2ObjectOpenHashMap<>();

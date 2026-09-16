@@ -6,8 +6,8 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum HudVisibility {
 
-    Hide(0),
-    Reset(1),
+    hide(0),
+    reset(1),
     ;
 
     private static final Int2ObjectMap<HudVisibility> BY_VALUE = new Int2ObjectOpenHashMap<>();
