@@ -15,17 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.model.inventory;
+package net.raphimc.viabedrock.protocol.model.inventory;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-import java.util.List;
+/**
+ * Slot info inside an item stack request action.
+ * The stack network id is written as a little endian int; 0 means "no net id".
+ */
+public record ItemStackRequestSlot(FullContainerName containerName, byte slot, int netId) {
 
-public record BedrockInventoryTransaction(
-        int legacyRequestId,
-        List<LegacySetItemSlotData> legacySlots,
-        List<InventoryActionData> actions,
-        ComplexInventoryTransaction_Type transactionType,
-        InventoryTransactionData transactionData
-) {
+    public static ItemStackRequestSlot of(final FullContainerName containerName, final int slot, final int netId) {
+        return new ItemStackRequestSlot(containerName, (byte) slot, netId);
+    }
+
+    public static ItemStackRequestSlot inventorySlot(final int slot, final int netId) {
+        return of(FullContainerName.EMPTY, slot, netId);
+    }
+
 }

@@ -49,6 +49,7 @@ import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomItemTags;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.rewriter.item.BundleItemRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.item.ItemDataRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomAttachableResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
@@ -59,6 +60,7 @@ import net.raphimc.viabedrock.protocol.types.item.NetworkItemStackDescriptorType
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -69,6 +71,7 @@ public class ItemRewriter extends StoredObject {
 
     private final BiMap<String, Integer> items;
     private final Set<String> componentItems;
+    private final Map<String, ItemEntry> itemEntries;
     private final Int2ObjectMap<IntSortedSet> blockItemValidBlockStates;
     private final Type<BedrockItem> itemType;
     private final Type<BedrockItem> optionalItemType;
@@ -87,9 +90,11 @@ public class ItemRewriter extends StoredObject {
 
         this.items = HashBiMap.create(itemEntries.length);
         this.componentItems = new HashSet<>();
+        this.itemEntries = new HashMap<>(itemEntries.length);
         for (ItemEntry itemEntry : itemEntries) {
             this.items.inverse().remove(itemEntry.id());
             this.items.put(itemEntry.identifier(), itemEntry.id());
+            this.itemEntries.put(itemEntry.identifier(), itemEntry);
             if (itemEntry.version() == ItemVersion.DataDriven || (itemEntry.version() == ItemVersion.None && itemEntry.componentBased())) {
                 this.componentItems.add(itemEntry.identifier());
             }
@@ -210,6 +215,22 @@ public class ItemRewriter extends StoredObject {
             javaItem = new StructuredItem(BedrockProtocol.MAPPINGS.getJavaItems().get("minecraft:paper"), bedrockItem.amount(), data);
         }
 
+        // Data-driven component-based items: translate the common component subset
+        final ItemEntry itemEntry = this.itemEntries.get(identifier);
+        if (itemEntry != null && itemEntry.componentData() != null && !itemEntry.componentData().isEmpty()) {
+            final CompoundTag entryComponentData = itemEntry.componentData();
+            final StructuredDataContainer entryData = javaItem.dataContainer();
+            if (entryComponentData.getCompoundTag("minecraft:display_name") != null && entryComponentData.getCompoundTag("minecraft:display_name").get("value") instanceof StringTag displayNameValue) {
+                entryData.set(StructuredDataKey.ITEM_NAME, TextUtil.stringToNbt(this.user().get(ResourcePackStorage.class).getTexts().translate(displayNameValue.getValue())));
+            }
+            if (entryComponentData.getCompoundTag("minecraft:durability") != null && entryComponentData.getCompoundTag("minecraft:durability").get("max_durability") instanceof IntTag maxDurability) {
+                entryData.set(StructuredDataKey.MAX_DAMAGE, maxDurability.asInt());
+            }
+            if (entryComponentData.getCompoundTag("minecraft:max_stack_size") != null && entryComponentData.getCompoundTag("minecraft:max_stack_size").get("value") instanceof IntTag maxStackSizeValue) {
+                entryData.set(StructuredDataKey.MAX_STACK_SIZE, maxStackSizeValue.asInt());
+            }
+        }
+
         final CompoundTag bedrockTag = bedrockItem.tag();
         if (bedrockTag != null) {
             if (bedrockTag.get("display") instanceof CompoundTag display) {
@@ -219,8 +240,10 @@ public class ItemRewriter extends StoredObject {
             }
         }
 
+        ItemDataRewriter.toJava(this.user(), bedrockItem, bedrockTag, javaItem);
+
         if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-            ExperimentalItemRewriter.handleItem(this.user(), bedrockItem, bedrockTag, javaItem);
+            ExperimentalItemRewriter.handleItem(this.user(), bedrockItem, bedrockTag, javaItem); // Map items only
         }
 
         final String tag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(identifier);
@@ -281,7 +304,40 @@ public class ItemRewriter extends StoredObject {
     }
 
     public BedrockItem bedrockItem(final Item javaItem) {
-        throw new UnsupportedOperationException("Translating Java items to Bedrock is not yet supported");
+        if (javaItem == null || javaItem.isEmpty()) {
+            return BedrockItem.empty();
+        }
+
+        final List<BedrockMappingData.JavaToBedrockItemMapping> candidates = BedrockProtocol.MAPPINGS.getJavaToBedrockItems().get(javaItem.identifier());
+        if (candidates == null || candidates.isEmpty()) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing java -> bedrock item mapping for java id " + javaItem.identifier());
+            return BedrockItem.empty();
+        }
+
+        // The first candidate is the canonical mapping (sorted at load time)
+        final BedrockMappingData.JavaToBedrockItemMapping candidate = candidates.get(0);
+        final Integer bedrockId = this.items.get(candidate.bedrockIdentifier());
+        if (bedrockId == null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing item runtime id for " + candidate.bedrockIdentifier());
+            return BedrockItem.empty();
+        }
+
+        final short data = candidate.meta() == null ? 0 : candidate.meta().shortValue();
+        final int blockRuntimeId;
+        if (candidate.blockState() != null) {
+            blockRuntimeId = this.user().get(BlockStateRewriter.class).bedrockId(candidate.blockState());
+        } else {
+            final IntSortedSet validBlockStates = this.blockItemValidBlockStates.get(bedrockId);
+            if (validBlockStates != null) {
+                blockRuntimeId = validBlockStates.firstInt();
+            } else {
+                blockRuntimeId = 0;
+            }
+        }
+
+        final BedrockItem bedrockItem = new BedrockItem(bedrockId, data, (byte) javaItem.amount(), new CompoundTag(), new String[0], new String[0], 0, blockRuntimeId, null);
+        ItemDataRewriter.toBedrock(this.user(), javaItem, bedrockItem);
+        return bedrockItem;
     }
 
     public BedrockItem[] bedrockItems(final Item[] javaItems) {

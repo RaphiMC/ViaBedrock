@@ -15,9 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.model.inventory;
+package net.raphimc.viabedrock.protocol.model.inventory;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
+import net.raphimc.viabedrock.protocol.model.FullContainerName;
 
-public record LegacySetItemSlotData(ContainerEnumName container, byte[] slots) {
+import java.util.List;
+
+public record ItemStackResponse(int result, int requestId, List<Container> containers) {
+
+    public static final int RESULT_OK = 0;
+
+    public record Container(FullContainerName containerName, List<Slot> slots) {
+    }
+
+    public record Slot(byte requestedSlot, byte slot, byte amount, int serverNetId, String customName, String filteredCustomName, int durabilityCorrection) {
+    }
+
 }

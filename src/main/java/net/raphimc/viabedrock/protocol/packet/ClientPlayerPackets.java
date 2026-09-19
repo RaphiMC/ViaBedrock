@@ -17,8 +17,10 @@
  */
 package net.raphimc.viabedrock.protocol.packet;
 
+import com.viaversion.viaversion.api.minecraft.BlockFace;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.Vector3d;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
@@ -42,17 +44,25 @@ import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ItemUseInventoryTransaction_TriggerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.*;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.inventory.BedrockInventoryTransaction;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
+import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryTransactionData;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.InventoryTransactionRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.Locale;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -289,12 +299,14 @@ public class ClientPlayerPackets {
                     clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StopSprinting);
                 }
                 case START_FALL_FLYING -> {
-                    if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-                        clientPlayer.setGliding(true);
-                        clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartGliding);
-                    }
+                    clientPlayer.setGliding(true);
+                    clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartGliding);
                 }
-                default -> throw new IllegalStateException("Unhandled PlayerCommandAction: " + action);
+                // Riding jumps are driven by the Jumping input flag in PlayerAuthInput;
+                // the Bedrock server computes the jump scale from the held ticks itself
+                case START_RIDING_JUMP, STOP_RIDING_JUMP -> {
+                }
+                default -> ViaBedrock.getPlatform().getLogger().log(Level.FINE, "Unhandled PlayerCommandAction: " + action);
             }
         });
         protocol.registerServerbound(ServerboundPackets26_1.PLAYER_ACTION, null, wrapper -> {
@@ -302,6 +314,7 @@ public class ClientPlayerPackets {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+            final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
             final PlayerActionAction action = PlayerActionAction.values()[wrapper.read(Types.VAR_INT)]; // action
             final BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
             final Direction direction = Direction.values()[wrapper.read(Types.UNSIGNED_BYTE)]; // face
@@ -331,7 +344,7 @@ public class ClientPlayerPackets {
                 }
                 case ABORT_DESTROY_BLOCK -> {
                     clientPlayer.setBlockBreakingInfo(null);
-                    clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.AbortDestroyBlock, position, 0/*TODO: Figure this value out*/));
+                    clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.AbortDestroyBlock, position, direction.ordinal()));
                 }
                 case STOP_DESTROY_BLOCK -> {
                     clientPlayer.cancelNextSwingPacket();
@@ -340,23 +353,84 @@ public class ClientPlayerPackets {
                     if (!gameSession.isBlockBreakingServerAuthoritative()) {
                         clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.StopDestroyBlock));
                         clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.CrackBlock, position, direction.ordinal()));
-                        clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.AbortDestroyBlock, position, 0));
+                        clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.AbortDestroyBlock, position, direction.ordinal()));
                     } else {
                         clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.ContinueDestroyBlock, position, direction.ordinal()));
                         clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.PredictDestroyBlock, position, direction.ordinal()));
-                        clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.AbortDestroyBlock, position, 0));
+                        clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.AbortDestroyBlock, position, direction.ordinal()));
                     }
 
                     chunkTracker.handleBlockChange(position, 0, chunkTracker.bedrockAirId());
                     PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, ProtocolConstants.JAVA_AIR_ID);
                 }
-                case DROP_ALL_ITEMS, DROP_ITEM -> {
-                    // TODO: Implement DROP_ALL_ITEMS, DROP_ITEM (Currently experimental)
-                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
+                case DROP_ITEM, DROP_ALL_ITEMS -> {
+                    // Dropping items is done with a synthetic inventory transaction: a world interaction
+                    // creating the dropped item and an inventory action predicting the hotbar change
+                    final BedrockItem currentItem = inventoryContainer.getSelectedHotbarItem();
+                    if (currentItem.isEmpty()) {
+                        break;
+                    }
+
+                    final BedrockItem predictedAmount = currentItem.copy();
+                    if (action == PlayerActionAction.DROP_ITEM) {
+                        predictedAmount.setAmount(1); // Drop a single item
+                    } else {
+                        // DROP_ALL_ITEMS drops the whole stack
+                        predictedAmount.setAmount(currentItem.amount());
+                    }
+
+                    BedrockItem predictedToItem;
+                    if (action == PlayerActionAction.DROP_ITEM && currentItem.amount() > 1) {
+                        predictedToItem = currentItem.copy();
+                        predictedToItem.setAmount(currentItem.amount() - 1);
+                    } else {
+                        predictedToItem = BedrockItem.empty();
+                    }
+
+                    final BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+                            0, // legacy request id
+                            null,
+                            List.of(
+                                    new InventoryActionData(
+                                            new InventorySource(InventorySourceType.World_Interaction, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySource_InventorySourceFlags.No_Flag),
+                                            0,
+                                            BedrockItem.empty(),
+                                            predictedAmount
+                                    ),
+                                    new InventoryActionData(
+                                            new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.No_Flag),
+                                            inventoryContainer.getSelectedHotbarSlot(),
+                                            currentItem,
+                                            predictedToItem
+                                    )
+                            ),
+                            ComplexInventoryTransaction_Type.NormalTransaction,
+                            new InventoryTransactionData.NormalTransactionData()
+                    );
+
+                    final PacketWrapper transactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
+                    transactionPacket.write(wrapper.user().get(InventoryTransactionRewriter.class).getInventoryTransactionType(), inventoryTransaction);
+                    transactionPacket.sendToServer(BedrockProtocol.class);
                 }
                 case RELEASE_USE_ITEM -> {
-                    // TODO: Implement RELEASE_USE_ITEM
-                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
+                    clientPlayer.setBlockBreakingInfo(null);
+
+                    final BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+                            0, // legacy request id
+                            null,
+                            null,
+                            ComplexInventoryTransaction_Type.ItemReleaseTransaction,
+                            new InventoryTransactionData.ReleaseItemTransactionData(
+                                    ItemReleaseInventoryTransaction_ActionType.Release,
+                                    inventoryContainer.getSelectedHotbarSlot(),
+                                    inventoryContainer.getSelectedHotbarItem(),
+                                    clientPlayer.position()
+                            )
+                    );
+
+                    final PacketWrapper transactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
+                    transactionPacket.write(wrapper.user().get(InventoryTransactionRewriter.class).getInventoryTransactionType(), inventoryTransaction);
+                    transactionPacket.sendToServer(BedrockProtocol.class);
                 }
                 case SWAP_ITEM_WITH_OFFHAND, STAB -> {
                 }
@@ -408,6 +482,14 @@ public class ClientPlayerPackets {
                 return;
             }
 
+            // Right-clicking a rideable entity with the main hand mounts it in Java Edition.
+            // Bedrock clients mount by sending a passenger-initiated SetActorLink packet.
+            if (EntityPackets.isRideable(entity)) {
+                wrapper.cancel();
+                PacketFactory.sendBedrockMount(wrapper.user(), entity, entityTracker.getClientPlayer());
+                return;
+            }
+
             // TODO: Bedrock client sends INTERACT packet when hovered entity changes. Might be used by anticheats
 
             wrapper.write(BedrockTypes.VAR_INT, 0); // legacy request id
@@ -424,6 +506,144 @@ public class ClientPlayerPackets {
             final Vector3d location = wrapper.read(Types.LOW_PRECISION_VECTOR); // location
             wrapper.write(BedrockTypes.POSITION_3F, entity.position().add((float) location.x(), (float) location.y(), (float) location.z())); // click position
             wrapper.read(Types.BOOLEAN); // using secondary action
+        });
+        protocol.registerServerbound(ServerboundPackets26_1.USE_ITEM, ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper -> {
+            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+            final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
+            final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
+
+            final int hand = wrapper.read(Types.VAR_INT); // hand
+            wrapper.read(Types.VAR_INT); // sequence
+            wrapper.read(Types.FLOAT); // yaw
+            wrapper.read(Types.FLOAT); // pitch
+
+            // Bedrock can't hold the majority of items in offhand and can't use any either.
+            // TODO: We need to handle cases where the item changes, or it affects player movement (eg: eating/blocking/etc)
+            if (hand != InteractionHand.MAIN_HAND.ordinal()) {
+                wrapper.cancel();
+                return;
+            }
+
+            // Tell the server that the player started using an item (e.g. for eating/blocking state)
+            clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartUsingItem);
+
+            final BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+                    0, // legacy request id
+                    null,
+                    null,
+                    ComplexInventoryTransaction_Type.ItemUseTransaction,
+                    new InventoryTransactionData.UseItemTransactionData(
+                            ItemUseInventoryTransaction_ActionType.Use,
+                            ItemUseInventoryTransaction_TriggerType.PlayerInput,
+                            new BlockPosition(0, 0, 0), // block position
+                            255, // block face
+                            inventoryContainer.getSelectedHotbarSlot(),
+                            inventoryContainer.getSelectedHotbarItem(),
+                            clientPlayer.position(),
+                            Position3f.ZERO, // click position
+                            0, // block runtime id
+                            ItemUseInventoryTransaction_PredictedResult.Failure,
+                            ItemUseInventoryTransaction_ClientCooldownState.Off
+                    )
+            );
+            wrapper.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
+        });
+
+        protocol.registerServerbound(ServerboundPackets26_1.USE_ITEM_ON, null, wrapper -> {
+            wrapper.cancel();
+
+            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
+            final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
+
+            final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)]; // hand
+
+            BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
+            int faceInt = wrapper.read(Types.UNSIGNED_BYTE); // face
+            Direction direction = Direction.getFromVerticalId(faceInt);
+            if (direction == null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown block face id: " + faceInt);
+                return;
+            }
+            BlockFace face = direction.blockFace();
+            Position3f clickPosition = new Position3f(
+                    wrapper.read(Types.FLOAT), // x
+                    wrapper.read(Types.FLOAT), // y
+                    wrapper.read(Types.FLOAT)  // z
+            );
+            boolean insideBlock = wrapper.read(Types.BOOLEAN); // inside block
+            wrapper.read(Types.BOOLEAN); // world border, this doesn't exist on Bedrock.
+
+            // Send back block changed ack with the sequence, this will help with ghost blocks.
+            PacketFactory.sendJavaBlockChangedAck(wrapper.user(), wrapper.read(Types.VAR_INT));
+
+            // The player can only interact using the main hand on Bedrock!
+            if (hand != InteractionHand.MAIN_HAND) {
+                return;
+            }
+
+            // The bedrock client will send a start item use on action to the server first.
+            PacketFactory.sendBedrockPlayerAction(
+                    wrapper.user(),
+                    clientPlayer.runtimeId(),
+                    PlayerActionType.StartItemUseOn,
+                    position,
+                    insideBlock ? position : position.getRelative(face),
+                    faceInt
+            );
+
+            // This is the main packet that the bedrock client uses to interact with blocks
+            final PacketWrapper transactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
+
+            BedrockItem predictedToItem = inventoryTracker.getInventoryContainer().getSelectedHotbarItem().copy();
+            // This is not entirely correct, but at least it's more accurate than not sending actions or sending the original item data.
+            if (predictedToItem.blockRuntimeId() != 0 && clientPlayer.javaGameMode() != GameMode.CREATIVE) {
+                predictedToItem.setAmount(predictedToItem.amount() - 1);
+            }
+            if (predictedToItem.amount() <= 0) {
+                predictedToItem = BedrockItem.empty();
+            }
+
+            final BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+                    0, // legacy request id
+                    null,
+                    List.of(
+                            new InventoryActionData(
+                                    new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySource_InventorySourceFlags.No_Flag),
+                                    inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                                    inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
+                                    predictedToItem
+                            )
+                    ),
+                    ComplexInventoryTransaction_Type.ItemUseTransaction,
+                    new InventoryTransactionData.UseItemTransactionData(
+                            ItemUseInventoryTransaction_ActionType.Place,
+                            ItemUseInventoryTransaction_TriggerType.PlayerInput,
+                            position,
+                            faceInt,
+                            inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                            inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
+                            clientPlayer.position(),
+                            clickPosition,
+                            chunkTracker.getBlockState(position),
+                            ItemUseInventoryTransaction_PredictedResult.Success,
+                            ItemUseInventoryTransaction_ClientCooldownState.Off
+                    )
+            );
+            transactionPacket.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
+
+            transactionPacket.sendToServer(BedrockProtocol.class);
+
+            // Bedrock sends a stop item use on after the transaction packet
+            PacketFactory.sendBedrockPlayerAction(
+                    wrapper.user(),
+                    clientPlayer.runtimeId(),
+                    PlayerActionType.StopItemUseOn,
+                    position,
+                    new BlockPosition(0, 0, 0),
+                    0
+            );
         });
         protocol.registerServerbound(ServerboundPackets26_1.MOVE_PLAYER_STATUS_ONLY, null, wrapper -> {
             wrapper.cancel();
@@ -457,7 +677,8 @@ public class ClientPlayerPackets {
             clientPlayer.setInputFlags(inputFlags);
         });
         protocol.registerServerbound(ServerboundPackets26_1.CLIENT_TICK_END, ServerboundBedrockPackets.PLAYER_AUTH_INPUT, wrapper -> {
-            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
             final Position3f prevPosition = clientPlayer.prevPosition();
             final boolean prevOnGround = clientPlayer.prevOnGround();
             final Set<InputFlag> prevInputFlags = clientPlayer.prevInputFlags();
@@ -548,6 +769,23 @@ public class ClientPlayerPackets {
                 velocity = new Position3f(dx * 0.91F, dy * 0.98F, dz * 0.91F);
             }
 
+            // Client predicted vehicle: while riding, position/velocity are interpreted as the vehicle's.
+            // The input flags must be added before they get serialized below
+            final Entity vehicle = clientPlayer.mountEntityRId() != -1 ? entityTracker.getEntityByRid(clientPlayer.mountEntityRId()) : null;
+            if (vehicle != null) {
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.IsInClientPredictedVehicle);
+
+                // Paddle force mode: the oar states are implied from the movement input
+                if (vehicle.javaType().isOrHasParent(EntityTypes26_2.ABSTRACT_BOAT)) {
+                    if (clientPlayer.inputFlags().contains(InputFlag.JUMP) || clientPlayer.inputFlags().contains(InputFlag.LEFT) || clientPlayer.inputFlags().contains(InputFlag.FORWARD)) {
+                        clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.PaddlingLeft);
+                    }
+                    if (clientPlayer.inputFlags().contains(InputFlag.JUMP) || clientPlayer.inputFlags().contains(InputFlag.RIGHT) || clientPlayer.inputFlags().contains(InputFlag.FORWARD)) {
+                        clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.PaddlingRight);
+                    }
+                }
+            }
+
             wrapper.write(BedrockTypes.FLOAT_LE, clientPlayer.rotation().x()); // pitch
             wrapper.write(BedrockTypes.FLOAT_LE, clientPlayer.rotation().y()); // yaw
             wrapper.write(BedrockTypes.POSITION_3F, clientPlayer.position()); // position
@@ -582,10 +820,21 @@ public class ClientPlayerPackets {
                     wrapper.write(BedrockTypes.VAR_INT, blockAction.direction()); // facing
                 }
             }
+            // Client predicted vehicle: while riding, position/velocity are interpreted as the vehicle's
             wrapper.write(Types.BOOLEAN, true); // vehicle rotation optional reflected
-            wrapper.write(Types.BOOLEAN, false); // not in predicted vehicle
+            if (vehicle != null) {
+                wrapper.write(Types.BOOLEAN, true); // vehicle rotation present
+                wrapper.write(BedrockTypes.POSITION_2F, new Position2f(0F, clientPlayer.rotation().y())); // vehicle rotation (pitch, yaw)
+            } else {
+                wrapper.write(Types.BOOLEAN, false); // no vehicle rotation
+            }
             wrapper.write(Types.BOOLEAN, true); // predicted vehicle id optional reflected
-            wrapper.write(Types.BOOLEAN, false); // not in predicted vehicle
+            if (vehicle != null) {
+                wrapper.write(Types.BOOLEAN, true); // predicted vehicle id present
+                wrapper.write(BedrockTypes.VAR_LONG, vehicle.uniqueId()); // client predicted vehicle
+            } else {
+                wrapper.write(Types.BOOLEAN, false); // not in predicted vehicle
+            }
             wrapper.write(BedrockTypes.POSITION_2F, new Position2f(0F, 0F)); // analog move vector
             wrapper.write(BedrockTypes.POSITION_3F, MathUtil.calculateCameraOrientation(clientPlayer.rotation().y(), clientPlayer.rotation().x())); // camera orientation
             wrapper.write(BedrockTypes.POSITION_2F, MathUtil.calculateMovementDirections(clientPlayer.authInputData(), false)); // raw move vector

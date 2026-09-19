@@ -350,7 +350,7 @@ public class JoinPackets {
                     }
 
                     if (!inventoryServerAuthoritative) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.INFO, "This server uses client authoritative inventories. This is not supported yet.");
+                        ViaBedrock.getPlatform().getLogger().log(Level.FINE, "This server uses client authoritative inventories.");
                     }
 
                     gameSession.setBedrockVanillaVersion(version);

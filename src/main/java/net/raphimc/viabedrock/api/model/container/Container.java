@@ -115,6 +115,13 @@ public abstract class Container {
         return slot;
     }
 
+    /**
+     * Inverse of {@link #javaSlot(int)}: converts a Java slot number back to the Bedrock slot number.
+     */
+    public int bedrockSlot(final int javaSlot) {
+        return javaSlot;
+    }
+
     public byte javaContainerId() {
         return this.containerId();
     }

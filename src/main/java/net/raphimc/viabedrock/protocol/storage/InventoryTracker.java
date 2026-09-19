@@ -38,6 +38,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ModalFormCancelReason;
 import net.raphimc.viabedrock.protocol.data.generated.bedrock.CustomItemTags;
+import com.viaversion.viaversion.api.minecraft.item.Item;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -45,7 +46,9 @@ import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -61,8 +64,57 @@ public class InventoryTracker extends StoredObject {
     private Container pendingCloseContainer = null;
     private IntObjectPair<Form> currentForm = null;
 
+    // Item stack request bookkeeping (server-auth inventory)
+    private int nextItemStackRequestId = 1;
+    private final List<CreativeItem> creativeItems = new ArrayList<>();
+
     public InventoryTracker(final UserConnection user) {
         super(user);
+    }
+
+    /**
+     * Allocates the next item stack request id. The Bedrock server expects strictly increasing ids.
+     */
+    public int nextItemStackRequestId() {
+        return this.nextItemStackRequestId++;
+    }
+
+    /**
+     * One entry of the Bedrock creative content: the item and its creative net id (used by craft creative requests).
+     */
+    public record CreativeItem(BedrockItem item, int netId) {
+    }
+
+    public void setCreativeItems(final List<CreativeItem> creativeItems) {
+        this.creativeItems.clear();
+        this.creativeItems.addAll(creativeItems);
+    }
+
+    public List<CreativeItem> getCreativeItems() {
+        return this.creativeItems;
+    }
+
+    /**
+     * Finds the creative content index of the given Java item, or -1 if it's not in the creative content.
+     * Matches on item id + data only: the server's creative entries can have different block runtime ids
+     * and NBT nuances than locally synthesized items.
+     */
+    public int findCreativeItemIndex(final ItemRewriter itemRewriter, final Item javaItem) {
+        final BedrockItem bedrockItem = itemRewriter.bedrockItem(javaItem);
+        if (bedrockItem.isEmpty()) {
+            return -1;
+        }
+        for (int i = 0; i < this.creativeItems.size(); i++) {
+            final BedrockItem creativeItem = this.creativeItems.get(i).item();
+            if (creativeItem.identifier() == bedrockItem.identifier() && creativeItem.data() == bedrockItem.data()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int getCreativeItemNetId(final int index) {
+        return index >= 0 && index < this.creativeItems.size() ? this.creativeItems.get(index).netId() : 0;
     }
 
     public Container getContainerClientbound(final byte containerId, final FullContainerName containerName, final BedrockItem storageItem) {
@@ -70,7 +122,7 @@ public class InventoryTracker extends StoredObject {
         if (containerId == this.offhandContainer.containerId()) return this.offhandContainer;
         if (containerId == this.armorContainer.containerId()) return this.armorContainer;
         if (containerId == this.hudContainer.containerId()) return this.hudContainer;
-        if (containerId == ContainerID.CONTAINER_ID_REGISTRY.getValue() && containerName.name() == ContainerEnumName.DynamicContainer) {
+        if (containerId == ContainerID.CONTAINER_ID_REGISTRY.getValue() && containerName != null && containerName.name() == ContainerEnumName.DynamicContainer && storageItem != null) {
             final String itemTag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(this.user().get(ItemRewriter.class).getItems().inverse().get(storageItem.identifier()));
             if (!storageItem.isEmpty() && CustomItemTags.BUNDLE.equals(itemTag)) {
                 return this.dynamicContainerRegistry.computeIfAbsent(containerName, cn -> new BundleContainer(this.user(), cn));

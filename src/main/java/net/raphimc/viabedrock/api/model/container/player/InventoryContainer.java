@@ -88,6 +88,12 @@ public class InventoryContainer extends Container {
     }
 
     @Override
+    public int bedrockSlot(final int javaSlot) {
+        // Inverse of javaSlot: Java hotbar slots 36-44 map back to Bedrock hotbar slots 0-8
+        return javaSlot >= 36 ? javaSlot - 36 : javaSlot;
+    }
+
+    @Override
     public byte javaContainerId() {
         return (byte) ContainerID.CONTAINER_ID_INVENTORY.getValue();
     }

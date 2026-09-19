@@ -31,17 +31,17 @@ Here is an overview of the current and planned features in ViaBedrock.
 - [x] Player spawning
 - [x] Entity spawning
 - [x] Entity interactions
-- [ ] Entity metadata
+- [x] Entity metadata
 - [x] Entity attributes
-- [ ] Entity mounting
+- [x] Entity mounting
 - [x] Player abilities
 - [x] Movement
-- [ ] Client-Authoritative Inventory
-- [ ] Server-Authoritative Inventory
-- [ ] Item data
-- [ ] Block breaking
-- [ ] Block placing
-- [ ] Item use
+- [x] Client-Authoritative Inventory
+- [x] Server-Authoritative Inventory
+- [x] Item data
+- [x] Block breaking
+- [x] Block placing
+- [x] Item use
 - [x] Respawning and dimension switching
 - [x] Form GUIs
 - [x] Scoreboard
@@ -49,17 +49,23 @@ Here is an overview of the current and planned features in ViaBedrock.
 - [x] Bossbar
 - [x] Player list
 - [x] Command suggestions
-- [x] Sounds (No mob sounds yet)
+- [x] Sounds
+- [ ] Mob sounds
 - [x] Particles
+- [ ] Map item data
+- [ ] Recipe book
 - [x] Basic resource pack conversion (Contributions are welcome)
 
 ### Experimental
 Some features are experimental, which means they are almost certainly not fully stable/tested and may cause unexpected issues. To enable those features set `enable-experimental-features` to `true` in the config file.
 
-* Block placing
-* Item use
-* Entity metadata
-* Some item data
+* Map item data
+
+### Known limitations
+* Recipe book crafting (`CRAFTING_DATA` recipe net ids) is not translated yet; recipe-based crafting falls back to an inventory resync.
+* `CanPlaceOn`/`CanDestroy` adventure-mode predicates and entity properties (PropertySyncData) are not converted (missing Java block registry / resource pack property parsing).
+* Inventory clicks use simplified request translation (pickup/swap/throw/drop); drag-crafting (`QUICK_CRAFT`), double-click collection (`PICKUP_ALL`), shift-click quick-move and recipe-book usage fall back to an inventory resync.
+* Double chests are treated as single 27-slot chests; slots beyond the first half fall back to a resync.
 
 ## Optional clientside mods
 Below is a list of mods which can be used in combination with ViaBedrock to enhance certain aspects, which would not be possible without client modification:

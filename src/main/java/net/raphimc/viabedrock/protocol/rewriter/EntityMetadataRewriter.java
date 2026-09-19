@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.rewriter;
+package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.EulerAngle;
@@ -24,6 +24,7 @@ import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.Entity;
+import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
@@ -36,7 +37,7 @@ import java.util.logging.Level;
 
 public class EntityMetadataRewriter {
 
-    // Called in Entity#translateEntityData if experimental features are enabled
+    // Called in Entity#translateEntityData
     public static boolean rewrite(final UserConnection user, final Entity entity, final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
         EntityTracker entityTracker = user.get(EntityTracker.class);
 
@@ -110,9 +111,14 @@ public class EntityMetadataRewriter {
                 }
 
                 if (entity.javaType().is(EntityTypes26_2.SHEEP)) {
+                    // Combine sheared flag with the current wool color (Java stores both in one byte)
                     byte sheepBitMask = 0;
                     if (bedrockFlags.contains(ActorFlags.SHEARED)) {
                         sheepBitMask |= 0x10;
+                    }
+                    final EntityData storedColor = entity.entityData().get(ActorDataIDs.COLOR_INDEX);
+                    if (storedColor != null) {
+                        sheepBitMask |= (byte) (readNumber(storedColor).intValue() & 0x0F); // Lower 4 bits for color
                     }
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WOOL), VersionedTypes.V26_2.entityDataTypes().byteType, sheepBitMask));
                 }
@@ -304,9 +310,12 @@ public class EntityMetadataRewriter {
                     case WOLF, CAT -> {
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.COLLAR_COLOR), VersionedTypes.V26_2.entityDataTypes().varIntType, javaColorIndex));
                     }
-                    case SHEEP -> { // TODO: This seems to get overwritten by the entity flags sheared value, need to combine both
-                        byte sheepBitMask = 0;
-                        sheepBitMask |= (byte) (javaColorIndex & 0x0F); // Lower 4 bits for color
+                    case SHEEP -> {
+                        // Combine wool color with the current sheared flag (Java stores both in one byte)
+                        byte sheepBitMask = (byte) (javaColorIndex & 0x0F); // Lower 4 bits for color
+                        if (entity.entityFlags().contains(ActorFlags.SHEARED)) {
+                            sheepBitMask |= 0x10;
+                        }
                         javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WOOL), VersionedTypes.V26_2.entityDataTypes().byteType, sheepBitMask));
                     }
                     default -> {
@@ -554,7 +563,7 @@ public class EntityMetadataRewriter {
             }
             case DATA_WAITING -> {
                 if (entity.javaType().is(EntityTypes26_2.AREA_EFFECT_CLOUD)) {
-                    boolean isWaiting = (boolean) entityData.getValue();
+                    boolean isWaiting = readNumber(entityData).intValue() != 0;
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.WAITING), VersionedTypes.V26_2.entityDataTypes().booleanType, isWaiting));
                 } else {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received DATA_WAITING for non-AREA_EFFECT_CLOUD entity " + entity.type());
@@ -637,6 +646,38 @@ public class EntityMetadataRewriter {
                     javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.ATTACK_TARGET), VersionedTypes.V26_2.entityDataTypes().varIntType, targetEntity.javaId()));
                 } else if (targetId != 0)  {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received TARGET for non-GUARDIAN entity " + entity.type() + " with non-zero value " + targetId);
+                }
+            }
+            case NAME -> {
+                // Custom name tags, e.g. from name tags or renamed entities. An empty name clears the custom name
+                if (entityData.getValue() instanceof String name) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.CUSTOM_NAME), VersionedTypes.V26_2.entityDataTypes().optionalComponentType, name.isEmpty() ? null : TextUtil.textComponentToNbt(TextUtil.stringToTextComponent(name))));
+                }
+            }
+            case NAMETAG_ALWAYS_SHOW -> {
+                // Whether the nametag is always visible (Java: only if a custom name is set)
+                javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.CUSTOM_NAME_VISIBLE), VersionedTypes.V26_2.entityDataTypes().booleanType, readNumber(entityData).intValue() != 0));
+            }
+            case HURT -> {
+                // Bedrock sends the taken damage as long as the entity flashes red, Java stores the remaining red flash ticks
+                if (entity.javaType().isOrHasParent(EntityTypes26_2.LIVING_ENTITY)) {
+                    final int hurtTicks = readNumber(entityData).intValue() > 0 ? 10 : 0;
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.HURT), VersionedTypes.V26_2.entityDataTypes().varIntType, hurtTicks));
+                }
+            }
+            case HURT_DIR -> {
+                if (entity.javaType().isOrHasParent(EntityTypes26_2.LIVING_ENTITY)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.HURTDIR), VersionedTypes.V26_2.entityDataTypes().floatType, readNumber(entityData).floatValue()));
+                }
+            }
+            case EFFECT_COLOR -> {
+                if (entity.javaType().isOrHasParent(EntityTypes26_2.LIVING_ENTITY)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.EFFECT_COLOR), VersionedTypes.V26_2.entityDataTypes().varIntType, readNumber(entityData).intValue()));
+                }
+            }
+            case USING_ITEM -> {
+                if (entity.javaType().isOrHasParent(EntityTypes26_2.LIVING_ENTITY)) {
+                    javaEntityData.add(new EntityData(entity.getJavaEntityDataIndex(EntityDataFields.USING_ITEM), VersionedTypes.V26_2.entityDataTypes().booleanType, readNumber(entityData).intValue() != 0));
                 }
             }
             case AGENT, BALLOON_ANCHOR -> {} // Education edition only, ignore
