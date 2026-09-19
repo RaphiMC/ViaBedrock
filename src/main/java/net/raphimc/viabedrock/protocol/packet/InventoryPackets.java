@@ -67,18 +67,25 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ContainerType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.ContainerInput;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.FullContainerName;
+import net.raphimc.viabedrock.protocol.model.inventory.BedrockInventoryTransaction;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
+import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryTransactionData;
 import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.InventoryTransactionRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public class InventoryPackets {
@@ -88,6 +95,44 @@ public class InventoryPackets {
     private static final String DIALOG_FAKE_BUTTON_TEXT = "This is not actually a button, but has to be one because dialogs don't support adding text only elements. Clicking it has the same effect as closing the dialog.";
 
     public static void register(final BedrockProtocol protocol) {
+        protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_TRANSACTION, null, wrapper -> {
+            final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+
+            wrapper.cancel();
+            final BedrockInventoryTransaction inventoryTransaction = wrapper.read(inventoryTransactionRewriter.getInventoryTransactionType());
+
+            if (inventoryTransaction.legacyRequestId() != 0) {
+                // Ignore legacy inventory transactions for now
+                return;
+            }
+
+            if (inventoryTransaction.actions() != null && !inventoryTransaction.actions().isEmpty()) {
+                // Apply all container-inventory actions, then send one content packet per changed container
+                final List<Container> changedContainers = new ArrayList<>();
+                for (InventoryActionData action : inventoryTransaction.actions()) {
+                    if (action.source().type() == InventorySourceType.Container_Inventory) {
+                        final Container container = inventoryTracker.getContainerClientbound((byte) action.source().containerId(), null, null);
+
+                        if (container != null) {
+                            container.setItem(action.slot(), action.toItem());
+                            if (!changedContainers.contains(container)) {
+                                changedContainers.add(container);
+                            }
+                        } else {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received inventory action for unknown container ID: " + action.source().containerId());
+                        }
+                    }
+                }
+                for (Container container : changedContainers) {
+                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);
+                }
+            }
+
+            if (inventoryTransaction.transactionType() != ComplexInventoryTransaction_Type.NormalTransaction) {
+                ViaBedrock.getPlatform().getLogger().log(Level.FINE, "Received unsupported inventory transaction type: " + inventoryTransaction.transactionType());
+            }
+        });
         protocol.registerClientbound(ClientboundBedrockPackets.CONTAINER_OPEN, ClientboundPackets26_1.OPEN_SCREEN, wrapper -> {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = wrapper.user().get(BlockStateRewriter.class);
