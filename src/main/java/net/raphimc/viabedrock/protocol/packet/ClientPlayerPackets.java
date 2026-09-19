@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.Vector3d;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandler;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
@@ -289,12 +290,14 @@ public class ClientPlayerPackets {
                     clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StopSprinting);
                 }
                 case START_FALL_FLYING -> {
-                    if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-                        clientPlayer.setGliding(true);
-                        clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartGliding);
-                    }
+                    clientPlayer.setGliding(true);
+                    clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.StartGliding);
                 }
-                default -> throw new IllegalStateException("Unhandled PlayerCommandAction: " + action);
+                // Riding jumps are driven by the Jumping input flag in PlayerAuthInput;
+                // the Bedrock server computes the jump scale from the held ticks itself
+                case START_RIDING_JUMP, STOP_RIDING_JUMP -> {
+                }
+                default -> ViaBedrock.getPlatform().getLogger().log(Level.FINE, "Unhandled PlayerCommandAction: " + action);
             }
         });
         protocol.registerServerbound(ServerboundPackets26_1.PLAYER_ACTION, null, wrapper -> {
@@ -408,6 +411,14 @@ public class ClientPlayerPackets {
                 return;
             }
 
+            // Right-clicking a rideable entity with the main hand mounts it in Java Edition.
+            // Bedrock clients mount by sending a passenger-initiated SetActorLink packet.
+            if (EntityPackets.isRideable(entity)) {
+                wrapper.cancel();
+                PacketFactory.sendBedrockMount(wrapper.user(), entity, entityTracker.getClientPlayer());
+                return;
+            }
+
             // TODO: Bedrock client sends INTERACT packet when hovered entity changes. Might be used by anticheats
 
             wrapper.write(BedrockTypes.VAR_INT, 0); // legacy request id
@@ -457,7 +468,8 @@ public class ClientPlayerPackets {
             clientPlayer.setInputFlags(inputFlags);
         });
         protocol.registerServerbound(ServerboundPackets26_1.CLIENT_TICK_END, ServerboundBedrockPackets.PLAYER_AUTH_INPUT, wrapper -> {
-            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
+            final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
+            final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
             final Position3f prevPosition = clientPlayer.prevPosition();
             final boolean prevOnGround = clientPlayer.prevOnGround();
             final Set<InputFlag> prevInputFlags = clientPlayer.prevInputFlags();
@@ -548,6 +560,23 @@ public class ClientPlayerPackets {
                 velocity = new Position3f(dx * 0.91F, dy * 0.98F, dz * 0.91F);
             }
 
+            // Client predicted vehicle: while riding, position/velocity are interpreted as the vehicle's.
+            // The input flags must be added before they get serialized below
+            final Entity vehicle = clientPlayer.mountEntityRId() != -1 ? entityTracker.getEntityByRid(clientPlayer.mountEntityRId()) : null;
+            if (vehicle != null) {
+                clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.IsInClientPredictedVehicle);
+
+                // Paddle force mode: the oar states are implied from the movement input
+                if (vehicle.javaType().isOrHasParent(EntityTypes26_2.ABSTRACT_BOAT)) {
+                    if (clientPlayer.inputFlags().contains(InputFlag.JUMP) || clientPlayer.inputFlags().contains(InputFlag.LEFT) || clientPlayer.inputFlags().contains(InputFlag.FORWARD)) {
+                        clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.PaddlingLeft);
+                    }
+                    if (clientPlayer.inputFlags().contains(InputFlag.JUMP) || clientPlayer.inputFlags().contains(InputFlag.RIGHT) || clientPlayer.inputFlags().contains(InputFlag.FORWARD)) {
+                        clientPlayer.addAuthInputData(PlayerAuthInputPacketPayload_InputData.PaddlingRight);
+                    }
+                }
+            }
+
             wrapper.write(BedrockTypes.FLOAT_LE, clientPlayer.rotation().x()); // pitch
             wrapper.write(BedrockTypes.FLOAT_LE, clientPlayer.rotation().y()); // yaw
             wrapper.write(BedrockTypes.POSITION_3F, clientPlayer.position()); // position
@@ -582,10 +611,21 @@ public class ClientPlayerPackets {
                     wrapper.write(BedrockTypes.VAR_INT, blockAction.direction()); // facing
                 }
             }
+            // Client predicted vehicle: while riding, position/velocity are interpreted as the vehicle's
             wrapper.write(Types.BOOLEAN, true); // vehicle rotation optional reflected
-            wrapper.write(Types.BOOLEAN, false); // not in predicted vehicle
+            if (vehicle != null) {
+                wrapper.write(Types.BOOLEAN, true); // vehicle rotation present
+                wrapper.write(BedrockTypes.POSITION_2F, new Position2f(0F, clientPlayer.rotation().y())); // vehicle rotation (pitch, yaw)
+            } else {
+                wrapper.write(Types.BOOLEAN, false); // no vehicle rotation
+            }
             wrapper.write(Types.BOOLEAN, true); // predicted vehicle id optional reflected
-            wrapper.write(Types.BOOLEAN, false); // not in predicted vehicle
+            if (vehicle != null) {
+                wrapper.write(Types.BOOLEAN, true); // predicted vehicle id present
+                wrapper.write(BedrockTypes.VAR_LONG, vehicle.uniqueId()); // client predicted vehicle
+            } else {
+                wrapper.write(Types.BOOLEAN, false); // not in predicted vehicle
+            }
             wrapper.write(BedrockTypes.POSITION_2F, new Position2f(0F, 0F)); // analog move vector
             wrapper.write(BedrockTypes.POSITION_3F, MathUtil.calculateCameraOrientation(clientPlayer.rotation().y(), clientPlayer.rotation().x())); // camera orientation
             wrapper.write(BedrockTypes.POSITION_2F, MathUtil.calculateMovementDirections(clientPlayer.authInputData(), false)); // raw move vector
