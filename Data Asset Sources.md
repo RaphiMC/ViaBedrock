@@ -7,7 +7,7 @@ If a file is not listed here, it has been created manually and is updated manual
 [CloudburstMC/Data](https://github.com/CloudburstMC/Data/blob/a8a4341d7763d6eb8547cff3ca46b4153d60163d/stripped_biome_definitions.json)
 
 ### data/bedrock/biomes.json
-[Kaooot/bedrock-network-data](https://github.com/Kaooot/bedrock-network-data/blob/6abdab1f549ffafdd627f4d4de34709a0e981345/release/1.26.40/biomes.json)
+[axolotl-pm/BedrockData](https://github.com/axolotl-pm/BedrockData/blob/4d9723bc0c4ca86e679d753751574399334ceca4/biome_id_map.json)
 
 ### data/bedrock/block_id_meta_to_1_12_0_nbt.bin
 [PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/8b72c47109e174ac7f17c3ac546748f8e49a5fdf/id_meta_to_nbt/1.12.0.bin)
@@ -69,10 +69,10 @@ This file has been dumped from a vanilla server using a fabric mod.
 [ViaVersion/Mappings](https://github.com/ViaVersion/Mappings/blob/e999640a3742e87080972cf13b15e329d5fada32/mappings/mapping-26.3.json)
 
 ### block_state_upgrade_schema/*
-[PMMP/BedrockBlockUpgradeSchema](https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)
+[opencollab-incubator/BedrockBlockUpgradeSchema](https://github.com/opencollab-incubator/BedrockBlockUpgradeSchema/tree/master/nbt_upgrade_schema)
 
 ### item_upgrade_schema/*
-[PMMP/BedrockItemUpgradeSchema](https://github.com/pmmp/BedrockItemUpgradeSchema/tree/master/id_meta_upgrade_schema)
+[opencollab-incubator/BedrockItemUpgradeSchema](https://github.com/opencollab-incubator/BedrockItemUpgradeSchema/tree/master)
 
 ### resource_packs/*
 These files have been generated using `BedrockPacksGenerator` using data from the official bedrock client's assets folder.

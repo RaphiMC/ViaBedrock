@@ -1,0 +1,13 @@
+{
+    "maxVersionMajor": 1,
+    "maxVersionMinor": 21,
+    "maxVersionPatch": 60,
+    "maxVersionRevision": 33,
+    "addedProperties": {
+        "minecraft:potent_sulfur": {
+            "potent_sulfur_state": {
+                "string": "dry"
+            }
+        }
+    }
+}
