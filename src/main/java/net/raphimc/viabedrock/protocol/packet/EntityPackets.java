@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.packet;
 
 import com.google.common.collect.Lists;
 import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.Holder;
 import com.viaversion.viaversion.api.minecraft.PaintingVariant;
 import com.viaversion.viaversion.api.minecraft.Vector3d;
@@ -131,7 +132,15 @@ public class EntityPackets {
             if (entity instanceof LivingEntity livingEntity) {
                 livingEntity.updateAttributes(attributes);
             }
+            if (!entityProperties.isEmpty()) {
+                ViaBedrock.getPlatform().getLogger().log(Level.FINE, "Skipping " + entityProperties.intProperties().size() + " int and " + entityProperties.floatProperties().size() + " float entity properties for entity " + entity.type());
+            }
             entity.updateEntityData(entityData);
+
+            // Apply initial entity links (e.g. passengers riding on this entity)
+            for (EntityLink entityLink : entityLinks) {
+                handleEntityLink(wrapper.user(), entityLink);
+            }
         });
         protocol.registerClientbound(ClientboundBedrockPackets.ADD_ITEM_ENTITY, ClientboundPackets26_1.ADD_ENTITY, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
@@ -505,10 +514,20 @@ public class EntityPackets {
                 return;
             }
 
+            if (!entityProperties.isEmpty()) {
+                ViaBedrock.getPlatform().getLogger().log(Level.FINE, "Skipping " + entityProperties.intProperties().size() + " int and " + entityProperties.floatProperties().size() + " float entity properties for entity " + entity.type());
+            }
+
             final List<EntityData> javaEntityData = new ArrayList<>();
             entity.updateEntityData(entityData, javaEntityData);
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
             wrapper.write(VersionedTypes.V26_2.entityDataList, javaEntityData); // entity data
+        });
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_ENTITY_LINK, ClientboundPackets26_1.SET_PASSENGERS, wrapper -> {
+            wrapper.cancel();
+
+            final EntityLink entityLink = wrapper.read(BedrockTypes.ENTITY_LINK); // entity link
+            handleEntityLink(wrapper.user(), entityLink);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.MOB_EFFECT, ClientboundPackets26_1.UPDATE_MOB_EFFECT, wrapper -> {
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
@@ -638,6 +657,57 @@ public class EntityPackets {
             wrapper.write(Types.VAR_INT, collectorEntity.javaId()); // collector entity id
             wrapper.write(Types.VAR_INT, 0); // amount
         });
+    }
+
+    /**
+     * Heuristic check for entities that can be mounted by right-clicking them in Java Edition.
+     * The Java server normally decides rideability; this approximation covers all vanilla rideables
+     * and lets the Bedrock server reject invalid mount requests.
+     */
+    public static boolean isRideable(final Entity entity) {
+        final EntityTypes26_2 type = entity.javaType();
+        return type.isOrHasParent(EntityTypes26_2.ABSTRACT_BOAT)
+                || type.isOrHasParent(EntityTypes26_2.ABSTRACT_HORSE)
+                || type.isOrHasParent(EntityTypes26_2.ABSTRACT_MINECART)
+                || type == EntityTypes26_2.CAMEL
+                || type == EntityTypes26_2.CAMEL_HUSK
+                || type == EntityTypes26_2.STRIDER
+                || type == EntityTypes26_2.PIG
+                || type == EntityTypes26_2.HAPPY_GHAST;
+    }
+
+    /**
+     * Applies a Bedrock entity link (mount state change) to the tracked entities and
+     * notifies the Java client with an updated SET_PASSENGERS packet for the vehicle.
+     */    public static void handleEntityLink(final UserConnection user, final EntityLink entityLink) {
+        final EntityTracker entityTracker = user.get(EntityTracker.class);
+        final Entity vehicle = entityTracker.getEntityByUid(entityLink.fromEntityUniqueId());
+        final Entity passenger = entityTracker.getEntityByUid(entityLink.toEntityUniqueId());
+        if (vehicle == null || passenger == null) {
+            ViaBedrock.getPlatform().getLogger().log(Level.FINE, "Skipping entity link for untracked entities: " + entityLink);
+            return;
+        }
+
+        switch (entityLink.type()) {
+            case Riding -> { // Rider, ordered first in the Java SET_PASSENGERS packet
+                vehicle.addRider(passenger.uniqueId());
+                passenger.setMountEntityRId(vehicle.runtimeId());
+                vehicle.sendPassengerUpdate();
+            }
+            case Passenger -> {
+                vehicle.addPassenger(passenger.uniqueId());
+                passenger.setMountEntityRId(vehicle.runtimeId());
+                vehicle.sendPassengerUpdate();
+            }
+            case None -> { // Dismount
+                vehicle.removePassenger(passenger.uniqueId());
+                passenger.clearMountState();
+                if (passenger instanceof ClientPlayerEntity clientPlayer) {
+                    clientPlayer.setRequestedDismount(false);
+                }
+                vehicle.sendPassengerUpdate();
+            }
+        }
     }
 
 }

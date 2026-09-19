@@ -15,17 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.types;
+package net.raphimc.viabedrock.protocol.model.inventory;
 
-import com.viaversion.viaversion.api.type.Type;
-import net.raphimc.viabedrock.experimental.model.inventory.*;
-import net.raphimc.viabedrock.experimental.types.inventory.*;
-import net.raphimc.viabedrock.protocol.types.BedrockTypes;
-import net.raphimc.viabedrock.protocol.types.array.ArrayType;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
-public class ExperimentalBedrockTypes {
-
-    public static final Type<LegacySetItemSlotData[]> LEGACY_SET_ITEM_SLOT_DATA = new ArrayType<>(new LegacySetItemSlotDataType(), BedrockTypes.UNSIGNED_VAR_INT);
-    public static final Type<InventorySource> INVENTORY_SOURCE = new InventorySourcePacketType();
-
+public record InventoryActionData(InventorySource source, int slot, BedrockItem fromItem, BedrockItem toItem) {
 }

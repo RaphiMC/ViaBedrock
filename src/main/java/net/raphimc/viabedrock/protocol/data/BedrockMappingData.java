@@ -47,6 +47,7 @@ import io.netty.buffer.Unpooled;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.api.chunk.blockstate.BlockStateUpgrader;
+
 import net.raphimc.viabedrock.api.item.ItemUpgrader;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
@@ -115,6 +116,7 @@ public class BedrockMappingData extends MappingDataBase {
     private Map<String, String> bedrockCustomItemTags;
     private Map<String, Map<BlockState, JavaItemMapping>> bedrockToJavaBlockItems;
     private Map<String, Map<Integer, JavaItemMapping>> bedrockToJavaMetaItems;
+    private Map<Integer, List<JavaToBedrockItemMapping>> javaToBedrockItems;
     private Map<ContainerType, Integer> bedrockToJavaContainers;
 
     // Entities
@@ -550,6 +552,27 @@ public class BedrockMappingData extends MappingDataBase {
                 if (!this.bedrockToJavaBlockItems.containsKey(bedrockIdentifier) && !this.bedrockToJavaMetaItems.containsKey(bedrockIdentifier)) {
                     throw new RuntimeException("Missing bedrock -> java item mapping for " + bedrockIdentifier);
                 }
+            }
+
+            // Build the java -> bedrock item reverse index
+            this.javaToBedrockItems = new HashMap<>();
+            for (Map.Entry<String, Map<BlockState, JavaItemMapping>> entry : this.bedrockToJavaBlockItems.entrySet()) {
+                for (Map.Entry<BlockState, JavaItemMapping> mapping : entry.getValue().entrySet()) {
+                    this.javaToBedrockItems.computeIfAbsent(mapping.getValue().id(), k -> new ArrayList<>()).add(new JavaToBedrockItemMapping(entry.getKey(), null, mapping.getKey(), mapping.getValue()));
+                }
+            }
+            for (Map.Entry<String, Map<Integer, JavaItemMapping>> entry : this.bedrockToJavaMetaItems.entrySet()) {
+                for (Map.Entry<Integer, JavaItemMapping> mapping : entry.getValue().entrySet()) {
+                    // The null meta key is the default mapping used when no explicit meta matches
+                    final Integer meta = mapping.getKey() == null ? 0 : mapping.getKey();
+                    this.javaToBedrockItems.computeIfAbsent(mapping.getValue().id(), k -> new ArrayList<>()).add(new JavaToBedrockItemMapping(entry.getKey(), meta, null, mapping.getValue()));
+                }
+            }
+            for (List<JavaToBedrockItemMapping> mappings : this.javaToBedrockItems.values()) {
+                mappings.sort(Comparator
+                        .comparing((JavaToBedrockItemMapping mapping) -> mapping.javaItemMapping().name() != null) // canonical mappings first (no display name override)
+                        .thenComparing(mapping -> mapping.blockState() == null) // block-state mappings before meta mappings
+                        .thenComparing(JavaToBedrockItemMapping::bedrockIdentifier));
             }
 
             final JsonArray javaMenusJson = javaViaMappingJson.get("menus").getAsJsonArray();
@@ -1146,6 +1169,10 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockToJavaMetaItems;
     }
 
+    public Map<Integer, List<JavaToBedrockItemMapping>> getJavaToBedrockItems() {
+        return this.javaToBedrockItems;
+    }
+
     public Map<ContainerType, Integer> getBedrockToJavaContainers() {
         return this.bedrockToJavaContainers;
     }
@@ -1406,6 +1433,13 @@ public class BedrockMappingData extends MappingDataBase {
     }
 
     public record JavaItemMapping(int id, String identifier, String name, CompoundTag overrideTag) {
+    }
+
+    /**
+     * One way to construct a Bedrock item from a Java item. Multiple candidates may exist per Java id
+     * (different block states / metas); the list is sorted so the first entry is the canonical mapping.
+     */
+    public record JavaToBedrockItemMapping(String bedrockIdentifier, Integer meta, BlockState blockState, JavaItemMapping javaItemMapping) {
     }
 
 }

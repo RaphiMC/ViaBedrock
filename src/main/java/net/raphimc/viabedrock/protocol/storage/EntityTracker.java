@@ -38,6 +38,7 @@ import net.raphimc.viabedrock.api.model.entity.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -106,6 +107,23 @@ public class EntityTracker extends StoredObject {
             throw new IllegalArgumentException("Cannot remove client player entity");
         }
 
+        // Clean up mount state: detach this entity from its vehicle and its own passengers
+        if (entity.mountEntityRId() != -1) {
+            final Entity vehicle = this.getEntityByRid(entity.mountEntityRId());
+            if (vehicle != null) {
+                vehicle.removePassenger(entity.uniqueId());
+                vehicle.sendPassengerUpdate();
+            }
+            entity.clearMountState();
+        }
+        for (long passengerUid : entity.passengers()) {
+            final Entity passenger = this.getEntityByUid(passengerUid);
+            if (passenger != null) {
+                passenger.clearMountState();
+            }
+        }
+        entity.clearPassengers();
+
         this.entities.remove(entity.uniqueId());
         this.runtimeIdToUniqueId.remove(entity.runtimeId());
         this.javaIdToUniqueId.remove(entity.javaId());
@@ -166,17 +184,28 @@ public class EntityTracker extends StoredObject {
     }
 
     public void prepareForRespawn() {
-        for (Entity entity : this.entities.values()) {
+        // The client player entity persists across respawn: reset its mount state, since
+        // the vehicles it was riding on are about to be removed
+        if (this.clientPlayerEntity != null) {
+            this.clientPlayerEntity.clearMountState();
+            this.clientPlayerEntity.clearPassengers();
+        }
+        for (Iterator<Entity> iterator = this.entities.values().iterator(); iterator.hasNext(); ) {
+            final Entity entity = iterator.next();
+            if (entity == this.clientPlayerEntity) {
+                continue;
+            }
+            iterator.remove();
+            this.runtimeIdToUniqueId.remove(entity.runtimeId());
+            this.javaIdToUniqueId.remove(entity.javaId());
             entity.remove();
         }
+        this.itemFrames.clear();
     }
 
     public Entity getEntityByRid(final long runtimeId) {
-        Long uniqueId = this.runtimeIdToUniqueId.get(runtimeId);
-        if (uniqueId == null) {
-            return null;
-        }
-        return this.entities.get(uniqueId.longValue());
+        final Long uniqueId = this.runtimeIdToUniqueId.get(runtimeId);
+        return uniqueId != null ? this.entities.get(uniqueId.longValue()) : null;
     }
 
     public Entity getEntityByUid(final long uniqueId) {
@@ -184,7 +213,8 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity getEntityByJid(final int javaId) {
-        return this.entities.get((long) this.javaIdToUniqueId.get(javaId));
+        final Long uniqueId = this.javaIdToUniqueId.get(javaId);
+        return uniqueId != null ? this.entities.get(uniqueId.longValue()) : null;
     }
 
     public ClientPlayerEntity getClientPlayer() {

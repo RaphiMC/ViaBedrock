@@ -26,7 +26,6 @@ import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
-import net.raphimc.viabedrock.experimental.rewriter.EntityMetadataRewriter;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
@@ -34,6 +33,8 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.DataItemType;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.BossEventOperationType;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.rewriter.EntityMetadataRewriter;
+import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataTypesBedrock;
 
@@ -65,7 +66,7 @@ public class Entity {
     protected int age;
     protected boolean hasBossBar;
 
-    // Mounting
+    // Mounting. Note: the passengers list stores Bedrock entity unique IDs, not runtime IDs
     protected List<Long> passengers = new ArrayList<>();
     protected long mountRuntimeId = -1;
 
@@ -116,8 +117,7 @@ public class Entity {
             }
             this.entityData.put(dataId, data);
             if (!this.translateEntityData(dataId, data, javaEntityData)) {
-                // TODO: Log warning when entity data translation is fully implemented
-                // ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received unknown entity data: " + dataId + " for entity type: " + this.type);
+                ViaBedrock.getPlatform().getLogger().log(Level.FINE, "Received unsupported entity data: " + dataId + " for entity type: " + this.type);
             }
         }
         this.onEntityDataChanged();
@@ -223,14 +223,25 @@ public class Entity {
         this.hasBossBar = hasBossBar;
     }
 
-    public void addPassenger(final long passengerRuntimeId) {
-        if (!this.passengers.contains(passengerRuntimeId)) {
-            this.passengers.add(passengerRuntimeId);
+    public void addPassenger(final long passengerUniqueId) {
+        if (!this.passengers.contains(passengerUniqueId)) {
+            this.passengers.add(passengerUniqueId);
         }
     }
 
-    public void removePassenger(final long passengerRuntimeId) {
-        this.passengers.remove(passengerRuntimeId);
+    public void addRider(final long passengerUniqueId) {
+        if (!this.passengers.contains(passengerUniqueId)) {
+            // Riders are ordered first in the Java SET_PASSENGERS packet
+            this.passengers.add(0, passengerUniqueId);
+        }
+    }
+
+    public void removePassenger(final long passengerUniqueId) {
+        this.passengers.remove(passengerUniqueId);
+    }
+
+    public void clearPassengers() {
+        this.passengers.clear();
     }
 
     public List<Long> passengers() {
@@ -245,6 +256,26 @@ public class Entity {
         return this.mountRuntimeId;
     }
 
+    public void clearMountState() {
+        this.mountRuntimeId = -1;
+    }
+
+    /**
+     * Sends the current passenger list of this entity to the Java client.
+     * Passengers that are no longer tracked are dropped from the list first.
+     */
+    public void sendPassengerUpdate() {
+        final EntityTracker entityTracker = this.user.get(EntityTracker.class);
+        this.passengers.removeIf(passengerUid -> entityTracker.getEntityByUid(passengerUid) == null);
+        final PacketWrapper setPassengers = PacketWrapper.create(ClientboundPackets26_1.SET_PASSENGERS, this.user);
+        setPassengers.write(Types.VAR_INT, this.javaId); // vehicle
+        setPassengers.write(Types.VAR_INT, this.passengers.size()); // number of passengers
+        for (long passengerUid : this.passengers) {
+            setPassengers.write(Types.VAR_INT, entityTracker.getEntityByUid(passengerUid).javaId()); // passenger id
+        }
+        setPassengers.send(BedrockProtocol.class);
+    }
+
     public final int getJavaEntityDataIndex(final String fieldName) {
         final int index = BedrockProtocol.MAPPINGS.getJavaEntityDataFields().get(this.javaType).indexOf(fieldName);
         if (index == -1) {
@@ -254,11 +285,7 @@ public class Entity {
     }
 
     protected boolean translateEntityData(final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
-        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-            return EntityMetadataRewriter.rewrite(user, this, id, entityData, javaEntityData);
-        }
-
-        return false;
+        return EntityMetadataRewriter.rewrite(user, this, id, entityData, javaEntityData);
     }
 
     protected void onEntityDataChanged() {

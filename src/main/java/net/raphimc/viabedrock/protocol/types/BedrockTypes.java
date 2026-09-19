@@ -26,12 +26,16 @@ import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.Tag_Type;
 import net.raphimc.viabedrock.protocol.model.*;
+import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
+import net.raphimc.viabedrock.protocol.model.inventory.LegacySetItemSlotData;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 import net.raphimc.viabedrock.protocol.types.array.ByteArrayType;
 import net.raphimc.viabedrock.protocol.types.chunk.ChunkSectionType;
 import net.raphimc.viabedrock.protocol.types.chunk.DataPaletteType;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataType;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityPropertiesType;
+import net.raphimc.viabedrock.protocol.types.inventory.InventorySourcePacketType;
+import net.raphimc.viabedrock.protocol.types.inventory.LegacySetItemSlotDataType;
 import net.raphimc.viabedrock.protocol.types.model.*;
 import net.raphimc.viabedrock.protocol.types.position.BlockPositionType;
 import net.raphimc.viabedrock.protocol.types.position.Position2fType;
@@ -105,5 +109,7 @@ public class BedrockTypes {
     public static final Type<FullContainerName> FULL_CONTAINER_NAME = new FullContainerNameType();
     public static final Type<FullContainerName> OPTIONAL_FULL_CONTAINER_NAME = new OptionalType<>(FULL_CONTAINER_NAME);
     public static final Type<FullContainerName[]> FULL_CONTAINER_NAME_ARRAY = new ArrayType<>(FULL_CONTAINER_NAME, UNSIGNED_VAR_INT);
+    public static final Type<InventorySource> INVENTORY_SOURCE = new InventorySourcePacketType();
+    public static final Type<LegacySetItemSlotData[]> LEGACY_SET_ITEM_SLOT_DATA = new ArrayType<>(new LegacySetItemSlotDataType(), UNSIGNED_VAR_INT);
 
 }

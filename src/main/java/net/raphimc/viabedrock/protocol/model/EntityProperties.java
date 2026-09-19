@@ -21,4 +21,13 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2IntMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 
 public record EntityProperties(Int2IntMap intProperties, Int2ObjectMap<Float> floatProperties) {
+
+    /**
+     * Bedrock entity properties (PropertySyncData). The property indexes resolve against the
+     * property definitions of the entity's resource pack definition, which ViaBedrock does not
+     * parse yet, so the values are currently skipped.
+     */
+    public boolean isEmpty() {
+        return this.intProperties.isEmpty() && this.floatProperties.isEmpty();
+    }
 }

@@ -36,4 +36,18 @@ public class RegistryUtil {
         throw new IllegalArgumentException("Entry not found in registry");
     }
 
+    /**
+     * Returns the registry entry (identifier + value) at the given index, or null if out of bounds.
+     */
+    public static Map.Entry<String, Tag> getRegistryEntry(final CompoundTag registry, final int index) {
+        int i = 0;
+        for (Map.Entry<String, Tag> tagEntry : registry.entrySet()) {
+            if (i == index) {
+                return tagEntry;
+            }
+            i++;
+        }
+        return null;
+    }
+
 }
