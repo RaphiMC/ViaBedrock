@@ -13,6 +13,7 @@ val tool by sourceSets.creating {
 }
 
 repositories {
+    mavenLocal()
     maven {
         name = "ViaVersion"
         url = uri("https://repo.viaversion.com")
@@ -39,7 +40,6 @@ repositories {
         name = "OpenCollab"
         url = uri("https://repo.opencollab.dev/maven-snapshots/")
     }
-    mavenLocal()
 }
 
 dependencies {

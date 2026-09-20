@@ -161,15 +161,15 @@ public class OtherPlayerPackets {
             }
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+            wrapper.write(Types.VAR_INT, 1); // Stepped
+            wrapper.write(Types.VAR_INT, 1); // 1 step
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y() - entity.eyeOffset()); // y
             wrapper.write(Types.DOUBLE, (double) position.z()); // z
-            wrapper.write(Types.DOUBLE, 0D); // velocity x
-            wrapper.write(Types.DOUBLE, 0D); // velocity y
-            wrapper.write(Types.DOUBLE, 0D); // velocity z
+            wrapper.write(Types.VAR_INT, 3); // INTERPOLATION_STEP_TICKS
             wrapper.write(Types.FLOAT, rotation.y()); // yaw
             wrapper.write(Types.FLOAT, rotation.x()); // pitch
-            wrapper.write(Types.BOOLEAN, onGround); // on ground
+            wrapper.write(Types.BOOLEAN, entity.isOnGround()); // on ground
 
             PacketFactory.sendJavaRotateHead(wrapper.user(), entity);
         });

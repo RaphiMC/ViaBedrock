@@ -64,6 +64,7 @@ import java.util.logging.Level;
 
 public class EntityPackets {
 
+    private static final int INTERPOLATION_STEP_TICKS = 3;
     private static final float PAINTING_POS_OFFSET = -0.46875F;
     private static final SwingAnimation DEFAULT_SWING_ANIMATION = new SwingAnimation(EnumTypes.SWING_ANIMATION1_21_11.idFromName("whack"), 6);
 
@@ -205,12 +206,12 @@ public class EntityPackets {
                     entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
                 } else { // force move local entity
                     wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+                    wrapper.write(Types.VAR_INT, 1); // Stepped
+                    wrapper.write(Types.VAR_INT, 1); // 1 step
                     wrapper.write(Types.DOUBLE, (double) entity.position().x()); // x
                     wrapper.write(Types.DOUBLE, (double) entity.position().y() - entity.eyeOffset()); // y
                     wrapper.write(Types.DOUBLE, (double) entity.position().z()); // z
-                    wrapper.write(Types.DOUBLE, 0D); // velocity x
-                    wrapper.write(Types.DOUBLE, 0D); // velocity y
-                    wrapper.write(Types.DOUBLE, 0D); // velocity z
+                    wrapper.write(Types.VAR_INT, INTERPOLATION_STEP_TICKS);
                     wrapper.write(Types.FLOAT, entity.rotation().y()); // yaw
                     wrapper.write(Types.FLOAT, entity.rotation().x()); // pitch
                     wrapper.write(Types.BOOLEAN, entity.isOnGround()); // on ground
@@ -223,15 +224,15 @@ public class EntityPackets {
             entity.setOnGround(onGround);
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+            wrapper.write(Types.VAR_INT, 1); // Stepped
+            wrapper.write(Types.VAR_INT, 1); // 1 step
             wrapper.write(Types.DOUBLE, (double) position.x()); // x
             wrapper.write(Types.DOUBLE, (double) position.y() - entity.eyeOffset()); // y
             wrapper.write(Types.DOUBLE, (double) position.z()); // z
-            wrapper.write(Types.DOUBLE, 0D); // velocity x
-            wrapper.write(Types.DOUBLE, 0D); // velocity y
-            wrapper.write(Types.DOUBLE, 0D); // velocity z
+            wrapper.write(Types.VAR_INT, INTERPOLATION_STEP_TICKS);
             wrapper.write(Types.FLOAT, yaw); // yaw
             wrapper.write(Types.FLOAT, pitch); // pitch
-            wrapper.write(Types.BOOLEAN, onGround); // on ground
+            wrapper.write(Types.BOOLEAN, entity.isOnGround()); // on ground
 
             PacketFactory.sendJavaRotateHead(wrapper.user(), entity);
         });
@@ -255,6 +256,7 @@ public class EntityPackets {
             final boolean teleported = wrapper.read(Types.BOOLEAN); // If the position shouldn't be interpolated
             final boolean forceMoveLocalEntity = wrapper.read(Types.BOOLEAN);
             wrapper.read(Types.BOOLEAN); // force completion
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // ticks
 
             final Entity entity = entityTracker.getEntityByRid(entityRuntimeId);
             if (entity == null) {
@@ -275,12 +277,12 @@ public class EntityPackets {
                     entityTracker.getClientPlayer().writePlayerPositionPacketToClient(wrapper, Relative.union(Relative.ROTATION, Relative.VELOCITY), true);
                 } else { // force move local entity
                     wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+                    wrapper.write(Types.VAR_INT, 1); // Stepped
+                    wrapper.write(Types.VAR_INT, 1); // 1 step
                     wrapper.write(Types.DOUBLE, (double) entity.position().x()); // x
                     wrapper.write(Types.DOUBLE, (double) entity.position().y() - entity.eyeOffset()); // y
                     wrapper.write(Types.DOUBLE, (double) entity.position().z()); // z
-                    wrapper.write(Types.DOUBLE, 0D); // velocity x
-                    wrapper.write(Types.DOUBLE, 0D); // velocity y
-                    wrapper.write(Types.DOUBLE, 0D); // velocity z
+                    wrapper.write(Types.VAR_INT, INTERPOLATION_STEP_TICKS);
                     wrapper.write(Types.FLOAT, entity.rotation().y()); // yaw
                     wrapper.write(Types.FLOAT, entity.rotation().x()); // pitch
                     wrapper.write(Types.BOOLEAN, entity.isOnGround()); // on ground
@@ -310,12 +312,12 @@ public class EntityPackets {
             entity.setOnGround(onGround);
 
             wrapper.write(Types.VAR_INT, entity.javaId()); // entity id
+            wrapper.write(Types.VAR_INT, 1); // Stepped
+            wrapper.write(Types.VAR_INT, 1); // 1 step
             wrapper.write(Types.DOUBLE, (double) entity.position().x()); // x
             wrapper.write(Types.DOUBLE, (double) entity.position().y() - entity.eyeOffset()); // y
             wrapper.write(Types.DOUBLE, (double) entity.position().z()); // z
-            wrapper.write(Types.DOUBLE, 0D); // velocity x
-            wrapper.write(Types.DOUBLE, 0D); // velocity y
-            wrapper.write(Types.DOUBLE, 0D); // velocity z
+            wrapper.write(Types.VAR_INT, INTERPOLATION_STEP_TICKS);
             wrapper.write(Types.FLOAT, entity.rotation().y()); // yaw
             wrapper.write(Types.FLOAT, entity.rotation().x()); // pitch
             wrapper.write(Types.BOOLEAN, entity.isOnGround()); // on ground

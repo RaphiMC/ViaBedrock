@@ -328,11 +328,11 @@ public class WorldPackets {
                 final byte[] data = wrapper.read(Types.BOOLEAN) ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // optional data
                 final SubChunkPacketPayload_HeightMapDataType heightmapResult = SubChunkPacketPayload_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_HeightMapDataType.NoData); // heightmap result
                 if (wrapper.read(Types.BOOLEAN)) {
-                    wrapper.read(new ByteArrayType(256)); // optional heightmap data
+                    wrapper.read(new ByteArrayType(272)); // optional heightmap data
                 }
                 final SubChunkPacketPayload_HeightMapDataType renderHeightmapResult = SubChunkPacketPayload_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_HeightMapDataType.NoData); // render heightmap result
                 if (wrapper.read(Types.BOOLEAN)) {
-                    wrapper.read(new ByteArrayType(256)); // optional render heightmap data
+                    wrapper.read(new ByteArrayType(272)); // optional render heightmap data
                 }
 
                 final BlockPosition absolute = new BlockPosition(center.x() + offset.x(), center.y() + offset.y(), center.z() + offset.z());

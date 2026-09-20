@@ -318,15 +318,15 @@ public class CustomEntity extends Entity {
         public void updatePositionAndRotation() {
             final PacketWrapper entityPositionSync = PacketWrapper.create(ClientboundPackets26_3.ENTITY_POSITION_SYNC, this.user);
             entityPositionSync.write(Types.VAR_INT, this.javaId()); // entity id
+            entityPositionSync.write(Types.VAR_INT, 1); // Stepped
+            entityPositionSync.write(Types.VAR_INT, 1); // 1 step
             entityPositionSync.write(Types.DOUBLE, (double) CustomEntity.this.position.x()); // x
             entityPositionSync.write(Types.DOUBLE, (double) CustomEntity.this.position.y()); // y
             entityPositionSync.write(Types.DOUBLE, (double) CustomEntity.this.position.z()); // z
-            entityPositionSync.write(Types.DOUBLE, 0D); // velocity x
-            entityPositionSync.write(Types.DOUBLE, 0D); // velocity y
-            entityPositionSync.write(Types.DOUBLE, 0D); // velocity z
+            entityPositionSync.write(Types.VAR_INT, 3); // INTERPOLATION_STEP_TICKS
             entityPositionSync.write(Types.FLOAT, CustomEntity.this.rotation.y()); // yaw
             entityPositionSync.write(Types.FLOAT, CustomEntity.this.rotation.x()); // pitch
-            entityPositionSync.write(Types.BOOLEAN, CustomEntity.this.onGround); // on ground
+            entityPositionSync.write(Types.BOOLEAN, CustomEntity.this.isOnGround()); // on ground
             entityPositionSync.send(BedrockProtocol.class);
         }
 

@@ -117,8 +117,14 @@ public class WorldEffectPackets {
             final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
             final float volume = wrapper.read(BedrockTypes.FLOAT_LE); // volume
             final float pitch = wrapper.read(BedrockTypes.FLOAT_LE); // pitch
-            wrapper.read(BedrockTypes.VAR_INT); // Loop Count TODO: Loop handler
-            wrapper.read(BedrockTypes.OPTIONAL_UNSIGNED_LONG_LE); // server sound handle
+            wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // loop count
+            wrapper.read(Types.BOOLEAN); // bypass listener range check
+            if (wrapper.read(Types.BOOLEAN)) { // has server sound handle
+                wrapper.read(BedrockTypes.LONG_LE); // server sound handle
+            }
+            if (wrapper.read(Types.BOOLEAN)) { // has playback position
+                wrapper.read(BedrockTypes.FLOAT_LE); // playback position
+            }
 
             final BedrockMappingData.JavaSound javaSound = BedrockProtocol.MAPPINGS.getBedrockToJavaSounds().get(name);
             if (javaSound == null) {

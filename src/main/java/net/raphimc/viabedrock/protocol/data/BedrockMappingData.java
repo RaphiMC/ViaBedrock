@@ -242,7 +242,9 @@ public class BedrockMappingData extends MappingDataBase {
             for (Map.Entry<String, JsonElement> entry : bedrockToJavaBlockStateMappingsJson.entrySet()) {
                 final BlockState bedrockBlockState = BlockState.fromString(entry.getKey());
                 if (!this.bedrockBlockStates.contains(bedrockBlockState)) {
-                    throw new RuntimeException("Unknown bedrock block state: " + bedrockBlockState.toBlockStateString());
+                    // TODO
+                    //throw new RuntimeException("Unknown bedrock block state: " + bedrockBlockState.toBlockStateString());
+                    ViaBedrock.getPlatform().getLogger().warning("Unknown bedrock block state: " + bedrockBlockState.toBlockStateString() + " (skipping)");
                 }
                 final BlockState javaBlockState = BlockState.fromString(entry.getValue().getAsString());
                 if (!this.javaBlockStates.containsKey(javaBlockState)) {
@@ -1351,7 +1353,8 @@ public class BedrockMappingData extends MappingDataBase {
                     this.bedrockBlockStateUpgrader.upgradeToLatest(tag);
                     final BedrockBlockState bedrockBlockState = BedrockBlockState.fromNbt(tag);
                     if (!this.bedrockBlockStates.contains(bedrockBlockState)) {
-                        throw new RuntimeException("Legacy block state " + bedrockBlockState.toBlockStateString() + " is not mapped to a modern block state");
+                        // TODO
+                        //throw new RuntimeException("Legacy block state " + bedrockBlockState.toBlockStateString() + " is not mapped to a modern block state");
                     }
 
                     this.bedrockLegacyBlockStates.put(id << 6 | metadata & 63, bedrockBlockState);

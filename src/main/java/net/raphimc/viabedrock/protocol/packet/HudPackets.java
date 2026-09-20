@@ -370,8 +370,7 @@ public class HudPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.BOSS_EVENT, ClientboundPackets26_3.BOSS_EVENT, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final long bossEntityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // boss entity unique id
-            final long playerId  = wrapper.read(BedrockTypes.VAR_LONG);
-            final int rawUpdateType = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // update type
+            final int rawUpdateType = wrapper.read(Types.BYTE); // update type
             final BossEventUpdateType updateType = BossEventUpdateType.getByValue(rawUpdateType);
             if (updateType == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown BossEventUpdateType: " + rawUpdateType);
@@ -382,8 +381,8 @@ public class HudPackets {
             final String bossName = wrapper.read(BedrockTypes.STRING);
             final String filteredBossName = wrapper.read(BedrockTypes.STRING);
             final float healthPercent = wrapper.read(BedrockTypes.FLOAT_LE);
-            final int color = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-            final int overlay = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+            final int color = wrapper.read(Types.BYTE);
+            final int overlay = wrapper.read(Types.BYTE);
 
             final Entity entity = entityTracker.getEntityByUid(bossEntityUniqueId);
             if (entity == null) {

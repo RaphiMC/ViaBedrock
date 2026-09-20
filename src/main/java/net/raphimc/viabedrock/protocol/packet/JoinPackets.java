@@ -429,6 +429,7 @@ public class JoinPackets {
                         wrapper.read(BedrockTypes.VAR_INT); // generator type
                         wrapper.read(BedrockTypes.VAR_INT); // dimension type
                         wrapper.read(BedrockTypes.UUID); // pack id
+                        wrapper.read(BedrockTypes.STRING); // default biome
                         if (dimensionIdentifier.equals(Dimension.OVERWORLD.getKey())) { // Bedrock client currently only supports overworld
                             gameSession.putBedrockDimensionDefinition(dimensionIdentifier, new IntIntImmutablePair(minimumHeight, maximumHeight));
                         }
@@ -551,8 +552,8 @@ public class JoinPackets {
         joinGame.write(Types.VAR_INT, chunkTracker.getDimension().ordinal()); // dimension id
         joinGame.write(Types.STRING, chunkTracker.getDimension().getKey()); // dimension name
         joinGame.write(Types.LONG, 0L); // hashed seed
-        joinGame.write(Types.BYTE, (byte) clientPlayer.javaGameMode().ordinal()); // game mode
-        joinGame.write(Types.BYTE, (byte) -1); // previous game mode
+        joinGame.write(Types.VAR_INT, clientPlayer.javaGameMode().ordinal()); // game mode
+        joinGame.write(Types.OPTIONAL_VAR_INT, null); // previous game mode
         joinGame.write(Types.BOOLEAN, false); // is debug
         joinGame.write(Types.BOOLEAN, gameSession.isFlatGenerator()); // is flat
         joinGame.write(Types.OPTIONAL_GLOBAL_POSITION, null); // last death location

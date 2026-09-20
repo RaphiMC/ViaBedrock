@@ -52,7 +52,6 @@ public class BedrockTypes {
     public static final FloatLEType FLOAT_LE = new FloatLEType();
     public static final LongLEType LONG_LE = new LongLEType();
     public static final LongLEType UNSIGNED_LONG_LE = LONG_LE;
-    public static final Type<Long> OPTIONAL_UNSIGNED_LONG_LE = new OptionalType<>(UNSIGNED_LONG_LE);
 
     public static final VarIntType VAR_INT = new VarIntType();
     public static final UnsignedVarIntType UNSIGNED_VAR_INT = new UnsignedVarIntType();
