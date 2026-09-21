@@ -38,6 +38,7 @@ public interface InventoryTransactionData {
             BlockPosition blockPosition,
             int face,
             int hotbarSlot,
+            HandSlot handSlot,
             BedrockItem itemInHand,
             Position3f playerPosition,
             Position3f clickPosition,

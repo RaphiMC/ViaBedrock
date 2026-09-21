@@ -522,11 +522,11 @@ public class WorldPackets {
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = wrapper.user().get(BlockStateRewriter.class);
             final BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // position
-            final boolean front = wrapper.read(Types.BOOLEAN); // front
             final List<String> lines = new ArrayList<>(4);
             for (int i = 0; i < 4; i++) {
                 lines.add(wrapper.read(Types.STRING)); // line
             }
+            final boolean front = wrapper.read(Types.VAR_INT) == 1; // front
 
             final String tag = blockStateRewriter.tag(chunkTracker.getBlockState(position));
             final BedrockBlockEntity signBlockEntity = (CustomBlockTags.HANGING_SIGN.equals(tag) || CustomBlockTags.SIGN.equals(tag)) ? chunkTracker.getBlockEntity(position) : null;

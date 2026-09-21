@@ -157,6 +157,7 @@ public class PacketFactory {
     }
 
     public static void writeJavaLevelParticles(final PacketWrapper wrapper, final Position3f position, final BedrockMappingData.JavaParticle particle) {
+        wrapper.write(VersionedTypes.V26_3.particle, particle.particle().copy()); // particle data
         wrapper.write(Types.BOOLEAN, false); // override limiter
         wrapper.write(Types.BOOLEAN, false); // always show
         wrapper.write(Types.DOUBLE, (double) position.x()); // x
@@ -170,7 +171,6 @@ public class PacketFactory {
         wrapper.write(Types.FLOAT, particle.speed()); // z speed
         wrapper.write(Types.VAR_INT, particle.count()); // count
         wrapper.write(Types.VAR_INT, 0); // Default randomization type
-        wrapper.write(VersionedTypes.V26_3.particle, particle.particle().copy()); // particle data
     }
 
 }

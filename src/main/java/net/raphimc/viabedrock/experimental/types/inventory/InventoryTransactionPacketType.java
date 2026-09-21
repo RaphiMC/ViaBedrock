@@ -59,10 +59,6 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
             }
         }
 
-        if (!buffer.readBoolean()) {
-            throw new IllegalStateException("Expected InventoryTransactionType");
-        }
-
         ComplexInventoryTransaction_Type type = ComplexInventoryTransaction_Type.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
         InventoryActionData[] actions = inventoryActionDataType.read(buffer);
         InventoryTransactionData transactionData = switch (type) {
@@ -74,6 +70,7 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
                     BedrockTypes.BLOCK_POSITION.read(buffer),
                     buffer.readByte(),
                     BedrockTypes.VAR_INT.read(buffer),
+                    HandSlot.getByValue(buffer.readByte()),
                     itemRewriter.newItemType().read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer),
                     BedrockTypes.POSITION_3F.read(buffer),
@@ -113,9 +110,7 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
             ExperimentalBedrockTypes.LEGACY_SET_ITEM_SLOT_DATA.write(buffer, bedrockInventoryTransaction.legacySlots().toArray(new LegacySetItemSlotData[0]));
         }
 
-        Types.BOOLEAN.write(buffer, true);
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, bedrockInventoryTransaction.transactionType().getValue());
-        Types.BOOLEAN.write(buffer, true);
         if (bedrockInventoryTransaction.actions() != null) { //TODO: Make actions list Optional
             inventoryActionDataType.write(buffer, bedrockInventoryTransaction.actions().toArray(new InventoryActionData[0]));
         } else {
@@ -132,6 +127,7 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
                 BedrockTypes.BLOCK_POSITION.write(buffer, data.blockPosition());
                 buffer.writeByte(data.face());
                 BedrockTypes.VAR_INT.write(buffer, data.hotbarSlot());
+                buffer.writeByte(data.handSlot().getValue());
                 itemRewriter.newItemType().write(buffer, data.itemInHand());
                 BedrockTypes.POSITION_3F.write(buffer, data.playerPosition());
                 BedrockTypes.POSITION_3F.write(buffer, data.clickPosition());

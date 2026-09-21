@@ -380,9 +380,7 @@ public class ClientPlayerPackets {
 
             wrapper.write(BedrockTypes.VAR_INT, 0); // legacy request id
             wrapper.write(Types.BOOLEAN, false); // has legacy data
-            wrapper.write(Types.BOOLEAN, true); // has transaction type
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemUseOnEntityTransaction.getValue()); // transaction type
-            wrapper.write(Types.BOOLEAN, true); // has transaction data
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entity.runtimeId()); // entity runtime id
             wrapper.write(BedrockTypes.VAR_INT, ItemUseOnActorActionType.Attack.getValue()); // action type
@@ -413,9 +411,7 @@ public class ClientPlayerPackets {
 
             wrapper.write(BedrockTypes.VAR_INT, 0); // legacy request id
             wrapper.write(Types.BOOLEAN, false); // has legacy data
-            wrapper.write(Types.BOOLEAN, true); // has transaction type
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, ComplexInventoryTransaction_Type.ItemUseOnEntityTransaction.getValue()); // transaction type
-            wrapper.write(Types.BOOLEAN, true); // has transaction data
             wrapper.write(BedrockTypes.UNSIGNED_VAR_INT, 0); // actions count
             wrapper.write(BedrockTypes.UNSIGNED_VAR_LONG, entity.runtimeId()); // entity runtime id
             wrapper.write(BedrockTypes.VAR_INT, ItemUseOnActorActionType.Interact.getValue()); // action type
@@ -620,8 +616,7 @@ public class ClientPlayerPackets {
         protocol.registerServerbound(ServerboundPackets26_3.PUNCH, ServerboundBedrockPackets.ANIMATE, wrapper -> {
             final GameSessionStorage gameSession = wrapper.user().get(GameSessionStorage.class);
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
-            final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)]; // hand
-            if (hand != InteractionHand.MAIN_HAND || clientPlayer.checkCancelSwingPacket()) {
+            if (clientPlayer.checkCancelSwingPacket()) {
                 wrapper.cancel();
                 return;
             }

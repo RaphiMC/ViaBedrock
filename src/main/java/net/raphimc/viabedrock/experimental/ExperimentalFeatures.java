@@ -209,6 +209,7 @@ public class ExperimentalFeatures {
                             new BlockPosition(0, 0, 0), // block position
                             255, // block face
                             inventoryContainer.getSelectedHotbarSlot(),
+                            HandSlot.Mainhand,
                             inventoryContainer.getSelectedHotbarItem(),
                             entityTracker.getClientPlayer().position(),
                             Position3f.ZERO, // click position
@@ -294,6 +295,7 @@ public class ExperimentalFeatures {
                             position,
                             faceInt,
                             inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                            HandSlot.Mainhand,
                             inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
                             clientPlayer.position(),
                             clickPosition,

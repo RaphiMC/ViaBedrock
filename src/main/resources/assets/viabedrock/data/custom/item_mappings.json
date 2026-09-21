@@ -15204,52 +15204,52 @@
     }
   },
   "minecraft:black_cushion": {
-    "meta": { "": { "java_id": "minecraft:black_carpet" } }
+    "meta": { "": { "java_id": "minecraft:black_cushion" } }
   },
   "minecraft:blue_cushion": {
-    "meta": { "": { "java_id": "minecraft:blue_carpet" } }
+    "meta": { "": { "java_id": "minecraft:blue_cushion" } }
   },
   "minecraft:brown_cushion": {
-    "meta": { "": { "java_id": "minecraft:brown_carpet" } }
+    "meta": { "": { "java_id": "minecraft:brown_cushion" } }
   },
   "minecraft:cyan_cushion": {
-    "meta": { "": { "java_id": "minecraft:cyan_carpet" } }
+    "meta": { "": { "java_id": "minecraft:cyan_cushion" } }
   },
   "minecraft:gray_cushion": {
-    "meta": { "": { "java_id": "minecraft:gray_carpet" } }
+    "meta": { "": { "java_id": "minecraft:gray_cushion" } }
   },
   "minecraft:green_cushion": {
-    "meta": { "": { "java_id": "minecraft:green_carpet" } }
+    "meta": { "": { "java_id": "minecraft:green_cushion" } }
   },
   "minecraft:light_blue_cushion": {
-    "meta": { "": { "java_id": "minecraft:light_blue_carpet" } }
+    "meta": { "": { "java_id": "minecraft:light_blue_cushion" } }
   },
   "minecraft:light_gray_cushion": {
-    "meta": { "": { "java_id": "minecraft:light_gray_carpet" } }
+    "meta": { "": { "java_id": "minecraft:light_gray_cushion" } }
   },
   "minecraft:lime_cushion": {
-    "meta": { "": { "java_id": "minecraft:lime_carpet" } }
+    "meta": { "": { "java_id": "minecraft:lime_cushion" } }
   },
   "minecraft:magenta_cushion": {
-    "meta": { "": { "java_id": "minecraft:magenta_carpet" } }
+    "meta": { "": { "java_id": "minecraft:magenta_cushion" } }
   },
   "minecraft:orange_cushion": {
-    "meta": { "": { "java_id": "minecraft:orange_carpet" } }
+    "meta": { "": { "java_id": "minecraft:orange_cushion" } }
   },
   "minecraft:pink_cushion": {
-    "meta": { "": { "java_id": "minecraft:pink_carpet" } }
+    "meta": { "": { "java_id": "minecraft:pink_cushion" } }
   },
   "minecraft:purple_cushion": {
-    "meta": { "": { "java_id": "minecraft:purple_carpet" } }
+    "meta": { "": { "java_id": "minecraft:purple_cushion" } }
   },
   "minecraft:red_cushion": {
-    "meta": { "": { "java_id": "minecraft:red_carpet" } }
+    "meta": { "": { "java_id": "minecraft:red_cushion" } }
   },
   "minecraft:white_cushion": {
-    "meta": { "": { "java_id": "minecraft:white_carpet" } }
+    "meta": { "": { "java_id": "minecraft:white_cushion" } }
   },
   "minecraft:yellow_cushion": {
-    "meta": { "": { "java_id": "minecraft:yellow_carpet" } }
+    "meta": { "": { "java_id": "minecraft:yellow_cushion" } }
   },
   "minecraft:orange_poplar_leaves": {
     "block": { "minecraft:orange_poplar_leaves": { "java_id": "minecraft:pale_oak_leaves" } }

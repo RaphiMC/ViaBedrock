@@ -42,8 +42,8 @@ public class InventorySourcePacketType extends Type<InventorySource> {
 
         int containerId = 0;
         InventorySourceFlags flag = InventorySourceFlags.No_Flag;
-        if (buffer.readBoolean() && buffer.readBoolean()) containerId = buffer.readByte();
-        if (buffer.readBoolean() && buffer.readBoolean()) flag = InventorySourceFlags.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        if (buffer.readBoolean()) containerId = buffer.readByte();
+        if (buffer.readBoolean()) flag = InventorySourceFlags.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
 
         switch (type) {
             case Container_Inventory, Non_Implemented_Feature_TODO -> {
@@ -62,7 +62,6 @@ public class InventorySourcePacketType extends Type<InventorySource> {
     public void write(ByteBuf buffer, InventorySource value) {
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.type().getValue());
 
-        Types.BOOLEAN.write(buffer, true);
         if (value.type() == InventorySourceType.Container_Inventory || value.type() == InventorySourceType.Non_Implemented_Feature_TODO) {
             Types.BOOLEAN.write(buffer, true);
             buffer.writeByte(value.containerId());
@@ -70,7 +69,6 @@ public class InventorySourcePacketType extends Type<InventorySource> {
             Types.BOOLEAN.write(buffer, false);
         }
 
-        Types.BOOLEAN.write(buffer, true);
         if (value.type() == InventorySourceType.World_Interaction) {
             Types.BOOLEAN.write(buffer, true);
             BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.flags().getValue());

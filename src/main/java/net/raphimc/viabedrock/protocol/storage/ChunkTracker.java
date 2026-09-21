@@ -402,10 +402,10 @@ public class ChunkTracker extends StoredObject {
         final BitSet lightMask = new BitSet();
         lightMask.set(0, remappedChunk.getSections().length + 2);
         levelChunkWithLight.write(this.chunkType, remappedChunk); // chunk
-        levelChunkWithLight.write(Types.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // sky light mask
-        levelChunkWithLight.write(Types.LONG_ARRAY_PRIMITIVE, new long[0]); // block light mask
-        levelChunkWithLight.write(Types.LONG_ARRAY_PRIMITIVE, new long[0]); // empty sky light mask
-        levelChunkWithLight.write(Types.LONG_ARRAY_PRIMITIVE, lightMask.toLongArray()); // empty block light mask
+        levelChunkWithLight.write(Types.BIT_SET, lightMask); // sky light mask
+        levelChunkWithLight.write(Types.BIT_SET, new BitSet()); // block light mask
+        levelChunkWithLight.write(Types.BIT_SET, new BitSet()); // empty sky light mask
+        levelChunkWithLight.write(Types.BIT_SET, lightMask); // empty block light mask
         levelChunkWithLight.write(Types.VAR_INT, remappedChunk.getSections().length + 2); // sky light length
         for (int i = 0; i < remappedChunk.getSections().length + 2; i++) {
             levelChunkWithLight.write(Types.BYTE_ARRAY_PRIMITIVE, FULL_LIGHT.clone()); // sky light
