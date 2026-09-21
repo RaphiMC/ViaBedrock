@@ -17,13 +17,13 @@
  */
 package net.raphimc.viabedrock.tool.generator.client;
 
-import com.viaversion.viaversion.libs.gson.Gson;
+import com.viaversion.viaversion.libs.gson.JsonArray;
 import net.raphimc.viabedrock.api.resourcepack.definition.ParticleDefinitions;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
+import net.raphimc.viabedrock.tool.ToolArgs;
+import net.raphimc.viabedrock.tool.ToolPaths;
 import net.raphimc.viabedrock.util.Util;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,8 @@ import java.util.Map;
 public class BedrockParticleListGenerator {
 
     public static void main(String[] args) throws Throwable {
-        final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(new File("/home/exterminate/Games/mc/MCBedrockWindows/1.26.5101/data/"));
+        final ToolArgs toolArgs = ToolArgs.parse(args);
+        final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(ToolPaths.clientDataDir(toolArgs));
 
         final List<String> particleList = new ArrayList<>();
         for (Map.Entry<String, ParticleDefinitions.ParticleDefinition> entry : resourcePackStorage.getParticles().particles().entrySet()) {
@@ -39,8 +40,9 @@ public class BedrockParticleListGenerator {
         }
         particleList.sort(String::compareTo);
 
-        final String json = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(particleList);
-        Files.writeString(new File("particles.json").toPath(), json);
+        final JsonArray particles = new JsonArray();
+        particleList.forEach(particles::add);
+        ToolPaths.writeJson(ToolPaths.BEDROCK_DATA.resolve("particles.json"), particles);
     }
 
 }

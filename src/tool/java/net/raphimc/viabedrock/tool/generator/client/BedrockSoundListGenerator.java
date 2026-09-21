@@ -17,17 +17,16 @@
  */
 package net.raphimc.viabedrock.tool.generator.client;
 
-import com.viaversion.viaversion.libs.gson.Gson;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.api.resourcepack.definition.BlockDefinitions;
 import net.raphimc.viabedrock.api.resourcepack.definition.SoundDefinitions;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
+import net.raphimc.viabedrock.tool.ToolArgs;
+import net.raphimc.viabedrock.tool.ToolPaths;
 import net.raphimc.viabedrock.util.Util;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.*;
 
 public class BedrockSoundListGenerator {
@@ -69,7 +68,8 @@ public class BedrockSoundListGenerator {
     );
 
     public static void main(String[] args) throws Throwable {
-        final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(new File("/home/exterminate/Games/mc/MCBedrockWindows/1.26.5101/data/"));
+        final ToolArgs toolArgs = ToolArgs.parse(args);
+        final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(ToolPaths.clientDataDir(toolArgs));
 
         final JsonObject soundList = new JsonObject();
         final Set<String> soundsWithoutCategory = new HashSet<>();
@@ -119,8 +119,7 @@ public class BedrockSoundListGenerator {
             throw new IllegalStateException("Sound without category: " + s);
         }
 
-        final String json = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(GsonUtil.sort(soundList));
-        Files.writeString(new File("sounds.json").toPath(), json);
+        ToolPaths.writeJson(ToolPaths.BEDROCK_DATA.resolve("sounds.json"), GsonUtil.sort(soundList));
 
         final Map<String, String> blockSounds = new TreeMap<>();
         for (Map.Entry<String, BlockDefinitions.BlockDefinition> blockEntry : resourcePackStorage.getBlocks().blocks().entrySet()) {
@@ -129,8 +128,9 @@ public class BedrockSoundListGenerator {
             }
         }
 
-        final String json3 = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(blockSounds);
-        Files.writeString(new File("block_sounds.json").toPath(), json3);
+        final JsonObject blockSoundsJson = new JsonObject();
+        blockSounds.forEach(blockSoundsJson::addProperty);
+        ToolPaths.writeJson(ToolPaths.BEDROCK_DATA.resolve("block_sounds.json"), blockSoundsJson);
 
         final JsonObject levelSoundMappings = new JsonObject();
         Map<String, Map<String, SoundDefinitions.ConfiguredSound>> mapping = new HashMap<>();
@@ -184,7 +184,6 @@ public class BedrockSoundListGenerator {
         levelSoundMappings.entrySet().forEach(entry -> sortedJson.put(entry.getKey(), entry.getValue()));
         levelSoundMappings.entrySet().clear();
         sortedJson.forEach(levelSoundMappings::add);
-        final String json2 = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create().toJson(levelSoundMappings);
-        Files.writeString(new File("level_sound_event_mappings.json").toPath(), json2);
+        ToolPaths.writeJson(ToolPaths.BEDROCK_DATA.resolve("level_sound_event_mappings.json"), levelSoundMappings, true);
     }
 }
