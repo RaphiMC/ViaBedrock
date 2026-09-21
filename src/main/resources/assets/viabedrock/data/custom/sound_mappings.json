@@ -1821,7 +1821,7 @@
   "block.straw_bed.fall": "minecraft:block.straw_bed.fall",
   "block.straw_bed.step": "minecraft:block.straw_bed.step",
   "block.straw_bed.jump": "minecraft:block.straw_bed.step",
-  "block.straw_bed.place": "minecraft:entity.block.straw_bed.place",
+  "block.straw_bed.place": "minecraft:block.straw_bed.place",
   "block.straw_bed.land": "minecraft:block.straw_bed.fall",
   "block.straw_bed.break": "minecraft:block.straw_bed.break",
   "block.straw_bed.hit": "minecraft:block.straw_bed.hit",
