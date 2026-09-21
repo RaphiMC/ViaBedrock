@@ -43,12 +43,41 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class ResourcePackPackets {
+
+    /**
+     * Computes a hash over all advertised resource packs and the current ViaBedrock version. The
+     * converted resource pack contents only depend on these, so the hash can be used to derive a
+     * stable resource pack id for the java client.
+     *
+     * @param infos The advertised resource packs
+     * @return The hash of the resource pack contents
+     */
+    private static byte[] getPackIdHash(final ResourcePackLoadStateTracker.Info[] infos) {
+        try {
+            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(ViaBedrock.IMPL_VERSION.getBytes(StandardCharsets.UTF_8)); // Conversion output changes with the ViaBedrock version
+            final List<ResourcePackLoadStateTracker.Info> sortedInfos = new ArrayList<>(List.of(infos));
+            sortedInfos.sort(Comparator.comparing(info -> info.key().toString()));
+            for (ResourcePackLoadStateTracker.Info info : sortedInfos) {
+                digest.update(info.key().id().toString().getBytes(StandardCharsets.UTF_8)); // pack id
+                digest.update(info.key().version().getBytes(StandardCharsets.UTF_8)); // pack version
+                digest.update(info.contentId().getBytes(StandardCharsets.UTF_8)); // pack content identity
+            }
+            return digest.digest();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 message digest is not available", e); // Never happens; every JVM implements SHA-256
+        }
+    }
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.RESOURCE_PACKS_INFO,
@@ -91,7 +120,10 @@ public class ResourcePackPackets {
                         final UUID httpToken = UUID.randomUUID();
                         ViaBedrock.getResourcePackServer().addConnection(httpToken, wrapper.user());
 
-                        wrapper.write(Types.UUID, UUID.randomUUID()); // id
+                        // Deterministic id derived from the converted resource pack contents, so that the java client can
+                        // reuse its cached copy of the pack instead of re-downloading and re-applying it on every join
+                        final UUID packId = UUID.nameUUIDFromBytes(getPackIdHash(infos));
+                        wrapper.write(Types.UUID, packId); // id
                         wrapper.write(Types.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + httpToken); // url
                         wrapper.write(Types.STRING, ""); // hash
                         wrapper.write(Types.BOOLEAN, false); // required
