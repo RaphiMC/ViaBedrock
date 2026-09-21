@@ -71,14 +71,21 @@ public final class ChunkLight {
         return this.blockLight[lightMaskIndex];
     }
 
-    void setSkyLight(final int lightMaskIndex, final byte[] data) {
+    /**
+     * Replaces the packed sky light nibble array of the given light mask index.
+     * Only intended for use by the light engine.
+     */
+    public void setSkyLight(final int lightMaskIndex, final byte[] data) {
         this.skyLight[lightMaskIndex] = data;
     }
 
-    void setBlockLight(final int lightMaskIndex, final byte[] data) {
+    /**
+     * Replaces the packed block light nibble array of the given light mask index.
+     * Only intended for use by the light engine.
+     */
+    public void setBlockLight(final int lightMaskIndex, final byte[] data) {
         this.blockLight[lightMaskIndex] = data;
     }
-
     /**
      * @return Whether all neighbor chunks were loaded when this light data was computed
      */

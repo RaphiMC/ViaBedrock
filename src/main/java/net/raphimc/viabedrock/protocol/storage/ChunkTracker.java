@@ -63,6 +63,9 @@ import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -79,9 +82,28 @@ public class ChunkTracker extends StoredObject {
     private final Long2ObjectMap<BedrockChunk> chunks = new Long2ObjectOpenHashMap<>();
     private final LongSet dirtyChunks = new LongOpenHashSet();
 
-    private final Long2ObjectMap<int[][]> javaBlockStateCache = new Long2ObjectOpenHashMap<>(); // chunk key -> per section java block states
+    private final ConcurrentHashMap<Long, CachedChunkStates> javaBlockStateCache = new ConcurrentHashMap<>(); // chunk key -> per section java block states
     private final Long2ObjectMap<ChunkLight> chunkLight = new Long2ObjectOpenHashMap<>(); // chunk key -> last computed light
     private final LongSet lightDirtyChunks = new LongOpenHashSet();
+    private final LongSet pendingLightComputations = new LongOpenHashSet();
+
+    private static final ExecutorService LIGHT_EXECUTOR = Executors.newFixedThreadPool(Math.min(4, Runtime.getRuntime().availableProcessors()), target -> {
+        final Thread thread = new Thread(target, "ViaBedrock Light Worker");
+        thread.setDaemon(true);
+        return thread;
+    });
+
+    private static final class CachedChunkStates {
+
+        public final int[][] sections; // May contain null sections; they are built on demand
+        public final long version; // Incremented whenever the block states change
+
+        public CachedChunkStates(final int[][] sections, final long version) {
+            this.sections = sections;
+            this.version = version;
+        }
+
+    }
 
     private final Set<SubChunkPosition> subChunkRequests = new HashSet<>();
     private final Set<SubChunkPosition> pendingSubChunks = new HashSet<>();
@@ -335,9 +357,25 @@ public class ChunkTracker extends StoredObject {
         section.mergeWith(this.handleBlockPalette(other));
         section.applyPendingBlockUpdates(this.bedrockAirId());
         this.invalidateJavaBlockStates(chunkX, subChunkY, chunkZ);
-        this.lightDirtyChunks.add(ChunkPosition.chunkKey(chunkX, chunkZ));
+
+        final long chunkKey = ChunkPosition.chunkKey(chunkX, chunkZ);
+        if (this.isChunkFullyLoaded(chunk)) {
+            // Complete chunk; send it with real light once it has been computed
+            this.lightDirtyChunks.add(chunkKey);
+            this.dirtyChunks.add(chunkKey);
+        } else if (!this.chunkLight.containsKey(chunkKey)) {
+            // Send a first preview of the chunk while the remaining sub chunks are still loading
+            this.dirtyChunks.add(chunkKey);
+        }
         blockEntities.forEach(blockEntity -> chunk.removeBlockEntityAt(blockEntity.position()));
         chunk.blockEntities().addAll(blockEntities);
+        return true;
+    }
+
+    private boolean isChunkFullyLoaded(final BedrockChunk chunk) {
+        for (final BedrockChunkSection section : chunk.getSections()) {
+            if (section.hasPendingBlockUpdates()) return false;
+        }
         return true;
     }
 
@@ -420,15 +458,14 @@ public class ChunkTracker extends StoredObject {
         }
 
         final Chunk remappedChunk = this.remapChunk(chunk);
-        // Reuse the cached light if present; it is refreshed by the budgeted light dirty processing
         ChunkLight light = this.chunkLight.get(ChunkPosition.chunkKey(chunkX, chunkZ));
         if (light == null) {
-            light = this.computeRegionLight(chunkX, chunkZ)[4];
-            // The light of the whole region is up to date now
-            for (int dz = -1; dz <= 1; dz++) {
-                for (int dx = -1; dx <= 1; dx++) {
-                    this.lightDirtyChunks.remove(ChunkPosition.chunkKey(chunkX + dx, chunkZ + dz));
-                }
+            // While the chunk is still receiving sub chunks, send vanilla-like placeholder light;
+            // the real light is computed asynchronously once the chunk is fully loaded
+            light = this.createPlaceholderLight();
+            this.chunkLight.put(ChunkPosition.chunkKey(chunkX, chunkZ), light);
+            if (this.isChunkFullyLoaded(chunk)) {
+                this.lightDirtyChunks.add(ChunkPosition.chunkKey(chunkX, chunkZ));
             }
         }
 
@@ -519,80 +556,118 @@ public class ChunkTracker extends StoredObject {
     }
 
     /**
-     * Recomputes the light of the 3x3 chunk region around the given chunk and sends light update
-     * packets to the client for all previously sent chunks whose light changed. Light travels at
-     * most 15 blocks, so the region covers all chunks that can be affected by block changes in the
-     * center chunk.
+     * Submits an asynchronous light computation of the 3x3 chunk region around the given chunk to
+     * the light worker pool. Light travels at most 15 blocks, so the region covers all chunks that
+     * can be affected by block changes in the center chunk. The result is applied back on the
+     * connection's event loop.
      */
-    private void sendLightUpdate(final int chunkX, final int chunkZ) {
-        final ChunkLight[] previousLights = new ChunkLight[9];
+    private void submitLightComputation(final int chunkX, final int chunkZ) {
+        final long centerKey = ChunkPosition.chunkKey(chunkX, chunkZ);
+        if (!this.pendingLightComputations.add(centerKey)) return;
+
+        // Reading the chunk map is only safe on the event loop; the chunk references themselves
+        // stay valid even if they get unloaded during the computation
+        final BedrockChunk[] regionChunks = new BedrockChunk[9];
         for (int dz = -1; dz <= 1; dz++) {
             for (int dx = -1; dx <= 1; dx++) {
-                previousLights[(dz + 1) * 3 + (dx + 1)] = this.chunkLight.get(ChunkPosition.chunkKey(chunkX + dx, chunkZ + dz));
+                regionChunks[(dz + 1) * 3 + (dx + 1)] = this.chunks.get(ChunkPosition.chunkKey(chunkX + dx, chunkZ + dz));
             }
         }
 
-        final ChunkLight[] lights = this.computeRegionLight(chunkX, chunkZ);
-        for (int chunkIndex = 0; chunkIndex < 9; chunkIndex++) {
-            if (previousLights[chunkIndex] == null || lights[chunkIndex] == null) continue; // Chunk was never sent; its light arrives with the next chunk packet
+        LIGHT_EXECUTOR.execute(() -> {
+            final long[] capturedVersions = new long[9];
+            final int[][][] regionStates = new int[9][][];
+            try {
+                for (int chunkIndex = 0; chunkIndex < 9; chunkIndex++) {
+                    final BedrockChunk chunk = regionChunks[chunkIndex];
+                    if (chunk == null) continue;
+                    regionStates[chunkIndex] = this.getOrBuildJavaBlockStates(chunk, capturedVersions, chunkIndex);
+                }
+            } catch (Throwable ignored) {
+                // Block data was modified concurrently (e.g. a sub chunk merge was in progress); try again later
+                this.user().getChannel().eventLoop().execute(() -> {
+                    this.pendingLightComputations.remove(centerKey);
+                    this.lightDirtyChunks.add(centerKey);
+                });
+                return;
+            }
 
-            final int neighborX = chunkX + (chunkIndex % 3) - 1;
-            final int neighborZ = chunkZ + chunkIndex / 3 - 1;
-            final LightPacketData lightData = buildDiffLightPacketData(lights[chunkIndex], previousLights[chunkIndex]);
+            final ChunkLight[] lights = LightEngine.computeRegionLight(regionStates, this.worldHeight >> 4, this.skyLight, BedrockProtocol.MAPPINGS.getJavaBlockLightEmission(), BedrockProtocol.MAPPINGS.getJavaBlockOpacity());
+            this.user().getChannel().eventLoop().execute(() -> this.applyLightComputation(chunkX, chunkZ, regionChunks, capturedVersions, lights));
+        });
+    }
+
+    /**
+     * Applies computed light data on the event loop: caches it, sends diffed light update packets
+     * for all previously sent chunks whose light changed and re-queues chunks that were modified
+     * while the computation was running.
+     */
+    private void applyLightComputation(final int chunkX, final int chunkZ, final BedrockChunk[] regionChunks, final long[] capturedVersions, final ChunkLight[] lights) {
+        if (!this.user().getChannel().isActive()) return;
+        this.pendingLightComputations.remove(ChunkPosition.chunkKey(chunkX, chunkZ));
+
+        for (int chunkIndex = 0; chunkIndex < 9; chunkIndex++) {
+            final BedrockChunk chunk = regionChunks[chunkIndex];
+            if (chunk == null || lights[chunkIndex] == null) continue;
+            final long chunkKey = ChunkPosition.chunkKey(chunk.getX(), chunk.getZ());
+            if (!this.chunks.containsKey(chunkKey)) continue;
+
+            final CachedChunkStates currentStates = this.javaBlockStateCache.get(chunkKey);
+            final boolean stale = currentStates != null && currentStates.version != capturedVersions[chunkIndex];
+            if (stale) {
+                // Blocks changed while the light was being computed; compute again
+                this.lightDirtyChunks.add(chunkKey);
+                continue;
+            }
+
+            final ChunkLight previousLight = this.chunkLight.put(chunkKey, lights[chunkIndex]);
+            this.lightDirtyChunks.remove(chunkKey);
+            if (previousLight == null) continue; // Chunk was never sent; its light arrives with the next chunk packet
+
+            final LightPacketData lightData = buildDiffLightPacketData(lights[chunkIndex], previousLight);
             if (lightData.skyLightArrays().isEmpty() && lightData.blockLightArrays().isEmpty() && lightData.emptySkyLightMask().isEmpty() && lightData.emptyBlockLightMask().isEmpty()) {
                 continue;
             }
 
             final PacketWrapper lightUpdate = PacketWrapper.create(ClientboundPackets26_1.LIGHT_UPDATE, this.user());
-            lightUpdate.write(Types.VAR_INT, neighborX); // chunk x
-            lightUpdate.write(Types.VAR_INT, neighborZ); // chunk z
+            lightUpdate.write(Types.VAR_INT, chunk.getX()); // chunk x
+            lightUpdate.write(Types.VAR_INT, chunk.getZ()); // chunk z
             this.writeLightData(lightUpdate, lightData);
             lightUpdate.send(BedrockProtocol.class);
         }
     }
 
-    /**
-     * Computes the light of all chunks of the 3x3 chunk region around the given chunk using the
-     * block data of the region. Unloaded chunks are treated as fully opaque. The light of all
-     * loaded chunks is stored for later light update diffing.
-     */
-    private ChunkLight[] computeRegionLight(final int chunkX, final int chunkZ) {
+    private ChunkLight createPlaceholderLight() {
         final int sectionCount = this.worldHeight >> 4;
-        final int[][][] regionStates = new int[9][][];
-        for (int dz = -1; dz <= 1; dz++) {
-            for (int dx = -1; dx <= 1; dx++) {
-                final BedrockChunk neighbor = this.chunks.get(ChunkPosition.chunkKey(chunkX + dx, chunkZ + dz));
-                if (neighbor == null) continue;
-
-                final int chunkIndex = (dz + 1) * 3 + (dx + 1);
-                regionStates[chunkIndex] = this.getJavaBlockStates(neighbor);
-                for (int sectionIndex = 0; sectionIndex < sectionCount; sectionIndex++) {
-                    regionStates[chunkIndex][sectionIndex] = this.getJavaBlockStates(neighbor, sectionIndex);
-                }
+        final ChunkLight light = new ChunkLight(sectionCount, this.skyLight, false);
+        if (this.skyLight) {
+            for (int i = 0; i < sectionCount + 2; i++) {
+                light.setSkyLight(i, ChunkLight.FULL);
             }
         }
-
-        final ChunkLight[] lights = LightEngine.computeRegionLight(regionStates, sectionCount, this.skyLight, BedrockProtocol.MAPPINGS.getJavaBlockLightEmission(), BedrockProtocol.MAPPINGS.getJavaBlockOpacity());
-        for (int chunkIndex = 0; chunkIndex < 9; chunkIndex++) {
-            if (lights[chunkIndex] == null) continue;
-            final int neighborX = chunkX + (chunkIndex % 3) - 1;
-            final int neighborZ = chunkZ + chunkIndex / 3 - 1;
-            this.chunkLight.put(ChunkPosition.chunkKey(neighborX, neighborZ), lights[chunkIndex]);
-        }
-        return lights;
+        return light;
     }
 
-    private int[][] getJavaBlockStates(final BedrockChunk chunk) {
-        return this.javaBlockStateCache.computeIfAbsent(ChunkPosition.chunkKey(chunk.getX(), chunk.getZ()), key -> new int[this.worldHeight >> 4][]);
-    }
-
-    private int[] getJavaBlockStates(final BedrockChunk chunk, final int sectionIndex) {
-        final int[][] chunkStates = this.getJavaBlockStates(chunk);
-        int[] states = chunkStates[sectionIndex];
-        if (states == null) {
-            states = chunkStates[sectionIndex] = this.buildJavaBlockStates(chunk.getSections()[sectionIndex]);
+    /**
+     * Returns the java block states of a chunk, building the missing sections. May be called from
+     * light worker threads; palette reads are safe against concurrent modification as they either
+     * see the old or the new state. Throws if the block data is being modified concurrently.
+     *
+     * @param versionOut Gets the version of the returned block states written at the chunk index
+     */
+    private int[][] getOrBuildJavaBlockStates(final BedrockChunk chunk, final long[] versionOut, final int chunkIndex) {
+        final long chunkKey = ChunkPosition.chunkKey(chunk.getX(), chunk.getZ());
+        CachedChunkStates cached = this.javaBlockStateCache.get(chunkKey);
+        if (cached == null) {
+            cached = this.javaBlockStateCache.computeIfAbsent(chunkKey, key -> new CachedChunkStates(new int[this.worldHeight >> 4][], 0));
         }
-        return states;
+        versionOut[chunkIndex] = cached.version;
+
+        for (int sectionIndex = 0; sectionIndex < cached.sections.length; sectionIndex++) {
+            if (cached.sections[sectionIndex] != null) continue;
+            cached.sections[sectionIndex] = this.buildJavaBlockStates(chunk.getSections()[sectionIndex]);
+        }
+        return cached.sections;
     }
 
     /**
@@ -628,13 +703,17 @@ public class ChunkTracker extends StoredObject {
     }
 
     private void invalidateJavaBlockStates(final int chunkX, final int subChunkY, final int chunkZ) {
-        final int[][] chunkStates = this.javaBlockStateCache.get(ChunkPosition.chunkKey(chunkX, chunkZ));
-        if (chunkStates == null) return;
+        final long chunkKey = ChunkPosition.chunkKey(chunkX, chunkZ);
+        final CachedChunkStates cached = this.javaBlockStateCache.get(chunkKey);
+        if (cached == null) return;
 
         final int sectionIndex = subChunkY + Math.abs(this.minY >> 4);
-        if (sectionIndex >= 0 && sectionIndex < chunkStates.length) {
-            chunkStates[sectionIndex] = null;
-        }
+        if (sectionIndex < 0 || sectionIndex >= cached.sections.length) return;
+
+        // Copy on write; light worker threads may still be reading the old states
+        final int[][] sections = cached.sections.clone();
+        sections[sectionIndex] = null;
+        this.javaBlockStateCache.put(chunkKey, new CachedChunkStates(sections, cached.version + 1));
     }
 
     public Dimension getDimension() {
@@ -665,8 +744,9 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void tick() {
-        // Light computations are expensive; process chunks with a time budget per tick so the
-        // connection's event loop is never blocked for long. Unprocessed chunks stay queued.
+        // Chunk data remapping and packet writing are expensive; process chunks with a time budget
+        // per tick so the connection's event loop is never blocked for long. Unprocessed chunks
+        // stay queued.
         final long deadline = System.nanoTime() + 30_000_000L;
 
         for (final Iterator<Long> iterator = this.dirtyChunks.iterator(); iterator.hasNext(); ) {
@@ -676,13 +756,14 @@ public class ChunkTracker extends StoredObject {
             this.sendChunk(chunkPos.chunkX(), chunkPos.chunkZ());
         }
 
-        for (final Iterator<Long> iterator = this.lightDirtyChunks.iterator(); iterator.hasNext(); ) {
-            if (System.nanoTime() > deadline) return; // Keep the remaining chunks queued
-            final long chunkKey = iterator.next();
-            iterator.remove();
-            if (!this.chunks.containsKey(chunkKey)) continue;
-            final ChunkPosition chunkPos = new ChunkPosition(chunkKey);
-            this.sendLightUpdate(chunkPos.chunkX(), chunkPos.chunkZ());
+        // Light computations run on the worker pool; only the cheap task submission happens here
+        if (!this.lightDirtyChunks.isEmpty()) {
+            for (final long chunkKey : this.lightDirtyChunks.toLongArray()) {
+                this.lightDirtyChunks.remove(chunkKey);
+                if (!this.chunks.containsKey(chunkKey)) continue;
+                final ChunkPosition chunkPos = new ChunkPosition(chunkKey);
+                this.submitLightComputation(chunkPos.chunkX(), chunkPos.chunkZ());
+            }
         }
 
         if (this.user().get(EntityTracker.class) == null || !this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
