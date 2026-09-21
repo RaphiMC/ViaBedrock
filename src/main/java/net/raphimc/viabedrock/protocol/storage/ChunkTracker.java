@@ -358,14 +358,9 @@ public class ChunkTracker extends StoredObject {
         section.applyPendingBlockUpdates(this.bedrockAirId());
         this.invalidateJavaBlockStates(chunkX, subChunkY, chunkZ);
 
-        final long chunkKey = ChunkPosition.chunkKey(chunkX, chunkZ);
         if (this.isChunkFullyLoaded(chunk)) {
-            // Complete chunk; send it with real light once it has been computed
-            this.lightDirtyChunks.add(chunkKey);
-            this.dirtyChunks.add(chunkKey);
-        } else if (!this.chunkLight.containsKey(chunkKey)) {
-            // Send a first preview of the chunk while the remaining sub chunks are still loading
-            this.dirtyChunks.add(chunkKey);
+            // The chunk is complete now; its light is computed and the chunk is sent to the client
+            this.lightDirtyChunks.add(ChunkPosition.chunkKey(chunkX, chunkZ));
         }
         blockEntities.forEach(blockEntity -> chunk.removeBlockEntityAt(blockEntity.position()));
         chunk.blockEntities().addAll(blockEntities);
@@ -458,15 +453,14 @@ public class ChunkTracker extends StoredObject {
         }
 
         final Chunk remappedChunk = this.remapChunk(chunk);
-        ChunkLight light = this.chunkLight.get(ChunkPosition.chunkKey(chunkX, chunkZ));
+        final ChunkLight light = this.chunkLight.get(ChunkPosition.chunkKey(chunkX, chunkZ));
         if (light == null) {
-            // While the chunk is still receiving sub chunks, send vanilla-like placeholder light;
-            // the real light is computed asynchronously once the chunk is fully loaded
-            light = this.createPlaceholderLight();
-            this.chunkLight.put(ChunkPosition.chunkKey(chunkX, chunkZ), light);
+            // The light of this chunk has not been computed yet; the chunk is sent as soon as the
+            // light computation finishes, so the client never sees placeholder light
             if (this.isChunkFullyLoaded(chunk)) {
                 this.lightDirtyChunks.add(ChunkPosition.chunkKey(chunkX, chunkZ));
             }
+            return;
         }
 
         final PacketWrapper levelChunkWithLight = PacketWrapper.create(ClientboundPackets26_1.LEVEL_CHUNK_WITH_LIGHT, this.user());
@@ -622,7 +616,11 @@ public class ChunkTracker extends StoredObject {
 
             final ChunkLight previousLight = this.chunkLight.put(chunkKey, lights[chunkIndex]);
             this.lightDirtyChunks.remove(chunkKey);
-            if (previousLight == null) continue; // Chunk was never sent; its light arrives with the next chunk packet
+            if (previousLight == null) {
+                // The chunk has not been sent to the client yet; send it now with its real light
+                this.dirtyChunks.add(chunkKey);
+                continue;
+            }
 
             final LightPacketData lightData = buildDiffLightPacketData(lights[chunkIndex], previousLight);
             if (lightData.skyLightArrays().isEmpty() && lightData.blockLightArrays().isEmpty() && lightData.emptySkyLightMask().isEmpty() && lightData.emptyBlockLightMask().isEmpty()) {
@@ -637,23 +635,10 @@ public class ChunkTracker extends StoredObject {
         }
     }
 
-    private ChunkLight createPlaceholderLight() {
-        final int sectionCount = this.worldHeight >> 4;
-        final ChunkLight light = new ChunkLight(sectionCount, this.skyLight, false);
-        if (this.skyLight) {
-            for (int i = 0; i < sectionCount + 2; i++) {
-                light.setSkyLight(i, ChunkLight.FULL);
-            }
-        }
-        return light;
-    }
-
     /**
-     * Returns the java block states of a chunk, building the missing sections. May be called from
-     * light worker threads; palette reads are safe against concurrent modification as they either
-     * see the old or the new state. Throws if the block data is being modified concurrently.
-     *
-     * @param versionOut Gets the version of the returned block states written at the chunk index
+     * Computes the light of all chunks of the 3x3 chunk region around the given chunk using the
+     * block data of the region. Unloaded chunks are treated as fully opaque. The light of all
+     * loaded chunks is stored for later light update diffing.
      */
     private int[][] getOrBuildJavaBlockStates(final BedrockChunk chunk, final long[] versionOut, final int chunkIndex) {
         final long chunkKey = ChunkPosition.chunkKey(chunk.getX(), chunk.getZ());
