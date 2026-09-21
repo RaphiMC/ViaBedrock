@@ -40,7 +40,8 @@ public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewr
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        final ListTag<StringTag> bedrockSherds = bedrockTag.getListTag("sherds", StringTag.class);
+        // TODO: 26.3
+        /*final ListTag<StringTag> bedrockSherds = bedrockTag.getListTag("sherds", StringTag.class);
         if (bedrockSherds != null) {
             final ListTag<StringTag> javaSherds = new ListTag<>(StringTag.class);
             for (StringTag bedrockSherd : bedrockSherds) {
@@ -59,7 +60,7 @@ public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewr
         }
         this.copyItem(user, bedrockTag, javaTag, "item");
         this.copy(bedrockTag, javaTag, "LootTable", StringTag.class);
-        this.copy(bedrockTag, javaTag, "LootTableSeed", IntTag.class);
+        this.copy(bedrockTag, javaTag, "LootTableSeed", IntTag.class);*/
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }
