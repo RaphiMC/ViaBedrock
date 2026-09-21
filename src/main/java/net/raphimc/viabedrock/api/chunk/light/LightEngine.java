@@ -34,6 +34,7 @@ public final class LightEngine {
     public static final int LIGHT_LENGTH = 2048;
 
     private static final int REGION_SIZE = 48; // 3x3 chunks
+    private static final int REGION_SIZE_SQUARED = REGION_SIZE * REGION_SIZE;
     private static final int MAX_HEIGHT = 1 << 12;
     private static final int[][] DIRECTIONS = {{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
     private static final int DOWN = 2; // Index of the {0, -1, 0} direction in DIRECTIONS
@@ -66,6 +67,7 @@ public final class LightEngine {
         }
 
         final int height = sectionCount << 4;
+        // Block index scheme: (y * REGION_SIZE + z) * REGION_SIZE + x
         final byte[] opacity = new byte[REGION_SIZE * REGION_SIZE * height];
         final byte[] emission = new byte[opacity.length];
         Arrays.fill(opacity, (byte) 15); // Unloaded chunks are treated as fully opaque
@@ -76,8 +78,9 @@ public final class LightEngine {
 
         final IntQueue queue = new IntQueue();
         if (skyLightData != null) {
-            seedSkyLight(skyLightData, opacity, height);
-            enqueueSkyLightFrontier(skyLightData, opacity, queue, height);
+            final short[] skyCutoff = new short[REGION_SIZE * REGION_SIZE]; // Topmost block of each column that is not fully sky lit
+            seedSkyLight(skyLightData, opacity, skyCutoff, height);
+            enqueueSkyLightFrontier(skyLightData, opacity, skyCutoff, queue, height);
             propagate(skyLightData, opacity, queue, height, true);
             queue.clear();
         }
@@ -115,17 +118,38 @@ public final class LightEngine {
                 final int[] states = chunkStates[sectionIndex];
                 if (states == null) continue;
 
+                final int javaId0 = states[0];
+                boolean singleState = true;
+                for (int i = 1; i < states.length; i++) {
+                    if (states[i] != javaId0) {
+                        singleState = false;
+                        break;
+                    }
+                }
+                if (singleState) { // Fast path for uniform sections, e.g. all air
+                    final byte opacityValue = opacityTable[javaId0];
+                    final byte emissionValue = emissionTable[javaId0];
+                    for (int y = 0; y < 16; y++) {
+                        final int layerBase = ((sectionIndex << 4) + y) * REGION_SIZE_SQUARED;
+                        for (int z = 0; z < 16; z++) {
+                            final int rowBase = layerBase + (baseZ + z) * REGION_SIZE + baseX;
+                            Arrays.fill(opacity, rowBase, rowBase + 16, opacityValue);
+                            Arrays.fill(emission, rowBase, rowBase + 16, emissionValue);
+                        }
+                    }
+                    continue;
+                }
+
                 for (int y = 0; y < 16; y++) {
-                    final int worldY = (sectionIndex << 4) + y;
+                    final int layerBase = ((sectionIndex << 4) + y) * REGION_SIZE_SQUARED;
                     final int statesBase = y << 8;
                     for (int z = 0; z < 16; z++) {
-                        int regionIndex = (baseX * REGION_SIZE + baseZ + z) * height + worldY;
+                        final int regionIndex = layerBase + (baseZ + z) * REGION_SIZE + baseX;
                         final int statesIndex = statesBase | (z << 4);
                         for (int x = 0; x < 16; x++) {
                             final int stateId = states[statesIndex + x];
-                            opacity[regionIndex] = opacityTable[stateId];
-                            emission[regionIndex] = emissionTable[stateId];
-                            regionIndex += REGION_SIZE * height;
+                            opacity[regionIndex + x] = opacityTable[stateId];
+                            emission[regionIndex + x] = emissionTable[stateId];
                         }
                     }
                 }
@@ -137,17 +161,19 @@ public final class LightEngine {
      * Scans every column of the region from the top and assigns sky light to all blocks that are
      * directly lit by the sky.
      */
-    private static void seedSkyLight(final byte[] skyLight, final byte[] opacity, final int height) {
-        for (int x = 0; x < REGION_SIZE; x++) {
-            for (int z = 0; z < REGION_SIZE; z++) {
+    private static void seedSkyLight(final byte[] skyLight, final byte[] opacity, final short[] skyCutoff, final int height) {
+        for (int z = 0; z < REGION_SIZE; z++) {
+            for (int x = 0; x < REGION_SIZE; x++) {
                 int level = 15;
+                short cutoff = -1; // Topmost block of the column that is not fully sky lit
                 for (int y = height - 1; y >= 0; y--) {
-                    final int index = (x * REGION_SIZE + z) * height + y;
+                    final int index = (y * REGION_SIZE + z) * REGION_SIZE + x;
                     if (level == 15 && opacity[index] == 0) { // Sky light travels downwards without losing level
                         skyLight[index] = 15;
                         continue;
                     }
                     level = Math.max(0, level - Math.max(1, opacity[index] & 0xFF));
+                    if (cutoff == -1) skyCutoff[z * REGION_SIZE + x] = cutoff = (short) y;
                     if (level == 0) break;
                     skyLight[index] = (byte) level;
                 }
@@ -158,14 +184,27 @@ public final class LightEngine {
     /**
      * Enqueues all directly sky lit blocks that are able to brighten one of their neighbors. Cells
      * that cannot brighten any neighbor are skipped, as light values never decrease again during
-     * propagation.
+     * propagation. Fully sky lit cells above the terrain of all neighboring columns are skipped
+     * upfront, as all their neighbors are fully sky lit as well.
      */
-    private static void enqueueSkyLightFrontier(final byte[] skyLight, final byte[] opacity, final IntQueue queue, final int height) {
-        for (int x = 0; x < REGION_SIZE; x++) {
+    private static void enqueueSkyLightFrontier(final byte[] skyLight, final byte[] opacity, final short[] skyCutoff, final IntQueue queue, final int height) {
+        for (int y = height - 1; y >= 0; y--) {
             for (int z = 0; z < REGION_SIZE; z++) {
-                for (int y = 0; y < height; y++) {
-                    final int level = skyLight[(x * REGION_SIZE + z) * height + y] & 0xFF;
-                    if (level > 1 && canBrightenNeighbor(skyLight, opacity, x, y, z, level, height, true)) {
+                for (int x = 0; x < REGION_SIZE; x++) {
+                    final int index = (y * REGION_SIZE + z) * REGION_SIZE + x;
+                    final int level = skyLight[index] & 0xFF;
+                    if (level <= 1) continue;
+
+                    if (level == 15) { // Cheap check whether any horizontal neighbor column is taller than this cell
+                        boolean neighborColumnTaller = false;
+                        if (x > 0 && skyCutoff[z * REGION_SIZE + x - 1] >= y) neighborColumnTaller = true;
+                        else if (x < REGION_SIZE - 1 && skyCutoff[z * REGION_SIZE + x + 1] >= y) neighborColumnTaller = true;
+                        else if (z > 0 && skyCutoff[(z - 1) * REGION_SIZE + x] >= y) neighborColumnTaller = true;
+                        else if (z < REGION_SIZE - 1 && skyCutoff[(z + 1) * REGION_SIZE + x] >= y) neighborColumnTaller = true;
+                        if (!neighborColumnTaller) continue;
+                    }
+
+                    if (canBrightenNeighbor(skyLight, opacity, x, y, z, level, height, true)) {
                         queue.enqueue(pack(x, y, z));
                     }
                 }
@@ -180,9 +219,9 @@ public final class LightEngine {
 
             blockLight[index] = (byte) level;
             if (level > 1) {
-                final int y = index % height;
-                final int column = index / height;
-                queue.enqueue(pack(column / REGION_SIZE, y, column % REGION_SIZE));
+                final int y = index / REGION_SIZE_SQUARED;
+                final int remainder = index % REGION_SIZE_SQUARED;
+                queue.enqueue(pack(remainder % REGION_SIZE, y, remainder / REGION_SIZE));
             }
         }
     }
@@ -190,10 +229,11 @@ public final class LightEngine {
     private static void propagate(final byte[] light, final byte[] opacity, final IntQueue queue, final int height, final boolean skyLight) {
         while (!queue.isEmpty()) {
             final int packed = queue.dequeueInt();
-            final int x = packed >>> 18;
-            final int z = (packed >>> 12) & 0x3F;
-            final int y = packed & 0xFFF;
-            final int level = light[(x * REGION_SIZE + z) * height + y] & 0xFF;
+            final int x = packed & 0x3F;
+            final int z = (packed >>> 6) & 0x3F;
+            final int y = packed >>> 12;
+            final int index = (y * REGION_SIZE + z) * REGION_SIZE + x;
+            final int level = light[index] & 0xFF;
             if (level <= 1) continue;
 
             for (int[] direction : DIRECTIONS) {
@@ -205,7 +245,7 @@ public final class LightEngine {
     private static void spread(final byte[] light, final byte[] opacity, final IntQueue queue, final int x, final int y, final int z, final boolean downwards, final int level, final int height, final boolean skyLight) {
         if (x < 0 || x >= REGION_SIZE || z < 0 || z >= REGION_SIZE || y < 0 || y >= height) return;
 
-        final int neighborIndex = (x * REGION_SIZE + z) * height + y;
+        final int neighborIndex = (y * REGION_SIZE + z) * REGION_SIZE + x;
         final int neighborOpacity = opacity[neighborIndex] & 0xFF;
         if (neighborOpacity >= 15) return; // Fully opaque blocks receive no light
 
@@ -228,7 +268,7 @@ public final class LightEngine {
             final int nz = z + DIRECTIONS[direction][2];
             if (nx < 0 || nx >= REGION_SIZE || nz < 0 || nz >= REGION_SIZE || ny < 0 || ny >= height) continue;
 
-            final int neighborIndex = (nx * REGION_SIZE + nz) * height + ny;
+            final int neighborIndex = (ny * REGION_SIZE + nz) * REGION_SIZE + nx;
             final int neighborOpacity = opacity[neighborIndex] & 0xFF;
             if (neighborOpacity >= 15) continue;
 
@@ -254,10 +294,10 @@ public final class LightEngine {
         boolean allFifteen = true;
 
         for (int y = 0; y < 16; y++) {
-            final int worldY = (sectionIndex << 4) + y;
+            final int layerBase = ((sectionIndex << 4) + y) * REGION_SIZE_SQUARED;
             for (int z = 0; z < 16; z++) {
-                int index = (baseX * REGION_SIZE + baseZ + z) * height + worldY;
-                for (int x = 0; x < 16; x++, index += REGION_SIZE * height) {
+                int index = layerBase + (baseZ + z) * REGION_SIZE + baseX;
+                for (int x = 0; x < 16; x++, index++) {
                     final int level = light[index] & 0xFF;
                     final int byteIndex = (y << 7) | (z << 3) | (x >> 1);
                     if ((x & 1) == 0) {
@@ -277,7 +317,7 @@ public final class LightEngine {
     }
 
     private static int pack(final int x, final int y, final int z) {
-        return (x << 18) | (z << 12) | y;
+        return (y << 12) | (z << 6) | x;
     }
 
     /**

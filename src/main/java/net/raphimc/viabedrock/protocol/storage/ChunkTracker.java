@@ -335,6 +335,7 @@ public class ChunkTracker extends StoredObject {
         section.mergeWith(this.handleBlockPalette(other));
         section.applyPendingBlockUpdates(this.bedrockAirId());
         this.invalidateJavaBlockStates(chunkX, subChunkY, chunkZ);
+        this.lightDirtyChunks.add(ChunkPosition.chunkKey(chunkX, chunkZ));
         blockEntities.forEach(blockEntity -> chunk.removeBlockEntityAt(blockEntity.position()));
         chunk.blockEntities().addAll(blockEntities);
         return true;
@@ -419,7 +420,17 @@ public class ChunkTracker extends StoredObject {
         }
 
         final Chunk remappedChunk = this.remapChunk(chunk);
-        final ChunkLight light = this.computeRegionLight(chunkX, chunkZ)[4];
+        // Reuse the cached light if present; it is refreshed by the budgeted light dirty processing
+        ChunkLight light = this.chunkLight.get(ChunkPosition.chunkKey(chunkX, chunkZ));
+        if (light == null) {
+            light = this.computeRegionLight(chunkX, chunkZ)[4];
+            // The light of the whole region is up to date now
+            for (int dz = -1; dz <= 1; dz++) {
+                for (int dx = -1; dx <= 1; dx++) {
+                    this.lightDirtyChunks.remove(ChunkPosition.chunkKey(chunkX + dx, chunkZ + dz));
+                }
+            }
+        }
 
         final PacketWrapper levelChunkWithLight = PacketWrapper.create(ClientboundPackets26_1.LEVEL_CHUNK_WITH_LIGHT, this.user());
         levelChunkWithLight.write(this.chunkType, remappedChunk); // chunk
@@ -654,19 +665,24 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void tick() {
-        for (long dirtyChunk : this.dirtyChunks) {
-            final ChunkPosition chunkPos = new ChunkPosition(dirtyChunk);
+        // Light computations are expensive; process chunks with a time budget per tick so the
+        // connection's event loop is never blocked for long. Unprocessed chunks stay queued.
+        final long deadline = System.nanoTime() + 30_000_000L;
+
+        for (final Iterator<Long> iterator = this.dirtyChunks.iterator(); iterator.hasNext(); ) {
+            if (System.nanoTime() > deadline) return; // Keep the remaining chunks queued
+            final ChunkPosition chunkPos = new ChunkPosition(iterator.next());
+            iterator.remove();
             this.sendChunk(chunkPos.chunkX(), chunkPos.chunkZ());
         }
-        this.dirtyChunks.clear();
 
-        if (!this.lightDirtyChunks.isEmpty()) {
-            for (long lightDirtyChunk : this.lightDirtyChunks) {
-                if (!this.chunks.containsKey(lightDirtyChunk)) continue;
-                final ChunkPosition chunkPos = new ChunkPosition(lightDirtyChunk);
-                this.sendLightUpdate(chunkPos.chunkX(), chunkPos.chunkZ());
-            }
-            this.lightDirtyChunks.clear();
+        for (final Iterator<Long> iterator = this.lightDirtyChunks.iterator(); iterator.hasNext(); ) {
+            if (System.nanoTime() > deadline) return; // Keep the remaining chunks queued
+            final long chunkKey = iterator.next();
+            iterator.remove();
+            if (!this.chunks.containsKey(chunkKey)) continue;
+            final ChunkPosition chunkPos = new ChunkPosition(chunkKey);
+            this.sendLightUpdate(chunkPos.chunkX(), chunkPos.chunkZ());
         }
 
         if (this.user().get(EntityTracker.class) == null || !this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
