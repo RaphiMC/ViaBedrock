@@ -7,7 +7,6 @@ plugins {
     id "net.raphimc.class-token-replacer" version "1.1.7"
 }
 
-
 sourceSets {
     tool
 
@@ -16,7 +15,7 @@ sourceSets {
 }
 
 repositories {
-    mavenLocal()
+    //mavenLocal() // Uncomment when updating
     maven {
         name = "ViaVersion"
         url = "https://repo.viaversion.com"
@@ -27,8 +26,13 @@ repositories {
         }
     }
     maven {
-        name = "OpenCollab"
-        url = "https://repo.opencollab.dev/maven-snapshots/"
+        name = "OpenCollab Snapshots"
+        url = "https://repo.opencollab.dev/maven-snapshots"
+
+        content {
+            includeGroupByRegex "org\\.cloudburstmc\\..+"
+            includeGroup "dev.opencollab"
+        }
     }
     maven {
         name = "Minecraft Libraries"
@@ -54,8 +58,8 @@ dependencies {
     compileOnly "com.google.guava:guava:33.7.1-jre"
     compileOnly "io.netty:netty-handler:4.2.18.Final"
     compileOnly "com.google.code.gson:gson:2.14.0"
-    compileOnly "org.cloudburstmc.netty:netty-transport-raknet:2.0.0.CR3-SNAPSHOT"
-    compileOnly "org.cloudburstmc.netty:netty-transport-nethernet:2.0.0.CR3-SNAPSHOT"
+    compileOnly "org.cloudburstmc.netty:netty-transport-raknet:2.0.0.CR4-20260921.144528-1"
+    compileOnly "org.cloudburstmc.netty:netty-transport-nethernet:2.0.0.CR4-20260921.144528-1"
 
     api("io.netty:netty-codec-http:4.2.18.Final") {
         transitive = false
