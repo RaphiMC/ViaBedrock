@@ -216,12 +216,16 @@ public enum MinecraftPacketIds {
     PlayerVideoCapturePacket(324),
     PlayerUpdateEntityOverridesPacket(325),
     PlayerLocation(326),
+    VoxelShapesPacket(337),
+    CameraSplinePacket(338),
     SyncWorldClocks(344),
     SendPartyDestinationCookie(349),
     PartyDestinationCookieResponse(350),
     SetPlayerFurnaceOptions(351),
     RecordStarted(352),
     ClientboundMatchmakingState(353),
+    ServerboundStonecutterSetRecipePacket(354),
+    ClientboundStonecutterSetRecipePacket(355),
     ServerboundMatchmakingCancel(356),
     ;
 
