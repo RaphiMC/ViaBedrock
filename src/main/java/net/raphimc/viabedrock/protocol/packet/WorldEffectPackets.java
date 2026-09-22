@@ -223,6 +223,12 @@ public class WorldEffectPackets {
                     final float pitch = (float) Math.pow(2D, (double) (key - 12) / 12);
                     configuredSound = new SoundDefinitions.ConfiguredSound(noteBlockSound, 1F, 1F, pitch, pitch);
                 }
+                case "place" -> {
+                    // TODO: Mixin in VFP and a setting, Block place sounds are sent by the server
+                    wrapper.cancel();
+                    return;
+                }
+                // TODO: I suspect block break sounds are sent by the server as well
                 default -> {
                     configuredSound = tryFindSound(wrapper.user(), soundEvent, data, entityIdentifier, isBabyMob);
                     if (configuredSound == null) { // Fallback for some special handled sounds
@@ -390,7 +396,7 @@ public class WorldEffectPackets {
                     }
                     if (levelEventMapping instanceof BedrockMappingData.JavaLevelEvent javaLevelEvent) {
                         wrapper.write(Types.INT, javaLevelEvent.levelEvent().getValue()); // event id
-                        wrapper.write(Types.BLOCK_POSITION1_14, new BlockPosition((int) position.x(), (int) position.y(), (int) position.z())); // position
+                        wrapper.write(Types.BLOCK_POSITION1_14, new BlockPosition(MathUtil.floor(position.x()), MathUtil.floor(position.y()), MathUtil.floor(position.z()))); // position
                         wrapper.write(Types.INT, switch (levelEvent) {
                             case ParticlesShoot, ParticlesShootWhiteSmoke -> switch (data % 9) {
                                 case 3, 0 -> Direction.WEST.ordinal();
