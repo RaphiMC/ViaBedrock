@@ -168,11 +168,6 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
 
     @Override
     public void transform(Direction direction, State state, PacketWrapper wrapper) throws InformativeException, CancelException {
-        if (state == State.STATUS) { // Status doesn't exist in the Bedrock protocol and is instead handled by the transport layer
-            super.transform(direction, state, wrapper);
-            return;
-        }
-
         if (direction == Direction.CLIENTBOUND) {
             State serverState = wrapper.user().getProtocolInfo().getServerState();
             final ClientboundBedrockPackets packet = ClientboundBedrockPackets.getPacket(wrapper.getId());
