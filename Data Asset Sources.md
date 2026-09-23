@@ -19,7 +19,7 @@ If a file is not listed here, it has been created manually and is updated manual
 [GeyserMC/Geyser](https://github.com/GeyserMC/Geyser/blob/50115039af4cd92e50545075d3a13eea6880cf88/core/src/main/resources/bedrock/block_palette.26_50.nbt)
 
 ### data/bedrock/block_sounds.json
-This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
+This file has been generated using `./gradlew generateBedrockSoundLists` from the official bedrock client's assets folder.
 
 ### data/bedrock/block_traits.json
 [microsoft.com](https://learn.microsoft.com/en-us/minecraft/creator/documents/intro-block-traits?view=minecraft-bedrock-stable)  
@@ -39,16 +39,20 @@ This file has been dumped from a BDS server using [CloudburstMC/ProxyPass](https
 [Kaooot/bedrock-network-data](https://github.com/Kaooot/bedrock-network-data/blob/6abdab1f549ffafdd627f4d4de34709a0e981345/release/1.26.40/item_tags.json)
 
 ### data/bedrock/level_sound_event_mappings.json
-This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
+This file has been generated using `./gradlew generateBedrockSoundLists` from the official bedrock client's assets folder.
 
 ### data/bedrock/particles.json
-This file has been generated using `BedrockParticleListGenerator` using data from the official bedrock client's assets folder.
+This file has been generated using `./gradlew generateBedrockParticleList` from the official bedrock client's assets folder.
 
 ### data/bedrock/runtime_item_states.json
 [CloudburstMC/Data](https://github.com/CloudburstMC/Data/blob/a8a4341d7763d6eb8547cff3ca46b4153d60163d/runtime_item_states.json)
 
 ### data/bedrock/sounds.json
-This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
+This file has been generated using `./gradlew generateBedrockSoundLists` from the official bedrock client's assets folder.
+
+### data/custom/block_tags.json and data/custom/potted_blockstates.json
+Run `./gradlew syncDerivedMappings` after updating the Bedrock palette and Java registry. It adds sign and shelf tags
+and directly named potted blocks. Other entries in these files remain curated.
 
 ### data/java/effects.json
 This file has been dumped using a fabric mod.
@@ -75,7 +79,7 @@ This file has been dumped from a vanilla server using a fabric mod.
 [opencollab-incubator/BedrockItemUpgradeSchema](https://github.com/opencollab-incubator/BedrockItemUpgradeSchema/tree/master)
 
 ### resource_packs/*
-These files have been generated using `BedrockPacksGenerator` using data from the official bedrock client's assets folder.
+These files have been generated using `./gradlew generateBedrockPacks` from the official bedrock client's assets folder.
 
 ### skin_packs/*
-These files have been generated using `BedrockPacksGenerator` using data from the official bedrock client's assets folder.
+These files have been generated using `./gradlew generateBedrockPacks` from the official bedrock client's assets folder.

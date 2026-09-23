@@ -25,24 +25,33 @@ import net.raphimc.viabedrock.codegen.CodeGen;
 import net.raphimc.viabedrock.codegen.model.Javadoc;
 import net.raphimc.viabedrock.codegen.model.member.impl.Field;
 import net.raphimc.viabedrock.codegen.model.type.impl.Enum;
+import net.raphimc.viabedrock.tool.ToolArgs;
+import net.raphimc.viabedrock.tool.ToolPaths;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class BedrockDataEnumGenerator {
 
     public static void main(String[] args) throws Throwable {
-        // Download metadata from https://github.com/Mojang/bedrock-protocol-docs/releases
-        final File jsonDir =  new File("/home/exterminate/Projects/Minecraft/bedrock-protocol-docs/");
+        final ToolArgs toolArgs = ToolArgs.parse(args);
+        final Path jsonDir = ToolPaths.protocolDocsDir(toolArgs);
         final Gson gson = new Gson();
 
-        final CodeGen codeGen = new CodeGen(new File("src/main/java"), "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated");
+        final CodeGen codeGen = new CodeGen(ToolPaths.MAIN_JAVA.toFile(), "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated");
 
-        for (File file : jsonDir.listFiles()) {
-            if(!file.getName().endsWith(".json")) continue;
+        final List<Path> jsonFiles;
+        try (Stream<Path> files = Files.list(jsonDir)) {
+            jsonFiles = files.filter(file -> file.getFileName().toString().endsWith(".json")).sorted().toList();
+        }
+        if (jsonFiles.isEmpty()) {
+            throw new IllegalStateException("No enum definitions found in " + jsonDir);
+        }
 
-            final JsonObject jsonObject = gson.fromJson(Files.readString(file.toPath()), JsonObject.class);
+        for (Path file : jsonFiles) {
+            final JsonObject jsonObject = gson.fromJson(Files.readString(file), JsonObject.class);
 
             if (!jsonObject.has("enum")) {
                 continue;
@@ -131,7 +140,7 @@ public class BedrockDataEnumGenerator {
         }
 
         codeGen.generate();
-
+        System.out.println("Generated " + jsonFiles.size() + " enums from " + jsonDir);
     }
 
 }

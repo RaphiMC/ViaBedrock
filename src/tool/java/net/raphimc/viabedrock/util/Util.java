@@ -23,22 +23,22 @@ import com.viaversion.viaversion.libs.gson.JsonParser;
 import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.resourcepack.content.DirectoryContent;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
-import net.raphimc.viabedrock.tool.JsonSorter;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Util {
 
-    public static ResourcePackStorage getClientResourcePacks(final File clientDataDir) throws IOException {
-        final File resourcePacksDir = new File(clientDataDir, "resource_packs_unpacked");
+    public static ResourcePackStorage getClientResourcePacks(final Path clientDataDir) throws IOException {
+        final File resourcePacksDir = clientDataDir.resolve("resource_packs_unpacked").toFile();
         final long start = System.currentTimeMillis();
 
-        final byte[] data = JsonSorter.class.getResourceAsStream("/assets/viabedrock/data/custom/vanilla_resource_packs.json").readAllBytes();
+        final byte[] data = Util.class.getResourceAsStream("/assets/viabedrock/data/custom/vanilla_resource_packs.json").readAllBytes();
         JsonArray obj = JsonParser.parseString(new String(data, StandardCharsets.UTF_8)).getAsJsonArray();
         final List<String> orderedKeys = obj.asList().stream().map(JsonElement::getAsString).toList();
 

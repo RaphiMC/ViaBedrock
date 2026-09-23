@@ -125,6 +125,7 @@
     "minecraft:mangrove_hanging_sign",
     "minecraft:oak_hanging_sign",
     "minecraft:pale_oak_hanging_sign",
+    "minecraft:poplar_hanging_sign",
     "minecraft:spruce_hanging_sign",
     "minecraft:warped_hanging_sign"
   ],
@@ -181,9 +182,10 @@
     "minecraft:dark_oak_shelf",
     "minecraft:jungle_shelf",
     "minecraft:mangrove_shelf",
-    "minecraft:pale_oak_shelf",
-    "minecraft:spruce_shelf",
     "minecraft:oak_shelf",
+    "minecraft:pale_oak_shelf",
+    "minecraft:poplar_shelf",
+    "minecraft:spruce_shelf",
     "minecraft:warped_shelf"
   ],
   "shulker_box": [
@@ -224,6 +226,8 @@
     "minecraft:mangrove_wall_sign",
     "minecraft:pale_oak_standing_sign",
     "minecraft:pale_oak_wall_sign",
+    "minecraft:poplar_standing_sign",
+    "minecraft:poplar_wall_sign",
     "minecraft:spruce_standing_sign",
     "minecraft:spruce_wall_sign",
     "minecraft:standing_sign",

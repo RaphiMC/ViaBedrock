@@ -24,15 +24,19 @@ import net.lenni0451.commons.asm.ASMUtils;
 import net.raphimc.viabedrock.codegen.CodeGen;
 import net.raphimc.viabedrock.codegen.model.member.impl.Field;
 import net.raphimc.viabedrock.codegen.model.type.impl.Enum;
+import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
+import net.raphimc.viabedrock.tool.ToolArgs;
+import net.raphimc.viabedrock.tool.ToolPaths;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -42,36 +46,15 @@ import java.util.zip.ZipInputStream;
 public class JavaDataEnumGenerator {
 
     private static final String MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
-    private static final String VERSION_ID = "26.3";
 
     public static void main(String[] args) throws Throwable {
-        final JsonObject metaObj = JsonParser.parseReader(new InputStreamReader(new URL(MANIFEST_URL).openStream())).getAsJsonObject();
-        final String versionUrl = metaObj.getAsJsonArray("versions").asList().stream()
-                .map(JsonElement::getAsJsonObject)
-                .filter(e -> e.get("id").getAsString().equals(VERSION_ID))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Version not found"))
-                .get("url").getAsString();
-        final JsonObject versionObj = JsonParser.parseReader(new InputStreamReader(new URL(versionUrl).openStream())).getAsJsonObject();
-        final String clientUrl = versionObj.getAsJsonObject("downloads").getAsJsonObject("client").get("url").getAsString();
-        final ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new URL(clientUrl).openStream()));
+        final ToolArgs toolArgs = ToolArgs.parse(args);
+        final String versionId = toolArgs.get("version", ProtocolConstants.JAVA_VERSION.getName());
+        final Path clientJar = toolArgs.path("client-jar", ToolPaths.PROJECT_ROOT.resolve("run/client-jars/" + versionId + ".jar"));
 
-        final Map<String, ClassNode> classNodes = new HashMap<>();
-        ZipEntry zipEntry;
-        while ((zipEntry = zis.getNextEntry()) != null) {
-            final String entryName = zipEntry.getName();
-            if (!entryName.endsWith(".class")) {
-                continue;
-            }
-            final byte[] entryData = zis.readAllBytes();
-            zis.closeEntry();
-            final ClassReader reader = new ClassReader(entryData);
-            final ClassNode classNode = new ClassNode();
-            reader.accept(classNode, 0);
-            classNodes.put(classNode.name.replace('/', '.'), classNode);
-        }
+        final Map<String, ClassNode> classNodes = readClassNodes(downloadClientJar(versionId, clientJar));
 
-        final CodeGen codeGen = new CodeGen(new File("src/main/java"), "net.raphimc.viabedrock.protocol.data.enums.java.generated");
+        final CodeGen codeGen = new CodeGen(ToolPaths.MAIN_JAVA.toFile(), "net.raphimc.viabedrock.protocol.data.enums.java.generated");
 
         codeGen.addType(extractFromEnum("BossEventOperationType", classNodes.get("net.minecraft.network.protocol.game.ClientboundBossEventPacket$OperationType")));
         codeGen.addType(extractFromEnum("ClientCommandAction", classNodes.get("net.minecraft.network.protocol.game.ServerboundClientCommandPacket$Action")));
@@ -91,6 +74,51 @@ public class JavaDataEnumGenerator {
         codeGen.addType(extractFromFieldsWithId("TeamVisibility", classNodes.get("net.minecraft.world.scores.Team$Visibility"), 3));
 
         codeGen.generate();
+        System.out.println("Generated enums from the " + versionId + " client");
+    }
+
+    private static Path downloadClientJar(final String versionId, final Path clientJar) throws Exception {
+        if (Files.isRegularFile(clientJar)) {
+            System.out.println("Using cached client jar " + clientJar);
+            return clientJar;
+        }
+
+        final JsonObject metaObj = JsonParser.parseReader(new InputStreamReader(new URL(MANIFEST_URL).openStream())).getAsJsonObject();
+        final String versionUrl = metaObj.getAsJsonArray("versions").asList().stream()
+                .map(JsonElement::getAsJsonObject)
+                .filter(e -> e.get("id").getAsString().equals(versionId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Version " + versionId + " not found in the version manifest. Pass --version=<id> if the name differs from the protocol version name."))
+                .get("url").getAsString();
+        final JsonObject versionObj = JsonParser.parseReader(new InputStreamReader(new URL(versionUrl).openStream())).getAsJsonObject();
+        final String clientUrl = versionObj.getAsJsonObject("downloads").getAsJsonObject("client").get("url").getAsString();
+
+        System.out.println("Downloading " + clientUrl);
+        Files.createDirectories(clientJar.getParent());
+        try (BufferedInputStream inputStream = new BufferedInputStream(new URL(clientUrl).openStream())) {
+            Files.copy(inputStream, clientJar);
+        }
+        return clientJar;
+    }
+
+    private static Map<String, ClassNode> readClassNodes(final Path clientJar) throws Exception {
+        final Map<String, ClassNode> classNodes = new HashMap<>();
+        try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(clientJar)))) {
+            ZipEntry zipEntry;
+            while ((zipEntry = zis.getNextEntry()) != null) {
+                final String entryName = zipEntry.getName();
+                if (!entryName.endsWith(".class")) {
+                    continue;
+                }
+                final byte[] entryData = zis.readAllBytes();
+                zis.closeEntry();
+                final ClassReader reader = new ClassReader(entryData);
+                final ClassNode classNode = new ClassNode();
+                reader.accept(classNode, 0);
+                classNodes.put(classNode.name.replace('/', '.'), classNode);
+            }
+        }
+        return classNodes;
     }
 
     private static Enum extractFromEnum(final String className, final ClassNode classNode) {

@@ -14748,7 +14748,7 @@
   "minecraft:wet_sponge": {
     "block": {
       "minecraft:wet_sponge": {
-        "java_id": "minecraft:sponge",
+        "java_id": "minecraft:wet_sponge",
         "java_name": "tile.sponge.wet.name"
       }
     }
@@ -15338,7 +15338,7 @@
   "minecraft:light_blue_wool_slab": {
     "block": {
       "minecraft:light_blue_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:light_blue_wool"
+        "java_id": "minecraft:light_blue_wool_slab"
       }
     }
   },
@@ -15359,7 +15359,7 @@
   "minecraft:black_concrete_slab": {
     "block": {
       "minecraft:black_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:black_concrete"
+        "java_id": "minecraft:black_concrete_slab"
       }
     }
   },
@@ -15380,7 +15380,7 @@
   "minecraft:black_wool_slab": {
     "block": {
       "minecraft:black_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:black_wool"
+        "java_id": "minecraft:black_wool_slab"
       }
     }
   },
@@ -15401,7 +15401,7 @@
   "minecraft:blue_concrete_slab": {
     "block": {
       "minecraft:blue_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:blue_concrete"
+        "java_id": "minecraft:blue_concrete_slab"
       }
     }
   },
@@ -15422,7 +15422,7 @@
   "minecraft:blue_wool_slab": {
     "block": {
       "minecraft:blue_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:blue_wool"
+        "java_id": "minecraft:blue_wool_slab"
       }
     }
   },
@@ -15443,7 +15443,7 @@
   "minecraft:brown_concrete_slab": {
     "block": {
       "minecraft:brown_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:brown_concrete"
+        "java_id": "minecraft:brown_concrete_slab"
       }
     }
   },
@@ -15464,7 +15464,7 @@
   "minecraft:brown_wool_slab": {
     "block": {
       "minecraft:brown_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:brown_wool"
+        "java_id": "minecraft:brown_wool_slab"
       }
     }
   },
@@ -15485,7 +15485,7 @@
   "minecraft:cyan_concrete_slab": {
     "block": {
       "minecraft:cyan_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:cyan_concrete"
+        "java_id": "minecraft:cyan_concrete_slab"
       }
     }
   },
@@ -15506,7 +15506,7 @@
   "minecraft:cyan_wool_slab": {
     "block": {
       "minecraft:cyan_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:cyan_wool"
+        "java_id": "minecraft:cyan_wool_slab"
       }
     }
   },
@@ -15527,7 +15527,7 @@
   "minecraft:gray_concrete_slab": {
     "block": {
       "minecraft:gray_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:gray_concrete"
+        "java_id": "minecraft:gray_concrete_slab"
       }
     }
   },
@@ -15548,7 +15548,7 @@
   "minecraft:gray_wool_slab": {
     "block": {
       "minecraft:gray_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:gray_wool"
+        "java_id": "minecraft:gray_wool_slab"
       }
     }
   },
@@ -15569,7 +15569,7 @@
   "minecraft:green_concrete_slab": {
     "block": {
       "minecraft:green_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:green_concrete"
+        "java_id": "minecraft:green_concrete_slab"
       }
     }
   },
@@ -15590,7 +15590,7 @@
   "minecraft:green_wool_slab": {
     "block": {
       "minecraft:green_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:green_wool"
+        "java_id": "minecraft:green_wool_slab"
       }
     }
   },
@@ -15611,7 +15611,7 @@
   "minecraft:light_blue_concrete_slab": {
     "block": {
       "minecraft:light_blue_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:light_blue_concrete"
+        "java_id": "minecraft:light_blue_concrete_slab"
       }
     }
   },
@@ -15639,7 +15639,7 @@
   "minecraft:light_gray_concrete_slab": {
     "block": {
       "minecraft:light_gray_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:light_gray_concrete"
+        "java_id": "minecraft:light_gray_concrete_slab"
       }
     }
   },
@@ -15660,7 +15660,7 @@
   "minecraft:light_gray_wool_slab": {
     "block": {
       "minecraft:light_gray_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:light_gray_wool"
+        "java_id": "minecraft:light_gray_wool_slab"
       }
     }
   },
@@ -15681,7 +15681,7 @@
   "minecraft:lime_concrete_slab": {
     "block": {
       "minecraft:lime_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:lime_concrete"
+        "java_id": "minecraft:lime_concrete_slab"
       }
     }
   },
@@ -15702,7 +15702,7 @@
   "minecraft:lime_wool_slab": {
     "block": {
       "minecraft:lime_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:lime_wool"
+        "java_id": "minecraft:lime_wool_slab"
       }
     }
   },
@@ -15716,7 +15716,7 @@
   "minecraft:magenta_concrete_slab": {
     "block": {
       "minecraft:magenta_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:magenta_concrete"
+        "java_id": "minecraft:magenta_concrete_slab"
       }
     }
   },
@@ -15737,7 +15737,7 @@
   "minecraft:magenta_wool_slab": {
     "block": {
       "minecraft:magenta_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:magenta_wool"
+        "java_id": "minecraft:magenta_wool_slab"
       }
     }
   },
@@ -15758,7 +15758,7 @@
   "minecraft:orange_concrete_slab": {
     "block": {
       "minecraft:orange_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:orange_concrete"
+        "java_id": "minecraft:orange_concrete_slab"
       }
     }
   },
@@ -15779,7 +15779,7 @@
   "minecraft:orange_wool_slab": {
     "block": {
       "minecraft:orange_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:orange_wool"
+        "java_id": "minecraft:orange_wool_slab"
       }
     }
   },
@@ -15800,7 +15800,7 @@
   "minecraft:pink_concrete_slab": {
     "block": {
       "minecraft:pink_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:pink_concrete"
+        "java_id": "minecraft:pink_concrete_slab"
       }
     }
   },
@@ -15821,7 +15821,7 @@
   "minecraft:pink_wool_slab": {
     "block": {
       "minecraft:pink_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:pink_wool"
+        "java_id": "minecraft:pink_wool_slab"
       }
     }
   },
@@ -15842,7 +15842,7 @@
   "minecraft:purple_concrete_slab": {
     "block": {
       "minecraft:purple_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:purple_concrete"
+        "java_id": "minecraft:purple_concrete_slab"
       }
     }
   },
@@ -15863,7 +15863,7 @@
   "minecraft:purple_wool_slab": {
     "block": {
       "minecraft:purple_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:purple_wool"
+        "java_id": "minecraft:purple_wool_slab"
       }
     }
   },
@@ -15884,7 +15884,7 @@
   "minecraft:red_concrete_slab": {
     "block": {
       "minecraft:red_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:red_concrete"
+        "java_id": "minecraft:red_concrete_slab"
       }
     }
   },
@@ -15912,7 +15912,7 @@
   "minecraft:red_wool_slab": {
     "block": {
       "minecraft:red_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:red_wool"
+        "java_id": "minecraft:red_wool_slab"
       }
     }
   },
@@ -15954,7 +15954,7 @@
   "minecraft:white_concrete_slab": {
     "block": {
       "minecraft:white_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:white_concrete"
+        "java_id": "minecraft:white_concrete_slab"
       }
     }
   },
@@ -15975,7 +15975,7 @@
   "minecraft:white_wool_slab": {
     "block": {
       "minecraft:white_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:white_wool"
+        "java_id": "minecraft:white_wool_slab"
       }
     }
   },
@@ -15996,7 +15996,7 @@
   "minecraft:yellow_concrete_slab": {
     "block": {
       "minecraft:yellow_concrete_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:yellow_concrete"
+        "java_id": "minecraft:yellow_concrete_slab"
       }
     }
   },
@@ -16017,7 +16017,7 @@
   "minecraft:yellow_wool_slab": {
     "block": {
       "minecraft:yellow_wool_slab[minecraft:vertical_half=bottom]": {
-        "java_id": "minecraft:yellow_wool"
+        "java_id": "minecraft:yellow_wool_slab"
       }
     }
   },
