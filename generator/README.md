@@ -1,7 +1,5 @@
 # ViaBedrock data generator
 
-![A bedrock cube with a cyan data stream](src/main/resources/icon.png)
-
 This Fabric mod dumps Java Edition data used by ViaBedrock. It produces these files:
 
 | Dump | ViaBedrock asset |

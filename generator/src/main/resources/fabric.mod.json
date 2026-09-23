@@ -5,7 +5,6 @@
   "name": "ViaBedrock Data Generator",
   "description": "Dumps Java Edition data used by ViaBedrock.",
   "license": "GPL-3.0-only",
-  "icon": "icon.png",
   "environment": "client",
   "entrypoints": {
     "main": [
