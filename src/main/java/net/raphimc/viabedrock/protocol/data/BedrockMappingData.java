@@ -99,6 +99,8 @@ public class BedrockMappingData extends MappingDataBase {
     private IntSet javaFluidBlockStates;
     private Int2IntMap javaPottedBlockStates;
     private Map<String, IntSet> javaHeightMapBlockStates;
+    private byte[] javaBlockLightEmission;
+    private byte[] javaBlockOpacity;
 
     // Biomes
     private CompoundTag bedrockBiomeDefinitions;
@@ -349,6 +351,8 @@ public class BedrockMappingData extends MappingDataBase {
                 }
                 this.javaHeightMapBlockStates.put(entry.getKey(), blockStates);
             }
+
+            this.loadBlockLightProperties();
         }
 
         { // Biomes
@@ -1014,6 +1018,110 @@ public class BedrockMappingData extends MappingDataBase {
         DataValues.validate();
     }
 
+    private void loadBlockLightProperties() {
+        final JsonObject lightPropertiesJson = this.readJson("java/block_light_properties.json");
+
+        final Map<String, Integer> emissionByIdentifier = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : lightPropertiesJson.getAsJsonObject("emission").entrySet()) {
+            final String identifier = Key.namespaced(entry.getKey());
+            if (!this.javaBlocks.containsKey(identifier)) {
+                throw new RuntimeException("Unknown java block in light emission data: " + identifier);
+            }
+            emissionByIdentifier.put(identifier, entry.getValue().getAsInt());
+        }
+        final Map<String, Integer> opacityByIdentifier = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : lightPropertiesJson.getAsJsonObject("opacity").entrySet()) {
+            final String identifier = Key.namespaced(entry.getKey());
+            if (!this.javaBlocks.containsKey(identifier)) {
+                throw new RuntimeException("Unknown java block in light opacity data: " + identifier);
+            }
+            opacityByIdentifier.put(identifier, entry.getValue().getAsInt());
+        }
+
+        final int stateCount = this.javaBlockStates.size();
+        this.javaBlockLightEmission = new byte[stateCount];
+        this.javaBlockOpacity = new byte[stateCount];
+        Arrays.fill(this.javaBlockOpacity, (byte) 15); // Blocks that are not listed are treated as full opaque cubes
+        for (Map.Entry<BlockState, Integer> entry : this.javaBlockStates.entrySet()) {
+            final BlockState blockState = entry.getKey();
+            final int stateId = entry.getValue();
+            final String identifier = blockState.namespacedIdentifier();
+
+            final Integer opacity = opacityByIdentifier.get(identifier);
+            this.javaBlockOpacity[stateId] = opacity != null ? opacity.byteValue() : (byte) 15;
+
+            // State dependent emission rules take precedence over the static values from the data asset
+            final int stateEmission = this.getStateLightEmission(blockState);
+            if (stateEmission != -1) {
+                this.javaBlockLightEmission[stateId] = (byte) stateEmission;
+            } else {
+                final Integer emission = emissionByIdentifier.get(identifier);
+                this.javaBlockLightEmission[stateId] = emission != null ? emission.byteValue() : 0;
+            }
+        }
+    }
+
+    /**
+     * Light emission of a java block state that depends on its block state properties.
+     * Returns -1 if the block has no state dependent emission rule.
+     */
+    private int getStateLightEmission(final BlockState blockState) {
+        final String identifier = blockState.identifier();
+        switch (identifier) {
+            case "campfire":
+                return blockState.hasProperty("lit", "true") ? 15 : 0;
+            case "soul_campfire":
+                return blockState.hasProperty("lit", "true") ? 13 : 0;
+            case "furnace", "blast_furnace", "smoker":
+                return blockState.hasProperty("lit", "true") ? 13 : 0;
+            case "redstone_lamp":
+                return blockState.hasProperty("lit", "true") ? 15 : 0;
+            case "redstone_torch", "redstone_wall_torch":
+                return blockState.hasProperty("lit", "true") ? 7 : 0;
+            case "redstone_wire":
+                return Math.max(0, Math.min(15, parseBlockStateInt(blockState, "power", 0)));
+            case "light":
+                return Math.max(0, Math.min(15, parseBlockStateInt(blockState, "level", 15)));
+            case "cave_vines", "cave_vines_plant":
+                return blockState.hasProperty("berries", "true") ? 14 : 0;
+            case "sea_pickle":
+                return blockState.hasProperty("waterlogged", "true") ? 3 + 3 * parseBlockStateInt(blockState, "pickles", 1) : 0;
+            case "respawn_anchor":
+                return Math.max(0, 4 * parseBlockStateInt(blockState, "charges", 0) - 1);
+            case "vault":
+                return blockState.hasProperty("vault_state", "inactive") ? 6 : 12;
+            case "trial_spawner":
+                if (blockState.hasProperty("trial_spawner_state", "active") || blockState.hasProperty("trial_spawner_state", "ejecting_reward")) return 8;
+                if (blockState.hasProperty("trial_spawner_state", "waiting")) return 4;
+                return 0;
+            case "sculk_sensor", "calibrated_sculk_sensor":
+                return blockState.hasProperty("sculk_sensor_phase", "active") ? 1 : 0;
+            default:
+                if (identifier.equals("candle") || identifier.endsWith("_candle")) {
+                    return blockState.hasProperty("lit", "true") ? 3 * parseBlockStateInt(blockState, "candles", 1) : 0;
+                }
+                if (identifier.equals("candle_cake") || identifier.endsWith("_candle_cake")) {
+                    return blockState.hasProperty("lit", "true") ? 3 : 0;
+                }
+                if (identifier.equals("copper_bulb") || identifier.endsWith("_copper_bulb")) {
+                    if (!blockState.hasProperty("lit", "true")) return 0;
+                    if (identifier.contains("oxidized")) return 4;
+                    if (identifier.contains("weathered")) return 8;
+                    if (identifier.contains("exposed")) return 12;
+                    return 15;
+                }
+                return -1;
+        }
+    }
+
+    private int parseBlockStateInt(final BlockState blockState, final String property, final int fallback) {
+        try {
+            return Integer.parseInt(blockState.properties().getOrDefault(property, String.valueOf(fallback)));
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
     public Map<ResourcePack.Key, ResourcePack> getBedrockResourcePacks() {
         return this.bedrockResourcePacks;
     }
@@ -1092,6 +1200,21 @@ public class BedrockMappingData extends MappingDataBase {
 
     public Map<String, IntSet> getJavaHeightMapBlockStates() {
         return this.javaHeightMapBlockStates;
+    }
+
+    /**
+     * Light emission (0-15) of every java block state, indexed by java block state id.
+     */
+    public byte[] getJavaBlockLightEmission() {
+        return this.javaBlockLightEmission;
+    }
+
+    /**
+     * Light opacity (0-15) of every java block state, indexed by java block state id.
+     * Values of 15 or above fully block light propagation.
+     */
+    public byte[] getJavaBlockOpacity() {
+        return this.javaBlockOpacity;
     }
 
     public CompoundTag getBedrockBiomeDefinitions() {
