@@ -339,7 +339,9 @@ public class WorldPackets {
                 final Consumer<byte[]> dataConsumer = combinedData -> {
                     try {
                         if (result == SubChunkPacketPayload_SubChunkRequestResult.SuccessAllAir) {
-                            chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), new BedrockChunkSectionImpl(), new ArrayList<>());
+                            if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), new BedrockChunkSectionImpl(), new ArrayList<>())) {
+                                chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
+                            }
                         } else if (result == SubChunkPacketPayload_SubChunkRequestResult.Success) {
                             final ByteBuf dataBuf = Unpooled.wrappedBuffer(combinedData);
 
@@ -358,7 +360,9 @@ public class WorldPackets {
                             } catch (Throwable e) {
                                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading sub chunk data", e);
                             }
-                            chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), section, blockEntities);
+                            if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), section, blockEntities)) {
+                                chunkTracker.sendChunkInNextTick(absolute.x(), absolute.z());
+                            }
                         } else {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk with result " + result);
                             chunkTracker.requestSubChunk(absolute.x(), absolute.y(), absolute.z());
