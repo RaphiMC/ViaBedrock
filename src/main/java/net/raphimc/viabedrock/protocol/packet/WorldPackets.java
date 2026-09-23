@@ -277,9 +277,9 @@ public class WorldPackets {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading chunk data", e);
                     }
 
-                    if (!chunk.isRequestSubChunks()) {
-                        chunkTracker.sendChunk(chunkX, chunkZ);
-                    }
+                    // Send the available terrain without waiting for requested subchunks. Their
+                    // responses queue further chunk packets as the terrain fills in.
+                    chunkTracker.sendChunkInNextTick(chunkX, chunkZ);
                 } catch (Throwable e) {
                     throw new RuntimeException("Error handling chunk data", e);
                 }
