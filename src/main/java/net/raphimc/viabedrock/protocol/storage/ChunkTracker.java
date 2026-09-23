@@ -72,6 +72,9 @@ import java.util.logging.Level;
 // TODO: Feature: Incremental light updates instead of whole section recomputations
 public class ChunkTracker extends StoredObject {
 
+    private static final int MAX_SUB_CHUNK_REQUEST_OFFSETS_PER_PACKET = 8_192;
+    private static final long SUB_CHUNK_REQUEST_BUDGET_NANOS = 5_000_000L;
+
     private final Dimension dimension;
     private final int minY;
     private final int worldHeight;
@@ -719,31 +722,39 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void tick() {
+        // Keep request preparation and Java chunk sends within the same per-tick time budget.
+        final long deadline = System.nanoTime() + 30_000_000L;
         if (this.user().get(EntityTracker.class) != null && this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
             this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
             this.queuedSubChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
+            final long requestDeadline = Math.min(deadline, System.nanoTime() + SUB_CHUNK_REQUEST_BUDGET_NANOS);
             if (!this.subChunkRequests.isEmpty()) {
                 final BlockPosition basePosition = new BlockPosition(this.centerX, 0, this.centerZ);
-                final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.user());
-                subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
-                subChunkRequest.write(BedrockTypes.UNSIGNED_VAR_INT, this.subChunkRequests.size()); // sub chunk offset count
-                while (!this.subChunkRequests.isEmpty()) {
-                    final SubChunkPosition position = this.subChunkRequests.remove();
-                    this.queuedSubChunkRequests.remove(position);
-                    this.pendingSubChunks.add(position);
-                    final BlockPosition offset = new BlockPosition(position.chunkX - basePosition.x(), position.subChunkY, position.chunkZ - basePosition.z());
-                    subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
+                while (!this.subChunkRequests.isEmpty() && System.nanoTime() < requestDeadline) {
+                    final List<SubChunkPosition> requests = new ArrayList<>(Math.min(MAX_SUB_CHUNK_REQUEST_OFFSETS_PER_PACKET, this.subChunkRequests.size()));
+                    do {
+                        final SubChunkPosition position = this.subChunkRequests.remove();
+                        this.queuedSubChunkRequests.remove(position);
+                        requests.add(position);
+                    } while (requests.size() < MAX_SUB_CHUNK_REQUEST_OFFSETS_PER_PACKET && !this.subChunkRequests.isEmpty() && System.nanoTime() < requestDeadline);
+                    this.pendingSubChunks.addAll(requests);
+
+                    final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.user());
+                    subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
+                    subChunkRequest.write(BedrockTypes.UNSIGNED_VAR_INT, requests.size()); // sub chunk offset count
+                    for (SubChunkPosition position : requests) {
+                        final BlockPosition offset = new BlockPosition(position.chunkX - basePosition.x(), position.subChunkY, position.chunkZ - basePosition.z());
+                        subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
+                    }
+                    subChunkRequest.write(BedrockTypes.INT_LE, basePosition.x());
+                    subChunkRequest.write(BedrockTypes.INT_LE, basePosition.y());
+                    subChunkRequest.write(BedrockTypes.INT_LE, basePosition.z());
+                    subChunkRequest.sendToServer(BedrockProtocol.class);
                 }
-                subChunkRequest.write(BedrockTypes.INT_LE, basePosition.x());
-                subChunkRequest.write(BedrockTypes.INT_LE, basePosition.y());
-                subChunkRequest.write(BedrockTypes.INT_LE, basePosition.z());
-                subChunkRequest.sendToServer(BedrockProtocol.class);
             }
         }
 
-        // Remapping a chunk and computing its initial light run on the event loop. Limit this work
-        // per tick, while leaving remaining chunk data queued for the next tick.
-        final long deadline = System.nanoTime() + 30_000_000L;
+        // Leave remaining chunk data queued when the tick budget is exhausted.
         // Send ready chunks outward from the current center, even when replies arrive out of order.
         final List<Long> readyChunks = new ArrayList<>(this.dirtyChunks);
         readyChunks.sort(Comparator.comparingLong(chunkKey -> {
