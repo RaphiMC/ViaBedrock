@@ -67,11 +67,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 // TODO: Feature: Block connections
 // TODO: Feature: Incremental light updates instead of whole section recomputations
 public class ChunkTracker extends StoredObject {
+
+    private static final int MAX_SUB_CHUNK_REQUESTS_PER_TICK = 256;
 
     private final Dimension dimension;
     private final int minY;
@@ -712,12 +713,18 @@ public class ChunkTracker extends StoredObject {
     public void tick() {
         if (this.user().get(EntityTracker.class) != null && this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
             this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
-            final BlockPosition basePosition = new BlockPosition(this.centerX, 0, this.centerZ);
-            while (!this.subChunkRequests.isEmpty()) {
-                final Set<SubChunkPosition> group = this.subChunkRequests.stream().limit(256).collect(Collectors.toSet());
+            if (!this.subChunkRequests.isEmpty()) {
+                // Finish nearby columns before requesting the rest of a large view distance.
+                final List<SubChunkPosition> requests = new ArrayList<>(this.subChunkRequests);
+                requests.sort(Comparator.comparingLong((SubChunkPosition position) -> this.distanceToCenterSquared(position.chunkX, position.chunkZ))
+                        .thenComparingInt(SubChunkPosition::chunkX)
+                        .thenComparingInt(SubChunkPosition::chunkZ)
+                        .thenComparingInt(SubChunkPosition::subChunkY));
+                final List<SubChunkPosition> group = requests.subList(0, Math.min(MAX_SUB_CHUNK_REQUESTS_PER_TICK, requests.size()));
                 this.subChunkRequests.removeAll(group);
                 this.pendingSubChunks.addAll(group);
 
+                final BlockPosition basePosition = new BlockPosition(this.centerX, 0, this.centerZ);
                 final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.user());
                 subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
                 subChunkRequest.write(BedrockTypes.UNSIGNED_VAR_INT, group.size()); // sub chunk offset count
@@ -735,9 +742,14 @@ public class ChunkTracker extends StoredObject {
         // Remapping a chunk and computing its initial light run on the event loop. Limit this work
         // per tick, while leaving remaining chunk data queued for the next tick.
         final long deadline = System.nanoTime() + 30_000_000L;
-        final int queuedChunks = this.dirtyChunks.size();
-        for (int i = 0; i < queuedChunks && !this.dirtyChunks.isEmpty() && System.nanoTime() < deadline; i++) {
-            final long chunkKey = this.dirtyChunks.iterator().next();
+        // Send ready chunks outward from the current center, even when replies arrive out of order.
+        final List<Long> readyChunks = new ArrayList<>(this.dirtyChunks);
+        readyChunks.sort(Comparator.comparingLong(chunkKey -> {
+            final ChunkPosition position = new ChunkPosition(chunkKey);
+            return this.distanceToCenterSquared(position.chunkX(), position.chunkZ());
+        }));
+        for (long chunkKey : readyChunks) {
+            if (System.nanoTime() >= deadline) break;
             this.dirtyChunks.remove(chunkKey);
             final ChunkPosition chunkPos = new ChunkPosition(chunkKey);
             this.sendChunk(chunkPos.chunkX(), chunkPos.chunkZ());
@@ -758,6 +770,12 @@ public class ChunkTracker extends StoredObject {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not submit chunk light update", e);
             }
         }
+    }
+
+    private long distanceToCenterSquared(final int chunkX, final int chunkZ) {
+        final long dx = (long) chunkX - this.centerX;
+        final long dz = (long) chunkZ - this.centerZ;
+        return dx * dx + dz * dz;
     }
 
     private Chunk remapChunk(final BedrockChunk chunk) {
