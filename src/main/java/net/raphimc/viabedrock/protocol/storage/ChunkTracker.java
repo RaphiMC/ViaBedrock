@@ -45,6 +45,8 @@ import net.raphimc.viabedrock.api.chunk.BedrockChunk;
 import net.raphimc.viabedrock.api.chunk.BlockEntityWithBlockState;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockBlockArray;
 import net.raphimc.viabedrock.api.chunk.datapalette.BedrockDataPalette;
+import net.raphimc.viabedrock.api.chunk.light.ChunkLight;
+import net.raphimc.viabedrock.api.chunk.light.LightEngine;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSectionImpl;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
@@ -61,26 +63,41 @@ import net.raphimc.viabedrock.protocol.rewriter.BlockStateRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 // TODO: Feature: Block connections
-// TODO: Feature: Lighting
+// TODO: Feature: Incremental light updates instead of whole section recomputations
 public class ChunkTracker extends StoredObject {
 
-    private static final byte[] FULL_LIGHT = new byte[ChunkSectionLight.LIGHT_LENGTH];
-
-    static {
-        Arrays.fill(FULL_LIGHT, (byte) 0xFF);
-    }
+    private static final long PARTIAL_CHUNK_SEND_INTERVAL_NANOS = 200_000_000L;
 
     private final Dimension dimension;
     private final int minY;
     private final int worldHeight;
+    private final boolean skyLight;
     private final Type<Chunk> chunkType;
 
     private final Long2ObjectMap<BedrockChunk> chunks = new Long2ObjectOpenHashMap<>();
-    private final LongSet dirtyChunks = new LongOpenHashSet();
+    private final Set<Long> dirtyChunks = new LinkedHashSet<>();
+    private final Map<Long, Long> lastChunkSendNanos = new HashMap<>();
+
+    private final Long2ObjectMap<int[][]> javaBlockStateCache = new Long2ObjectOpenHashMap<>(); // chunk key -> per section java block states
+    private final Long2ObjectMap<ChunkLight> chunkLight = new Long2ObjectOpenHashMap<>(); // Only chunks sent to the client have cached light
+    private final LongSet lightDirtyChunks = new LongOpenHashSet();
+    private final LongSet pendingLightComputations = new LongOpenHashSet();
+    private final Map<Long, Long> lightVersions = new HashMap<>();
+
+    private static final int LIGHT_WORKERS = Math.min(2, Runtime.getRuntime().availableProcessors());
+    private static final Semaphore LIGHT_SLOTS = new Semaphore(LIGHT_WORKERS);
+    private static final ExecutorService LIGHT_EXECUTOR = Executors.newFixedThreadPool(LIGHT_WORKERS, target -> {
+        final Thread thread = new Thread(target, "ViaBedrock Light Worker");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private final Set<SubChunkPosition> subChunkRequests = new HashSet<>();
     private final Set<SubChunkPosition> pendingSubChunks = new HashSet<>();
@@ -101,6 +118,7 @@ public class ChunkTracker extends StoredObject {
         final CompoundTag dimensionTag = dimensionRegistry.getCompoundTag(dimensionKey);
         this.minY = dimensionTag.getNumberTag("min_y").asInt();
         this.worldHeight = dimensionTag.getNumberTag("height").asInt();
+        this.skyLight = dimensionTag.getNumberTag("has_skylight") != null && dimensionTag.getNumberTag("has_skylight").asByte() != 0;
         this.chunkType = new ChunkType26_1(this.worldHeight >> 4, MathUtil.ceilLog2(BedrockProtocol.MAPPINGS.getJavaBlockStates().size()), MathUtil.ceilLog2(biomeRegistry.size()));
 
         final ChunkTracker oldChunkTracker = user.get(ChunkTracker.class);
@@ -139,11 +157,20 @@ public class ChunkTracker extends StoredObject {
             }
         }
         this.chunks.put(ChunkPosition.chunkKey(chunk.getX(), chunk.getZ()), chunk);
+
         return chunk;
     }
 
     public void unloadChunk(final ChunkPosition chunkPos) {
-        this.chunks.remove(chunkPos.chunkKey());
+        final long chunkKey = chunkPos.chunkKey();
+        this.chunks.remove(chunkKey);
+        this.dirtyChunks.remove(chunkKey);
+        this.lastChunkSendNanos.remove(chunkKey);
+        this.javaBlockStateCache.remove(chunkKey);
+        this.chunkLight.remove(chunkKey);
+        this.lightDirtyChunks.remove(chunkKey);
+        this.lightVersions.remove(chunkKey);
+        this.invalidateNearbyLight(chunkPos.chunkX(), chunkPos.chunkZ());
         this.user().get(EntityTracker.class).removeItemFrame(chunkPos);
 
         final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets26_3.FORGET_LEVEL_CHUNK, this.user());
@@ -316,6 +343,7 @@ public class ChunkTracker extends StoredObject {
         final BedrockChunkSection section = chunk.getSections()[subChunkY + Math.abs(this.minY >> 4)];
         section.mergeWith(this.handleBlockPalette(other));
         section.applyPendingBlockUpdates(this.bedrockAirId());
+        this.invalidateJavaBlockStates(chunkX, subChunkY, chunkZ);
         blockEntities.forEach(blockEntity -> chunk.removeBlockEntityAt(blockEntity.position()));
         chunk.blockEntities().addAll(blockEntities);
         return true;
@@ -356,6 +384,16 @@ public class ChunkTracker extends StoredObject {
         }
 
         if (prevBlockState != blockState) {
+            this.invalidateJavaBlockStates(blockPosition.x() >> 4, blockPosition.y() >> 4, blockPosition.z() >> 4);
+            final int chunkX = blockPosition.x() >> 4;
+            final int chunkZ = blockPosition.z() >> 4;
+            final long chunkKey = ChunkPosition.chunkKey(chunkX, chunkZ);
+            if (this.chunkLight.containsKey(chunkKey)) {
+                this.lightVersions.merge(chunkKey, 1L, Long::sum);
+                this.lightDirtyChunks.add(chunkKey);
+            }
+            this.invalidateNearbyLight(chunkX, chunkZ);
+
             if (BlockEntityRewriter.isBlockEntity(tag)) {
                 final BedrockBlockEntity bedrockBlockEntity = this.getBlockEntity(blockPosition);
                 BlockEntity javaBlockEntity = null;
@@ -397,21 +435,253 @@ public class ChunkTracker extends StoredObject {
         }
 
         final Chunk remappedChunk = this.remapChunk(chunk);
+        final ChunkLight light = this.computeChunkLight(chunkX, chunkZ);
 
         final PacketWrapper levelChunkWithLight = PacketWrapper.create(ClientboundPackets26_3.LEVEL_CHUNK_WITH_LIGHT, this.user());
-        final BitSet lightMask = new BitSet();
-        lightMask.set(0, remappedChunk.getSections().length + 2);
         levelChunkWithLight.write(this.chunkType, remappedChunk); // chunk
-        levelChunkWithLight.write(Types.BIT_SET, lightMask); // sky light mask
-        levelChunkWithLight.write(Types.BIT_SET, new BitSet()); // block light mask
-        levelChunkWithLight.write(Types.BIT_SET, new BitSet()); // empty sky light mask
-        levelChunkWithLight.write(Types.BIT_SET, lightMask); // empty block light mask
-        levelChunkWithLight.write(Types.VAR_INT, remappedChunk.getSections().length + 2); // sky light length
-        for (int i = 0; i < remappedChunk.getSections().length + 2; i++) {
-            levelChunkWithLight.write(Types.BYTE_ARRAY_PRIMITIVE, FULL_LIGHT.clone()); // sky light
-        }
-        levelChunkWithLight.write(Types.VAR_INT, 0); // block light length
+        this.writeLightData(levelChunkWithLight, buildFullLightPacketData(light));
         levelChunkWithLight.send(BedrockProtocol.class);
+        final long chunkKey = ChunkPosition.chunkKey(chunkX, chunkZ);
+        this.lastChunkSendNanos.put(chunkKey, System.nanoTime());
+        this.chunkLight.put(chunkKey, light);
+        this.lightVersions.merge(chunkKey, 1L, Long::sum);
+        // Initial lighting uses this chunk alone. Refresh its borders with any loaded neighbors.
+        this.lightDirtyChunks.add(chunkKey);
+        this.invalidateNearbyLight(chunkX, chunkZ);
+    }
+
+    private record LightPacketData(BitSet skyLightMask, BitSet blockLightMask, BitSet emptySkyLightMask, BitSet emptyBlockLightMask, List<byte[]> skyLightArrays, List<byte[]> blockLightArrays) {
+    }
+
+    private static LightPacketData buildFullLightPacketData(final ChunkLight light) {
+        final int maskSize = light.skyLightLength();
+        final BitSet skyLightMask = new BitSet(maskSize);
+        final BitSet blockLightMask = new BitSet(maskSize);
+        final BitSet emptySkyLightMask = new BitSet(maskSize);
+        final BitSet emptyBlockLightMask = new BitSet(maskSize);
+        final List<byte[]> skyLightArrays = new ArrayList<>();
+        final List<byte[]> blockLightArrays = new ArrayList<>();
+        for (int i = 0; i < maskSize; i++) {
+            final byte[] skyLight = light.skyLight(i);
+            final byte[] blockLight = light.blockLight(i);
+            if (skyLight != null) {
+                skyLightMask.set(i);
+                skyLightArrays.add(skyLight);
+            } else {
+                emptySkyLightMask.set(i);
+            }
+            if (blockLight != null) {
+                blockLightMask.set(i);
+                blockLightArrays.add(blockLight);
+            } else {
+                emptyBlockLightMask.set(i);
+            }
+        }
+        return new LightPacketData(skyLightMask, blockLightMask, emptySkyLightMask, emptyBlockLightMask, skyLightArrays, blockLightArrays);
+    }
+
+    private static LightPacketData buildDiffLightPacketData(final ChunkLight light, final ChunkLight previousLight) {
+        final int maskSize = light.skyLightLength();
+        final BitSet skyLightMask = new BitSet(maskSize);
+        final BitSet blockLightMask = new BitSet(maskSize);
+        final BitSet emptySkyLightMask = new BitSet(maskSize);
+        final BitSet emptyBlockLightMask = new BitSet(maskSize);
+        final List<byte[]> skyLightArrays = new ArrayList<>();
+        final List<byte[]> blockLightArrays = new ArrayList<>();
+        for (int i = 0; i < maskSize; i++) {
+            final byte[] skyLight = light.skyLight(i);
+            final byte[] blockLight = light.blockLight(i);
+            if (!Arrays.equals(skyLight, previousLight.skyLight(i))) {
+                if (skyLight != null) {
+                    skyLightMask.set(i);
+                    skyLightArrays.add(skyLight);
+                } else {
+                    emptySkyLightMask.set(i);
+                }
+            }
+            if (!Arrays.equals(blockLight, previousLight.blockLight(i))) {
+                if (blockLight != null) {
+                    blockLightMask.set(i);
+                    blockLightArrays.add(blockLight);
+                } else {
+                    emptyBlockLightMask.set(i);
+                }
+            }
+        }
+        return new LightPacketData(skyLightMask, blockLightMask, emptySkyLightMask, emptyBlockLightMask, skyLightArrays, blockLightArrays);
+    }
+
+    /**
+     * Writes sky and block light masks and arrays in the format shared by
+     * LEVEL_CHUNK_WITH_LIGHT and LIGHT_UPDATE.
+     */
+    private void writeLightData(final PacketWrapper wrapper, final LightPacketData lightData) {
+        wrapper.write(Types.BIT_SET, lightData.skyLightMask()); // sky light mask
+        wrapper.write(Types.BIT_SET, lightData.blockLightMask()); // block light mask
+        wrapper.write(Types.BIT_SET, lightData.emptySkyLightMask()); // empty sky light mask
+        wrapper.write(Types.BIT_SET, lightData.emptyBlockLightMask()); // empty block light mask
+        wrapper.write(Types.VAR_INT, lightData.skyLightArrays().size()); // sky light length
+        for (byte[] skyLight : lightData.skyLightArrays()) {
+            wrapper.write(Types.BYTE_ARRAY_PRIMITIVE, skyLight); // sky light
+        }
+        wrapper.write(Types.VAR_INT, lightData.blockLightArrays().size()); // block light length
+        for (byte[] blockLight : lightData.blockLightArrays()) {
+            wrapper.write(Types.BYTE_ARRAY_PRIMITIVE, blockLight); // block light
+        }
+    }
+
+    private void invalidateNearbyLight(final int chunkX, final int chunkZ) {
+        for (int dz = -1; dz <= 1; dz++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                if (dx == 0 && dz == 0) continue;
+                final long neighborKey = ChunkPosition.chunkKey(chunkX + dx, chunkZ + dz);
+                if (!this.chunkLight.containsKey(neighborKey)) continue;
+                this.lightVersions.merge(neighborKey, 1L, Long::sum);
+                this.lightDirtyChunks.add(neighborKey);
+            }
+        }
+    }
+
+    private static boolean isChunkFullyLoaded(final BedrockChunk chunk) {
+        for (final BedrockChunkSection section : chunk.getSections()) {
+            if (section.hasPendingBlockUpdates()) return false;
+        }
+        return true;
+    }
+
+    private ChunkLight computeChunkLight(final int chunkX, final int chunkZ) {
+        final int[][][] regionStates = new int[9][][];
+        regionStates[4] = this.snapshotChunkStates(this.chunks.get(ChunkPosition.chunkKey(chunkX, chunkZ)));
+        return LightEngine.computeRegionLight(regionStates, this.worldHeight >> 4, this.skyLight,
+                BedrockProtocol.MAPPINGS.getJavaBlockLightEmission(), BedrockProtocol.MAPPINGS.getJavaBlockOpacity())[4];
+    }
+
+    /**
+     * Copies the section references on the event loop. Each built section array is immutable, so
+     * workers can read this snapshot while later subchunk merges replace cached sections.
+     */
+    private int[][][] snapshotRegionStates(final int chunkX, final int chunkZ) {
+        final int[][][] regionStates = new int[9][][];
+        for (int dz = -1; dz <= 1; dz++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                final BedrockChunk neighbor = this.chunks.get(ChunkPosition.chunkKey(chunkX + dx, chunkZ + dz));
+                if (neighbor == null) continue;
+
+                final int chunkIndex = (dz + 1) * 3 + (dx + 1);
+                regionStates[chunkIndex] = this.snapshotChunkStates(neighbor);
+            }
+        }
+        return regionStates;
+    }
+
+    private int[][] snapshotChunkStates(final BedrockChunk chunk) {
+        final int[][] states = this.getJavaBlockStates(chunk);
+        for (int sectionIndex = 0; sectionIndex < states.length; sectionIndex++) {
+            this.getJavaBlockStates(chunk, sectionIndex);
+        }
+        return states.clone();
+    }
+
+    private void submitLightUpdate(final long chunkKey) {
+        final ChunkPosition position = new ChunkPosition(chunkKey);
+        final BedrockChunk chunk = this.chunks.get(chunkKey);
+        final long version = this.lightVersions.getOrDefault(chunkKey, 0L);
+        final int[][][] regionStates = this.snapshotRegionStates(position.chunkX(), position.chunkZ());
+        this.pendingLightComputations.add(chunkKey);
+        LIGHT_EXECUTOR.execute(() -> {
+            ChunkLight light = null;
+            Throwable failure = null;
+            try {
+                light = LightEngine.computeRegionLight(regionStates, this.worldHeight >> 4, this.skyLight,
+                        BedrockProtocol.MAPPINGS.getJavaBlockLightEmission(), BedrockProtocol.MAPPINGS.getJavaBlockOpacity())[4];
+            } catch (Throwable e) {
+                failure = e;
+            } finally {
+                LIGHT_SLOTS.release();
+            }
+
+            final ChunkLight result = light;
+            final Throwable error = failure;
+            this.user().getChannel().eventLoop().execute(() -> {
+                this.pendingLightComputations.remove(chunkKey);
+                if (!this.user().getChannel().isActive()) return;
+                if (error != null) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not update chunk light", error);
+                    return;
+                }
+                if (this.chunks.get(chunkKey) != chunk || !this.chunkLight.containsKey(chunkKey)) return;
+                if (this.lightVersions.getOrDefault(chunkKey, 0L) != version) {
+                    this.lightDirtyChunks.add(chunkKey);
+                    return;
+                }
+
+                final ChunkLight previousLight = this.chunkLight.put(chunkKey, result);
+                final LightPacketData lightData = buildDiffLightPacketData(result, previousLight);
+                if (lightData.skyLightArrays().isEmpty() && lightData.blockLightArrays().isEmpty()
+                        && lightData.emptySkyLightMask().isEmpty() && lightData.emptyBlockLightMask().isEmpty()) return;
+
+                final PacketWrapper lightUpdate = PacketWrapper.create(ClientboundPackets26_3.LIGHT_UPDATE, this.user());
+                lightUpdate.write(Types.VAR_INT, position.chunkX());
+                lightUpdate.write(Types.VAR_INT, position.chunkZ());
+                this.writeLightData(lightUpdate, lightData);
+                lightUpdate.send(BedrockProtocol.class);
+            });
+        });
+    }
+
+    private int[][] getJavaBlockStates(final BedrockChunk chunk) {
+        return this.javaBlockStateCache.computeIfAbsent(ChunkPosition.chunkKey(chunk.getX(), chunk.getZ()), key -> new int[this.worldHeight >> 4][]);
+    }
+
+    private int[] getJavaBlockStates(final BedrockChunk chunk, final int sectionIndex) {
+        final int[][] chunkStates = this.getJavaBlockStates(chunk);
+        int[] states = chunkStates[sectionIndex];
+        if (states == null) {
+            states = chunkStates[sectionIndex] = this.buildJavaBlockStates(chunk.getSections()[sectionIndex]);
+        }
+        return states;
+    }
+
+    /**
+     * Converts the bedrock block states of a chunk section into java block states, indexed with
+     * {@code y * 256 | z * 16 | x}.
+     */
+    private int[] buildJavaBlockStates(final BedrockChunkSection section) {
+        final int[] states = new int[ChunkSection.SIZE];
+        final List<DataPalette> blockPalettes = section.palettes(PaletteType.BLOCKS);
+        if (blockPalettes.isEmpty()) return states; // All air
+
+        final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
+        final DataPalette layer0 = blockPalettes.get(0);
+        final int[] entryJavaIds = new int[layer0.size()];
+        for (int i = 0; i < entryJavaIds.length; i++) {
+            final int javaId = blockStateRewriter.javaId(layer0.idByIndex(i));
+            entryJavaIds[i] = javaId != -1 ? javaId : ProtocolConstants.JAVA_AIR_ID;
+        }
+        if (layer0.size() == 1) {
+            if (entryJavaIds[0] != ProtocolConstants.JAVA_AIR_ID) {
+                Arrays.fill(states, entryJavaIds[0]);
+            }
+        } else {
+            for (int y = 0; y < 16; y++) {
+                for (int z = 0; z < 16; z++) {
+                    for (int x = 0; x < 16; x++) {
+                        states[(y << 8) | (z << 4) | x] = entryJavaIds[layer0.paletteIndexAt(layer0.index(x, y, z))];
+                    }
+                }
+            }
+        }
+        return states;
+    }
+
+    private void invalidateJavaBlockStates(final int chunkX, final int subChunkY, final int chunkZ) {
+        final int[][] chunkStates = this.javaBlockStateCache.get(ChunkPosition.chunkKey(chunkX, chunkZ));
+        if (chunkStates == null) return;
+
+        final int sectionIndex = subChunkY + Math.abs(this.minY >> 4);
+        if (sectionIndex >= 0 && sectionIndex < chunkStates.length) {
+            chunkStates[sectionIndex] = null;
+        }
     }
 
     public Dimension getDimension() {
@@ -442,36 +712,60 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void tick() {
-        for (long dirtyChunk : this.dirtyChunks) {
-            final ChunkPosition chunkPos = new ChunkPosition(dirtyChunk);
+        if (this.user().get(EntityTracker.class) != null && this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
+            this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
+            final BlockPosition basePosition = new BlockPosition(this.centerX, 0, this.centerZ);
+            while (!this.subChunkRequests.isEmpty()) {
+                final Set<SubChunkPosition> group = this.subChunkRequests.stream().limit(256).collect(Collectors.toSet());
+                this.subChunkRequests.removeAll(group);
+                this.pendingSubChunks.addAll(group);
+
+                final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.user());
+                subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
+                subChunkRequest.write(BedrockTypes.UNSIGNED_VAR_INT, group.size()); // sub chunk offset count
+                for (SubChunkPosition subChunkPosition : group) {
+                    final BlockPosition offset = new BlockPosition(subChunkPosition.chunkX - basePosition.x(), subChunkPosition.subChunkY, subChunkPosition.chunkZ - basePosition.z());
+                    subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
+                }
+                subChunkRequest.write(BedrockTypes.INT_LE, basePosition.x());
+                subChunkRequest.write(BedrockTypes.INT_LE, basePosition.y());
+                subChunkRequest.write(BedrockTypes.INT_LE, basePosition.z());
+                subChunkRequest.sendToServer(BedrockProtocol.class);
+            }
+        }
+
+        // Remapping a chunk and computing its initial light run on the event loop. Limit this work
+        // per tick, while leaving remaining chunk data queued for the next tick.
+        final long deadline = System.nanoTime() + 30_000_000L;
+        final int queuedChunks = this.dirtyChunks.size();
+        for (int i = 0; i < queuedChunks && !this.dirtyChunks.isEmpty() && System.nanoTime() < deadline; i++) {
+            final long chunkKey = this.dirtyChunks.iterator().next();
+            this.dirtyChunks.remove(chunkKey);
+            final BedrockChunk chunk = this.chunks.get(chunkKey);
+            if (chunk == null) continue;
+            final Long lastSend = this.lastChunkSendNanos.get(chunkKey);
+            if (lastSend != null && System.nanoTime() - lastSend < PARTIAL_CHUNK_SEND_INTERVAL_NANOS && !isChunkFullyLoaded(chunk)) {
+                this.dirtyChunks.add(chunkKey);
+                continue;
+            }
+            final ChunkPosition chunkPos = new ChunkPosition(chunkKey);
             this.sendChunk(chunkPos.chunkX(), chunkPos.chunkZ());
         }
-        this.dirtyChunks.clear();
 
-        if (this.user().get(EntityTracker.class) == null || !this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
-            return;
-        }
-
-        this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
-        final BlockPosition basePosition = new BlockPosition(this.centerX, 0, this.centerZ);
-        while (!this.subChunkRequests.isEmpty()) {
-            final Set<SubChunkPosition> group = this.subChunkRequests.stream().limit(256).collect(Collectors.toSet());
-            this.subChunkRequests.removeAll(group);
-            this.pendingSubChunks.addAll(group);
-
-            final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.user());
-            subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
-            subChunkRequest.write(BedrockTypes.UNSIGNED_VAR_INT, group.size()); // sub chunk offset count
-            for (SubChunkPosition subChunkPosition : group) {
-                final BlockPosition offset = new BlockPosition(subChunkPosition.chunkX - basePosition.x(), subChunkPosition.subChunkY, subChunkPosition.chunkZ - basePosition.z());
-                subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
+        while (!this.lightDirtyChunks.isEmpty() && System.nanoTime() < deadline && LIGHT_SLOTS.tryAcquire()) {
+            final long chunkKey = this.lightDirtyChunks.iterator().nextLong();
+            this.lightDirtyChunks.remove(chunkKey);
+            if (!this.chunkLight.containsKey(chunkKey) || this.pendingLightComputations.contains(chunkKey)) {
+                LIGHT_SLOTS.release();
+                continue;
             }
-            // base position
-            subChunkRequest.write(BedrockTypes.INT_LE, basePosition.x()); // x
-            subChunkRequest.write(BedrockTypes.INT_LE, basePosition.y()); // y
-            subChunkRequest.write(BedrockTypes.INT_LE, basePosition.z()); // z
-
-            subChunkRequest.sendToServer(BedrockProtocol.class);
+            try {
+                this.submitLightUpdate(chunkKey);
+            } catch (RuntimeException e) {
+                this.pendingLightComputations.remove(chunkKey);
+                LIGHT_SLOTS.release();
+                ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not submit chunk light update", e);
+            }
         }
     }
 
