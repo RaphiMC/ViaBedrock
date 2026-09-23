@@ -19,7 +19,9 @@ package net.raphimc.viabedrock.protocol.provider;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.platform.providers.Provider;
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.gson.JsonObject;
+import net.raphimc.viabedrock.api.BedrockProtocolVersion;
 import net.raphimc.viabedrock.api.modinterface.BedrockSkinUtilityInterface;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
 import net.raphimc.viabedrock.api.resourcepack.content.Content;
@@ -109,6 +111,11 @@ public class SkinProvider implements Provider {
             claims.put("PlatformType", 0);
             claims.put("PlatformOfflineId", "");
             claims.put("PlatformOnlineId", "");
+        }
+        { // @since 26.40
+            claims.put("ClientEditorConnectionIntent", 0);
+            claims.put("ClientIsEditorCapable", 0);
+            claims.put("ProfileHash", "");
         }
 
         return claims;
