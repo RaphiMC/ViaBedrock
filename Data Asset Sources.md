@@ -3,6 +3,8 @@
 This file lists all the sources/code to obtain the data assets used in ViaBedrock.  
 If a file is not listed here, it has been created manually and is updated manually.
 
+The Java data generator and its setup steps are in [generator/README.md](generator/README.md).
+
 ### data/bedrock/biome_definitions.json
 [CloudburstMC/Data](https://github.com/CloudburstMC/Data/blob/619483eb88140f46b8933506c6263861c0d8fa43/stripped_biome_definitions.json)
 
@@ -51,19 +53,19 @@ This file has been generated using `BedrockParticleListGenerator` using data fro
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
 
 ### data/java/effects.json
-This file has been dumped using a fabric mod.
+This file can be dumped with the Fabric mod in `generator`.
 
 ### data/java/entity_data_fields.json
-This file has been dumped using a fabric mod.
+This file can be dumped with the Fabric mod in `generator`.
 
 ### data/java/heightmap_blockstates.nbt
-This file has been dumped using a fabric mod.
+This file can be dumped with the Fabric mod in `generator`.
 
 ### data/java/registries.nbt
-This file has been dumped from a vanilla server using a fabric mod.
+This file can be dumped from a vanilla server with the Fabric mod in `generator`.
 
 ### data/java/tags.nbt
-This file has been dumped from a vanilla server using a fabric mod.
+This file can be dumped from a vanilla server with the Fabric mod in `generator`.
 
 ### data/java/via_mappings.json
 [ViaVersion/Mappings](https://github.com/ViaVersion/Mappings/blob/248db97b3e3aa16dbdc13690e77de073c721ff9f/mappings/mapping-26.2.json)
