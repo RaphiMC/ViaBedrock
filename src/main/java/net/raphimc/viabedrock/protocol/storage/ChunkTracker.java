@@ -97,7 +97,8 @@ public class ChunkTracker extends StoredObject {
         return thread;
     });
 
-    private final Set<SubChunkPosition> subChunkRequests = new HashSet<>();
+    private final PriorityQueue<SubChunkPosition> subChunkRequests = new PriorityQueue<>(this::compareSubChunkRequests);
+    private final Set<SubChunkPosition> queuedSubChunkRequests = new HashSet<>();
     private final Set<SubChunkPosition> pendingSubChunks = new HashSet<>();
 
     private int centerX = 0;
@@ -124,8 +125,14 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void setCenter(final int x, final int z) {
-        this.centerX = x;
-        this.centerZ = z;
+        if (this.centerX != x || this.centerZ != z) {
+            this.centerX = x;
+            this.centerZ = z;
+            // Queue priorities depend on the center, so rebuild the heap after it moves.
+            final List<SubChunkPosition> requests = new ArrayList<>(this.subChunkRequests);
+            this.subChunkRequests.clear();
+            this.subChunkRequests.addAll(requests);
+        }
         this.removeOutOfLoadDistanceChunks();
     }
 
@@ -318,7 +325,10 @@ public class ChunkTracker extends StoredObject {
 
     public void requestSubChunk(final int chunkX, final int subChunkY, final int chunkZ) {
         if (!this.isInLoadDistance(chunkX, chunkZ)) return;
-        this.subChunkRequests.add(new SubChunkPosition(chunkX, subChunkY, chunkZ));
+        final SubChunkPosition position = new SubChunkPosition(chunkX, subChunkY, chunkZ);
+        if (this.queuedSubChunkRequests.add(position)) {
+            this.subChunkRequests.add(position);
+        }
     }
 
     public boolean mergeSubChunk(final int chunkX, final int subChunkY, final int chunkZ, final BedrockChunkSection other, final List<BedrockBlockEntity> blockEntities) {
@@ -713,15 +723,15 @@ public class ChunkTracker extends StoredObject {
     public void tick() {
         if (this.user().get(EntityTracker.class) != null && this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
             this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
+            this.queuedSubChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
             if (!this.subChunkRequests.isEmpty()) {
                 // Finish nearby columns before requesting the rest of a large view distance.
-                final List<SubChunkPosition> requests = new ArrayList<>(this.subChunkRequests);
-                requests.sort(Comparator.comparingLong((SubChunkPosition position) -> this.distanceToCenterSquared(position.chunkX, position.chunkZ))
-                        .thenComparingInt(SubChunkPosition::chunkX)
-                        .thenComparingInt(SubChunkPosition::chunkZ)
-                        .thenComparingInt(SubChunkPosition::subChunkY));
-                final List<SubChunkPosition> group = requests.subList(0, Math.min(MAX_SUB_CHUNK_REQUESTS_PER_TICK, requests.size()));
-                this.subChunkRequests.removeAll(group);
+                final List<SubChunkPosition> group = new ArrayList<>(Math.min(MAX_SUB_CHUNK_REQUESTS_PER_TICK, this.subChunkRequests.size()));
+                while (group.size() < MAX_SUB_CHUNK_REQUESTS_PER_TICK && !this.subChunkRequests.isEmpty()) {
+                    final SubChunkPosition position = this.subChunkRequests.remove();
+                    this.queuedSubChunkRequests.remove(position);
+                    group.add(position);
+                }
                 this.pendingSubChunks.addAll(group);
 
                 final BlockPosition basePosition = new BlockPosition(this.centerX, 0, this.centerZ);
@@ -776,6 +786,16 @@ public class ChunkTracker extends StoredObject {
         final long dx = (long) chunkX - this.centerX;
         final long dz = (long) chunkZ - this.centerZ;
         return dx * dx + dz * dz;
+    }
+
+    private int compareSubChunkRequests(final SubChunkPosition first, final SubChunkPosition second) {
+        int result = Long.compare(this.distanceToCenterSquared(first.chunkX, first.chunkZ), this.distanceToCenterSquared(second.chunkX, second.chunkZ));
+        if (result != 0) return result;
+        result = Integer.compare(first.chunkX, second.chunkX);
+        if (result != 0) return result;
+        result = Integer.compare(first.chunkZ, second.chunkZ);
+        if (result != 0) return result;
+        return Integer.compare(first.subChunkY, second.subChunkY);
     }
 
     private Chunk remapChunk(final BedrockChunk chunk) {
