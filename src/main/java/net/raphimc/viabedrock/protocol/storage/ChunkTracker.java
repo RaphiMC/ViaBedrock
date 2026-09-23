@@ -73,7 +73,6 @@ import java.util.logging.Level;
 public class ChunkTracker extends StoredObject {
 
     private static final int MAX_SUB_CHUNK_REQUESTS_PER_PACKET = 256;
-    private static final long SUB_CHUNK_REQUEST_BUDGET_NANOS = 5_000_000L;
 
     private final Dimension dimension;
     private final int minY;
@@ -725,9 +724,8 @@ public class ChunkTracker extends StoredObject {
         if (this.user().get(EntityTracker.class) != null && this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
             this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
             this.queuedSubChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
-            final long requestDeadline = System.nanoTime() + SUB_CHUNK_REQUEST_BUDGET_NANOS;
-            while (!this.subChunkRequests.isEmpty() && System.nanoTime() < requestDeadline) {
-                // Keep each packet bounded while requesting nearby columns until the time budget expires.
+            while (!this.subChunkRequests.isEmpty()) {
+                // Keep individual packets bounded while draining all queued requests.
                 final List<SubChunkPosition> group = new ArrayList<>(Math.min(MAX_SUB_CHUNK_REQUESTS_PER_PACKET, this.subChunkRequests.size()));
                 while (group.size() < MAX_SUB_CHUNK_REQUESTS_PER_PACKET && !this.subChunkRequests.isEmpty()) {
                     final SubChunkPosition position = this.subChunkRequests.remove();
