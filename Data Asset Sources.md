@@ -50,9 +50,6 @@ This file has been generated using `BedrockParticleListGenerator` using data fro
 ### data/bedrock/sounds.json
 This file has been generated using `BedrockSoundListGenerator` using data from the official bedrock client's assets folder.
 
-### data/java/block_light_properties.json
-This file has been created manually using the light emission and light-filtering block tables from [minecraft.wiki](https://minecraft.wiki/w/Light). State dependent light emission is implemented in `BedrockMappingData#loadBlockLightProperties`.
-
 ### data/java/effects.json
 This file has been dumped using a fabric mod.
 
