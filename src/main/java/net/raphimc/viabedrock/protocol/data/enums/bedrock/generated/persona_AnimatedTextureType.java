@@ -6,6 +6,7 @@ import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
 public enum persona_AnimatedTextureType {
 
+    None(0),
     Face(1),
     Body32x32(2),
     Body128x128(3),

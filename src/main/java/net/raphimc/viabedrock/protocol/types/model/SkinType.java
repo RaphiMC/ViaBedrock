@@ -19,8 +19,8 @@ package net.raphimc.viabedrock.protocol.types.model;
 
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SharedTypes_persona_ArmSizeType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.SharedTypes_persona_PieceType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.persona_ArmSize_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.persona_PieceType;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -60,14 +60,14 @@ public class SkinType extends Type<SkinData> {
         final String capeId = BedrockTypes.STRING.read(buffer);
         final String fullSkinId = BedrockTypes.STRING.read(buffer);
 
-        final String armSize = SharedTypes_persona_ArmSizeType.getByValue(buffer.readUnsignedByte()).name();
+        final String armSize = persona_ArmSize_Type.getByValue(buffer.readUnsignedByte()).name();
         final String skinColor = new Color(buffer.readIntLE(), true).toString();
 
         final int piecesLength = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final List<SkinData.PersonaPieceData> personaPieces = new ArrayList<>(piecesLength);
         for (int i = 0; i < piecesLength; i++) {
             final String id = BedrockTypes.STRING.read(buffer);
-            final String type = SharedTypes_persona_PieceType.getByValue(buffer.readIntLE()).name();
+            final String type = persona_PieceType.getByValue(buffer.readIntLE()).name();
             final String packId = BedrockTypes.UUID.read(buffer).toString();
             final boolean defaultPiece = buffer.readBoolean();
             final String productId = BedrockTypes.STRING.read(buffer);
@@ -77,7 +77,7 @@ public class SkinType extends Type<SkinData> {
         final int tintsLength = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
         final List<SkinData.PersonaPieceTintData> tintColors = new ArrayList<>(tintsLength);
         for (int i = 0; i < tintsLength; i++) {
-            final String type = SharedTypes_persona_PieceType.getByName(BedrockTypes.STRING.read(buffer)).name();
+            final String type = persona_PieceType.getByName(BedrockTypes.STRING.read(buffer)).name();
             final List<String> colors = new ArrayList<>(4);
             for (int i2 = 0; i2 < 4; i2++) {
                 colors.add(new Color(buffer.readIntLE(), true).toString());

@@ -18,6 +18,7 @@
 package net.raphimc.viabedrock.tool.generator;
 
 import com.viaversion.viaversion.libs.gson.Gson;
+import com.viaversion.viaversion.libs.gson.JsonArray;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.codegen.CodeGen;
@@ -32,8 +33,8 @@ import java.util.*;
 public class BedrockDataEnumGenerator {
 
     public static void main(String[] args) throws Throwable {
-        // Clone https://github.com/EndstoneMC/protocol-docs/
-        final File jsonDir =  new File("/home/exterminate/Projects/Minecraft/protocol-docs/enums/");
+        // Download metadata from https://github.com/Mojang/bedrock-protocol-docs/releases
+        final File jsonDir =  new File("/home/exterminate/Projects/Minecraft/bedrock-protocol-docs/");
         final Gson gson = new Gson();
 
         final CodeGen codeGen = new CodeGen(new File("src/main/java"), "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated");
@@ -42,9 +43,15 @@ public class BedrockDataEnumGenerator {
             if(!file.getName().endsWith(".json")) continue;
 
             final JsonObject jsonObject = gson.fromJson(Files.readString(file.toPath()), JsonObject.class);
-            final String enumName = jsonObject.get("name").getAsString().replace("::", "_");
 
-            if (enumName.equalsIgnoreCase("SharedTypes_Legacy_LevelSoundEvent")) {
+            if (!jsonObject.has("enum")) {
+                continue;
+            }
+
+            final String enumName = jsonObject.get("title").getAsString()
+                    .replace("::", "_").replace(" ", "_").replace("-", "_");
+
+            if (enumName.equalsIgnoreCase("LevelSoundEvent")) {
                 // Skip this enum, we already have a custom implementation for it
                 continue;
             }
@@ -105,10 +112,20 @@ public class BedrockDataEnumGenerator {
 
             genEnum.members().addMethod("public", "int", "getValue", method -> method.code().add("return this.value;"));
 
-            for (JsonElement enumFieldElement : jsonObject.getAsJsonArray("values")) {
-                JsonObject object = enumFieldElement.getAsJsonObject();
-                String name  = object.get("name").getAsString().replace(" ", "_");
-                genEnum.enumFields().add(new Field(name, null, null, object.get("value").getAsString(), new Javadoc()));
+
+            JsonArray enumFields = jsonObject.getAsJsonArray("enum");
+            for (int i = 0; i < enumFields.size(); i++) {
+                JsonElement enumFieldElement = enumFields.get(i);
+                String name = enumFieldElement.getAsString().replace(" ", "_");
+                String value = null;
+                if (jsonObject.has("x-enum-binary-value")) {
+                    JsonArray binaryValues = jsonObject.getAsJsonArray("x-enum-binary-value");
+                    if (binaryValues.size() > i) {
+                        value = binaryValues.get(i).getAsString();
+                    }
+                }
+
+                genEnum.enumFields().add(new Field(name, null, null, value, new Javadoc()));
             }
             codeGen.addType(genEnum);
         }

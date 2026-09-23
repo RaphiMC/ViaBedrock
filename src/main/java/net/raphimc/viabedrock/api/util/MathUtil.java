@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.api.util;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerAuthInputPacketPayload_InputData;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerAuthInputData;
 import net.raphimc.viabedrock.protocol.model.Position2f;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 
@@ -95,10 +95,10 @@ public class MathUtil {
         }
     }
 
-    public static Position2f calculateMovementDirections(final Set<PlayerAuthInputPacketPayload_InputData> authInputData, final boolean sneaking) {
+    public static Position2f calculateMovementDirections(final Set<PlayerAuthInputData> authInputData, final boolean sneaking) {
         final float[] directions = new float[2];
-        directions[0] = authInputData.contains(PlayerAuthInputPacketPayload_InputData.Left) ? 1F : authInputData.contains(PlayerAuthInputPacketPayload_InputData.Right) ? -1F : 0F;
-        directions[1] = authInputData.contains(PlayerAuthInputPacketPayload_InputData.Up) ? 1F : authInputData.contains(PlayerAuthInputPacketPayload_InputData.Down) ? -1F : 0F;
+        directions[0] = authInputData.contains(PlayerAuthInputData.Left) ? 1F : authInputData.contains(PlayerAuthInputData.Right) ? -1F : 0F;
+        directions[1] = authInputData.contains(PlayerAuthInputData.Up) ? 1F : authInputData.contains(PlayerAuthInputData.Down) ? -1F : 0F;
         final boolean both = directions[0] != 0F && directions[1] != 0F;
         for (int i = 0; i < directions.length; i++) {
             if (both) {

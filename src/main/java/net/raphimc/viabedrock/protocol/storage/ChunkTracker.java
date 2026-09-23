@@ -36,7 +36,7 @@ import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
 import com.viaversion.viaversion.libs.fastutil.longs.LongOpenHashSet;
 import com.viaversion.viaversion.libs.fastutil.longs.LongSet;
-import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
+import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import com.viaversion.viaversion.util.CompactArrayUtil;
 import com.viaversion.viaversion.util.MathUtil;
 import net.raphimc.viabedrock.ViaBedrock;
@@ -206,7 +206,7 @@ public class ChunkTracker extends StoredObject {
         if (!this.isInRenderDistance(chunkX, chunkZ)) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of render distance, but within load distance: " + chunkX + ", " + chunkZ);
             final EntityTracker entityTracker = this.user().get(EntityTracker.class);
-            final PacketWrapper setChunkCacheCenter = PacketWrapper.create(ClientboundPackets26_1.SET_CHUNK_CACHE_CENTER, this.user());
+            final PacketWrapper setChunkCacheCenter = PacketWrapper.create(ClientboundPackets26_3.SET_CHUNK_CACHE_CENTER, this.user());
             setChunkCacheCenter.write(Types.VAR_INT, (int) Math.floor(entityTracker.getClientPlayer().position().x()) >> 4); // chunk x
             setChunkCacheCenter.write(Types.VAR_INT, (int) Math.floor(entityTracker.getClientPlayer().position().z()) >> 4); // chunk z
             setChunkCacheCenter.send(BedrockProtocol.class);
@@ -245,7 +245,7 @@ public class ChunkTracker extends StoredObject {
         this.lightDirtyChunks.remove(chunkKey);
         this.user().get(EntityTracker.class).removeItemFrame(chunkPos);
 
-        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets26_1.FORGET_LEVEL_CHUNK, this.user());
+        final PacketWrapper unloadChunk = PacketWrapper.create(ClientboundPackets26_3.FORGET_LEVEL_CHUNK, this.user());
         unloadChunk.write(Types.CHUNK_POSITION, chunkPos); // chunk position
         unloadChunk.send(BedrockProtocol.class);
     }
@@ -524,7 +524,7 @@ public class ChunkTracker extends StoredObject {
         }
 
         final Chunk remappedChunk = this.remapChunk(chunk);
-        final PacketWrapper levelChunkWithLight = PacketWrapper.create(ClientboundPackets26_1.LEVEL_CHUNK_WITH_LIGHT, this.user());
+        final PacketWrapper levelChunkWithLight = PacketWrapper.create(ClientboundPackets26_3.LEVEL_CHUNK_WITH_LIGHT, this.user());
         levelChunkWithLight.write(this.chunkType, remappedChunk); // chunk
         this.writeLightData(levelChunkWithLight, buildFullLightPacketData(light));
         levelChunkWithLight.send(BedrockProtocol.class);
@@ -596,10 +596,10 @@ public class ChunkTracker extends StoredObject {
      * LEVEL_CHUNK_WITH_LIGHT and LIGHT_UPDATE.
      */
     private void writeLightData(final PacketWrapper wrapper, final LightPacketData lightData) {
-        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, lightData.skyLightMask().toLongArray()); // sky light mask
-        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, lightData.blockLightMask().toLongArray()); // block light mask
-        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, lightData.emptySkyLightMask().toLongArray()); // empty sky light mask
-        wrapper.write(Types.LONG_ARRAY_PRIMITIVE, lightData.emptyBlockLightMask().toLongArray()); // empty block light mask
+        wrapper.write(Types.BIT_SET, lightData.skyLightMask()); // sky light mask
+        wrapper.write(Types.BIT_SET, lightData.blockLightMask()); // block light mask
+        wrapper.write(Types.BIT_SET, lightData.emptySkyLightMask()); // empty sky light mask
+        wrapper.write(Types.BIT_SET, lightData.emptyBlockLightMask()); // empty block light mask
         wrapper.write(Types.VAR_INT, lightData.skyLightArrays().size()); // sky light length
         for (byte[] skyLight : lightData.skyLightArrays()) {
             wrapper.write(Types.BYTE_ARRAY_PRIMITIVE, skyLight); // sky light
@@ -688,7 +688,7 @@ public class ChunkTracker extends StoredObject {
                 continue;
             }
 
-            final PacketWrapper lightUpdate = PacketWrapper.create(ClientboundPackets26_1.LIGHT_UPDATE, this.user());
+            final PacketWrapper lightUpdate = PacketWrapper.create(ClientboundPackets26_3.LIGHT_UPDATE, this.user());
             lightUpdate.write(Types.VAR_INT, chunk.getX()); // chunk x
             lightUpdate.write(Types.VAR_INT, chunk.getZ()); // chunk z
             this.writeLightData(lightUpdate, lightData);

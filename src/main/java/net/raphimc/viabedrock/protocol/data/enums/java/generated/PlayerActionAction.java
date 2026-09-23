@@ -4,6 +4,7 @@ package net.raphimc.viabedrock.protocol.data.enums.java.generated;
 public enum PlayerActionAction {
 
     START_DESTROY_BLOCK,
+    CHANGE_DESTROY_DIRECTION,
     ABORT_DESTROY_BLOCK,
     STOP_DESTROY_BLOCK,
     DROP_ALL_ITEMS,

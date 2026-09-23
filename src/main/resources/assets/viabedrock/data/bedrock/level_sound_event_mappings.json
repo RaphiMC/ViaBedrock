@@ -1714,6 +1714,11 @@
         1.0
       ]
     },
+    "block:red_shrub": {
+      "sound": "block.red_shrub.break",
+      "volume": 0.8,
+      "pitch": 1.2
+    },
     "block:copper_bulb": {
       "sound": "break.copper_bulb",
       "pitch": 0.8
@@ -11288,6 +11293,10 @@
         0.8,
         1.0
       ]
+    },
+    "block:red_shrub": {
+      "sound": "block.red_shrub.place",
+      "pitch": 0.8
     },
     "block:copper_bulb": {
       "sound": "place.copper_bulb",

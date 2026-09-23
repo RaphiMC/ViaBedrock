@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.minecraft.GameProfile;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
+import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.components.RootBedrockComponent;
 import net.lenni0451.mcstructs_bedrock.text.components.TranslationBedrockComponent;
@@ -118,7 +118,7 @@ public class HudPackets {
 
             uuidsToRemoveSafe.addAll(uuidsToRemove); // TODO: This might be a little jank
             if (!uuidsToRemoveSafe.isEmpty()) {
-                PacketWrapper infoRemovePacket = PacketWrapper.create(ClientboundPackets26_1.PLAYER_INFO_REMOVE, wrapper.user());
+                PacketWrapper infoRemovePacket = PacketWrapper.create(ClientboundPackets26_3.PLAYER_INFO_REMOVE, wrapper.user());
                 infoRemovePacket.write(Types.UUID_ARRAY, uuidsToRemoveSafe.toArray(new UUID[0])); // uuids
                 infoRemovePacket.send(BedrockProtocol.class);
 
@@ -140,7 +140,7 @@ public class HudPackets {
             }
 
             if (!profiles.isEmpty()) {
-                PacketWrapper infoAddPacket = PacketWrapper.create(ClientboundPackets26_1.PLAYER_INFO_UPDATE, wrapper.user());
+                PacketWrapper infoAddPacket = PacketWrapper.create(ClientboundPackets26_3.PLAYER_INFO_UPDATE, wrapper.user());
                 infoAddPacket.write(Types.PROFILE_ACTIONS_ENUM1_21_4, BitSets.create(8, PlayerInfoUpdateAction.ADD_PLAYER, PlayerInfoUpdateAction.UPDATE_LISTED, PlayerInfoUpdateAction.UPDATE_DISPLAY_NAME)); // actions
                 infoAddPacket.write(Types.VAR_INT, profiles.size()); // length
                 for (GameProfile profile : profiles) {
@@ -162,7 +162,7 @@ public class HudPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.SET_TITLE, null, wrapper -> {
             final int rawType = wrapper.read(BedrockTypes.VAR_INT); // type
-            final SetTitlePacketPayload_TitleType type = SetTitlePacketPayload_TitleType.getByValue(rawType);
+            final SetTitlePacket_TitleType type = SetTitlePacket_TitleType.getByValue(rawType);
             if (type == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown SetTitlePacketPayload_TitleType: " + rawType);
                 wrapper.cancel();
@@ -179,7 +179,7 @@ public class HudPackets {
             final Function<String, String> translator = wrapper.user().get(ResourcePackStorage.class).getTexts().lookup();
             final String originalText = text;
             try {
-                if (type.getValue() >= SetTitlePacketPayload_TitleType.TitleTextObject.getValue() && type.getValue() <= SetTitlePacketPayload_TitleType.ActionbarTextObject.getValue()) {
+                if (type.getValue() >= SetTitlePacket_TitleType.TitleTextObject.getValue() && type.getValue() <= SetTitlePacket_TitleType.ActionbarTextObject.getValue()) {
                     final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(text);
                     rootComponent.forEach(c -> {
                         if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
@@ -189,23 +189,23 @@ public class HudPackets {
 
                 switch (type) {
                     case Clear, Reset -> {
-                        wrapper.setPacketType(ClientboundPackets26_1.CLEAR_TITLES);
-                        wrapper.write(Types.BOOLEAN, type == SetTitlePacketPayload_TitleType.Reset); // reset
+                        wrapper.setPacketType(ClientboundPackets26_3.CLEAR_TITLES);
+                        wrapper.write(Types.BOOLEAN, type == SetTitlePacket_TitleType.Reset); // reset
                     }
                     case Title, TitleTextObject -> {
-                        wrapper.setPacketType(ClientboundPackets26_1.SET_TITLE_TEXT);
+                        wrapper.setPacketType(ClientboundPackets26_3.SET_TITLE_TEXT);
                         wrapper.write(Types.TAG, TextUtil.stringToNbt(text)); // text
                     }
                     case Subtitle, SubtitleTextObject -> {
-                        wrapper.setPacketType(ClientboundPackets26_1.SET_SUBTITLE_TEXT);
+                        wrapper.setPacketType(ClientboundPackets26_3.SET_SUBTITLE_TEXT);
                         wrapper.write(Types.TAG, TextUtil.stringToNbt(text)); // text
                     }
                     case Actionbar, ActionbarTextObject -> {
-                        wrapper.setPacketType(ClientboundPackets26_1.SET_ACTION_BAR_TEXT);
+                        wrapper.setPacketType(ClientboundPackets26_3.SET_ACTION_BAR_TEXT);
                         wrapper.write(Types.TAG, TextUtil.stringToNbt(text)); // text
                     }
                     case Times -> {
-                        wrapper.setPacketType(ClientboundPackets26_1.SET_TITLES_ANIMATION);
+                        wrapper.setPacketType(ClientboundPackets26_3.SET_TITLES_ANIMATION);
                         wrapper.write(Types.INT, fadeInTicks); // fade in ticks
                         wrapper.write(Types.INT, stayTicks); // stay ticks
                         wrapper.write(Types.INT, fadeOutTicks); // fade out ticks
@@ -217,7 +217,7 @@ public class HudPackets {
                 wrapper.cancel();
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.SET_DISPLAY_OBJECTIVE, ClientboundPackets26_1.SET_DISPLAY_OBJECTIVE, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.SET_DISPLAY_OBJECTIVE, ClientboundPackets26_3.SET_DISPLAY_OBJECTIVE, wrapper -> {
             final ScoreboardTracker scoreboardTracker = wrapper.user().get(ScoreboardTracker.class);
 
             final String displaySlot = wrapper.read(BedrockTypes.STRING); // display slot
@@ -243,7 +243,7 @@ public class HudPackets {
             if (!scoreboardTracker.hasObjective(objectiveName)) {
                 scoreboardTracker.addObjective(objectiveName, new ScoreboardObjective(objectiveName, sortOrder));
 
-                final PacketWrapper scoreboardObjective = PacketWrapper.create(ClientboundPackets26_1.SET_OBJECTIVE, wrapper.user());
+                final PacketWrapper scoreboardObjective = PacketWrapper.create(ClientboundPackets26_3.SET_OBJECTIVE, wrapper.user());
                 scoreboardObjective.write(Types.STRING, objectiveName); // objective name
                 scoreboardObjective.write(Types.BYTE, (byte) ObjectiveAction.ADD.ordinal()); // mode
                 scoreboardObjective.write(Types.TAG, TextUtil.stringToNbt(wrapper.user().get(ResourcePackStorage.class).getTexts().translate(displayName))); // display name
@@ -359,7 +359,7 @@ public class HudPackets {
                 }
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.REMOVE_OBJECTIVE, ClientboundPackets26_1.SET_OBJECTIVE, new PacketHandlers() {
+        protocol.registerClientbound(ClientboundBedrockPackets.REMOVE_OBJECTIVE, ClientboundPackets26_3.SET_OBJECTIVE, new PacketHandlers() {
             @Override
             protected void register() {
                 map(BedrockTypes.STRING, Types.STRING); // objective name
@@ -367,11 +367,10 @@ public class HudPackets {
                 handler(wrapper -> wrapper.user().get(ScoreboardTracker.class).removeObjective(wrapper.get(Types.STRING, 0)));
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.BOSS_EVENT, ClientboundPackets26_1.BOSS_EVENT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.BOSS_EVENT, ClientboundPackets26_3.BOSS_EVENT, wrapper -> {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final long bossEntityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // boss entity unique id
-            final long playerId  = wrapper.read(BedrockTypes.VAR_LONG);
-            final int rawUpdateType = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // update type
+            final int rawUpdateType = wrapper.read(Types.BYTE); // update type
             final BossEventUpdateType updateType = BossEventUpdateType.getByValue(rawUpdateType);
             if (updateType == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown BossEventUpdateType: " + rawUpdateType);
@@ -382,8 +381,8 @@ public class HudPackets {
             final String bossName = wrapper.read(BedrockTypes.STRING);
             final String filteredBossName = wrapper.read(BedrockTypes.STRING);
             final float healthPercent = wrapper.read(BedrockTypes.FLOAT_LE);
-            final int color = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-            final int overlay = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+            final int color = wrapper.read(Types.BYTE);
+            final int overlay = wrapper.read(Types.BYTE);
 
             final Entity entity = entityTracker.getEntityByUid(bossEntityUniqueId);
             if (entity == null) {
@@ -436,13 +435,13 @@ public class HudPackets {
             final Function<String, String> translator = wrapper.user().get(ResourcePackStorage.class).getTexts().lookup();
             gameSession.setDeathMessage(TextUtil.stringToTextComponent(BedrockTranslator.translate(message, translator, parameters)));
             if (entityTracker.getClientPlayer().isDead()) {
-                final PacketWrapper playerCombatKill = PacketWrapper.create(ClientboundPackets26_1.PLAYER_COMBAT_KILL, wrapper.user());
+                final PacketWrapper playerCombatKill = PacketWrapper.create(ClientboundPackets26_3.PLAYER_COMBAT_KILL, wrapper.user());
                 playerCombatKill.write(Types.VAR_INT, entityTracker.getClientPlayer().javaId()); // entity id
                 playerCombatKill.write(Types.TAG, TextUtil.textComponentToNbt(gameSession.getDeathMessage())); // message
                 playerCombatKill.send(BedrockProtocol.class);
             }
         });
-        protocol.registerClientbound(ClientboundBedrockPackets.GUI_DATA_PICK_ITEM, ClientboundPackets26_1.SYSTEM_CHAT, wrapper -> {
+        protocol.registerClientbound(ClientboundBedrockPackets.GUI_DATA_PICK_ITEM, ClientboundPackets26_3.SYSTEM_CHAT, wrapper -> {
             final String itemName = wrapper.read(BedrockTypes.STRING); // item name
             final String itemEffects = wrapper.read(BedrockTypes.STRING); // item effects
             wrapper.read(BedrockTypes.INT_LE); // hotbar slot (Unused by the vanilla client)

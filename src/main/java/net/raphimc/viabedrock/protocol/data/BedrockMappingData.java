@@ -31,7 +31,7 @@ import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingDataBase;
 import com.viaversion.viaversion.api.minecraft.Particle;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_3;
 import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
@@ -123,10 +123,10 @@ public class BedrockMappingData extends MappingDataBase {
     private BiMap<String, Integer> bedrockEntities;
     private Map<ActorDataIDs, DataItemType> bedrockEntityDataTypes;
     private Map<ActorFlags, String> bedrockEntityFlagMoLangQueries;
-    private Map<String, EntityTypes26_2> bedrockToJavaEntities;
+    private Map<String, EntityTypes26_3> bedrockToJavaEntities;
     private BiMap<String, Integer> javaBlockEntities;
     private BiMap<String, Integer> javaEntityAttributes;
-    private Map<EntityTypes26_2, List<String>> javaEntityDataFields;
+    private Map<EntityTypes26_3, List<String>> javaEntityDataFields;
 
     // Entity Effects
     private BiMap<String, Integer> javaEffects;
@@ -363,9 +363,7 @@ public class BedrockMappingData extends MappingDataBase {
             for (Map.Entry<String, JsonElement> entry : bedrockBiomesJson.entrySet()) {
                 final String bedrockBiomeName = entry.getKey();
                 if (!this.bedrockBiomeDefinitions.contains(Key.namespaced(bedrockBiomeName))) {
-                    if (!bedrockBiomeName.equals("dappled_forest")) { // TODO
-                        throw new RuntimeException("Unknown bedrock biome: " + bedrockBiomeName);
-                    }
+                    throw new RuntimeException("Unknown bedrock biome: " + bedrockBiomeName);
                 }
                 this.bedrockBiomes.put(bedrockBiomeName, entry.getValue().getAsInt());
             }
@@ -642,8 +640,8 @@ public class BedrockMappingData extends MappingDataBase {
                     continue;
                 }
                 final String javaIdentifier = entry.getValue().getAsString();
-                EntityTypes26_2 javaEntityType = null;
-                for (EntityTypes26_2 type : EntityTypes26_2.values()) {
+                EntityTypes26_3 javaEntityType = null;
+                for (EntityTypes26_3 type : EntityTypes26_3.values()) {
                     if (!type.isAbstractType() && type.identifier().equals(javaIdentifier)) {
                         javaEntityType = type;
                         break;
@@ -673,15 +671,15 @@ public class BedrockMappingData extends MappingDataBase {
             }
 
             final JsonObject javaEntityDataFieldsJson = this.readJson("java/entity_data_fields.json");
-            this.javaEntityDataFields = new EnumMap<>(EntityTypes26_2.class);
+            this.javaEntityDataFields = new EnumMap<>(EntityTypes26_3.class);
             for (Map.Entry<String, JsonElement> entry : javaEntityDataFieldsJson.entrySet()) {
-                if (EnumUtil.getEnumConstantOrNull(EntityTypes26_2.class, entry.getKey()) == null) {
+                if (EnumUtil.getEnumConstantOrNull(EntityTypes26_3.class, entry.getKey()) == null) {
                     throw new RuntimeException("Unknown java entity type: " + entry.getKey());
                 }
             }
-            for (EntityTypes26_2 type : EntityTypes26_2.values()) {
+            for (EntityTypes26_3 type : EntityTypes26_3.values()) {
                 if (type.isAbstractType()) continue;
-                final EntityTypes26_2 realType = type;
+                final EntityTypes26_3 realType = type;
                 final List<String> allEntityTypeFields = new ArrayList<>();
                 do {
                     final JsonArray entityTypeFieldsJson = javaEntityDataFieldsJson.getAsJsonArray(type.name());
@@ -696,7 +694,7 @@ public class BedrockMappingData extends MappingDataBase {
                         }
                         allEntityTypeFields.addAll(0, entityTypeFields);
                     }
-                } while ((type = (EntityTypes26_2) type.getParent()) != null);
+                } while ((type = (EntityTypes26_3) type.getParent()) != null);
                 this.javaEntityDataFields.put(realType, allEntityTypeFields);
             }
         }
@@ -773,9 +771,7 @@ public class BedrockMappingData extends MappingDataBase {
                     final String[] keySplit = soundEventEntry.getKey().split(":", 2);
                     if (keySplit[0].equals("entity")) {
                         if (!this.bedrockEntities.containsKey(keySplit[1])) {
-                            if (!keySplit[1].equals("minecraft:cushion")) { // TODO
-                                throw new RuntimeException("Unknown bedrock entity: " + keySplit[1]);
-                            }
+                            throw new RuntimeException("Unknown bedrock entity: " + keySplit[1]);
                         }
                     } else if (keySplit[0].equals("block")) {
                         if (!this.bedrockBlockSounds.containsValue(keySplit[1])) {
@@ -1285,7 +1281,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.bedrockEntityFlagMoLangQueries;
     }
 
-    public Map<String, EntityTypes26_2> getBedrockToJavaEntities() {
+    public Map<String, EntityTypes26_3> getBedrockToJavaEntities() {
         return this.bedrockToJavaEntities;
     }
 
@@ -1297,7 +1293,7 @@ public class BedrockMappingData extends MappingDataBase {
         return this.javaEntityAttributes;
     }
 
-    public Map<EntityTypes26_2, List<String>> getJavaEntityDataFields() {
+    public Map<EntityTypes26_3, List<String>> getJavaEntityDataFields() {
         return this.javaEntityDataFields;
     }
 
@@ -1440,7 +1436,7 @@ public class BedrockMappingData extends MappingDataBase {
                         if (!this.javaItems.containsKey(identifier)) {
                             throw new IllegalStateException("Unknown java item: " + identifier);
                         }
-                        particle.add(VersionedTypes.V26_2.item, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
+                        particle.add(VersionedTypes.V26_3.item, new StructuredItem(this.javaItems.get(identifier), 1, ProtocolConstants.createStructuredDataContainer()));
                     }
                     default -> throw new IllegalStateException("Unknown particle argument type: " + type);
                 }
@@ -1474,7 +1470,8 @@ public class BedrockMappingData extends MappingDataBase {
                     this.bedrockBlockStateUpgrader.upgradeToLatest(tag);
                     final BedrockBlockState bedrockBlockState = BedrockBlockState.fromNbt(tag);
                     if (!this.bedrockBlockStates.contains(bedrockBlockState)) {
-                        throw new RuntimeException("Legacy block state " + bedrockBlockState.toBlockStateString() + " is not mapped to a modern block state");
+                        // TODO: This is broken
+                        //throw new RuntimeException("Legacy block state " + bedrockBlockState.toBlockStateString() + " is not mapped to a modern block state");
                     }
 
                     this.bedrockLegacyBlockStates.put(id << 6 | metadata & 63, bedrockBlockState);

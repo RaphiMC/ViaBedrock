@@ -13,8 +13,6 @@ public enum ItemStackRequestActionType {
     Destroy(4),
     Consume(5),
     Create(6),
-    PlaceInItemContainer(7),
-    TakeFromItemContainer(8),
     ScreenLabTableCombine(9),
     ScreenBeaconPayment(10),
     ScreenHUDMineBlock(11),

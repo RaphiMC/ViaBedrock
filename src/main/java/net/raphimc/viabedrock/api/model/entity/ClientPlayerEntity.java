@@ -22,7 +22,7 @@ import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
-import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
+import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
@@ -67,7 +67,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     // Server Authoritative Movement
     private Position3f prevPosition;
     private boolean prevOnGround;
-    private final Set<PlayerAuthInputPacketPayload_InputData> authInputData = EnumSet.noneOf(PlayerAuthInputPacketPayload_InputData.class);
+    private final Set<PlayerAuthInputData> authInputData = EnumSet.noneOf(PlayerAuthInputData.class);
     private final List<AuthInputBlockAction> authInputBlockActions = new ArrayList<>();
     private Set<InputFlag> inputFlags = EnumSet.noneOf(InputFlag.class);
     private Set<InputFlag> prevInputFlags = EnumSet.noneOf(InputFlag.class);
@@ -116,7 +116,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void sendPlayerPositionPacketToClient(final Set<Relative> relatives) {
-        final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets26_1.PLAYER_POSITION, this.user);
+        final PacketWrapper playerPosition = PacketWrapper.create(ClientboundPackets26_3.PLAYER_POSITION, this.user);
         this.writePlayerPositionPacketToClient(playerPosition, relatives, true);
         playerPosition.send(BedrockProtocol.class);
     }
@@ -226,7 +226,7 @@ public class ClientPlayerEntity extends PlayerEntity {
             if (!this.initiallySpawned) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received teleport confirm for teleport id " + teleportId + " but player is not spawned yet");
             }
-            this.authInputData.add(PlayerAuthInputPacketPayload_InputData.HandledTeleport);
+            this.authInputData.add(PlayerAuthInputData.HandledTeleport);
         }
     }
 
@@ -238,15 +238,15 @@ public class ClientPlayerEntity extends PlayerEntity {
         return this.prevOnGround;
     }
 
-    public Set<PlayerAuthInputPacketPayload_InputData> authInputData() {
+    public Set<PlayerAuthInputData> authInputData() {
         return this.authInputData;
     }
 
-    public void addAuthInputData(final PlayerAuthInputPacketPayload_InputData data) {
+    public void addAuthInputData(final PlayerAuthInputData data) {
         this.authInputData.add(data);
     }
 
-    public void addAuthInputData(final PlayerAuthInputPacketPayload_InputData... data) {
+    public void addAuthInputData(final PlayerAuthInputData... data) {
         this.authInputData.addAll(Arrays.asList(data));
     }
 
@@ -255,7 +255,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void addAuthInputBlockAction(final AuthInputBlockAction blockAction) {
-        this.authInputData.add(PlayerAuthInputPacketPayload_InputData.PerformBlockActions);
+        this.authInputData.add(PlayerAuthInputData.PerformBlockActions);
         this.authInputBlockActions.add(blockAction);
     }
 
@@ -284,7 +284,7 @@ public class ClientPlayerEntity extends PlayerEntity {
 
     @Override
     public void setAbilities(final PlayerAbilities abilities) {
-        final PacketWrapper playerAbilities = PacketWrapper.create(ClientboundPackets26_1.PLAYER_ABILITIES, this.user);
+        final PacketWrapper playerAbilities = PacketWrapper.create(ClientboundPackets26_3.PLAYER_ABILITIES, this.user);
         this.setAbilities(abilities, playerAbilities);
         playerAbilities.send(BedrockProtocol.class);
     }
@@ -457,7 +457,7 @@ public class ClientPlayerEntity extends PlayerEntity {
                 final EntityAttribute health = attribute.name().equals("minecraft:health") ? attribute : this.attributes.get("minecraft:health");
                 final EntityAttribute hunger = attribute.name().equals("minecraft:player.hunger") ? attribute : this.attributes.get("minecraft:player.hunger");
                 final EntityAttribute saturation = attribute.name().equals("minecraft:player.saturation") ? attribute : this.attributes.get("minecraft:player.saturation");
-                final PacketWrapper setHealth = PacketWrapper.create(ClientboundPackets26_1.SET_HEALTH, this.user);
+                final PacketWrapper setHealth = PacketWrapper.create(ClientboundPackets26_3.SET_HEALTH, this.user);
                 setHealth.write(Types.FLOAT, health.computeClampedValue()); // health
                 setHealth.write(Types.VAR_INT, (int) hunger.computeClampedValue()); // food
                 setHealth.write(Types.FLOAT, saturation.computeClampedValue()); // saturation
@@ -472,7 +472,7 @@ public class ClientPlayerEntity extends PlayerEntity {
             case "minecraft:player.experience", "minecraft:player.level" -> {
                 final EntityAttribute experience = attribute.name().equals("minecraft:player.experience") ? attribute : this.attributes.get("minecraft:player.experience");
                 final EntityAttribute level = attribute.name().equals("minecraft:player.level") ? attribute : this.attributes.get("minecraft:player.level");
-                final PacketWrapper setExperience = PacketWrapper.create(ClientboundPackets26_1.SET_EXPERIENCE, this.user);
+                final PacketWrapper setExperience = PacketWrapper.create(ClientboundPackets26_3.SET_EXPERIENCE, this.user);
                 setExperience.write(Types.FLOAT, experience.computeClampedValue()); // bar progress
                 setExperience.write(Types.VAR_INT, (int) level.computeClampedValue()); // experience level
                 setExperience.write(Types.VAR_INT, 0); // total experience

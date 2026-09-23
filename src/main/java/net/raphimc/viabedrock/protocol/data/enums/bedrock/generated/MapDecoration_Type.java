@@ -31,7 +31,12 @@ public enum MapDecoration_Type {
     JungleTemple(22),
     WitchHut(23),
     TrialChambers(24),
-    Count(25),
+    AbandonedCamp(25),
+    BuriedAncientCity(26),
+    BuriedMineshaft(27),
+    DesertPyramid(28),
+    WarmOceanRuins(29),
+    Count(30),
     ;
 
     private static final Int2ObjectMap<MapDecoration_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();

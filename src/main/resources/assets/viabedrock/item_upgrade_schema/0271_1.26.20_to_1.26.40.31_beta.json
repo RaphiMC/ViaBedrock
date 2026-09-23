@@ -1,0 +1,10 @@
+{
+    "remappedMetas": {
+        "minecraft:chest_boat": {
+            "10": "minecraft:poplar_chest_boat"
+        }
+    },
+    "renamedIds": {
+        "minecraft:record_bounce": "minecraft:music_disc_bounce"
+    }
+}

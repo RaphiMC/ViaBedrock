@@ -7,9 +7,9 @@ This file lists the steps necessary to update ViaBedrock.
 3. Update data in the `protocol/data` package
 4. Run `MappingDataGenerator` to generate the mapping classes
 5. Update hardcoded blockstates: Search all files for `new BlockState("`
-6. Replace `VersionedTypes.V26_2` and `EntityTypes26_2` with the new type
-7. Replace `ClientboundPackets26_1` and `ServerboundPackets26_1` with the new packet enum
-8. Replace `ClientboundConfigurationPackets1_21_9` and `ServerboundConfigurationPackets1_21_9` with the new packet enum
+6. Replace `VersionedTypes.V26_3` and `EntityTypes26_3` with the new type
+7. Replace `ClientboundPackets26_3` and `ServerboundPackets26_3` with the new packet enum
+8. Replace `ClientboundConfigurationPackets26_3` and `ServerboundConfigurationPackets1_21_9` with the new packet enum
 9. Check `StructuredDataKey` usages and update them to new Minecraft version if needed
 10. Update changed packet contents
 11. Update rewriters
@@ -17,7 +17,7 @@ This file lists the steps necessary to update ViaBedrock.
 ## Bedrock Edition Update
 1. Add new vanilla resource packs to `assets/viabedrock/data/custom/vanilla_resource_packs.json`
 2. Update and run `BedrockDataEnumGenerator` to generate the data enums
-3. Update manual enums (Thank you Mojang)
+3. Extract the resource packs (https://github.com/LPaicen/brarchive-extractor + https://github.com/bedrock-apis/bds-docs/tree/stable-1.26.50)
 4. Update `assets/viabedrock/data` (See `Data Asset Sources.md`) and `BedrockMappingData`
 5. Update data in the `protocol/data` package
 6. Run `MappingDataGenerator` to generate the mapping classes

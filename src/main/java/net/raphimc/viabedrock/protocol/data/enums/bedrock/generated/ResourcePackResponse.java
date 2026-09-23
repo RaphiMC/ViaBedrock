@@ -59,7 +59,7 @@ public enum ResourcePackResponse {
     }
 
     public int getValue() {
-        return this.value - 1; // TODO: #blameMojang
+        return this.value - 1; // TODO
     }
 
 }

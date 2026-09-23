@@ -35,18 +35,26 @@ public class ParticleDefinitions {
     public ParticleDefinitions(final ResourcePackStorage resourcePackStorage) {
         for (ResourcePack pack : resourcePackStorage.getPackStackBottomToTop()) {
             for (String particlePath : pack.content().getFilesDeep("particles/", ".json")) {
-                try {
-                    final JsonObject particleEffect = pack.content().getJson(particlePath).getAsJsonObject("particle_effect");
-                    final String identifier = Key.namespaced(particleEffect.getAsJsonObject("description").get("identifier").getAsString());
-                    final ParticleDefinition particleDefinition = new ParticleDefinition(identifier);
-                    if (particleEffect.has("components")) {
-                        final JsonObject components = particleEffect.getAsJsonObject("components");
-                    }
-                    this.particles.put(identifier, particleDefinition);
-                } catch (Throwable e) {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse particle definition " + particlePath + " in pack " + pack.key(), e);
-                }
+                this.handle(pack, particlePath);
             }
+            for (String particlePath : pack.content().getFilesDeep("__brarchive/particles/", ".json")) {
+                this.handle(pack, particlePath);
+            }
+        }
+    }
+
+    private void handle(ResourcePack pack, String particlePath) {
+        try {
+            final JsonObject particleEffect = pack.content().getJson(particlePath).getAsJsonObject("particle_effect");
+            final String identifier = Key.namespaced(particleEffect.getAsJsonObject("description").get("identifier").getAsString());
+            final ParticleDefinition particleDefinition = new ParticleDefinition(identifier);
+            if (particleEffect.has("components")) {
+                final JsonObject components = particleEffect.getAsJsonObject("components");
+            }
+            this.particles.put(identifier, particleDefinition);
+        } catch (Throwable e) {
+            System.err.println("Failed to load particle " + particlePath + ": " + e.getMessage());
+            //ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse particle definition " + particlePath + " in pack " + pack.key(), e);
         }
     }
 

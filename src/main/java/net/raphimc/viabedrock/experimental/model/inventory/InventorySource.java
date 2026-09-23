@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.experimental.model.inventory;
 
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySource_InventorySourceFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceFlags;
 
-public record InventorySource(InventorySourceType type, int containerId, InventorySource_InventorySourceFlags flags) {
+public record InventorySource(InventorySourceType type, int containerId, InventorySourceFlags flags) {
 }

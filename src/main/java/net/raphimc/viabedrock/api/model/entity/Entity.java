@@ -18,12 +18,12 @@
 package net.raphimc.viabedrock.api.model.entity;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_2;
+import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_3;
 import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
-import com.viaversion.viaversion.protocols.v1_21_11to26_1.packet.ClientboundPackets26_1;
+import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.experimental.rewriter.EntityMetadataRewriter;
@@ -49,7 +49,7 @@ public class Entity {
     protected final String type;
     protected final int javaId;
     protected final UUID javaUuid;
-    protected final EntityTypes26_2 javaType;
+    protected final EntityTypes26_3 javaType;
 
     /**
      * x, y, z
@@ -69,7 +69,7 @@ public class Entity {
     protected List<Long> passengers = new ArrayList<>();
     protected long mountRuntimeId = -1;
 
-    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes26_2 javaType) {
+    public Entity(final UserConnection user, final long uniqueId, final long runtimeId, final String type, final int javaId, final UUID javaUuid, final EntityTypes26_3 javaType) {
         this.user = user;
         this.uniqueId = uniqueId;
         this.runtimeId = runtimeId;
@@ -86,7 +86,7 @@ public class Entity {
     public void remove() {
         if (this.hasBossBar) {
             this.hasBossBar = false;
-            final PacketWrapper bossEvent = PacketWrapper.create(ClientboundPackets26_1.BOSS_EVENT, this.user);
+            final PacketWrapper bossEvent = PacketWrapper.create(ClientboundPackets26_3.BOSS_EVENT, this.user);
             bossEvent.write(Types.UUID, this.javaUuid()); // uuid
             bossEvent.write(Types.VAR_INT, BossEventOperationType.REMOVE.ordinal()); // operation
             bossEvent.send(BedrockProtocol.class);
@@ -96,9 +96,9 @@ public class Entity {
     public final void updateEntityData(final EntityData[] entityData) {
         final List<EntityData> javaEntityData = new ArrayList<>();
         this.updateEntityData(entityData, javaEntityData);
-        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets26_1.SET_ENTITY_DATA, this.user);
+        final PacketWrapper setEntityData = PacketWrapper.create(ClientboundPackets26_3.SET_ENTITY_DATA, this.user);
         setEntityData.write(Types.VAR_INT, this.javaId); // entity id
-        setEntityData.write(VersionedTypes.V26_2.entityDataList, javaEntityData); // entity data
+        setEntityData.write(VersionedTypes.V26_3.entityDataList, javaEntityData); // entity data
         setEntityData.send(BedrockProtocol.class);
     }
 
@@ -160,7 +160,7 @@ public class Entity {
         return this.javaUuid;
     }
 
-    public EntityTypes26_2 javaType() {
+    public EntityTypes26_3 javaType() {
         return this.javaType;
     }
 
