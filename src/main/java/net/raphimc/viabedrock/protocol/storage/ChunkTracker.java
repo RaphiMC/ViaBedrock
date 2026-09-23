@@ -72,7 +72,7 @@ import java.util.logging.Level;
 // TODO: Feature: Incremental light updates instead of whole section recomputations
 public class ChunkTracker extends StoredObject {
 
-    private static final int MAX_SUB_CHUNK_REQUEST_OFFSETS_PER_PACKET = 8_192;
+    private static final int MAX_SUB_CHUNK_REQUEST_OFFSETS_PER_PACKET = 256;
     private static final long SUB_CHUNK_REQUEST_BUDGET_NANOS = 5_000_000L;
 
     private final Dimension dimension;
