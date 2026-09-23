@@ -3,6 +3,8 @@
 This file lists all the sources/code to obtain the data assets used in ViaBedrock.  
 If a file is not listed here, it has been created manually and is updated manually.
 
+The Java data generator and its setup steps are in [generator/README.md](generator/README.md).
+
 ### data/bedrock/biome_definitions.json
 [CloudburstMC/Data](https://github.com/CloudburstMC/Data/blob/a8a4341d7763d6eb8547cff3ca46b4153d60163d/stripped_biome_definitions.json)
 
@@ -58,19 +60,19 @@ and directly named potted blocks. Other entries in these files remain curated.
 This file has been created manually using the light emission and light-filtering block tables from [minecraft.wiki](https://minecraft.wiki/w/Light). State dependent light emission is implemented in `BedrockMappingData#loadBlockLightProperties`.
 
 ### data/java/effects.json
-This file has been dumped using a fabric mod.
+This file can be dumped with the Fabric mod in `generator`.
 
 ### data/java/entity_data_fields.json
-This file has been dumped using a fabric mod.
+This file can be dumped with the Fabric mod in `generator`.
 
 ### data/java/heightmap_blockstates.nbt
-This file has been dumped using a fabric mod.
+This file can be dumped with the Fabric mod in `generator`.
 
 ### data/java/registries.nbt
-This file has been dumped from a vanilla server using a fabric mod.
+This file can be dumped from a vanilla server with the Fabric mod in `generator`.
 
 ### data/java/tags.nbt
-This file has been dumped from a vanilla server using a fabric mod.
+This file can be dumped from a vanilla server with the Fabric mod in `generator`.
 
 ### data/java/via_mappings.json
 [ViaVersion/Mappings](https://github.com/ViaVersion/Mappings/blob/e999640a3742e87080972cf13b15e329d5fada32/mappings/mapping-26.3.json)

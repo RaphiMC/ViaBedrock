@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "net.raphimc.viabedrock.generator.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "DumpRegistries",
+    "DumpTags",
+    "NetworkPayloadAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
