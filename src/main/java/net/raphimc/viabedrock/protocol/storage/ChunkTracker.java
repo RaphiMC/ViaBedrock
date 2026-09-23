@@ -72,8 +72,6 @@ import java.util.logging.Level;
 // TODO: Feature: Incremental light updates instead of whole section recomputations
 public class ChunkTracker extends StoredObject {
 
-    private static final int MAX_SUB_CHUNK_REQUESTS_PER_PACKET = 256;
-
     private final Dimension dimension;
     private final int minY;
     private final int worldHeight;
@@ -724,22 +722,16 @@ public class ChunkTracker extends StoredObject {
         if (this.user().get(EntityTracker.class) != null && this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
             this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
             this.queuedSubChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
-            while (!this.subChunkRequests.isEmpty()) {
-                // Keep individual packets bounded while draining all queued requests.
-                final List<SubChunkPosition> group = new ArrayList<>(Math.min(MAX_SUB_CHUNK_REQUESTS_PER_PACKET, this.subChunkRequests.size()));
-                while (group.size() < MAX_SUB_CHUNK_REQUESTS_PER_PACKET && !this.subChunkRequests.isEmpty()) {
-                    final SubChunkPosition position = this.subChunkRequests.remove();
-                    this.queuedSubChunkRequests.remove(position);
-                    group.add(position);
-                }
-                this.pendingSubChunks.addAll(group);
-
+            if (!this.subChunkRequests.isEmpty()) {
                 final BlockPosition basePosition = new BlockPosition(this.centerX, 0, this.centerZ);
                 final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.user());
                 subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
-                subChunkRequest.write(BedrockTypes.UNSIGNED_VAR_INT, group.size()); // sub chunk offset count
-                for (SubChunkPosition subChunkPosition : group) {
-                    final BlockPosition offset = new BlockPosition(subChunkPosition.chunkX - basePosition.x(), subChunkPosition.subChunkY, subChunkPosition.chunkZ - basePosition.z());
+                subChunkRequest.write(BedrockTypes.UNSIGNED_VAR_INT, this.subChunkRequests.size()); // sub chunk offset count
+                while (!this.subChunkRequests.isEmpty()) {
+                    final SubChunkPosition position = this.subChunkRequests.remove();
+                    this.queuedSubChunkRequests.remove(position);
+                    this.pendingSubChunks.add(position);
+                    final BlockPosition offset = new BlockPosition(position.chunkX - basePosition.x(), position.subChunkY, position.chunkZ - basePosition.z());
                     subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
                 }
                 subChunkRequest.write(BedrockTypes.INT_LE, basePosition.x());
