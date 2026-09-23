@@ -73,8 +73,6 @@ import java.util.stream.Collectors;
 // TODO: Feature: Incremental light updates instead of whole section recomputations
 public class ChunkTracker extends StoredObject {
 
-    private static final long PARTIAL_CHUNK_SEND_INTERVAL_NANOS = 200_000_000L;
-
     private final Dimension dimension;
     private final int minY;
     private final int worldHeight;
@@ -83,7 +81,6 @@ public class ChunkTracker extends StoredObject {
 
     private final Long2ObjectMap<BedrockChunk> chunks = new Long2ObjectOpenHashMap<>();
     private final Set<Long> dirtyChunks = new LinkedHashSet<>();
-    private final Map<Long, Long> lastChunkSendNanos = new HashMap<>();
 
     private final Long2ObjectMap<int[][]> javaBlockStateCache = new Long2ObjectOpenHashMap<>(); // chunk key -> per section java block states
     private final Long2ObjectMap<ChunkLight> chunkLight = new Long2ObjectOpenHashMap<>(); // Only chunks sent to the client have cached light
@@ -165,7 +162,6 @@ public class ChunkTracker extends StoredObject {
         final long chunkKey = chunkPos.chunkKey();
         this.chunks.remove(chunkKey);
         this.dirtyChunks.remove(chunkKey);
-        this.lastChunkSendNanos.remove(chunkKey);
         this.javaBlockStateCache.remove(chunkKey);
         this.chunkLight.remove(chunkKey);
         this.lightDirtyChunks.remove(chunkKey);
@@ -425,12 +421,14 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void sendChunkInNextTick(final int chunkX, final int chunkZ) {
+        final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
+        if (chunk == null || !isChunkFullyLoaded(chunk)) return;
         this.dirtyChunks.add(ChunkPosition.chunkKey(chunkX, chunkZ));
     }
 
     public void sendChunk(final int chunkX, final int chunkZ) {
         final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
-        if (chunk == null) {
+        if (chunk == null || !isChunkFullyLoaded(chunk)) {
             return;
         }
 
@@ -442,7 +440,6 @@ public class ChunkTracker extends StoredObject {
         this.writeLightData(levelChunkWithLight, buildFullLightPacketData(light));
         levelChunkWithLight.send(BedrockProtocol.class);
         final long chunkKey = ChunkPosition.chunkKey(chunkX, chunkZ);
-        this.lastChunkSendNanos.put(chunkKey, System.nanoTime());
         this.chunkLight.put(chunkKey, light);
         this.lightVersions.merge(chunkKey, 1L, Long::sum);
         // Initial lighting uses this chunk alone. Refresh its borders with any loaded neighbors.
@@ -543,6 +540,7 @@ public class ChunkTracker extends StoredObject {
     }
 
     private static boolean isChunkFullyLoaded(final BedrockChunk chunk) {
+        // Sections requested from Bedrock keep pending updates until their subchunk response arrives.
         for (final BedrockChunkSection section : chunk.getSections()) {
             if (section.hasPendingBlockUpdates()) return false;
         }
@@ -741,13 +739,6 @@ public class ChunkTracker extends StoredObject {
         for (int i = 0; i < queuedChunks && !this.dirtyChunks.isEmpty() && System.nanoTime() < deadline; i++) {
             final long chunkKey = this.dirtyChunks.iterator().next();
             this.dirtyChunks.remove(chunkKey);
-            final BedrockChunk chunk = this.chunks.get(chunkKey);
-            if (chunk == null) continue;
-            final Long lastSend = this.lastChunkSendNanos.get(chunkKey);
-            if (lastSend != null && System.nanoTime() - lastSend < PARTIAL_CHUNK_SEND_INTERVAL_NANOS && !isChunkFullyLoaded(chunk)) {
-                this.dirtyChunks.add(chunkKey);
-                continue;
-            }
             final ChunkPosition chunkPos = new ChunkPosition(chunkKey);
             this.sendChunk(chunkPos.chunkX(), chunkPos.chunkZ());
         }
