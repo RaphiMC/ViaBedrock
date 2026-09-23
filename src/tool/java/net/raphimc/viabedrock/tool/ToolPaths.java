@@ -73,25 +73,24 @@ public class ToolPaths {
     }
 
     /**
-     * The {@code data} directory of an installed Bedrock client. The vanilla resource packs, sounds and particles are read from it.
+     * The {@code data} directory of an installed Bedrock client. The tools read extracted vanilla resource packs, sounds and particles from it.
      * <p>
      * Copy the directory to {@code run/client-data} when the game is not installed on this machine.
      */
     public static Path clientDataDir(final ToolArgs args) {
-        return args.directory("client-data", "It is the 'data' directory of the Bedrock client installation, for example 'C:\\XboxGames\\Minecraft for Windows\\Content\\data'. It can also be copied to run/client-data.",
+        return args.directory("client-data", "It is the 'data' directory of the Bedrock client installation with extracted resource_packs_unpacked, for example 'C:\\XboxGames\\Minecraft for Windows\\Content\\data'. It can also be copied to run/client-data.",
                 PROJECT_ROOT.resolve("run/client-data"),
                 Path.of("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
     }
 
     /**
-     * A clone of <a href="https://github.com/EndstoneMC/protocol-docs">EndstoneMC/protocol-docs</a>, which the Bedrock enums are generated from.
+     * The enum metadata from <a href="https://github.com/Mojang/bedrock-protocol-docs/releases">Mojang/bedrock-protocol-docs releases</a>.
      */
     public static Path protocolDocsDir(final ToolArgs args) {
-        final Path directory = args.directory("protocol-docs", "Clone https://github.com/EndstoneMC/protocol-docs and pass its location, or clone it to run/protocol-docs.",
+        final Path directory = args.directory("protocol-docs", "Download the enum metadata from https://github.com/Mojang/bedrock-protocol-docs/releases and pass its directory, or extract it to run/protocol-docs.",
                 PROJECT_ROOT.resolve("run/protocol-docs"),
                 PROJECT_ROOT.getParent().resolve("protocol-docs"));
-        // Accept both the repository root and the enums directory inside of it
-        return Files.isDirectory(directory.resolve("enums")) ? directory.resolve("enums") : directory;
+        return directory;
     }
 
     private static Path findProjectRoot() {
