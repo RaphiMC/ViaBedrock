@@ -47,10 +47,13 @@ public class MappingMistakeReporter {
         mistakes.sort(java.util.Comparator.comparing(MappingMistake::category).thenComparing(MappingMistake::check).thenComparing(MappingMistake::key));
 
         final com.viaversion.viaversion.libs.gson.JsonObject itemFixJson = new com.viaversion.viaversion.libs.gson.JsonObject();
+        final com.viaversion.viaversion.libs.gson.JsonObject expectedItemIds = new com.viaversion.viaversion.libs.gson.JsonObject();
         for (ItemMappingFix fix : itemFixes) {
             itemFixJson.addProperty(fix.key(), fix.suggestedJavaId());
+            expectedItemIds.addProperty(fix.key(), fix.currentJavaId());
         }
         ToolPaths.writeJson(MappingProposer.OUTPUT_DIR.resolve("item_fixes.json"), itemFixJson);
+        ToolPaths.writeJson(MappingProposer.OUTPUT_DIR.resolve("item_fixes_expected.json"), expectedItemIds);
 
         final StringBuilder report = new StringBuilder();
         report.append("Mappings which load fine but disagree with the rest of the data.\n");

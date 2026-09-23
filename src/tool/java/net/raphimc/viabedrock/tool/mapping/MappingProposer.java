@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.tool.mapping;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.GsonUtil;
+import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.tool.ToolArgs;
 import net.raphimc.viabedrock.tool.ToolPaths;
 
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -44,8 +46,9 @@ public class MappingProposer {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final double minScore = Double.parseDouble(toolArgs.get("min-score", "0.5"));
 
-        final MappingAnalysis analysis = new MappingAnalysis(new MappingAssets());
-        final List<MappingGap> gaps = analysis.run(List.of(MappingAnalysis.BLOCK_STATES));
+        final MappingAssets assets = new MappingAssets();
+        final MappingAnalysis analysis = new MappingAnalysis(assets);
+        final List<MappingGap> gaps = analysis.run(MappingAnalysis.CATEGORIES);
         final List<BlockStateProposal> proposals = new BlockStateProposer(analysis).proposeAll();
 
         final JsonObject accepted = new JsonObject();
@@ -69,6 +72,7 @@ public class MappingProposer {
         ToolPaths.writeJson(OUTPUT_DIR.resolve("block_states.json"), GsonUtil.sort(accepted));
         ToolPaths.writeString(OUTPUT_DIR.resolve("block_states_stale.json"), GsonUtil.getGson().toJson(stale));
         ToolPaths.writeString(OUTPUT_DIR.resolve("block_states.txt"), report(byBlock, stale, minScore));
+        ToolPaths.writeJson(OUTPUT_DIR.resolve("identifiers.json"), identifierProposals(assets, gaps));
 
         System.out.println();
         System.out.println("proposed  " + accepted.size() + " of " + proposals.size() + " missing block states");
@@ -78,6 +82,29 @@ public class MappingProposer {
         for (Map.Entry<String, Integer> entry : strategyCounts(proposals).entrySet()) {
             System.out.println("  " + entry.getKey() + ": " + entry.getValue());
         }
+    }
+
+    private static JsonObject identifierProposals(final MappingAssets assets, final List<MappingGap> gaps) {
+        final Map<String, Set<String>> javaIdentifiers = Map.of(
+                MappingAnalysis.ENTITIES, assets.javaNamespaced("entities"),
+                MappingAnalysis.EFFECTS, assets.javaEffects(),
+                MappingAnalysis.PARTICLES, assets.javaNamespaced("particles"),
+                MappingAnalysis.SOUNDS, assets.javaNamespaced("sounds")
+        );
+        final JsonObject proposals = new JsonObject();
+        for (String category : javaIdentifiers.keySet()) {
+            proposals.add(category, new JsonObject());
+        }
+        for (MappingGap gap : gaps) {
+            final Set<String> targets = javaIdentifiers.get(gap.category());
+            if (gap.kind() == MappingGap.Kind.MISSING && targets != null) {
+                final String identity = Key.namespaced(gap.key());
+                if (targets.contains(identity)) {
+                    proposals.getAsJsonObject(gap.category()).addProperty(gap.key(), identity);
+                }
+            }
+        }
+        return GsonUtil.sort(proposals).getAsJsonObject();
     }
 
     private static Map<String, Integer> strategyCounts(final List<BlockStateProposal> proposals) {

@@ -20,6 +20,8 @@ package net.raphimc.viabedrock.tool.mapping;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.tool.ToolPlatform;
 
+import java.util.List;
+
 /**
  * Loads the mapping data the same way a real connection does, which is the final word on whether the data assets fit
  * together. {@link MappingGapReporter} finds problems without stopping, this proves that nothing is left.
@@ -27,6 +29,13 @@ import net.raphimc.viabedrock.tool.ToolPlatform;
 public class MappingValidator {
 
     public static void main(String[] args) throws Throwable {
+        final List<MappingGap> gaps = new MappingAnalysis(new MappingAssets()).run(MappingAnalysis.CATEGORIES);
+        if (!gaps.isEmpty()) {
+            gaps.stream().limit(20).forEach(gap -> System.err.println(gap.category() + " " + gap.kind() + " " + gap.key()
+                    + (gap.detail() == null ? "" : ": " + gap.detail())));
+            throw new IllegalStateException("Found " + gaps.size() + " mapping gaps. Run ./gradlew reportMappingGaps for the full list.");
+        }
+
         ToolPlatform.init();
         try {
             final long start = System.currentTimeMillis();

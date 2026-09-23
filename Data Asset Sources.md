@@ -50,6 +50,10 @@ This file has been generated using `./gradlew generateBedrockParticleList` from 
 ### data/bedrock/sounds.json
 This file has been generated using `./gradlew generateBedrockSoundLists` from the official bedrock client's assets folder.
 
+### data/custom/block_tags.json and data/custom/potted_blockstates.json
+Run `./gradlew syncDerivedMappings` after updating the Bedrock palette and Java registry. It adds sign and shelf tags
+and directly named potted blocks. Other entries in these files remain curated.
+
 ### data/java/effects.json
 This file has been dumped using a fabric mod.
 

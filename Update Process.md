@@ -31,14 +31,26 @@ written, so a proposal is either something java actually has or it is reported a
 ```bash
 ./gradlew reportMappingGaps      # what is missing, stale or pointing at something java dropped
 ./gradlew reportMappingMistakes  # what loads fine but disagrees with the rest of the data
-./gradlew proposeMappings        # writes proposals to run/mapping-proposals, nothing is changed yet
+./gradlew syncDerivedMappings    # adds predictable block tags and potted states
+./gradlew proposeMappings        # writes block and identity proposals to run/mapping-proposals
 ./gradlew selfTestMappings       # hides each mapped block and checks the proposer reproduces it by hand
 ./gradlew applyMappingProposals  # merges the reviewed proposals into the data assets
-./gradlew validateMappings       # loads the mapping data the way a real connection does
+./gradlew validateMappings       # checks derived data and loads the mapping data
 ```
 
-The order to use them in is: report, propose, read `run/mapping-proposals/block_states.txt`, delete or edit anything
-in `run/mapping-proposals/block_states.json` that looks wrong, apply, validate, then review the git diff.
+After updating the Bedrock palette and Java registry, run `syncDerivedMappings`. It adds sign and shelf block tags,
+and directly named potted blocks. Other custom mappings remain curated.
+`reportMappingGaps` checks these derived entries, and `validateMappings` fails when any are missing or disagree.
+
+Run the report and proposer. Read `run/mapping-proposals/block_states.txt`.
+Remove or edit incorrect entries in `run/mapping-proposals/block_states.json`.
+Then apply the proposals, validate the mappings, and review the git diff.
+The apply task checks proposals against the current Bedrock and Java data. Pass `--replace` only when you intend to
+change an existing block state mapping.
+For missing entities, effects, particles, and sounds, review `run/mapping-proposals/identifiers.json`.
+The proposer adds an entry only when both editions use the same identifier. Apply a reviewed category with
+`./gradlew applyMappingProposals --args="--category=entities"`. Run `reportMappingMistakes` before applying item fixes;
+it records the current item IDs so the apply task can reject old proposals.
 
 `reportMappingMistakes` is the other half. Everything it lists already loads, so nothing here is proof of a bug, but
 each finding is a mapping that disagrees with the rest of the data:

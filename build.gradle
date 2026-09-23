@@ -37,13 +37,15 @@ registerToolTask("generateBedrockSoundLists", "net.raphimc.viabedrock.tool.gener
 registerToolTask("generateBedrockParticleList", "net.raphimc.viabedrock.tool.generator.client.BedrockParticleListGenerator",
         "Generates particles.json from the bedrock client. Options: --client-data")
 registerToolTask("reportMappingGaps", "net.raphimc.viabedrock.tool.mapping.MappingGapReporter",
-        "Reports bedrock identifiers which have no java mapping, and mappings which point at identifiers that no longer exist. Options: --category, --limit")
+        "Reports missing or broken mappings, derived block tags and potted states. Options: --category, --limit")
+registerToolTask("syncDerivedMappings", "net.raphimc.viabedrock.tool.mapping.DerivedMappingDataUpdater",
+        "Adds block tags and potted states derived from the current Bedrock and Java data")
 registerToolTask("reportMappingMistakes", "net.raphimc.viabedrock.tool.mapping.MappingMistakeReporter",
         "Reports mappings which load fine but disagree with the rest of the data. Options: --limit")
 registerToolTask("proposeMappings", "net.raphimc.viabedrock.tool.mapping.MappingProposer",
         "Writes mapping proposals for every gap to run/mapping-proposals. Options: --min-score")
 registerToolTask("applyMappingProposals", "net.raphimc.viabedrock.tool.mapping.MappingProposalApplier",
-        "Applies reviewed proposals back into the data assets. Options: --category, --keep-stale, --dry-run")
+        "Applies reviewed proposals back into the data assets. Options: --category, --keep-stale, --replace, --dry-run")
 registerToolTask("selfTestMappings", "net.raphimc.viabedrock.tool.mapping.MappingSelfTest",
         "Hides the mappings of each already mapped block and checks whether the proposer reproduces them. Options: --limit, --show")
 registerToolTask("validateMappings", "net.raphimc.viabedrock.tool.mapping.MappingValidator",

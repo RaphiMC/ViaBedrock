@@ -46,8 +46,11 @@ public class MappingAnalysis {
     public static final String EFFECTS = "effects";
     public static final String PARTICLES = "particles";
     public static final String SOUNDS = "sounds";
+    public static final String BLOCK_TAGS = "block_tags";
+    public static final String POTTED_BLOCK_STATES = "potted_block_states";
 
-    public static final List<String> CATEGORIES = List.of(BLOCK_STATES, ITEMS, ENTITIES, EFFECTS, PARTICLES, SOUNDS);
+    public static final List<String> CATEGORIES = List.of(BLOCK_STATES, ITEMS, ENTITIES, EFFECTS, PARTICLES, SOUNDS,
+            BLOCK_TAGS, POTTED_BLOCK_STATES);
 
     private final MappingAssets assets;
     private final List<MappingGap> gaps = new ArrayList<>();
@@ -86,7 +89,45 @@ public class MappingAnalysis {
         if (categories.contains(SOUNDS)) {
             this.checkIdentifierMapping(SOUNDS, this.assets.bedrockKeys("bedrock/sounds.json"), "custom/sound_mappings.json", this.assets.javaNamespaced("sounds"), false);
         }
+        if (categories.contains(BLOCK_TAGS)) {
+            this.checkBlockTags();
+        }
+        if (categories.contains(POTTED_BLOCK_STATES)) {
+            this.checkPottedBlockStates();
+        }
         return List.copyOf(this.gaps);
+    }
+
+    private void checkBlockTags() {
+        final JsonObject tags = this.assets.json("custom/block_tags.json");
+        for (Map.Entry<String, String> entry : DerivedMappingRules.blockTags(this.assets).entrySet()) {
+            boolean found = false;
+            for (Map.Entry<String, JsonElement> tag : tags.entrySet()) {
+                for (JsonElement member : tag.getValue().getAsJsonArray()) {
+                    if (member.getAsString().equals(entry.getKey())) {
+                        found = true;
+                        if (!tag.getKey().equals(entry.getValue())) {
+                            this.gaps.add(new MappingGap(BLOCK_TAGS, MappingGap.Kind.BROKEN, entry.getKey(),
+                                    "tagged as " + tag.getKey() + ", expected " + entry.getValue()));
+                        }
+                    }
+                }
+            }
+            if (!found) {
+                this.gaps.add(new MappingGap(BLOCK_TAGS, MappingGap.Kind.MISSING, entry.getKey(), "expected " + entry.getValue()));
+            }
+        }
+    }
+
+    private void checkPottedBlockStates() {
+        final JsonObject mappings = this.assets.json("custom/potted_blockstates.json");
+        for (Map.Entry<String, String> entry : DerivedMappingRules.pottedBlockStates(this.assets).entrySet()) {
+            if (!mappings.has(entry.getKey())) {
+                this.gaps.add(new MappingGap(POTTED_BLOCK_STATES, MappingGap.Kind.MISSING, entry.getKey(), "expected " + entry.getValue()));
+            } else if (!mappings.get(entry.getKey()).getAsString().equals(entry.getValue())) {
+                this.gaps.add(new MappingGap(POTTED_BLOCK_STATES, MappingGap.Kind.BROKEN, entry.getKey(), "expected " + entry.getValue()));
+            }
+        }
     }
 
     /**
@@ -125,6 +166,10 @@ public class MappingAnalysis {
         final Set<String> bedrockBlockItems = this.assets.bedrockBlockItems(ProtocolConstants.LAST_BLOCK_ITEM_ID);
         final Set<String> javaItems = this.assets.javaNamespaced("items");
         final JsonObject mappings = this.assets.json("custom/item_mappings.json");
+        final Map<String, List<BedrockBlockState>> statesByIdentifier = new LinkedHashMap<>();
+        for (BedrockBlockState state : this.bedrockBlockStates) {
+            statesByIdentifier.computeIfAbsent(state.namespacedIdentifier(), key -> new ArrayList<>()).add(state);
+        }
 
         for (Map.Entry<String, JsonElement> entry : mappings.entrySet()) {
             final String bedrockIdentifier = entry.getKey();
@@ -140,7 +185,18 @@ public class MappingAnalysis {
                 continue;
             }
             if (isBlockItem) {
-                for (Map.Entry<String, JsonElement> blockMapping : definition.getAsJsonObject("block").entrySet()) {
+                final JsonObject blockMappings = definition.getAsJsonObject("block");
+                if (blockMappings.isEmpty()) {
+                    this.gaps.add(new MappingGap(ITEMS, MappingGap.Kind.BROKEN, bedrockIdentifier, "has no block state item mappings"));
+                }
+                for (Map.Entry<String, JsonElement> blockMapping : blockMappings.entrySet()) {
+                    final BlockState pattern = BlockState.fromString(blockMapping.getKey());
+                    final boolean matchesPalette = statesByIdentifier.getOrDefault(pattern.namespacedIdentifier(), List.of()).stream()
+                            .anyMatch(state -> state.properties().entrySet().containsAll(pattern.properties().entrySet()));
+                    if (!matchesPalette) {
+                        this.gaps.add(new MappingGap(ITEMS, MappingGap.Kind.BROKEN, bedrockIdentifier + " " + blockMapping.getKey(),
+                                "block state pattern matches no Bedrock palette state"));
+                    }
                     this.checkJavaItem(bedrockIdentifier + " " + blockMapping.getKey(), blockMapping.getValue(), javaItems);
                 }
             } else {
