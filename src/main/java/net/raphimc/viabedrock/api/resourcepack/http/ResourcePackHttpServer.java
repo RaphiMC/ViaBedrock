@@ -23,25 +23,26 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.*;
+import io.netty.handler.stream.ChunkedFile;
 import io.netty.handler.stream.ChunkedStream;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.resourcepack.content.Content;
-import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.io.ByteArrayInputStream;
+import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public class ResourcePackHttpServer {
 
     private final InetSocketAddress bindAddress;
     private final ChannelFuture channelFuture;
-    private final Map<UUID, UserConnection> connections = new HashMap<>();
+    private final ConcurrentHashMap<UUID, ConvertedResourcePackCache.Pack> connections = new ConcurrentHashMap<>();
+    private final ConvertedResourcePackCache convertedPacks = new ConvertedResourcePackCache(ViaBedrock.getPlatform().getServerPacksFolder().toPath().resolve("converted"), ViaBedrock.getConfig().getPackCacheMode());
 
     public ResourcePackHttpServer(final InetSocketAddress bindAddress) {
         this.bindAddress = bindAddress;
@@ -58,7 +59,7 @@ public class ResourcePackHttpServer {
                         channel.pipeline().addLast("chunked_writer", new ChunkedWriteHandler());
                         channel.pipeline().addLast("http_handler", new SimpleChannelInboundHandler<>() {
                             @Override
-                            protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws InterruptedException {
+                            protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
                                 if (msg instanceof HttpRequest request) {
                                     if (!request.method().equals(HttpMethod.GET)) {
                                         ctx.close();
@@ -71,34 +72,24 @@ public class ResourcePackHttpServer {
                                         return;
                                     }
                                     final UUID uuid = UUID.fromString(queryStringDecoder.parameters().get("token").get(0));
-                                    final UserConnection user = ResourcePackHttpServer.this.connections.get(uuid);
-                                    if (user == null) {
+                                    final ConvertedResourcePackCache.Pack pack = ResourcePackHttpServer.this.connections.get(uuid);
+                                    if (pack == null) {
                                         ctx.close();
                                         return;
                                     }
 
-                                    while (!user.has(ResourcePackStorage.class)) {
-                                        Thread.sleep(100);
-                                    }
-                                    final ResourcePackStorage resourcePackStorage = user.get(ResourcePackStorage.class);
-
                                     try {
-                                        final long start = System.nanoTime();
-                                        final Content javaContent = ResourcePackRewriter.bedrockToJava(resourcePackStorage);
-                                        final byte[] data = javaContent.toZip();
-                                        final long end = System.nanoTime();
-                                        ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Converted resource packs in " + ((end - start) / 1_000_000L) + "ms");
-                                        System.gc(); // Resource pack conversion is very memory intensive, so we trigger a GC after conversion to free up memory as soon as possible
-
                                         final DefaultHttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-                                        response.headers().set(HttpHeaderNames.TRANSFER_ENCODING, HttpHeaderValues.CHUNKED);
                                         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/octet-stream");
-                                        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, data.length);
+                                        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, pack.size());
                                         response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
                                         ctx.write(response);
-                                        ctx.writeAndFlush(new HttpChunkedInput(new ChunkedStream(new ByteArrayInputStream(data), 65535))).addListener(ChannelFutureListener.CLOSE);
+                                        final HttpChunkedInput content = pack.bytes() != null
+                                                ? new HttpChunkedInput(new ChunkedStream(new ByteArrayInputStream(pack.bytes()), 65535))
+                                                : new HttpChunkedInput(new ChunkedFile(new RandomAccessFile(pack.path().toFile(), "r"), 0, pack.size(), 65535));
+                                        ctx.writeAndFlush(content).addListener(ChannelFutureListener.CLOSE);
                                     } catch (Throwable e) {
-                                        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Failed to convert resource packs", e);
+                                        ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Failed to serve converted resource pack", e);
                                         ctx.close();
                                     }
                                 }
@@ -115,19 +106,19 @@ public class ResourcePackHttpServer {
                 .syncUninterruptibly();
     }
 
-    public void addConnection(final UUID uuid, final UserConnection connection) {
-        synchronized (this.connections) {
-            this.connections.put(uuid, connection);
-        }
-
+    public void addConnection(final UUID uuid, final UserConnection connection, final ConvertedResourcePackCache.Pack pack) {
+        this.connections.put(uuid, pack);
         connection.getChannel().closeFuture().addListener(future -> {
-            synchronized (this.connections) {
-                this.connections.remove(uuid);
-            }
+            this.connections.remove(uuid);
         });
     }
 
+    public CompletableFuture<ConvertedResourcePackCache.Pack> prepare(final ResourcePackStorage storage) {
+        return this.convertedPacks.prepare(storage);
+    }
+
     public void stop() {
+        this.convertedPacks.stop();
         if (this.channelFuture != null) {
             this.channelFuture.channel().close();
         }
