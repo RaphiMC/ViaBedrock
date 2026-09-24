@@ -77,7 +77,7 @@ public class NetworkItemStackDescriptorType extends Type<BedrockItem> {
                     item.setBlockingTicks(userData.readLongLE());
                 }
             }
-        } catch (IndexOutOfBoundsException ignored) {
+        } catch (final IndexOutOfBoundsException ignored) {
             // Bedrock client stops reading at whatever point and loads whatever it has read successfully
         }
 

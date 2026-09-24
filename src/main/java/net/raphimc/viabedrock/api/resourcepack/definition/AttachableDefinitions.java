@@ -41,7 +41,7 @@ public class AttachableDefinitions {
                     final BedrockAttachableData attachableData = BedrockAttachableParser.parse(pack.content().getString(attachablePath));
                     final String identifier = Key.namespaced(attachableData.getIdentifier());
                     this.attachables.put(identifier, new AttachableDefinition(identifier, attachableData));
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse attachable definition " + attachablePath + " in pack " + pack.key(), e);
                 }
             }

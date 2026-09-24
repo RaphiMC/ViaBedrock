@@ -25,4 +25,5 @@ class JavaMapPaletteUtilTest {
         assertEquals(15, palette[0]);
         assertEquals(88, palette[1]);
     }
+
 }

@@ -17,7 +17,6 @@
  */
 package net.raphimc.viabedrock.protocol.packet;
 
-import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import net.raphimc.viabedrock.api.util.TextUtil;
@@ -165,4 +164,5 @@ public final class MapPackets {
 
     private record Decoration(int type, byte x, byte y, byte rotation, String label) {
     }
+
 }

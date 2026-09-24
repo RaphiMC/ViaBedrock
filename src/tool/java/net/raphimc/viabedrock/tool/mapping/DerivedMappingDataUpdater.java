@@ -24,12 +24,7 @@ import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.tool.ToolPaths;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Adds entries which can be derived from the current Bedrock palette and Java registry. Conflicts need a manual review.

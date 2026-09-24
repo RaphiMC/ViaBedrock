@@ -23,30 +23,30 @@ import net.raphimc.viabedrock.api.chunk.section.BedrockChunkSection;
 
 public class ChunkSectionType extends Type<BedrockChunkSection> {
 
-    private final Type<BedrockChunkSection> V0 = new ChunkSectionV0Type();
-    private final Type<BedrockChunkSection> V1 = new ChunkSectionV1Type();
-    private final Type<BedrockChunkSection> V8 = new ChunkSectionV8Type();
-    private final Type<BedrockChunkSection> V9 = new ChunkSectionV9Type();
+    private final Type<BedrockChunkSection> v0 = new ChunkSectionV0Type();
+    private final Type<BedrockChunkSection> v1 = new ChunkSectionV1Type();
+    private final Type<BedrockChunkSection> v8 = new ChunkSectionV8Type();
+    private final Type<BedrockChunkSection> v9 = new ChunkSectionV9Type();
 
     public ChunkSectionType() {
         super(BedrockChunkSection.class);
     }
 
     @Override
-    public BedrockChunkSection read(ByteBuf buffer) {
+    public BedrockChunkSection read(final ByteBuf buffer) {
         final byte version = buffer.readByte(); // version
 
         return switch (version) {
-            case 0, 2, 3, 4, 5, 6, 7 -> V0.read(buffer);
-            case 1 -> V1.read(buffer);
-            case 8 -> V8.read(buffer);
-            case 9 -> V9.read(buffer);
+            case 0, 2, 3, 4, 5, 6, 7 -> this.v0.read(buffer);
+            case 1 -> this.v1.read(buffer);
+            case 8 -> this.v8.read(buffer);
+            case 9 -> this.v9.read(buffer);
             default -> throw new UnsupportedOperationException("Unknown chunk section version: " + version);
         };
     }
 
     @Override
-    public void write(ByteBuf buffer, BedrockChunkSection value) {
+    public void write(final ByteBuf buffer, final BedrockChunkSection value) {
         throw new UnsupportedOperationException("Cannot serialize ChunkSectionType");
     }
 

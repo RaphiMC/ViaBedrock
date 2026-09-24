@@ -137,7 +137,9 @@ public class ChunkTracker extends StoredObject {
     }
 
     public BedrockChunk createChunk(final int chunkX, final int chunkZ, final int nonNullSectionCount) {
-        if (!this.isInLoadDistance(chunkX, chunkZ)) return null;
+        if (!this.isInLoadDistance(chunkX, chunkZ)) {
+            return null;
+        }
         if (!this.isInRenderDistance(chunkX, chunkZ)) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received chunk outside of render distance, but within load distance: " + chunkX + ", " + chunkZ);
             final EntityTracker entityTracker = this.user().get(EntityTracker.class);
@@ -179,16 +181,22 @@ public class ChunkTracker extends StoredObject {
     }
 
     public BedrockChunk getChunk(final int chunkX, final int chunkZ) {
-        if (!this.isInLoadDistance(chunkX, chunkZ)) return null;
+        if (!this.isInLoadDistance(chunkX, chunkZ)) {
+            return null;
+        }
         return this.chunks.get(ChunkPosition.chunkKey(chunkX, chunkZ));
     }
 
     public BedrockChunkSection getChunkSection(final int chunkX, final int subChunkY, final int chunkZ) {
         final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
-        if (chunk == null) return null;
+        if (chunk == null) {
+            return null;
+        }
 
         final int sectionIndex = subChunkY + Math.abs(this.minY >> 4);
-        if (sectionIndex < 0 || sectionIndex >= chunk.getSections().length) return null;
+        if (sectionIndex < 0 || sectionIndex >= chunk.getSections().length) {
+            return null;
+        }
 
         return chunk.getSections()[sectionIndex];
     }
@@ -203,14 +211,20 @@ public class ChunkTracker extends StoredObject {
 
     public int getBlockState(final int layer, final BlockPosition blockPosition) {
         final BedrockChunkSection chunkSection = this.getChunkSection(blockPosition);
-        if (chunkSection == null) return this.bedrockAirId();
-        if (chunkSection.palettesCount(PaletteType.BLOCKS) <= layer) return this.bedrockAirId();
+        if (chunkSection == null) {
+            return this.bedrockAirId();
+        }
+        if (chunkSection.palettesCount(PaletteType.BLOCKS) <= layer) {
+            return this.bedrockAirId();
+        }
         return chunkSection.palettes(PaletteType.BLOCKS).get(layer).idAt(blockPosition.x() & 15, blockPosition.y() & 15, blockPosition.z() & 15);
     }
 
     public int getJavaBlockState(final BlockPosition blockPosition) {
         final BedrockChunkSection chunkSection = this.getChunkSection(blockPosition);
-        if (chunkSection == null) return ProtocolConstants.JAVA_AIR_ID;
+        if (chunkSection == null) {
+            return ProtocolConstants.JAVA_AIR_ID;
+        }
 
         final int sectionX = blockPosition.x() & 15;
         final int sectionY = blockPosition.y() & 15;
@@ -251,20 +265,26 @@ public class ChunkTracker extends StoredObject {
 
     public BedrockBlockEntity getBlockEntity(final BlockPosition blockPosition) {
         final BedrockChunk chunk = this.getChunk(blockPosition.x() >> 4, blockPosition.z() >> 4);
-        if (chunk == null) return null;
+        if (chunk == null) {
+            return null;
+        }
         return chunk.getBlockEntityAt(blockPosition);
     }
 
     public void addBlockEntity(final BedrockBlockEntity bedrockBlockEntity) {
         final BedrockChunk chunk = this.getChunk(bedrockBlockEntity.position().x() >> 4, bedrockBlockEntity.position().z() >> 4);
-        if (chunk == null) return;
+        if (chunk == null) {
+            return;
+        }
 
         chunk.removeBlockEntityAt(bedrockBlockEntity.position());
         chunk.blockEntities().add(bedrockBlockEntity);
     }
 
     public boolean isChunkLoaded(final ChunkPosition chunkPos) {
-        if (!this.isInLoadDistance(chunkPos.chunkX(), chunkPos.chunkZ())) return false;
+        if (!this.isInLoadDistance(chunkPos.chunkX(), chunkPos.chunkZ())) {
+            return false;
+        }
         return this.chunks.containsKey(chunkPos.chunkKey());
     }
 
@@ -287,7 +307,9 @@ public class ChunkTracker extends StoredObject {
     public boolean isInLoadDistance(final int chunkX, final int chunkZ) {
         if (!this.isInRenderDistance(chunkX, chunkZ)) { // Bedrock accepts chunks outside the chunk render range and uses the player position as a center to determine if a chunk is allowed to be loaded
             final EntityTracker entityTracker = this.user().get(EntityTracker.class);
-            if (entityTracker == null) return false;
+            if (entityTracker == null) {
+                return false;
+            }
             final int centerX = (int) Math.floor(entityTracker.getClientPlayer().position().x()) >> 4;
             final int centerZ = (int) Math.floor(entityTracker.getClientPlayer().position().z()) >> 4;
             return Math.abs(chunkX - centerX) <= this.radius && Math.abs(chunkZ - centerZ) <= this.radius;
@@ -304,7 +326,9 @@ public class ChunkTracker extends StoredObject {
         final Set<ChunkPosition> chunksToRemove = new HashSet<>();
         for (long chunkKey : this.chunks.keySet()) {
             final ChunkPosition chunkPos = new ChunkPosition(chunkKey);
-            if (this.isInLoadDistance(chunkPos.chunkX(), chunkPos.chunkZ())) continue;
+            if (this.isInLoadDistance(chunkPos.chunkX(), chunkPos.chunkZ())) {
+                continue;
+            }
 
             chunksToRemove.add(chunkPos);
         }
@@ -320,12 +344,16 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void requestSubChunk(final int chunkX, final int subChunkY, final int chunkZ) {
-        if (!this.isInLoadDistance(chunkX, chunkZ)) return;
+        if (!this.isInLoadDistance(chunkX, chunkZ)) {
+            return;
+        }
         this.subChunkRequests.add(new SubChunkPosition(chunkX, subChunkY, chunkZ));
     }
 
     public boolean mergeSubChunk(final int chunkX, final int subChunkY, final int chunkZ, final BedrockChunkSection other, final List<BedrockBlockEntity> blockEntities) {
-        if (!this.isInLoadDistance(chunkX, chunkZ)) return false;
+        if (!this.isInLoadDistance(chunkX, chunkZ)) {
+            return false;
+        }
 
         final SubChunkPosition position = new SubChunkPosition(chunkX, subChunkY, chunkZ);
         if (!this.pendingSubChunks.contains(position)) {
@@ -450,9 +478,6 @@ public class ChunkTracker extends StoredObject {
         this.invalidateNearbyLight(chunkX, chunkZ);
     }
 
-    private record LightPacketData(BitSet skyLightMask, BitSet blockLightMask, BitSet emptySkyLightMask, BitSet emptyBlockLightMask, List<byte[]> skyLightArrays, List<byte[]> blockLightArrays) {
-    }
-
     private static LightPacketData buildFullLightPacketData(final ChunkLight light) {
         final int maskSize = light.skyLightLength();
         final BitSet skyLightMask = new BitSet(maskSize);
@@ -533,9 +558,13 @@ public class ChunkTracker extends StoredObject {
     private void invalidateNearbyLight(final int chunkX, final int chunkZ) {
         for (int dz = -1; dz <= 1; dz++) {
             for (int dx = -1; dx <= 1; dx++) {
-                if (dx == 0 && dz == 0) continue;
+                if (dx == 0 && dz == 0) {
+                    continue;
+                }
                 final long neighborKey = ChunkPosition.chunkKey(chunkX + dx, chunkZ + dz);
-                if (!this.chunkLight.containsKey(neighborKey)) continue;
+                if (!this.chunkLight.containsKey(neighborKey)) {
+                    continue;
+                }
                 this.lightVersions.merge(neighborKey, 1L, Long::sum);
                 this.lightDirtyChunks.add(neighborKey);
             }
@@ -544,7 +573,9 @@ public class ChunkTracker extends StoredObject {
 
     private static boolean isChunkFullyLoaded(final BedrockChunk chunk) {
         for (final BedrockChunkSection section : chunk.getSections()) {
-            if (section.hasPendingBlockUpdates()) return false;
+            if (section.hasPendingBlockUpdates()) {
+                return false;
+            }
         }
         return true;
     }
@@ -553,7 +584,7 @@ public class ChunkTracker extends StoredObject {
         final int[][][] regionStates = new int[9][][];
         regionStates[4] = this.snapshotChunkStates(this.chunks.get(ChunkPosition.chunkKey(chunkX, chunkZ)));
         return LightEngine.computeRegionLight(regionStates, this.worldHeight >> 4, this.skyLight,
-                BedrockProtocol.MAPPINGS.getJavaBlockLightEmission(), BedrockProtocol.MAPPINGS.getJavaBlockOpacity())[4];
+            BedrockProtocol.MAPPINGS.getJavaBlockLightEmission(), BedrockProtocol.MAPPINGS.getJavaBlockOpacity())[4];
     }
 
     /**
@@ -565,7 +596,9 @@ public class ChunkTracker extends StoredObject {
         for (int dz = -1; dz <= 1; dz++) {
             for (int dx = -1; dx <= 1; dx++) {
                 final BedrockChunk neighbor = this.chunks.get(ChunkPosition.chunkKey(chunkX + dx, chunkZ + dz));
-                if (neighbor == null) continue;
+                if (neighbor == null) {
+                    continue;
+                }
 
                 final int chunkIndex = (dz + 1) * 3 + (dx + 1);
                 regionStates[chunkIndex] = this.snapshotChunkStates(neighbor);
@@ -593,8 +626,8 @@ public class ChunkTracker extends StoredObject {
             Throwable failure = null;
             try {
                 light = LightEngine.computeRegionLight(regionStates, this.worldHeight >> 4, this.skyLight,
-                        BedrockProtocol.MAPPINGS.getJavaBlockLightEmission(), BedrockProtocol.MAPPINGS.getJavaBlockOpacity())[4];
-            } catch (Throwable e) {
+                    BedrockProtocol.MAPPINGS.getJavaBlockLightEmission(), BedrockProtocol.MAPPINGS.getJavaBlockOpacity())[4];
+            } catch (final Throwable e) {
                 failure = e;
             } finally {
                 LIGHT_SLOTS.release();
@@ -604,12 +637,16 @@ public class ChunkTracker extends StoredObject {
             final Throwable error = failure;
             this.user().getChannel().eventLoop().execute(() -> {
                 this.pendingLightComputations.remove(chunkKey);
-                if (!this.user().getChannel().isActive()) return;
+                if (!this.user().getChannel().isActive()) {
+                    return;
+                }
                 if (error != null) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not update chunk light", error);
                     return;
                 }
-                if (this.chunks.get(chunkKey) != chunk || !this.chunkLight.containsKey(chunkKey)) return;
+                if (this.chunks.get(chunkKey) != chunk || !this.chunkLight.containsKey(chunkKey)) {
+                    return;
+                }
                 if (this.lightVersions.getOrDefault(chunkKey, 0L) != version) {
                     this.lightDirtyChunks.add(chunkKey);
                     return;
@@ -618,7 +655,9 @@ public class ChunkTracker extends StoredObject {
                 final ChunkLight previousLight = this.chunkLight.put(chunkKey, result);
                 final LightPacketData lightData = buildDiffLightPacketData(result, previousLight);
                 if (lightData.skyLightArrays().isEmpty() && lightData.blockLightArrays().isEmpty()
-                        && lightData.emptySkyLightMask().isEmpty() && lightData.emptyBlockLightMask().isEmpty()) return;
+                    && lightData.emptySkyLightMask().isEmpty() && lightData.emptyBlockLightMask().isEmpty()) {
+                    return;
+                }
 
                 final PacketWrapper lightUpdate = PacketWrapper.create(ClientboundPackets26_3.LIGHT_UPDATE, this.user());
                 lightUpdate.write(Types.VAR_INT, position.chunkX());
@@ -649,7 +688,9 @@ public class ChunkTracker extends StoredObject {
     private int[] buildJavaBlockStates(final BedrockChunkSection section) {
         final int[] states = new int[ChunkSection.SIZE];
         final List<DataPalette> blockPalettes = section.palettes(PaletteType.BLOCKS);
-        if (blockPalettes.isEmpty()) return states; // All air
+        if (blockPalettes.isEmpty()) {
+            return states; // All air
+        }
 
         final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);
         final DataPalette layer0 = blockPalettes.get(0);
@@ -676,7 +717,9 @@ public class ChunkTracker extends StoredObject {
 
     private void invalidateJavaBlockStates(final int chunkX, final int subChunkY, final int chunkZ) {
         final int[][] chunkStates = this.javaBlockStateCache.get(ChunkPosition.chunkKey(chunkX, chunkZ));
-        if (chunkStates == null) return;
+        if (chunkStates == null) {
+            return;
+        }
 
         final int sectionIndex = subChunkY + Math.abs(this.minY >> 4);
         if (sectionIndex >= 0 && sectionIndex < chunkStates.length) {
@@ -742,7 +785,9 @@ public class ChunkTracker extends StoredObject {
             final long chunkKey = this.dirtyChunks.iterator().next();
             this.dirtyChunks.remove(chunkKey);
             final BedrockChunk chunk = this.chunks.get(chunkKey);
-            if (chunk == null) continue;
+            if (chunk == null) {
+                continue;
+            }
             final Long lastSend = this.lastChunkSendNanos.get(chunkKey);
             if (lastSend != null && System.nanoTime() - lastSend < PARTIAL_CHUNK_SEND_INTERVAL_NANOS && !isChunkFullyLoaded(chunk)) {
                 this.dirtyChunks.add(chunkKey);
@@ -761,7 +806,7 @@ public class ChunkTracker extends StoredObject {
             }
             try {
                 this.submitLightUpdate(chunkKey);
-            } catch (RuntimeException e) {
+            } catch (final RuntimeException e) {
                 this.pendingLightComputations.remove(chunkKey);
                 LIGHT_SLOTS.release();
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not submit chunk light update", e);
@@ -843,9 +888,13 @@ public class ChunkTracker extends StoredObject {
                             for (int z = 0; z < 16; z++) {
                                 for (int y = 0; y < 16; y++) {
                                     final int blockState1 = layer1.idAt(x, y, z);
-                                    if (blockState1 == airId) continue;
+                                    if (blockState1 == airId) {
+                                        continue;
+                                    }
                                     final int blockState0 = layer0.idAt(x, y, z);
-                                    if (blockState0 == airId) continue;
+                                    if (blockState0 == airId) {
+                                        continue;
+                                    }
 
                                     if (CustomBlockTags.WATER.equals(blockStateRewriter.tag(blockState1))) { // Waterlogging
                                         final int waterloggedBlockState = blockStateRewriter.waterlog(remappedBlockPalette.idAt(x, y, z));
@@ -1028,7 +1077,10 @@ public class ChunkTracker extends StoredObject {
     private record SubChunkPosition(int chunkX, int subChunkY, int chunkZ) {
     }
 
-    private static class BiomeAggregator {
+    private record LightPacketData(BitSet skyLightMask, BitSet blockLightMask, BitSet emptySkyLightMask, BitSet emptyBlockLightMask, List<byte[]> skyLightArrays, List<byte[]> blockLightArrays) {
+    }
+
+    private static final class BiomeAggregator {
 
         private int[] biome;
         private int[] count;

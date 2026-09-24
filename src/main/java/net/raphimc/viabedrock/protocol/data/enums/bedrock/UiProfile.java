@@ -20,33 +20,34 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
-public enum UIProfile {
+public enum UiProfile {
 
     Classic(0),
     Pocket(1),
-    None(2),
-    ;
+    None(2);
 
-    private static final Int2ObjectMap<UIProfile> BY_VALUE = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<UiProfile> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
-        for (UIProfile value : values()) {
+        for (UiProfile value : values()) {
             if (!BY_VALUE.containsKey(value.value)) {
                 BY_VALUE.put(value.value, value);
             }
         }
     }
 
-    public static UIProfile getByValue(final int value) {
+    public static UiProfile getByValue(final int value) {
         return BY_VALUE.get(value);
     }
 
-    public static UIProfile getByValue(final int value, final UIProfile fallback) {
+    public static UiProfile getByValue(final int value, final UiProfile fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
-    public static UIProfile getByName(final String name) {
-        for (UIProfile value : values()) {
+    public static UiProfile getByName(final String name) {
+        for (UiProfile value : values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -54,8 +55,8 @@ public enum UIProfile {
         return null;
     }
 
-    public static UIProfile getByName(final String name, final UIProfile fallback) {
-        for (UIProfile value : values()) {
+    public static UiProfile getByName(final String name, final UiProfile fallback) {
+        for (UiProfile value : values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -63,13 +64,11 @@ public enum UIProfile {
         return fallback;
     }
 
-    private final int value;
-
-    UIProfile(final UIProfile value) {
+    UiProfile(final UiProfile value) {
         this(value.value);
     }
 
-    UIProfile(final int value) {
+    UiProfile(final int value) {
         this.value = value;
     }
 

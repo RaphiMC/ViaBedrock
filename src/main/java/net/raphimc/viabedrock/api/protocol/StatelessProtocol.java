@@ -41,10 +41,10 @@ public abstract class StatelessProtocol<CU extends ClientboundPacketType, CM ext
     @Override
     protected PacketTypesProvider<CU, CM, SM, SU> createPacketTypesProvider() {
         return new SimplePacketTypesProvider<>(
-                Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.unmappedClientboundPacketType)),
-                Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.mappedClientboundPacketType)),
-                Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.mappedServerboundPacketType)),
-                Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.unmappedServerboundPacketType))
+            Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.unmappedClientboundPacketType)),
+            Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.mappedClientboundPacketType)),
+            Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.mappedServerboundPacketType)),
+            Map.of(State.PLAY, PacketTypeMap.ofUnsequenced(this.unmappedServerboundPacketType))
         );
     }
 

@@ -123,10 +123,11 @@ public enum ParticleType {
     GreenFlame(98),
     PauseMobGrowth(99),
     ResetMobGrowth(100),
-    SulfurCube(101),
-    ;
+    SulfurCube(101);
 
     private static final Int2ObjectMap<ParticleType> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (ParticleType value : values()) {
@@ -161,8 +162,6 @@ public enum ParticleType {
         }
         return fallback;
     }
-
-    private final int value;
 
     ParticleType(final ParticleType value) {
         this(value.value);

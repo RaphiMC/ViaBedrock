@@ -41,7 +41,7 @@ public final class DerivedMappingRules {
             } else if (identifier.endsWith("_shelf")) {
                 tags.put(identifier, "shelf");
             } else if (identifier.endsWith("_standing_sign") || identifier.endsWith("_wall_sign")
-                    || identifier.equals("minecraft:standing_sign") || identifier.equals("minecraft:wall_sign")) {
+                || identifier.equals("minecraft:standing_sign") || identifier.equals("minecraft:wall_sign")) {
                 tags.put(identifier, "sign");
             }
         }

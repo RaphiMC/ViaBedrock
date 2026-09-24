@@ -86,7 +86,7 @@ public class PaddedBitArray implements BitArray {
     }
 
     @Override
-    public PaddedBitArray clone() {
+    public PaddedBitArray copy() {
         return new PaddedBitArray(this.version, this.size, Arrays.copyOf(this.words, this.words.length));
     }
 

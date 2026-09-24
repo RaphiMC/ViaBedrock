@@ -28,7 +28,7 @@ public class Position2fType extends Type<Position2f> {
     }
 
     @Override
-    public Position2f read(ByteBuf buffer) {
+    public Position2f read(final ByteBuf buffer) {
         final float x = buffer.readFloatLE();
         final float y = buffer.readFloatLE();
 
@@ -36,7 +36,7 @@ public class Position2fType extends Type<Position2f> {
     }
 
     @Override
-    public void write(ByteBuf buffer, Position2f value) {
+    public void write(final ByteBuf buffer, final Position2f value) {
         buffer.writeFloatLE(value.x());
         buffer.writeFloatLE(value.y());
     }

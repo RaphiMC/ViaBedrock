@@ -18,19 +18,11 @@
 package net.raphimc.viabedrock.tool.mapping;
 
 import com.viaversion.viaversion.libs.gson.JsonElement;
-import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Looks for mappings which load without complaining but disagree with the rest of the data.
@@ -77,15 +69,15 @@ public class MappingMistakeDetector {
             }
             if (entry.getValue().isJsonNull()) {
                 this.mistakes.add(new MappingMistake(category, MappingMistake.UNMAPPED_BUT_PRESENT, entry.getKey(),
-                        "left unmapped although java has " + identity));
+                    "left unmapped although java has " + identity));
                 continue;
             }
             final String javaIdentifier = entry.getValue().isJsonObject()
-                    ? Key.namespaced(entry.getValue().getAsJsonObject().get("particle").getAsString())
-                    : Key.namespaced(entry.getValue().getAsString());
+                ? Key.namespaced(entry.getValue().getAsJsonObject().get("particle").getAsString())
+                : Key.namespaced(entry.getValue().getAsString());
             if (!javaIdentifier.equals(identity)) {
                 this.mistakes.add(new MappingMistake(category, MappingMistake.IDENTITY_AVAILABLE, entry.getKey(),
-                        "maps to " + javaIdentifier + " although java has " + identity));
+                    "maps to " + javaIdentifier + " although java has " + identity));
             }
         }
     }
@@ -94,8 +86,8 @@ public class MappingMistakeDetector {
         final Map<String, Set<String>> javaIdentifiersByBlock = new LinkedHashMap<>();
         for (Map.Entry<BlockState, BlockState> entry : this.analysis.blockStateMappings().entrySet()) {
             javaIdentifiersByBlock
-                    .computeIfAbsent(entry.getKey().namespacedIdentifier(), key -> new LinkedHashSet<>())
-                    .add(entry.getValue().namespacedIdentifier());
+                .computeIfAbsent(entry.getKey().namespacedIdentifier(), key -> new LinkedHashSet<>())
+                .add(entry.getValue().namespacedIdentifier());
         }
 
         for (Map.Entry<String, Set<String>> entry : javaIdentifiersByBlock.entrySet()) {
@@ -103,7 +95,7 @@ public class MappingMistakeDetector {
                 continue;
             }
             this.mistakes.add(new MappingMistake(MappingAnalysis.BLOCK_STATES, MappingMistake.IDENTITY_AVAILABLE, entry.getKey(),
-                    "maps to " + String.join(", ", entry.getValue()) + " although java has " + entry.getKey()));
+                "maps to " + String.join(", ", entry.getValue()) + " although java has " + entry.getKey()));
         }
     }
 
@@ -132,7 +124,7 @@ public class MappingMistakeDetector {
                 javaIdentifiers.add(javaBlockState.namespacedIdentifier());
                 javaPropertyKeys.addAll(javaBlockState.properties().keySet());
                 signature.put(new TreeMap<>(bedrockBlockState.properties()).toString(),
-                        javaIdentifiers.stream().toList().indexOf(javaBlockState.namespacedIdentifier()) + new TreeMap<>(javaBlockState.properties()).toString());
+                    javaIdentifiers.stream().toList().indexOf(javaBlockState.namespacedIdentifier()) + new TreeMap<>(javaBlockState.properties()).toString());
             }
             if (!complete || javaPropertyKeys.isEmpty() || block.getValue().get(0).properties().isEmpty()) {
                 continue; // Without properties on both sides there is no translation to compare
@@ -141,8 +133,8 @@ public class MappingMistakeDetector {
             // Both sides have to describe the same thing before two blocks can be called comparable
             final String groupKey = signature.keySet() + " -> " + javaPropertyKeys + " in " + javaIdentifiers.size() + " identifiers";
             groups.computeIfAbsent(groupKey, key -> new LinkedHashMap<>())
-                    .computeIfAbsent(signature.toString(), key -> new ArrayList<>())
-                    .add(block.getKey());
+                .computeIfAbsent(signature.toString(), key -> new ArrayList<>())
+                .add(block.getKey());
         }
 
         for (Map.Entry<String, Map<String, List<String>>> group : groups.entrySet()) {
@@ -163,8 +155,8 @@ public class MappingMistakeDetector {
                 }
                 for (String block : variant.getValue()) {
                     this.mistakes.add(new MappingMistake(MappingAnalysis.BLOCK_STATES, MappingMistake.FAMILY_OUTLIER, block,
-                            "translates its properties differently from " + majority.getValue().size() + " similar blocks, for example "
-                                    + majority.getValue().get(0)));
+                        "translates its properties differently from " + majority.getValue().size() + " similar blocks, for example "
+                            + majority.getValue().get(0)));
                 }
             }
         }
@@ -194,8 +186,8 @@ public class MappingMistakeDetector {
                 javaPropertyKeys.addAll(javaBlockState.properties().keySet());
                 for (String bedrockKey : bedrockBlockState.properties().keySet()) {
                     javaValuesPerBedrockProperty
-                            .computeIfAbsent(bedrockKey, key -> new LinkedHashSet<>())
-                            .add(javaBlockState.namespacedIdentifier() + new TreeMap<>(javaBlockState.properties()));
+                        .computeIfAbsent(bedrockKey, key -> new LinkedHashSet<>())
+                        .add(javaBlockState.namespacedIdentifier() + new TreeMap<>(javaBlockState.properties()));
                 }
             }
             if (!complete) {
@@ -209,7 +201,7 @@ public class MappingMistakeDetector {
                 }
                 if (this.propertyChangesNothing(block.getValue(), bedrockKey, javaKey)) {
                     this.mistakes.add(new MappingMistake(MappingAnalysis.BLOCK_STATES, MappingMistake.IGNORED_PROPERTY, block.getKey(),
-                            bedrockKey + " never changes java's " + javaKey));
+                        bedrockKey + " never changes java's " + javaKey));
                 }
             }
         }

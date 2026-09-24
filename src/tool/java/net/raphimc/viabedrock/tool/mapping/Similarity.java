@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.tool.mapping;
 /**
  * String similarity helpers used to pick the best template for a mapping proposal.
  */
-public class Similarity {
+public final class Similarity {
 
     /**
      * Levenshtein distance with a cutoff. Stops as soon as the distance is known to exceed {@code max}, which keeps
@@ -97,6 +97,9 @@ public class Similarity {
             return null;
         }
         return targetPrefix + templateJava.substring(templatePrefix.length());
+    }
+
+    private Similarity() {
     }
 
 }

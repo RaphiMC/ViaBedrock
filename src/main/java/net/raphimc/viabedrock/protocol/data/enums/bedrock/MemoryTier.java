@@ -23,6 +23,6 @@ public enum MemoryTier {
     Low,
     Mid,
     High,
-    SuperHigh,
+    SuperHigh
 
 }

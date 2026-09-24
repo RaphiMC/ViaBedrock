@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class BlockEntityRewriter {
+public final class BlockEntityRewriter {
 
     private static final Map<String, Rewriter> BLOCK_ENTITY_REWRITERS = new HashMap<>();
 
@@ -114,11 +114,15 @@ public class BlockEntityRewriter {
         final String tag = blockStateRewriter.tag(bedrockBlockStateId);
         if (isBlockEntity(tag)) {
             final BlockEntity javaBlockEntity = BLOCK_ENTITY_REWRITERS.get(tag).toJava(user, bedrockBlockEntity);
-            if (javaBlockEntity == null) return null;
+            if (javaBlockEntity == null) {
+                return null;
+            }
 
             if (javaBlockEntity.tag() != null) {
                 final int typeId = BedrockProtocol.MAPPINGS.getJavaBlockEntities().getOrDefault(tag, -1);
-                if (typeId == -1) throw new IllegalStateException("Unknown java block entity type: " + tag);
+                if (typeId == -1) {
+                    throw new IllegalStateException("Unknown java block entity type: " + tag);
+                }
 
                 return javaBlockEntity.withTypeId(typeId);
             }
@@ -133,6 +137,9 @@ public class BlockEntityRewriter {
 
     public static boolean isBlockEntity(final String tag) {
         return BLOCK_ENTITY_REWRITERS.containsKey(tag);
+    }
+
+    private BlockEntityRewriter() {
     }
 
     public interface Rewriter {
@@ -167,7 +174,7 @@ public class BlockEntityRewriter {
 
         default void copyItem(final UserConnection user, final CompoundTag fromTag, final CompoundTag toTag, final String fromKey, final String toKey) {
             if (fromTag.get(fromKey) instanceof CompoundTag itemTag) {
-                CompoundTag item = this.rewriteItem(user, itemTag);
+                final CompoundTag item = this.rewriteItem(user, itemTag);
                 if (item != null) {
                     toTag.put(toKey, item);
                 }
@@ -183,7 +190,9 @@ public class BlockEntityRewriter {
             final ItemRewriter itemRewriter = user.get(ItemRewriter.class);
             for (CompoundTag bedrockItemTag : bedrockItemList) {
                 final CompoundTag javaItemTag = itemRewriter.javaItem(bedrockItemTag);
-                if (javaItemTag == null) continue;
+                if (javaItemTag == null) {
+                    continue;
+                }
                 this.copy(bedrockItemTag, javaItemTag, "Slot", ByteTag.class);
                 javaItemList.add(javaItemTag);
             }

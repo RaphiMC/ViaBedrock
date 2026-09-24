@@ -40,12 +40,14 @@ public class BlockDefinitions {
                 try {
                     final JsonObject blocks = pack.content().getJson("blocks.json");
                     for (Map.Entry<String, JsonElement> entry : blocks.entrySet()) {
-                        if (entry.getKey().equals("format_version")) continue;
+                        if (entry.getKey().equals("format_version")) {
+                            continue;
+                        }
                         final JsonObject block = entry.getValue().getAsJsonObject();
                         final String sound = block.has("sound") ? block.get("sound").getAsString() : null;
                         this.blocks.put(Key.namespaced(entry.getKey()), new BlockDefinition(Key.namespaced(entry.getKey()), sound));
                     }
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse blocks.json in pack " + pack.key(), e);
                 }
             }

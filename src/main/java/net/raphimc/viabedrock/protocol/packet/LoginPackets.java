@@ -31,7 +31,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.CryptUtil;
-import net.raphimc.viabedrock.api.util.FNV1;
+import net.raphimc.viabedrock.api.util.Fnv1;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.api.util.ServerBlacklist;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -57,7 +57,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-public class LoginPackets {
+public final class LoginPackets {
 
     private static final int CLOCK_SKEW = 60;
 
@@ -75,7 +75,7 @@ public class LoginPackets {
             try {
                 Jwts.parser().clockSkewSeconds(CLOCK_SKEW).verifyWith(authData.getSessionKeyPair().getPublic()).build().parseSignedClaims(authData.getMultiplayerToken());
                 isSelfSigned = true;
-            } catch (JwtException e) {
+            } catch (final JwtException e) {
                 isSelfSigned = false;
             }
 
@@ -120,7 +120,7 @@ public class LoginPackets {
                     final PacketWrapper loginDisconnect = PacketWrapper.create(ClientboundLoginPackets.LOGIN_DISCONNECT, wrapper.user());
                     PacketFactory.writeJavaDisconnect(loginDisconnect, "§cThis server is blacklisted by ViaBedrock because the server is known to ban players joining with ViaBedrock (Due to the server's anti-cheat).\n\n§7If you want to join the server anyway, set disable-server-blacklist to true in the ViaBedrock config file.");
                     loginDisconnect.send(BedrockProtocol.class);
-                } catch (Throwable ignored) {
+                } catch (final Throwable ignored) {
                 }
                 if (wrapper.user().getChannel() != null) {
                     wrapper.user().getChannel().flush();
@@ -137,24 +137,24 @@ public class LoginPackets {
                 final Instant now = Instant.now();
                 final KeyPair sessionKeyPair = CryptUtil.generateEcdsa384KeyPair();
                 final String encodedPublicKey = Base64.getEncoder().encodeToString(sessionKeyPair.getPublic().getEncoded());
-                final long rawXuid = FNV1.fnv1_64(javaUsername.getBytes(StandardCharsets.UTF_8));
+                final long rawXuid = Fnv1.fnv1_64(javaUsername.getBytes(StandardCharsets.UTF_8));
                 final String xuid = String.valueOf(Math.abs(rawXuid));
                 final String multiplayerToken = Jwts.builder()
-                        .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
-                        .header().add("x5u", encodedPublicKey).and()
-                        .claim(Claims.AUDIENCE, "api://auth-minecraft-services/multiplayer") // audience
-                        .claim("cpk", encodedPublicKey) // client public key
-                        .claim("leguuid", UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + xuid).getBytes(StandardCharsets.UTF_8))) // ? (Should be the same as SelfSignedId)
-                        .claim("mid", Long.toHexString(rawXuid).toUpperCase(Locale.ROOT)) // PlayFab entity id
-                        .claim("nid", "") // ?
-                        .claim("nname", "") // ?
-                        .claim("pid", "") // ?
-                        .claim("pname", "") // ?
-                        .claim("xid", xuid) // xuid
-                        .claim("xname", javaUsername) // display name
-                        .issuedAt(Date.from(now))
-                        .expiration(Date.from(now.plus(365, ChronoUnit.DAYS)))
-                        .compact();
+                    .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
+                    .header().add("x5u", encodedPublicKey).and()
+                    .claim(Claims.AUDIENCE, "api://auth-minecraft-services/multiplayer") // audience
+                    .claim("cpk", encodedPublicKey) // client public key
+                    .claim("leguuid", UUID.nameUUIDFromBytes(("pocket-auth-1-xuid:" + xuid).getBytes(StandardCharsets.UTF_8))) // ? (Should be the same as SelfSignedId)
+                    .claim("mid", Long.toHexString(rawXuid).toUpperCase(Locale.ROOT)) // PlayFab entity id
+                    .claim("nid", "") // ?
+                    .claim("nname", "") // ?
+                    .claim("pid", "") // ?
+                    .claim("pname", "") // ?
+                    .claim("xid", xuid) // xuid
+                    .claim("xname", javaUsername) // display name
+                    .issuedAt(Date.from(now))
+                    .expiration(Date.from(now.plus(365, ChronoUnit.DAYS)))
+                    .compact();
                 wrapper.user().put(new AuthData(multiplayerToken, sessionKeyPair));
             }
             final AuthData authData = wrapper.user().get(AuthData.class);
@@ -168,15 +168,15 @@ public class LoginPackets {
                 authData.setSelfSignedId(protocolInfo.getUuid()); // Not correct, but should be fine for most cases
             }
             if (authData.getClientRandomId() == null) {
-                authData.setClientRandomId(FNV1.fnv1_64(authData.getSelfSignedId().toString().getBytes(StandardCharsets.UTF_8))); // Not correct, but should be fine for most cases
+                authData.setClientRandomId(Fnv1.fnv1_64(authData.getSelfSignedId().toString().getBytes(StandardCharsets.UTF_8))); // Not correct, but should be fine for most cases
             }
             if (authData.getSkinJwt() == null) {
                 final KeyPair sessionKeyPair = authData.getSessionKeyPair();
                 authData.setSkinJwt(Jwts.builder()
-                        .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
-                        .header().add("x5u", Base64.getEncoder().encodeToString(sessionKeyPair.getPublic().getEncoded())).and()
-                        .claims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(wrapper.user()))
-                        .compact());
+                    .signWith(sessionKeyPair.getPrivate(), Jwts.SIG.ES384)
+                    .header().add("x5u", Base64.getEncoder().encodeToString(sessionKeyPair.getPublic().getEncoded())).and()
+                    .claims(Via.getManager().getProviders().get(SkinProvider.class).getClientPlayerSkin(wrapper.user()))
+                    .compact());
             }
         });
         protocol.registerServerboundTransition(ServerboundLoginPackets.LOGIN_ACKNOWLEDGED, null, PacketWrapper::cancel);
@@ -196,6 +196,9 @@ public class LoginPackets {
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException("Failed to perform ECDH key exchange", e);
         }
+    }
+
+    private LoginPackets() {
     }
 
 }

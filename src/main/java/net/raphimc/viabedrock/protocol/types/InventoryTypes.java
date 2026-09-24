@@ -18,14 +18,18 @@
 package net.raphimc.viabedrock.protocol.types;
 
 import com.viaversion.viaversion.api.type.Type;
-import net.raphimc.viabedrock.protocol.model.inventory.*;
-import net.raphimc.viabedrock.protocol.types.inventory.*;
-import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
+import net.raphimc.viabedrock.protocol.model.inventory.LegacySetItemSlotData;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
+import net.raphimc.viabedrock.protocol.types.inventory.InventorySourcePacketType;
+import net.raphimc.viabedrock.protocol.types.inventory.LegacySetItemSlotDataType;
 
-public class InventoryTypes {
+public final class InventoryTypes {
 
     public static final Type<LegacySetItemSlotData[]> LEGACY_SET_ITEM_SLOT_DATA = new ArrayType<>(new LegacySetItemSlotDataType(), BedrockTypes.UNSIGNED_VAR_INT);
     public static final Type<InventorySource> INVENTORY_SOURCE = new InventorySourcePacketType();
+
+    private InventoryTypes() {
+    }
 
 }

@@ -18,25 +18,41 @@
 package net.raphimc.viabedrock.protocol.types.primitive;
 
 import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.TypeConverter;
 import io.netty.buffer.ByteBuf;
 
-import java.util.UUID;
+public class LongLeType extends Type<Long> implements TypeConverter<Long> {
 
-public class UUIDType extends Type<UUID> {
+    public LongLeType() {
+        super("LongLE", Long.class);
+    }
 
-    public UUIDType() {
-        super(UUID.class);
+    public long readPrimitive(final ByteBuf buffer) {
+        return buffer.readLongLE();
+    }
+
+    public void writePrimitive(final ByteBuf buffer, final long value) {
+        buffer.writeLongLE(value);
     }
 
     @Override
-    public UUID read(ByteBuf buffer) {
-        return new UUID(buffer.readLongLE(), buffer.readLongLE());
+    public Long read(final ByteBuf buffer) {
+        return this.readPrimitive(buffer);
     }
 
     @Override
-    public void write(ByteBuf buffer, UUID value) {
-        buffer.writeLongLE(value.getMostSignificantBits());
-        buffer.writeLongLE(value.getLeastSignificantBits());
+    public void write(final ByteBuf buffer, final Long value) {
+        this.writePrimitive(buffer, value);
+    }
+
+    @Override
+    public Long from(final Object o) {
+        if (o instanceof Number) {
+            return ((Number) o).longValue();
+        } else if (o instanceof Boolean) {
+            return ((Boolean) o) ? 1L : 0L;
+        }
+        return (Long) o;
     }
 
 }

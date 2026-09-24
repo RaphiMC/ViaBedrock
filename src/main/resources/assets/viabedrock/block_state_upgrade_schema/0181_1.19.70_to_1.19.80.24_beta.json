@@ -1,23 +1,23 @@
 {
-    "maxVersionMajor": 1,
-    "maxVersionMinor": 19,
-    "maxVersionPatch": 80,
-    "maxVersionRevision": 11,
-    "flattenedProperties": {
-        "minecraft:fence": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "wood_type",
-            "suffix": "_fence"
-        },
-        "minecraft:log": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "old_log_type",
-            "suffix": "_log"
-        },
-        "minecraft:log2": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "new_log_type",
-            "suffix": "_log"
-        }
+  "maxVersionMajor": 1,
+  "maxVersionMinor": 19,
+  "maxVersionPatch": 80,
+  "maxVersionRevision": 11,
+  "flattenedProperties": {
+    "minecraft:fence": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "wood_type",
+      "suffix": "_fence"
+    },
+    "minecraft:log": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "old_log_type",
+      "suffix": "_log"
+    },
+    "minecraft:log2": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "new_log_type",
+      "suffix": "_log"
     }
+  }
 }

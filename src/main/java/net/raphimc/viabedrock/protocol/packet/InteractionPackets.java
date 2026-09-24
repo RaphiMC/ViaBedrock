@@ -56,7 +56,10 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import java.util.List;
 import java.util.logging.Level;
 
-public class InteractionPackets {
+public final class InteractionPackets {
+
+    private InteractionPackets() {
+    }
 
     public static boolean handlePlayerAction(final PacketWrapper wrapper, final PlayerActionAction action) {
         final InventoryTransactionRewriter transactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
@@ -163,7 +166,7 @@ public class InteractionPackets {
             predictedToItem = BedrockItem.empty();
         }
 
-        BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+        final BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
                 0, // legacy request id
                 null,
                 List.of(
@@ -224,7 +227,7 @@ public class InteractionPackets {
                 return;
             }
 
-            BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+            final BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
                     0, // legacy request id
                     null,
                     null,
@@ -274,10 +277,10 @@ public class InteractionPackets {
         });
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_TRANSACTION, null, wrapper -> {
             final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
-            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
 
             wrapper.cancel();
-            BedrockInventoryTransaction inventoryTransaction = wrapper.read(inventoryTransactionRewriter.getInventoryTransactionType());
+            final BedrockInventoryTransaction inventoryTransaction = wrapper.read(inventoryTransactionRewriter.getInventoryTransactionType());
 
             if (inventoryTransaction.legacyRequestId() != 0) {
                 // Ignore legacy inventory transactions for now
@@ -287,11 +290,11 @@ public class InteractionPackets {
             if (inventoryTransaction.actions() != null && !inventoryTransaction.actions().isEmpty()) {
                 for (InventoryActionData action : inventoryTransaction.actions()) {
                     if (action.source().type() == InventorySourceType.Container_Inventory) {
-                        Container container = inventoryTracker.getContainerClientbound((byte) action.source().containerId(), null, null);
+                        final Container container = inventoryTracker.getContainerClientbound((byte) action.source().containerId(), null, null);
 
                         if (container != null) {
                             container.setItem(action.slot(), action.toItem());
-                            PacketFactory.sendJavaContainerSetContent(wrapper.user(),  container);
+                            PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);
                         } else {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received inventory action for unknown container ID: " + action.source().containerId());
                         }
@@ -333,7 +336,7 @@ public class InteractionPackets {
 
                     if (passenger.uniqueId() == entityTracker.getClientPlayer().uniqueId()) { // TODO: This could be applied to all passengers not just players
                         // The player is now riding an entity, update the state
-                        entityTracker.getClientPlayer().setMountEntityRId(entityTracker.getEntityByUid(linkType.fromEntityUniqueId()).runtimeId());
+                        entityTracker.getClientPlayer().setMountEntityRuntimeId(entityTracker.getEntityByUid(linkType.fromEntityUniqueId()).runtimeId());
                     }
                 }
                 case None -> { // Remove
@@ -345,15 +348,14 @@ public class InteractionPackets {
                         wrapper.write(Types.VAR_INT, entityTracker.getEntityByUid(passengerUid).javaId()); // passenger id
                     }
 
-                    if (passenger.uniqueId() == entityTracker.getClientPlayer().uniqueId()) {// TODO: This could be applied to all passengers not just players
+                    if (passenger.uniqueId() == entityTracker.getClientPlayer().uniqueId()) { // TODO: This could be applied to all passengers not just players
                         // The player is no longer riding an entity, update the state
-                        entityTracker.getClientPlayer().setMountEntityRId(-1);
+                        entityTracker.getClientPlayer().setMountEntityRuntimeId(-1);
                         entityTracker.getClientPlayer().setRequestedDismount(false);
                     }
                 }
             }
         });
-
 
     }
 

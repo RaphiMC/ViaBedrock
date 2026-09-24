@@ -66,10 +66,18 @@ public class InventoryTracker extends StoredObject {
     }
 
     public Container getContainerClientbound(final byte containerId, final FullContainerName containerName, final BedrockItem storageItem) {
-        if (containerId == this.inventoryContainer.containerId()) return this.inventoryContainer;
-        if (containerId == this.offhandContainer.containerId()) return this.offhandContainer;
-        if (containerId == this.armorContainer.containerId()) return this.armorContainer;
-        if (containerId == this.hudContainer.containerId()) return this.hudContainer;
+        if (containerId == this.inventoryContainer.containerId()) {
+            return this.inventoryContainer;
+        }
+        if (containerId == this.offhandContainer.containerId()) {
+            return this.offhandContainer;
+        }
+        if (containerId == this.armorContainer.containerId()) {
+            return this.armorContainer;
+        }
+        if (containerId == this.hudContainer.containerId()) {
+            return this.hudContainer;
+        }
         if (containerId == ContainerID.CONTAINER_ID_REGISTRY.getValue() && containerName.name() == ContainerEnumName.DynamicContainer) {
             final String itemTag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(this.user().get(ItemRewriter.class).getItems().inverse().get(storageItem.identifier()));
             if (!storageItem.isEmpty() && CustomItemTags.BUNDLE.equals(itemTag)) {
@@ -132,7 +140,9 @@ public class InventoryTracker extends StoredObject {
 
     public void tick() {
         if (this.currentContainer != null && this.currentContainer.position() != null) {
-            if (this.currentContainer.type() == ContainerType.INVENTORY) return;
+            if (this.currentContainer.type() == ContainerType.INVENTORY) {
+                return;
+            }
 
             final ChunkTracker chunkTracker = this.user().get(ChunkTracker.class);
             final BlockStateRewriter blockStateRewriter = this.user().get(BlockStateRewriter.class);

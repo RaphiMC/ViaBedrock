@@ -31,7 +31,7 @@ import java.io.StringReader;
 import java.util.List;
 
 @SuppressWarnings("UnstableApiUsage")
-public class MoLangEngine {
+public final class MoLangEngine {
 
     public static Value eval(final Scope scope, final String expression) throws IOException {
         return eval(scope, parse(expression));
@@ -50,7 +50,7 @@ public class MoLangEngine {
         Value lastResult = NumberValue.zero();
         for (Expression expression : expressions) {
             lastResult = expression.visit(evaluator);
-            Value returnValue = evaluator.popReturnValue();
+            final Value returnValue = evaluator.popReturnValue();
             if (returnValue != null) {
                 lastResult = returnValue;
                 break;
@@ -61,13 +61,16 @@ public class MoLangEngine {
     }
 
     public static List<Expression> parse(final String expression) throws IOException {
-        try (final StringReader reader = new StringReader(expression)) {
+        try (StringReader reader = new StringReader(expression)) {
             return parse(reader);
         }
     }
 
     public static List<Expression> parse(final Reader reader) throws IOException {
         return MolangParser.parser(reader).parseAll();
+    }
+
+    private MoLangEngine() {
     }
 
 }

@@ -64,7 +64,6 @@ public enum BitArrayVersion {
         throw new IllegalArgumentException("Invalid palette bits: " + bits);
     }
 
-
     public BitArray createArray(final int size) {
         return this.createArray(size, new int[this.getWordsForSize(size)]);
     }
@@ -81,7 +80,9 @@ public enum BitArrayVersion {
     }
 
     public int getWordsForSize(final int size) {
-        if (this.entriesPerWord == 0) return 0;
+        if (this.entriesPerWord == 0) {
+            return 0;
+        }
         return MathUtil.ceil((float) size / this.entriesPerWord);
     }
 

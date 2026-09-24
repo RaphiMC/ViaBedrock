@@ -131,13 +131,13 @@ public class BlockStateRewriter implements StorableObject {
             }
 
             final List<CompoundTag> combinations = CombinationUtil.generateCombinations(propertiesMap).stream()
-                    .map(stringTagMap -> {
-                        final CompoundTag combination = new CompoundTag();
-                        for (Map.Entry<String, Tag> entry : stringTagMap.entrySet()) {
-                            combination.put(entry.getKey(), entry.getValue().copy());
-                        }
-                        return combination;
-                    }).collect(Collectors.toList());
+                .map(stringTagMap -> {
+                    final CompoundTag combination = new CompoundTag();
+                    for (Map.Entry<String, Tag> entry : stringTagMap.entrySet()) {
+                        combination.put(entry.getKey(), entry.getValue().copy());
+                    }
+                    return combination;
+                }).collect(Collectors.toList());
             if (combinations.isEmpty()) {
                 combinations.add(new CompoundTag());
             }
@@ -182,7 +182,9 @@ public class BlockStateRewriter implements StorableObject {
         for (Int2ObjectMap.Entry<BedrockBlockState> entry : BedrockProtocol.MAPPINGS.getBedrockLegacyBlockStates().int2ObjectEntrySet()) {
             final int legacyId = entry.getIntKey() >> 6;
             final int legacyData = entry.getIntKey() & 63;
-            if (legacyData > 15) continue; // Dirty hack Mojang did in 1.12. Can be ignored safely as those values can't be used in chunk packets.
+            if (legacyData > 15) {
+                continue; // Dirty hack Mojang did in 1.12. Can be ignored safely as those values can't be used in chunk packets.
+            }
 
             this.legacyBlockStateIdMappings.put(legacyId << 4 | legacyData & 15, this.blockStateMappings.getOrDefault(entry.getValue(), -1).intValue());
         }
@@ -197,7 +199,7 @@ public class BlockStateRewriter implements StorableObject {
             this.blockStateSanitizer.sanitize(bedrockBlockStateTagClone);
 
             return this.bedrockId(BedrockBlockState.fromNbt(bedrockBlockStateTagClone));
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while rewriting block state tag: " + bedrockBlockStateTag, e);
             return this.bedrockId(BedrockBlockState.AIR);
         }

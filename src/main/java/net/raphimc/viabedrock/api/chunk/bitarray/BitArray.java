@@ -18,7 +18,7 @@
 
 package net.raphimc.viabedrock.api.chunk.bitarray;
 
-public interface BitArray extends Cloneable {
+public interface BitArray {
 
     void set(final int index, final int value);
 
@@ -30,6 +30,6 @@ public interface BitArray extends Cloneable {
 
     BitArrayVersion getVersion();
 
-    BitArray clone();
+    BitArray copy();
 
 }

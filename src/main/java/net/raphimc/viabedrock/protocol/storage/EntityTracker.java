@@ -54,7 +54,7 @@ import java.util.logging.Level;
 
 public class EntityTracker extends StoredObject {
 
-    private final AtomicInteger ID_COUNTER = new AtomicInteger(2);
+    private final AtomicInteger idCounter = new AtomicInteger(2);
 
     private ClientPlayerEntity clientPlayerEntity = null;
     private final Long2ObjectMap<Entity> entities = new Long2ObjectOpenHashMap<>();
@@ -85,8 +85,8 @@ public class EntityTracker extends StoredObject {
     }
 
     public <T extends Entity> T addEntity(final T entity, final boolean updateTeam) {
-        if (entity instanceof ClientPlayerEntity clientPlayerEntity) {
-            this.clientPlayerEntity = clientPlayerEntity;
+        if (entity instanceof ClientPlayerEntity playerEntity) {
+            this.clientPlayerEntity = playerEntity;
         }
 
         final Entity prevEntity = this.entities.put(entity.uniqueId(), entity);
@@ -208,7 +208,7 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity getEntityByRid(final long runtimeId) {
-        Long uniqueId = this.runtimeIdToUniqueId.get(runtimeId);
+        final Long uniqueId = this.runtimeIdToUniqueId.get(runtimeId);
         if (uniqueId == null) {
             return null;
         }
@@ -237,7 +237,7 @@ public class EntityTracker extends StoredObject {
     }
 
     public int getNextJavaEntityId() {
-        return ID_COUNTER.getAndIncrement();
+        return this.idCounter.getAndIncrement();
     }
 
     public record ItemFrame(BlockPosition position, int facing) {

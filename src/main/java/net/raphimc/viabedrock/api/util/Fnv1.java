@@ -17,19 +17,19 @@
  */
 package net.raphimc.viabedrock.api.util;
 
-public class FNV1 {
+public final class Fnv1 {
 
-    private static final long FNV1_64_INIT = 0xcbf29ce484222325L;
+    private static final long FNV1_64_INIT = 0xCBF29CE484222325L;
     private static final long FNV1_PRIME_64 = 1099511628211L;
 
-    private static final int FNV1_32_INIT = 0x811c9dc5;
+    private static final int FNV1_32_INIT = 0x811C9DC5;
     private static final int FNV1_PRIME_32 = 0x01000193;
 
     public static long fnv1_64(final byte[] data) {
         long hash = FNV1_64_INIT;
         for (byte b : data) {
             hash *= FNV1_PRIME_64;
-            hash ^= (b & 0xff);
+            hash ^= (b & 0xFF);
         }
 
         return hash;
@@ -38,11 +38,14 @@ public class FNV1 {
     public static int fnv1a_32(final byte[] data) {
         int hash = FNV1_32_INIT;
         for (byte b : data) {
-            hash ^= (b & 0xff);
+            hash ^= (b & 0xFF);
             hash *= FNV1_PRIME_32;
         }
 
         return hash;
+    }
+
+    private Fnv1() {
     }
 
 }

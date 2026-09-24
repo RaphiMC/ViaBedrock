@@ -51,7 +51,9 @@ public class GlyphSheetResourceRewriter implements ResourcePackRewriter.Rewriter
 
             for (ResourcePack pack : resourcePackStorage.getPackStackTopToBottom()) {
                 final Content bedrockContent = pack.content();
-                if (!bedrockContent.contains(bedrockPath)) continue;
+                if (!bedrockContent.contains(bedrockPath)) {
+                    continue;
+                }
 
                 javaContent.copyFrom(bedrockContent, bedrockPath, "assets/viabedrock/textures/" + javaPath);
                 final Content.LazyImage image = bedrockContent.getImage(bedrockPath);

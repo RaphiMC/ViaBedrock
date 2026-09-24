@@ -30,7 +30,7 @@ import java.nio.file.Path;
  * The project root is looked up from the working directory, so the tools behave the same when started
  * from Gradle, from an IDE run configuration or from a terminal inside a subdirectory.
  */
-public class ToolPaths {
+public final class ToolPaths {
 
     public static final Path PROJECT_ROOT = findProjectRoot();
     public static final Path MAIN_JAVA = PROJECT_ROOT.resolve("src/main/java");
@@ -79,8 +79,8 @@ public class ToolPaths {
      */
     public static Path clientDataDir(final ToolArgs args) {
         return args.directory("client-data", "It is the 'data' directory of the Bedrock client installation with extracted resource_packs_unpacked, for example 'C:\\XboxGames\\Minecraft for Windows\\Content\\data'. It can also be copied to run/client-data.",
-                PROJECT_ROOT.resolve("run/client-data"),
-                Path.of("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
+            PROJECT_ROOT.resolve("run/client-data"),
+            Path.of("C:\\XboxGames\\Minecraft for Windows\\Content\\data"));
     }
 
     /**
@@ -88,8 +88,8 @@ public class ToolPaths {
      */
     public static Path protocolDocsDir(final ToolArgs args) {
         final Path directory = args.directory("protocol-docs", "Download the enum metadata from https://github.com/Mojang/bedrock-protocol-docs/releases and pass its directory, or extract it to run/protocol-docs.",
-                PROJECT_ROOT.resolve("run/protocol-docs"),
-                PROJECT_ROOT.getParent().resolve("protocol-docs"));
+            PROJECT_ROOT.resolve("run/protocol-docs"),
+            PROJECT_ROOT.getParent().resolve("protocol-docs"));
         return directory;
     }
 
@@ -102,6 +102,9 @@ public class ToolPaths {
             directory = directory.getParent();
         }
         throw new IllegalStateException("Could not find the ViaBedrock project root. Run the tools from inside the repository.");
+    }
+
+    private ToolPaths() {
     }
 
 }

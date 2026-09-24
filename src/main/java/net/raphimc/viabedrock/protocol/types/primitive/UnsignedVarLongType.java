@@ -40,22 +40,22 @@ public class UnsignedVarLongType extends Type<Long> implements TypeConverter<Lon
         return val;
     }
 
-    public void writePrimitive(final ByteBuf buffer, long value) {
+    public void writePrimitive(final ByteBuf buffer, final long value) {
         Types.VAR_LONG.writePrimitive(buffer, value);
     }
 
     @Override
-    public Long read(ByteBuf buffer) {
+    public Long read(final ByteBuf buffer) {
         return this.readPrimitive(buffer);
     }
 
     @Override
-    public void write(ByteBuf buffer, Long value) {
+    public void write(final ByteBuf buffer, final Long value) {
         this.writePrimitive(buffer, value);
     }
 
     @Override
-    public Long from(Object o) {
+    public Long from(final Object o) {
         if (o instanceof Number) {
             return ((Number) o).longValue();
         } else if (o instanceof Boolean) {

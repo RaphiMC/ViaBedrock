@@ -29,9 +29,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class ResourcePackConverterTest {
+public final class ResourcePackConverterTest {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final Path input = Path.of(toolArgs.require("input", "Pass the .mcpack which should be converted, for example --input=run/input.mcpack"));
         final Path output = toolArgs.path("output", ToolPaths.PROJECT_ROOT.resolve("run/converted_pack.zip"));
@@ -55,6 +55,9 @@ public class ResourcePackConverterTest {
         Files.write(output, javaContent.toZip());
         System.out.println("Writing took " + (System.currentTimeMillis() - start) + "ms");
         System.out.println("Wrote " + output);
+    }
+
+    private ResourcePackConverterTest() {
     }
 
 }

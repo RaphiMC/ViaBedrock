@@ -33,22 +33,22 @@ public class VarIntType extends Type<Integer> implements TypeConverter<Integer> 
         return (i >>> 1) ^ -(i & 1);
     }
 
-    public void writePrimitive(final ByteBuf buffer, int value) {
+    public void writePrimitive(final ByteBuf buffer, final int value) {
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, (value << 1) ^ (value >> 31));
     }
 
     @Override
-    public Integer read(ByteBuf buffer) {
+    public Integer read(final ByteBuf buffer) {
         return this.readPrimitive(buffer);
     }
 
     @Override
-    public void write(ByteBuf buffer, Integer value) {
+    public void write(final ByteBuf buffer, final Integer value) {
         this.writePrimitive(buffer, value);
     }
 
     @Override
-    public Integer from(Object o) {
+    public Integer from(final Object o) {
         if (o instanceof Number) {
             return ((Number) o).intValue();
         } else if (o instanceof Boolean) {

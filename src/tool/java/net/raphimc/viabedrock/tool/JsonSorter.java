@@ -33,9 +33,9 @@ import java.util.TreeMap;
  * <p>
  * Example: {@code --file=data/custom/item_mappings.json --deep}
  */
-public class JsonSorter {
+public final class JsonSorter {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final List<String> files = toolArgs.list("file");
         if (files.isEmpty()) {
@@ -73,6 +73,9 @@ public class JsonSorter {
             return assetPath;
         }
         throw new IllegalArgumentException("Could not find '" + file + "'. It is neither a file nor a path inside " + ToolPaths.ASSETS);
+    }
+
+    private JsonSorter() {
     }
 
 }

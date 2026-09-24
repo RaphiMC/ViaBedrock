@@ -21,45 +21,48 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JavaMapPaletteUtil {
+public final class JavaMapPaletteUtil {
 
     private static final float[] JAVA_L;
     private static final float[] JAVA_A;
     private static final float[] JAVA_B;
 
     static {
-        MapColor[] colors = MapColor.values();
+        final MapColor[] colors = MapColor.values();
         JAVA_L = new float[colors.length];
         JAVA_A = new float[colors.length];
         JAVA_B = new float[colors.length];
 
         for (int i = 0; i < colors.length; i++) {
-            Color c = colors[i].getColor();
-            float[] lab = rgbToLab(c.getRed(), c.getGreen(), c.getBlue());
+            final Color c = colors[i].getColor();
+            final float[] lab = rgbToLab(c.getRed(), c.getGreen(), c.getBlue());
             JAVA_L[i] = lab[0];
             JAVA_A[i] = lab[1];
             JAVA_B[i] = lab[2];
         }
     }
 
-    public static short[] convertToJavaPalette(int[] bedrockColors) {
+    private JavaMapPaletteUtil() {
+    }
+
+    public static short[] convertToJavaPalette(final int[] bedrockColors) {
         //TODO: Check biome tinting for grass/foliage/water
-        short[] javaColors = new short[bedrockColors.length];
+        final short[] javaColors = new short[bedrockColors.length];
         final Map<Integer, Short> cache = new HashMap<>();
 
         for (int i = 0; i < bedrockColors.length; i++) {
-            int c = bedrockColors[i];
+            final int c = bedrockColors[i];
 
-            int a = (c >>> 24);
+            final int a = (c >>> 24);
             if (a == 0) {
                 javaColors[i] = 0;
                 continue;
             }
 
             // Bedrock map pixels arrive as RGBA bytes in a little-endian uint32.
-            int r = c & 0xFF;
-            int g = (c >> 8) & 0xFF;
-            int b = (c >> 16) & 0xFF;
+            final int r = c & 0xFF;
+            final int g = (c >> 8) & 0xFF;
+            final int b = (c >> 16) & 0xFF;
 
             final int rgb = c & 0xFFFFFF;
             final Short cached = cache.get(rgb);
@@ -68,17 +71,17 @@ public class JavaMapPaletteUtil {
                 continue;
             }
 
-            float[] lab = rgbToLab(r, g, b);
+            final float[] lab = rgbToLab(r, g, b);
 
             float bestDist = Float.MAX_VALUE;
             short best = 0;
 
             for (short j = 4; j < JAVA_L.length; j++) {
-                float dL = lab[0] - JAVA_L[j];
-                float dA = lab[1] - JAVA_A[j];
-                float dB = lab[2] - JAVA_B[j];
+                final float dL = lab[0] - JAVA_L[j];
+                final float dA = lab[1] - JAVA_A[j];
+                final float dB = lab[2] - JAVA_B[j];
 
-                float dist = dL * dL + dA * dA + dB * dB;
+                final float dist = dL * dL + dA * dA + dB * dB;
                 if (dist < bestDist) {
                     bestDist = dist;
                     best = j;
@@ -92,47 +95,48 @@ public class JavaMapPaletteUtil {
         return javaColors;
     }
 
-    private static float[] rgbToLab(int r, int g, int b) {
-        // sRGB → linear
-        float rf = pivotRgb(r / 255f);
-        float gf = pivotRgb(g / 255f);
-        float bf = pivotRgb(b / 255f);
+    private static float[] rgbToLab(final int r, final int g, final int b) {
+        // sRGB to linear
+        final float rf = pivotRgb(r / 255f);
+        final float gf = pivotRgb(g / 255f);
+        final float bf = pivotRgb(b / 255f);
 
-        // linear RGB → XYZ
-        float x = rf * 0.4124f + gf * 0.3576f + bf * 0.1805f;
-        float y = rf * 0.2126f + gf * 0.7152f + bf * 0.0722f;
-        float z = rf * 0.0193f + gf * 0.1192f + bf * 0.9505f;
+        // linear RGB to XYZ
+        final float x = rf * 0.4124f + gf * 0.3576f + bf * 0.1805f;
+        final float y = rf * 0.2126f + gf * 0.7152f + bf * 0.0722f;
+        final float z = rf * 0.0193f + gf * 0.1192f + bf * 0.9505f;
 
-        // XYZ → LAB
+        // XYZ to LAB
         return xyzToLab(x, y, z);
     }
 
-    private static float pivotRgb(float n) {
+    private static float pivotRgb(final float n) {
         return n <= 0.04045f
-                ? n / 12.92f
-                : (float) Math.pow((n + 0.055f) / 1.055f, 2.4f);
+            ? n / 12.92f
+            : (float) Math.pow((n + 0.055f) / 1.055f, 2.4f);
     }
 
-    private static float[] xyzToLab(float x, float y, float z) {
+    private static float[] xyzToLab(final float x, final float y, final float z) {
         // D65 reference white
-        float xr = x / 0.95047f;
-        float yr = y / 1.00000f;
-        float zr = z / 1.08883f;
+        final float xr = x / 0.95047f;
+        final float yr = y / 1.00000f;
+        final float zr = z / 1.08883f;
 
-        float fx = pivotXyz(xr);
-        float fy = pivotXyz(yr);
-        float fz = pivotXyz(zr);
+        final float fx = pivotXyz(xr);
+        final float fy = pivotXyz(yr);
+        final float fz = pivotXyz(zr);
 
-        float L = 116f * fy - 16f;
-        float A = 500f * (fx - fy);
-        float B = 200f * (fy - fz);
+        final float lightness = 116f * fy - 16f;
+        final float greenRed = 500f * (fx - fy);
+        final float blueYellow = 200f * (fy - fz);
 
-        return new float[] { L, A, B };
+        return new float[]{lightness, greenRed, blueYellow};
     }
 
-    private static float pivotXyz(float n) {
+    private static float pivotXyz(final float n) {
         return n > 0.008856f
-                ? (float) Math.cbrt(n)
-                : (7.787f * n) + (16f / 116f);
+            ? (float) Math.cbrt(n)
+            : (7.787f * n) + (16f / 116f);
     }
+
 }

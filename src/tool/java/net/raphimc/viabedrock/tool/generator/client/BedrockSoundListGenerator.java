@@ -29,45 +29,45 @@ import net.raphimc.viabedrock.util.Util;
 
 import java.util.*;
 
-public class BedrockSoundListGenerator {
+public final class BedrockSoundListGenerator {
 
     private static final Set<String> CANCELLED_SOUNDS = Set.of(
-            "imitate.panda",
-            "guardian.flop",
-            "block.sculk_sensor.clicking",
-            "block.sculk_sensor.clicking_stop",
-            "block.sculk.place",
-            "item.bone_meal.use",
-            "mob.armor_stand.break",
-            "mob.armor_stand.land",
-            "mob.armor_stand.hit",
-            "sniff",
-            "emerge",
-            "spit",
-            "dig",
-            "scream",
-            "sound",
-            "jealous",
-            "idle",
-            "slightly_angry",
-            "note.bass"
+        "imitate.panda",
+        "guardian.flop",
+        "block.sculk_sensor.clicking",
+        "block.sculk_sensor.clicking_stop",
+        "block.sculk.place",
+        "item.bone_meal.use",
+        "mob.armor_stand.break",
+        "mob.armor_stand.land",
+        "mob.armor_stand.hit",
+        "sniff",
+        "emerge",
+        "spit",
+        "dig",
+        "scream",
+        "sound",
+        "jealous",
+        "idle",
+        "slightly_angry",
+        "note.bass"
     );
 
     private static final Set<String> SPECIAL_SOUNDS = Set.of(
-            // Mapped in code
-            "record.null",
-            "note",
-            // Those seem to do nothing
-            "item.fizz",
-            "mob.warning.baby",
-            "haggle.idle",
-            "default",
-            "scared",
-            "jump.prevent",
-            "undefined"
+        // Mapped in code
+        "record.null",
+        "note",
+        // Those seem to do nothing
+        "item.fizz",
+        "mob.warning.baby",
+        "haggle.idle",
+        "default",
+        "scared",
+        "jump.prevent",
+        "undefined"
     );
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(ToolPaths.clientDataDir(toolArgs));
 
@@ -133,7 +133,7 @@ public class BedrockSoundListGenerator {
         ToolPaths.writeJson(ToolPaths.BEDROCK_DATA.resolve("block_sounds.json"), blockSoundsJson);
 
         final JsonObject levelSoundMappings = new JsonObject();
-        Map<String, Map<String, SoundDefinitions.ConfiguredSound>> mapping = new HashMap<>();
+        final Map<String, Map<String, SoundDefinitions.ConfiguredSound>> mapping = new HashMap<>();
         for (Map.Entry<String, SoundDefinitions.EventSound> entry : resourcePackStorage.getSounds().eventSounds().entrySet()) {
             mapping.computeIfAbsent(entry.getKey(), k -> new HashMap<>()).put("", entry.getValue().sound());
         }
@@ -155,13 +155,15 @@ public class BedrockSoundListGenerator {
         }
 
         for (Map.Entry<String, Map<String, SoundDefinitions.ConfiguredSound>> entry : mapping.entrySet()) {
-            if (CANCELLED_SOUNDS.contains(entry.getKey())) continue;
+            if (CANCELLED_SOUNDS.contains(entry.getKey())) {
+                continue;
+            }
 
             if (levelSoundMappings.has(entry.getKey())) {
                 System.out.println("Duplicate sound event: " + entry.getKey());
                 continue;
             }
-            JsonObject sounds = new JsonObject();
+            final JsonObject sounds = new JsonObject();
             for (Map.Entry<String, SoundDefinitions.ConfiguredSound> soundEntry : entry.getValue().entrySet()) {
                 if (!soundList.has(soundEntry.getValue().sound())) {
                     System.out.println("Unknown sound: " + soundEntry.getValue().sound());
@@ -186,4 +188,8 @@ public class BedrockSoundListGenerator {
         sortedJson.forEach(levelSoundMappings::add);
         ToolPaths.writeJson(ToolPaths.BEDROCK_DATA.resolve("level_sound_event_mappings.json"), levelSoundMappings, true);
     }
+
+    private BedrockSoundListGenerator() {
+    }
+
 }

@@ -35,7 +35,9 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
     }
 
     public BedrockChunkSectionImpl(final boolean noPendingBlockUpdates) {
-        if (noPendingBlockUpdates) this.pendingBlockUpdates = null;
+        if (noPendingBlockUpdates) {
+            this.pendingBlockUpdates = null;
+        }
     }
 
     @Override
@@ -80,7 +82,7 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
     }
 
     @Override
-    public void addPendingBlockUpdate(int x, int y, int z, int layer, int blockState) {
+    public void addPendingBlockUpdate(final int x, final int y, final int z, final int layer, final int blockState) {
         if (!this.hasPendingBlockUpdates()) {
             throw new IllegalStateException("This section already has been merged with another section");
         }
@@ -105,7 +107,9 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
 
                 if (layer > 0) {
                     final int prevBlockState = this.blockPalettes.get(layer - 1).idAt(sectionIndex);
-                    if (prevBlockState == airId) continue;
+                    if (prevBlockState == airId) {
+                        continue;
+                    }
                 }
 
                 palette.setIdAt(sectionIndex, blockState);
@@ -117,7 +121,9 @@ public class BedrockChunkSectionImpl implements BedrockChunkSection {
     @Override
     public void addPalette(final PaletteType type, final DataPalette palette) {
         if (type == PaletteType.BLOCKS) {
-            if (palette == null) throw new IllegalArgumentException("Block palette cannot be null");
+            if (palette == null) {
+                throw new IllegalArgumentException("Block palette cannot be null");
+            }
 
             if (this.blockPalettes.size() >= 2) {
                 throw new IllegalStateException("This section already has two block palettes");

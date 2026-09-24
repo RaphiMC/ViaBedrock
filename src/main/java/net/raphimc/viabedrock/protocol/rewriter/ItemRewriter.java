@@ -41,7 +41,6 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.resourcepack.definition.ItemDefinitions;
 import net.raphimc.viabedrock.api.util.TextUtil;
-import net.raphimc.viabedrock.protocol.rewriter.ItemDataRewriter;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
@@ -125,7 +124,9 @@ public class ItemRewriter extends StoredObject {
     }
 
     public Item javaItem(final BedrockItem bedrockItem) {
-        if (bedrockItem.isEmpty()) return StructuredItem.empty();
+        if (bedrockItem.isEmpty()) {
+            return StructuredItem.empty();
+        }
 
         final String identifier = this.items.inverse().get(bedrockItem.identifier());
         if (identifier == null) {
@@ -254,18 +255,18 @@ public class ItemRewriter extends StoredObject {
             return null;
         }
 
-        String bedrockId = bedrockTag.getString("Name");
+        final String bedrockId = bedrockTag.getString("Name");
         if (bedrockId == null || bedrockId.isEmpty()) {
             return null;
         }
 
-        Integer id = this.items.get(bedrockId);
+        final Integer id = this.items.get(bedrockId);
         if (id == null) {
             ViaBedrock.getPlatform().getLogger().warning("Could not find item " + bedrockId);
             return null;
         }
 
-        BedrockItem item = new BedrockItem(
+        final BedrockItem item = new BedrockItem(
                 id,
                 (short) 0,
                 bedrockTag.getByte("Count"),

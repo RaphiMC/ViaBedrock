@@ -32,7 +32,7 @@ public class ItemEntryType extends Type<ItemEntry> {
     }
 
     @Override
-    public ItemEntry read(ByteBuf buffer) {
+    public ItemEntry read(final ByteBuf buffer) {
         final String identifier = Key.namespaced(BedrockTypes.STRING.read(buffer));
         final int id = buffer.readShortLE();
         final boolean componentBased = buffer.readBoolean();
@@ -43,7 +43,7 @@ public class ItemEntryType extends Type<ItemEntry> {
     }
 
     @Override
-    public void write(ByteBuf buffer, ItemEntry value) {
+    public void write(final ByteBuf buffer, final ItemEntry value) {
         BedrockTypes.STRING.write(buffer, value.identifier());
         buffer.writeShortLE(value.id());
         buffer.writeBoolean(value.componentBased());

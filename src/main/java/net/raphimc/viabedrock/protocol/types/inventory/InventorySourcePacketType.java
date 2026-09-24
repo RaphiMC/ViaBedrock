@@ -20,10 +20,10 @@ package net.raphimc.viabedrock.protocol.types.inventory;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
+import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class InventorySourcePacketType extends Type<InventorySource> {
@@ -33,17 +33,21 @@ public class InventorySourcePacketType extends Type<InventorySource> {
     }
 
     @Override
-    public InventorySource read(ByteBuf buffer) {
-        int rawTypeId = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
-        InventorySourceType type = InventorySourceType.getByValue(rawTypeId);
+    public InventorySource read(final ByteBuf buffer) {
+        final int rawTypeId = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
+        final InventorySourceType type = InventorySourceType.getByValue(rawTypeId);
         if (type == null) {
             throw new IllegalStateException("Invalid inventory source type id: " + rawTypeId);
         }
 
         int containerId = 0;
         InventorySourceFlags flag = InventorySourceFlags.No_Flag;
-        if (buffer.readBoolean()) containerId = buffer.readByte();
-        if (buffer.readBoolean()) flag = InventorySourceFlags.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        if (buffer.readBoolean()) {
+            containerId = buffer.readByte();
+        }
+        if (buffer.readBoolean()) {
+            flag = InventorySourceFlags.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        }
 
         switch (type) {
             case Container_Inventory, Non_Implemented_Feature_TODO -> {
@@ -59,7 +63,7 @@ public class InventorySourcePacketType extends Type<InventorySource> {
     }
 
     @Override
-    public void write(ByteBuf buffer, InventorySource value) {
+    public void write(final ByteBuf buffer, final InventorySource value) {
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.type().getValue());
 
         if (value.type() == InventorySourceType.Container_Inventory || value.type() == InventorySourceType.Non_Implemented_Feature_TODO) {
@@ -76,4 +80,5 @@ public class InventorySourcePacketType extends Type<InventorySource> {
             Types.BOOLEAN.write(buffer, false);
         }
     }
+
 }

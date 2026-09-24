@@ -102,27 +102,27 @@ public class BundleContainer extends Container {
     private Pair<Container, Integer> findHoldingContainer() {
         final InventoryTracker inventoryTracker = this.user.get(InventoryTracker.class);
 
-        int slot = findBundleInContainer(inventoryTracker.getInventoryContainer());
+        int slot = this.findBundleInContainer(inventoryTracker.getInventoryContainer());
         if (slot != -1) {
             return new Pair<>(inventoryTracker.getInventoryContainer(), slot);
         }
 
-        slot = findBundleInContainer(inventoryTracker.getCurrentContainer());
+        slot = this.findBundleInContainer(inventoryTracker.getCurrentContainer());
         if (slot != -1) {
             return new Pair<>(inventoryTracker.getCurrentContainer(), slot);
         }
 
-        slot = findBundleInContainer(inventoryTracker.getOffhandContainer());
+        slot = this.findBundleInContainer(inventoryTracker.getOffhandContainer());
         if (slot != -1) {
             return new Pair<>(inventoryTracker.getOffhandContainer(), slot);
         }
 
-        slot = findBundleInContainer(inventoryTracker.getArmorContainer());
+        slot = this.findBundleInContainer(inventoryTracker.getArmorContainer());
         if (slot != -1) {
             return new Pair<>(inventoryTracker.getArmorContainer(), slot);
         }
 
-        slot = findBundleInContainer(inventoryTracker.getHudContainer());
+        slot = this.findBundleInContainer(inventoryTracker.getHudContainer());
         if (slot != -1) {
             return new Pair<>(inventoryTracker.getHudContainer(), slot);
         }
@@ -131,20 +131,28 @@ public class BundleContainer extends Container {
     }
 
     private int findBundleInContainer(final Container container) {
-        if (container == null) return -1;
+        if (container == null) {
+            return -1;
+        }
 
         final ItemRewriter itemRewriter = this.user.get(ItemRewriter.class);
 
         final BedrockItem[] items = container.getItems();
         for (int i = 0; i < items.length; i++) {
             final BedrockItem item = items[i];
-            if (item.isEmpty() || item.tag() == null) continue;
+            if (item.isEmpty() || item.tag() == null) {
+                continue;
+            }
 
             final String itemTag = BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().get(itemRewriter.getItems().inverse().get(item.identifier()));
-            if (!CustomItemTags.BUNDLE.equals(itemTag)) continue;
+            if (!CustomItemTags.BUNDLE.equals(itemTag)) {
+                continue;
+            }
 
             final IntTag bundleIdTag = item.tag().getIntTag("bundle_id");
-            if (bundleIdTag == null || bundleIdTag.asInt() == 0) continue;
+            if (bundleIdTag == null || bundleIdTag.asInt() == 0) {
+                continue;
+            }
 
             if (bundleIdTag.asInt() == this.containerName.dynamicId()) {
                 return i;

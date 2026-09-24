@@ -30,7 +30,7 @@ import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 public class CrafterBlockEntityRewriter extends LootableContainerBlockEntityRewriter {
 
     @Override
-    public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
+    public BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity) {
         final BlockEntity javaBlockEntity = super.toJava(user, bedrockBlockEntity);
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = javaBlockEntity.tag();

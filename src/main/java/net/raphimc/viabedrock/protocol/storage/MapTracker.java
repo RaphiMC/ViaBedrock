@@ -60,4 +60,5 @@ public class MapTracker extends StoredObject {
         request.sendToServer(BedrockProtocol.class);
         return javaId;
     }
+
 }

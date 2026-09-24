@@ -22,10 +22,10 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransa
 import java.util.List;
 
 public record BedrockInventoryTransaction(
-        int legacyRequestId,
-        List<LegacySetItemSlotData> legacySlots,
-        List<InventoryActionData> actions,
-        ComplexInventoryTransaction_Type transactionType,
-        InventoryTransactionData transactionData
+    int legacyRequestId,
+    List<LegacySetItemSlotData> legacySlots,
+    List<InventoryActionData> actions,
+    ComplexInventoryTransaction_Type transactionType,
+    InventoryTransactionData transactionData
 ) {
 }

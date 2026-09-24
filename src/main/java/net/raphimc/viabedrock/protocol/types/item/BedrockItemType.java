@@ -40,7 +40,7 @@ public class BedrockItemType extends Type<BedrockItem> {
     }
 
     @Override
-    public BedrockItem read(ByteBuf buffer) {
+    public BedrockItem read(final ByteBuf buffer) {
         final int id = BedrockTypes.VAR_INT.read(buffer);
         if (id == 0 || id == -1) {
             return BedrockItem.empty();
@@ -50,8 +50,8 @@ public class BedrockItemType extends Type<BedrockItem> {
         item.setAmount(buffer.readUnsignedShortLE());
         item.setData(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
         /*if (buffer.readBoolean()) {
-            item.setNetId(BedrockTypes.VAR_INT.read(buffer));
-        }*/
+         *     item.setNetId(BedrockTypes.VAR_INT.read(buffer));
+         * }*/
         item.setBlockRuntimeId(BedrockTypes.VAR_INT.read(buffer));
 
         final IntSortedSet validBlockStates = this.blockItemValidBlockStates.get(item.identifier());
@@ -81,7 +81,7 @@ public class BedrockItemType extends Type<BedrockItem> {
                     item.setBlockingTicks(userData.readLongLE());
                 }
             }
-        } catch (IndexOutOfBoundsException ignored) {
+        } catch (final IndexOutOfBoundsException ignored) {
             // Bedrock client stops reading at whatever point and loads whatever it has read successfully
         }
 
@@ -89,7 +89,7 @@ public class BedrockItemType extends Type<BedrockItem> {
     }
 
     @Override
-    public void write(ByteBuf buffer, BedrockItem value) {
+    public void write(final ByteBuf buffer, final BedrockItem value) {
         if (value.isEmpty()) {
             BedrockTypes.VAR_INT.write(buffer, 0);
             return;

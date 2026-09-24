@@ -29,27 +29,29 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
-public class TagLEType extends Type<Tag> {
+public class TagLeType extends Type<Tag> {
 
-    public TagLEType() {
+    public TagLeType() {
         super(Tag.class);
     }
 
     @Override
-    public Tag read(ByteBuf buffer) {
+    public Tag read(final ByteBuf buffer) {
         final byte id = buffer.readByte();
-        if (id == 0) return null;
+        if (id == 0) {
+            return null;
+        }
 
         try {
             BedrockTypes.UTF8_STRING.read(buffer);
             return TagRegistry.read(id, new LittleEndianByteBufInputStream(buffer), TagLimiter.noop(), 0);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     @Override
-    public void write(ByteBuf buffer, Tag value) {
+    public void write(final ByteBuf buffer, final Tag value) {
         if (value == null) {
             buffer.writeByte(0);
             return;
@@ -59,7 +61,7 @@ public class TagLEType extends Type<Tag> {
         BedrockTypes.UTF8_STRING.write(buffer, "");
         try {
             value.write(new LittleEndianByteBufOutputStream(buffer));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }

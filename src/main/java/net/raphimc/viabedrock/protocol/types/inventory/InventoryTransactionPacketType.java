@@ -21,15 +21,15 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.model.inventory.BedrockInventoryTransaction;
 import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
 import net.raphimc.viabedrock.protocol.model.inventory.InventoryTransactionData;
 import net.raphimc.viabedrock.protocol.model.inventory.LegacySetItemSlotData;
-import net.raphimc.viabedrock.protocol.types.InventoryTypes;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.*;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+import net.raphimc.viabedrock.protocol.types.InventoryTypes;
 
 import java.util.List;
 
@@ -38,20 +38,20 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
     private final UserConnection user;
     private final Type<InventoryActionData[]> inventoryActionDataType;
 
-    public InventoryTransactionPacketType(final UserConnection user, Type<InventoryActionData[]> inventoryActionDataType) {
+    public InventoryTransactionPacketType(final UserConnection user, final Type<InventoryActionData[]> inventoryActionDataType) {
         super(BedrockInventoryTransaction.class);
         this.user = user;
         this.inventoryActionDataType = inventoryActionDataType;
     }
 
     @Override
-    public BedrockInventoryTransaction read(ByteBuf buffer) {
-        ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+    public BedrockInventoryTransaction read(final ByteBuf buffer) {
+        final ItemRewriter itemRewriter = this.user.get(ItemRewriter.class);
         if (itemRewriter == null) {
-            throw new IllegalStateException("ItemRewriter not found for user " + user);
+            throw new IllegalStateException("ItemRewriter not found for user " + this.user);
         }
 
-        int legacyRequestId = BedrockTypes.VAR_INT.read(buffer);
+        final int legacyRequestId = BedrockTypes.VAR_INT.read(buffer);
         LegacySetItemSlotData[] legacySlots = new LegacySetItemSlotData[0];
         if (buffer.readBoolean()) {
             if (legacyRequestId < -1 && (legacyRequestId & 1) == 0) {
@@ -59,38 +59,38 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
             }
         }
 
-        ComplexInventoryTransaction_Type type = ComplexInventoryTransaction_Type.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
-        InventoryActionData[] actions = inventoryActionDataType.read(buffer);
-        InventoryTransactionData transactionData = switch (type) {
-            case NormalTransaction ->  new InventoryTransactionData.NormalTransactionData();
+        final ComplexInventoryTransaction_Type type = ComplexInventoryTransaction_Type.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        final InventoryActionData[] actions = this.inventoryActionDataType.read(buffer);
+        final InventoryTransactionData transactionData = switch (type) {
+            case NormalTransaction -> new InventoryTransactionData.NormalTransactionData();
             case InventoryMismatch -> new InventoryTransactionData.MismatchTransactionData();
             case ItemUseTransaction -> new InventoryTransactionData.UseItemTransactionData(
-                    ItemUseActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
-                    ItemUseTriggerType.getByValue(buffer.readByte()),
-                    BedrockTypes.BLOCK_POSITION.read(buffer),
-                    buffer.readByte(),
-                    BedrockTypes.VAR_INT.read(buffer),
-                    HandSlot.getByValue(buffer.readByte()),
-                    itemRewriter.newItemType().read(buffer),
-                    BedrockTypes.POSITION_3F.read(buffer),
-                    BedrockTypes.POSITION_3F.read(buffer),
-                    BedrockTypes.UNSIGNED_VAR_INT.read(buffer),
-                    ItemUsePredictedResult.getByValue(buffer.readByte()),
-                    ItemUseClientCooldownState.getByValue(buffer.readByte())
+                ItemUseActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
+                ItemUseTriggerType.getByValue(buffer.readByte()),
+                BedrockTypes.BLOCK_POSITION.read(buffer),
+                buffer.readByte(),
+                BedrockTypes.VAR_INT.read(buffer),
+                HandSlot.getByValue(buffer.readByte()),
+                itemRewriter.newItemType().read(buffer),
+                BedrockTypes.POSITION_3F.read(buffer),
+                BedrockTypes.POSITION_3F.read(buffer),
+                BedrockTypes.UNSIGNED_VAR_INT.read(buffer),
+                ItemUsePredictedResult.getByValue(buffer.readByte()),
+                ItemUseClientCooldownState.getByValue(buffer.readByte())
             );
             case ItemUseOnEntityTransaction -> new InventoryTransactionData.UseItemOnEntityTransactionData(
-                    BedrockTypes.UNSIGNED_VAR_LONG.read(buffer),
-                    ItemUseOnActorActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
-                    BedrockTypes.VAR_INT.read(buffer),
-                    itemRewriter.newItemType().read(buffer),
-                    BedrockTypes.POSITION_3F.read(buffer),
-                    BedrockTypes.POSITION_3F.read(buffer)
+                BedrockTypes.UNSIGNED_VAR_LONG.read(buffer),
+                ItemUseOnActorActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
+                BedrockTypes.VAR_INT.read(buffer),
+                itemRewriter.newItemType().read(buffer),
+                BedrockTypes.POSITION_3F.read(buffer),
+                BedrockTypes.POSITION_3F.read(buffer)
             );
             case ItemReleaseTransaction -> new InventoryTransactionData.ReleaseItemTransactionData(
-                    ItemReleaseActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
-                    BedrockTypes.VAR_INT.read(buffer),
-                    itemRewriter.newItemType().read(buffer),
-                    BedrockTypes.POSITION_3F.read(buffer)
+                ItemReleaseActionType.getByValue(BedrockTypes.VAR_INT.read(buffer)),
+                BedrockTypes.VAR_INT.read(buffer),
+                itemRewriter.newItemType().read(buffer),
+                BedrockTypes.POSITION_3F.read(buffer)
             );
         };
 
@@ -98,10 +98,10 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
     }
 
     @Override
-    public void write(ByteBuf buffer, BedrockInventoryTransaction bedrockInventoryTransaction) {
-        ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+    public void write(final ByteBuf buffer, final BedrockInventoryTransaction bedrockInventoryTransaction) {
+        final ItemRewriter itemRewriter = this.user.get(ItemRewriter.class);
         if (itemRewriter == null) {
-            throw new IllegalStateException("ItemRewriter not found for user " + user);
+            throw new IllegalStateException("ItemRewriter not found for user " + this.user);
         }
 
         BedrockTypes.VAR_INT.write(buffer, bedrockInventoryTransaction.legacyRequestId());
@@ -112,16 +112,16 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
 
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, bedrockInventoryTransaction.transactionType().getValue());
         if (bedrockInventoryTransaction.actions() != null) { //TODO: Make actions list Optional
-            inventoryActionDataType.write(buffer, bedrockInventoryTransaction.actions().toArray(new InventoryActionData[0]));
+            this.inventoryActionDataType.write(buffer, bedrockInventoryTransaction.actions().toArray(new InventoryActionData[0]));
         } else {
-            inventoryActionDataType.write(buffer, new InventoryActionData[0]);
+            this.inventoryActionDataType.write(buffer, new InventoryActionData[0]);
         }
         switch (bedrockInventoryTransaction.transactionType()) {
             case NormalTransaction, InventoryMismatch -> {
                 // No additional data to write
             }
             case ItemUseTransaction -> {
-                InventoryTransactionData.UseItemTransactionData data = (InventoryTransactionData.UseItemTransactionData) bedrockInventoryTransaction.transactionData();
+                final InventoryTransactionData.UseItemTransactionData data = (InventoryTransactionData.UseItemTransactionData) bedrockInventoryTransaction.transactionData();
                 BedrockTypes.VAR_INT.write(buffer, data.actionType().getValue());
                 buffer.writeByte(data.triggerType().getValue());
                 BedrockTypes.BLOCK_POSITION.write(buffer, data.blockPosition());
@@ -136,7 +136,7 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
                 buffer.writeByte(data.clientCooldownState().getValue());
             }
             case ItemUseOnEntityTransaction -> {
-                InventoryTransactionData.UseItemOnEntityTransactionData data = (InventoryTransactionData.UseItemOnEntityTransactionData) bedrockInventoryTransaction.transactionData();
+                final InventoryTransactionData.UseItemOnEntityTransactionData data = (InventoryTransactionData.UseItemOnEntityTransactionData) bedrockInventoryTransaction.transactionData();
                 BedrockTypes.UNSIGNED_VAR_LONG.write(buffer, data.entityRuntimeId());
                 BedrockTypes.VAR_INT.write(buffer, data.actionType().getValue());
                 BedrockTypes.VAR_INT.write(buffer, data.hotbarSlot());
@@ -145,7 +145,7 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
                 BedrockTypes.POSITION_3F.write(buffer, data.clickPosition());
             }
             case ItemReleaseTransaction -> {
-                InventoryTransactionData.ReleaseItemTransactionData data = (InventoryTransactionData.ReleaseItemTransactionData) bedrockInventoryTransaction.transactionData();
+                final InventoryTransactionData.ReleaseItemTransactionData data = (InventoryTransactionData.ReleaseItemTransactionData) bedrockInventoryTransaction.transactionData();
                 BedrockTypes.VAR_INT.write(buffer, data.actionType().getValue());
                 BedrockTypes.VAR_INT.write(buffer, data.hotbarSlot());
                 itemRewriter.newItemType().write(buffer, data.itemInHand());
@@ -153,4 +153,5 @@ public class InventoryTransactionPacketType extends Type<BedrockInventoryTransac
             }
         }
     }
+
 }

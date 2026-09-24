@@ -39,7 +39,6 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
-import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import com.viaversion.viaversion.util.Pair;
 import net.lenni0451.mcstructs_bedrock.text.utils.BedrockTranslator;
 import net.lenni0451.mcstructs_bedrock.text.utils.TranslatorOptions;
@@ -169,7 +168,7 @@ public class CommandsStorage extends StoredObject {
         final ParseResults<UserConnection> parseResults = this.dispatcher.parse(reader, this.user());
         try {
             return this.dispatcher.execute(parseResults);
-        } catch (Throwable ignored) {
+        } catch (final Throwable ignored) {
             if (!parseResults.getContext().getNodes().isEmpty()) {
                 return RESULT_ALLOW_SEND;
             }
@@ -191,7 +190,9 @@ public class CommandsStorage extends StoredObject {
 
         for (CommandData command : this.commands) {
             final String name = command.alias() != null ? Iterables.getFirst(command.alias().values().keySet(), null) : command.name();
-            if (name == null) continue;
+            if (name == null) {
+                continue;
+            }
 
             if (playerCommandPermission < command.permission()) {
                 continue;

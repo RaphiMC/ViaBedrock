@@ -152,10 +152,11 @@ public enum LevelEvent {
     AnimationSpawnCobweb(9814),
     ParticleSmashAttackGroundDust(9815),
     ParticleLegacyEvent(0x4000),
-    ParticleCreakingHeartTrail(9816),
-    ;
+    ParticleCreakingHeartTrail(9816);
 
     private static final Int2ObjectMap<LevelEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (LevelEvent value : values()) {
@@ -190,8 +191,6 @@ public enum LevelEvent {
         }
         return fallback;
     }
-
-    private final int value;
 
     LevelEvent(final LevelEvent value) {
         this(value.value);

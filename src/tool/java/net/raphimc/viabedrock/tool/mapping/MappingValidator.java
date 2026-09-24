@@ -26,13 +26,13 @@ import java.util.List;
  * Loads the mapping data the same way a real connection does, which is the final word on whether the data assets fit
  * together. {@link MappingGapReporter} finds problems without stopping, this proves that nothing is left.
  */
-public class MappingValidator {
+public final class MappingValidator {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final List<MappingGap> gaps = new MappingAnalysis(new MappingAssets()).run(MappingAnalysis.CATEGORIES);
         if (!gaps.isEmpty()) {
             gaps.stream().limit(20).forEach(gap -> System.err.println(gap.category() + " " + gap.kind() + " " + gap.key()
-                    + (gap.detail() == null ? "" : ": " + gap.detail())));
+                + (gap.detail() == null ? "" : ": " + gap.detail())));
             throw new IllegalStateException("Found " + gaps.size() + " mapping gaps. Run ./gradlew reportMappingGaps for the full list.");
         }
 
@@ -45,6 +45,9 @@ public class MappingValidator {
         } finally {
             ToolPlatform.shutdown();
         }
+    }
+
+    private MappingValidator() {
     }
 
 }

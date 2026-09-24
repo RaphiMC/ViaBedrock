@@ -36,17 +36,17 @@ public class JsonArgumentType implements ArgumentType<Object> {
 
     static {
         try {
-            Field field = JsonReader.class.getDeclaredField("pos");
+            final Field field = JsonReader.class.getDeclaredField("pos");
             field.setAccessible(true);
             JSON_READER_POS = field;
-        } catch (NoSuchFieldException var1) {
+        } catch (final NoSuchFieldException var1) {
             throw new IllegalStateException("Couldn't get field 'pos' for JsonReader", var1);
         }
         try {
-            Field field = JsonReader.class.getDeclaredField("lineStart");
+            final Field field = JsonReader.class.getDeclaredField("lineStart");
             field.setAccessible(true);
             JSON_READER_LINE_START = field;
-        } catch (NoSuchFieldException var1) {
+        } catch (final NoSuchFieldException var1) {
             throw new IllegalStateException("Couldn't get field 'lineStart' for JsonReader", var1);
         }
     }
@@ -56,20 +56,20 @@ public class JsonArgumentType implements ArgumentType<Object> {
     }
 
     @Override
-    public Object parse(StringReader reader) throws CommandSyntaxException {
+    public Object parse(final StringReader reader) throws CommandSyntaxException {
         try (JsonReader r = new JsonReader(new java.io.StringReader(reader.getRemaining()))) {
             GsonUtil.getGson().fromJson(r, JsonObject.class);
             reader.setCursor(reader.getCursor() + this.getPosition(r));
             return null;
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             throw INVALID_JSON_EXCEPTION.createWithContext(reader);
         }
     }
 
-    private int getPosition(JsonReader reader) {
+    private int getPosition(final JsonReader reader) {
         try {
             return JSON_READER_POS.getInt(reader) - JSON_READER_LINE_START.getInt(reader);
-        } catch (IllegalAccessException var2) {
+        } catch (final IllegalAccessException var2) {
             throw new IllegalStateException("Couldn't read position of JsonReader", var2);
         }
     }

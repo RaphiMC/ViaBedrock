@@ -32,12 +32,12 @@ public enum CommandRegistry_HardNonTerminal {
     CompareOperator(0x100007),
     Selection(0x100008),
     StandaloneSelection(0x100009),
-    WildcardSelection(0x10000a),
-    NonIdSelector(0x10000b),
-    ScoresArg(0x10000c),
-    ScoresArgs(0x10000d),
-    ScoreSelectParam(0x10000e),
-    ScoreSelector(0x10000f),
+    WildcardSelection(0x10000A),
+    NonIdSelector(0x10000B),
+    ScoresArg(0x10000C),
+    ScoresArgs(0x10000D),
+    ScoreSelectParam(0x10000E),
+    ScoreSelector(0x10000F),
     TagSelector(0x100010),
     FilePath(0x100011),
     FilePathVal(0x100012),
@@ -48,12 +48,12 @@ public enum CommandRegistry_HardNonTerminal {
     FullIntegerRange(0x100017),
     RationalRangeVal(0x100018),
     RationalRangePostVal(0x100019),
-    RationalRange(0x10001a),
-    FullRationalRange(0x10001b),
-    SelArgs(0x10001c),
-    Args(0x10001d),
-    Arg(0x10001e),
-    MArg(0x10001f),
+    RationalRange(0x10001A),
+    FullRationalRange(0x10001B),
+    SelArgs(0x10001C),
+    Args(0x10001D),
+    Arg(0x10001E),
+    MArg(0x10001F),
     MValue(0x100020),
     NameArg(0x100021),
     TypeArg(0x100022),
@@ -64,12 +64,12 @@ public enum CommandRegistry_HardNonTerminal {
     HasPermissionElement(0x100027),
     HasPermissionElements(0x100028),
     TagArg(0x100029),
-    HasItemElement(0x10002a),
-    HasItemElements(0x10002b),
-    HasItemArg(0x10002c),
-    HasItemArgs(0x10002d),
-    HasItemSelector(0x10002e),
-    EquipmentSlotEnum(0x10002f),
+    HasItemElement(0x10002A),
+    HasItemElements(0x10002B),
+    HasItemArg(0x10002C),
+    HasItemArgs(0x10002D),
+    HasItemSelector(0x10002E),
+    EquipmentSlotEnum(0x10002F),
     PropertyValue(0x100030),
     HasPropertyParamValue(0x100031),
     HasPropertyParamEnumValue(0x100032),
@@ -80,12 +80,12 @@ public enum CommandRegistry_HardNonTerminal {
     HasPropertySelector(0x100037),
     Id(0x100038),
     IdCont(0x100039),
-    CoordXInt(0x10003a),
-    CoordYInt(0x10003b),
-    CoordZInt(0x10003c),
-    CoordXFloat(0x10003d),
-    CoordYFloat(0x10003e),
-    CoordZFloat(0x10003f),
+    CoordXInt(0x10003A),
+    CoordYInt(0x10003B),
+    CoordZInt(0x10003C),
+    CoordXFloat(0x10003D),
+    CoordYFloat(0x10003E),
+    CoordZFloat(0x10003F),
     Position(0x100040),
     PositionFloat(0x100041),
     MessageExp(0x100042),
@@ -96,12 +96,12 @@ public enum CommandRegistry_HardNonTerminal {
     RawTextCont(0x100047),
     JsonValue(0x100048),
     JsonField(0x100049),
-    JsonObject(0x10004a),
-    JsonObjectFields(0x10004b),
-    JsonObjectCont(0x10004c),
-    JsonArray(0x10004d),
-    JsonArrayValues(0x10004e),
-    JsonArrayCont(0x10004f),
+    JsonObject(0x10004A),
+    JsonObjectFields(0x10004B),
+    JsonObjectCont(0x10004C),
+    JsonArray(0x10004D),
+    JsonArrayValues(0x10004E),
+    JsonArrayCont(0x10004F),
     BlockState(0x100050),
     BlockStateKey(0x100051),
     BlockStateValue(0x100052),
@@ -112,12 +112,13 @@ public enum CommandRegistry_HardNonTerminal {
     Command(0x100057),
     SlashCommand(0x100058),
     CodeBuilderArg(0x100059),
-    CodeBuilderArgs(0x10005a),
-    CodeBuilderSelectParam(0x10005b),
-    CodeBuilderSelector(0x10005c),
-    ;
+    CodeBuilderArgs(0x10005A),
+    CodeBuilderSelectParam(0x10005B),
+    CodeBuilderSelector(0x10005C);
 
     private static final Int2ObjectMap<CommandRegistry_HardNonTerminal> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (CommandRegistry_HardNonTerminal value : values()) {
@@ -152,8 +153,6 @@ public enum CommandRegistry_HardNonTerminal {
         }
         return fallback;
     }
-
-    private final int value;
 
     CommandRegistry_HardNonTerminal(final CommandRegistry_HardNonTerminal value) {
         this(value.value);

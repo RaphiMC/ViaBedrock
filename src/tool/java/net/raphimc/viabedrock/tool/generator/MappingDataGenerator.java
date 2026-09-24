@@ -38,9 +38,9 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class MappingDataGenerator {
+public final class MappingDataGenerator {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         ViaManagerImpl.initAndLoad(new TestPlatform(), new NoopInjector(), new ViaCommandHandler(false), ViaPlatformLoader.NOOP);
         while (!Via.getManager().getProtocolManager().hasLoadedMappings()) {
             Thread.sleep(100);
@@ -74,9 +74,12 @@ public class MappingDataGenerator {
         return clazz;
     }
 
+    private MappingDataGenerator() {
+    }
+
     private static class TestPlatform extends UserConnectionViaVersionPlatform {
 
-        public TestPlatform() {
+        TestPlatform() {
             super(null);
         }
 

@@ -24,14 +24,16 @@ import net.jpountz.lz4.LZ4FastDecompressor;
 
 import java.util.Arrays;
 
-public class LZ4 {
+public final class Lz4 {
 
     private static final LZ4Factory LZ4_FACTORY = LZ4Factory.fastestInstance();
     private static final LZ4Compressor LZ4_COMPRESSOR = LZ4_FACTORY.highCompressor();
     private static final LZ4FastDecompressor LZ4_DECOMPRESSOR = LZ4_FACTORY.fastDecompressor();
 
     public static byte[] compress(final byte[] input) {
-        if (input == null) return null;
+        if (input == null) {
+            return null;
+        }
 
         final int maxCompressedLength = LZ4_COMPRESSOR.maxCompressedLength(input.length);
         final byte[] compressed = new byte[maxCompressedLength + 4];
@@ -41,9 +43,14 @@ public class LZ4 {
     }
 
     public static byte[] decompress(final byte[] input) {
-        if (input == null) return null;
+        if (input == null) {
+            return null;
+        }
 
         return LZ4_DECOMPRESSOR.decompress(input, 4, Ints.fromByteArray(input));
+    }
+
+    private Lz4() {
     }
 
 }

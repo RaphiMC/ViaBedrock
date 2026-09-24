@@ -58,7 +58,9 @@ public enum DyeColor {
     }
 
     public static DyeColor getByJavaId(final int id) {
-        if (id < 0 || id >= JAVA_VALUES.length) return null;
+        if (id < 0 || id >= JAVA_VALUES.length) {
+            return null;
+        }
 
         return JAVA_VALUES[id];
     }
@@ -69,24 +71,26 @@ public enum DyeColor {
     }
 
     public static DyeColor getByBedrockId(final int id) {
-        if (id < 0 || id >= BEDROCK_VALUES.length) return null;
+        if (id < 0 || id >= BEDROCK_VALUES.length) {
+            return null;
+        }
 
         return BEDROCK_VALUES[id];
     }
 
     public static DyeColor getClosestDyeColor(final int rgb) {
-        int r = (rgb >> 16) & 0xFF;
-        int g = (rgb >> 8) & 0xFF;
-        int b = rgb & 0xFF;
+        final int r = (rgb >> 16) & 0xFF;
+        final int g = (rgb >> 8) & 0xFF;
+        final int b = rgb & 0xFF;
 
         DyeColor closest = null;
         int closestDistance = Integer.MAX_VALUE;
         for (DyeColor color : values()) {
-            int colorR = (color.signColor >> 16) & 0xFF;
-            int colorG = (color.signColor >> 8) & 0xFF;
-            int colorB = color.signColor & 0xFF;
+            final int colorR = (color.signColor >> 16) & 0xFF;
+            final int colorG = (color.signColor >> 8) & 0xFF;
+            final int colorB = color.signColor & 0xFF;
 
-            int distance = (r - colorR) * (r - colorR) + (g - colorG) * (g - colorG) + (b - colorB) * (b - colorB);
+            final int distance = (r - colorR) * (r - colorR) + (g - colorG) * (g - colorG) + (b - colorB) * (b - colorB);
             if (distance < closestDistance) {
                 closest = color;
                 closestDistance = distance;

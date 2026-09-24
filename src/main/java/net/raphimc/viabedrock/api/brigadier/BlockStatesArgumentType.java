@@ -32,15 +32,21 @@ public class BlockStatesArgumentType implements ArgumentType<Object> {
     }
 
     @Override
-    public Object parse(StringReader reader) throws CommandSyntaxException {
-        if (!reader.canRead()) throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
-        if (reader.peek() != '[') throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
+    public Object parse(final StringReader reader) throws CommandSyntaxException {
+        if (!reader.canRead()) {
+            throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
+        }
+        if (reader.peek() != '[') {
+            throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
+        }
         reader.skip();
         while (reader.canRead() && reader.peek() != ']') {
             reader.skipWhitespace();
             reader.readQuotedString();
             reader.skipWhitespace();
-            if (reader.peek() != '=') throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
+            if (reader.peek() != '=') {
+                throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
+            }
             reader.skip();
             reader.skipWhitespace();
             if (reader.peek() == '"') {
@@ -48,15 +54,21 @@ public class BlockStatesArgumentType implements ArgumentType<Object> {
             } else {
                 try {
                     reader.readInt();
-                } catch (Throwable t) {
+                } catch (final Throwable t) {
                     reader.readBoolean();
                 }
             }
             reader.skipWhitespace();
-            if (reader.peek() == ',') reader.skip();
+            if (reader.peek() == ',') {
+                reader.skip();
+            }
         }
-        if (!reader.canRead()) throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
-        if (reader.peek() != ']') throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
+        if (!reader.canRead()) {
+            throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
+        }
+        if (reader.peek() != ']') {
+            throw INVALID_BLOCK_STATES_EXCEPTION.createWithContext(reader);
+        }
         reader.skip();
         return null;
     }

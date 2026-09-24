@@ -29,11 +29,11 @@ import java.util.Map;
 
 public abstract class ItemModelResourceRewriter implements ResourcePackRewriter.Rewriter {
 
+    private final String subFolder;
+
     public static CustomModelData1_21_4 getCustomModelData(final String key) {
         return new CustomModelData1_21_4(new float[0], new boolean[0], new String[]{key}, new int[0]);
     }
-
-    private final String subFolder;
 
     public ItemModelResourceRewriter(final String subFolder) {
         this.subFolder = subFolder;

@@ -29,12 +29,12 @@ public class FullContainerNameType extends Type<FullContainerName> {
     }
 
     @Override
-    public FullContainerName read(ByteBuf buffer) {
+    public FullContainerName read(final ByteBuf buffer) {
         return new FullContainerName(ContainerEnumName.getByValue(buffer.readByte()), buffer.readBoolean() ? buffer.readIntLE() : null);
     }
 
     @Override
-    public void write(ByteBuf buffer, FullContainerName value) {
+    public void write(final ByteBuf buffer, final FullContainerName value) {
         buffer.writeByte(value.name().getValue());
         buffer.writeBoolean(value.dynamicId() != null);
         if (value.dynamicId() != null) {

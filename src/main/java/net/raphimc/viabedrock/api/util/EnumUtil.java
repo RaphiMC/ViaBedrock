@@ -22,12 +22,12 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.ToIntFunction;
 
-public class EnumUtil {
+public final class EnumUtil {
 
     public static <T extends Enum<T>> T getEnumConstantOrNull(final Class<T> enumClass, final String name) {
         try {
             return Enum.valueOf(enumClass, name);
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             return null;
         }
     }
@@ -74,6 +74,9 @@ public class EnumUtil {
             }
         }
         return bitmask;
+    }
+
+    private EnumUtil() {
     }
 
 }

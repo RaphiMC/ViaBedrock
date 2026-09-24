@@ -52,7 +52,7 @@ public class ToolPlatform implements ViaBedrockPlatform {
         while (!Via.getManager().getProtocolManager().hasLoadedMappings()) {
             try {
                 Thread.sleep(100);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new IllegalStateException("Interrupted while waiting for the mappings to load", e);
             }
@@ -81,7 +81,7 @@ public class ToolPlatform implements ViaBedrockPlatform {
 
     private static class ToolConfig extends ViaBedrockConfig {
 
-        public ToolConfig(final File configFile, final Logger logger) {
+        ToolConfig(final File configFile, final Logger logger) {
             super(configFile, logger);
             this.reload();
         }
@@ -95,7 +95,7 @@ public class ToolPlatform implements ViaBedrockPlatform {
 
     private static class ToolViaPlatform extends UserConnectionViaVersionPlatform {
 
-        public ToolViaPlatform() {
+        ToolViaPlatform() {
             super(null);
         }
 

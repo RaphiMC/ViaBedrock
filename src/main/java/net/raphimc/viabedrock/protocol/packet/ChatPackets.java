@@ -52,7 +52,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-public class ChatPackets {
+public final class ChatPackets {
 
     private static final PacketHandler CHAT_COMMAND_HANDLER = new PacketHandlers() {
         @Override
@@ -122,7 +122,9 @@ public class ChatPackets {
                                 String message = originalMessage = wrapper.read(BedrockTypes.STRING); // message
                                 final RootBedrockComponent rootComponent = BedrockComponentSerializer.deserialize(message);
                                 rootComponent.forEach(c -> {
-                                    if (c instanceof TranslationBedrockComponent) ((TranslationBedrockComponent) c).setTranslator(translator);
+                                    if (c instanceof TranslationBedrockComponent) {
+                                        ((TranslationBedrockComponent) c).setTranslator(translator);
+                                    }
                                 });
                                 message = rootComponent.asString();
                                 if (localize) {
@@ -153,7 +155,7 @@ public class ChatPackets {
                             }
                             default -> throw new IllegalStateException("Unhandled TextPacketType: " + type);
                         }
-                    } catch (Throwable e) { // Bedrock client silently ignores errors
+                    } catch (final Throwable e) { // Bedrock client silently ignores errors
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error while translating '" + originalMessage + "'", e);
                         wrapper.cancel();
                     }
@@ -197,21 +199,23 @@ public class ChatPackets {
             wrapper.write(Types.BOOLEAN, false); // overlay
         });
         protocol.registerClientboundTransition(ClientboundBedrockPackets.AVAILABLE_COMMANDS,
-                State.CONFIGURATION, (PacketHandler) wrapper -> {
-                    final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
-                    wrapper.user().put(new CommandsStorage(wrapper.user(), commands));
-                    wrapper.cancel(); // Will be sent when the java player is ready
-                }, ClientboundPackets26_3.COMMANDS, (PacketHandler) wrapper -> {
-                    final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
-                    final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
-                    wrapper.user().put(commandsStorage);
-                    commandsStorage.writeCommandTree(wrapper);
-                }
+            State.CONFIGURATION, (PacketHandler) wrapper -> {
+                final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
+                wrapper.user().put(new CommandsStorage(wrapper.user(), commands));
+                wrapper.cancel(); // Will be sent when the java player is ready
+            }, ClientboundPackets26_3.COMMANDS, (PacketHandler) wrapper -> {
+                final CommandData[] commands = wrapper.read(BedrockTypes.COMMAND_DATA_ARRAY); // commands
+                final CommandsStorage commandsStorage = new CommandsStorage(wrapper.user(), commands);
+                wrapper.user().put(commandsStorage);
+                commandsStorage.writeCommandTree(wrapper);
+            }
         );
         protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SOFT_ENUM, null, wrapper -> {
             wrapper.cancel();
             final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
-            if (commandsStorage == null) return;
+            if (commandsStorage == null) {
+                return;
+            }
 
             final String name = wrapper.read(BedrockTypes.STRING); // name
             final Set<String> values = Sets.newHashSet(wrapper.read(BedrockTypes.STRING_ARRAY)); // values
@@ -279,7 +283,9 @@ public class ChatPackets {
         protocol.registerServerbound(ServerboundPackets26_3.COMMAND_SUGGESTION, null, wrapper -> {
             wrapper.cancel();
             final CommandsStorage commandsStorage = wrapper.user().get(CommandsStorage.class);
-            if (commandsStorage == null) return;
+            if (commandsStorage == null) {
+                return;
+            }
 
             final int id = wrapper.read(Types.VAR_INT); // transaction id
             final String command = wrapper.read(Types.STRING); // command
@@ -304,6 +310,9 @@ public class ChatPackets {
             }
             tabComplete.send(BedrockProtocol.class);
         });
+    }
+
+    private ChatPackets() {
     }
 
 }

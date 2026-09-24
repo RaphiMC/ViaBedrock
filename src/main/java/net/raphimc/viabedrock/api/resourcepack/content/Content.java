@@ -91,12 +91,12 @@ public abstract class Content {
         return this.langCache.computeIfAbsent(path, k -> {
             final List<String> lines = this.getLines(k);
             return Collections.unmodifiableMap(lines.stream()
-                    .filter(line -> !line.startsWith("##"))
-                    .filter(line -> line.contains("="))
-                    .map(line -> line.contains("##") ? line.substring(0, line.indexOf("##")) : line)
-                    .map(String::trim)
-                    .map(line -> line.split("=", 2))
-                    .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1], (o, n) -> n)));
+                .filter(line -> !line.startsWith("##"))
+                .filter(line -> line.contains("="))
+                .map(line -> line.contains("##") ? line.substring(0, line.indexOf("##")) : line)
+                .map(String::trim)
+                .map(line -> line.split("=", 2))
+                .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1], (o, n) -> n)));
         });
     }
 
@@ -144,7 +144,7 @@ public abstract class Content {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "png", baos);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
         return this.put(path, baos.toByteArray());
@@ -190,7 +190,7 @@ public abstract class Content {
             if (this.image == null) {
                 try {
                     this.image = ImageIO.read(new ByteArrayInputStream(this.bytes));
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -209,7 +209,7 @@ public abstract class Content {
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 try {
                     ImageIO.write(image, "png", baos);
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     throw new RuntimeException(e);
                 }
                 return baos.toByteArray();

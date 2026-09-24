@@ -33,7 +33,7 @@ public class CommandOriginDataType extends Type<CommandOriginData> {
     }
 
     @Override
-    public CommandOriginData read(ByteBuf buffer) {
+    public CommandOriginData read(final ByteBuf buffer) {
         final String rawType = BedrockTypes.STRING.read(buffer);
         final CommandOriginType type = CommandOriginType.getByName(rawType);
         if (type == null) { // Bedrock client disconnects if the type is not valid
@@ -48,7 +48,7 @@ public class CommandOriginDataType extends Type<CommandOriginData> {
     }
 
     @Override
-    public void write(ByteBuf buffer, CommandOriginData value) {
+    public void write(final ByteBuf buffer, final CommandOriginData value) {
         BedrockTypes.STRING.write(buffer, value.type().name().toLowerCase(Locale.ROOT));
         BedrockTypes.UUID.write(buffer, value.uuid());
         BedrockTypes.STRING.write(buffer, value.requestId());

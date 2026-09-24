@@ -17,10 +17,11 @@
  */
 package net.raphimc.viabedrock.protocol.util.map;
 
-import java.awt.*;
+import java.awt.Color;
 
 // TODO: Auto generate this...
 public enum MapColor {
+
     COLOR_0(-1, -1, -1),
     COLOR_1(-1, -1, -1),
     COLOR_2(-1, -1, -1),
@@ -272,19 +273,16 @@ public enum MapColor {
 
     private final int value;
 
-    MapColor(int red, int green, int blue) {
-        int alpha = 255;
-        if (red == -1 && green == -1 && blue == -1)
-            alpha = 0; // transparent
-
-        this.value = ((alpha & 0xFF) << 24) |
-                ((red & 0xFF) << 16) |
-                ((green & 0xFF) << 8) |
-                (blue & 0xFF);
+    MapColor(final int red, final int green, final int blue) {
+        final int alpha = red == -1 && green == -1 && blue == -1 ? 0 : 255;
+        this.value = ((alpha & 0xFF) << 24)
+            | ((red & 0xFF) << 16)
+            | ((green & 0xFF) << 8)
+            | (blue & 0xFF);
     }
 
     public Color getColor() {
-        return new Color((value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF, (value >> 24) & 0xFF);
+        return new Color((this.value >> 16) & 0xFF, (this.value >> 8) & 0xFF, this.value & 0xFF, (this.value >> 24) & 0xFF);
     }
 
 }

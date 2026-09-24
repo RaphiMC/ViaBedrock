@@ -1,10 +1,15 @@
 plugins {
     id "java-library"
     id "base.base-conventions"
+    id "viabedrock.checkstyle"
     id "base.fill-build-constants"
     id "viabedrock.publishing-conventions"
     id "via.run-with-viaproxy-task"
     id "net.raphimc.class-token-replacer" version "1.1.7"
+}
+
+checkstyleMain {
+    exclude("**/generated/**")
 }
 
 sourceSets {
@@ -117,34 +122,34 @@ def registerToolTask(String name, String toolMainClass, String toolDescription) 
 }
 
 registerToolTask("generateJavaDataEnums", "net.raphimc.viabedrock.tool.generator.JavaDataEnumGenerator",
-        "Generates the java edition data enums from the vanilla client jar. Options: --version, --client-jar")
+    "Generates the java edition data enums from the vanilla client jar. Options: --version, --client-jar")
 registerToolTask("generateBedrockDataEnums", "net.raphimc.viabedrock.tool.generator.BedrockDataEnumGenerator",
-        "Generates the bedrock edition data enums from a protocol-docs clone. Options: --protocol-docs")
+    "Generates the bedrock edition data enums from a protocol-docs clone. Options: --protocol-docs")
 registerToolTask("generateMappingData", "net.raphimc.viabedrock.tool.generator.MappingDataGenerator",
-        "Generates the mapping constant classes from the loaded mapping data")
+    "Generates the mapping constant classes from the loaded mapping data")
 registerToolTask("generateBedrockPacks", "net.raphimc.viabedrock.tool.generator.client.BedrockPacksGenerator",
-        "Generates the bundled vanilla resource packs and skin packs from the bedrock client. Options: --client-data")
+    "Generates the bundled vanilla resource packs and skin packs from the bedrock client. Options: --client-data")
 registerToolTask("generateBedrockSoundLists", "net.raphimc.viabedrock.tool.generator.client.BedrockSoundListGenerator",
-        "Generates sounds.json, block_sounds.json and level_sound_event_mappings.json from the bedrock client. Options: --client-data")
+    "Generates sounds.json, block_sounds.json and level_sound_event_mappings.json from the bedrock client. Options: --client-data")
 registerToolTask("generateBedrockParticleList", "net.raphimc.viabedrock.tool.generator.client.BedrockParticleListGenerator",
-        "Generates particles.json from the bedrock client. Options: --client-data")
+    "Generates particles.json from the bedrock client. Options: --client-data")
 registerToolTask("reportMappingGaps", "net.raphimc.viabedrock.tool.mapping.MappingGapReporter",
-        "Reports missing or broken mappings, derived block tags and potted states. Options: --category, --limit")
+    "Reports missing or broken mappings, derived block tags and potted states. Options: --category, --limit")
 registerToolTask("syncDerivedMappings", "net.raphimc.viabedrock.tool.mapping.DerivedMappingDataUpdater",
-        "Adds block tags and potted states derived from the current Bedrock and Java data")
+    "Adds block tags and potted states derived from the current Bedrock and Java data")
 registerToolTask("reportMappingMistakes", "net.raphimc.viabedrock.tool.mapping.MappingMistakeReporter",
-        "Reports mappings which load fine but disagree with the rest of the data. Options: --limit")
+    "Reports mappings which load fine but disagree with the rest of the data. Options: --limit")
 registerToolTask("proposeMappings", "net.raphimc.viabedrock.tool.mapping.MappingProposer",
-        "Writes mapping proposals for every gap to run/mapping-proposals. Options: --min-score")
+    "Writes mapping proposals for every gap to run/mapping-proposals. Options: --min-score")
 registerToolTask("applyMappingProposals", "net.raphimc.viabedrock.tool.mapping.MappingProposalApplier",
-        "Applies reviewed proposals back into the data assets. Options: --category, --keep-stale, --replace, --dry-run")
+    "Applies reviewed proposals back into the data assets. Options: --category, --keep-stale, --replace, --dry-run")
 registerToolTask("selfTestMappings", "net.raphimc.viabedrock.tool.mapping.MappingSelfTest",
-        "Hides the mappings of each already mapped block and checks whether the proposer reproduces them. Options: --limit, --show")
+    "Hides the mappings of each already mapped block and checks whether the proposer reproduces them. Options: --limit, --show")
 registerToolTask("validateMappings", "net.raphimc.viabedrock.tool.mapping.MappingValidator",
-        "Loads the mapping data the way a real connection does, which fails if anything is still missing or broken")
+    "Loads the mapping data the way a real connection does, which fails if anything is still missing or broken")
 registerToolTask("upgradeBlockStateMappings", "net.raphimc.viabedrock.tool.BlockStateMappingsUpgrader",
-        "Upgrades blockstate_mappings.json through block state upgrade schemas. Options: --schema, --from, --mappings, --output")
+    "Upgrades blockstate_mappings.json through block state upgrade schemas. Options: --schema, --from, --mappings, --output")
 registerToolTask("sortJson", "net.raphimc.viabedrock.tool.JsonSorter",
-        "Sorts data asset json files in place. Options: --file (required), --deep")
+    "Sorts data asset json files in place. Options: --file (required), --deep")
 registerToolTask("convertResourcePack", "net.raphimc.viabedrock.test.ResourcePackConverterTest",
-        "Converts a bedrock .mcpack to a java resource pack. Options: --input (required), --output")
+    "Converts a bedrock .mcpack to a java resource pack. Options: --input (required), --output")

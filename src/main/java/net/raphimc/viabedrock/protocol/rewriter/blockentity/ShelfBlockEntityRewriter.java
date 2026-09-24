@@ -23,7 +23,6 @@ import com.viaversion.nbt.tag.ListTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -31,7 +30,7 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 public class ShelfBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
-    public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
+    public BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
@@ -43,7 +42,9 @@ public class ShelfBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
             for (int i = 0; i < count; i++) {
                 final CompoundTag bedrockItemTag = bedrockItemList.get(i);
                 final CompoundTag javaItemTag = itemRewriter.javaItem(bedrockItemTag);
-                if (javaItemTag == null) continue;
+                if (javaItemTag == null) {
+                    continue;
+                }
                 javaItemTag.put("Slot", new ByteTag((byte) i));
                 javaItemList.add(javaItemTag);
             }

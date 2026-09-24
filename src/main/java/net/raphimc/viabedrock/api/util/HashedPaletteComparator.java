@@ -25,9 +25,9 @@ public class HashedPaletteComparator implements Comparator<String> {
     public static final HashedPaletteComparator INSTANCE = new HashedPaletteComparator();
 
     @Override
-    public int compare(String o1, String o2) {
-        final long hash1 = FNV1.fnv1_64(o1.getBytes(StandardCharsets.UTF_8));
-        final long hash2 = FNV1.fnv1_64(o2.getBytes(StandardCharsets.UTF_8));
+    public int compare(final String o1, final String o2) {
+        final long hash1 = Fnv1.fnv1_64(o1.getBytes(StandardCharsets.UTF_8));
+        final long hash2 = Fnv1.fnv1_64(o2.getBytes(StandardCharsets.UTF_8));
         return Long.compareUnsigned(hash1, hash2);
     }
 

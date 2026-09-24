@@ -31,24 +31,20 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class BedrockPacksGenerator {
+public final class BedrockPacksGenerator {
 
     private static final String MOJANG_LICENSE = """
-            (c) Mojang AB. All rights reserved.
-            
-            By downloading the files in this repository, you agree to the [Minecraft End User License Agreement](https://www.minecraft.net/en-us/eula) and that these files are subject to its terms.
-            """;
+        (c) Mojang AB. All rights reserved.
 
-    public static void main(String[] args) throws Throwable {
+        By downloading the files in this repository, you agree to the [Minecraft End User License Agreement](https://www.minecraft.net/en-us/eula) and that these files are subject to its terms.
+        """;
+
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final File clientDataDir = ToolPaths.clientDataDir(toolArgs).toFile();
         final File resourcePacksDir = new File(clientDataDir, "resource_packs_unpacked");
@@ -121,8 +117,8 @@ public class BedrockPacksGenerator {
         final JsonObject header = manifest.getAsJsonObject("header");
         final JsonElement version = header.get("version");
         final String versionString = version.isJsonArray()
-                ? StreamSupport.stream(version.getAsJsonArray().spliterator(), false).map(JsonElement::getAsString).collect(Collectors.joining("."))
-                : version.getAsString();
+            ? StreamSupport.stream(version.getAsJsonArray().spliterator(), false).map(JsonElement::getAsString).collect(Collectors.joining("."))
+            : version.getAsString();
         return header.get("uuid").getAsString() + "_" + versionString;
     }
 
@@ -163,13 +159,13 @@ public class BedrockPacksGenerator {
             final Path targetPath = targetRoot.resolve(folderPath);
             Files.walk(sourcePath).forEach(path -> {
                 try {
-                    Path resolvedTargetPath = targetPath.resolve(sourcePath.relativize(path).toString());
+                    final Path resolvedTargetPath = targetPath.resolve(sourcePath.relativize(path).toString());
                     if (Files.isDirectory(path)) {
                         Files.createDirectories(resolvedTargetPath);
                     } else {
                         Files.copy(path, resolvedTargetPath);
                     }
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     e.printStackTrace();
                 }
             });
@@ -182,12 +178,15 @@ public class BedrockPacksGenerator {
                 try {
                     final BasicFileAttributeView attributeView = Files.getFileAttributeView(path, BasicFileAttributeView.class);
                     attributeView.setTimes(FileTime.from(Instant.EPOCH), FileTime.from(Instant.EPOCH), FileTime.from(Instant.EPOCH));
-                } catch (NoSuchFileException ignored) {
-                } catch (Throwable e) {
+                } catch (final NoSuchFileException ignored) {
+                } catch (final Throwable e) {
                     e.printStackTrace();
                 }
             });
         }
+    }
+
+    private BedrockPacksGenerator() {
     }
 
 }

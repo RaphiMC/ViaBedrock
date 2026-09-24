@@ -57,7 +57,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class ClientPlayerPackets {
+public final class ClientPlayerPackets {
 
     private static final PacketHandler CLIENT_PLAYER_GAME_MODE_INFO_UPDATE = wrapper -> {
         final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
@@ -277,7 +277,7 @@ public class ClientPlayerPackets {
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             wrapper.read(Types.VAR_INT); // entity id
             final PlayerCommandAction action = PlayerCommandAction.values()[wrapper.read(Types.VAR_INT)]; // action
-            final int data = wrapper.read(Types.VAR_INT); // data
+            wrapper.read(Types.VAR_INT); // data
 
             switch (action) {
                 case START_SPRINTING -> {
@@ -472,12 +472,12 @@ public class ClientPlayerPackets {
             }
 
             if (clientPlayer.isGliding() && (
-                    clientPlayer.isOnGround() ||
-                    clientPlayer.effects().containsKey("minecraft:levitation") ||
-                    clientPlayer.entityFlags().contains(ActorFlags.WALLCLIMBING) ||
-                    clientPlayer.entityFlags().contains(ActorFlags.IN_ASCENDABLE_BLOCK) ||
-                    clientPlayer.entityFlags().contains(ActorFlags.IN_SCAFFOLDING)
-            )) {
+                clientPlayer.isOnGround()
+                    || clientPlayer.effects().containsKey("minecraft:levitation")
+                    || clientPlayer.entityFlags().contains(ActorFlags.WALLCLIMBING)
+                    || clientPlayer.entityFlags().contains(ActorFlags.IN_ASCENDABLE_BLOCK)
+                    || clientPlayer.entityFlags().contains(ActorFlags.IN_SCAFFOLDING))
+            ) {
                 clientPlayer.setGliding(false);
                 clientPlayer.addAuthInputData(PlayerAuthInputData.StopGliding);
             }
@@ -642,6 +642,9 @@ public class ClientPlayerPackets {
                 clientPlayer.addAuthInputData(PlayerAuthInputData.MissedSwing);
             }
         });
+    }
+
+    private ClientPlayerPackets() {
     }
 
 }

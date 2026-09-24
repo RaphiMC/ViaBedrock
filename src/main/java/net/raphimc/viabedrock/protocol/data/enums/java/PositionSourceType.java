@@ -20,6 +20,6 @@ package net.raphimc.viabedrock.protocol.data.enums.java;
 public enum PositionSourceType {
 
     BLOCK,
-    ENTITY,
+    ENTITY
 
 }
