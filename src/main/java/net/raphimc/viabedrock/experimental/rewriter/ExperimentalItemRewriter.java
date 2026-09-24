@@ -23,11 +23,8 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredData;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.data.Enchantments;
-import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.RegistryUtil;
-import net.raphimc.viabedrock.experimental.model.map.MapObject;
-import net.raphimc.viabedrock.experimental.storage.MapTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Enchant_Type;
@@ -44,21 +41,6 @@ public class ExperimentalItemRewriter {
 
             if (bedrockTag.get("Damage") instanceof NumberTag durability)  {
                 javaItem.dataContainer().set(StructuredDataKey.DAMAGE, durability.asInt());
-            }
-
-            if (bedrockTag.get("map_uuid") instanceof NumberTag uuidTag) {
-                MapTracker mapTracker = user.get(MapTracker.class);
-                final long uuid = uuidTag.asLong();
-
-                MapObject map = mapTracker.getMapObjects().get(uuid);
-                if (map == null) {
-                    final int mapId = mapTracker.getNextMapId();
-                    map = new MapObject(uuid, mapId);
-                    mapTracker.getMapObjects().put(uuid, map);
-                    //ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Registered new map with id " + mapId + " and uuid " + uuid);
-                }
-
-                javaItem.dataContainer().set(StructuredDataKey.MAP_ID, map.getJavaId());
             }
 
             if (bedrockTag.get("ench") instanceof ListTag<?> enchantments) {

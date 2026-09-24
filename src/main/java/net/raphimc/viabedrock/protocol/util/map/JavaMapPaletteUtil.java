@@ -15,11 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.util;
+package net.raphimc.viabedrock.protocol.util.map;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
-import net.raphimc.viabedrock.experimental.model.map.MapColor;
 
 import java.awt.Color;
 import java.util.Arrays;
@@ -80,7 +77,7 @@ public class JavaMapPaletteUtil {
             float bestDist = Float.MAX_VALUE;
             short best = 0;
 
-            for (short j = 0; j < JAVA_L.length; j++) {
+            for (short j = 4; j < JAVA_L.length; j++) {
                 float dL = lab[0] - JAVA_L[j];
                 float dA = lab[1] - JAVA_A[j];
                 float dB = lab[2] - JAVA_B[j];

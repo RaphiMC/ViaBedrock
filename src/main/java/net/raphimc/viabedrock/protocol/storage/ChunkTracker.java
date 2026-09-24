@@ -394,7 +394,9 @@ public class ChunkTracker extends StoredObject {
             }
             this.invalidateNearbyLight(chunkX, chunkZ);
 
-            if (BlockEntityRewriter.isBlockEntity(tag)) {
+            if (CustomBlockTags.ITEM_FRAME.equals(tag)) {
+                entityTracker.spawnItemFrame(blockPosition, blockStateRewriter.blockState(blockState));
+            } else if (BlockEntityRewriter.isBlockEntity(tag)) {
                 final BedrockBlockEntity bedrockBlockEntity = this.getBlockEntity(blockPosition);
                 BlockEntity javaBlockEntity = null;
                 if (bedrockBlockEntity != null) {
@@ -410,8 +412,6 @@ public class ChunkTracker extends StoredObject {
                 if (javaBlockEntity != null && javaBlockEntity.tag() != null) {
                     return new IntObjectImmutablePair<>(remappedBlockState, javaBlockEntity);
                 }
-            } else if (CustomBlockTags.ITEM_FRAME.equals(tag)) {
-                entityTracker.spawnItemFrame(blockPosition, blockStateRewriter.blockState(blockState));
             }
         }
 
@@ -810,7 +810,10 @@ public class ChunkTracker extends StoredObject {
                         for (int x = 0; x < 16; x++) {
                             final String tag = paletteIndexBlockStateTags[remappedBlockPalette.paletteIndexAt(remappedBlockPalette.index(x, y, z))];
                             if (tag != null) {
-                                if (BlockEntityRewriter.isBlockEntity(tag)) {
+                                if (tag.equals(CustomBlockTags.ITEM_FRAME)) {
+                                    final BlockPosition position = new BlockPosition((chunk.getX() << 4) + x, this.minY + (idx << 4) + y, (chunk.getZ() << 4) + z);
+                                    this.user().get(EntityTracker.class).spawnItemFrame(position, blockStateRewriter.blockState(layer0.idAt(x, y, z)));
+                                } else if (BlockEntityRewriter.isBlockEntity(tag)) {
                                     final int absY = this.minY + (idx << 4) + y;
                                     final BlockPosition position = new BlockPosition((chunk.getX() << 4) + x, absY, (chunk.getZ() << 4) + z);
                                     final BedrockBlockEntity bedrockBlockEntity = chunk.getBlockEntityAt(position);
@@ -827,9 +830,6 @@ public class ChunkTracker extends StoredObject {
                                         final BlockEntity javaBlockEntity = new BlockEntityImpl(BlockEntity.pack(x, z), (short) absY, javaType, new CompoundTag());
                                         remappedChunk.blockEntities().add(javaBlockEntity);
                                     }
-                                } else if (tag.equals(CustomBlockTags.ITEM_FRAME)) {
-                                    final BlockPosition position = new BlockPosition((chunk.getX() << 4) + x, this.minY + (idx << 4) + y, (chunk.getZ() << 4) + z);
-                                    this.user().get(EntityTracker.class).spawnItemFrame(position, blockStateRewriter.blockState(layer0.idAt(x, y, z)));
                                 }
                             }
                         }

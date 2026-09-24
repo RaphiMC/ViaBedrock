@@ -21,6 +21,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.viaversion.nbt.tag.CompoundTag;
 import com.viaversion.nbt.tag.IntTag;
+import com.viaversion.nbt.tag.NumberTag;
 import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.nbt.tag.Tag;
 import com.viaversion.viaversion.api.Via;
@@ -51,6 +52,7 @@ import net.raphimc.viabedrock.protocol.model.ItemEntry;
 import net.raphimc.viabedrock.protocol.rewriter.item.BundleItemRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomAttachableResourceRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.resourcepack.CustomItemTextureResourceRewriter;
+import net.raphimc.viabedrock.protocol.storage.MapTracker;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
@@ -212,6 +214,9 @@ public class ItemRewriter extends StoredObject {
 
         final CompoundTag bedrockTag = bedrockItem.tag();
         if (bedrockTag != null) {
+            if (identifier.equals("minecraft:filled_map") && bedrockTag.get("map_uuid") instanceof NumberTag mapUuid) {
+                javaItem.dataContainer().set(StructuredDataKey.MAP_ID, this.user().get(MapTracker.class).itemJavaId(mapUuid.asLong()));
+            }
             if (bedrockTag.get("display") instanceof CompoundTag display) {
                 if (display.contains("Name")) { // Bedrock client defaults to empty string if the type is wrong
                     javaItem.dataContainer().set(StructuredDataKey.CUSTOM_NAME, TextUtil.stringToNbt(display.getString("Name", "")));
@@ -232,8 +237,21 @@ public class ItemRewriter extends StoredObject {
     }
 
     public CompoundTag javaItem(final CompoundTag bedrockTag) {
+        final Item javaItem = this.javaItemStack(bedrockTag);
+        if (javaItem == null) {
+            return null;
+        }
         final CompoundTag javaTag = new CompoundTag();
+        final String javaId = BedrockProtocol.MAPPINGS.getJavaItems().inverse().get(javaItem.identifier());
+        javaTag.put("id", new StringTag(javaId));
+        javaTag.put("count", new IntTag(javaItem.amount()));
+        if (javaItem.tag() != null) {
+            javaTag.put("components", javaItem.tag());
+        }
+        return javaTag;
+    }
 
+    public Item javaItemStack(final CompoundTag bedrockTag) {
         if (bedrockTag == null) {
             return null;
         }
@@ -259,17 +277,7 @@ public class ItemRewriter extends StoredObject {
             return null;
         }
 
-        Item javaItem = this.javaItem(item);
-
-        String javaId = BedrockProtocol.MAPPINGS.getJavaItems().inverse().get(javaItem.identifier());
-        javaTag.put("id", new StringTag(javaId));
-
-        javaTag.put("count",new IntTag(javaItem.amount()));
-        if (javaItem.tag() != null) {
-            javaTag.put("components", javaItem.tag());
-        }
-
-        return javaTag;
+        return this.javaItem(item);
     }
 
     public Item[] javaItems(final BedrockItem[] bedrockItems) {

@@ -96,6 +96,14 @@ dependencies {
     toolImplementation "org.jsoup:jsoup:1.23.2"
     toolImplementation "org.ow2.asm:asm-tree:9.10.1"
     toolImplementation "net.lenni0451.commons:asm:1.9.2"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.10.1"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.10.1"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.10.1"
+}
+
+tasks.named("test", Test) {
+    useJUnitPlatform()
 }
 
 def registerToolTask(String name, String toolMainClass, String toolDescription) {

@@ -39,6 +39,8 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.protocol.StatelessTransitionProtocol;
 import net.raphimc.viabedrock.api.util.PacketFactory;
 import net.raphimc.viabedrock.experimental.ExperimentalFeatures;
+import net.raphimc.viabedrock.protocol.packet.MapPackets;
+import net.raphimc.viabedrock.protocol.storage.MapTracker;
 import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayStatus;
@@ -97,6 +99,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         ClientPlayerPackets.register(this);
         OtherPlayerPackets.register(this);
         WorldPackets.register(this);
+        MapPackets.register(this);
         EntityPackets.register(this);
         HudPackets.register(this);
         InventoryPackets.register(this);
@@ -154,6 +157,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         user.put(new PlayerListStorage());
         user.put(new ScoreboardTracker());
         user.put(new InventoryTracker(user));
+        user.put(new MapTracker(user));
         user.put(new BreakingTracker(user));
 
         if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {

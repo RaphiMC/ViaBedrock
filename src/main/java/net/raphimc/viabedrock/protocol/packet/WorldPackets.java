@@ -466,6 +466,7 @@ public class WorldPackets {
                     final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
                     final BedrockBlockEntity bedrockBlockEntity = new BedrockBlockEntity(wrapper.get(Types.BLOCK_POSITION1_14, 0), (CompoundTag) tag);
                     chunkTracker.addBlockEntity(bedrockBlockEntity);
+                    wrapper.user().get(EntityTracker.class).updateItemFrame(bedrockBlockEntity.position(), bedrockBlockEntity);
 
                     final BlockEntity javaBlockEntity = BlockEntityRewriter.toJava(wrapper.user(), chunkTracker.getBlockState(bedrockBlockEntity.position()), bedrockBlockEntity);
                     if (javaBlockEntity instanceof BlockEntityWithBlockState blockEntityWithBlockState) {

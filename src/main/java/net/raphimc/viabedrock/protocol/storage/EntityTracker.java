@@ -17,14 +17,20 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.NumberTag;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.minecraft.ChunkPosition;
 import com.viaversion.viaversion.api.minecraft.Vector3d;
 import com.viaversion.viaversion.api.minecraft.entities.EntityTypes26_3;
+import com.viaversion.viaversion.api.minecraft.entitydata.EntityData;
+import com.viaversion.viaversion.api.minecraft.item.Item;
+import com.viaversion.viaversion.api.minecraft.item.StructuredItem;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
@@ -33,9 +39,12 @@ import com.viaversion.viaversion.libs.fastutil.objects.Object2IntMap;
 import com.viaversion.viaversion.libs.fastutil.objects.Object2IntOpenHashMap;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import net.raphimc.viabedrock.ViaBedrock;
+import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.api.model.entity.*;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
+import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,21 +135,43 @@ public class EntityTracker extends StoredObject {
         spawnEntity.write(Types.VAR_INT, javaId); // entity id
         spawnEntity.write(Types.UUID, UUID.randomUUID()); // uuid
         spawnEntity.write(Types.VAR_INT, blockState.identifier().equals("frame") ? EntityTypes26_3.ITEM_FRAME.getId() : EntityTypes26_3.GLOW_ITEM_FRAME.getId()); // type id
-        spawnEntity.write(Types.DOUBLE, (double) position.x()); // x
-        spawnEntity.write(Types.DOUBLE, (double) position.y()); // y
-        spawnEntity.write(Types.DOUBLE, (double) position.z()); // z
+        spawnEntity.write(Types.DOUBLE, position.x() + 0.5D); // x
+        spawnEntity.write(Types.DOUBLE, position.y() + 0.5D); // y
+        spawnEntity.write(Types.DOUBLE, position.z() + 0.5D); // z
         spawnEntity.write(Types.LOW_PRECISION_VECTOR, Vector3d.ZERO); // velocity
         spawnEntity.write(Types.BYTE, (byte) 0); // pitch
         spawnEntity.write(Types.BYTE, (byte) 0); // yaw
         spawnEntity.write(Types.BYTE, (byte) 0); // head yaw
         spawnEntity.write(Types.VAR_INT, Integer.valueOf(blockState.properties().get("facing_direction"))); // data
         spawnEntity.send(BedrockProtocol.class);
+        this.updateItemFrame(position, this.user().get(ChunkTracker.class).getBlockEntity(position));
+    }
+
+    public void updateItemFrame(final BlockPosition position, final BedrockBlockEntity blockEntity) {
+        if (!this.itemFrames.containsKey(position) || blockEntity == null) {
+            return;
+        }
+
+        final CompoundTag tag = blockEntity.tag();
+        final Item item = this.user().get(ItemRewriter.class).javaItemStack(tag.getCompoundTag("Item"));
+        final int rotation = tag.get("ItemRotation") instanceof NumberTag rotationTag ? rotationTag.asInt() : 0;
+        final EntityTypes26_3 frameType = EntityTypes26_3.ITEM_FRAME;
+        final List<String> fields = BedrockProtocol.MAPPINGS.getJavaEntityDataFields().get(frameType);
+        final List<EntityData> data = List.of(
+                new EntityData(fields.indexOf(EntityDataFields.ITEM), VersionedTypes.V26_3.entityDataTypes.itemType,
+                        item == null ? StructuredItem.empty() : item),
+                new EntityData(fields.indexOf(EntityDataFields.ROTATION), VersionedTypes.V26_3.entityDataTypes.varIntType, rotation)
+        );
+        final PacketWrapper metadata = PacketWrapper.create(ClientboundPackets26_3.SET_ENTITY_DATA, this.user());
+        metadata.write(Types.VAR_INT, this.itemFrames.getInt(position));
+        metadata.write(VersionedTypes.V26_3.entityDataList, data);
+        metadata.send(BedrockProtocol.class);
     }
 
     public void removeItemFrame(final BlockPosition position) {
         if (this.itemFrames.containsKey(position)) {
             final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets26_3.REMOVE_ENTITIES, this.user());
-            removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{this.itemFrames.getInt(position)}); // entity ids
+            removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{this.itemFrames.removeInt(position)}); // entity ids
             removeEntities.send(BedrockProtocol.class);
         }
     }

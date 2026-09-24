@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.model.map;
+package net.raphimc.viabedrock.protocol.util.map;
 
 import java.awt.*;
 
@@ -278,9 +278,9 @@ public enum MapColor {
             alpha = 0; // transparent
 
         this.value = ((alpha & 0xFF) << 24) |
-                ((blue & 0xFF) << 16) |
+                ((red & 0xFF) << 16) |
                 ((green & 0xFF) << 8) |
-                (red & 0xFF);
+                (blue & 0xFF);
     }
 
     public Color getColor() {
