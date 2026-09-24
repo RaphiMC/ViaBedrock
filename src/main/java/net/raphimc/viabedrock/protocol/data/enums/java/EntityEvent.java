@@ -85,6 +85,8 @@ public enum EntityEvent {
 
     private static final Int2ObjectMap<EntityEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
+    private final byte value;
+
     static {
         for (EntityEvent value : values()) {
             BY_VALUE.put(value.value, value);
@@ -98,8 +100,6 @@ public enum EntityEvent {
     public static EntityEvent getByValue(final byte value, final EntityEvent fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
     }
-
-    private final byte value;
 
     EntityEvent(final int value) {
         this.value = (byte) value;

@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.tool;
 
 import com.viaversion.nbt.tag.CompoundTag;
-import com.viaversion.viaversion.libs.gson.Gson;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.libs.gson.JsonParser;
@@ -27,18 +26,36 @@ import net.raphimc.viabedrock.api.chunk.blockstate.JsonBlockStateUpgradeSchema;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
-public class BlockStateMappingsUpgrader {
+/**
+ * Runs the hand maintained bedrock to java block state mappings through one or more bedrock block state upgrade schemas.
+ * <p>
+ * After pulling new schemas from <a href="https://github.com/pmmp/BedrockBlockUpgradeSchema">PMMP/BedrockBlockUpgradeSchema</a>,
+ * pass the ones which were added, for example {@code --from=0331_1.21.100.23_beta_to_1.21.110.26_beta}. Applying a schema
+ * which is already part of the mappings merges block states and fails with a duplicate block state error.
+ */
+public final class BlockStateMappingsUpgrader {
 
-    public static void main(String[] args) throws Throwable {
-        final byte[] data = BlockStateMappingsUpgrader.class.getResourceAsStream("/assets/viabedrock/block_state_upgrade_schema/0321_1.21.40.25_beta_to_1.21.60.28_beta.json").readAllBytes();
-        final JsonBlockStateUpgradeSchema schema = new JsonBlockStateUpgradeSchema(JsonParser.parseString(new String(data, StandardCharsets.UTF_8)).getAsJsonObject());
-        final byte[] blockStateData = BlockStateMappingsUpgrader.class.getResourceAsStream("/assets/viabedrock/data/custom/blockstate_mappings.json").readAllBytes();
-        final JsonObject blockStateMappingsJson = JsonParser.parseString(new String(blockStateData, StandardCharsets.UTF_8)).getAsJsonObject();
+    public static void main(final String[] args) throws Throwable {
+        final ToolArgs toolArgs = ToolArgs.parse(args);
+        final List<Path> schemaFiles = resolveSchemas(toolArgs);
+        final Path mappingsFile = toolArgs.path("mappings", ToolPaths.CUSTOM_DATA.resolve("blockstate_mappings.json"));
+        final Path outputFile = toolArgs.path("output", mappingsFile);
+
+        final List<JsonBlockStateUpgradeSchema> schemas = new ArrayList<>();
+        for (Path schemaFile : schemaFiles) {
+            System.out.println("Applying schema " + schemaFile.getFileName());
+            schemas.add(new JsonBlockStateUpgradeSchema(JsonParser.parseString(Files.readString(schemaFile)).getAsJsonObject()));
+        }
+
+        final JsonObject blockStateMappingsJson = JsonParser.parseString(Files.readString(mappingsFile)).getAsJsonObject();
         final JsonObject newBlockStateMappingsJson = new JsonObject();
 
         for (Map.Entry<String, JsonElement> entry : blockStateMappingsJson.entrySet()) {
@@ -57,25 +74,27 @@ public class BlockStateMappingsUpgrader {
                     statesTag.putBoolean(property.getKey(), false);
                 } else {
                     final boolean byteVal = property.getKey().equals("coral_hang_type_bit") || property.getKey().equals("dead_bit") || property.getKey().equals("color_bit")
-                            || property.getKey().equals("allow_underwater_bit") || property.getKey().equals("active");
+                        || property.getKey().equals("allow_underwater_bit") || property.getKey().equals("active");
                     if (byteVal) {
                         statesTag.putByte(property.getKey(), Byte.parseByte(property.getValue()));
                     } else {
                         try {
                             statesTag.putInt(property.getKey(), Integer.parseInt(property.getValue()));
-                        } catch (NumberFormatException e) {
+                        } catch (final NumberFormatException e) {
                             statesTag.putString(property.getKey(), property.getValue());
                         }
                     }
                 }
             }
 
-            schema.upgrade(blockStateTag);
+            for (JsonBlockStateUpgradeSchema schema : schemas) {
+                schema.upgrade(blockStateTag);
+            }
 
             final BedrockBlockState newBedrockBlockState = BedrockBlockState.fromNbt(blockStateTag);
             final String newBedrockBlockStateString = newBedrockBlockState.toBlockStateString(true);
             if (newBlockStateMappingsJson.has(newBedrockBlockStateString)) {
-                throw new IllegalStateException("Duplicate block state: " + newBedrockBlockStateString);
+                throw new IllegalStateException("Duplicate block state: " + newBedrockBlockStateString + ". The mappings most likely already contain this schema.");
             }
             newBlockStateMappingsJson.addProperty(newBedrockBlockStateString, javaBlockState.toBlockStateString(true));
         }
@@ -84,8 +103,57 @@ public class BlockStateMappingsUpgrader {
             throw new IllegalStateException("Something went wrong while upgrading block state mappings");
         }
 
-        final String json = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(GsonUtil.sort(newBlockStateMappingsJson));
-        Files.writeString(new File("new_blockstate_mappings.json").toPath(), json);
+        ToolPaths.writeJson(outputFile, GsonUtil.sort(newBlockStateMappingsJson));
+    }
+
+    private static List<Path> resolveSchemas(final ToolArgs toolArgs) throws IOException {
+        final List<Path> allSchemas = listSchemas();
+
+        final List<String> requested = toolArgs.list("schema");
+        if (!requested.isEmpty()) {
+            final List<Path> schemas = new ArrayList<>();
+            for (String name : requested) {
+                schemas.add(resolveSchema(allSchemas, name));
+            }
+            return schemas;
+        }
+
+        final List<String> from = toolArgs.list("from");
+        if (!from.isEmpty()) {
+            final Path firstSchema = resolveSchema(allSchemas, from.get(0));
+            return allSchemas.subList(allSchemas.indexOf(firstSchema), allSchemas.size());
+        }
+
+        final StringBuilder message = new StringBuilder("Missing required argument --schema or --from. The mappings don't record which schemas they already contain, so the new ones have to be named. The newest schemas are:");
+        for (Path schema : allSchemas.subList(Math.max(0, allSchemas.size() - 5), allSchemas.size())) {
+            message.append("\n  ").append(schema.getFileName());
+        }
+        throw new IllegalArgumentException(message.toString());
+    }
+
+    private static Path resolveSchema(final List<Path> allSchemas, final String name) {
+        final Path asPath = Path.of(name);
+        if (Files.isRegularFile(asPath)) {
+            return asPath;
+        }
+        final String fileName = name.endsWith(".json") ? name : name + ".json";
+        return allSchemas.stream()
+            .filter(schema -> schema.getFileName().toString().equals(fileName))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Unknown schema '" + name + "'. It is neither a file nor a name in " + ToolPaths.BLOCK_STATE_UPGRADE_SCHEMAS));
+    }
+
+    private static List<Path> listSchemas() throws IOException {
+        try (Stream<Path> files = Files.list(ToolPaths.BLOCK_STATE_UPGRADE_SCHEMAS)) {
+            final List<Path> schemas = files.filter(file -> file.getFileName().toString().endsWith(".json")).sorted().toList();
+            if (schemas.isEmpty()) {
+                throw new IllegalStateException("No schemas found in " + ToolPaths.BLOCK_STATE_UPGRADE_SCHEMAS);
+            }
+            return schemas;
+        }
+    }
+
+    private BlockStateMappingsUpgrader() {
     }
 
 }

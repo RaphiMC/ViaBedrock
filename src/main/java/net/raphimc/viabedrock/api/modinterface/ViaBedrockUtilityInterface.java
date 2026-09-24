@@ -24,7 +24,7 @@ import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundConfigurationPackets26_3;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIds;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.types.primitive.ImageType;
 
@@ -34,7 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-public class ViaBedrockUtilityInterface {
+public final class ViaBedrockUtilityInterface {
 
     // This channel WILL ONLY be used to confirm that ViaBedrockUtility is present, the server will use viabedrockutility:data to respond
     public static final String CONFIRM_CHANNEL = "viabedrockutility:confirm";
@@ -49,33 +49,33 @@ public class ViaBedrockUtilityInterface {
         pluginMessage.send(BedrockProtocol.class);
     }
 
-    public static void spawnCustomEntity(final UserConnection user, final UUID uuid, final String identifier, final Map<ActorDataIDs, EntityData> entityData) {
+    public static void spawnCustomEntity(final UserConnection user, final UUID uuid, final String identifier, final Map<ActorDataIds, EntityData> entityData) {
         final PacketWrapper pluginMessage = PacketWrapper.create(ClientboundPackets26_3.CUSTOM_PAYLOAD, user);
         pluginMessage.write(Types.STRING, CHANNEL); // Channel
         pluginMessage.write(Types.INT, PayloadType.MODEL_REQUEST.ordinal()); // Type
         writeString(pluginMessage, identifier);
 
-        boolean writeBitmask1 = entityData.containsKey(ActorDataIDs.RESERVED_0);
+        final boolean writeBitmask1 = entityData.containsKey(ActorDataIds.RESERVED_0);
         pluginMessage.write(Types.BOOLEAN, writeBitmask1);
         if (writeBitmask1) {
-            pluginMessage.write(Types.LONG, entityData.get(ActorDataIDs.RESERVED_0).<Long>value());
+            pluginMessage.write(Types.LONG, entityData.get(ActorDataIds.RESERVED_0).<Long>value());
         }
-        boolean writeBitmask2 = entityData.containsKey(ActorDataIDs.RESERVED_092);
+        final boolean writeBitmask2 = entityData.containsKey(ActorDataIds.RESERVED_092);
         pluginMessage.write(Types.BOOLEAN, writeBitmask2);
         if (writeBitmask2) {
-            pluginMessage.write(Types.LONG, entityData.get(ActorDataIDs.RESERVED_092).<Long>value());
+            pluginMessage.write(Types.LONG, entityData.get(ActorDataIds.RESERVED_092).<Long>value());
         }
 
-        boolean writeVariant = entityData.containsKey(ActorDataIDs.VARIANT);
+        final boolean writeVariant = entityData.containsKey(ActorDataIds.VARIANT);
         pluginMessage.write(Types.BOOLEAN, writeVariant);
         if (writeVariant) {
-            pluginMessage.write(Types.INT, entityData.get(ActorDataIDs.VARIANT).<Integer>value());
+            pluginMessage.write(Types.INT, entityData.get(ActorDataIds.VARIANT).<Integer>value());
         }
 
-        boolean writeMarkVariant = entityData.containsKey(ActorDataIDs.MARK_VARIANT);
+        final boolean writeMarkVariant = entityData.containsKey(ActorDataIds.MARK_VARIANT);
         pluginMessage.write(Types.BOOLEAN, writeMarkVariant);
         if (writeMarkVariant) {
-            pluginMessage.write(Types.INT, entityData.get(ActorDataIDs.MARK_VARIANT).<Integer>value());
+            pluginMessage.write(Types.INT, entityData.get(ActorDataIds.MARK_VARIANT).<Integer>value());
         }
 
         pluginMessage.write(Types.UUID, uuid);
@@ -143,8 +143,12 @@ public class ViaBedrockUtilityInterface {
         wrapper.write(Types.REMAINING_BYTES, s.getBytes(StandardCharsets.UTF_8));
     }
 
+    private ViaBedrockUtilityInterface() {
+    }
+
     private enum PayloadType {
         CONFIRM, MODEL_REQUEST, ANIMATE,
         CAPE, SKIN_INFORMATION, SKIN_DATA
     }
+
 }

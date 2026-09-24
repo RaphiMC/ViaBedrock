@@ -37,7 +37,7 @@ public class ByteArrayType extends Type<byte[]> {
     }
 
     @Override
-    public byte[] read(ByteBuf buffer) {
+    public byte[] read(final ByteBuf buffer) {
         final int length = this.length == -1 ? BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer) : this.length;
         Preconditions.checkArgument(buffer.isReadable(length), "Length is larger than readable bytes: " + length + " > " + buffer.readableBytes());
         final byte[] array = new byte[length];
@@ -46,9 +46,9 @@ public class ByteArrayType extends Type<byte[]> {
     }
 
     @Override
-    public void write(ByteBuf buffer, byte[] value) {
+    public void write(final ByteBuf buffer, final byte[] value) {
         if (this.length != -1) {
-            Preconditions.checkArgument(length == value.length, "Length does not match expected length");
+            Preconditions.checkArgument(this.length == value.length, "Length does not match expected length");
         } else {
             BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.length);
         }

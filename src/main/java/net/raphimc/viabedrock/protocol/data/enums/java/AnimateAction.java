@@ -21,6 +21,6 @@ public enum AnimateAction {
 
     WAKE_UP,
     CRITICAL_HIT,
-    MAGIC_CRITICAL_HIT,
+    MAGIC_CRITICAL_HIT
 
 }

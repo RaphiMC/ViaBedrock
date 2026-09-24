@@ -1,0 +1,84 @@
+/*
+ * This file is part of ViaBedrock - https://github.com/RaphiMC/ViaBedrock
+ * Copyright (C) 2023-2026 RK_01/RaphiMC and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package net.raphimc.viabedrock.protocol.types.inventory;
+
+import com.viaversion.viaversion.api.type.Type;
+import com.viaversion.viaversion.api.type.Types;
+import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerID;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceFlags;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
+import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+
+public class InventorySourcePacketType extends Type<InventorySource> {
+
+    public InventorySourcePacketType() {
+        super(InventorySource.class);
+    }
+
+    @Override
+    public InventorySource read(final ByteBuf buffer) {
+        final int rawTypeId = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
+        final InventorySourceType type = InventorySourceType.getByValue(rawTypeId);
+        if (type == null) {
+            throw new IllegalStateException("Invalid inventory source type id: " + rawTypeId);
+        }
+
+        int containerId = 0;
+        InventorySourceFlags flag = InventorySourceFlags.No_Flag;
+        if (buffer.readBoolean()) {
+            containerId = buffer.readByte();
+        }
+        if (buffer.readBoolean()) {
+            flag = InventorySourceFlags.getByValue(BedrockTypes.UNSIGNED_VAR_INT.read(buffer));
+        }
+
+        switch (type) {
+            case Container_Inventory, Non_Implemented_Feature_TODO -> {
+                return new InventorySource(type, containerId, InventorySourceFlags.No_Flag);
+            }
+            case World_Interaction -> {
+                return new InventorySource(type, ContainerID.CONTAINER_ID_NONE.getValue(), flag);
+            }
+            default -> {
+                return new InventorySource(type, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySourceFlags.No_Flag);
+            }
+        }
+    }
+
+    @Override
+    public void write(final ByteBuf buffer, final InventorySource value) {
+        BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.type().getValue());
+
+        if (value.type() == InventorySourceType.Container_Inventory || value.type() == InventorySourceType.Non_Implemented_Feature_TODO) {
+            Types.BOOLEAN.write(buffer, true);
+            buffer.writeByte(value.containerId());
+        } else {
+            Types.BOOLEAN.write(buffer, false);
+        }
+
+        if (value.type() == InventorySourceType.World_Interaction) {
+            Types.BOOLEAN.write(buffer, true);
+            BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.flags().getValue());
+        } else {
+            Types.BOOLEAN.write(buffer, false);
+        }
+    }
+
+}

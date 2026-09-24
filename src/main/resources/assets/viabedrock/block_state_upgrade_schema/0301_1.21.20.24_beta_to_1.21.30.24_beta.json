@@ -1,79 +1,79 @@
 {
-    "maxVersionMajor": 1,
-    "maxVersionMinor": 21,
-    "maxVersionPatch": 30,
-    "maxVersionRevision": 7,
-    "removedProperties": {
-        "minecraft:structure_void": [
-            "structure_void_type"
-        ]
+  "maxVersionMajor": 1,
+  "maxVersionMinor": 21,
+  "maxVersionPatch": 30,
+  "maxVersionRevision": 7,
+  "removedProperties": {
+    "minecraft:structure_void": [
+      "structure_void_type"
+    ]
+  },
+  "flattenedProperties": {
+    "minecraft:chemistry_table": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "chemistry_table_type",
+      "suffix": ""
     },
-    "flattenedProperties": {
-        "minecraft:chemistry_table": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "chemistry_table_type",
-            "suffix": ""
-        },
-        "minecraft:cobblestone_wall": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "wall_block_type",
-            "suffix": "_wall",
-            "flattenedValueRemaps": {
-                "end_brick": "end_stone_brick"
-            }
-        },
-        "minecraft:colored_torch_bp": {
-            "prefix": "minecraft:colored_torch_",
-            "flattenedProperty": "color_bit",
-            "flattenedPropertyType": "byte",
-            "suffix": "",
-            "flattenedValueRemaps": {
-                "0": "blue",
-                "1": "purple",
-                "dummy": "map_not_list"
-            }
-        },
-        "minecraft:colored_torch_rg": {
-            "prefix": "minecraft:colored_torch_",
-            "flattenedProperty": "color_bit",
-            "flattenedPropertyType": "byte",
-            "suffix": "",
-            "flattenedValueRemaps": {
-                "0": "red",
-                "1": "green",
-                "dummy": "map_not_list"
-            }
-        },
-        "minecraft:purpur_block": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "chisel_type",
-            "suffix": "",
-            "flattenedValueRemaps": {
-                "chiseled": "deprecated_purpur_block_1",
-                "default": "purpur_block",
-                "lines": "purpur_pillar",
-                "smooth": "deprecated_purpur_block_2"
-            }
-        },
-        "minecraft:sponge": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "sponge_type",
-            "suffix": "sponge",
-            "flattenedValueRemaps": {
-                "dry": "",
-                "wet": "wet_"
-            }
-        },
-        "minecraft:tnt": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "allow_underwater_bit",
-            "flattenedPropertyType": "byte",
-            "suffix": "tnt",
-            "flattenedValueRemaps": {
-                "0": "",
-                "1": "underwater_",
-                "dummy": "map_not_list"
-            }
-        }
+    "minecraft:cobblestone_wall": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "wall_block_type",
+      "suffix": "_wall",
+      "flattenedValueRemaps": {
+        "end_brick": "end_stone_brick"
+      }
+    },
+    "minecraft:colored_torch_bp": {
+      "prefix": "minecraft:colored_torch_",
+      "flattenedProperty": "color_bit",
+      "flattenedPropertyType": "byte",
+      "suffix": "",
+      "flattenedValueRemaps": {
+        "0": "blue",
+        "1": "purple",
+        "dummy": "map_not_list"
+      }
+    },
+    "minecraft:colored_torch_rg": {
+      "prefix": "minecraft:colored_torch_",
+      "flattenedProperty": "color_bit",
+      "flattenedPropertyType": "byte",
+      "suffix": "",
+      "flattenedValueRemaps": {
+        "0": "red",
+        "1": "green",
+        "dummy": "map_not_list"
+      }
+    },
+    "minecraft:purpur_block": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "chisel_type",
+      "suffix": "",
+      "flattenedValueRemaps": {
+        "chiseled": "deprecated_purpur_block_1",
+        "default": "purpur_block",
+        "lines": "purpur_pillar",
+        "smooth": "deprecated_purpur_block_2"
+      }
+    },
+    "minecraft:sponge": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "sponge_type",
+      "suffix": "sponge",
+      "flattenedValueRemaps": {
+        "dry": "",
+        "wet": "wet_"
+      }
+    },
+    "minecraft:tnt": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "allow_underwater_bit",
+      "flattenedPropertyType": "byte",
+      "suffix": "tnt",
+      "flattenedValueRemaps": {
+        "0": "",
+        "1": "underwater_",
+        "dummy": "map_not_list"
+      }
     }
+  }
 }

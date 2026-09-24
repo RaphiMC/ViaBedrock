@@ -37,7 +37,7 @@ public class SkinType extends Type<SkinData> {
 
     // TODO
     @Override
-    public SkinData read(ByteBuf buffer) {
+    public SkinData read(final ByteBuf buffer) {
         final String skinId = BedrockTypes.STRING.read(buffer);
         final String playFabId = BedrockTypes.STRING.read(buffer);
         final String skinResourcePatch = BedrockTypes.STRING.read(buffer);
@@ -91,14 +91,14 @@ public class SkinType extends Type<SkinData> {
         final boolean primaryUser = buffer.readBoolean();
         final boolean overridingPlayerAppearance = buffer.readBoolean();
 
-        boolean trusted = "true".equalsIgnoreCase(BedrockTypes.STRING.read(buffer));
-        String profileHash = BedrockTypes.STRING.read(buffer);
+        "true".equalsIgnoreCase(BedrockTypes.STRING.read(buffer)); // trusted
+        BedrockTypes.STRING.read(buffer); // profile hash
 
         return new SkinData(skinId, playFabId, skinResourcePatch, skinData, animations, capeData, geometryData, geometryDataEngineVersion, animationData, premium, persona, capeOnClassic, primaryUser, capeId, fullSkinId, armSize, skinColor, personaPieces, tintColors, overridingPlayerAppearance);
     }
 
     @Override
-    public void write(ByteBuf buffer, SkinData value) { // TODO: I havent bothered updating this as it isnt used
+    public void write(final ByteBuf buffer, final SkinData value) { // TODO: I havent bothered updating this as it isnt used
         BedrockTypes.STRING.write(buffer, value.skinId());
         BedrockTypes.STRING.write(buffer, value.playFabId());
         BedrockTypes.STRING.write(buffer, value.skinResourcePatch());

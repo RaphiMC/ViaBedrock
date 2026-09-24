@@ -21,7 +21,6 @@ import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.api.type.Types;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.api.resourcepack.content.ZipContent;
@@ -69,7 +68,7 @@ public class ResourcePackLoadStateTracker extends StoredObject {
         try {
             final Info info = this.requests.get(resourcePack.key());
             Via.getManager().getProviders().get(ResourcePackProvider.class).save(resourcePack, info != null ? info.cacheIdentity() : null);
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to save resource pack: " + resourcePack.key(), e);
         }
         this.addLocalResourcePack(resourcePack);
@@ -101,7 +100,7 @@ public class ResourcePackLoadStateTracker extends StoredObject {
                 asyncTasks.add(() -> {
                     try {
                         this.addLocalResourcePack(Via.getManager().getProviders().get(ResourcePackProvider.class).load(info.key(), info.cacheIdentity()));
-                    } catch (Throwable e) {
+                    } catch (final Throwable e) {
                         if (!(e.getCause() instanceof InterruptedException)) {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to load resource pack: " + info.key(), e);
                             downloadList.add(info.key());
@@ -115,7 +114,7 @@ public class ResourcePackLoadStateTracker extends StoredObject {
                         final BedrockPackDownloader downloader = new BedrockPackDownloader(info.httpUrl());
                         downloader.getContentLength(); // Check if the pack is available before downloading
                         this.addRemoteResourcePack(new ResourcePack(new ZipContent(downloader.download())));
-                    } catch (Throwable e) {
+                    } catch (final Throwable e) {
                         if (!(e.getCause() instanceof InterruptedException)) {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to download resource pack: " + info.key(), e);
                             downloadList.add(info.key());
@@ -132,8 +131,8 @@ public class ResourcePackLoadStateTracker extends StoredObject {
                 for (Future<Void> future : this.executor.invokeAll(asyncTasks, 2, TimeUnit.MINUTES)) {
                     future.get();
                 }
-            } catch (InterruptedException ignored) {
-            } catch (ExecutionException e) {
+            } catch (final InterruptedException ignored) {
+            } catch (final ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }, this.executor).thenRun(() -> {
@@ -164,7 +163,7 @@ public class ResourcePackLoadStateTracker extends StoredObject {
             } else {
                 try {
                     this.resourcePacks.put(key, Via.getManager().getProviders().get(ResourcePackProvider.class).loadAny(key));
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.FINE, "No cached resource pack for: " + key, e);
                 }
             }
@@ -197,7 +196,7 @@ public class ResourcePackLoadStateTracker extends StoredObject {
             try {
                 final MessageDigest digest = MessageDigest.getInstance("SHA-256");
                 return this.contentId + ':' + HexFormat.of().formatHex(digest.digest(this.contentKey));
-            } catch (NoSuchAlgorithmException e) {
+            } catch (final NoSuchAlgorithmException e) {
                 throw new IllegalStateException("SHA-256 is not available", e);
             }
         }

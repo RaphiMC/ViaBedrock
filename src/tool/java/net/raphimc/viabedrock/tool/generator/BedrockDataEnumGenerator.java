@@ -25,31 +25,40 @@ import net.raphimc.viabedrock.codegen.CodeGen;
 import net.raphimc.viabedrock.codegen.model.Javadoc;
 import net.raphimc.viabedrock.codegen.model.member.impl.Field;
 import net.raphimc.viabedrock.codegen.model.type.impl.Enum;
+import net.raphimc.viabedrock.tool.ToolArgs;
+import net.raphimc.viabedrock.tool.ToolPaths;
 
-import java.io.File;
 import java.nio.file.Files;
-import java.util.*;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Stream;
 
-public class BedrockDataEnumGenerator {
+public final class BedrockDataEnumGenerator {
 
-    public static void main(String[] args) throws Throwable {
-        // Download metadata from https://github.com/Mojang/bedrock-protocol-docs/releases
-        final File jsonDir =  new File("/home/exterminate/Projects/Minecraft/bedrock-protocol-docs/");
+    public static void main(final String[] args) throws Throwable {
+        final ToolArgs toolArgs = ToolArgs.parse(args);
+        final Path jsonDir = ToolPaths.protocolDocsDir(toolArgs);
         final Gson gson = new Gson();
 
-        final CodeGen codeGen = new CodeGen(new File("src/main/java"), "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated");
+        final CodeGen codeGen = new CodeGen(ToolPaths.MAIN_JAVA.toFile(), "net.raphimc.viabedrock.protocol.data.enums.bedrock.generated");
 
-        for (File file : jsonDir.listFiles()) {
-            if(!file.getName().endsWith(".json")) continue;
+        final List<Path> jsonFiles;
+        try (Stream<Path> files = Files.list(jsonDir)) {
+            jsonFiles = files.filter(file -> file.getFileName().toString().endsWith(".json")).sorted().toList();
+        }
+        if (jsonFiles.isEmpty()) {
+            throw new IllegalStateException("No enum definitions found in " + jsonDir);
+        }
 
-            final JsonObject jsonObject = gson.fromJson(Files.readString(file.toPath()), JsonObject.class);
+        for (Path file : jsonFiles) {
+            final JsonObject jsonObject = gson.fromJson(Files.readString(file), JsonObject.class);
 
             if (!jsonObject.has("enum")) {
                 continue;
             }
 
             final String enumName = jsonObject.get("title").getAsString()
-                    .replace("::", "_").replace(" ", "_").replace("-", "_");
+                .replace("::", "_").replace(" ", "_").replace("-", "_");
 
             if (enumName.equalsIgnoreCase("LevelSoundEvent")) {
                 // Skip this enum, we already have a custom implementation for it
@@ -64,8 +73,8 @@ public class BedrockDataEnumGenerator {
             genEnum.members().add(new Field("private static final", "Int2ObjectMap<" + enumName + ">", "BY_VALUE", "new Int2ObjectOpenHashMap<>()"));
             genEnum.members().addStaticBlock(staticBlock -> {
                 staticBlock.code().addForEach(enumName + " value", "values()", forEach -> {
-                    forEach.code().addIf("!BY_VALUE.containsKey(value.value)", _if -> {
-                        _if.code().add("BY_VALUE.put(value.value, value);");
+                    forEach.code().addIf("!BY_VALUE.containsKey(value.value)", ifBlock -> {
+                        ifBlock.code().add("BY_VALUE.put(value.value, value);");
                     });
                 });
             });
@@ -82,8 +91,8 @@ public class BedrockDataEnumGenerator {
             genEnum.members().addMethod("public static", enumName, "getByName", method -> {
                 method.parameters().add(new Field("final", "String", "name"));
                 method.code().addForEach(enumName + " value", "values()", forEach -> {
-                    forEach.code().addIf("value.name().equalsIgnoreCase(name)", _if -> {
-                        _if.code().add("return value;");
+                    forEach.code().addIf("value.name().equalsIgnoreCase(name)", ifBlock -> {
+                        ifBlock.code().add("return value;");
                     });
                 });
                 method.code().add("return null;");
@@ -92,8 +101,8 @@ public class BedrockDataEnumGenerator {
                 method.parameters().add(new Field("final", "String", "name"));
                 method.parameters().add(new Field("final", enumName, "fallback"));
                 method.code().addForEach(enumName + " value", "values()", forEach -> {
-                    forEach.code().addIf("value.name().equalsIgnoreCase(name)", _if -> {
-                        _if.code().add("return value;");
+                    forEach.code().addIf("value.name().equalsIgnoreCase(name)", ifBlock -> {
+                        ifBlock.code().add("return value;");
                     });
                 });
                 method.code().add("return fallback;");
@@ -112,14 +121,13 @@ public class BedrockDataEnumGenerator {
 
             genEnum.members().addMethod("public", "int", "getValue", method -> method.code().add("return this.value;"));
 
-
-            JsonArray enumFields = jsonObject.getAsJsonArray("enum");
+            final JsonArray enumFields = jsonObject.getAsJsonArray("enum");
             for (int i = 0; i < enumFields.size(); i++) {
-                JsonElement enumFieldElement = enumFields.get(i);
-                String name = enumFieldElement.getAsString().replace(" ", "_");
+                final JsonElement enumFieldElement = enumFields.get(i);
+                final String name = enumFieldElement.getAsString().replace(" ", "_");
                 String value = null;
                 if (jsonObject.has("x-enum-binary-value")) {
-                    JsonArray binaryValues = jsonObject.getAsJsonArray("x-enum-binary-value");
+                    final JsonArray binaryValues = jsonObject.getAsJsonArray("x-enum-binary-value");
                     if (binaryValues.size() > i) {
                         value = binaryValues.get(i).getAsString();
                     }
@@ -131,7 +139,10 @@ public class BedrockDataEnumGenerator {
         }
 
         codeGen.generate();
+        System.out.println("Generated " + jsonFiles.size() + " enums from " + jsonDir);
+    }
 
+    private BedrockDataEnumGenerator() {
     }
 
 }

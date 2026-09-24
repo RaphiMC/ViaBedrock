@@ -26,7 +26,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 import java.util.TreeMap;
 
-public class BlockStateHasher {
+public final class BlockStateHasher {
 
     public static int hash(final CompoundTag blockStateTag) {
         final String name = Key.namespaced(blockStateTag.getStringTag("name").getValue());
@@ -41,13 +41,16 @@ public class BlockStateHasher {
         final ByteBuf byteBuf = Unpooled.buffer();
         try {
             BedrockTypes.TAG_LE.write(byteBuf, cleanedBlockStateTag);
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             throw new RuntimeException(e);
         }
         final byte[] bytes = ByteBufUtil.getBytes(byteBuf);
         byteBuf.release();
 
-        return FNV1.fnv1a_32(bytes);
+        return Fnv1.fnv1a_32(bytes);
+    }
+
+    private BlockStateHasher() {
     }
 
 }

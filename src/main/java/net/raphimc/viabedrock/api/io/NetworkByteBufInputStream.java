@@ -36,7 +36,7 @@ public class NetworkByteBufInputStream extends LittleEndianByteBufInputStream {
     public int readInt() throws IOException {
         try {
             return BedrockTypes.VAR_INT.read(this.buffer);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
@@ -45,7 +45,7 @@ public class NetworkByteBufInputStream extends LittleEndianByteBufInputStream {
     public long readLong() throws IOException {
         try {
             return BedrockTypes.VAR_LONG.read(this.buffer);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
@@ -54,7 +54,7 @@ public class NetworkByteBufInputStream extends LittleEndianByteBufInputStream {
     public String readUTF() throws IOException {
         try {
             return BedrockTypes.STRING.read(this.buffer);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }

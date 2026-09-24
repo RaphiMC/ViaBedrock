@@ -33,7 +33,7 @@ import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class ResourcePackRewriter {
+public final class ResourcePackRewriter {
 
     private static final List<Rewriter> REWRITERS = new ArrayList<>();
 
@@ -78,6 +78,9 @@ public class ResourcePackRewriter {
         final JsonObject root = new JsonObject();
         root.add("pack", pack);
         return root;
+    }
+
+    private ResourcePackRewriter() {
     }
 
     public interface Rewriter {

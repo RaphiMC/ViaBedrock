@@ -34,7 +34,7 @@ import java.util.logging.Level;
 
 public class PacketSyncStorage extends StoredObject {
 
-    private final AtomicInteger ID_COUNTER = new AtomicInteger(0);
+    private final AtomicInteger idCounter = new AtomicInteger(0);
     private final Int2ObjectMap<Long> pendingNetworkStackLatencyResponses = new Int2ObjectOpenHashMap<>();
     private final Int2ObjectMap<Runnable> pendingActions = new Int2ObjectOpenHashMap<>();
 
@@ -43,10 +43,10 @@ public class PacketSyncStorage extends StoredObject {
     }
 
     public int addNetworkStackLatencyResponse(final long timestamp) {
-        if (ID_COUNTER.get() >= Short.MAX_VALUE) { // VB compatibility
-            ID_COUNTER.set(0);
+        if (this.idCounter.get() >= Short.MAX_VALUE) { // VB compatibility
+            this.idCounter.set(0);
         }
-        final int id = this.ID_COUNTER.getAndIncrement();
+        final int id = this.idCounter.getAndIncrement();
         if (this.pendingNetworkStackLatencyResponses.put(id, Long.valueOf(timestamp)) != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Overwrote pending network stack latency response with id " + id);
         }
@@ -58,10 +58,10 @@ public class PacketSyncStorage extends StoredObject {
     }
 
     public void syncWithClient(final Runnable runnable) {
-        if (ID_COUNTER.get() >= Short.MAX_VALUE) { // VB compatibility
-            ID_COUNTER.set(0);
+        if (this.idCounter.get() >= Short.MAX_VALUE) { // VB compatibility
+            this.idCounter.set(0);
         }
-        final int id = ID_COUNTER.getAndIncrement();
+        final int id = this.idCounter.getAndIncrement();
         if (this.pendingActions.put(id, runnable) != null) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Overwrote pending action with id " + id);
         }

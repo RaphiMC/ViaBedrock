@@ -32,7 +32,7 @@ import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 public class CreakingHeartBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
-    public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
+    public BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 

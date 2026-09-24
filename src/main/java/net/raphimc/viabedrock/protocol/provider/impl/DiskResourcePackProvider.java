@@ -68,7 +68,7 @@ public class DiskResourcePackProvider extends ResourcePackProvider {
             digest.update((byte) 0);
             digest.update(contentIdentity.getBytes(StandardCharsets.UTF_8));
             return this.getSourcePath().resolve(HexFormat.of().formatHex(digest.digest()) + ".mcpack");
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 is not available", e);
         }
     }

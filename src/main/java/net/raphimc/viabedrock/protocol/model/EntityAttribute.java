@@ -57,7 +57,9 @@ public record EntityAttribute(String name, float currentValue, float minValue, f
     }
 
     private float applyModifiers(final float value, final AttributeOperands operand) {
-        if (this.modifiers.length == 0) return value;
+        if (this.modifiers.length == 0) {
+            return value;
+        }
 
         float result = value;
         final Set<String> applied = new HashSet<>();

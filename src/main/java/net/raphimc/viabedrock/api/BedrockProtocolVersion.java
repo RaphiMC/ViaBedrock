@@ -24,11 +24,11 @@ import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BedrockProtocolVersion {
+public final class BedrockProtocolVersion {
 
     public static final List<ProtocolVersion> PROTOCOLS = new ArrayList<>();
 
-    public static final ProtocolVersion bedrockLatest = new SpecialProtocolVersion(ProtocolConstants.BEDROCK_PROTOCOL_VERSION, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME, ProtocolConstants.JAVA_VERSION) {
+    public static final ProtocolVersion BEDROCK_LATEST = new SpecialProtocolVersion(ProtocolConstants.BEDROCK_PROTOCOL_VERSION, "Bedrock " + ProtocolConstants.BEDROCK_VERSION_NAME, ProtocolConstants.JAVA_VERSION) {
         @Override
         public ProtocolVersion getBaseProtocolVersion() {
             return null;
@@ -36,8 +36,11 @@ public class BedrockProtocolVersion {
     };
 
     static {
-        ProtocolVersion.register(bedrockLatest);
-        PROTOCOLS.add(bedrockLatest);
+        ProtocolVersion.register(BEDROCK_LATEST);
+        PROTOCOLS.add(BEDROCK_LATEST);
+    }
+
+    private BedrockProtocolVersion() {
     }
 
 }

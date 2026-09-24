@@ -29,8 +29,8 @@ import net.raphimc.viabedrock.codegen.CodeGen;
 import net.raphimc.viabedrock.codegen.model.member.impl.Field;
 import net.raphimc.viabedrock.codegen.model.type.impl.Class;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.tool.ToolPaths;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
@@ -38,9 +38,9 @@ import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class MappingDataGenerator {
+public final class MappingDataGenerator {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         ViaManagerImpl.initAndLoad(new TestPlatform(), new NoopInjector(), new ViaCommandHandler(false), ViaPlatformLoader.NOOP);
         while (!Via.getManager().getProtocolManager().hasLoadedMappings()) {
             Thread.sleep(100);
@@ -48,13 +48,13 @@ public class MappingDataGenerator {
         BedrockProtocol.MAPPINGS.load();
 
         { // Bedrock
-            final CodeGen codeGen = new CodeGen(new File("src/main/java"), "net.raphimc.viabedrock.protocol.data.generated.bedrock");
+            final CodeGen codeGen = new CodeGen(ToolPaths.MAIN_JAVA.toFile(), "net.raphimc.viabedrock.protocol.data.generated.bedrock");
             codeGen.addType(generateFromSet("CustomBlockTags", new HashSet<>(BedrockProtocol.MAPPINGS.getBedrockCustomBlockTags().values())));
             codeGen.addType(generateFromSet("CustomItemTags", new HashSet<>(BedrockProtocol.MAPPINGS.getBedrockCustomItemTags().values())));
             codeGen.generate();
         }
         { // Java
-            final CodeGen codeGen = new CodeGen(new File("src/main/java"), "net.raphimc.viabedrock.protocol.data.generated.java");
+            final CodeGen codeGen = new CodeGen(ToolPaths.MAIN_JAVA.toFile(), "net.raphimc.viabedrock.protocol.data.generated.java");
             codeGen.addType(generateFromSet("RegistryKeys", BedrockProtocol.MAPPINGS.getJavaRegistries().keySet()));
             codeGen.addType(generateFromSet("Attributes", BedrockProtocol.MAPPINGS.getJavaEntityAttributes().keySet()));
             codeGen.addType(generateFromSet("EntityDataFields", BedrockProtocol.MAPPINGS.getJavaEntityDataFields().values().stream().flatMap(Collection::stream).collect(Collectors.toSet())));
@@ -74,9 +74,12 @@ public class MappingDataGenerator {
         return clazz;
     }
 
+    private MappingDataGenerator() {
+    }
+
     private static class TestPlatform extends UserConnectionViaVersionPlatform {
 
-        public TestPlatform() {
+        TestPlatform() {
             super(null);
         }
 

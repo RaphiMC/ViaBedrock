@@ -38,17 +38,23 @@ public abstract class StatelessTransitionProtocol<CU extends ClientboundPacketTy
     }
 
     public void registerClientboundTransition(final CU unmappedPacketType, final Object... handlers) {
-        if (handlers.length % 2 != 0) throw new IllegalArgumentException("handlers.length % 2 != 0");
+        if (handlers.length % 2 != 0) {
+            throw new IllegalArgumentException("handlers.length % 2 != 0");
+        }
 
         this.registerClientbound(unmappedPacketType.state(), unmappedPacketType.getId(), -1, wrapper -> {
             final State currentState = wrapper.user().getProtocolInfo().getServerState();
 
             for (int i = 0; i < handlers.length; i += 2) {
                 if (handlers[i] instanceof State state) {
-                    if (state != currentState) continue;
+                    if (state != currentState) {
+                        continue;
+                    }
                 } else {
                     final ClientboundPacketType mappedPacketType = (ClientboundPacketType) handlers[i];
-                    if (mappedPacketType.state() != currentState) continue;
+                    if (mappedPacketType.state() != currentState) {
+                        continue;
+                    }
                     wrapper.setPacketType(mappedPacketType);
                 }
 

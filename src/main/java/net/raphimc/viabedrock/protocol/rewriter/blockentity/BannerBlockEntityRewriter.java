@@ -47,7 +47,7 @@ public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
     }
 
     @Override
-    public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
+    public BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
@@ -72,7 +72,9 @@ public class BannerBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
         if (bedrockPatterns != null) {
             final ListTag<CompoundTag> javaPatterns = new ListTag<>(CompoundTag.class);
             for (CompoundTag bedrockPattern : bedrockPatterns) {
-                if (!(bedrockPattern.get("Pattern") instanceof StringTag patternTag)) continue;
+                if (!(bedrockPattern.get("Pattern") instanceof StringTag patternTag)) {
+                    continue;
+                }
 
                 final String pattern = patternTag.getValue();
                 final DyeColor color = DyeColor.getByBedrockId(bedrockPattern.getInt("Color", DyeColor.BLACK.bedrockId()), DyeColor.PURPLE);

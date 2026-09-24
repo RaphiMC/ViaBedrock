@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.UUID;
 
-public class BedrockSkinUtilityInterface {
+public final class BedrockSkinUtilityInterface {
 
     public static final String CHANNEL = "bedrockskin:data";
     private static final int VERSION = 1;
@@ -100,6 +100,9 @@ public class BedrockSkinUtilityInterface {
     private static void writeString(final PacketWrapper wrapper, final String s) {
         wrapper.write(Types.INT, s.length());
         wrapper.write(Types.REMAINING_BYTES, s.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private BedrockSkinUtilityInterface() {
     }
 
 }

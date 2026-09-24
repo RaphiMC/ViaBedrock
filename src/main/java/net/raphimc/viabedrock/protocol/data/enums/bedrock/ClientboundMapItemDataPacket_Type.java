@@ -25,10 +25,11 @@ public enum ClientboundMapItemDataPacket_Type {
     Invalid(0),
     TextureUpdate(1 << 1),
     DecorationUpdate(1 << 2),
-    Creation(1 << 3),
-    ;
+    Creation(1 << 3);
 
     private static final Int2ObjectMap<ClientboundMapItemDataPacket_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (ClientboundMapItemDataPacket_Type value : values()) {
@@ -63,8 +64,6 @@ public enum ClientboundMapItemDataPacket_Type {
         }
         return fallback;
     }
-
-    private final int value;
 
     ClientboundMapItemDataPacket_Type(final ClientboundMapItemDataPacket_Type value) {
         this(value.value);

@@ -32,19 +32,19 @@ public class Utf8StringType extends Type<String> {
     }
 
     @Override
-    public String read(ByteBuf buffer) {
+    public String read(final ByteBuf buffer) {
         try {
             return new LittleEndianByteBufInputStream(buffer).readUTF();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     @Override
-    public void write(ByteBuf buffer, String value) {
+    public void write(final ByteBuf buffer, final String value) {
         try {
             new LittleEndianByteBufOutputStream(buffer).writeUTF(value);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }

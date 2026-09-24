@@ -30,7 +30,7 @@ public class ImageType extends Type<BufferedImage> {
     }
 
     @Override
-    public BufferedImage read(ByteBuf buffer) {
+    public BufferedImage read(final ByteBuf buffer) {
         final int width = buffer.readIntLE();
         final int height = buffer.readIntLE();
         final byte[] data = BedrockTypes.BYTE_ARRAY.read(buffer);
@@ -51,7 +51,7 @@ public class ImageType extends Type<BufferedImage> {
     }
 
     @Override
-    public void write(ByteBuf buffer, BufferedImage value) {
+    public void write(final ByteBuf buffer, final BufferedImage value) {
         if (value == null) {
             buffer.writeIntLE(0);
             buffer.writeIntLE(0);

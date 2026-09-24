@@ -78,18 +78,18 @@ public class ResourcePack {
             this.key = new Key(id, version);
             this.name = headerObj.get("name").getAsString();
             /*if (formatVersion >= 2) { // Technically needed, but not feasible to implement currently
-                final Semver minEngineVersion;
-                if (formatVersion >= 3) {
-                    minEngineVersion = new Semver(headerObj.get("min_engine_version").getAsString());
-                } else {
-                    minEngineVersion = new Semver(StreamSupport.stream(headerObj.getAsJsonArray("min_engine_version").spliterator(), false).map(JsonElement::getAsString).collect(Collectors.joining(".")));
-                }
-                if (minEngineVersion.isGreaterThan(ProtocolConstants.BEDROCK_VERSION_NAME)) {
-                    throw new RuntimeException("Resource pack requires a newer game version: " + minEngineVersion + " > " + ProtocolConstants.BEDROCK_VERSION_NAME);
-                }
-            }*/
+             *     final Semver minEngineVersion;
+             *     if (formatVersion >= 3) {
+             *         minEngineVersion = new Semver(headerObj.get("min_engine_version").getAsString());
+             *     } else {
+             *         minEngineVersion = new Semver(StreamSupport.stream(headerObj.getAsJsonArray("min_engine_version").spliterator(), false).map(JsonElement::getAsString).collect(Collectors.joining(".")));
+             *     }
+             *     if (minEngineVersion.isGreaterThan(ProtocolConstants.BEDROCK_VERSION_NAME)) {
+             *         throw new RuntimeException("Resource pack requires a newer game version: " + minEngineVersion + " > " + ProtocolConstants.BEDROCK_VERSION_NAME);
+             *     }
+             * }*/
             this.content = content;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             throw new RuntimeException("Failed to parse resource pack", e);
         }
     }
@@ -140,7 +140,7 @@ public class ResourcePack {
                 aesCfb8.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), new IvParameterSpec(Arrays.copyOfRange(key, 0, 16)));
                 this.content.put(path, aesCfb8.doFinal(this.content.get(path)));
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             throw new RuntimeException("Failed to decrypt content", e);
         }
     }
@@ -160,7 +160,7 @@ public class ResourcePack {
                 return false;
             }
             return true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             return false;
         }
     }

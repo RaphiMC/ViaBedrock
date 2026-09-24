@@ -17,59 +17,59 @@
  */
 package net.raphimc.viabedrock.tool.generator.client;
 
-import com.viaversion.viaversion.libs.gson.Gson;
 import com.viaversion.viaversion.libs.gson.JsonElement;
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.GsonUtil;
 import net.raphimc.viabedrock.api.resourcepack.definition.BlockDefinitions;
 import net.raphimc.viabedrock.api.resourcepack.definition.SoundDefinitions;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
+import net.raphimc.viabedrock.tool.ToolArgs;
+import net.raphimc.viabedrock.tool.ToolPaths;
 import net.raphimc.viabedrock.util.Util;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.*;
 
-public class BedrockSoundListGenerator {
+public final class BedrockSoundListGenerator {
 
     private static final Set<String> CANCELLED_SOUNDS = Set.of(
-            "imitate.panda",
-            "guardian.flop",
-            "block.sculk_sensor.clicking",
-            "block.sculk_sensor.clicking_stop",
-            "block.sculk.place",
-            "item.bone_meal.use",
-            "mob.armor_stand.break",
-            "mob.armor_stand.land",
-            "mob.armor_stand.hit",
-            "sniff",
-            "emerge",
-            "spit",
-            "dig",
-            "scream",
-            "sound",
-            "jealous",
-            "idle",
-            "slightly_angry",
-            "note.bass"
+        "imitate.panda",
+        "guardian.flop",
+        "block.sculk_sensor.clicking",
+        "block.sculk_sensor.clicking_stop",
+        "block.sculk.place",
+        "item.bone_meal.use",
+        "mob.armor_stand.break",
+        "mob.armor_stand.land",
+        "mob.armor_stand.hit",
+        "sniff",
+        "emerge",
+        "spit",
+        "dig",
+        "scream",
+        "sound",
+        "jealous",
+        "idle",
+        "slightly_angry",
+        "note.bass"
     );
 
     private static final Set<String> SPECIAL_SOUNDS = Set.of(
-            // Mapped in code
-            "record.null",
-            "note",
-            // Those seem to do nothing
-            "item.fizz",
-            "mob.warning.baby",
-            "haggle.idle",
-            "default",
-            "scared",
-            "jump.prevent",
-            "undefined"
+        // Mapped in code
+        "record.null",
+        "note",
+        // Those seem to do nothing
+        "item.fizz",
+        "mob.warning.baby",
+        "haggle.idle",
+        "default",
+        "scared",
+        "jump.prevent",
+        "undefined"
     );
 
-    public static void main(String[] args) throws Throwable {
-        final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(new File("/home/exterminate/Games/mc/MCBedrockWindows/1.26.5101/data/"));
+    public static void main(final String[] args) throws Throwable {
+        final ToolArgs toolArgs = ToolArgs.parse(args);
+        final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(ToolPaths.clientDataDir(toolArgs));
 
         final JsonObject soundList = new JsonObject();
         final Set<String> soundsWithoutCategory = new HashSet<>();
@@ -119,8 +119,7 @@ public class BedrockSoundListGenerator {
             throw new IllegalStateException("Sound without category: " + s);
         }
 
-        final String json = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(GsonUtil.sort(soundList));
-        Files.writeString(new File("sounds.json").toPath(), json);
+        ToolPaths.writeJson(ToolPaths.BEDROCK_DATA.resolve("sounds.json"), GsonUtil.sort(soundList));
 
         final Map<String, String> blockSounds = new TreeMap<>();
         for (Map.Entry<String, BlockDefinitions.BlockDefinition> blockEntry : resourcePackStorage.getBlocks().blocks().entrySet()) {
@@ -129,11 +128,12 @@ public class BedrockSoundListGenerator {
             }
         }
 
-        final String json3 = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(blockSounds);
-        Files.writeString(new File("block_sounds.json").toPath(), json3);
+        final JsonObject blockSoundsJson = new JsonObject();
+        blockSounds.forEach(blockSoundsJson::addProperty);
+        ToolPaths.writeJson(ToolPaths.BEDROCK_DATA.resolve("block_sounds.json"), blockSoundsJson);
 
         final JsonObject levelSoundMappings = new JsonObject();
-        Map<String, Map<String, SoundDefinitions.ConfiguredSound>> mapping = new HashMap<>();
+        final Map<String, Map<String, SoundDefinitions.ConfiguredSound>> mapping = new HashMap<>();
         for (Map.Entry<String, SoundDefinitions.EventSound> entry : resourcePackStorage.getSounds().eventSounds().entrySet()) {
             mapping.computeIfAbsent(entry.getKey(), k -> new HashMap<>()).put("", entry.getValue().sound());
         }
@@ -155,13 +155,15 @@ public class BedrockSoundListGenerator {
         }
 
         for (Map.Entry<String, Map<String, SoundDefinitions.ConfiguredSound>> entry : mapping.entrySet()) {
-            if (CANCELLED_SOUNDS.contains(entry.getKey())) continue;
+            if (CANCELLED_SOUNDS.contains(entry.getKey())) {
+                continue;
+            }
 
             if (levelSoundMappings.has(entry.getKey())) {
                 System.out.println("Duplicate sound event: " + entry.getKey());
                 continue;
             }
-            JsonObject sounds = new JsonObject();
+            final JsonObject sounds = new JsonObject();
             for (Map.Entry<String, SoundDefinitions.ConfiguredSound> soundEntry : entry.getValue().entrySet()) {
                 if (!soundList.has(soundEntry.getValue().sound())) {
                     System.out.println("Unknown sound: " + soundEntry.getValue().sound());
@@ -184,7 +186,10 @@ public class BedrockSoundListGenerator {
         levelSoundMappings.entrySet().forEach(entry -> sortedJson.put(entry.getKey(), entry.getValue()));
         levelSoundMappings.entrySet().clear();
         sortedJson.forEach(levelSoundMappings::add);
-        final String json2 = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create().toJson(levelSoundMappings);
-        Files.writeString(new File("level_sound_event_mappings.json").toPath(), json2);
+        ToolPaths.writeJson(ToolPaths.BEDROCK_DATA.resolve("level_sound_event_mappings.json"), levelSoundMappings, true);
     }
+
+    private BedrockSoundListGenerator() {
+    }
+
 }

@@ -116,7 +116,9 @@ public class BlockState {
     }
 
     public BlockState replaceProperty(final String key, final String value) {
-        if (!this.properties.containsKey(key)) return this;
+        if (!this.properties.containsKey(key)) {
+            return this;
+        }
 
         return this.withProperty(key, value);
     }
@@ -174,24 +176,28 @@ public class BlockState {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BlockState that)) return false;
-        return Objects.equals(namespace, that.namespace) && Objects.equals(identifier, that.identifier) && Objects.equals(properties, that.properties);
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof BlockState that)) {
+            return false;
+        }
+        return Objects.equals(this.namespace, that.namespace) && Objects.equals(this.identifier, that.identifier) && Objects.equals(this.properties, that.properties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(namespace, identifier, properties);
+        return Objects.hash(this.namespace, this.identifier, this.properties);
     }
 
     @Override
     public String toString() {
-        return "BlockState{" +
-                "namespace='" + namespace + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", properties=" + properties +
-                '}';
+        return "BlockState{"
+            + "namespace='" + this.namespace + '\''
+            + ", identifier='" + this.identifier + '\''
+            + ", properties=" + this.properties
+            + '}';
     }
 
 }

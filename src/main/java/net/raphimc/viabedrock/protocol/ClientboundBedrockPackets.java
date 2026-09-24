@@ -190,23 +190,25 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     SET_PLAYER_FURNACE_OPTIONS(MinecraftPacketIds.SetPlayerFurnaceOptions.getValue()),
     RECORD_STARTED(MinecraftPacketIds.RecordStarted.getValue()),
     STONECUTTER_SET_RECIPE(MinecraftPacketIds.ClientboundStonecutterSetRecipePacket.getValue());
-//    UPDATE_SOUND_DATA(MinecraftPacketIds.ClientboundUpdateSoundDataPacket.getValue());
-//    CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue()),
-//    PRIMITIVE_SHAPES(MinecraftPacketIds.PrimitiveShapesPacket.getValue()),
-//    DATA_STORE(MinecraftPacketIds.ClientboundDataStore.getValue()),
-//    GRAPHICS_OVERRIDE_PARAMETER(MinecraftPacketIds.GraphicsParameterOverridePacket.getValue()),
-//    DATA_DRIVEN_UI_SHOW_SCREEN(MinecraftPacketIds.ClientboundDataDrivenUIShowScreen.getValue()),
-//    DATA_DRIVEN_UI_CLOSE_SCREEN(MinecraftPacketIds.ClientboundDataDrivenUICloseScreen.getValue()),
-//    DATA_DRIVEN_UI_RELOAD(MinecraftPacketIds.ClientboundDataDrivenUIReload.getValue()),
-//    TEXTURE_SHIFT(MinecraftPacketIds.ClientboundTextureShiftPacket.getValue()),
-//    CAMERA_SPLINE(MinecraftPacketIds.CameraSpline.getValue()),
-//    CAMERA_AIM_ASSIST_ACTOR_PRIORITY(MinecraftPacketIds.CameraAimAssistActorPriority.getValue()),
-//    LOCATOR_BAR(MinecraftPacketIds.LocatorBarPacket.getValue()),
-//    ATTRIBUTE_LAYER_SYNC(MinecraftPacketIds.ClientboundAttributeLayerSyncPacket.getValue()),
-//    SERVER_STORE_INFO(MinecraftPacketIds.ServerStoreInfo.getValue()),
-//    SERVER_PRESENCE_INFO(MinecraftPacketIds.ServerPresenceInfo.getValue());
+    // UPDATE_SOUND_DATA(MinecraftPacketIds.ClientboundUpdateSoundDataPacket.getValue());
+    // CONTROL_SCHEME_SET(MinecraftPacketIds.ClientboundControlSchemeSetPacket.getValue()),
+    // PRIMITIVE_SHAPES(MinecraftPacketIds.PrimitiveShapesPacket.getValue()),
+    // DATA_STORE(MinecraftPacketIds.ClientboundDataStore.getValue()),
+    // GRAPHICS_OVERRIDE_PARAMETER(MinecraftPacketIds.GraphicsParameterOverridePacket.getValue()),
+    // DATA_DRIVEN_UI_SHOW_SCREEN(MinecraftPacketIds.ClientboundDataDrivenUIShowScreen.getValue()),
+    // DATA_DRIVEN_UI_CLOSE_SCREEN(MinecraftPacketIds.ClientboundDataDrivenUICloseScreen.getValue()),
+    // DATA_DRIVEN_UI_RELOAD(MinecraftPacketIds.ClientboundDataDrivenUIReload.getValue()),
+    // TEXTURE_SHIFT(MinecraftPacketIds.ClientboundTextureShiftPacket.getValue()),
+    // CAMERA_SPLINE(MinecraftPacketIds.CameraSpline.getValue()),
+    // CAMERA_AIM_ASSIST_ACTOR_PRIORITY(MinecraftPacketIds.CameraAimAssistActorPriority.getValue()),
+    // LOCATOR_BAR(MinecraftPacketIds.LocatorBarPacket.getValue()),
+    // ATTRIBUTE_LAYER_SYNC(MinecraftPacketIds.ClientboundAttributeLayerSyncPacket.getValue()),
+    // SERVER_STORE_INFO(MinecraftPacketIds.ServerStoreInfo.getValue()),
+    // SERVER_PRESENCE_INFO(MinecraftPacketIds.ServerPresenceInfo.getValue());
 
     private static final ClientboundBedrockPackets[] REGISTRY = new ClientboundBedrockPackets[512];
+
+    private final int id;
 
     static {
         for (ClientboundBedrockPackets packet : values()) {
@@ -215,7 +217,9 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     }
 
     public static ClientboundBedrockPackets getPacket(final int id) {
-        if (id < 0 || id >= REGISTRY.length) return null;
+        if (id < 0 || id >= REGISTRY.length) {
+            return null;
+        }
 
         return REGISTRY[id];
     }
@@ -223,8 +227,6 @@ public enum ClientboundBedrockPackets implements ClientboundPacketType {
     ClientboundBedrockPackets(final int id) {
         this.id = id;
     }
-
-    private final int id;
 
     @Override
     public int getId() {

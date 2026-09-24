@@ -17,12 +17,14 @@
  */
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
-import com.viaversion.nbt.tag.*;
+import com.viaversion.nbt.tag.CompoundTag;
+import com.viaversion.nbt.tag.IntArrayTag;
+import com.viaversion.nbt.tag.ListTag;
+import com.viaversion.nbt.tag.LongTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
 import com.viaversion.viaversion.util.UUIDUtil;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
@@ -33,18 +35,18 @@ import java.util.List;
 public class VaultBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
-    public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
+    public BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
-        final CompoundTag shared_data = new CompoundTag();
+        final CompoundTag sharedData = new CompoundTag();
 
-        this.copyItem(user, bedrockTag, shared_data, "display_item");
+        this.copyItem(user, bedrockTag, sharedData, "display_item");
 
         if (bedrockTag.contains("connected_players")) {
 
-            List<LongTag> players = bedrockTag.getListTag("connected_players", LongTag.class).getValue();
-            ListTag<IntArrayTag> javaPlayers = new ListTag<>(IntArrayTag.class);
+            final List<LongTag> players = bedrockTag.getListTag("connected_players", LongTag.class).getValue();
+            final ListTag<IntArrayTag> javaPlayers = new ListTag<>(IntArrayTag.class);
             for (LongTag player : players) {
                 if (player.asLong() != -1) {
                     final Entity entity = user.get(EntityTracker.class).getEntityByUid(player.asLong());
@@ -53,13 +55,13 @@ public class VaultBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
                     }
                 }
             }
-            shared_data.put("connected_players", javaPlayers);
+            sharedData.put("connected_players", javaPlayers);
         }
 
-        float cpr = bedrockTag.getFloat("connected_particle_range");
-        shared_data.putDouble("connected_particles_range", cpr);
+        final float cpr = bedrockTag.getFloat("connected_particle_range");
+        sharedData.putDouble("connected_particles_range", cpr);
 
-        javaTag.put("shared_data", shared_data);
+        javaTag.put("shared_data", sharedData);
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }

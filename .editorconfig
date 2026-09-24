@@ -1,0 +1,157 @@
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{java,xml,gradle}]
+tab_width = 4
+indent_size = 4
+
+[*.{json,yml,yaml}]
+tab_width = 2
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.java]
+max_line_length = off
+ij_java_imports_layout = *, |, javax.**, java.**, |, $*
+ij_java_doc_enable_formatting = true
+ij_java_doc_use_throws_not_exception_tag = true
+
+# Checkstyle: AnnotationLocation
+ij_java_class_annotation_wrap = split_into_lines
+ij_java_field_annotation_wrap = split_into_lines
+ij_java_method_annotation_wrap = split_into_lines
+
+# Checkstyle: EmptyForInitializerPad
+ij_java_space_before_for_semicolon = false
+
+# Checkstyle: EmptyLineSeparator
+ij_java_blank_lines_after_package = 1
+ij_java_blank_lines_after_imports = 1
+ij_java_blank_lines_around_class = 1
+ij_java_blank_lines_around_initializer = 1
+ij_java_blank_lines_around_method = 1
+ij_java_blank_lines_around_method_in_interface = 1
+ij_java_blank_lines_around_field = 0
+ij_java_blank_lines_around_field_in_interface = 0
+ij_java_blank_lines_around_field_with_annotations = 0
+ij_java_keep_blank_lines_before_right_brace = 1
+ij_java_keep_blank_lines_in_code = 1
+ij_java_keep_blank_lines_in_declarations = 1
+
+# Checkstyle: FinalLocalVariable
+ij_java_generate_final_locals = true
+ij_java_generate_final_parameters = true
+
+# Checkstyle: GenericWhitespace
+ij_java_spaces_within_angle_brackets = false
+ij_java_space_before_opening_angle_bracket_in_type_parameter = false
+ij_java_space_after_closing_angle_bracket_in_type_argument = false
+ij_java_spaces_around_type_bounds_in_type_parameters = true
+
+# Checkstyle: JavadocMissingLeadingAsterisk
+ij_java_doc_enable_leading_asterisks = true
+
+# Checkstyle: LeftCurly
+ij_java_block_brace_style = end_of_line
+ij_java_class_brace_style = end_of_line
+ij_java_method_brace_style = end_of_line
+ij_java_lambda_brace_style = end_of_line
+
+# Checkstyle: MethodParamPad
+ij_java_space_before_method_call_parentheses = false
+ij_java_space_before_method_parentheses = false
+
+# Checkstyle: NeedBraces
+ij_java_if_brace_force = always
+ij_java_for_brace_force = always
+ij_java_while_brace_force = always
+ij_java_do_while_brace_force = always
+
+# Checkstyle: NoWhitespaceAfter / NoWhitespaceBefore
+ij_java_spaces_around_unary_operator = false
+
+# Checkstyle: NoWhitespaceBefore
+ij_java_space_before_comma = false
+
+# Checkstyle: OneStatementPerLine
+ij_java_keep_multiple_expressions_in_one_line = false
+
+# Checkstyle: OperatorWrap
+ij_java_binary_operation_sign_on_next_line = true
+ij_java_ternary_operation_signs_on_next_line = true
+
+# Checkstyle: ParenPad
+ij_java_spaces_within_method_call_parentheses = false
+ij_java_spaces_within_method_parentheses = false
+ij_java_spaces_within_parentheses = false
+ij_java_spaces_within_if_parentheses = false
+ij_java_spaces_within_for_parentheses = false
+ij_java_spaces_within_while_parentheses = false
+ij_java_spaces_within_switch_parentheses = false
+ij_java_spaces_within_catch_parentheses = false
+ij_java_spaces_within_synchronized_parentheses = false
+ij_java_spaces_within_try_parentheses = false
+
+# Checkstyle: RequireEmptyLineBeforeBlockTagGroup
+ij_java_doc_add_blank_line_after_description = true
+
+# Checkstyle: RightCurly
+ij_java_else_on_new_line = false
+ij_java_catch_on_new_line = false
+ij_java_finally_on_new_line = false
+ij_java_while_on_new_line = false
+
+# Checkstyle: SeparatorWrap
+ij_java_method_call_chain_wrap = normal
+ij_java_wrap_first_method_in_call_chain = false
+
+# Checkstyle: TypecastParenPad
+ij_java_spaces_within_cast_parentheses = false
+
+# Checkstyle: WhitespaceAfter
+ij_java_space_after_type_cast = true
+ij_java_space_after_for_semicolon = true
+ij_java_space_after_comma = true
+ij_java_space_after_comma_in_type_arguments = true
+
+# Checkstyle: WhitespaceAround
+ij_java_space_before_if_parentheses = true
+ij_java_space_before_for_parentheses = true
+ij_java_space_before_while_parentheses = true
+ij_java_space_before_switch_parentheses = true
+ij_java_space_before_catch_parentheses = true
+ij_java_space_before_synchronized_parentheses = true
+ij_java_space_before_try_parentheses = true
+ij_java_spaces_around_additive_operators = true
+ij_java_spaces_around_assignment_operators = true
+ij_java_spaces_around_bitwise_operators = true
+ij_java_spaces_around_equality_operators = true
+ij_java_spaces_around_lambda_arrow = true
+ij_java_spaces_around_logical_operators = true
+ij_java_spaces_around_multiplicative_operators = true
+ij_java_spaces_around_relational_operators = true
+ij_java_spaces_around_shift_operators = true
+ij_java_space_before_quest = true
+ij_java_space_after_quest = true
+ij_java_space_before_colon = true
+ij_java_space_after_colon = true
+ij_java_space_before_colon_in_foreach = true
+ij_java_space_before_class_left_brace = true
+ij_java_space_before_method_left_brace = true
+ij_java_space_before_if_left_brace = true
+ij_java_space_before_for_left_brace = true
+ij_java_space_before_while_left_brace = true
+ij_java_space_before_switch_left_brace = true
+ij_java_space_before_try_left_brace = true
+ij_java_space_before_catch_left_brace = true
+ij_java_space_before_else_left_brace = true
+ij_java_space_before_finally_left_brace = true
+ij_java_space_before_do_left_brace = true
+ij_java_space_before_synchronized_left_brace = true

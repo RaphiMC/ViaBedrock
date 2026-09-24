@@ -18,7 +18,7 @@
 package net.raphimc.viabedrock.protocol.provider.impl;
 
 import net.raphimc.viabedrock.ViaBedrock;
-import net.raphimc.viabedrock.api.io.BlobDB;
+import net.raphimc.viabedrock.api.io.BlobDb;
 import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 
 import java.io.IOException;
@@ -31,33 +31,35 @@ import java.util.stream.Stream;
 
 public class DiskBlobCacheProvider extends BlobCacheProvider {
 
-    private static BlobDB BLOB_DB;
+    private static BlobDb BLOB_DB;
 
     public DiskBlobCacheProvider() {
-        if (BLOB_DB != null) return;
+        if (BLOB_DB != null) {
+            return;
+        }
 
         try {
             try {
-                BLOB_DB = new BlobDB(ViaBedrock.getPlatform().getBlobCacheFolder());
-            } catch (Throwable e) {
+                BLOB_DB = new BlobDb(ViaBedrock.getPlatform().getBlobCacheFolder());
+            } catch (final Throwable e) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to open BlobDB, deleting it...", e);
                 try (Stream<Path> paths = Files.walk(ViaBedrock.getPlatform().getBlobCacheFolder().toPath())) {
                     for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
                         Files.delete(path);
                     }
                 }
-                BLOB_DB = new BlobDB(ViaBedrock.getPlatform().getBlobCacheFolder());
+                BLOB_DB = new BlobDb(ViaBedrock.getPlatform().getBlobCacheFolder());
             }
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
                     BLOB_DB.save();
                     BLOB_DB.close();
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to close blob cache", e);
                 }
             }));
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             throw new IllegalStateException("Failed to open or create blob cache", e);
         }
     }
@@ -76,7 +78,7 @@ public class DiskBlobCacheProvider extends BlobCacheProvider {
     public byte[] getBlob(final long hash) {
         try {
             return BLOB_DB.get(hash);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }

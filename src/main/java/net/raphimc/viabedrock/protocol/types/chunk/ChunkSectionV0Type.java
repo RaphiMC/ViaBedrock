@@ -31,7 +31,7 @@ public class ChunkSectionV0Type extends Type<BedrockChunkSection> {
     }
 
     @Override
-    public BedrockChunkSection read(ByteBuf buffer) {
+    public BedrockChunkSection read(final ByteBuf buffer) {
         final BedrockBlockArray blockArray = new BedrockBlockArray();
         buffer.readBytes(blockArray.getBlocks()); // block ids
         buffer.readBytes(blockArray.getData().getHandle()); // block data
@@ -42,7 +42,7 @@ public class ChunkSectionV0Type extends Type<BedrockChunkSection> {
     }
 
     @Override
-    public void write(ByteBuf buffer, BedrockChunkSection value) {
+    public void write(final ByteBuf buffer, final BedrockChunkSection value) {
         final BedrockBlockArray blockArray = (BedrockBlockArray) value.palette(PaletteType.BLOCKS);
         buffer.writeBytes(blockArray.getBlocks()); // block ids
         buffer.writeBytes(blockArray.getData().getHandle()); // block data

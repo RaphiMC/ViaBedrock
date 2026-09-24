@@ -18,49 +18,40 @@
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
 import com.viaversion.nbt.tag.CompoundTag;
-import com.viaversion.nbt.tag.IntTag;
-import com.viaversion.nbt.tag.ListTag;
-import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
-
-import java.util.Collections;
-import java.util.logging.Level;
 
 public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
-    public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
-        final CompoundTag bedrockTag = bedrockBlockEntity.tag();
+    public BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity) {
+        //final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
         // TODO: 26.3
         /*final ListTag<StringTag> bedrockSherds = bedrockTag.getListTag("sherds", StringTag.class);
-        if (bedrockSherds != null) {
-            final ListTag<StringTag> javaSherds = new ListTag<>(StringTag.class);
-            for (StringTag bedrockSherd : bedrockSherds) {
-                final String bedrockIdentifier = bedrockSherd.getValue();
-                final BedrockMappingData.JavaItemMapping itemMapping = BedrockProtocol.MAPPINGS.getBedrockToJavaMetaItems().getOrDefault(bedrockIdentifier, Collections.emptyMap()).getOrDefault(null, null);
-                if (itemMapping != null) {
-                    javaSherds.add(new StringTag(itemMapping.identifier()));
-                } else if (bedrockIdentifier.isEmpty()) {
-                    javaSherds.add(new StringTag("minecraft:brick"));
-                } else {
-                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing item: " + bedrockIdentifier);
-                    javaSherds.add(new StringTag("minecraft:brick"));
-                }
-            }
-            javaTag.put("sherds", javaSherds);
-        }
-        this.copyItem(user, bedrockTag, javaTag, "item");
-        this.copy(bedrockTag, javaTag, "LootTable", StringTag.class);
-        this.copy(bedrockTag, javaTag, "LootTableSeed", IntTag.class);*/
+         * if (bedrockSherds != null) {
+         *     final ListTag<StringTag> javaSherds = new ListTag<>(StringTag.class);
+         *     for (StringTag bedrockSherd : bedrockSherds) {
+         *         final String bedrockIdentifier = bedrockSherd.getValue();
+         *         final BedrockMappingData.JavaItemMapping itemMapping = BedrockProtocol.MAPPINGS.getBedrockToJavaMetaItems().getOrDefault(bedrockIdentifier, Collections.emptyMap()).getOrDefault(null, null);
+         *         if (itemMapping != null) {
+         *             javaSherds.add(new StringTag(itemMapping.identifier()));
+         *         } else if (bedrockIdentifier.isEmpty()) {
+         *             javaSherds.add(new StringTag("minecraft:brick"));
+         *         } else {
+         *             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing item: " + bedrockIdentifier);
+         *             javaSherds.add(new StringTag("minecraft:brick"));
+         *         }
+         *     }
+         *     javaTag.put("sherds", javaSherds);
+         * }
+         * this.copyItem(user, bedrockTag, javaTag, "item");
+         * this.copy(bedrockTag, javaTag, "LootTable", StringTag.class);
+         * this.copy(bedrockTag, javaTag, "LootTableSeed", IntTag.class);*/
 
         return new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, javaTag);
     }

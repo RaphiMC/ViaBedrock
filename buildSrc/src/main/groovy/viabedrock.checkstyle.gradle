@@ -1,0 +1,223 @@
+plugins {
+    id "checkstyle"
+}
+
+checkstyle {
+    toolVersion = "14.1.0"
+    configProperties = [
+        javaVersion              : java.toolchain.languageVersion.get().asInt(),
+        typeParameterNameFormat  : "^[A-Z0-9_]+\$",
+        allowedAbbreviationLength: 0,
+    ]
+    config = resources.text.fromString(/* language=XML */ """
+        <!DOCTYPE module PUBLIC
+            "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+            "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+        <module name="Checker">
+            <property name="tabWidth" value="4"/>
+            <module name="FileTabCharacter"/>
+            <module name="NewlineAtEndOfFile"/>
+            <module name="TreeWalker">
+                <module name="AbbreviationAsWordInName">
+                    <property name="allowedAbbreviationLength" value="\${allowedAbbreviationLength}"/>
+                    <property name="ignoreFinal" value="false"/>
+                </module>
+                <module name="AnnotationLocation">
+                    <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
+                </module>
+                <module name="AnnotationUseStyle"/>
+                <module name="ArrayTypeStyle"/>
+                <module name="AtclauseOrder"/>
+                <module name="AvoidEscapedUnicodeCharacters"/>
+                <module name="AvoidModuleImport"/>
+                <module name="AvoidNoArgumentSuperConstructorCall"/>
+                <module name="ClassTypeParameterName">
+                    <property name="format" value="\${typeParameterNameFormat}"/>
+                </module>
+                <module name="CommentsIndentation"/>
+                <module name="ConstantName"/>
+                <module name="ConstructorsDeclarationGrouping"/>
+                <module name="CovariantEquals"/>
+                <module name="DeclarationOrder">
+                    <property name="ignoreConstructors" value="true"/>
+                    <property name="ignoreModifiers" value="true"/>
+                </module>
+                <module name="DefaultComesLast">
+                    <property name="skipIfLastAndSharedWithCase" value="true"/>
+                </module>
+                <module name="EmptyBlock">
+                    <property name="option" value="text"/>
+                </module>
+                <module name="EmptyCatchBlock">
+                    <property name="exceptionVariableName" value="^(?:_|ignored?)\$"/>
+                </module>
+                <module name="EmptyForInitializerPad"/>
+                <module name="EmptyForIteratorPad">
+                    <property name="option" value="space"/>
+                </module>
+                <module name="EmptyLineSeparator">
+                    <property name="allowMultipleEmptyLines" value="false"/>
+                    <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+                    <property name="allowNoEmptyLineBetweenFields" value="true"/>
+                    <property name="tokens" value="IMPORT, STATIC_IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF, STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF, RECORD_DEF, COMPACT_CTOR_DEF"/>
+                </module>
+                <module name="EmptyStatement"/>
+                <module name="EqualsHashCode"/>
+                <module name="ExpressionOverBlockLambda"/>
+                <module name="FallThrough">
+                    <property name="checkLastCaseGroup" value="true"/>
+                </module>
+                <module name="FinalClass"/>
+                <module name="FinalLocalVariable">
+                    <property name="validateUnnamedVariables" value="true"/>
+                    <property name="tokens" value="VARIABLE_DEF, PARAMETER_DEF"/>
+                </module>
+                <module name="GenericWhitespace"/>
+                <module name="HexLiteralCase"/>
+                <module name="HideUtilityClassConstructor"/>
+                <module name="IllegalImport"/>
+                <module name="IllegalSymbol"/>
+                <module name="InappropriateJavadocBlockTagsOnField"/>
+                <module name="InappropriateJavadocBlockTagsOnPackage"/>
+                <module name="InappropriateJavadocBlockTagsOnType"/>
+                <module name="Indentation"/>
+                <module name="InnerTypeLast"/>
+                <module name="InterfaceIsType"/>
+                <module name="InterfaceTypeParameterName">
+                    <property name="format" value="\${typeParameterNameFormat}"/>
+                </module>
+                <module name="InvalidJavadocPosition"/>
+                <module name="JavadocBlockTagLocation"/>
+                <module name="JavadocContentLocation"/>
+                <module name="JavadocEndCommentDelimiter"/>
+                <module name="JavadocLeadingAsteriskAlign"/>
+                <module name="JavadocMissingLeadingAsterisk"/>
+                <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+                <module name="JavadocParamOrder"/>
+                <module name="JavadocTagContinuationIndentation"/>
+                <module name="LambdaParameterName"/>
+                <module name="LeftCurly">
+                    <property name="ignoreEnums" value="false"/>
+                </module>
+                <module name="LocalFinalVariableName"/>
+                <module name="LocalVariableName"/>
+                <module name="MemberName">
+                    <property name="format" value="^[a-z_]\\w*\$"/>
+                </module>
+                <module name="MethodName">
+                    <property name="format" value="^[a-z_]\\w*\$"/>
+                </module>
+                <module name="MethodParamPad"/>
+                <module name="MethodTypeParameterName">
+                    <property name="format" value="\${typeParameterNameFormat}"/>
+                </module>
+                <module name="MissingDeprecated"/>
+                <module name="MissingOverride"/>
+                <module name="MissingOverrideOnRecordAccessor"/>
+                <module name="ModifiedControlVariable"/>
+                <module name="ModifierOrder"/>
+                <module name="MultilineCommentLeadingAsteriskPresence"/>
+                <module name="MultipleVariableDeclarations"/>
+                <module name="MutableException"/>
+                <module name="NeedBraces"/>
+                <module name="NoArrayTrailingComma"/>
+                <module name="NoClone"/>
+                <module name="NoCodeInFile"/>
+                <module name="NoEnumTrailingComma"/>
+                <module name="NoFinalizer"/>
+                <module name="NoLineWrap"/>
+                <module name="NoWhitespaceAfter"/>
+                <module name="NoWhitespaceBefore"/>
+                <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+                <module name="NonEmptyAtclauseDescription"/>
+                <module name="OneStatementPerLine">
+                    <property name="treatTryResourcesAsStatement" value="true"/>
+                </module>
+                <module name="OneTopLevelClass"/>
+                <module name="OperatorWrap"/>
+                <module name="OuterTypeFilename"/>
+                <module name="PackageName">
+                    <property name="format" value="^[a-z]+(\\.[a-z][a-z0-9_]*)*\$"/>
+                </module>
+                <module name="ParameterName">
+                    <property name="ignoreOverridden" value="true"/>
+                </module>
+                <module name="ParenPad"/>
+                <module name="PatternVariableAssignment"/>
+                <module name="PatternVariableName"/>
+                <module name="RecordComponentName"/>
+                <module name="RecordTypeParameterName">
+                    <property name="format" value="\${typeParameterNameFormat}"/>
+                </module>
+                <module name="RedundantImport"/>
+                <module name="RedundantModifier">
+                    <property name="jdkVersion" value="\${javaVersion}"/>
+                    <property name="tokens" value="ANNOTATION_FIELD_DEF, INTERFACE_DEF, CTOR_DEF, CLASS_DEF, ENUM_DEF, RESOURCE, ANNOTATION_DEF, RECORD_DEF, PATTERN_VARIABLE_DEF, LAMBDA"/>
+                </module>
+                <module name="RequireEmptyLineBeforeBlockTagGroup"/>
+                <module name="RequireThis">
+                    <property name="validateOnlyOverlapping" value="false"/>
+                </module>
+                <module name="RightCurly"/>
+                <module name="SealedShouldHavePermitsList"/>
+                <module name="SeparatorWrap">
+                    <property name="option" value="eol"/>
+                    <property name="tokens" value="COMMA, SEMI, ELLIPSIS, ARRAY_DECLARATOR, RBRACK"/>
+                </module>
+                <module name="SeparatorWrap">
+                    <property name="option" value="nl"/>
+                    <property name="tokens" value="DOT, AT, METHOD_REF"/>
+                </module>
+                <module name="SimplifyBooleanExpression"/>
+                <module name="SimplifyBooleanReturn"/>
+                <module name="SingleLineJavadoc"/>
+                <module name="SingleSpaceSeparator"/>
+                <module name="StaticVariableName">
+                    <property name="format" value="^\\w+\$"/>
+                </module>
+                <module name="StringLiteralEquality"/>
+                <module name="TypeBodyPadding"/>
+                <module name="TypeName">
+                    <property name="format" value="^[A-Z]\\w*\$"/>
+                </module>
+                <module name="TypecastParenPad"/>
+                <module name="UnnecessaryFullyQualifiedType"/>
+                <module name="UnnecessaryNullCheckWithInstanceOf"/>
+                <module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+                <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
+                <module name="UnnecessarySemicolonInEnumeration"/>
+                <module name="UnnecessarySemicolonInTryWithResources"/>
+                ${configProperties.javaVersion >= 22 ? '<module name="UnusedCatchParameterShouldBeUnnamed"/>' : ''}
+                <module name="UnusedImports"/>
+                ${configProperties.javaVersion >= 22 ? '<module name="UnusedLambdaParameterShouldBeUnnamed"/>' : ''}
+                <module name="UnusedLocalVariable">
+                    <property name="allowUnnamedVariables" value="false"/>
+                    <property name="jdkVersion" value="\${javaVersion}"/>
+                </module>
+                <module name="UnusedPrivateField"/>
+                ${configProperties.javaVersion >= 22 ? '<module name="UnusedTryResourceShouldBeUnnamed"/>' : ''}
+                <module name="UpperEll"/>
+                ${configProperties.javaVersion >= 14 ? '<module name="UseEnhancedSwitch"/>' : ''}
+                <module name="VisibilityModifier">
+                    <property name="packageAllowed" value="true"/>
+                    <property name="protectedAllowed" value="true"/>
+                </module>
+                ${configProperties.javaVersion >= 21 ? '<module name="WhenShouldBeUsed"/>' : ''}
+                <module name="WhitespaceAfter"/>
+                <module name="WhitespaceAround">
+                    <property name="ignoreEnhancedForColon" value="false"/>
+                </module>
+                <module name="SuppressWarningsHolder"/>
+                <module name="SuppressWithNearbyCommentFilter"/>
+            </module>
+            <module name="SuppressWarningsFilter"/>
+        </module>
+    """)
+}
+
+tasks.withType(Checkstyle).configureEach {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}

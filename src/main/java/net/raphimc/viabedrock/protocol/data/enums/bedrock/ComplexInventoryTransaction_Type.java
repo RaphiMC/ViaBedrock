@@ -42,10 +42,11 @@ public enum ComplexInventoryTransaction_Type {
      * Sent when releasing right click on a chargeable item like a bow or finishing charging like a crossbow. This is different than canceling item use early which would be in Player Auth Input.<br>
      * See ItemReleaseInventoryTransaction::ActionType for which it is.
      */
-    ItemReleaseTransaction(4),
-    ;
+    ItemReleaseTransaction(4);
 
     private static final Int2ObjectMap<ComplexInventoryTransaction_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (ComplexInventoryTransaction_Type value : values()) {
@@ -80,8 +81,6 @@ public enum ComplexInventoryTransaction_Type {
         }
         return fallback;
     }
-
-    private final int value;
 
     ComplexInventoryTransaction_Type(final ComplexInventoryTransaction_Type value) {
         this(value.value);

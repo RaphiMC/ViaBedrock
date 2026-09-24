@@ -21,6 +21,6 @@ public enum ObjectiveAction {
 
     ADD,
     REMOVE,
-    CHANGE,
+    CHANGE
 
 }

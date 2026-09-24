@@ -37,42 +37,60 @@ public class IntegerRangeArgumentType implements ArgumentType<Object> {
     }
 
     @Override
-    public Object parse(StringReader reader) throws CommandSyntaxException {
-        if (!reader.canRead() || reader.peek() == ' ') throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
-        if (reader.peek() == '!') reader.skip();
+    public Object parse(final StringReader reader) throws CommandSyntaxException {
+        if (!reader.canRead() || reader.peek() == ' ') {
+            throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
+        }
+        if (reader.peek() == '!') {
+            reader.skip();
+        }
         if (reader.canRead(2) && reader.peek() == '.' && reader.peek(1) == '.') {
             reader.skip();
             reader.skip();
         } else {
             this.readInt(reader);
-            if (!reader.canRead() || reader.peek() == ' ') return null;
-            if (!reader.canRead(2)) throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
+            if (!reader.canRead() || reader.peek() == ' ') {
+                return null;
+            }
+            if (!reader.canRead(2)) {
+                throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
+            }
             for (int i = 0; i < 2; i++) {
-                if (reader.read() != '.') throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
+                if (reader.read() != '.') {
+                    throw INVALID_INTEGER_RANGE_EXCEPTION.createWithContext(reader);
+                }
             }
         }
-        if (!reader.canRead() || reader.peek() == ' ') return null;
+        if (!reader.canRead() || reader.peek() == ' ') {
+            return null;
+        }
         this.readInt(reader);
         return null;
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        StringReader reader = new StringReader(builder.getInput());
+    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+        final StringReader reader = new StringReader(builder.getInput());
         reader.setCursor(builder.getStart());
 
-        if (!reader.canRead()) builder.suggest("!");
+        if (!reader.canRead()) {
+            builder.suggest("!");
+        }
         return builder.buildFuture();
     }
 
     private int readInt(final StringReader reader) throws CommandSyntaxException {
         final int start = reader.getCursor();
-        while (reader.canRead() && this.isAllowedNumber(reader.peek())) reader.skip();
+        while (reader.canRead() && this.isAllowedNumber(reader.peek())) {
+            reader.skip();
+        }
         final String number = reader.getString().substring(start, reader.getCursor());
-        if (number.isEmpty()) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt().createWithContext(reader);
+        if (number.isEmpty()) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt().createWithContext(reader);
+        }
         try {
             return Integer.parseInt(number);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             reader.setCursor(start);
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt().createWithContext(reader, number);
         }

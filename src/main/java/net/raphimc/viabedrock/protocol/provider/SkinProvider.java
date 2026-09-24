@@ -27,10 +27,10 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.DataValues;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.MemoryTier;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.UiProfile;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.BuildPlatform;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GraphicsMode;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InputMode;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.UIProfile;
 import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.storage.AuthData;
 import net.raphimc.viabedrock.protocol.storage.ChannelStorage;
@@ -87,7 +87,7 @@ public class SkinProvider implements Provider {
             claims.put("LanguageCode", "en_US");
             claims.put("GraphicsMode", GraphicsMode.Fancy.getValue());
             claims.put("GuiScale", -1);
-            claims.put("UIProfile", UIProfile.Classic.getValue());
+            claims.put("UIProfile", UiProfile.Classic.getValue());
             claims.put("ClientRandomId", authData.getClientRandomId());
             claims.put("SelfSignedId", authData.getSelfSignedId());
             claims.put("IsEditorMode", false);
@@ -109,6 +109,11 @@ public class SkinProvider implements Provider {
             claims.put("PlatformType", 0);
             claims.put("PlatformOfflineId", "");
             claims.put("PlatformOnlineId", "");
+        }
+        { // @since 26.40
+            claims.put("ClientEditorConnectionIntent", 0);
+            claims.put("ClientIsEditorCapable", false);
+            claims.put("ProfileHash", "");
         }
 
         return claims;

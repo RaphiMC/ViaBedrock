@@ -25,10 +25,11 @@ public enum IdentityDefinition_Type {
     Invalid(0),
     Player(1),
     Entity(2),
-    FakePlayer(3),
-    ;
+    FakePlayer(3);
 
     private static final Int2ObjectMap<IdentityDefinition_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (IdentityDefinition_Type value : values()) {
@@ -63,8 +64,6 @@ public enum IdentityDefinition_Type {
         }
         return fallback;
     }
-
-    private final int value;
 
     IdentityDefinition_Type(final IdentityDefinition_Type value) {
         this(value.value);

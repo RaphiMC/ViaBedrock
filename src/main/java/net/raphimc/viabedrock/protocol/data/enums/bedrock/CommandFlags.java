@@ -17,7 +17,7 @@
  */
 package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 
-public class CommandFlags {
+public final class CommandFlags {
 
     public static final int TEST_USAGE = 1 << 0;
     public static final int HIDDEN_FROM_COMMAND_BLOCK = 1 << 1;
@@ -28,5 +28,8 @@ public class CommandFlags {
     public static final int MESSAGE_TYPE = 1 << 6;
     public static final int NOT_CHEAT = 1 << 7;
     public static final int ASYNC = 1 << 8;
+
+    private CommandFlags() {
+    }
 
 }

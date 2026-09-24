@@ -54,12 +54,12 @@ public class ResourcePackHttpServer {
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childHandler(new ChannelInitializer<>() {
                     @Override
-                    protected void initChannel(Channel channel) {
+                    protected void initChannel(final Channel channel) {
                         channel.pipeline().addLast("http_codec", new HttpServerCodec());
                         channel.pipeline().addLast("chunked_writer", new ChunkedWriteHandler());
                         channel.pipeline().addLast("http_handler", new SimpleChannelInboundHandler<>() {
                             @Override
-                            protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
+                            protected void channelRead0(final ChannelHandlerContext ctx, final Object msg) {
                                 if (msg instanceof HttpRequest request) {
                                     if (!request.method().equals(HttpMethod.GET)) {
                                         ctx.close();
@@ -88,7 +88,7 @@ public class ResourcePackHttpServer {
                                                 ? new HttpChunkedInput(new ChunkedStream(new ByteArrayInputStream(pack.bytes()), 65535))
                                                 : new HttpChunkedInput(new ChunkedFile(new RandomAccessFile(pack.path().toFile(), "r"), 0, pack.size(), 65535));
                                         ctx.writeAndFlush(content).addListener(ChannelFutureListener.CLOSE);
-                                    } catch (Throwable e) {
+                                    } catch (final Throwable e) {
                                         ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Failed to serve converted resource pack", e);
                                         ctx.close();
                                     }
@@ -96,7 +96,7 @@ public class ResourcePackHttpServer {
                             }
 
                             @Override
-                            public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+                            public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
                                 ctx.close();
                             }
                         });

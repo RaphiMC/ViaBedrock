@@ -102,7 +102,7 @@ public class ConvertedResourcePackCache {
             FileSystemUtil.writeAtomically(path, converted.bytes());
             FileSystemUtil.writeAtomically(index, converted.sha1().getBytes(StandardCharsets.US_ASCII));
             return describe(path);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new CompletionException("Failed to prepare converted resource pack", e);
         }
     }
@@ -113,7 +113,7 @@ public class ConvertedResourcePackCache {
             final byte[] bytes = ResourcePackRewriter.bedrockToJava(storage).toZip();
             ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Converted resource packs in " + ((System.nanoTime() - start) / 1_000_000L) + "ms");
             return describe(bytes);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new CompletionException("Failed to convert resource packs", e);
         }
     }
@@ -154,7 +154,7 @@ public class ConvertedResourcePackCache {
                     output.write(bytes);
                 }
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new CompletionException(e);
         }
         return HexFormat.of().formatHex(digest.digest());
@@ -169,7 +169,7 @@ public class ConvertedResourcePackCache {
     private static MessageDigest digest(final String algorithm) {
         try {
             return MessageDigest.getInstance(algorithm);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new IllegalStateException(algorithm + " is not available", e);
         }
     }

@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FileSystemUtil {
+public final class FileSystemUtil {
 
     public static void writeAtomically(final Path path, final byte[] bytes) throws IOException {
         final Path temporary = Files.createTempFile(path.getParent(), path.getFileName().toString(), ".tmp");
@@ -37,7 +37,7 @@ public class FileSystemUtil {
             Files.write(temporary, bytes);
             try {
                 Files.move(temporary, path, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-            } catch (AtomicMoveNotSupportedException ignored) {
+            } catch (final AtomicMoveNotSupportedException ignored) {
                 Files.move(temporary, path, StandardCopyOption.REPLACE_EXISTING);
             }
         } finally {
@@ -54,7 +54,7 @@ public class FileSystemUtil {
     private static Path getPath(final URI uri) throws IOException {
         try {
             return Paths.get(uri);
-        } catch (FileSystemNotFoundException e) {
+        } catch (final FileSystemNotFoundException e) {
             FileSystems.newFileSystem(uri, Collections.emptyMap());
             return Paths.get(uri);
         }
@@ -63,18 +63,21 @@ public class FileSystemUtil {
     private static Map<Path, byte[]> getFilesInPath(final Path path) throws IOException {
         try (Stream<Path> stream = Files.list(path)) {
             return stream
-                    .filter(Files::isRegularFile)
-                    .sorted(Comparator.comparing(Path::toString))
-                    .collect(Collectors.toMap(f -> f, f -> {
-                        try {
-                            return Files.readAllBytes(f);
-                        } catch (IOException e) {
-                            throw new UncheckedIOException(e);
-                        }
-                    }, (u, v) -> {
-                        throw new IllegalStateException("Duplicate key");
-                    }, LinkedHashMap::new));
+                .filter(Files::isRegularFile)
+                .sorted(Comparator.comparing(Path::toString))
+                .collect(Collectors.toMap(f -> f, f -> {
+                    try {
+                        return Files.readAllBytes(f);
+                    } catch (final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }, (u, v) -> {
+                    throw new IllegalStateException("Duplicate key");
+                }, LinkedHashMap::new));
         }
+    }
+
+    private FileSystemUtil() {
     }
 
 }

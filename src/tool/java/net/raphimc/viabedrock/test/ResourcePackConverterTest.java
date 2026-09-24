@@ -22,19 +22,22 @@ import net.raphimc.viabedrock.api.resourcepack.content.Content;
 import net.raphimc.viabedrock.api.resourcepack.content.ZipContent;
 import net.raphimc.viabedrock.protocol.rewriter.ResourcePackRewriter;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
+import net.raphimc.viabedrock.tool.ToolArgs;
+import net.raphimc.viabedrock.tool.ToolPaths;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
-public class ResourcePackConverterTest {
+public final class ResourcePackConverterTest {
 
-    public static void main(String[] args) throws Throwable {
-        final File input = new File("input.mcpack");
-        final File output = new File("output.zip");
+    public static void main(final String[] args) throws Throwable {
+        final ToolArgs toolArgs = ToolArgs.parse(args);
+        final Path input = Path.of(toolArgs.require("input", "Pass the .mcpack which should be converted, for example --input=run/input.mcpack"));
+        final Path output = toolArgs.path("output", ToolPaths.PROJECT_ROOT.resolve("run/converted_pack.zip"));
 
         long start = System.currentTimeMillis();
-        final byte[] bytes = Files.readAllBytes(input.toPath());
+        final byte[] bytes = Files.readAllBytes(input);
         System.out.println("Reading took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();
@@ -48,8 +51,13 @@ public class ResourcePackConverterTest {
         System.out.println("Conversion took " + (System.currentTimeMillis() - start) + "ms");
 
         start = System.currentTimeMillis();
-        Files.write(output.toPath(), javaContent.toZip());
+        Files.createDirectories(output.toAbsolutePath().getParent());
+        Files.write(output, javaContent.toZip());
         System.out.println("Writing took " + (System.currentTimeMillis() - start) + "ms");
+        System.out.println("Wrote " + output);
+    }
+
+    private ResourcePackConverterTest() {
     }
 
 }

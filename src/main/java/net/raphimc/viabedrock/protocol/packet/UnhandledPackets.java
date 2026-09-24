@@ -18,12 +18,12 @@
 package net.raphimc.viabedrock.protocol.packet;
 
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
-import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ServerboundPackets26_3;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ServerboundConfigurationPackets1_21_9;
+import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ServerboundPackets26_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 
-public class UnhandledPackets {
+public final class UnhandledPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.cancelClientbound(ClientboundBedrockPackets.SET_HEALTH); // Seems to do nothing meaningful
@@ -62,6 +62,9 @@ public class UnhandledPackets {
         protocol.cancelServerbound(ServerboundPackets26_3.PLAYER_LOADED);
         protocol.cancelServerbound(ServerboundPackets26_3.SET_TEST_BLOCK);
         protocol.cancelServerbound(ServerboundPackets26_3.TEST_INSTANCE_BLOCK_ACTION);
+    }
+
+    private UnhandledPackets() {
     }
 
 }

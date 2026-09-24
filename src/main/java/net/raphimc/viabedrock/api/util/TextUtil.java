@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-public class TextUtil {
+public final class TextUtil {
 
     private static final Function<Character, TextFormatting> BEDROCK_FORMATTING_RESOLVER = c -> Optional.ofNullable(BedrockTextFormatting.getByCode(c)).map(f -> {
         if (f.isColor()) {
@@ -125,15 +125,18 @@ public class TextUtil {
         final Set<BedrockTextFormatting> styles = EnumSet.noneOf(BedrockTextFormatting.class);
         final StringBuilder out = new StringBuilder();
 
-        for (int i = 0; i < chars.length; i++) {
-            final char c = chars[i];
+        int i = 0;
+        while (i < chars.length) {
+            final char c = chars[i++];
             out.append(c);
             if (c == BedrockTextFormatting.COLOR_CHAR) {
-                if (i + 1 < chars.length) {
-                    final char code = chars[++i];
+                if (i < chars.length) {
+                    final char code = chars[i++];
                     out.append(code);
                     final BedrockTextFormatting formatting = BedrockTextFormatting.getByCode(code);
-                    if (formatting == null) continue;
+                    if (formatting == null) {
+                        continue;
+                    }
 
                     if (BedrockTextFormatting.RESET.equals(formatting)) {
                         styles.clear();
@@ -148,6 +151,9 @@ public class TextUtil {
             }
         }
         return out.toString();
+    }
+
+    private TextUtil() {
     }
 
     private static final class ResetTrackingStyle extends Style {

@@ -47,7 +47,7 @@ public abstract class BlockStateUpgradeSchema {
             for (Consumer<CompoundTag> action : this.actions) {
                 action.accept(tag);
             }
-        } catch (JsonBlockStateUpgradeSchema.StopUpgrade ignored) {
+        } catch (final JsonBlockStateUpgradeSchema.StopUpgrade ignored) {
         }
 
         tag.putInt("version", this.version);

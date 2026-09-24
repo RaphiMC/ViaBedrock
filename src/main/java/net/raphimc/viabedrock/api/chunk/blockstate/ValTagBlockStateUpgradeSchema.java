@@ -39,7 +39,9 @@ public class ValTagBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                 final int id = BedrockProtocol.MAPPINGS.getBedrockLegacyBlocks().get(name);
 
                 final short metadata = tag.<ShortTag>removeUnchecked("val").asShort();
-                if (metadata < 0 || metadata > 63) return;
+                if (metadata < 0 || metadata > 63) {
+                    return;
+                }
 
                 BedrockBlockState blockState = BedrockProtocol.MAPPINGS.getBedrockLegacyBlockStates().get(id << 6 | metadata & 63);
                 if (blockState == null) {
