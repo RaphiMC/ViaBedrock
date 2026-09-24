@@ -24,7 +24,6 @@ import com.viaversion.viaversion.api.protocol.packet.Direction;
 import com.viaversion.viaversion.api.protocol.packet.PacketType;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
-import com.viaversion.viaversion.api.protocol.packet.mapping.PacketMappings;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.exception.CancelException;
 import com.viaversion.viaversion.exception.InformativeException;
@@ -38,9 +37,7 @@ import io.netty.buffer.ByteBufUtil;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.protocol.StatelessTransitionProtocol;
 import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.experimental.ExperimentalFeatures;
 import net.raphimc.viabedrock.protocol.packet.MapPackets;
-import net.raphimc.viabedrock.protocol.storage.MapTracker;
 import net.raphimc.viabedrock.platform.ViaBedrockConfig;
 import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayStatus;
@@ -49,6 +46,7 @@ import net.raphimc.viabedrock.protocol.provider.BlobCacheProvider;
 import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
 import net.raphimc.viabedrock.protocol.provider.ResourcePackProvider;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
+import net.raphimc.viabedrock.protocol.rewriter.InventoryTransactionRewriter;
 import net.raphimc.viabedrock.protocol.storage.*;
 import net.raphimc.viabedrock.protocol.task.*;
 
@@ -106,9 +104,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         WorldEffectPackets.register(this);
         UnhandledPackets.register(this);
 
-        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-            ExperimentalFeatures.registerPacketTranslators(this);
-        }
+        InteractionPackets.register(this);
 
         // Fallback for unhandled packets (Temporary)
         for (ClientboundBedrockPackets packet : this.unmappedClientboundPacketType.getEnumConstants()) {
@@ -141,9 +137,6 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         Via.getPlatform().runRepeatingSync(new EntityTrackerTickTask(), 1L);
         Via.getPlatform().runRepeatingSync(new InventoryTrackerTickTask(), 1L);
 
-        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-            ExperimentalFeatures.registerTasks();
-        }
     }
 
     @Override
@@ -157,12 +150,10 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
         user.put(new PlayerListStorage());
         user.put(new ScoreboardTracker());
         user.put(new InventoryTracker(user));
-        user.put(new MapTracker(user));
         user.put(new BreakingTracker(user));
 
-        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-            ExperimentalFeatures.registerStorages(user);
-        }
+        user.put(new InventoryTransactionRewriter(user));
+        user.put(new MapTracker(user));
     }
 
     @Override
@@ -231,16 +222,6 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
             user.getChannel().flush();
             user.getChannel().close();
         }
-    }
-
-    // Only used for experimental features
-    public PacketMappings getClientboundMappings() {
-        return this.clientboundMappings;
-    }
-
-    // Only used for experimental features
-    public PacketMappings getServerboundMappings() {
-        return this.serverboundMappings;
     }
 
 }

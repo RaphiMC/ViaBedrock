@@ -25,7 +25,6 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ServerboundPackets26_3;
-import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
@@ -35,7 +34,6 @@ import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.experimental.ExperimentalFeatures;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -291,10 +289,8 @@ public class ClientPlayerPackets {
                     clientPlayer.addAuthInputData(PlayerAuthInputData.StopSprinting);
                 }
                 case START_FALL_FLYING -> {
-                    if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-                        clientPlayer.setGliding(true);
-                        clientPlayer.addAuthInputData(PlayerAuthInputData.StartGliding);
-                    }
+                    clientPlayer.setGliding(true);
+                    clientPlayer.addAuthInputData(PlayerAuthInputData.StartGliding);
                 }
                 default -> throw new IllegalStateException("Unhandled PlayerCommandAction: " + action);
             }
@@ -305,6 +301,9 @@ public class ClientPlayerPackets {
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final PlayerActionAction action = PlayerActionAction.values()[wrapper.read(Types.VAR_INT)]; // action
+            if (InteractionPackets.handlePlayerAction(wrapper, action)) {
+                return;
+            }
             final BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
             final Direction direction = Direction.values()[wrapper.read(Types.UNSIGNED_BYTE)]; // face
             final int sequence = wrapper.read(Types.VAR_INT); // sequence number
@@ -352,14 +351,6 @@ public class ClientPlayerPackets {
                     chunkTracker.handleBlockChange(position, 0, chunkTracker.bedrockAirId());
                     PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, ProtocolConstants.JAVA_AIR_ID);
                 }
-                case DROP_ALL_ITEMS, DROP_ITEM -> {
-                    // TODO: Implement DROP_ALL_ITEMS, DROP_ITEM (Currently experimental)
-                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
-                }
-                case RELEASE_USE_ITEM -> {
-                    // TODO: Implement RELEASE_USE_ITEM
-                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
-                }
                 case SWAP_ITEM_WITH_OFFHAND, STAB -> {
                 }
                 default -> throw new IllegalStateException("Unhandled PlayerActionAction: " + action);
@@ -403,8 +394,8 @@ public class ClientPlayerPackets {
                 final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)];
                 final Vector3d location = wrapper.read(Types.LOW_PRECISION_VECTOR);
                 wrapper.read(Types.BOOLEAN); // using secondary action
-                if (hand == InteractionHand.MAIN_HAND && ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-                    ExperimentalFeatures.sendUseItemOnBlock(
+                if (hand == InteractionHand.MAIN_HAND) {
+                    InteractionPackets.sendUseItemOnBlock(
                             wrapper.user(), itemFrame.position(), itemFrame.facing(),
                             new Position3f((float) location.x() + 0.5F, (float) location.y() + 0.5F, (float) location.z() + 0.5F),
                             false

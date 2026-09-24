@@ -110,6 +110,11 @@ public class SkinProvider implements Provider {
             claims.put("PlatformOfflineId", "");
             claims.put("PlatformOnlineId", "");
         }
+        { // @since 26.40
+            claims.put("ClientEditorConnectionIntent", 0);
+            claims.put("ClientIsEditorCapable", false);
+            claims.put("ProfileHash", "");
+        }
 
         return claims;
     }

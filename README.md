@@ -31,17 +31,17 @@ Here is an overview of the current and planned features in ViaBedrock.
 - [x] Player spawning
 - [x] Entity spawning
 - [x] Entity interactions
-- [ ] Entity metadata
+- [x] Basic entity metadata translation
 - [x] Entity attributes
-- [ ] Entity mounting
+- [x] Basic entity mounting
 - [x] Player abilities
 - [x] Movement
 - [ ] Client-Authoritative Inventory
 - [ ] Server-Authoritative Inventory
-- [ ] Item data
+- [x] Basic item data translation
 - [ ] Block breaking
-- [ ] Block placing
-- [ ] Item use
+- [x] Basic block placing
+- [x] Basic item use
 - [x] Respawning and dimension switching
 - [x] Form GUIs
 - [x] Scoreboard
@@ -52,14 +52,6 @@ Here is an overview of the current and planned features in ViaBedrock.
 - [x] Sounds (No mob sounds yet)
 - [x] Particles
 - [x] Basic resource pack conversion (Contributions are welcome)
-
-### Experimental
-Some features are experimental, which means they are almost certainly not fully stable/tested and may cause unexpected issues. To enable those features set `enable-experimental-features` to `true` in the config file.
-
-* Block placing
-* Item use
-* Entity metadata
-* Some item data
 
 ## Optional clientside mods
 Below is a list of mods which can be used in combination with ViaBedrock to enhance certain aspects, which would not be possible without client modification:

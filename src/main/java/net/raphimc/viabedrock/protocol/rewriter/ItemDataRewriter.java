@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.rewriter;
+package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.nbt.tag.*;
 import com.viaversion.viaversion.api.connection.UserConnection;
@@ -23,6 +23,7 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredData;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.data.Enchantments;
+import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.RegistryUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
@@ -32,7 +33,7 @@ import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 import java.util.logging.Level;
 
-public class ExperimentalItemRewriter {
+public class ItemDataRewriter {
 
     // BedrockTag can be null
     public static void handleItem(final UserConnection user, final BedrockItem bedrockItem, final CompoundTag bedrockTag, final Item javaItem) {
