@@ -15,39 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.model.map;
+package net.raphimc.viabedrock.protocol.model.inventory;
 
-import com.viaversion.viaversion.api.minecraft.BlockPosition;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceType;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.InventorySourceFlags;
 
-public class MapTrackedObject {
-    private final Type type;
-    private long entityId;
-    private BlockPosition position;
-
-    public MapTrackedObject(long entityId) {
-        this.type = Type.ENTITY;
-        this.entityId = entityId;
-    }
-
-    public MapTrackedObject(BlockPosition position) {
-        this.type = Type.BLOCK;
-        this.position = position;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public long getEntityId() {
-        return entityId;
-    }
-
-    public BlockPosition getPosition() {
-        return position;
-    }
-
-    public enum Type {
-        ENTITY,
-        BLOCK
-    }
+public record InventorySource(InventorySourceType type, int containerId, InventorySourceFlags flags) {
 }

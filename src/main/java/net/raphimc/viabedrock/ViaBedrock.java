@@ -50,9 +50,6 @@ public class ViaBedrock {
                 throw new IllegalStateException("Failed to start resource pack HTTP server", e);
             }
         }
-        if (config.shouldEnableExperimentalFeatures()) {
-            platform.getLogger().log(Level.WARNING, "Experimental features are enabled. These features might not be fully stable/tested and may cause issues.");
-        }
     }
 
     public static ViaBedrockPlatform getPlatform() {

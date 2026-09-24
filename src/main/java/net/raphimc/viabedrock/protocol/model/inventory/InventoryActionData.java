@@ -15,17 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.model.inventory;
+package net.raphimc.viabedrock.protocol.model.inventory;
 
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ComplexInventoryTransaction_Type;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
-import java.util.List;
-
-public record BedrockInventoryTransaction(
-        int legacyRequestId,
-        List<LegacySetItemSlotData> legacySlots,
-        List<InventoryActionData> actions,
-        ComplexInventoryTransaction_Type transactionType,
-        InventoryTransactionData transactionData
-) {
+public record InventoryActionData(InventorySource source, int slot, BedrockItem fromItem, BedrockItem toItem) {
 }

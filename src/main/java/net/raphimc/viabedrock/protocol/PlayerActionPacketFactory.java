@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental;
+package net.raphimc.viabedrock.protocol;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
@@ -30,7 +30,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PlayerAction
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class ExperimentalPacketFactory {
+public class PlayerActionPacketFactory {
 
     public static void sendBedrockPlayerAction(final UserConnection user, long entityId, PlayerActionType actionType, BlockPosition position, BlockPosition resultPosition, int face) {
         final PacketWrapper startItemUseOn = PacketWrapper.create(ServerboundBedrockPackets.PLAYER_ACTION, user);

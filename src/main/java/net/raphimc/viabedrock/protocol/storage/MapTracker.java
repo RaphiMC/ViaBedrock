@@ -15,6 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.model.map;
+package net.raphimc.viabedrock.protocol.storage;
 
-public record MapDecoration(int image, int rotation, int xOffset, int yOffset, String label, int color) {}
+import com.viaversion.viaversion.api.connection.StoredObject;
+import com.viaversion.viaversion.api.connection.UserConnection;
+import java.util.HashMap;
+import java.util.Map;
+
+public class MapTracker extends StoredObject {
+
+    private final Map<Long, Integer> javaIds = new HashMap<>();
+    private int nextMapId;
+
+    public MapTracker(UserConnection user) {
+        super(user);
+    }
+
+    public int getJavaId(final long bedrockUuid) {
+        return this.javaIds.computeIfAbsent(bedrockUuid, ignored -> this.nextMapId++);
+    }
+
+}
