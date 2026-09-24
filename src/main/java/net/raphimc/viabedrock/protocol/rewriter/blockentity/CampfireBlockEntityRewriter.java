@@ -23,7 +23,6 @@ import com.viaversion.nbt.tag.ListTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -31,18 +30,22 @@ import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 public class CampfireBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
-    public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
+    public BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
         final CompoundTag javaTag = new CompoundTag();
 
         final ListTag<CompoundTag> javaItemList = new ListTag<>(CompoundTag.class);
         final ItemRewriter itemRewriter = user.get(ItemRewriter.class);
         for (int i = 0; i < 4; i++) {
-            String name = "Item" + (i + 1);
-            if (!bedrockTag.contains(name)) continue;
+            final String name = "Item" + (i + 1);
+            if (!bedrockTag.contains(name)) {
+                continue;
+            }
             final CompoundTag bedrockItemTag = bedrockTag.getCompoundTag(name);
             final CompoundTag javaItemTag = itemRewriter.javaItem(bedrockItemTag);
-            if (javaItemTag == null) continue;
+            if (javaItemTag == null) {
+                continue;
+            }
             javaItemTag.put("Slot", new ByteTag((byte) i));
             javaItemList.add(javaItemTag);
         }

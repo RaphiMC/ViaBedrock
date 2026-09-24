@@ -30,7 +30,6 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
-import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
@@ -51,7 +50,10 @@ import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
 import net.raphimc.viabedrock.protocol.data.generated.java.RegistryKeys;
-import net.raphimc.viabedrock.protocol.model.*;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.EntityAttribute;
+import net.raphimc.viabedrock.protocol.model.EntityEffect;
+import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.GameSessionStorage;
@@ -62,7 +64,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class EntityPackets {
+public final class EntityPackets {
 
     private static final int INTERPOLATION_STEP_TICKS = 3;
     private static final float PAINTING_POS_OFFSET = -0.46875F;
@@ -89,8 +91,8 @@ public class EntityPackets {
                 attributes[i] = new EntityAttribute(name, currentValue, minValue, maxValue);
             }
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
-            final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
-            final EntityLink[] entityLinks = wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
+            wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
+            wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
 
             final Entity entity;
             final EntityTypes26_3 javaEntityType = BedrockProtocol.MAPPINGS.getBedrockToJavaEntities().get(type);
@@ -502,7 +504,7 @@ public class EntityPackets {
 
             final long entityRuntimeId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // entity runtime id
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
-            final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
+            wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
             wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // tick
 
             final Entity entity = entityTracker.getEntityByRid(entityRuntimeId);
@@ -640,6 +642,9 @@ public class EntityPackets {
             wrapper.write(Types.VAR_INT, collectorEntity.javaId()); // collector entity id
             wrapper.write(Types.VAR_INT, 0); // amount
         });
+    }
+
+    private EntityPackets() {
     }
 
 }

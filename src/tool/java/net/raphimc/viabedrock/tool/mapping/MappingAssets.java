@@ -34,12 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -65,7 +60,7 @@ public class MappingAssets {
         return this.jsonCache.computeIfAbsent(file, key -> {
             try {
                 return JsonParser.parseString(Files.readString(this.path(key)));
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException("Failed to read " + key, e);
             }
         });
@@ -75,7 +70,7 @@ public class MappingAssets {
         return this.nbtCache.computeIfAbsent(file, key -> {
             try (InputStream inputStream = Files.newInputStream(this.path(key))) {
                 return NBTIO.readTag(new DataInputStream(new GZIPInputStream(inputStream)), TagLimiter.noop(), true, CompoundTag.class);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException("Failed to read " + key, e);
             }
         });

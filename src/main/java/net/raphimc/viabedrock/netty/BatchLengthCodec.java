@@ -29,13 +29,13 @@ import java.util.logging.Level;
 public class BatchLengthCodec extends ByteToMessageCodec<ByteBuf> {
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
+    protected void encode(final ChannelHandlerContext ctx, final ByteBuf in, final ByteBuf out) {
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(out, in.readableBytes());
         out.writeBytes(in);
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+    protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         while (in.isReadable()) {
             final int length = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(in);
             if (in.isReadable(length)) {

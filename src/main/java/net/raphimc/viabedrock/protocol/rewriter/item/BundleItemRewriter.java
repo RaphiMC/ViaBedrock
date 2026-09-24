@@ -33,15 +33,21 @@ import java.util.Arrays;
 public class BundleItemRewriter implements ItemRewriter.NbtRewriter {
 
     @Override
-    public void toJava(UserConnection user, BedrockItem bedrockItem, Item javaItem) {
-        if (bedrockItem.tag() == null) return;
+    public void toJava(final UserConnection user, final BedrockItem bedrockItem, final Item javaItem) {
+        if (bedrockItem.tag() == null) {
+            return;
+        }
 
         final IntTag bundleIdTag = bedrockItem.tag().getIntTag("bundle_id");
-        if (bundleIdTag == null || bundleIdTag.asInt() == 0) return;
+        if (bundleIdTag == null || bundleIdTag.asInt() == 0) {
+            return;
+        }
 
         final FullContainerName containerName = new FullContainerName(ContainerEnumName.DynamicContainer, bundleIdTag.asInt());
         final BundleContainer bundleContainer = user.get(InventoryTracker.class).getDynamicContainer(containerName);
-        if (bundleContainer == null) return;
+        if (bundleContainer == null) {
+            return;
+        }
 
         Item[] javaItems = bundleContainer.getJavaBundleItems();
         for (int i = 0; i < javaItems.length; i++) {

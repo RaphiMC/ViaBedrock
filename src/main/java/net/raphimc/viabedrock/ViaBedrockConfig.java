@@ -28,7 +28,6 @@ import java.util.logging.Logger;
 
 public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.platform.ViaBedrockConfig {
 
-    private boolean enableExperimentalFeatures;
     private BlobCacheMode blobCacheMode;
     private boolean translateResourcePacks;
     private String resourcePackHost;
@@ -49,7 +48,6 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
     }
 
     private void loadFields() {
-        this.enableExperimentalFeatures = this.getBoolean("enable-experimental-features", false);
         this.blobCacheMode = BlobCacheMode.byName(this.getString("blob-cache", "disk"));
         this.translateResourcePacks = this.getBoolean("translate-resource-packs", true);
         this.resourcePackHost = this.getString("resource-pack-host", "127.0.0.1");
@@ -66,12 +64,7 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
     }
 
     @Override
-    protected void handleConfig(Map<String, Object> map) {
-    }
-
-    @Override
-    public boolean shouldEnableExperimentalFeatures() {
-        return this.enableExperimentalFeatures;
+    protected void handleConfig(final Map<String, Object> map) {
     }
 
     @Override

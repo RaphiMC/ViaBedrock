@@ -28,11 +28,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BreakingTracker extends StoredObject {
-    private final AtomicInteger ID_COUNTER = new AtomicInteger(1);
+
+    private final AtomicInteger idCounter = new AtomicInteger(1);
 
     private final Map<Position3f, BlockCrackingInfo> blockCrackingInfos = new ConcurrentHashMap<>();
 
-    public BreakingTracker(UserConnection user) {
+    public BreakingTracker(final UserConnection user) {
         super(user);
     }
 
@@ -43,7 +44,7 @@ public class BreakingTracker extends StoredObject {
 
             // Clamped this to 0-10 instead of 0-9 because we don't want the animation to be stuck at stage 9 (we want it to stop after that).
             // We're doing this because breaking animation doesn't seem to actually be cleared from the client cache until StopBlockCracking is sent.
-            int progress = info.breakTime() <= 0 ? 10 : (int) Math.max(0, Math.min(10, ((System.currentTimeMillis() - info.startTime()) / (double) ((65535 / info.breakTime()) * 50)) * 10));
+            final int progress = info.breakTime() <= 0 ? 10 : (int) Math.max(0, Math.min(10, ((System.currentTimeMillis() - info.startTime()) / (double) ((65535 / info.breakTime()) * 50)) * 10));
             if (progress != info.prevProgress()) {
                 PacketFactory.sendJavaBlockDestroyProgress(user(), info.breakId(), new BlockPosition((int) position3f.x(), (int) position3f.y(), (int) position3f.z()), progress);
             }
@@ -51,8 +52,8 @@ public class BreakingTracker extends StoredObject {
         }
     }
 
-    public void stopCracking(Position3f position3f) {
-        Map.Entry<Position3f, BlockCrackingInfo> entry = crackingInfoFromPosition(position3f);
+    public void stopCracking(final Position3f position3f) {
+        final Map.Entry<Position3f, BlockCrackingInfo> entry = this.crackingInfoFromPosition(position3f);
         if (entry == null) {
             return;
         }
@@ -63,8 +64,8 @@ public class BreakingTracker extends StoredObject {
         PacketFactory.sendJavaBlockDestroyProgress(user(), info.breakId(), new BlockPosition((int) position3f.x(), (int) position3f.y(), (int) position3f.z()), 10);
     }
 
-    public void updateCrackingInfo(Position3f position3f, long breakTime, boolean update) {
-        Map.Entry<Position3f, BlockCrackingInfo> entry = crackingInfoFromPosition(position3f);
+    public void updateCrackingInfo(final Position3f position3f, final long breakTime, final boolean update) {
+        final Map.Entry<Position3f, BlockCrackingInfo> entry = this.crackingInfoFromPosition(position3f);
         // The cracking animation won't start regardless of the "UpdateBlockCracking" info until the client actually receive "StartBlockCracking".
         if (entry == null && update) {
             return;
@@ -88,7 +89,7 @@ public class BreakingTracker extends StoredObject {
         }
     }
 
-    private Map.Entry<Position3f, BlockCrackingInfo> crackingInfoFromPosition(Position3f position3f) {
+    private Map.Entry<Position3f, BlockCrackingInfo> crackingInfoFromPosition(final Position3f position3f) {
         for (Map.Entry<Position3f, BlockCrackingInfo> entry : this.blockCrackingInfos.entrySet()) {
             final Position3f position3f1 = entry.getKey();
             if (position3f1.x() == position3f.x() && position3f1.y() == position3f.y() && position3f1.z() == position3f.z()) {
@@ -101,11 +102,12 @@ public class BreakingTracker extends StoredObject {
 
     private class BlockCrackingInfo {
         private final int breakId;
-        private long breakTime, startTime;
+        private long breakTime;
+        private long startTime;
         private int prevProgress = 0;
 
-        public BlockCrackingInfo(long breakTime) {
-            this.breakId = ID_COUNTER.getAndIncrement();
+        BlockCrackingInfo(final long breakTime) {
+            this.breakId = BreakingTracker.this.idCounter.getAndIncrement();
             this.breakTime = breakTime;
             this.startTime = System.currentTimeMillis();
         }
@@ -118,7 +120,7 @@ public class BreakingTracker extends StoredObject {
             return this.prevProgress;
         }
 
-        public void prevProgress(int prevProgress) {
+        public void prevProgress(final int prevProgress) {
             this.prevProgress = prevProgress;
         }
 
@@ -126,7 +128,7 @@ public class BreakingTracker extends StoredObject {
             return this.breakTime;
         }
 
-        public void breakTime(long time) {
+        public void breakTime(final long time) {
             this.breakTime = time;
         }
 
@@ -134,8 +136,9 @@ public class BreakingTracker extends StoredObject {
             return this.startTime;
         }
 
-        public void startTime(long time) {
+        public void startTime(final long time) {
             this.startTime = time;
         }
     }
+
 }

@@ -40,18 +40,17 @@ import net.raphimc.viabedrock.protocol.types.position.SubChunkOffsetType;
 import net.raphimc.viabedrock.protocol.types.primitive.*;
 
 import java.awt.image.BufferedImage;
-import java.math.BigInteger;
 import java.util.UUID;
 
-public class BedrockTypes {
+public final class BedrockTypes {
 
-    public static final ShortLEType SHORT_LE = new ShortLEType();
-    public static final UnsignedShortLEType UNSIGNED_SHORT_LE = new UnsignedShortLEType();
-    public static final IntLEType INT_LE = new IntLEType();
-    public static final UnsignedIntLEType UNSIGNED_INT_LE = new UnsignedIntLEType();
-    public static final FloatLEType FLOAT_LE = new FloatLEType();
-    public static final LongLEType LONG_LE = new LongLEType();
-    public static final LongLEType UNSIGNED_LONG_LE = LONG_LE;
+    public static final ShortLeType SHORT_LE = new ShortLeType();
+    public static final UnsignedShortLeType UNSIGNED_SHORT_LE = new UnsignedShortLeType();
+    public static final IntLeType INT_LE = new IntLeType();
+    public static final UnsignedIntLeType UNSIGNED_INT_LE = new UnsignedIntLeType();
+    public static final FloatLeType FLOAT_LE = new FloatLeType();
+    public static final LongLeType LONG_LE = new LongLeType();
+    public static final LongLeType UNSIGNED_LONG_LE = LONG_LE;
 
     public static final VarIntType VAR_INT = new VarIntType();
     public static final UnsignedVarIntType UNSIGNED_VAR_INT = new UnsignedVarIntType();
@@ -66,12 +65,12 @@ public class BedrockTypes {
     public static final Type<String[]> STRING_ARRAY = new ArrayType<>(STRING, UNSIGNED_VAR_INT);
     public static final Type<String> UTF8_STRING = new Utf8StringType();
     public static final Type<String[]> UTF8_STRING_ARRAY = new ArrayType<>(UTF8_STRING, UNSIGNED_INT_LE);
-    public static final Type<UUID> UUID = new UUIDType();
+    public static final Type<UUID> UUID = new UuidType();
     public static final Type<UUID[]> UUID_ARRAY = new ArrayType<>(UUID, UNSIGNED_VAR_INT);
     public static final Type<BufferedImage> IMAGE = new ImageType();
 
     public static final Type<Tag> NETWORK_TAG = new TagType();
-    public static final Type<Tag> TAG_LE = new TagLEType();
+    public static final Type<Tag> TAG_LE = new TagLeType();
     public static final Type<Tag> COMPOUND_TAG_VALUE = new TagValueType(Tag_Type.Compound);
     public static final Type<BlockPosition> BLOCK_POSITION = new BlockPositionType();
     public static final Type<Position3f> POSITION_3F = new Position3fType();
@@ -104,5 +103,8 @@ public class BedrockTypes {
     public static final Type<FullContainerName> FULL_CONTAINER_NAME = new FullContainerNameType();
     public static final Type<FullContainerName> OPTIONAL_FULL_CONTAINER_NAME = new OptionalType<>(FULL_CONTAINER_NAME);
     public static final Type<FullContainerName[]> FULL_CONTAINER_NAME_ARRAY = new ArrayType<>(FULL_CONTAINER_NAME, UNSIGNED_VAR_INT);
+
+    private BedrockTypes() {
+    }
 
 }

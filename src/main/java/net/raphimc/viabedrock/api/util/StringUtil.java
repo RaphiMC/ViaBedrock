@@ -21,7 +21,7 @@ import com.viaversion.viaversion.libs.mcstructs.core.Identifier;
 
 import java.util.UUID;
 
-public class StringUtil {
+public final class StringUtil {
 
     private static final String IDENTIFIER_INVALID_VALUE_CHARS = Identifier.VALID_VALUE_CHARS.replace("[", "[^").replace("]*", "]");
 
@@ -35,7 +35,7 @@ public class StringUtil {
      * @param uuid The uuid to encode
      * @return The encoded string
      */
-    public static String encodeUUID(final UUID uuid) {
+    public static String encodeUuid(final UUID uuid) {
         return encodeLong(uuid.getMostSignificantBits()) + encodeLong(uuid.getLeastSignificantBits());
     }
 
@@ -56,6 +56,9 @@ public class StringUtil {
             builder.append('§').append(c);
         }
         return builder.toString();
+    }
+
+    private StringUtil() {
     }
 
 }

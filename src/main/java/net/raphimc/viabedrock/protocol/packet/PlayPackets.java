@@ -22,7 +22,6 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ServerboundPackets26_3;
-import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -30,7 +29,7 @@ import net.raphimc.viabedrock.protocol.storage.BlobCache;
 import net.raphimc.viabedrock.protocol.storage.GameRulesStorage;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class PlayPackets {
+public final class PlayPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.SET_DIFFICULTY, ClientboundPackets26_3.CHANGE_DIFFICULTY, new PacketHandlers() {
@@ -87,6 +86,9 @@ public class PlayPackets {
             pongResponse.write(Types.LONG, wrapper.read(Types.LONG)); // time
             pongResponse.send(BedrockProtocol.class);
         });
+    }
+
+    private PlayPackets() {
     }
 
 }

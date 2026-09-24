@@ -48,66 +48,66 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class ResourcePackPackets {
+public final class ResourcePackPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientboundTransition(ClientboundBedrockPackets.RESOURCE_PACKS_INFO,
-                ClientboundConfigurationPackets26_3.RESOURCE_PACK_PUSH, (PacketHandler) wrapper -> {
-                    if (wrapper.user().has(ResourcePackLoadStateTracker.class) || wrapper.user().has(ResourcePackStorage.class)) {
-                        ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACKS_INFO after resource pack negotiation was already started/finished");
-                        wrapper.cancel();
-                        return;
-                    }
-                    wrapper.read(Types.BOOLEAN); // resource pack required
-                    wrapper.read(Types.BOOLEAN); // has addon packs
+            ClientboundConfigurationPackets26_3.RESOURCE_PACK_PUSH, (PacketHandler) wrapper -> {
+                if (wrapper.user().has(ResourcePackLoadStateTracker.class) || wrapper.user().has(ResourcePackStorage.class)) {
+                    ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received RESOURCE_PACKS_INFO after resource pack negotiation was already started/finished");
+                    wrapper.cancel();
+                    return;
+                }
+                wrapper.read(Types.BOOLEAN); // resource pack required
+                wrapper.read(Types.BOOLEAN); // has addon packs
+                wrapper.read(Types.BOOLEAN); // has scripts
+                wrapper.read(Types.BOOLEAN); // force disable vibrant visuals
+                wrapper.read(BedrockTypes.UUID); // world template uuid
+                wrapper.read(BedrockTypes.STRING); // world template version
+                final ResourcePackLoadStateTracker.Info[] infos = new ResourcePackLoadStateTracker.Info[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // resource packs size
+                for (int i = 0; i < infos.length; i++) {
+                    final UUID id = wrapper.read(BedrockTypes.UUID); // pack id
+                    final String version = wrapper.read(BedrockTypes.STRING); // pack version
+                    wrapper.read(BedrockTypes.UNSIGNED_LONG_LE); // pack size
+                    final byte[] contentKey = wrapper.read(BedrockTypes.BYTE_ARRAY); // content key
+                    wrapper.read(BedrockTypes.STRING); // subpack names
+                    final String contentId = wrapper.read(BedrockTypes.STRING); // content identity
                     wrapper.read(Types.BOOLEAN); // has scripts
-                    wrapper.read(Types.BOOLEAN); // force disable vibrant visuals
-                    wrapper.read(BedrockTypes.UUID); // world template uuid
-                    wrapper.read(BedrockTypes.STRING); // world template version
-                    final ResourcePackLoadStateTracker.Info[] infos = new ResourcePackLoadStateTracker.Info[wrapper.read(BedrockTypes.UNSIGNED_VAR_INT)]; // resource packs size
-                    for (int i = 0; i < infos.length; i++) {
-                        final UUID id = wrapper.read(BedrockTypes.UUID); // pack id
-                        final String version = wrapper.read(BedrockTypes.STRING); // pack version
-                        wrapper.read(BedrockTypes.UNSIGNED_LONG_LE); // pack size
-                        final byte[] contentKey = wrapper.read(BedrockTypes.BYTE_ARRAY); // content key
-                        wrapper.read(BedrockTypes.STRING); // subpack names
-                        final String contentId = wrapper.read(BedrockTypes.STRING); // content identity
-                        wrapper.read(Types.BOOLEAN); // has scripts
-                        wrapper.read(Types.BOOLEAN); // is addon pack
-                        wrapper.read(Types.BOOLEAN); // is ray tracing capable
-                        URL cdnUrl = null;
-                        try {
-                            final String cdnUrlString = wrapper.read(BedrockTypes.STRING); // cdn url
-                            if (!cdnUrlString.isEmpty()) {
-                                cdnUrl = new URL(cdnUrlString);
-                            }
-                        } catch (MalformedURLException ignored) {
+                    wrapper.read(Types.BOOLEAN); // is addon pack
+                    wrapper.read(Types.BOOLEAN); // is ray tracing capable
+                    URL cdnUrl = null;
+                    try {
+                        final String cdnUrlString = wrapper.read(BedrockTypes.STRING); // cdn url
+                        if (!cdnUrlString.isEmpty()) {
+                            cdnUrl = new URL(cdnUrlString);
                         }
-                        infos[i] = new ResourcePackLoadStateTracker.Info(new ResourcePack.Key(id, version), contentKey, contentId, cdnUrl);
+                    } catch (final MalformedURLException ignored) {
                     }
-                    wrapper.user().put(new ResourcePackLoadStateTracker(wrapper.user(), infos));
+                    infos[i] = new ResourcePackLoadStateTracker.Info(new ResourcePack.Key(id, version), contentKey, contentId, cdnUrl);
+                }
+                wrapper.user().put(new ResourcePackLoadStateTracker(wrapper.user(), infos));
 
-                    if (ViaBedrock.getConfig().shouldTranslateResourcePacks() && wrapper.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolConstants.JAVA_VERSION)) {
-                        final UUID httpToken = UUID.randomUUID();
-                        ViaBedrock.getResourcePackServer().addConnection(httpToken, wrapper.user());
+                if (ViaBedrock.getConfig().shouldTranslateResourcePacks() && wrapper.user().getProtocolInfo().protocolVersion().newerThanOrEqualTo(ProtocolConstants.JAVA_VERSION)) {
+                    final UUID httpToken = UUID.randomUUID();
+                    ViaBedrock.getResourcePackServer().addConnection(httpToken, wrapper.user());
 
-                        wrapper.write(Types.UUID, UUID.randomUUID()); // id
-                        wrapper.write(Types.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + httpToken); // url
-                        wrapper.write(Types.STRING, ""); // hash
-                        wrapper.write(Types.BOOLEAN, false); // required
-                        wrapper.write(Types.OPTIONAL_TAG, TextUtil.stringToNbt(
-                                "\n§aIf you press 'Yes', the resource packs will be downloaded and converted to the Java Edition format. " +
-                                        "This may take a while, depending on your internet connection and the size of the packs. " +
-                                        "If you press 'No', you can join without loading the resource packs but you will have a worse gameplay experience.")
-                        ); // prompt
-                    } else {
-                        wrapper.cancel();
-                        final PacketWrapper resourcePack = PacketWrapper.create(ServerboundConfigurationPackets1_21_9.RESOURCE_PACK, wrapper.user());
-                        resourcePack.write(Types.UUID, UUID.randomUUID()); // id
-                        resourcePack.write(Types.VAR_INT, ResourcePackAction.DECLINED.ordinal()); // action
-                        resourcePack.sendToServer(BedrockProtocol.class, false);
-                    }
-                }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Bedrock client ignores resource packs after the initial info packet
+                    wrapper.write(Types.UUID, UUID.randomUUID()); // id
+                    wrapper.write(Types.STRING, ViaBedrock.getResourcePackServer().getUrl() + "?token=" + httpToken); // url
+                    wrapper.write(Types.STRING, ""); // hash
+                    wrapper.write(Types.BOOLEAN, false); // required
+                    wrapper.write(Types.OPTIONAL_TAG, TextUtil.stringToNbt(
+                        "\n§aIf you press 'Yes', the resource packs will be downloaded and converted to the Java Edition format. "
+                            + "This may take a while, depending on your internet connection and the size of the packs. "
+                            + "If you press 'No', you can join without loading the resource packs but you will have a worse gameplay experience.")
+                    ); // prompt
+                } else {
+                    wrapper.cancel();
+                    final PacketWrapper resourcePack = PacketWrapper.create(ServerboundConfigurationPackets1_21_9.RESOURCE_PACK, wrapper.user());
+                    resourcePack.write(Types.UUID, UUID.randomUUID()); // id
+                    resourcePack.write(Types.VAR_INT, ResourcePackAction.DECLINED.ordinal()); // action
+                    resourcePack.sendToServer(BedrockProtocol.class, false);
+                }
+            }, State.PLAY, (PacketHandler) PacketWrapper::cancel // Bedrock client ignores resource packs after the initial info packet
         );
         protocol.registerClientbound(ClientboundBedrockPackets.RESOURCE_PACK_STACK, null, wrapper -> {
             wrapper.cancel();
@@ -141,7 +141,7 @@ public class ResourcePackPackets {
                             resourcePack.decryptContent(info.contentKey(), info.contentId());
                             try {
                                 Via.getManager().getProviders().get(ResourcePackProvider.class).save(resourcePack);
-                            } catch (Throwable e) {
+                            } catch (final Throwable e) {
                                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to save resource pack: " + resourcePack.key(), e);
                             }
                         }
@@ -247,6 +247,9 @@ public class ResourcePackPackets {
                 default -> throw new IllegalStateException("Unhandled ResourcePackAction: " + action);
             }
         });
+    }
+
+    private ResourcePackPackets() {
     }
 
 }

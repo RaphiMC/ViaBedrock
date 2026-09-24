@@ -24,12 +24,7 @@ import net.raphimc.viabedrock.tool.ToolArgs;
 import net.raphimc.viabedrock.tool.ToolPaths;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Writes a mapping proposal for every gap into {@code run/mapping-proposals}, so the proposals can be read before
@@ -38,11 +33,11 @@ import java.util.TreeMap;
  * Run it with {@code ./gradlew proposeMappings}, review {@code block_states.txt}, then apply the result with
  * {@code ./gradlew applyMappingProposals}.
  */
-public class MappingProposer {
+public final class MappingProposer {
 
     public static final Path OUTPUT_DIR = ToolPaths.PROJECT_ROOT.resolve("run/mapping-proposals");
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final double minScore = Double.parseDouble(toolArgs.get("min-score", "0.5"));
 
@@ -64,10 +59,10 @@ public class MappingProposer {
         }
 
         final List<String> stale = gaps.stream()
-                .filter(gap -> gap.kind() == MappingGap.Kind.STALE)
-                .map(MappingGap::key)
-                .sorted()
-                .toList();
+            .filter(gap -> gap.kind() == MappingGap.Kind.STALE)
+            .map(MappingGap::key)
+            .sorted()
+            .toList();
 
         ToolPaths.writeJson(OUTPUT_DIR.resolve("block_states.json"), GsonUtil.sort(accepted));
         ToolPaths.writeString(OUTPUT_DIR.resolve("block_states_stale.json"), GsonUtil.getGson().toJson(stale));
@@ -86,10 +81,10 @@ public class MappingProposer {
 
     private static JsonObject identifierProposals(final MappingAssets assets, final List<MappingGap> gaps) {
         final Map<String, Set<String>> javaIdentifiers = Map.of(
-                MappingAnalysis.ENTITIES, assets.javaNamespaced("entities"),
-                MappingAnalysis.EFFECTS, assets.javaEffects(),
-                MappingAnalysis.PARTICLES, assets.javaNamespaced("particles"),
-                MappingAnalysis.SOUNDS, assets.javaNamespaced("sounds")
+            MappingAnalysis.ENTITIES, assets.javaNamespaced("entities"),
+            MappingAnalysis.EFFECTS, assets.javaEffects(),
+            MappingAnalysis.PARTICLES, assets.javaNamespaced("particles"),
+            MappingAnalysis.SOUNDS, assets.javaNamespaced("sounds")
         );
         final JsonObject proposals = new JsonObject();
         for (String category : javaIdentifiers.keySet()) {
@@ -136,8 +131,8 @@ public class MappingProposer {
             for (int i = 0; i < shown; i++) {
                 final BlockStateProposal proposal = proposals.get(i);
                 report.append("   ").append(proposal.bedrockBlockState().toBlockStateString(true))
-                        .append("\n     -> ").append(proposal.resolved() ? proposal.javaBlockState().toBlockStateString(true) : "UNRESOLVED")
-                        .append("  [").append(proposal.strategy()).append(" ").append(String.format("%.2f", proposal.score())).append("]\n");
+                    .append("\n     -> ").append(proposal.resolved() ? proposal.javaBlockState().toBlockStateString(true) : "UNRESOLVED")
+                    .append("  [").append(proposal.strategy()).append(" ").append(String.format("%.2f", proposal.score())).append("]\n");
             }
             if (proposals.size() > shown) {
                 report.append("   ... ").append(proposals.size() - shown).append(" more states of this block\n");
@@ -164,9 +159,12 @@ public class MappingProposer {
     private static String readString(final Path file) {
         try {
             return java.nio.file.Files.readString(file);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Failed to read " + ToolPaths.describe(file) + ". Run ./gradlew proposeMappings first.", e);
         }
+    }
+
+    private MappingProposer() {
     }
 
 }

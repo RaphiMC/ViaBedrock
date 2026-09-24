@@ -41,7 +41,7 @@ public class EntityDefinitions {
                     final BedrockEntityData entityData = BedrockEntityParser.parse(pack.content().getString(entityPath));
                     final String identifier = Key.namespaced(entityData.getIdentifier());
                     this.entities.put(identifier, new EntityDefinition(identifier, entityData));
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse entity definition " + entityPath + " in pack " + pack.key(), e);
                 }
             }

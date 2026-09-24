@@ -17,9 +17,11 @@
  */
 package net.raphimc.viabedrock.tool.mapping;
 
+import com.viaversion.viaversion.libs.gson.JsonObject;
 import net.raphimc.viabedrock.tool.ToolArgs;
 import net.raphimc.viabedrock.tool.ToolPaths;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,9 +30,9 @@ import java.util.TreeMap;
  * Prints mappings which load fine but disagree with the rest of the data. Run it with
  * {@code ./gradlew reportMappingMistakes}.
  */
-public class MappingMistakeReporter {
+public final class MappingMistakeReporter {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final int limit = Integer.parseInt(toolArgs.get("limit", "0"));
 
@@ -38,16 +40,16 @@ public class MappingMistakeReporter {
         final MappingAnalysis analysis = new MappingAnalysis(assets);
         analysis.run(MappingAnalysis.CATEGORIES);
 
-        final List<MappingMistake> mistakes = new java.util.ArrayList<>(new MappingMistakeDetector(assets, analysis).run());
+        final List<MappingMistake> mistakes = new ArrayList<>(new MappingMistakeDetector(assets, analysis).run());
         final List<ItemMappingFix> itemFixes = new ItemMappingChecker(assets).run();
         for (ItemMappingFix fix : itemFixes) {
             mistakes.add(new MappingMistake(MappingAnalysis.ITEMS, MappingMistake.IDENTITY_AVAILABLE, fix.key(),
-                    "maps to " + fix.currentJavaId() + ", suggest " + fix.suggestedJavaId() + " (" + fix.reason() + ")"));
+                "maps to " + fix.currentJavaId() + ", suggest " + fix.suggestedJavaId() + " (" + fix.reason() + ")"));
         }
         mistakes.sort(java.util.Comparator.comparing(MappingMistake::category).thenComparing(MappingMistake::check).thenComparing(MappingMistake::key));
 
-        final com.viaversion.viaversion.libs.gson.JsonObject itemFixJson = new com.viaversion.viaversion.libs.gson.JsonObject();
-        final com.viaversion.viaversion.libs.gson.JsonObject expectedItemIds = new com.viaversion.viaversion.libs.gson.JsonObject();
+        final JsonObject itemFixJson = new JsonObject();
+        final JsonObject expectedItemIds = new JsonObject();
         for (ItemMappingFix fix : itemFixes) {
             itemFixJson.addProperty(fix.key(), fix.suggestedJavaId());
             expectedItemIds.addProperty(fix.key(), fix.currentJavaId());
@@ -61,7 +63,7 @@ public class MappingMistakeReporter {
 
         final Map<String, List<MappingMistake>> byCheck = new TreeMap<>();
         for (MappingMistake mistake : mistakes) {
-            byCheck.computeIfAbsent(mistake.category() + " / " + mistake.check(), key -> new java.util.ArrayList<>()).add(mistake);
+            byCheck.computeIfAbsent(mistake.category() + " / " + mistake.check(), key -> new ArrayList<>()).add(mistake);
         }
         for (Map.Entry<String, List<MappingMistake>> entry : byCheck.entrySet()) {
             report.append("== ").append(entry.getKey()).append(" (").append(entry.getValue().size()).append(")\n");
@@ -78,6 +80,9 @@ public class MappingMistakeReporter {
         System.out.println();
         System.out.println(report);
         ToolPaths.writeString(MappingProposer.OUTPUT_DIR.resolve("mistakes.txt"), report.toString());
+    }
+
+    private MappingMistakeReporter() {
     }
 
 }

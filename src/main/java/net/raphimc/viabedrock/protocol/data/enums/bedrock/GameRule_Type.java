@@ -25,10 +25,11 @@ public enum GameRule_Type {
     Invalid(0),
     Bool(1),
     Int(2),
-    Float(3),
-    ;
+    Float(3);
 
     private static final Int2ObjectMap<GameRule_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (GameRule_Type value : values()) {
@@ -63,8 +64,6 @@ public enum GameRule_Type {
         }
         return fallback;
     }
-
-    private final int value;
 
     GameRule_Type(final GameRule_Type value) {
         this(value.value);

@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.api.util;
 
 import java.util.BitSet;
 
-public class BitSets {
+public final class BitSets {
 
     public static BitSet create(final int length, final Enum<?>... setBits) {
         final BitSet bitSet = new BitSet(length);
@@ -35,6 +35,9 @@ public class BitSets {
             bitSet.set(setBit);
         }
         return bitSet;
+    }
+
+    private BitSets() {
     }
 
 }

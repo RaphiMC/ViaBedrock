@@ -29,7 +29,6 @@ import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
-import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.modinterface.ViaBedrockUtilityInterface;
 import net.raphimc.viabedrock.api.resourcepack.definition.EntityDefinitions;
@@ -37,7 +36,7 @@ import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.MoLangEngine;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIds;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.generated.java.EntityDataFields;
 import net.raphimc.viabedrock.protocol.model.Position3f;
@@ -86,7 +85,7 @@ public class CustomEntity extends Entity {
             for (String initExpression : this.entityDefinition.entityData().getScripts().initialize()) {
                 MoLangEngine.eval(this.entityScope, initExpression);
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to initialize custom entity variables", e);
         }
 
@@ -207,9 +206,9 @@ public class CustomEntity extends Entity {
 
     private void despawn() {
         this.spawned = false;
-        final int[] entityIds = new int[partEntities.size()];
-        for (int i = 0; i < partEntities.size(); i++) {
-            entityIds[i] = partEntities.get(i).javaId();
+        final int[] entityIds = new int[this.partEntities.size()];
+        for (int i = 0; i < this.partEntities.size(); i++) {
+            entityIds[i] = this.partEntities.get(i).javaId();
         }
         this.partEntities.clear();
         final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets26_3.REMOVE_ENTITIES, this.user);
@@ -220,11 +219,11 @@ public class CustomEntity extends Entity {
     private boolean evaluateRenderControllerChange() {
         final Scope executionScope = this.entityScope.copy();
         final MutableObjectBinding queryBinding = new MutableObjectBinding();
-        if (this.entityData.containsKey(ActorDataIDs.VARIANT)) {
-            queryBinding.set("variant", Value.of(this.entityData.get(ActorDataIDs.VARIANT).<Integer>value()));
+        if (this.entityData.containsKey(ActorDataIds.VARIANT)) {
+            queryBinding.set("variant", Value.of(this.entityData.get(ActorDataIds.VARIANT).<Integer>value()));
         }
-        if (this.entityData.containsKey(ActorDataIDs.MARK_VARIANT)) {
-            queryBinding.set("mark_variant", Value.of(this.entityData.get(ActorDataIDs.MARK_VARIANT).<Integer>value()));
+        if (this.entityData.containsKey(ActorDataIds.MARK_VARIANT)) {
+            queryBinding.set("mark_variant", Value.of(this.entityData.get(ActorDataIds.MARK_VARIANT).<Integer>value()));
         }
 
         final Set<ActorFlags> entityFlags = this.entityFlags();
@@ -254,7 +253,7 @@ public class CustomEntity extends Entity {
                     if (!conditionResult.getAsBoolean()) {
                         continue;
                     }
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to evaluate render controller condition", e);
                     continue;
                 }
@@ -275,7 +274,7 @@ public class CustomEntity extends Entity {
                         newModels.add(new EvaluatedModel(geometryName + "_" + textureName, geometryValue, textureValue));
                     }
                 }
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to evaluate render controller", e);
                 this.models.clear();
                 return true;
@@ -311,7 +310,7 @@ public class CustomEntity extends Entity {
 
     private class ItemDisplayEntity extends Entity {
 
-        public ItemDisplayEntity(final int javaId) {
+        ItemDisplayEntity(final int javaId) {
             super(CustomEntity.this.user, 0L, 0L, null, javaId, UUID.randomUUID(), EntityTypes26_3.ITEM_DISPLAY);
         }
 

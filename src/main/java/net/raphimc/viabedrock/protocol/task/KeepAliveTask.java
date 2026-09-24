@@ -36,13 +36,15 @@ public class KeepAliveTask implements Runnable {
             final State state = info.getProtocolInfo().getServerState();
             if ((state == State.PLAY || state == State.CONFIGURATION) && info.getProtocolInfo().getPipeline().contains(BedrockProtocol.class)) {
                 info.getChannel().eventLoop().submit(() -> {
-                    if (!info.getChannel().isActive()) return;
+                    if (!info.getChannel().isActive()) {
+                        return;
+                    }
 
                     try {
                         final PacketWrapper keepAlive = PacketWrapper.create(info.getProtocolInfo().getServerState() == State.PLAY ? ClientboundPackets26_3.KEEP_ALIVE : ClientboundConfigurationPackets26_3.KEEP_ALIVE, info);
                         keepAlive.write(Types.LONG, ThreadLocalRandom.current().nextLong()); // id
                         keepAlive.send(BedrockProtocol.class);
-                    } catch (Throwable e) {
+                    } catch (final Throwable e) {
                         BedrockProtocol.kickForIllegalState(info, "Error sending keep alive packet. See console for details.", e);
                     }
                 });

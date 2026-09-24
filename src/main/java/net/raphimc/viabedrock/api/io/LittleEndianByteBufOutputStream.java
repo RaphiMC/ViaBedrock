@@ -35,37 +35,37 @@ public class LittleEndianByteBufOutputStream extends ByteBufOutputStream {
     }
 
     @Override
-    public void writeChar(int v) {
+    public void writeChar(final int v) {
         this.buffer.writeChar(Character.reverseBytes((char) v));
     }
 
     @Override
-    public void writeDouble(double v) {
+    public void writeDouble(final double v) {
         this.buffer.writeDoubleLE(v);
     }
 
     @Override
-    public void writeFloat(float v) {
+    public void writeFloat(final float v) {
         this.buffer.writeFloatLE(v);
     }
 
     @Override
-    public void writeShort(int v) {
+    public void writeShort(final int v) {
         this.buffer.writeShortLE(v);
     }
 
     @Override
-    public void writeLong(long v) throws IOException {
+    public void writeLong(final long v) throws IOException {
         this.buffer.writeLongLE(v);
     }
 
     @Override
-    public void writeInt(int v) throws IOException {
+    public void writeInt(final int v) throws IOException {
         this.buffer.writeIntLE(v);
     }
 
     @Override
-    public void writeUTF(String v) throws IOException {
+    public void writeUTF(final String v) throws IOException {
         this.writeShort(ByteBufUtil.utf8Bytes(v));
         this.buffer.writeCharSequence(v, StandardCharsets.UTF_8);
     }

@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.api.util;
 
 import com.viaversion.nbt.tag.*;
 
-public class NbtUtil {
+public final class NbtUtil {
 
     public static Tag createTag(final Object obj) {
         if (obj instanceof Byte) {
@@ -33,6 +33,9 @@ public class NbtUtil {
         } else {
             throw new IllegalArgumentException("Unknown value type: " + obj.getClass());
         }
+    }
+
+    private NbtUtil() {
     }
 
 }

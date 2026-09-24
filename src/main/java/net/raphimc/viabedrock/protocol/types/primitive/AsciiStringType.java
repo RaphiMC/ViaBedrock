@@ -29,12 +29,12 @@ public class AsciiStringType extends Type<String> {
     }
 
     @Override
-    public String read(ByteBuf buffer) {
+    public String read(final ByteBuf buffer) {
         return buffer.readString(buffer.readIntLE(), StandardCharsets.US_ASCII);
     }
 
     @Override
-    public void write(ByteBuf buffer, String value) {
+    public void write(final ByteBuf buffer, final String value) {
         buffer.writeIntLE(value.length());
         buffer.writeCharSequence(value, StandardCharsets.US_ASCII);
     }

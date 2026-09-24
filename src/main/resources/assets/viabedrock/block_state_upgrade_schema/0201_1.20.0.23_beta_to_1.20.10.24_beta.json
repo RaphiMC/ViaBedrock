@@ -1,86 +1,86 @@
 {
-    "maxVersionMajor": 1,
-    "maxVersionMinor": 20,
-    "maxVersionPatch": 10,
-    "maxVersionRevision": 32,
-    "renamedProperties": {
-        "minecraft:observer": {
-            "facing_direction": "minecraft:facing_direction"
-        }
-    },
-    "remappedPropertyValues": {
-        "minecraft:observer": {
-            "facing_direction": "facing_direction_00"
-        }
-    },
-    "remappedPropertyValuesIndex": {
-        "facing_direction_00": [
-            {
-                "old": {
-                    "int": 0
-                },
-                "new": {
-                    "string": "down"
-                }
-            },
-            {
-                "old": {
-                    "int": 1
-                },
-                "new": {
-                    "string": "up"
-                }
-            },
-            {
-                "old": {
-                    "int": 2
-                },
-                "new": {
-                    "string": "north"
-                }
-            },
-            {
-                "old": {
-                    "int": 3
-                },
-                "new": {
-                    "string": "south"
-                }
-            },
-            {
-                "old": {
-                    "int": 4
-                },
-                "new": {
-                    "string": "west"
-                }
-            },
-            {
-                "old": {
-                    "int": 5
-                },
-                "new": {
-                    "string": "east"
-                }
-            }
-        ]
-    },
-    "flattenedProperties": {
-        "minecraft:concrete": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "color",
-            "suffix": "_concrete",
-            "flattenedValueRemaps": {
-                "silver": "light_gray"
-            }
-        },
-        "minecraft:shulker_box": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "color",
-            "suffix": "_shulker_box",
-            "flattenedValueRemaps": {
-                "silver": "light_gray"
-            }
-        }
+  "maxVersionMajor": 1,
+  "maxVersionMinor": 20,
+  "maxVersionPatch": 10,
+  "maxVersionRevision": 32,
+  "renamedProperties": {
+    "minecraft:observer": {
+      "facing_direction": "minecraft:facing_direction"
     }
+  },
+  "remappedPropertyValues": {
+    "minecraft:observer": {
+      "facing_direction": "facing_direction_00"
+    }
+  },
+  "remappedPropertyValuesIndex": {
+    "facing_direction_00": [
+      {
+        "old": {
+          "int": 0
+        },
+        "new": {
+          "string": "down"
+        }
+      },
+      {
+        "old": {
+          "int": 1
+        },
+        "new": {
+          "string": "up"
+        }
+      },
+      {
+        "old": {
+          "int": 2
+        },
+        "new": {
+          "string": "north"
+        }
+      },
+      {
+        "old": {
+          "int": 3
+        },
+        "new": {
+          "string": "south"
+        }
+      },
+      {
+        "old": {
+          "int": 4
+        },
+        "new": {
+          "string": "west"
+        }
+      },
+      {
+        "old": {
+          "int": 5
+        },
+        "new": {
+          "string": "east"
+        }
+      }
+    ]
+  },
+  "flattenedProperties": {
+    "minecraft:concrete": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "color",
+      "suffix": "_concrete",
+      "flattenedValueRemaps": {
+        "silver": "light_gray"
+      }
+    },
+    "minecraft:shulker_box": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "color",
+      "suffix": "_shulker_box",
+      "flattenedValueRemaps": {
+        "silver": "light_gray"
+      }
+    }
+  }
 }

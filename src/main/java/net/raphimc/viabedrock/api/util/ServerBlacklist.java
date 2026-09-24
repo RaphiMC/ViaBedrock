@@ -20,19 +20,22 @@ package net.raphimc.viabedrock.api.util;
 import java.util.List;
 import java.util.Locale;
 
-public class ServerBlacklist {
+public final class ServerBlacklist {
 
     private static final List<String> BLACKLISTED_HOSTS = List.of(
-            "hivebedrock.network",
-            "geo.hivebedrock.network",
-            "ca.hivebedrock.network",
-            "fr.hivebedrock.network",
-            "sg.hivebedrock.network",
-            "donutsmp.net"
+        "hivebedrock.network",
+        "geo.hivebedrock.network",
+        "ca.hivebedrock.network",
+        "fr.hivebedrock.network",
+        "sg.hivebedrock.network",
+        "donutsmp.net"
     );
 
     public static boolean isBlacklisted(final String hostname) {
         return BLACKLISTED_HOSTS.contains(hostname.toLowerCase(Locale.ROOT));
+    }
+
+    private ServerBlacklist() {
     }
 
 }

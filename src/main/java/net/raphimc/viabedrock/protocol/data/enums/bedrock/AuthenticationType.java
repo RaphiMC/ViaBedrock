@@ -21,6 +21,6 @@ public enum AuthenticationType {
 
     Full,
     Guest,
-    SelfSigned,
+    SelfSigned
 
 }

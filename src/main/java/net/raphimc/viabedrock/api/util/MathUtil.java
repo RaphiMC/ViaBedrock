@@ -24,7 +24,7 @@ import net.raphimc.viabedrock.protocol.model.Position3f;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class MathUtil {
+public final class MathUtil {
 
     public static int ceil(final float f) {
         final int i = (int) f;
@@ -118,6 +118,9 @@ public class MathUtil {
         final float y = -MathUtil.clamp((float) Math.sin(pitchRad), -1F, 1F);
         final float z = MathUtil.clamp((float) Math.cos(yawRad) * (float) Math.cos(pitchRad), -1F, 1F);
         return new Position3f(x, y, z);
+    }
+
+    private MathUtil() {
     }
 
 }

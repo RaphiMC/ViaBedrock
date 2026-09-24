@@ -41,9 +41,9 @@ import java.util.stream.Stream;
  * pass the ones which were added, for example {@code --from=0331_1.21.100.23_beta_to_1.21.110.26_beta}. Applying a schema
  * which is already part of the mappings merges block states and fails with a duplicate block state error.
  */
-public class BlockStateMappingsUpgrader {
+public final class BlockStateMappingsUpgrader {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final List<Path> schemaFiles = resolveSchemas(toolArgs);
         final Path mappingsFile = toolArgs.path("mappings", ToolPaths.CUSTOM_DATA.resolve("blockstate_mappings.json"));
@@ -74,13 +74,13 @@ public class BlockStateMappingsUpgrader {
                     statesTag.putBoolean(property.getKey(), false);
                 } else {
                     final boolean byteVal = property.getKey().equals("coral_hang_type_bit") || property.getKey().equals("dead_bit") || property.getKey().equals("color_bit")
-                            || property.getKey().equals("allow_underwater_bit") || property.getKey().equals("active");
+                        || property.getKey().equals("allow_underwater_bit") || property.getKey().equals("active");
                     if (byteVal) {
                         statesTag.putByte(property.getKey(), Byte.parseByte(property.getValue()));
                     } else {
                         try {
                             statesTag.putInt(property.getKey(), Integer.parseInt(property.getValue()));
-                        } catch (NumberFormatException e) {
+                        } catch (final NumberFormatException e) {
                             statesTag.putString(property.getKey(), property.getValue());
                         }
                     }
@@ -138,9 +138,9 @@ public class BlockStateMappingsUpgrader {
         }
         final String fileName = name.endsWith(".json") ? name : name + ".json";
         return allSchemas.stream()
-                .filter(schema -> schema.getFileName().toString().equals(fileName))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Unknown schema '" + name + "'. It is neither a file nor a name in " + ToolPaths.BLOCK_STATE_UPGRADE_SCHEMAS));
+            .filter(schema -> schema.getFileName().toString().equals(fileName))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Unknown schema '" + name + "'. It is neither a file nor a name in " + ToolPaths.BLOCK_STATE_UPGRADE_SCHEMAS));
     }
 
     private static List<Path> listSchemas() throws IOException {
@@ -151,6 +151,9 @@ public class BlockStateMappingsUpgrader {
             }
             return schemas;
         }
+    }
+
+    private BlockStateMappingsUpgrader() {
     }
 
 }

@@ -27,8 +27,8 @@ import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.experimental.ExperimentalPacketFactory;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
+import net.raphimc.viabedrock.protocol.PlayerActionPacketFactory;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.Direction;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.AbilitiesIndex;
@@ -51,7 +51,7 @@ import java.util.logging.Level;
 
 public class ClientPlayerEntity extends PlayerEntity {
 
-    private final AtomicInteger TELEPORT_ID = new AtomicInteger(1);
+    private final AtomicInteger teleportId = new AtomicInteger(1);
     private final GameSessionStorage gameSession;
 
     // Initial spawn and respawning
@@ -104,14 +104,9 @@ public class ClientPlayerEntity extends PlayerEntity {
         this.prevOnGround = this.onGround;
         this.prevInputFlags = this.inputFlags;
 
-        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-            // TODO: Experimental
-
-            if (this.mountRuntimeId != -1 && this.sneaking && !this.requestedDismount) {
-                // Dismount entity
-                ExperimentalPacketFactory.sendBedrockDismount(this.user, this.mountRuntimeId);
-                this.requestedDismount = true;
-            }
+        if (this.mountRuntimeId != -1 && this.sneaking && !this.requestedDismount) {
+            PlayerActionPacketFactory.sendBedrockDismount(this.user, this.mountRuntimeId);
+            this.requestedDismount = true;
         }
     }
 
@@ -122,7 +117,7 @@ public class ClientPlayerEntity extends PlayerEntity {
     }
 
     public void writePlayerPositionPacketToClient(final PacketWrapper wrapper, final Set<Relative> relatives, final boolean fakeTeleport) {
-        this.pendingTeleportId = TELEPORT_ID.getAndIncrement();
+        this.pendingTeleportId = this.teleportId.getAndIncrement();
 
         wrapper.write(Types.VAR_INT, this.pendingTeleportId * (fakeTeleport ? -1 : 1)); // teleport id
         wrapper.write(Types.DOUBLE, relatives.contains(Relative.X) ? 0D : (double) this.position.x()); // x
@@ -308,10 +303,18 @@ public class ClientPlayerEntity extends PlayerEntity {
         }
 
         byte flags = 0;
-        if (abilities.getBooleanValue(AbilitiesIndex.Invulnerable)) flags |= AbilitiesFlag.INVULNERABLE.getBit();
-        if (abilities.getBooleanValue(AbilitiesIndex.Flying)) flags |= AbilitiesFlag.FLYING.getBit();
-        if (abilities.getBooleanValue(AbilitiesIndex.MayFly)) flags |= AbilitiesFlag.CAN_FLY.getBit();
-        if (abilities.getBooleanValue(AbilitiesIndex.Instabuild)) flags |= AbilitiesFlag.INSTABUILD.getBit();
+        if (abilities.getBooleanValue(AbilitiesIndex.Invulnerable)) {
+            flags |= AbilitiesFlag.INVULNERABLE.getBit();
+        }
+        if (abilities.getBooleanValue(AbilitiesIndex.Flying)) {
+            flags |= AbilitiesFlag.FLYING.getBit();
+        }
+        if (abilities.getBooleanValue(AbilitiesIndex.MayFly)) {
+            flags |= AbilitiesFlag.CAN_FLY.getBit();
+        }
+        if (abilities.getBooleanValue(AbilitiesIndex.Instabuild)) {
+            flags |= AbilitiesFlag.INSTABUILD.getBit();
+        }
         javaAbilities.write(Types.BYTE, flags); // flags
         javaAbilities.write(Types.FLOAT, abilities.getFloatValue(AbilitiesIndex.FlySpeed)); // fly speed
         javaAbilities.write(Types.FLOAT, abilities.getFloatValue(AbilitiesIndex.WalkSpeed)); // walk speed

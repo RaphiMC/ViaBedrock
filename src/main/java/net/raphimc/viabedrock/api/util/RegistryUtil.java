@@ -22,7 +22,7 @@ import com.viaversion.nbt.tag.Tag;
 
 import java.util.Map;
 
-public class RegistryUtil {
+public final class RegistryUtil {
 
     public static int getRegistryIndex(final CompoundTag registry, final CompoundTag entry) {
         int index = 0;
@@ -34,6 +34,9 @@ public class RegistryUtil {
         }
 
         throw new IllegalArgumentException("Entry not found in registry");
+    }
+
+    private RegistryUtil() {
     }
 
 }

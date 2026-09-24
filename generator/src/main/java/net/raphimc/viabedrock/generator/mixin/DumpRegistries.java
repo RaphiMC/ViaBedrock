@@ -35,8 +35,8 @@ public class DumpRegistries {
     private static synchronized void mergeRegistry(final String name, final CompoundTag entries) throws IOException {
         final Path output = DumpOutput.DIRECTORY.resolve("registries.nbt");
         final CompoundTag root = Files.exists(output)
-                ? NbtIo.readCompressed(output, NbtAccounter.unlimitedHeap())
-                : new CompoundTag();
+            ? NbtIo.readCompressed(output, NbtAccounter.unlimitedHeap())
+            : new CompoundTag();
         root.put(name, entries);
         DumpOutput.writeNbt("registries.nbt", root);
     }

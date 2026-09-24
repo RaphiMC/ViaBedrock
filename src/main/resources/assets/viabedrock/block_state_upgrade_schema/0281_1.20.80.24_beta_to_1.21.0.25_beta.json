@@ -1,94 +1,94 @@
 {
-    "maxVersionMajor": 1,
-    "maxVersionMinor": 21,
-    "maxVersionPatch": 0,
-    "maxVersionRevision": 3,
-    "addedProperties": {
-        "minecraft:trial_spawner": {
-            "ominous": {
-                "byte": 0
-            }
-        },
-        "minecraft:vault": {
-            "ominous": {
-                "byte": 0
-            }
-        }
+  "maxVersionMajor": 1,
+  "maxVersionMinor": 21,
+  "maxVersionPatch": 0,
+  "maxVersionRevision": 3,
+  "addedProperties": {
+    "minecraft:trial_spawner": {
+      "ominous": {
+        "byte": 0
+      }
     },
-    "flattenedProperties": {
-        "minecraft:double_plant": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "double_plant_type",
-            "suffix": "",
-            "flattenedValueRemaps": {
-                "fern": "large_fern",
-                "grass": "tall_grass",
-                "paeonia": "peony",
-                "rose": "rose_bush",
-                "syringa": "lilac"
-            }
-        },
-        "minecraft:stone_block_slab": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "stone_slab_type",
-            "suffix": "_slab",
-            "flattenedValueRemaps": {
-                "wood": "petrified_oak"
-            }
-        },
-        "minecraft:tallgrass": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "tall_grass_type",
-            "suffix": "",
-            "flattenedValueRemaps": {
-                "default": "short_grass",
-                "snow": "fern",
-                "tall": "short_grass"
-            }
-        }
-    },
-    "remappedStates": {
-        "minecraft:coral_block": [
-            {
-                "oldState": {
-                    "dead_bit": {
-                        "byte": 0
-                    }
-                },
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "coral_color",
-                    "suffix": "_coral_block",
-                    "flattenedValueRemaps": {
-                        "blue": "tube",
-                        "pink": "brain",
-                        "purple": "bubble",
-                        "red": "fire",
-                        "yellow": "horn"
-                    }
-                },
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "dead_bit": {
-                        "byte": 1
-                    }
-                },
-                "newFlattenedName": {
-                    "prefix": "minecraft:dead_",
-                    "flattenedProperty": "coral_color",
-                    "suffix": "_coral_block",
-                    "flattenedValueRemaps": {
-                        "blue": "tube",
-                        "pink": "brain",
-                        "purple": "bubble",
-                        "red": "fire",
-                        "yellow": "horn"
-                    }
-                },
-                "newState": null
-            }
-        ]
+    "minecraft:vault": {
+      "ominous": {
+        "byte": 0
+      }
     }
+  },
+  "flattenedProperties": {
+    "minecraft:double_plant": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "double_plant_type",
+      "suffix": "",
+      "flattenedValueRemaps": {
+        "fern": "large_fern",
+        "grass": "tall_grass",
+        "paeonia": "peony",
+        "rose": "rose_bush",
+        "syringa": "lilac"
+      }
+    },
+    "minecraft:stone_block_slab": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "stone_slab_type",
+      "suffix": "_slab",
+      "flattenedValueRemaps": {
+        "wood": "petrified_oak"
+      }
+    },
+    "minecraft:tallgrass": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "tall_grass_type",
+      "suffix": "",
+      "flattenedValueRemaps": {
+        "default": "short_grass",
+        "snow": "fern",
+        "tall": "short_grass"
+      }
+    }
+  },
+  "remappedStates": {
+    "minecraft:coral_block": [
+      {
+        "oldState": {
+          "dead_bit": {
+            "byte": 0
+          }
+        },
+        "newFlattenedName": {
+          "prefix": "minecraft:",
+          "flattenedProperty": "coral_color",
+          "suffix": "_coral_block",
+          "flattenedValueRemaps": {
+            "blue": "tube",
+            "pink": "brain",
+            "purple": "bubble",
+            "red": "fire",
+            "yellow": "horn"
+          }
+        },
+        "newState": null
+      },
+      {
+        "oldState": {
+          "dead_bit": {
+            "byte": 1
+          }
+        },
+        "newFlattenedName": {
+          "prefix": "minecraft:dead_",
+          "flattenedProperty": "coral_color",
+          "suffix": "_coral_block",
+          "flattenedValueRemaps": {
+            "blue": "tube",
+            "pink": "brain",
+            "purple": "bubble",
+            "red": "fire",
+            "yellow": "horn"
+          }
+        },
+        "newState": null
+      }
+    ]
+  }
 }

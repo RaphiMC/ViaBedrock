@@ -27,11 +27,6 @@ import java.util.function.Supplier;
 public interface ViaBedrockConfig extends Config {
 
     /**
-     * @return If true, enables experimental features. These features are almost certainly not fully stable/tested and may cause unexpected issues
-     */
-    boolean shouldEnableExperimentalFeatures();
-
-    /**
      * @return The blob cache mode to use.
      */
     BlobCacheMode getBlobCacheMode();
@@ -92,7 +87,7 @@ public interface ViaBedrockConfig extends Config {
             this.providerSupplier = providerSupplier;
         }
 
-        public static BlobCacheMode byName(String name) {
+        public static BlobCacheMode byName(final String name) {
             for (BlobCacheMode mode : values()) {
                 if (mode.name().equalsIgnoreCase(name)) {
                     return mode;
@@ -129,7 +124,7 @@ public interface ViaBedrockConfig extends Config {
             this.providerSupplier = providerSupplier;
         }
 
-        public static PackCacheMode byName(String name) {
+        public static PackCacheMode byName(final String name) {
             for (PackCacheMode mode : values()) {
                 if (mode.name().equalsIgnoreCase(name)) {
                     return mode;

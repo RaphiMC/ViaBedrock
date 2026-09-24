@@ -19,14 +19,12 @@ package net.raphimc.viabedrock.api.resourcepack.definition;
 
 import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.Key;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.resourcepack.ResourcePack;
 import net.raphimc.viabedrock.protocol.storage.ResourcePackStorage;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class ParticleDefinitions {
 
@@ -43,16 +41,13 @@ public class ParticleDefinitions {
         }
     }
 
-    private void handle(ResourcePack pack, String particlePath) {
+    private void handle(final ResourcePack pack, final String particlePath) {
         try {
             final JsonObject particleEffect = pack.content().getJson(particlePath).getAsJsonObject("particle_effect");
             final String identifier = Key.namespaced(particleEffect.getAsJsonObject("description").get("identifier").getAsString());
             final ParticleDefinition particleDefinition = new ParticleDefinition(identifier);
-            if (particleEffect.has("components")) {
-                final JsonObject components = particleEffect.getAsJsonObject("components");
-            }
             this.particles.put(identifier, particleDefinition);
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             System.err.println("Failed to load particle " + particlePath + ": " + e.getMessage());
             //ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse particle definition " + particlePath + " in pack " + pack.key(), e);
         }

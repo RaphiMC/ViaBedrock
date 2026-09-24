@@ -1,16 +1,16 @@
 {
-    "maxVersionMajor": 1,
-    "maxVersionMinor": 19,
-    "maxVersionPatch": 70,
-    "maxVersionRevision": 15,
-    "flattenedProperties": {
-        "minecraft:wool": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "color",
-            "suffix": "_wool",
-            "flattenedValueRemaps": {
-                "silver": "light_gray"
-            }
-        }
+  "maxVersionMajor": 1,
+  "maxVersionMinor": 19,
+  "maxVersionPatch": 70,
+  "maxVersionRevision": 15,
+  "flattenedProperties": {
+    "minecraft:wool": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "color",
+      "suffix": "_wool",
+      "flattenedValueRemaps": {
+        "silver": "light_gray"
+      }
     }
+  }
 }

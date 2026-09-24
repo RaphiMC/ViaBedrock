@@ -51,7 +51,7 @@ public class ItemDefinitions {
                         }
                     }
                     this.items.put(identifier, itemDefinition);
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse item definition " + itemPath + " in pack " + pack.key(), e);
                 }
             }

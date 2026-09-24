@@ -20,8 +20,8 @@ package net.raphimc.viabedrock.protocol.types.model;
 import com.google.common.collect.Sets;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandPermissionLevel;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.CommandRegistry_HardNonTerminal;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.CommandPermissionLevel;
 import net.raphimc.viabedrock.protocol.model.CommandData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -41,7 +41,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
     }
 
     @Override
-    public CommandData[] read(ByteBuf buffer) {
+    public CommandData[] read(final ByteBuf buffer) {
         final String[] enumLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // enum literals
         final String[] subCommandLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // sub command literals
         final String[] postFixLiterals = BedrockTypes.STRING_ARRAY.read(buffer); // post fix literals
@@ -160,7 +160,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
                 overloads[j] = new CommandData.OverloadData(chaining, params);
             }
 
-            CommandData commandData;
+            final CommandData commandData;
             if (commandMap.containsKey(name)) {
                 final CommandData oldCommandData = commandMap.get(name);
                 final CommandData.EnumData newAlias = validAliasPointer ? alias : oldCommandData.alias();
@@ -211,7 +211,7 @@ public class CommandDataArrayType extends Type<CommandData[]> {
     }
 
     @Override
-    public void write(ByteBuf buffer, CommandData[] value) {
+    public void write(final ByteBuf buffer, final CommandData[] value) {
         throw new UnsupportedOperationException("Cannot serialize CommandDataArrayType");
     }
 

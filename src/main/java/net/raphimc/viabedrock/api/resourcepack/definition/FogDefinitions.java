@@ -47,7 +47,7 @@ public class FogDefinitions {
                         }
                     }
                     this.fogs.put(identifier, new FogDefinition(identifier, colors));
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse fog definition " + fogPath + " in pack " + pack.key(), e);
                 }
             }

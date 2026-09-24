@@ -25,7 +25,6 @@ import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
 import com.viaversion.viaversion.api.type.Types;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ServerboundPackets26_3;
-import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import com.viaversion.viaversion.util.Pair;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
@@ -58,7 +57,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class ClientPlayerPackets {
+public final class ClientPlayerPackets {
 
     private static final PacketHandler CLIENT_PLAYER_GAME_MODE_INFO_UPDATE = wrapper -> {
         final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
@@ -278,7 +277,7 @@ public class ClientPlayerPackets {
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             wrapper.read(Types.VAR_INT); // entity id
             final PlayerCommandAction action = PlayerCommandAction.values()[wrapper.read(Types.VAR_INT)]; // action
-            final int data = wrapper.read(Types.VAR_INT); // data
+            wrapper.read(Types.VAR_INT); // data
 
             switch (action) {
                 case START_SPRINTING -> {
@@ -290,10 +289,8 @@ public class ClientPlayerPackets {
                     clientPlayer.addAuthInputData(PlayerAuthInputData.StopSprinting);
                 }
                 case START_FALL_FLYING -> {
-                    if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-                        clientPlayer.setGliding(true);
-                        clientPlayer.addAuthInputData(PlayerAuthInputData.StartGliding);
-                    }
+                    clientPlayer.setGliding(true);
+                    clientPlayer.addAuthInputData(PlayerAuthInputData.StartGliding);
                 }
                 default -> throw new IllegalStateException("Unhandled PlayerCommandAction: " + action);
             }
@@ -304,6 +301,9 @@ public class ClientPlayerPackets {
             final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
             final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
             final PlayerActionAction action = PlayerActionAction.values()[wrapper.read(Types.VAR_INT)]; // action
+            if (InteractionPackets.handlePlayerAction(wrapper, action)) {
+                return;
+            }
             final BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
             final Direction direction = Direction.values()[wrapper.read(Types.UNSIGNED_BYTE)]; // face
             final int sequence = wrapper.read(Types.VAR_INT); // sequence number
@@ -350,14 +350,6 @@ public class ClientPlayerPackets {
 
                     chunkTracker.handleBlockChange(position, 0, chunkTracker.bedrockAirId());
                     PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, ProtocolConstants.JAVA_AIR_ID);
-                }
-                case DROP_ALL_ITEMS, DROP_ITEM -> {
-                    // TODO: Implement DROP_ALL_ITEMS, DROP_ITEM (Currently experimental)
-                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
-                }
-                case RELEASE_USE_ITEM -> {
-                    // TODO: Implement RELEASE_USE_ITEM
-                    PacketFactory.sendJavaContainerSetContent(wrapper.user(), wrapper.user().get(InventoryTracker.class).getInventoryContainer());
                 }
                 case SWAP_ITEM_WITH_OFFHAND, STAB -> {
                 }
@@ -465,12 +457,12 @@ public class ClientPlayerPackets {
             }
 
             if (clientPlayer.isGliding() && (
-                    clientPlayer.isOnGround() ||
-                    clientPlayer.effects().containsKey("minecraft:levitation") ||
-                    clientPlayer.entityFlags().contains(ActorFlags.WALLCLIMBING) ||
-                    clientPlayer.entityFlags().contains(ActorFlags.IN_ASCENDABLE_BLOCK) ||
-                    clientPlayer.entityFlags().contains(ActorFlags.IN_SCAFFOLDING)
-            )) {
+                clientPlayer.isOnGround()
+                    || clientPlayer.effects().containsKey("minecraft:levitation")
+                    || clientPlayer.entityFlags().contains(ActorFlags.WALLCLIMBING)
+                    || clientPlayer.entityFlags().contains(ActorFlags.IN_ASCENDABLE_BLOCK)
+                    || clientPlayer.entityFlags().contains(ActorFlags.IN_SCAFFOLDING))
+            ) {
                 clientPlayer.setGliding(false);
                 clientPlayer.addAuthInputData(PlayerAuthInputData.StopGliding);
             }
@@ -635,6 +627,9 @@ public class ClientPlayerPackets {
                 clientPlayer.addAuthInputData(PlayerAuthInputData.MissedSwing);
             }
         });
+    }
+
+    private ClientPlayerPackets() {
     }
 
 }

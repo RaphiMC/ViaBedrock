@@ -171,7 +171,9 @@ public class BedrockItem implements Item {
     }
 
     public boolean isDifferent(final BedrockItem o) {
-        if (o == null) return true;
+        if (o == null) {
+            return true;
+        }
         return this.id != o.id || this.data != o.data || this.blockRuntimeId != o.blockRuntimeId || !Objects.equals(this.tag, o.tag);
     }
 
@@ -181,31 +183,35 @@ public class BedrockItem implements Item {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BedrockItem that = (BedrockItem) o;
-        return id == that.id && data == that.data && amount == that.amount && blockingTicks == that.blockingTicks && blockRuntimeId == that.blockRuntimeId && Objects.equals(tag, that.tag) && Objects.deepEquals(canPlace, that.canPlace) && Objects.deepEquals(canBreak, that.canBreak) && Objects.equals(netId, that.netId);
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final BedrockItem that = (BedrockItem) o;
+        return this.id == that.id && this.data == that.data && this.amount == that.amount && this.blockingTicks == that.blockingTicks && this.blockRuntimeId == that.blockRuntimeId && Objects.equals(this.tag, that.tag) && Objects.deepEquals(this.canPlace, that.canPlace) && Objects.deepEquals(this.canBreak, that.canBreak) && Objects.equals(this.netId, that.netId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, data, amount, tag, Arrays.hashCode(canPlace), Arrays.hashCode(canBreak), blockingTicks, blockRuntimeId, netId);
+        return Objects.hash(this.id, this.data, this.amount, this.tag, Arrays.hashCode(this.canPlace), Arrays.hashCode(this.canBreak), this.blockingTicks, this.blockRuntimeId, this.netId);
     }
 
     @Override
     public String toString() {
-        return "BedrockItem{" +
-                "id=" + id +
-                ", data=" + data +
-                ", amount=" + this.amount() +
-                ", tag=" + tag +
-                ", canPlace=" + Arrays.toString(canPlace) +
-                ", canBreak=" + Arrays.toString(canBreak) +
-                ", blockingTicks=" + blockingTicks +
-                ", blockRuntimeId=" + blockRuntimeId +
-                ", netId=" + netId +
-                '}';
+        return "BedrockItem{"
+            + "id=" + this.id
+            + ", data=" + this.data
+            + ", amount=" + this.amount()
+            + ", tag=" + this.tag
+            + ", canPlace=" + Arrays.toString(this.canPlace)
+            + ", canBreak=" + Arrays.toString(this.canBreak)
+            + ", blockingTicks=" + this.blockingTicks
+            + ", blockRuntimeId=" + this.blockRuntimeId
+            + ", netId=" + this.netId
+            + '}';
     }
 
 }

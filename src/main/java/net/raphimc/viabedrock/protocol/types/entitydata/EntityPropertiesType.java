@@ -33,7 +33,7 @@ public class EntityPropertiesType extends Type<EntityProperties> {
     }
 
     @Override
-    public EntityProperties read(ByteBuf buffer) {
+    public EntityProperties read(final ByteBuf buffer) {
         final int intPropertiesLength = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(buffer);
         final Int2IntMap intProperties = new Int2IntOpenHashMap(intPropertiesLength);
         for (int i = 0; i < intPropertiesLength; i++) {
@@ -52,7 +52,7 @@ public class EntityPropertiesType extends Type<EntityProperties> {
     }
 
     @Override
-    public void write(ByteBuf buffer, EntityProperties value) {
+    public void write(final ByteBuf buffer, final EntityProperties value) {
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, value.intProperties().size());
         for (Int2IntMap.Entry entry : value.intProperties().int2IntEntrySet()) {
             BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(buffer, entry.getIntKey());

@@ -22,13 +22,7 @@ import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.tool.ToolArgs;
 import net.raphimc.viabedrock.tool.ToolPaths;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Measures how often the proposer reproduces a mapping that was written by hand.
@@ -37,9 +31,9 @@ import java.util.TreeMap;
  * is compared against what is in the file. The accuracy per strategy is the number to look at before trusting a
  * proposal for a block nobody has mapped yet.
  */
-public class MappingSelfTest {
+public final class MappingSelfTest {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final int limit = Integer.parseInt(toolArgs.get("limit", "0"));
         final int mismatchesToShow = Integer.parseInt(toolArgs.get("show", "25"));
@@ -76,9 +70,9 @@ public class MappingSelfTest {
                     counts[0]++;
                 } else if (mismatches.computeIfAbsent(proposal.strategy(), key -> new ArrayList<>()).size() < mismatchesToShow) {
                     mismatches.get(proposal.strategy()).add(bedrockBlockState.toBlockStateString(true)
-                            + "\n    expected " + expected.toBlockStateString(true)
-                            + "\n    proposed " + (proposal.resolved() ? proposal.javaBlockState().toBlockStateString(true) : "nothing")
-                            + "  [" + proposal.strategy() + (proposal.template() == null ? "" : " from " + proposal.template()) + "]");
+                        + "\n    expected " + expected.toBlockStateString(true)
+                        + "\n    proposed " + (proposal.resolved() ? proposal.javaBlockState().toBlockStateString(true) : "nothing")
+                        + "  [" + proposal.strategy() + (proposal.template() == null ? "" : " from " + proposal.template()) + "]");
                 }
             }
         }
@@ -91,7 +85,7 @@ public class MappingSelfTest {
             correct += entry.getValue()[0];
             total += entry.getValue()[1];
             report.append(String.format("  %-20s %6d / %6d  %6.2f%%%n", entry.getKey(), entry.getValue()[0], entry.getValue()[1],
-                    100D * entry.getValue()[0] / entry.getValue()[1]));
+                100D * entry.getValue()[0] / entry.getValue()[1]));
         }
         report.append(String.format("%n  %-20s %6d / %6d  %6.2f%%%n", "total", correct, total, 100D * correct / total));
 
@@ -109,6 +103,9 @@ public class MappingSelfTest {
 
     private static Map<String, Integer> empty() {
         return new LinkedHashMap<>();
+    }
+
+    private MappingSelfTest() {
     }
 
 }

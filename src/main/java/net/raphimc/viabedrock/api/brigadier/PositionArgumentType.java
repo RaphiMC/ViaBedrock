@@ -37,20 +37,28 @@ public class PositionArgumentType implements ArgumentType<Object> {
     }
 
     @Override
-    public Object parse(StringReader reader) throws CommandSyntaxException {
-        boolean hasHat = this.readCoordinate(reader, false);
-        if (reader.canRead()) reader.skip();
-        boolean hasHat2 = this.readCoordinate(reader, hasHat);
-        if (hasHat != hasHat2) throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
-        if (reader.canRead()) reader.skip();
-        boolean hasHat3 = this.readCoordinate(reader, hasHat);
-        if (hasHat2 != hasHat3) throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+    public Object parse(final StringReader reader) throws CommandSyntaxException {
+        final boolean hasHat = this.readCoordinate(reader, false);
+        if (reader.canRead()) {
+            reader.skip();
+        }
+        final boolean hasHat2 = this.readCoordinate(reader, hasHat);
+        if (hasHat != hasHat2) {
+            throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+        }
+        if (reader.canRead()) {
+            reader.skip();
+        }
+        final boolean hasHat3 = this.readCoordinate(reader, hasHat);
+        if (hasHat2 != hasHat3) {
+            throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+        }
         return null;
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        StringReader reader = new StringReader(builder.getInput());
+    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+        final StringReader reader = new StringReader(builder.getInput());
         reader.setCursor(builder.getStart());
 
         if (!reader.canRead()) {
@@ -61,7 +69,9 @@ public class PositionArgumentType implements ArgumentType<Object> {
     }
 
     private boolean readCoordinate(final StringReader reader, final boolean requiresHat) throws CommandSyntaxException {
-        if (!reader.canRead()) throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+        if (!reader.canRead()) {
+            throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+        }
         boolean hasHat = false;
         boolean hasWave = false;
         if (reader.peek() == '^') {
@@ -74,10 +84,14 @@ public class PositionArgumentType implements ArgumentType<Object> {
             hasWave = true;
         }
         if (hasWave) {
-            if (!reader.canRead() || reader.peek() == ' ') return hasHat;
+            if (!reader.canRead() || reader.peek() == ' ') {
+                return hasHat;
+            }
         }
         reader.readDouble();
-        if (reader.canRead() && reader.peek() != ' ') throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+        if (reader.canRead() && reader.peek() != ' ') {
+            throw INVALID_BLOCK_POSITION_EXCEPTION.createWithContext(reader);
+        }
         return hasHat;
     }
 

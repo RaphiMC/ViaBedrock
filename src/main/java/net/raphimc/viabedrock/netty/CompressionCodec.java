@@ -24,7 +24,7 @@ import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.io.compression.CompressionAlgorithm;
 import net.raphimc.viabedrock.api.io.compression.NoopCompression;
 import net.raphimc.viabedrock.api.io.compression.SnappyCompression;
-import net.raphimc.viabedrock.api.io.compression.ZLibCompression;
+import net.raphimc.viabedrock.api.io.compression.ZlibCompression;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompressionAlgorithm;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
 
     private final CompressionAlgorithm preferredCompressionAlgorithm;
     private final int threshold;
-    private ZLibCompression zLibCompression;
+    private ZlibCompression zLibCompression;
     private SnappyCompression snappyCompression;
 
     public CompressionCodec(final PacketCompressionAlgorithm preferredCompressionAlgorithm, final int threshold) {
@@ -43,7 +43,7 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+    public void handlerRemoved(final ChannelHandlerContext ctx) throws Exception {
         super.handlerRemoved(ctx);
         if (this.zLibCompression != null) {
             this.zLibCompression.end();
@@ -54,7 +54,7 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) throws Exception {
+    protected void encode(final ChannelHandlerContext ctx, final ByteBuf in, final ByteBuf out) throws Exception {
         if (!in.isReadable()) {
             return;
         }
@@ -80,7 +80,7 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+    protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) throws Exception {
         if (!in.isReadable()) {
             return;
         }
@@ -108,7 +108,7 @@ public class CompressionCodec extends ByteToMessageCodec<ByteBuf> {
             case None -> NoopCompression.INSTANCE;
             case ZLib -> {
                 if (this.zLibCompression == null) {
-                    this.zLibCompression = new ZLibCompression();
+                    this.zLibCompression = new ZlibCompression();
                 }
                 yield this.zLibCompression;
             }

@@ -41,7 +41,7 @@ public class ModelDefinitions {
                             this.entityModels.put(bedrockGeometry.getIdentifier(), bedrockGeometry);
                         }
                     }
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse model definition " + modelPath + " in pack " + pack.key(), e);
                 }
             }

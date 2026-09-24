@@ -24,13 +24,7 @@ import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Compares the bedrock data assets against the curated mapping files and collects everything that is wrong.
@@ -50,7 +44,7 @@ public class MappingAnalysis {
     public static final String POTTED_BLOCK_STATES = "potted_block_states";
 
     public static final List<String> CATEGORIES = List.of(BLOCK_STATES, ITEMS, ENTITIES, EFFECTS, PARTICLES, SOUNDS,
-            BLOCK_TAGS, POTTED_BLOCK_STATES);
+        BLOCK_TAGS, POTTED_BLOCK_STATES);
 
     private final MappingAssets assets;
     private final List<MappingGap> gaps = new ArrayList<>();
@@ -108,7 +102,7 @@ public class MappingAnalysis {
                         found = true;
                         if (!tag.getKey().equals(entry.getValue())) {
                             this.gaps.add(new MappingGap(BLOCK_TAGS, MappingGap.Kind.BROKEN, entry.getKey(),
-                                    "tagged as " + tag.getKey() + ", expected " + entry.getValue()));
+                                "tagged as " + tag.getKey() + ", expected " + entry.getValue()));
                         }
                     }
                 }
@@ -181,7 +175,7 @@ public class MappingAnalysis {
             final boolean isBlockItem = bedrockBlockItems.contains(bedrockIdentifier);
             if (definition.has("block") != isBlockItem) {
                 this.gaps.add(new MappingGap(ITEMS, MappingGap.Kind.BROKEN, bedrockIdentifier,
-                        isBlockItem ? "is a block item but is mapped as a meta item" : "is a meta item but is mapped as a block item"));
+                    isBlockItem ? "is a block item but is mapped as a meta item" : "is a meta item but is mapped as a block item"));
                 continue;
             }
             if (isBlockItem) {
@@ -192,10 +186,10 @@ public class MappingAnalysis {
                 for (Map.Entry<String, JsonElement> blockMapping : blockMappings.entrySet()) {
                     final BlockState pattern = BlockState.fromString(blockMapping.getKey());
                     final boolean matchesPalette = statesByIdentifier.getOrDefault(pattern.namespacedIdentifier(), List.of()).stream()
-                            .anyMatch(state -> state.properties().entrySet().containsAll(pattern.properties().entrySet()));
+                        .anyMatch(state -> state.properties().entrySet().containsAll(pattern.properties().entrySet()));
                     if (!matchesPalette) {
                         this.gaps.add(new MappingGap(ITEMS, MappingGap.Kind.BROKEN, bedrockIdentifier + " " + blockMapping.getKey(),
-                                "block state pattern matches no Bedrock palette state"));
+                            "block state pattern matches no Bedrock palette state"));
                     }
                     this.checkJavaItem(bedrockIdentifier + " " + blockMapping.getKey(), blockMapping.getValue(), javaItems);
                 }
@@ -213,7 +207,7 @@ public class MappingAnalysis {
         for (String bedrockIdentifier : bedrockItems) {
             if (!mappings.has(bedrockIdentifier)) {
                 this.gaps.add(new MappingGap(ITEMS, MappingGap.Kind.MISSING, bedrockIdentifier,
-                        bedrockBlockItems.contains(bedrockIdentifier) ? "block item" : "meta item"));
+                    bedrockBlockItems.contains(bedrockIdentifier) ? "block item" : "meta item"));
             }
         }
     }
@@ -246,8 +240,8 @@ public class MappingAnalysis {
                 continue;
             }
             final String javaIdentifier = entry.getValue().isJsonObject()
-                    ? entry.getValue().getAsJsonObject().get("particle").getAsString()
-                    : entry.getValue().getAsString();
+                ? entry.getValue().getAsJsonObject().get("particle").getAsString()
+                : entry.getValue().getAsString();
             if (!javaParticles.contains(Key.namespaced(javaIdentifier))) {
                 this.gaps.add(new MappingGap(PARTICLES, MappingGap.Kind.BROKEN, entry.getKey(), "java has no particle " + javaIdentifier));
             }

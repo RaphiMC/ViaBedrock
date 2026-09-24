@@ -22,12 +22,7 @@ import com.viaversion.viaversion.libs.gson.JsonObject;
 import com.viaversion.viaversion.util.Key;
 import net.raphimc.viabedrock.api.model.BlockState;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Checks the java item every item mapping points at.
@@ -133,7 +128,7 @@ public class ItemMappingChecker {
                 continue;
             }
             return new ItemMappingFix(bedrockIdentifier, path, currentJavaId, suggested,
-                    "this is " + sibling.getKey() + "'s java item, renaming it the same way gives " + suggested);
+                "this is " + sibling.getKey() + "'s java item, renaming it the same way gives " + suggested);
         }
         return null;
     }

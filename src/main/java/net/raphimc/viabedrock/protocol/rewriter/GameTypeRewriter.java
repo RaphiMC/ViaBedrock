@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.rewriter;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.GameType;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.GameMode;
 
-public class GameTypeRewriter {
+public final class GameTypeRewriter {
 
     public static GameMode getEffectiveGameMode(final GameType playerGameType, final GameType levelGameType) {
         GameType effectiveGameType = playerGameType;
@@ -37,6 +37,9 @@ public class GameTypeRewriter {
             case Spectator -> GameMode.SPECTATOR;
             default -> throw new IllegalStateException("Unhandled GameType: " + effectiveGameType);
         });
+    }
+
+    private GameTypeRewriter() {
     }
 
 }

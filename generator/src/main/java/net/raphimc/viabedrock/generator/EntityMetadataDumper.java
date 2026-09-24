@@ -31,7 +31,7 @@ public final class EntityMetadataDumper {
             }
             final Type genericType = field.getGenericType();
             if (!(genericType instanceof ParameterizedType parameterizedType)
-                    || !(parameterizedType.getActualTypeArguments()[0] instanceof Class<?> entityClass)) {
+                || !(parameterizedType.getActualTypeArguments()[0] instanceof Class<?> entityClass)) {
                 throw new IllegalStateException("Cannot find entity class for " + field.getName());
             }
             for (Class<?> type = entityClass; type != null; type = type.getSuperclass()) {
@@ -59,10 +59,10 @@ public final class EntityMetadataDumper {
         for (Field field : type.getDeclaredFields()) {
             if (EntityDataAccessor.class.isAssignableFrom(field.getType())) {
                 names.add(field.getName()
-                        .replaceFirst("DATA_ID_", "")
-                        .replaceFirst("DATA_", "")
-                        .replaceFirst("ID_", "")
-                        .replace("_ID", ""));
+                    .replaceFirst("DATA_ID_", "")
+                    .replaceFirst("DATA_", "")
+                    .replaceFirst("ID_", "")
+                    .replace("_ID", ""));
             }
         }
         return names;
@@ -70,7 +70,7 @@ public final class EntityMetadataDumper {
 
     private static String toViaBedrockName(final Class<?> type) {
         String name = String.join("_", type.getSimpleName().split("(?<=[a-z])(?=[A-Z])"))
-                .toUpperCase(Locale.ROOT);
+            .toUpperCase(Locale.ROOT);
         if (!name.equals("LIVING_ENTITY")) {
             name = name.replace("_ENTITY", "");
         }

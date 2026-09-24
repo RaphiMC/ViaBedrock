@@ -62,7 +62,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
-public class WorldEffectPackets {
+public final class WorldEffectPackets {
 
     // Only log warnings about missing mappings if explicitly enabled for debugging
     // The Bedrock Dedicated Server sends a lot of unknown sound events which are expected to be ignored in most cases (Resource packs could add custom sounds for certain events)
@@ -70,48 +70,48 @@ public class WorldEffectPackets {
 
     public static void register(final BedrockProtocol protocol) {
         /*protocol.registerClientbound(ClientboundBedrockPackets.UPDATE_SOUND_DATA, null, wrapper -> {
-            wrapper.read(BedrockTypes.UNSIGNED_LONG_LE); // server sound handle
-
-            if (wrapper.read(Types.BOOLEAN)) { // Stop Sound
-                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-            }
-
-            if (wrapper.read(Types.BOOLEAN)) { // Set Volume
-                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-
-                final float volume = wrapper.read(BedrockTypes.FLOAT_LE); // volume
-            }
-
-            if (wrapper.read(Types.BOOLEAN)) { // Set Pitch
-                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-
-                final float pitch = wrapper.read(BedrockTypes.FLOAT_LE); // pitch
-            }
-
-            if  (wrapper.read(Types.BOOLEAN)) { // Set Fade
-                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-
-                final float targetVolume = wrapper.read(BedrockTypes.FLOAT_LE); // targetVolume
-                final float duration = wrapper.read(BedrockTypes.FLOAT_LE); // duration
-            }
-
-            if (wrapper.read(Types.BOOLEAN)) { // Set SeekTo
-                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-
-                final float seconds = wrapper.read(BedrockTypes.FLOAT_LE); // seconds
-            }
-
-            if (wrapper.read(Types.BOOLEAN)) { // Set Pause
-                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-            }
-
-            if (wrapper.read(Types.BOOLEAN)) { // Set Resume
-                wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
-            }
-
-            wrapper.cancel();
-            // TODO: Server handle based sound manager
-        });*/
+         *     wrapper.read(BedrockTypes.UNSIGNED_LONG_LE); // server sound handle
+         *
+         *     if (wrapper.read(Types.BOOLEAN)) { // Stop Sound
+         *         wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+         *     }
+         *
+         *     if (wrapper.read(Types.BOOLEAN)) { // Set Volume
+         *         wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+         *
+         *         final float volume = wrapper.read(BedrockTypes.FLOAT_LE); // volume
+         *     }
+         *
+         *     if (wrapper.read(Types.BOOLEAN)) { // Set Pitch
+         *         wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+         *
+         *         final float pitch = wrapper.read(BedrockTypes.FLOAT_LE); // pitch
+         *     }
+         *
+         *     if  (wrapper.read(Types.BOOLEAN)) { // Set Fade
+         *         wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+         *
+         *         final float targetVolume = wrapper.read(BedrockTypes.FLOAT_LE); // targetVolume
+         *         final float duration = wrapper.read(BedrockTypes.FLOAT_LE); // duration
+         *     }
+         *
+         *     if (wrapper.read(Types.BOOLEAN)) { // Set SeekTo
+         *         wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+         *
+         *         final float seconds = wrapper.read(BedrockTypes.FLOAT_LE); // seconds
+         *     }
+         *
+         *     if (wrapper.read(Types.BOOLEAN)) { // Set Pause
+         *         wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+         *     }
+         *
+         *     if (wrapper.read(Types.BOOLEAN)) { // Set Resume
+         *         wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
+         *     }
+         *
+         *     wrapper.cancel();
+         *     // TODO: Server handle based sound manager
+         * });*/
         protocol.registerClientbound(ClientboundBedrockPackets.PLAY_SOUND, ClientboundPackets26_3.SOUND, wrapper -> {
             final String name = wrapper.read(BedrockTypes.STRING); // sound name
             final BlockPosition position = wrapper.read(BedrockTypes.BLOCK_POSITION); // position
@@ -194,7 +194,7 @@ public class WorldEffectPackets {
         protocol.registerClientbound(ClientboundBedrockPackets.LEVEL_SOUND_EVENT, ClientboundPackets26_3.SOUND, wrapper -> {
 
             final String soundEvent = wrapper.read(BedrockTypes.STRING);
-            if (soundEvent == null ||  soundEvent.isEmpty()) {
+            if (soundEvent == null || soundEvent.isEmpty()) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown SoundEvent");
                 wrapper.cancel();
                 return;
@@ -208,7 +208,7 @@ public class WorldEffectPackets {
             wrapper.read(BedrockTypes.OPTIONAL_POSITION_3F); // fire at position
 
             final boolean globalSound = isGlobal || Float.isNaN(position.x()) || Float.isNaN(position.y()) || Float.isNaN(position.z());
-            SoundDefinitions.ConfiguredSound configuredSound;
+            final SoundDefinitions.ConfiguredSound configuredSound;
             switch (soundEvent) {
                 case "record.null" -> {
                     wrapper.setPacketType(ClientboundPackets26_3.STOP_SOUND);
@@ -233,12 +233,12 @@ public class WorldEffectPackets {
                     configuredSound = tryFindSound(wrapper.user(), soundEvent, data, entityIdentifier, isBabyMob);
                     if (configuredSound == null) { // Fallback for some special handled sounds
                         /*switch (soundEvent) {
-                            case AmbientBaby, MobWarningBaby, HurtBaby, DeathBaby, StepBaby -> {
-                                final SharedTypes_Legacy_LevelSoundEvent soundEventAdult = EnumUtil.getEnumConstantOrNull(SharedTypes_Legacy_LevelSoundEvent.class, soundEvent.name().replace("Baby", ""));
-                                configuredSound = tryFindSound(wrapper.user(), soundEventAdult, data, entityIdentifier, true);
-                            }
-                            case AmbientInWater, AmbientInAir -> configuredSound = tryFindSound(wrapper.user(), SharedTypes_Legacy_LevelSoundEvent.Ambient, data, entityIdentifier, isBabyMob);
-                        }*/
+                         *     case AmbientBaby, MobWarningBaby, HurtBaby, DeathBaby, StepBaby -> {
+                         *         final SharedTypes_Legacy_LevelSoundEvent soundEventAdult = EnumUtil.getEnumConstantOrNull(SharedTypes_Legacy_LevelSoundEvent.class, soundEvent.name().replace("Baby", ""));
+                         *         configuredSound = tryFindSound(wrapper.user(), soundEventAdult, data, entityIdentifier, true);
+                         *     }
+                         *     case AmbientInWater, AmbientInAir -> configuredSound = tryFindSound(wrapper.user(), SharedTypes_Legacy_LevelSoundEvent.Ambient, data, entityIdentifier, isBabyMob);
+                         * }*/
                     }
                     if (configuredSound == null) {
                         if (LEVEL_SOUND_DEBUG_LOG) {
@@ -378,7 +378,7 @@ public class WorldEffectPackets {
                 case StartBlockCracking, UpdateBlockCracking -> {
                     wrapper.cancel();
                     wrapper.user().get(BreakingTracker.class).updateCrackingInfo(new Position3f(
-                            MathUtil.floor(position.x()), MathUtil.floor(position.y()), MathUtil.floor(position.z())
+                        MathUtil.floor(position.x()), MathUtil.floor(position.y()), MathUtil.floor(position.z())
                     ), data, levelEvent == LevelEvent.UpdateBlockCracking);
                 }
                 case StopBlockCracking -> {
@@ -435,7 +435,7 @@ public class WorldEffectPackets {
                         wrapper.write(Types.LONG, ThreadLocalRandom.current().nextLong()); // seed
                     } else if (levelEventMapping instanceof BedrockMappingData.JavaParticle javaParticle) {
                         wrapper.setPacketType(ClientboundPackets26_3.LEVEL_PARTICLES);
-                        PacketFactory.writeJavaLevelParticles(wrapper, switch (levelEvent) {
+                        final Position3f particlePosition = switch (levelEvent) {
                             case ParticlesCrackBlockDown -> new Position3f(MathUtil.floor(position.x()) + 0.5F, MathUtil.floor(position.y()), MathUtil.floor(position.z()) + 0.5F);
                             case ParticlesCrackBlockUp -> new Position3f(MathUtil.floor(position.x()) + 0.5F, MathUtil.floor(position.y()) + 1F, MathUtil.floor(position.z()) + 0.5F);
                             case ParticlesCrackBlockNorth -> new Position3f(MathUtil.floor(position.x()) + 0.5F, MathUtil.floor(position.y()) + 0.5F, MathUtil.floor(position.z()));
@@ -443,15 +443,16 @@ public class WorldEffectPackets {
                             case ParticlesCrackBlockWest -> new Position3f(MathUtil.floor(position.x()), MathUtil.floor(position.y()) + 0.5F, MathUtil.floor(position.z()) + 0.5F);
                             case ParticlesCrackBlockEast -> new Position3f(MathUtil.floor(position.x()) + 1F, MathUtil.floor(position.y()) + 0.5F, MathUtil.floor(position.z()) + 0.5F);
                             default -> position;
-                        }, switch (levelEvent) {
+                        };
+                        final BedrockMappingData.JavaParticle particle = switch (levelEvent) {
                             case ParticlesCrit -> javaParticle.withCount(data);
                             case ParticlesCrackBlock, ParticlesCrackBlockDown, ParticlesCrackBlockUp, ParticlesCrackBlockNorth,
                                  ParticlesCrackBlockSouth, ParticlesCrackBlockWest, ParticlesCrackBlockEast -> {
                                 final int javaBlockState = wrapper.user().get(BlockStateRewriter.class).javaId(data);
                                 if (javaBlockState != -1) {
-                                    final Particle particle = new Particle(javaParticle.particle().id());
-                                    particle.add(Types.VAR_INT, javaBlockState); // block state
-                                    yield javaParticle.withParticle(particle);
+                                    final Particle p = new Particle(javaParticle.particle().id());
+                                    p.add(Types.VAR_INT, javaBlockState); // block state
+                                    yield javaParticle.withParticle(p);
                                 } else {
                                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing block state: " + data);
                                     wrapper.cancel();
@@ -459,7 +460,8 @@ public class WorldEffectPackets {
                                 }
                             }
                             default -> javaParticle;
-                        });
+                        };
+                        PacketFactory.writeJavaLevelParticles(wrapper, particlePosition, particle);
                     } else if (levelEventMapping == null) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Missing level event mapping for " + levelEvent);
                         wrapper.cancel();
@@ -491,25 +493,25 @@ public class WorldEffectPackets {
                     for (int i = 0; i < count; i++) {
                         final float progress = i / (count - 1F);
                         final Position3f position = new Position3f(
-                                MathUtil.lerp(progress, startPosition.x(), endPosition.x()) + (ThreadLocalRandom.current().nextFloat() - 0.5F) * variationX * 2F,
-                                MathUtil.lerp(progress, startPosition.y(), endPosition.y()) + (ThreadLocalRandom.current().nextFloat() - 0.5F) * variationY * 2F - 1F,
-                                MathUtil.lerp(progress, startPosition.z(), endPosition.z()) + (ThreadLocalRandom.current().nextFloat() - 0.5F) * variationX * 2F
+                            MathUtil.lerp(progress, startPosition.x(), endPosition.x()) + (ThreadLocalRandom.current().nextFloat() - 0.5F) * variationX * 2F,
+                            MathUtil.lerp(progress, startPosition.y(), endPosition.y()) + (ThreadLocalRandom.current().nextFloat() - 0.5F) * variationY * 2F - 1F,
+                            MathUtil.lerp(progress, startPosition.z(), endPosition.z()) + (ThreadLocalRandom.current().nextFloat() - 0.5F) * variationX * 2F
                         );
                         final BedrockMappingData.JavaParticle javaParticle = new BedrockMappingData.JavaParticle(
-                                new Particle(BedrockProtocol.MAPPINGS.getJavaParticles().get("minecraft:portal")),
-                                (ThreadLocalRandom.current().nextFloat() - 0.5F) * dirScale,
-                                (ThreadLocalRandom.current().nextFloat() - 0.5F) * dirScale,
-                                (ThreadLocalRandom.current().nextFloat() - 0.5F) * dirScale,
-                                1F,
-                                0
+                            new Particle(BedrockProtocol.MAPPINGS.getJavaParticles().get("minecraft:portal")),
+                            (ThreadLocalRandom.current().nextFloat() - 0.5F) * dirScale,
+                            (ThreadLocalRandom.current().nextFloat() - 0.5F) * dirScale,
+                            (ThreadLocalRandom.current().nextFloat() - 0.5F) * dirScale,
+                            1F,
+                            0
                         );
                         PacketFactory.sendJavaLevelParticles(wrapper.user(), position, javaParticle);
                     }
                 }
                 case ParticlesBlockExplosion -> {
                     wrapper.cancel();
-                    final Position3f originPosition = new Position3f(data.getFloat("originX"), data.getFloat("originY"), data.getFloat("originZ"));
-                    final float radius = data.getFloat("radius");
+                    // final Position3f originPosition = new Position3f(data.getFloat("originX"), data.getFloat("originY"), data.getFloat("originZ"));
+                    // final float radius = data.getFloat("radius");
                     final int blockCount = data.getInt("size");
                     for (int i = 0; i < blockCount; i++) {
                         final Position3f position = new Position3f(data.getFloat("pos" + i + "x"), data.getFloat("pos" + i + "y"), data.getFloat("pos" + i + "z"));
@@ -743,6 +745,9 @@ public class WorldEffectPackets {
             configuredSound = soundEvents.get(null); // generic sound
         }
         return configuredSound;
+    }
+
+    private WorldEffectPackets() {
     }
 
 }

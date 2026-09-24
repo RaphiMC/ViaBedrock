@@ -39,7 +39,7 @@ public class FlowerPotBlockEntityRewriter implements BlockEntityRewriter.Rewrite
     private static final int DEFAULT_BLOCK_STATE = BedrockProtocol.MAPPINGS.getJavaBlockStates().get(new BlockState("flower_pot", Collections.emptyMap()));
 
     @Override
-    public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
+    public BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
 
         final BlockEntity javaBlockEntity = new BlockEntityImpl(bedrockBlockEntity.packedXZ(), bedrockBlockEntity.y(), -1, null);
@@ -50,7 +50,9 @@ public class FlowerPotBlockEntityRewriter implements BlockEntityRewriter.Rewrite
         if (bedrockTag.get("item") instanceof ShortTag itemTag && bedrockTag.get("mData") instanceof IntTag dataTag) {
             final short id = itemTag.asShort();
             final int metadata = dataTag.asInt();
-            if (metadata < 0 || metadata > 15) return defaultJavaBlockEntity;
+            if (metadata < 0 || metadata > 15) {
+                return defaultJavaBlockEntity;
+            }
             final int legacyBlockStateId = (id << 4) | metadata;
 
             bedrockBlockState = blockStateRewriter.bedrockId(legacyBlockStateId);

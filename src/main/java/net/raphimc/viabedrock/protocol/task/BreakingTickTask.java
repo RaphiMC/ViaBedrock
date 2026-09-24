@@ -23,21 +23,25 @@ import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.storage.BreakingTracker;
 
 public class BreakingTickTask implements Runnable {
+
     @Override
     public void run() {
         for (UserConnection info : Via.getManager().getConnectionManager().getConnections()) {
             final BreakingTracker breakingTracker = info.get(BreakingTracker.class);
             if (breakingTracker != null) {
                 info.getChannel().eventLoop().submit(() -> {
-                    if (!info.getChannel().isActive()) return;
+                    if (!info.getChannel().isActive()) {
+                        return;
+                    }
 
                     try {
                         breakingTracker.tick();
-                    } catch (Throwable e) {
+                    } catch (final Throwable e) {
                         BedrockProtocol.kickForIllegalState(info, "Error ticking cracking animation. See console for details.", e);
                     }
                 });
             }
         }
     }
+
 }

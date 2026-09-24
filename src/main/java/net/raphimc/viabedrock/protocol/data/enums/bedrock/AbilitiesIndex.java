@@ -42,10 +42,11 @@ public enum AbilitiesIndex {
     WorldBuilder(16),
     NoClip(17),
     PrivilegedBuilder(18),
-    VerticalFlySpeed(19),
-    ;
+    VerticalFlySpeed(19);
 
     private static final Int2ObjectMap<AbilitiesIndex> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (AbilitiesIndex value : values()) {
@@ -80,8 +81,6 @@ public enum AbilitiesIndex {
         }
         return fallback;
     }
-
-    private final int value;
 
     AbilitiesIndex(final AbilitiesIndex value) {
         this(value.value);

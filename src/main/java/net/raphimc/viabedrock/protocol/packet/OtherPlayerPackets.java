@@ -41,7 +41,10 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PositionMode
 import net.raphimc.viabedrock.protocol.data.enums.java.Relative;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.EquipmentSlot;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.PlayerInfoUpdateAction;
-import net.raphimc.viabedrock.protocol.model.*;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.model.PlayerAbilities;
+import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.SkinData;
 import net.raphimc.viabedrock.protocol.provider.SkinProvider;
 import net.raphimc.viabedrock.protocol.rewriter.GameTypeRewriter;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
@@ -52,7 +55,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class OtherPlayerPackets {
+public final class OtherPlayerPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.ADD_PLAYER, ClientboundPackets26_3.ADD_ENTITY, wrapper -> {
@@ -70,9 +73,9 @@ public class OtherPlayerPackets {
             final BedrockItem item = wrapper.read(itemRewriter.newItemType()); // held item
             final GameType gameType = GameType.getByValue(wrapper.read(BedrockTypes.VAR_INT), GameType.Undefined); // game type
             final EntityData[] entityData = wrapper.read(BedrockTypes.ENTITY_DATA_ARRAY); // entity data
-            final EntityProperties entityProperties = wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
+            wrapper.read(BedrockTypes.ENTITY_PROPERTIES); // entity properties
             final PlayerAbilities abilities = wrapper.read(BedrockTypes.PLAYER_ABILITIES); // abilities
-            final EntityLink[] entityLinks = wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
+            wrapper.read(BedrockTypes.ENTITY_LINK_ARRAY); // entity links
 
             final PlayerEntity entity = entityTracker.addEntity(new PlayerEntity(wrapper.user(), entityRuntimeId, entityTracker.getNextJavaEntityId(), uuid, abilities));
             entity.setPosition(position);
@@ -83,11 +86,11 @@ public class OtherPlayerPackets {
             playerInfoUpdate.write(Types.PROFILE_ACTIONS_ENUM1_21_4, BitSets.create(8, PlayerInfoUpdateAction.ADD_PLAYER, PlayerInfoUpdateAction.UPDATE_GAME_MODE)); // actions
             playerInfoUpdate.write(Types.VAR_INT, 1); // length
             playerInfoUpdate.write(Types.UUID, uuid); // uuid
-            playerInfoUpdate.write(Types.STRING, StringUtil.encodeUUID(uuid)); // username
+            playerInfoUpdate.write(Types.STRING, StringUtil.encodeUuid(uuid)); // username
             playerInfoUpdate.write(Types.PROFILE_PROPERTY_ARRAY, new GameProfile.Property[]{
-                    new GameProfile.Property("platform_online_id", platformOnlineId),
-                    new GameProfile.Property("device_id", wrapper.read(BedrockTypes.STRING)), // device id
-                    new GameProfile.Property("device_os", wrapper.read(BedrockTypes.INT_LE).toString()) // device os
+                new GameProfile.Property("platform_online_id", platformOnlineId),
+                new GameProfile.Property("device_id", wrapper.read(BedrockTypes.STRING)), // device id
+                new GameProfile.Property("device_os", wrapper.read(BedrockTypes.INT_LE).toString()) // device os
             }); // properties
             playerInfoUpdate.write(Types.VAR_INT, GameTypeRewriter.getEffectiveGameMode(gameType, gameSession.getLevelGameType()).ordinal()); // game mode
             playerInfoUpdate.send(BedrockProtocol.class);
@@ -195,6 +198,9 @@ public class OtherPlayerPackets {
                 wrapper.cancel();
             }
         });
+    }
+
+    private OtherPlayerPackets() {
     }
 
 }

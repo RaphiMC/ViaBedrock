@@ -27,7 +27,7 @@ import net.raphimc.viabedrock.api.chunk.bitarray.BitArrayVersion;
 
 import java.util.List;
 
-public class BedrockDataPalette implements DefaultedDataPalette, Cloneable {
+public class BedrockDataPalette implements DefaultedDataPalette {
 
     private final IntList palette;
     private BitArray bitArray;
@@ -130,9 +130,8 @@ public class BedrockDataPalette implements DefaultedDataPalette, Cloneable {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public BedrockDataPalette clone() {
-        return new BedrockDataPalette(new IntArrayList(this.palette), this.bitArray.clone());
+    public BedrockDataPalette copy() {
+        return new BedrockDataPalette(new IntArrayList(this.palette), this.bitArray.copy());
     }
 
     public BitArray getBitArray() {

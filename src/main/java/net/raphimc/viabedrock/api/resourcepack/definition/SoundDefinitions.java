@@ -51,7 +51,7 @@ public class SoundDefinitions {
                         final SoundDefinition soundDefinition = new SoundDefinition(entry.getKey(), category);
                         this.soundDefinitions.put(entry.getKey(), soundDefinition);
                     }
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse sound_definitions.json in pack " + pack.key(), e);
                 }
             }
@@ -65,7 +65,7 @@ public class SoundDefinitions {
                         final SoundDefinition soundDefinition = new SoundDefinition(entry.getKey(), category);
                         this.soundDefinitions.put(entry.getKey(), soundDefinition);
                     }
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse sound_definitions.json in pack " + pack.key(), e);
                 }
             }
@@ -112,7 +112,7 @@ public class SoundDefinitions {
                             this.parseEvents(interactiveSounds.getAsJsonObject("block_sounds"), false, this.blockSounds);
                         }
                     }
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse sounds.json in pack " + pack.key(), e);
                 }
             }
