@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.rewriter;
+package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.nbt.tag.*;
 import com.viaversion.viaversion.api.connection.UserConnection;
@@ -26,8 +26,7 @@ import com.viaversion.viaversion.api.minecraft.item.data.Enchantments;
 import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.RegistryUtil;
-import net.raphimc.viabedrock.experimental.model.map.MapObject;
-import net.raphimc.viabedrock.experimental.storage.MapTracker;
+import net.raphimc.viabedrock.protocol.storage.MapTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.data.JavaRegistries;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Enchant_Type;
@@ -35,7 +34,7 @@ import net.raphimc.viabedrock.protocol.model.BedrockItem;
 
 import java.util.logging.Level;
 
-public class ExperimentalItemRewriter {
+public class ItemDataRewriter {
 
     // BedrockTag can be null
     public static void handleItem(final UserConnection user, final BedrockItem bedrockItem, final CompoundTag bedrockTag, final Item javaItem) {
@@ -47,18 +46,7 @@ public class ExperimentalItemRewriter {
             }
 
             if (bedrockTag.get("map_uuid") instanceof NumberTag uuidTag) {
-                MapTracker mapTracker = user.get(MapTracker.class);
-                final long uuid = uuidTag.asLong();
-
-                MapObject map = mapTracker.getMapObjects().get(uuid);
-                if (map == null) {
-                    final int mapId = mapTracker.getNextMapId();
-                    map = new MapObject(uuid, mapId);
-                    mapTracker.getMapObjects().put(uuid, map);
-                    //ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Registered new map with id " + mapId + " and uuid " + uuid);
-                }
-
-                javaItem.dataContainer().set(StructuredDataKey.MAP_ID, map.getJavaId());
+                javaItem.dataContainer().set(StructuredDataKey.MAP_ID, user.get(MapTracker.class).getJavaId(uuidTag.asLong()));
             }
 
             if (bedrockTag.get("ench") instanceof ListTag<?> enchantments) {

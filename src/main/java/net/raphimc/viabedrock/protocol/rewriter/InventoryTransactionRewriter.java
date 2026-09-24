@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.rewriter;
+package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
-import net.raphimc.viabedrock.experimental.model.inventory.BedrockInventoryTransaction;
-import net.raphimc.viabedrock.experimental.model.inventory.InventoryActionData;
-import net.raphimc.viabedrock.experimental.types.inventory.InventoryActionDataType;
-import net.raphimc.viabedrock.experimental.types.inventory.InventoryTransactionPacketType;
+import net.raphimc.viabedrock.protocol.model.inventory.BedrockInventoryTransaction;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
+import net.raphimc.viabedrock.protocol.types.inventory.InventoryActionDataType;
+import net.raphimc.viabedrock.protocol.types.inventory.InventoryTransactionPacketType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 

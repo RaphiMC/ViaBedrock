@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.rewriter;
+package net.raphimc.viabedrock.protocol.rewriter;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.EulerAngle;
@@ -36,7 +36,6 @@ import java.util.logging.Level;
 
 public class EntityMetadataRewriter {
 
-    // Called in Entity#translateEntityData if experimental features are enabled
     public static boolean rewrite(final UserConnection user, final Entity entity, final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
         EntityTracker entityTracker = user.get(EntityTracker.class);
 

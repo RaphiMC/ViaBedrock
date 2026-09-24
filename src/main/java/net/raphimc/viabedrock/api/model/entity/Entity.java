@@ -26,7 +26,7 @@ import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
-import net.raphimc.viabedrock.experimental.rewriter.EntityMetadataRewriter;
+import net.raphimc.viabedrock.protocol.rewriter.EntityMetadataRewriter;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
@@ -254,11 +254,7 @@ public class Entity {
     }
 
     protected boolean translateEntityData(final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
-        if (ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
-            return EntityMetadataRewriter.rewrite(user, this, id, entityData, javaEntityData);
-        }
-
-        return false;
+        return EntityMetadataRewriter.rewrite(user, this, id, entityData, javaEntityData);
     }
 
     protected void onEntityDataChanged() {

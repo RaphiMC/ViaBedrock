@@ -15,29 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viabedrock.experimental.storage;
+package net.raphimc.viabedrock.protocol.types;
 
-import com.viaversion.viaversion.api.connection.StoredObject;
-import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectMap;
-import com.viaversion.viaversion.libs.fastutil.longs.Long2ObjectOpenHashMap;
-import net.raphimc.viabedrock.experimental.model.map.MapObject;
+import com.viaversion.viaversion.api.type.Type;
+import net.raphimc.viabedrock.protocol.model.inventory.*;
+import net.raphimc.viabedrock.protocol.types.inventory.*;
+import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 
-public class MapTracker extends StoredObject {
+public class InventoryTypes {
 
-    private final Long2ObjectMap<MapObject> mapObjects = new Long2ObjectOpenHashMap<>();
-    private int nextMapId = 0;
-
-    public MapTracker(UserConnection user) {
-        super(user);
-    }
-
-    public Long2ObjectMap<MapObject> getMapObjects() {
-        return mapObjects;
-    }
-
-    public int getNextMapId() {
-        return nextMapId++;
-    }
+    public static final Type<LegacySetItemSlotData[]> LEGACY_SET_ITEM_SLOT_DATA = new ArrayType<>(new LegacySetItemSlotDataType(), BedrockTypes.UNSIGNED_VAR_INT);
+    public static final Type<InventorySource> INVENTORY_SOURCE = new InventorySourcePacketType();
 
 }
