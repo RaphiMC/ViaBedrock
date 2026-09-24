@@ -92,7 +92,7 @@ public class Pow2BitArray implements BitArray {
     }
 
     @Override
-    public Pow2BitArray clone() {
+    public Pow2BitArray copy() {
         return new Pow2BitArray(this.version, this.size, Arrays.copyOf(this.words, this.words.length));
     }
 

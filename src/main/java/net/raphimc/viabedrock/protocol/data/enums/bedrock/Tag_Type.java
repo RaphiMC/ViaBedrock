@@ -33,10 +33,11 @@ public enum Tag_Type {
     String(8),
     List(9),
     Compound(10),
-    IntArray(11),
-    ;
+    IntArray(11);
 
     private static final Int2ObjectMap<Tag_Type> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (Tag_Type value : values()) {
@@ -71,8 +72,6 @@ public enum Tag_Type {
         }
         return fallback;
     }
-
-    private final int value;
 
     Tag_Type(final Tag_Type value) {
         this(value.value);

@@ -40,7 +40,7 @@ public class RenderControllerDefinitions {
                     for (BedrockRenderController bedrockRenderController : BedrockControllerParser.parse(pack.content().getString(controllerPath))) {
                         this.renderControllers.put(bedrockRenderController.identifier(), bedrockRenderController);
                     }
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse render controller " + controllerPath + " in pack " + pack.key(), e);
                 }
             }

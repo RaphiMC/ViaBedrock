@@ -18,10 +18,9 @@
 package net.raphimc.viabedrock.protocol.types.inventory;
 
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
-import net.raphimc.viabedrock.protocol.model.inventory.LegacySetItemSlotData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;
+import net.raphimc.viabedrock.protocol.model.inventory.LegacySetItemSlotData;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
 public class LegacySetItemSlotDataType extends Type<LegacySetItemSlotData> {
@@ -31,7 +30,7 @@ public class LegacySetItemSlotDataType extends Type<LegacySetItemSlotData> {
     }
 
     @Override
-    public LegacySetItemSlotData read(ByteBuf buffer) {
+    public LegacySetItemSlotData read(final ByteBuf buffer) {
         final byte containerId = buffer.readByte();
         final byte[] slots = BedrockTypes.BYTE_ARRAY.read(buffer);
 
@@ -39,8 +38,9 @@ public class LegacySetItemSlotDataType extends Type<LegacySetItemSlotData> {
     }
 
     @Override
-    public void write(ByteBuf buffer, LegacySetItemSlotData value) {
+    public void write(final ByteBuf buffer, final LegacySetItemSlotData value) {
         buffer.writeByte(value.container().getValue());
         BedrockTypes.BYTE_ARRAY.write(buffer, value.slots());
     }
+
 }

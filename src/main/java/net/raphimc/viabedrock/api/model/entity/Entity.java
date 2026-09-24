@@ -26,14 +26,14 @@ import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ClientboundPackets26_3;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.EnumUtil;
-import net.raphimc.viabedrock.protocol.rewriter.EntityMetadataRewriter;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIDs;
+import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIds;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.DataItemType;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.BossEventOperationType;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.rewriter.EntityMetadataRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.entitydata.EntityDataTypesBedrock;
 
@@ -60,7 +60,7 @@ public class Entity {
      */
     protected Position3f rotation = Position3f.ZERO;
     protected boolean onGround;
-    protected final Map<ActorDataIDs, EntityData> entityData = new EnumMap<>(ActorDataIDs.class);
+    protected final Map<ActorDataIds, EntityData> entityData = new EnumMap<>(ActorDataIds.class);
     protected String name;
     protected int age;
     protected boolean hasBossBar;
@@ -104,7 +104,7 @@ public class Entity {
 
     public final void updateEntityData(final EntityData[] entityData, final List<EntityData> javaEntityData) {
         for (EntityData data : entityData) {
-            final ActorDataIDs dataId = ActorDataIDs.getByValue(data.id());
+            final ActorDataIds dataId = ActorDataIds.getByValue(data.id());
             if (dataId == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown ActorDataIDs: " + data.id());
                 continue;
@@ -188,17 +188,17 @@ public class Entity {
         this.onGround = onGround;
     }
 
-    public Map<ActorDataIDs, EntityData> entityData() {
+    public Map<ActorDataIds, EntityData> entityData() {
         return this.entityData;
     }
 
     public Set<ActorFlags> entityFlags() {
         BigInteger combinedFlags = BigInteger.ZERO;
-        if (this.entityData.containsKey(ActorDataIDs.RESERVED_0)) {
-            combinedFlags = combinedFlags.add(BigInteger.valueOf(this.entityData.get(ActorDataIDs.RESERVED_0).<Long>value().longValue()));
+        if (this.entityData.containsKey(ActorDataIds.RESERVED_0)) {
+            combinedFlags = combinedFlags.add(BigInteger.valueOf(this.entityData.get(ActorDataIds.RESERVED_0).<Long>value().longValue()));
         }
-        if (this.entityData.containsKey(ActorDataIDs.RESERVED_092)) {
-            combinedFlags = combinedFlags.add(BigInteger.valueOf(this.entityData.get(ActorDataIDs.RESERVED_092).<Long>value().longValue()).shiftLeft(64));
+        if (this.entityData.containsKey(ActorDataIds.RESERVED_092)) {
+            combinedFlags = combinedFlags.add(BigInteger.valueOf(this.entityData.get(ActorDataIds.RESERVED_092).<Long>value().longValue()).shiftLeft(64));
         }
         return EnumUtil.getEnumSetFromBitmask(ActorFlags.class, combinedFlags, ActorFlags::getValue);
     }
@@ -237,11 +237,11 @@ public class Entity {
         return Collections.unmodifiableList(this.passengers);
     }
 
-    public void setMountEntityRId(final long runtimeId) {
+    public void setMountEntityRuntimeId(final long runtimeId) {
         this.mountRuntimeId = runtimeId;
     }
 
-    public long mountEntityRId() {
+    public long mountEntityRuntimeId() {
         return this.mountRuntimeId;
     }
 
@@ -253,8 +253,8 @@ public class Entity {
         return index;
     }
 
-    protected boolean translateEntityData(final ActorDataIDs id, final EntityData entityData, final List<EntityData> javaEntityData) {
-        return EntityMetadataRewriter.rewrite(user, this, id, entityData, javaEntityData);
+    protected boolean translateEntityData(final ActorDataIds id, final EntityData entityData, final List<EntityData> javaEntityData) {
+        return EntityMetadataRewriter.rewrite(this.user, this, id, entityData, javaEntityData);
     }
 
     protected void onEntityDataChanged() {

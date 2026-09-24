@@ -32,7 +32,7 @@ public class PacketCodec extends ByteToMessageCodec<ByteBuf> {
     public static final String NAME = "viabedrock-packet-codec";
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) {
+    protected void encode(final ChannelHandlerContext ctx, final ByteBuf in, final ByteBuf out) {
         final int packetId = Types.VAR_INT.readPrimitive(in);
         final int header = packetId & 1023;
         BedrockTypes.UNSIGNED_VAR_INT.writePrimitive(out, header);
@@ -40,11 +40,10 @@ public class PacketCodec extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+    protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         final int header = BedrockTypes.UNSIGNED_VAR_INT.readPrimitive(in);
         final int packetId = header & 1023;
         final int senderSubClientId = (header >> 10) & 3;
-        final int targetSubClientId = (header >> 12) & 3;
         if (senderSubClientId != 0) { // Bedrock client drops the packet if sender sub client id is not 0
             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Dropping packet with invalid sender sub client id: " + senderSubClientId);
             in.skipBytes(in.readableBytes());

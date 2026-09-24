@@ -26,7 +26,7 @@ import java.util.function.IntPredicate;
 public interface DefaultedDataPalette extends DataPalette {
 
     @Override
-    default void forEachMatchingCoordinate(IntPredicate idPredicate, IntConsumer coordinateConsumer) {
+    default void forEachMatchingCoordinate(final IntPredicate idPredicate, final IntConsumer coordinateConsumer) {
         for (int idx = 0; idx < ChunkSection.SIZE; idx++) {
             if (idPredicate.test(idAt(idx))) {
                 coordinateConsumer.accept(idx);

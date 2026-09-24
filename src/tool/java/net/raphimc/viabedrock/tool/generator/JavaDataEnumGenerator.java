@@ -43,11 +43,11 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class JavaDataEnumGenerator {
+public final class JavaDataEnumGenerator {
 
     private static final String MANIFEST_URL = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final String versionId = toolArgs.get("version", ProtocolConstants.JAVA_VERSION.getName());
         final Path clientJar = toolArgs.path("client-jar", ToolPaths.PROJECT_ROOT.resolve("run/client-jars/" + versionId + ".jar"));
@@ -85,11 +85,11 @@ public class JavaDataEnumGenerator {
 
         final JsonObject metaObj = JsonParser.parseReader(new InputStreamReader(new URL(MANIFEST_URL).openStream())).getAsJsonObject();
         final String versionUrl = metaObj.getAsJsonArray("versions").asList().stream()
-                .map(JsonElement::getAsJsonObject)
-                .filter(e -> e.get("id").getAsString().equals(versionId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Version " + versionId + " not found in the version manifest. Pass --version=<id> if the name differs from the protocol version name."))
-                .get("url").getAsString();
+            .map(JsonElement::getAsJsonObject)
+            .filter(e -> e.get("id").getAsString().equals(versionId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Version " + versionId + " not found in the version manifest. Pass --version=<id> if the name differs from the protocol version name."))
+            .get("url").getAsString();
         final JsonObject versionObj = JsonParser.parseReader(new InputStreamReader(new URL(versionUrl).openStream())).getAsJsonObject();
         final String clientUrl = versionObj.getAsJsonObject("downloads").getAsJsonObject("client").get("url").getAsString();
 
@@ -162,6 +162,9 @@ public class JavaDataEnumGenerator {
             ordinal++;
         }
         return genEnum;
+    }
+
+    private JavaDataEnumGenerator() {
     }
 
 }

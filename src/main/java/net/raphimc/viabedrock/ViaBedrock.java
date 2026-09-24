@@ -24,7 +24,7 @@ import net.raphimc.viabedrock.platform.ViaBedrockPlatform;
 import java.net.InetSocketAddress;
 import java.util.logging.Level;
 
-public class ViaBedrock {
+public final class ViaBedrock {
 
     public static final String VERSION = "${version}";
     public static final String IMPL_VERSION = "git-ViaBedrock-${version}:${commit_hash}";
@@ -37,7 +37,9 @@ public class ViaBedrock {
     }
 
     public static void init(final ViaBedrockPlatform platform, final ViaBedrockConfig config) {
-        if (ViaBedrock.platform != null) throw new IllegalStateException("ViaBedrock is already initialized");
+        if (ViaBedrock.platform != null) {
+            throw new IllegalStateException("ViaBedrock is already initialized");
+        }
 
         ViaBedrock.platform = platform;
         ViaBedrock.config = config;
@@ -46,7 +48,7 @@ public class ViaBedrock {
             try {
                 ViaBedrock.resourcePackServer = new ResourcePackHttpServer(new InetSocketAddress(config.getResourcePackHost(), config.getResourcePackPort()));
                 platform.getLogger().log(Level.INFO, "Started resource pack HTTP server on " + resourcePackServer.getUrl());
-            } catch (Throwable e) {
+            } catch (final Throwable e) {
                 throw new IllegalStateException("Failed to start resource pack HTTP server", e);
             }
         }

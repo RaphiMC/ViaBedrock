@@ -25,10 +25,11 @@ public enum CommandParameterOption {
     None(0),
     EnumAutocompleteExpansion(0x01),
     HasSemanticConstraint(0x02),
-    EnumAsChainedCommand(0x04),
-    ;
+    EnumAsChainedCommand(0x04);
 
     private static final Int2ObjectMap<CommandParameterOption> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (CommandParameterOption value : values()) {
@@ -63,8 +64,6 @@ public enum CommandParameterOption {
         }
         return fallback;
     }
-
-    private final int value;
 
     CommandParameterOption(final CommandParameterOption value) {
         this(value.value);

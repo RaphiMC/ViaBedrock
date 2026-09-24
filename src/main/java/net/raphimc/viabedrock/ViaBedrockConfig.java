@@ -64,7 +64,7 @@ public class ViaBedrockConfig extends Config implements net.raphimc.viabedrock.p
     }
 
     @Override
-    protected void handleConfig(Map<String, Object> map) {
+    protected void handleConfig(final Map<String, Object> map) {
     }
 
     @Override

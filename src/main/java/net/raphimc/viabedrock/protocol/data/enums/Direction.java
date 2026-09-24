@@ -59,7 +59,9 @@ public enum Direction {
     }
 
     public static Direction getFromHorizontalId(final int horizontalId) {
-        if (horizontalId == -1) return null;
+        if (horizontalId == -1) {
+            return null;
+        }
 
         for (Direction direction : values()) {
             if (direction.horizontalId == horizontalId) {

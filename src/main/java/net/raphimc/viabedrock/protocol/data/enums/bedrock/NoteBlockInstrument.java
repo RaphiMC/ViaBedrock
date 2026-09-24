@@ -49,10 +49,11 @@ public enum NoteBlockInstrument {
     Creeper(22),
     Dragon(23),
     WitherSkeleton(24),
-    Piglin(25),
-    ;
+    Piglin(25);
 
     private static final Int2ObjectMap<NoteBlockInstrument> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (NoteBlockInstrument value : values()) {
@@ -87,8 +88,6 @@ public enum NoteBlockInstrument {
         }
         return fallback;
     }
-
-    private final int value;
 
     NoteBlockInstrument(final NoteBlockInstrument value) {
         this(value.value);

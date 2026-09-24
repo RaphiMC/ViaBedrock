@@ -29,10 +29,11 @@ public enum SerializedAbilitiesData_SerializedAbilitiesLayer {
     Spectator(2),
     Commands(3),
     Editor(4),
-    LoadingScreen(5),
-    ;
+    LoadingScreen(5);
 
     private static final Int2ObjectMap<SerializedAbilitiesData_SerializedAbilitiesLayer> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
         for (SerializedAbilitiesData_SerializedAbilitiesLayer value : values()) {
@@ -67,8 +68,6 @@ public enum SerializedAbilitiesData_SerializedAbilitiesLayer {
         }
         return fallback;
     }
-
-    private final int value;
 
     SerializedAbilitiesData_SerializedAbilitiesLayer(final SerializedAbilitiesData_SerializedAbilitiesLayer value) {
         this(value.value);

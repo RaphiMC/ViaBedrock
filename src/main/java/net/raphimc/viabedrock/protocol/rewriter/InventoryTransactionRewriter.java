@@ -22,10 +22,10 @@ import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
 import net.raphimc.viabedrock.protocol.model.inventory.BedrockInventoryTransaction;
 import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
-import net.raphimc.viabedrock.protocol.types.inventory.InventoryActionDataType;
-import net.raphimc.viabedrock.protocol.types.inventory.InventoryTransactionPacketType;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
+import net.raphimc.viabedrock.protocol.types.inventory.InventoryActionDataType;
+import net.raphimc.viabedrock.protocol.types.inventory.InventoryTransactionPacketType;
 
 public class InventoryTransactionRewriter extends StoredObject {
 
@@ -36,15 +36,15 @@ public class InventoryTransactionRewriter extends StoredObject {
         super(user);
 
         this.inventoryActionDataType = new ArrayType<>(new InventoryActionDataType(user), BedrockTypes.UNSIGNED_VAR_INT);
-        this.inventoryTransactionType = new InventoryTransactionPacketType(user, inventoryActionDataType);
+        this.inventoryTransactionType = new InventoryTransactionPacketType(user, this.inventoryActionDataType);
     }
 
     public Type<BedrockInventoryTransaction> getInventoryTransactionType() {
-        return inventoryTransactionType;
+        return this.inventoryTransactionType;
     }
 
     public Type<InventoryActionData[]> getInventoryActionDataType() {
-        return inventoryActionDataType;
+        return this.inventoryActionDataType;
     }
 
 }

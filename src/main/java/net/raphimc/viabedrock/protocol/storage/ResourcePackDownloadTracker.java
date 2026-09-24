@@ -64,12 +64,12 @@ public class ResourcePackDownloadTracker implements StorableObject {
                     if (!Arrays.equals(hash, this.hash)) {
                         throw new IllegalStateException("Hash mismatch");
                     }
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     throw new RuntimeException("Failed to verify data hash", e);
                 }
                 try {
                     return new ResourcePack(new ZipContent(this.data));
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     throw new RuntimeException("Failed to parse resource pack data", e);
                 }
             } else {

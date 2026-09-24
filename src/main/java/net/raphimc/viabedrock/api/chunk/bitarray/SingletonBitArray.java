@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.chunk.bitarray;
 
 import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 
-public class SingletonBitArray implements BitArray {
+public final class SingletonBitArray implements BitArray {
 
     public static final SingletonBitArray INSTANCE = new SingletonBitArray();
 
@@ -52,7 +52,7 @@ public class SingletonBitArray implements BitArray {
     }
 
     @Override
-    public SingletonBitArray clone() {
+    public SingletonBitArray copy() {
         return SingletonBitArray.INSTANCE;
     }
 

@@ -52,7 +52,7 @@ public class BiomeDefinitions {
                         }
                     }
                     this.biomes.put(name, biomeDefinition);
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Failed to parse biome definition " + biomePath + " in pack " + pack.key(), e);
                 }
             }

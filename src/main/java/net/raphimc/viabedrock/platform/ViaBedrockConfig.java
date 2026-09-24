@@ -87,7 +87,7 @@ public interface ViaBedrockConfig extends Config {
             this.providerSupplier = providerSupplier;
         }
 
-        public static BlobCacheMode byName(String name) {
+        public static BlobCacheMode byName(final String name) {
             for (BlobCacheMode mode : values()) {
                 if (mode.name().equalsIgnoreCase(name)) {
                     return mode;
@@ -124,7 +124,7 @@ public interface ViaBedrockConfig extends Config {
             this.providerSupplier = providerSupplier;
         }
 
-        public static PackCacheMode byName(String name) {
+        public static PackCacheMode byName(final String name) {
             for (PackCacheMode mode : values()) {
                 if (mode.name().equalsIgnoreCase(name)) {
                     return mode;

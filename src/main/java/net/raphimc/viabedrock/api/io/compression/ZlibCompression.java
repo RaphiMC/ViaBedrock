@@ -23,7 +23,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompre
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-public class ZLibCompression implements CompressionAlgorithm {
+public class ZlibCompression implements CompressionAlgorithm {
 
     private final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
     private final Inflater inflater = new Inflater(true);

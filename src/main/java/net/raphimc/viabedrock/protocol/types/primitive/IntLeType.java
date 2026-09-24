@@ -21,38 +21,38 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.TypeConverter;
 import io.netty.buffer.ByteBuf;
 
-public class ShortLEType extends Type<Short> implements TypeConverter<Short> {
+public class IntLeType extends Type<Integer> implements TypeConverter<Integer> {
 
-    public ShortLEType() {
-        super("ShortLE", Short.class);
+    public IntLeType() {
+        super("IntLE", Integer.class);
     }
 
-    public short readPrimitive(final ByteBuf buffer) {
-        return buffer.readShortLE();
+    public int readPrimitive(final ByteBuf buffer) {
+        return buffer.readIntLE();
     }
 
-    public void writePrimitive(final ByteBuf buffer, final short value) {
-        buffer.writeShortLE(value);
+    public void writePrimitive(final ByteBuf buffer, final int value) {
+        buffer.writeIntLE(value);
     }
 
     @Override
-    public Short read(ByteBuf buffer) {
+    public Integer read(final ByteBuf buffer) {
         return this.readPrimitive(buffer);
     }
 
     @Override
-    public void write(ByteBuf buffer, Short value) {
+    public void write(final ByteBuf buffer, final Integer value) {
         this.writePrimitive(buffer, value);
     }
 
     @Override
-    public Short from(Object o) {
+    public Integer from(final Object o) {
         if (o instanceof Number) {
-            return ((Number) o).shortValue();
+            return ((Number) o).intValue();
         } else if (o instanceof Boolean) {
-            return (short) (((Boolean) o) ? 1 : 0);
+            return ((Boolean) o) ? 1 : 0;
         }
-        return (Short) o;
+        return (Integer) o;
     }
 
 }

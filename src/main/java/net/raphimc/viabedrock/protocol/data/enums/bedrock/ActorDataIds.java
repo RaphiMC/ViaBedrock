@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.protocol.data.enums.bedrock;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectMap;
 import com.viaversion.viaversion.libs.fastutil.ints.Int2ObjectOpenHashMap;
 
-public enum ActorDataIDs {
+public enum ActorDataIds {
 
     RESERVED_0(0),
     STRUCTURAL_INTEGRITY(1),
@@ -162,29 +162,30 @@ public enum ActorDataIDs {
     AIM_ASSIST_PRIORITY_CATEGORY_ID(137),
     AIM_ASSIST_PRIORITY_ACTOR_ID(138),
     RESERVED_139(139),
-    NAMEPLATE_RENDER_DISTANCE_MAX(140),
-    ;
+    NAMEPLATE_RENDER_DISTANCE_MAX(140);
 
-    private static final Int2ObjectMap<ActorDataIDs> BY_VALUE = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<ActorDataIds> BY_VALUE = new Int2ObjectOpenHashMap<>();
+
+    private final int value;
 
     static {
-        for (ActorDataIDs value : values()) {
+        for (ActorDataIds value : values()) {
             if (!BY_VALUE.containsKey(value.value)) {
                 BY_VALUE.put(value.value, value);
             }
         }
     }
 
-    public static ActorDataIDs getByValue(final int value) {
+    public static ActorDataIds getByValue(final int value) {
         return BY_VALUE.get(value);
     }
 
-    public static ActorDataIDs getByValue(final int value, final ActorDataIDs fallback) {
+    public static ActorDataIds getByValue(final int value, final ActorDataIds fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
     }
 
-    public static ActorDataIDs getByName(final String name) {
-        for (ActorDataIDs value : values()) {
+    public static ActorDataIds getByName(final String name) {
+        for (ActorDataIds value : values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -192,8 +193,8 @@ public enum ActorDataIDs {
         return null;
     }
 
-    public static ActorDataIDs getByName(final String name, final ActorDataIDs fallback) {
-        for (ActorDataIDs value : values()) {
+    public static ActorDataIds getByName(final String name, final ActorDataIds fallback) {
+        for (ActorDataIds value : values()) {
             if (value.name().equalsIgnoreCase(name)) {
                 return value;
             }
@@ -201,13 +202,11 @@ public enum ActorDataIDs {
         return fallback;
     }
 
-    private final int value;
-
-    ActorDataIDs(final ActorDataIDs value) {
+    ActorDataIds(final ActorDataIds value) {
         this(value.value);
     }
 
-    ActorDataIDs(final int value) {
+    ActorDataIds(final int value) {
         this.value = value;
     }
 

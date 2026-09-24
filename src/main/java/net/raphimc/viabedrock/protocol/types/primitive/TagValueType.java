@@ -39,16 +39,16 @@ public class TagValueType extends Type<Tag> {
     }
 
     @Override
-    public Tag read(ByteBuf buffer) {
+    public Tag read(final ByteBuf buffer) {
         try {
             return TagRegistry.read(this.tagType.getValue(), new NetworkByteBufInputStream(buffer), TagLimiter.noop(), 0);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     @Override
-    public void write(ByteBuf buffer, Tag value) {
+    public void write(final ByteBuf buffer, final Tag value) {
         if (value == null) {
             throw new IllegalArgumentException("Tag value cannot be null");
         } else if (value.getTagId() != this.tagType.getValue()) {
@@ -57,7 +57,7 @@ public class TagValueType extends Type<Tag> {
 
         try {
             value.write(new NetworkByteBufOutputStream(buffer));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }

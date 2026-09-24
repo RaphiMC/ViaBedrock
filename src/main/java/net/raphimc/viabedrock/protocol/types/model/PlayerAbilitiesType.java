@@ -36,7 +36,7 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
     }
 
     @Override
-    public PlayerAbilities read(ByteBuf buffer) {
+    public PlayerAbilities read(final ByteBuf buffer) {
         final long entityUniqueId = buffer.readLongLE();
         final byte playerPermission = buffer.readByte();
         final byte commandPermission = buffer.readByte();
@@ -59,7 +59,7 @@ public class PlayerAbilitiesType extends Type<PlayerAbilities> {
     }
 
     @Override
-    public void write(ByteBuf buffer, PlayerAbilities value) {
+    public void write(final ByteBuf buffer, final PlayerAbilities value) {
         buffer.writeLongLE(value.entityUniqueId());
         buffer.writeByte(value.playerPermission());
         buffer.writeByte(value.commandPermission());

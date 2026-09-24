@@ -33,7 +33,7 @@ public class WildcardIntegerArgumentType implements ArgumentType<Object> {
     }
 
     @Override
-    public Object parse(StringReader reader) throws CommandSyntaxException {
+    public Object parse(final StringReader reader) throws CommandSyntaxException {
         if (!reader.canRead()) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt().createWithContext(reader);
         }
@@ -48,7 +48,7 @@ public class WildcardIntegerArgumentType implements ArgumentType<Object> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         final StringReader reader = new StringReader(builder.getInput());
         reader.setCursor(builder.getStart());
 

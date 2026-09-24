@@ -20,12 +20,12 @@ package net.raphimc.viabedrock.protocol.types.inventory;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.type.Type;
 import io.netty.buffer.ByteBuf;
+import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
 import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
-import net.raphimc.viabedrock.protocol.types.InventoryTypes;
-import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.rewriter.ItemRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
+import net.raphimc.viabedrock.protocol.types.InventoryTypes;
 
 public class InventoryActionDataType extends Type<InventoryActionData> {
 
@@ -38,10 +38,10 @@ public class InventoryActionDataType extends Type<InventoryActionData> {
     }
 
     @Override
-    public InventoryActionData read(ByteBuf buffer) {
-        ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+    public InventoryActionData read(final ByteBuf buffer) {
+        final ItemRewriter itemRewriter = this.user.get(ItemRewriter.class);
         if (itemRewriter == null) {
-            throw new IllegalStateException("ItemRewriter not found for user " + user);
+            throw new IllegalStateException("ItemRewriter not found for user " + this.user);
         }
         final InventorySource source = InventoryTypes.INVENTORY_SOURCE.read(buffer);
         final int slot = BedrockTypes.UNSIGNED_VAR_INT.read(buffer);
@@ -52,14 +52,15 @@ public class InventoryActionDataType extends Type<InventoryActionData> {
     }
 
     @Override
-    public void write(ByteBuf buffer, InventoryActionData value) {
-        ItemRewriter itemRewriter = user.get(ItemRewriter.class);
+    public void write(final ByteBuf buffer, final InventoryActionData value) {
+        final ItemRewriter itemRewriter = this.user.get(ItemRewriter.class);
         if (itemRewriter == null) {
-            throw new IllegalStateException("ItemRewriter not found for user " + user);
+            throw new IllegalStateException("ItemRewriter not found for user " + this.user);
         }
         InventoryTypes.INVENTORY_SOURCE.write(buffer, value.source());
         BedrockTypes.UNSIGNED_VAR_INT.write(buffer, value.slot());
         itemRewriter.newItemType().write(buffer, value.fromItem());
         itemRewriter.newItemType().write(buffer, value.toItem());
     }
+
 }

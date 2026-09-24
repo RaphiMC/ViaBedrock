@@ -29,7 +29,7 @@ public class SubChunkOffsetType extends Type<BlockPosition> {
     }
 
     @Override
-    public BlockPosition read(ByteBuf buffer) {
+    public BlockPosition read(final ByteBuf buffer) {
         final int x = Types.BYTE.readPrimitive(buffer);
         final int y = Types.BYTE.readPrimitive(buffer);
         final int z = Types.BYTE.readPrimitive(buffer);
@@ -38,7 +38,7 @@ public class SubChunkOffsetType extends Type<BlockPosition> {
     }
 
     @Override
-    public void write(ByteBuf buffer, BlockPosition value) {
+    public void write(final ByteBuf buffer, final BlockPosition value) {
         Types.BYTE.writePrimitive(buffer, (byte) value.x());
         Types.BYTE.writePrimitive(buffer, (byte) value.y());
         Types.BYTE.writePrimitive(buffer, (byte) value.z());

@@ -20,15 +20,7 @@ package net.raphimc.viabedrock.tool.mapping;
 import net.raphimc.viabedrock.api.model.BedrockBlockState;
 import net.raphimc.viabedrock.api.model.BlockState;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Proposes java block states for bedrock block states which have no mapping yet.
@@ -90,19 +82,19 @@ public class BlockStateProposer {
                 continue;
             }
             this.mappingsByIdentifier
-                    .computeIfAbsent(entry.getKey().namespacedIdentifier(), key -> new HashMap<>())
-                    .put(propertyKey(entry.getKey()), entry.getValue());
+                .computeIfAbsent(entry.getKey().namespacedIdentifier(), key -> new HashMap<>())
+                .put(propertyKey(entry.getKey()), entry.getValue());
             // Mappings for states bedrock has dropped still tell us which java block this bedrock block belongs to,
             // which is the only hint for blocks whose name differs, like trip_wire -> tripwire
             javaIdentifierCounts
-                    .computeIfAbsent(entry.getKey().namespacedIdentifier(), key -> new LinkedHashMap<>())
-                    .merge(entry.getValue().namespacedIdentifier(), 1, Integer::sum);
+                .computeIfAbsent(entry.getKey().namespacedIdentifier(), key -> new LinkedHashMap<>())
+                .merge(entry.getValue().namespacedIdentifier(), 1, Integer::sum);
         }
         for (Map.Entry<String, Map<String, Integer>> entry : javaIdentifierCounts.entrySet()) {
             this.previousJavaIdentifiers.put(entry.getKey(), entry.getValue().entrySet().stream()
-                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                    .map(Map.Entry::getKey)
-                    .toList());
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .toList());
         }
 
         // A template has to be complete, otherwise it could hand out a mapping for a state which is itself a guess
@@ -142,8 +134,8 @@ public class BlockStateProposer {
         }
         for (Map.Entry<String, Map<String, Integer>> entry : counts.entrySet()) {
             entry.getValue().entrySet().stream()
-                    .max(Map.Entry.comparingByValue())
-                    .ifPresent(best -> this.commonJavaPropertyValues.put(entry.getKey(), best.getKey()));
+                .max(Map.Entry.comparingByValue())
+                .ifPresent(best -> this.commonJavaPropertyValues.put(entry.getKey(), best.getKey()));
         }
     }
 
@@ -174,15 +166,15 @@ public class BlockStateProposer {
                 for (Map.Entry<String, String> javaProperty : javaBlockState.properties().entrySet()) {
                     javaValues.computeIfAbsent(javaProperty.getKey(), key -> new LinkedHashSet<>()).add(javaProperty.getValue());
                     for (Map.Entry<String, String> bedrockProperty : bedrockBlockState.properties().entrySet()) {
-                        observed.computeIfAbsent(bedrockProperty.getKey() + "\u0000" + javaProperty.getKey(), key -> new LinkedHashMap<>())
-                                .computeIfAbsent(bedrockProperty.getValue(), key -> new LinkedHashSet<>())
-                                .add(javaProperty.getValue());
+                        observed.computeIfAbsent(bedrockProperty.getKey() + "\0" + javaProperty.getKey(), key -> new LinkedHashMap<>())
+                            .computeIfAbsent(bedrockProperty.getValue(), key -> new LinkedHashSet<>())
+                            .add(javaProperty.getValue());
                     }
                 }
             }
 
             for (Map.Entry<String, Map<String, Set<String>>> entry : observed.entrySet()) {
-                final String[] keys = entry.getKey().split("\u0000", 2);
+                final String[] keys = entry.getKey().split("\0", 2);
                 if (javaValues.get(keys[1]).size() < 2) {
                     continue; // The java property never changes in this block, so it says nothing about the bedrock one
                 }
@@ -197,8 +189,8 @@ public class BlockStateProposer {
                     support.computeIfAbsent(keys[0], key -> new LinkedHashMap<>()).merge(keys[1], 1, Integer::sum);
                     for (Map.Entry<String, Set<String>> value : entry.getValue().entrySet()) {
                         valueCounts.computeIfAbsent(entry.getKey(), key -> new LinkedHashMap<>())
-                                .computeIfAbsent(value.getKey(), key -> new LinkedHashMap<>())
-                                .merge(value.getValue().iterator().next(), 1, Integer::sum);
+                            .computeIfAbsent(value.getKey(), key -> new LinkedHashMap<>())
+                            .merge(value.getValue().iterator().next(), 1, Integer::sum);
                     }
                 }
             }
@@ -206,9 +198,9 @@ public class BlockStateProposer {
 
         for (Map.Entry<String, Map<String, Integer>> entry : support.entrySet()) {
             final List<String> javaKeys = entry.getValue().entrySet().stream()
-                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                    .map(Map.Entry::getKey)
-                    .toList();
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .toList();
             this.learnedPropertyAliases.put(entry.getKey(), javaKeys);
             for (Map.Entry<String, Integer> javaKey : entry.getValue().entrySet()) {
                 this.learnedPropertyAliasSupport.put(entry.getKey() + " -> " + javaKey.getKey(), javaKey.getValue());
@@ -220,8 +212,8 @@ public class BlockStateProposer {
             final Map<String, String> valueMap = new LinkedHashMap<>();
             for (Map.Entry<String, Map<String, Integer>> value : entry.getValue().entrySet()) {
                 value.getValue().entrySet().stream()
-                        .max(Map.Entry.comparingByValue())
-                        .ifPresent(best -> valueMap.put(value.getKey(), best.getKey()));
+                    .max(Map.Entry.comparingByValue())
+                    .ifPresent(best -> valueMap.put(value.getKey(), best.getKey()));
             }
             this.learnedPropertyValues.put(entry.getKey(), valueMap);
         }
@@ -253,7 +245,7 @@ public class BlockStateProposer {
             final BlockStateProposal byPreviousIdentifier = this.proposeByPropertyName(bedrockBlockState, previousJavaIdentifier);
             if (byPreviousIdentifier != null) {
                 return new BlockStateProposal(bedrockBlockState, byPreviousIdentifier.javaBlockState(), "previous-mapping", null,
-                        byPreviousIdentifier.score() - 0.05D, byPreviousIdentifier.note());
+                    byPreviousIdentifier.score() - 0.05D, byPreviousIdentifier.note());
             }
         }
         return new BlockStateProposal(bedrockBlockState, null, "unresolved", null, 0D, "no java block state could be validated");
@@ -270,8 +262,8 @@ public class BlockStateProposer {
             }
 
             final String javaIdentifier = template.equals(identifier)
-                    ? templateJavaState.namespacedIdentifier()
-                    : Similarity.rewriteIdentifier(template, identifier, templateJavaState.namespacedIdentifier());
+                ? templateJavaState.namespacedIdentifier()
+                : Similarity.rewriteIdentifier(template, identifier, templateJavaState.namespacedIdentifier());
             if (javaIdentifier == null || !this.javaPropertiesByIdentifier.containsKey(javaIdentifier)) {
                 continue;
             }
@@ -314,10 +306,10 @@ public class BlockStateProposer {
             }
         }
         candidates.sort(Comparator
-                .comparing((String template) -> !template.equals(identifier))
-                .thenComparing(template -> -Similarity.commonSuffixLength(template, identifier))
-                .thenComparing(template -> Similarity.levenshtein(template, identifier, Integer.MAX_VALUE - 1))
-                .thenComparing(template -> template));
+            .comparing((String template) -> !template.equals(identifier))
+            .thenComparing(template -> -Similarity.commonSuffixLength(template, identifier))
+            .thenComparing(template -> Similarity.levenshtein(template, identifier, Integer.MAX_VALUE - 1))
+            .thenComparing(template -> template));
         return candidates;
     }
 
@@ -350,8 +342,8 @@ public class BlockStateProposer {
                     String aliasValue = translateValue(bedrockProperty.getValue(), allowedValues);
                     if (aliasValue == null) {
                         final String learnedValue = this.learnedPropertyValues
-                                .getOrDefault(bedrockProperty.getKey() + "\u0000" + javaKey, Map.of())
-                                .get(bedrockProperty.getValue());
+                            .getOrDefault(bedrockProperty.getKey() + "\0" + javaKey, Map.of())
+                            .get(bedrockProperty.getValue());
                         if (learnedValue != null && allowedValues.contains(learnedValue)) {
                             aliasValue = learnedValue;
                         }
@@ -359,7 +351,7 @@ public class BlockStateProposer {
                     if (aliasValue != null) {
                         value = aliasValue;
                         viaAlias.add(bedrockProperty.getKey() + "->" + javaKey
-                                + " (" + this.learnedPropertyAliasSupport.getOrDefault(bedrockProperty.getKey() + " -> " + javaKey, 0) + " blocks)");
+                            + " (" + this.learnedPropertyAliasSupport.getOrDefault(bedrockProperty.getKey() + " -> " + javaKey, 0) + " blocks)");
                         break;
                     }
                 }
@@ -381,7 +373,7 @@ public class BlockStateProposer {
 
         // A defaulted property is only safe when the bedrock state has nothing left to say. If bedrock properties
         // went unused while a java property had to be guessed, the two sides disagree and a human should look at it.
-        final int usedBedrockProperties = bedrockBlockState.properties().size() - unusedBedrockProperties(bedrockBlockState, javaProperties.keySet(), viaAlias);
+        final int usedBedrockProperties = bedrockBlockState.properties().size() - this.unusedBedrockProperties(bedrockBlockState, javaProperties.keySet(), viaAlias);
         final boolean guessing = !defaulted.isEmpty() && usedBedrockProperties < bedrockBlockState.properties().size();
 
         final double score = defaulted.isEmpty() ? (viaAlias.isEmpty() ? 0.7D : 0.65D) : (guessing ? 0.45D : 0.55D);

@@ -80,7 +80,7 @@ public class BedrockBlockEntity implements BlockEntity {
     }
 
     @Override
-    public BlockEntity withTypeId(int typeId) {
+    public BlockEntity withTypeId(final int typeId) {
         throw new UnsupportedOperationException();
     }
 

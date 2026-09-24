@@ -28,7 +28,7 @@ public class Position3fType extends Type<Position3f> {
     }
 
     @Override
-    public Position3f read(ByteBuf buffer) {
+    public Position3f read(final ByteBuf buffer) {
         final float x = buffer.readFloatLE();
         final float y = buffer.readFloatLE();
         final float z = buffer.readFloatLE();
@@ -37,7 +37,7 @@ public class Position3fType extends Type<Position3f> {
     }
 
     @Override
-    public void write(ByteBuf buffer, Position3f value) {
+    public void write(final ByteBuf buffer, final Position3f value) {
         buffer.writeFloatLE(value.x());
         buffer.writeFloatLE(value.y());
         buffer.writeFloatLE(value.z());

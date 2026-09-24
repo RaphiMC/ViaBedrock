@@ -61,7 +61,7 @@ public class PlayerEntity extends LivingEntity {
         setPlayerTeam.write(Types.VAR_INT, TeamCollisionRule.NEVER.ordinal()); // collision rule
         setPlayerTeam.write(Types.BOOL_OPTIONAL_VAR_INT, null); // color
         setPlayerTeam.write(Types.BYTE, (byte) 3); // flags
-        setPlayerTeam.write(Types.STRING_ARRAY, new String[]{StringUtil.encodeUUID(this.javaUuid)}); // players
+        setPlayerTeam.write(Types.STRING_ARRAY, new String[]{StringUtil.encodeUuid(this.javaUuid)}); // players
         setPlayerTeam.send(BedrockProtocol.class);
     }
 
@@ -132,8 +132,7 @@ public class PlayerEntity extends LivingEntity {
                 attributeCount.incrementAndGet();
                 yield true;
             }
-            case "minecraft:player.hunger", "minecraft:player.saturation", "minecraft:player.experience", "minecraft:player.level", "minecraft:player.exhaustion" ->
-                    true; // Ignore for non client player entities
+            case "minecraft:player.hunger", "minecraft:player.saturation", "minecraft:player.experience", "minecraft:player.level", "minecraft:player.exhaustion" -> true; // Ignore for non client player entities
             default -> super.translateAttribute(attribute, javaAttributes, attributeCount, javaEntityData);
         };
     }

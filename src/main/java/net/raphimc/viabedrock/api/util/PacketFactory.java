@@ -40,7 +40,8 @@ import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
-public class PacketFactory {
+public final class PacketFactory {
+
     public static void sendJavaBlockDestroyProgress(final UserConnection user, final int id, final BlockPosition position, final int stage) {
         final PacketWrapper blockDestruction = PacketWrapper.create(ClientboundPackets26_3.BLOCK_DESTRUCTION, user);
         blockDestruction.write(Types.VAR_INT, id); // id
@@ -171,6 +172,9 @@ public class PacketFactory {
         wrapper.write(Types.FLOAT, particle.speed()); // z speed
         wrapper.write(Types.VAR_INT, particle.count()); // count
         wrapper.write(Types.VAR_INT, 0); // Default randomization type
+    }
+
+    private PacketFactory() {
     }
 
 }

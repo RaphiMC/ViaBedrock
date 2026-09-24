@@ -70,7 +70,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
-public class WorldPackets {
+public final class WorldPackets {
 
     private static final PacketHandler UPDATE_BLOCK_HANDLER = wrapper -> {
         final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
@@ -258,7 +258,7 @@ public class WorldPackets {
                                     if (i == 0) {
                                         throw new RuntimeException("First biome palette can not point to previous biome palette");
                                     }
-                                    biomePalette = ((BedrockDataPalette) sections[i - 1].palette(PaletteType.BIOMES)).clone();
+                                    biomePalette = ((BedrockDataPalette) sections[i - 1].palette(PaletteType.BIOMES)).copy();
                                 }
                                 sections[i].addPalette(PaletteType.BIOMES, biomePalette);
                             }
@@ -271,16 +271,16 @@ public class WorldPackets {
                                 blockEntities.add(new BedrockBlockEntity((CompoundTag) tag));
                             }
                         }
-                    } catch (IndexOutOfBoundsException ignored) {
+                    } catch (final IndexOutOfBoundsException ignored) {
                         // Bedrock client stops reading at whatever point and loads whatever it has read successfully
-                    } catch (Throwable e) {
+                    } catch (final Throwable e) {
                         ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading chunk data", e);
                     }
 
                     // Send the available terrain without waiting for requested subchunks. Their
                     // responses queue further chunk packets as the terrain fills in.
                     chunkTracker.sendChunkInNextTick(chunkX, chunkZ);
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     throw new RuntimeException("Error handling chunk data", e);
                 }
             };
@@ -316,9 +316,9 @@ public class WorldPackets {
                 return;
             }
             final BlockPosition center = new BlockPosition(
-                    wrapper.read(BedrockTypes.INT_LE),
-                    wrapper.read(BedrockTypes.INT_LE),
-                    wrapper.read(BedrockTypes.INT_LE)
+                wrapper.read(BedrockTypes.INT_LE),
+                wrapper.read(BedrockTypes.INT_LE),
+                wrapper.read(BedrockTypes.INT_LE)
             ); // center position
             final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // count
 
@@ -326,11 +326,11 @@ public class WorldPackets {
                 final BlockPosition offset = wrapper.read(BedrockTypes.SUB_CHUNK_OFFSET); // offset
                 final SubChunkPacketPayload_SubChunkRequestResult result = SubChunkPacketPayload_SubChunkRequestResult.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_SubChunkRequestResult.Undefined); // result
                 final byte[] data = wrapper.read(Types.BOOLEAN) ? wrapper.read(BedrockTypes.BYTE_ARRAY) : new byte[0]; // optional data
-                final SubChunkPacketPayload_HeightMapDataType heightmapResult = SubChunkPacketPayload_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_HeightMapDataType.NoData); // heightmap result
+                SubChunkPacketPayload_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_HeightMapDataType.NoData); // heightmap result
                 if (wrapper.read(Types.BOOLEAN)) {
                     wrapper.read(new ByteArrayType(272)); // optional heightmap data
                 }
-                final SubChunkPacketPayload_HeightMapDataType renderHeightmapResult = SubChunkPacketPayload_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_HeightMapDataType.NoData); // render heightmap result
+                SubChunkPacketPayload_HeightMapDataType.getByValue(wrapper.read(Types.BYTE), SubChunkPacketPayload_HeightMapDataType.NoData); // render heightmap result
                 if (wrapper.read(Types.BOOLEAN)) {
                     wrapper.read(new ByteArrayType(272)); // optional render heightmap data
                 }
@@ -355,9 +355,9 @@ public class WorldPackets {
                                         blockEntities.add(new BedrockBlockEntity((CompoundTag) tag));
                                     }
                                 }
-                            } catch (IndexOutOfBoundsException ignored) {
+                            } catch (final IndexOutOfBoundsException ignored) {
                                 // Bedrock client stops reading at whatever point and loads whatever it has read successfully
-                            } catch (Throwable e) {
+                            } catch (final Throwable e) {
                                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Error reading sub chunk data", e);
                             }
                             if (chunkTracker.mergeSubChunk(absolute.x(), absolute.y(), absolute.z(), section, blockEntities)) {
@@ -367,7 +367,7 @@ public class WorldPackets {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received sub chunk with result " + result);
                             chunkTracker.requestSubChunk(absolute.x(), absolute.y(), absolute.z());
                         }
-                    } catch (Throwable e) {
+                    } catch (final Throwable e) {
                         throw new RuntimeException("Error handling sub chunk data", e);
                     }
                 };
@@ -551,6 +551,9 @@ public class WorldPackets {
             wrapper.write(BedrockTypes.BLOCK_POSITION, position); // position
             wrapper.write(BedrockTypes.NETWORK_TAG, signTag.copy()); // block entity tag
         });
+    }
+
+    private WorldPackets() {
     }
 
 }

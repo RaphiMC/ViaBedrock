@@ -25,45 +25,49 @@ import net.raphimc.viabedrock.protocol.model.Position3f;
 public interface InventoryTransactionData {
 
     // NormalTransactionData represents an inventory transaction data object for normal transactions, such as crafting. It has no content.
-    record NormalTransactionData() implements InventoryTransactionData {}
+    record NormalTransactionData() implements InventoryTransactionData {
+    }
 
     // MismatchTransactionData represents a mismatched inventory transaction's data object.
-    record MismatchTransactionData() implements InventoryTransactionData {}
-
+    record MismatchTransactionData() implements InventoryTransactionData {
+    }
 
     // UseItemTransactionData represents an inventory transaction data object sent when the client uses an item on a block.
     record UseItemTransactionData(
-            ItemUseActionType actionType,
-            ItemUseTriggerType triggerType,
-            BlockPosition blockPosition,
-            int face,
-            int hotbarSlot,
-            HandSlot handSlot,
-            BedrockItem itemInHand,
-            Position3f playerPosition,
-            Position3f clickPosition,
-            int blockRuntimeId,
-            ItemUsePredictedResult predictedResult,
-            ItemUseClientCooldownState clientCooldownState
-    ) implements InventoryTransactionData {}
+        ItemUseActionType actionType,
+        ItemUseTriggerType triggerType,
+        BlockPosition blockPosition,
+        int face,
+        int hotbarSlot,
+        HandSlot handSlot,
+        BedrockItem itemInHand,
+        Position3f playerPosition,
+        Position3f clickPosition,
+        int blockRuntimeId,
+        ItemUsePredictedResult predictedResult,
+        ItemUseClientCooldownState clientCooldownState
+    ) implements InventoryTransactionData {
+    }
 
     // UseItemOnEntityTransactionData represents an inventory transaction data object sent when the client uses an item on an entity.
     record UseItemOnEntityTransactionData(
-            long entityRuntimeId,
-            ItemUseOnActorActionType actionType,
-            int hotbarSlot,
-            BedrockItem itemInHand,
-            Position3f playerPosition,
-            Position3f clickPosition
-    ) implements InventoryTransactionData {}
+        long entityRuntimeId,
+        ItemUseOnActorActionType actionType,
+        int hotbarSlot,
+        BedrockItem itemInHand,
+        Position3f playerPosition,
+        Position3f clickPosition
+    ) implements InventoryTransactionData {
+    }
 
     // ReleaseItemTransactionData represents an inventory transaction data object sent when the client releases the item it was using,
     // for example when stopping while eating or stopping the charging of a bow.
     record ReleaseItemTransactionData(
-            ItemReleaseActionType actionType,
-            int hotbarSlot,
-            BedrockItem itemInHand,
-            Position3f headPosition
-    ) implements InventoryTransactionData {}
+        ItemReleaseActionType actionType,
+        int hotbarSlot,
+        BedrockItem itemInHand,
+        Position3f headPosition
+    ) implements InventoryTransactionData {
+    }
 
 }

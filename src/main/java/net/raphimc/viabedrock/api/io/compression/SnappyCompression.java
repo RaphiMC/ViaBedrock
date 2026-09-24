@@ -34,16 +34,16 @@ public class SnappyCompression implements CompressionAlgorithm {
         } else { // Netty's snappy implementation can't handle more than that (https://github.com/netty/netty/issues/13226)
             Types.VAR_INT.writePrimitive(out, in.readableBytes());
 
-            int value = in.readableBytes() - 1;
+            final int value = in.readableBytes() - 1;
             int highestOneBit = Integer.highestOneBit(value);
             int bitLength = 0;
             while ((highestOneBit >>= 1) != 0) {
                 bitLength++;
             }
-            int bytesToEncode = 1 + bitLength / 8;
+            final int bytesToEncode = 1 + bitLength / 8;
             out.writeByte(59 + bytesToEncode << 2);
             for (int i = 0; i < bytesToEncode; i++) {
-                out.writeByte(in.readableBytes() - 1 >> i * 8 & 0x0ff);
+                out.writeByte(in.readableBytes() - 1 >> i * 8 & 0x0FF);
             }
             out.writeBytes(in);
         }

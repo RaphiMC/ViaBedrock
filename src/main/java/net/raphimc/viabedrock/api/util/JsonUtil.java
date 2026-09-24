@@ -24,21 +24,25 @@ import com.viaversion.viaversion.libs.gson.JsonPrimitive;
 
 import java.util.*;
 
-public class JsonUtil {
+public final class JsonUtil {
 
     public static <T extends JsonElement> T sort(final T element, final Comparator<String> comparator) {
         if (element == null) {
             return null;
         } else if (element.isJsonArray()) {
             final JsonArray array = element.getAsJsonArray();
-            for (int i = 0; i < array.size(); i++) array.set(i, sort(array.get(i), comparator));
+            for (int i = 0; i < array.size(); i++) {
+                array.set(i, sort(array.get(i), comparator));
+            }
             return (T) array;
         } else if (element.isJsonObject()) {
             final JsonObject object = element.getAsJsonObject();
             final JsonObject sorted = new JsonObject();
             final List<String> keys = new ArrayList<>(object.keySet());
             keys.sort(comparator);
-            for (String key : keys) sorted.add(key, sort(object.get(key), comparator));
+            for (String key : keys) {
+                sorted.add(key, sort(object.get(key), comparator));
+            }
             return (T) sorted;
         } else {
             return element;
@@ -69,16 +73,23 @@ public class JsonUtil {
         } else if (element.isJsonArray()) {
             final JsonArray array = element.getAsJsonArray();
             final List<Object> list = new ArrayList<>();
-            for (int i = 0; i < array.size(); i++) list.add(getValue(array.get(i)));
+            for (int i = 0; i < array.size(); i++) {
+                list.add(getValue(array.get(i)));
+            }
             return list;
         } else if (element.isJsonObject()) {
             final JsonObject object = element.getAsJsonObject();
             final Map<String, Object> map = new HashMap<>();
-            for (Map.Entry<String, JsonElement> entry : object.entrySet()) map.put(entry.getKey(), getValue(entry.getValue()));
+            for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
+                map.put(entry.getKey(), getValue(entry.getValue()));
+            }
             return map;
         } else {
             return null;
         }
+    }
+
+    private JsonUtil() {
     }
 
 }

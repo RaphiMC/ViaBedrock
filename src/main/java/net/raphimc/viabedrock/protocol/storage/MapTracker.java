@@ -19,6 +19,7 @@ package net.raphimc.viabedrock.protocol.storage;
 
 import com.viaversion.viaversion.api.connection.StoredObject;
 import com.viaversion.viaversion.api.connection.UserConnection;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class MapTracker extends StoredObject {
     private final Map<Long, Integer> javaIds = new HashMap<>();
     private int nextMapId;
 
-    public MapTracker(UserConnection user) {
+    public MapTracker(final UserConnection user) {
         super(user);
     }
 

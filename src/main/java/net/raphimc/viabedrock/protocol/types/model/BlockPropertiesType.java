@@ -31,12 +31,12 @@ public class BlockPropertiesType extends Type<BlockProperties> {
     }
 
     @Override
-    public BlockProperties read(ByteBuf buffer) {
+    public BlockProperties read(final ByteBuf buffer) {
         return new BlockProperties(Key.namespaced(BedrockTypes.STRING.read(buffer)), (CompoundTag) BedrockTypes.NETWORK_TAG.read(buffer));
     }
 
     @Override
-    public void write(ByteBuf buffer, BlockProperties value) {
+    public void write(final ByteBuf buffer, final BlockProperties value) {
         BedrockTypes.STRING.write(buffer, value.name());
         BedrockTypes.NETWORK_TAG.write(buffer, value.properties());
     }

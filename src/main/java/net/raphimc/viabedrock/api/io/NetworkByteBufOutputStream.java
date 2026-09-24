@@ -33,28 +33,28 @@ public class NetworkByteBufOutputStream extends LittleEndianByteBufOutputStream 
     }
 
     @Override
-    public void writeInt(int v) throws IOException {
+    public void writeInt(final int v) throws IOException {
         try {
             BedrockTypes.VAR_INT.write(this.buffer, v);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
     @Override
-    public void writeLong(long v) throws IOException {
+    public void writeLong(final long v) throws IOException {
         try {
             BedrockTypes.VAR_LONG.write(this.buffer, v);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }
 
     @Override
-    public void writeUTF(String s) throws IOException {
+    public void writeUTF(final String s) throws IOException {
         try {
             BedrockTypes.STRING.write(this.buffer, s);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(e);
         }
     }

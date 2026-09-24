@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class BedrockBlockState extends BlockState {
+public final class BedrockBlockState extends BlockState {
 
     public static final BlockState AIR = new BlockState("air", Collections.emptyMap());
     public static final BlockState STONE = new BlockState("stone", Collections.singletonMap("stone_type", "stone"));

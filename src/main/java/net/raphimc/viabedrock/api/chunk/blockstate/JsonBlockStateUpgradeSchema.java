@@ -92,7 +92,9 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
                         }
 
                         mappings.add(new RemappedStatesEntry(oldStateTag, newStateTag, copiedStates, states -> {
-                            if (!states.contains(flattenedProperty)) return null;
+                            if (!states.contains(flattenedProperty)) {
+                                return null;
+                            }
 
                             final String flattenedValue = states.get(flattenedProperty).getValue().toString();
                             final String flattenedName = prefix + flattenedValueRemaps.getOrDefault(flattenedValue, flattenedValue) + suffix;
@@ -105,7 +107,9 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
                 this.actions.add(tag -> {
                     final String name = tag.getStringTag("name").getValue();
-                    if (!name.equals(identifier)) return;
+                    if (!name.equals(identifier)) {
+                        return;
+                    }
 
                     if (tag.get("states") instanceof CompoundTag states) {
                         for (RemappedStatesEntry mapping : mappings) {
@@ -149,7 +153,9 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
             this.actions.add(tag -> {
                 final String name = tag.getStringTag("name").getValue();
-                if (!mappings.containsKey(name)) return;
+                if (!mappings.containsKey(name)) {
+                    return;
+                }
 
                 tag.putString(NEW_NAME_KEY, mappings.get(name));
             });
@@ -172,10 +178,14 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
                 this.actions.add(tag -> {
                     final String name = tag.getStringTag("name").getValue();
-                    if (!name.equals(identifier)) return;
+                    if (!name.equals(identifier)) {
+                        return;
+                    }
 
                     if (tag.get("states") instanceof CompoundTag states) {
-                        if (!states.contains(flattenedProperty)) return;
+                        if (!states.contains(flattenedProperty)) {
+                            return;
+                        }
 
                         final String flattenedValue = states.get(flattenedProperty).getValue().toString();
                         final String flattenedName = prefix + flattenedValueRemaps.getOrDefault(flattenedValue, flattenedValue) + suffix;
@@ -196,7 +206,9 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
                 this.actions.add(tag -> {
                     final String name = tag.getStringTag("name").getValue();
-                    if (!name.equals(identifier)) return;
+                    if (!name.equals(identifier)) {
+                        return;
+                    }
 
                     if (tag.get("states") instanceof CompoundTag states) {
                         for (Pair<String, ?> property : toAdd) {
@@ -217,7 +229,9 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
                 this.actions.add(tag -> {
                     final String name = tag.getStringTag("name").getValue();
-                    if (!name.equals(identifier)) return;
+                    if (!name.equals(identifier)) {
+                        return;
+                    }
 
                     if (tag.get("states") instanceof CompoundTag states) {
                         for (String property : toRemove) {
@@ -238,12 +252,16 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
                 this.actions.add(tag -> {
                     final String name = tag.getStringTag("name").getValue();
-                    if (!name.equals(identifier)) return;
+                    if (!name.equals(identifier)) {
+                        return;
+                    }
 
                     if (tag.get("states") instanceof CompoundTag states) {
                         for (Map.Entry<String, List<Pair<?, ?>>> mapping : mappings.entrySet()) {
                             final Tag property = states.get(mapping.getKey());
-                            if (property == null) continue;
+                            if (property == null) {
+                                continue;
+                            }
 
                             final Object value = property.getValue();
                             for (Pair<?, ?> valueMapping : mapping.getValue()) {
@@ -267,7 +285,9 @@ public class JsonBlockStateUpgradeSchema extends BlockStateUpgradeSchema {
 
                 this.actions.add(tag -> {
                     final String name = tag.getStringTag("name").getValue();
-                    if (!name.equals(identifier)) return;
+                    if (!name.equals(identifier)) {
+                        return;
+                    }
 
                     if (tag.get("states") instanceof CompoundTag states) {
                         for (Map.Entry<String, String> mapping : mappings.entrySet()) {

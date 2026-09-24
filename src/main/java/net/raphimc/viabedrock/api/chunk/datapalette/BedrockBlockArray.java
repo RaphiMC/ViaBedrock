@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.api.chunk.datapalette;
 import com.viaversion.viaversion.api.minecraft.chunks.ChunkSection;
 import com.viaversion.viaversion.api.minecraft.chunks.NibbleArray;
 
-public class BedrockBlockArray implements DefaultedDataPalette, Cloneable {
+public class BedrockBlockArray implements DefaultedDataPalette {
 
     private final byte[] blocks;
     private final NibbleArray data;
@@ -89,8 +89,7 @@ public class BedrockBlockArray implements DefaultedDataPalette, Cloneable {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public BedrockBlockArray clone() {
+    public BedrockBlockArray copy() {
         return new BedrockBlockArray(this.blocks.clone(), new NibbleArray(this.data.getHandle().clone()));
     }
 

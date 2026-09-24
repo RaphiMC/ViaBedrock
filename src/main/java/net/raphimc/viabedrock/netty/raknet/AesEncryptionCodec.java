@@ -59,7 +59,7 @@ public class AesEncryptionCodec extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) throws Exception {
+    protected void encode(final ChannelHandlerContext ctx, final ByteBuf in, final ByteBuf out) throws Exception {
         final byte[] hash = this.generateHash(in, this.sentPacketCounter++);
 
         final ByteBuffer inBuffer = in.nioBuffer();
@@ -71,7 +71,7 @@ public class AesEncryptionCodec extends ByteToMessageCodec<ByteBuf> {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+    protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) throws Exception {
         final ByteBuffer inBuffer = in.nioBuffer();
         final ByteBuffer outBuffer = inBuffer.duplicate();
 

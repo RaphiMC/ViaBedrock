@@ -24,7 +24,7 @@ import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.libs.mcstructs.text.serializer.TextComponentCodec;
 import com.viaversion.viaversion.protocols.v26_2to26_3.Protocol26_2To26_3;
 
-public class ProtocolConstants {
+public final class ProtocolConstants {
 
     public static final ProtocolVersion JAVA_VERSION = ProtocolVersion.v26_3;
     public static final Class<? extends Protocol<?, ?, ?, ?>> JAVA_PROTOCOL_CLASS = Protocol26_2To26_3.class;
@@ -48,6 +48,9 @@ public class ProtocolConstants {
         final StructuredDataContainer data = new StructuredDataContainer();
         data.setIdLookup(Via.getManager().getProtocolManager().getProtocol(JAVA_PROTOCOL_CLASS), true);
         return data;
+    }
+
+    private ProtocolConstants() {
     }
 
 }

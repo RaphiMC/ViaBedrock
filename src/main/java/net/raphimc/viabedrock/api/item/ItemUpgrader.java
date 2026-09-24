@@ -48,7 +48,7 @@ public class ItemUpgrader {
                     }
                 }
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Failed to load item upgrade schema", e);
             this.remappedMetas.clear();
         }

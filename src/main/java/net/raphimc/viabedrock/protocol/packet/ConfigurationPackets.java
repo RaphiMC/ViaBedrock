@@ -20,11 +20,11 @@ package net.raphimc.viabedrock.protocol.packet;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.protocol.packet.State;
 import com.viaversion.viaversion.api.protocol.remapper.PacketHandlers;
-import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ServerboundPackets26_3;
 import com.viaversion.viaversion.protocols.v1_21_7to1_21_9.packet.ServerboundConfigurationPackets1_21_9;
+import com.viaversion.viaversion.protocols.v26_2to26_3.packet.ServerboundPackets26_3;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 
-public class ConfigurationPackets {
+public final class ConfigurationPackets {
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerServerboundTransition(ServerboundConfigurationPackets1_21_9.CLIENT_INFORMATION, null, new PacketHandlers() {
@@ -43,6 +43,9 @@ public class ConfigurationPackets {
             wrapper.cancel();
             wrapper.user().getProtocolInfo().setClientState(State.CONFIGURATION);
         });
+    }
+
+    private ConfigurationPackets() {
     }
 
 }

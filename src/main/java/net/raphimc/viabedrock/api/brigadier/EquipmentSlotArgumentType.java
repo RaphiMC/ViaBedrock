@@ -40,7 +40,7 @@ public class EquipmentSlotArgumentType implements ArgumentType<Object> {
     }
 
     @Override
-    public Object parse(StringReader reader) throws CommandSyntaxException {
+    public Object parse(final StringReader reader) throws CommandSyntaxException {
         final String slot = reader.readUnquotedString();
         if (!SLOTS.contains(slot)) {
             throw INVALID_EQUIPMENT_EXCEPTION.create();
@@ -50,7 +50,7 @@ public class EquipmentSlotArgumentType implements ArgumentType<Object> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         return SuggestionsUtil.suggestMatching(SLOTS, builder);
     }
 

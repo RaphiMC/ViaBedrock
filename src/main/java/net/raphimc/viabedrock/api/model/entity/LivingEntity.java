@@ -86,7 +86,9 @@ public class LivingEntity extends Entity {
         for (EntityAttribute attribute : attributes) {
             if (attribute.name().equals("minecraft:health") && this instanceof PlayerEntity player && player.abilities().getBooleanValue(AbilitiesIndex.Invulnerable)) {
                 final EntityAttribute oldAttribute = this.attributes.get(attribute.name());
-                if (attribute.computeClampedValue() <= oldAttribute.computeClampedValue()) continue;
+                if (attribute.computeClampedValue() <= oldAttribute.computeClampedValue()) {
+                    continue;
+                }
             }
             this.attributes.put(attribute.name(), attribute);
             if (!this.translateAttribute(attribute, javaAttributes, attributeCount, javaEntityData)) {
@@ -119,8 +121,12 @@ public class LivingEntity extends Entity {
         javaEffect.write(Types.VAR_INT, effect.amplifier()); // amplifier
         javaEffect.write(Types.VAR_INT, effect.duration().get() != -1 ? Math.max(effect.duration().get(), 0) : -1); // duration
         byte flags = 0;
-        if (effect.ambient()) flags |= UpdateMobEffectFlag.AMBIENT.getBit();
-        if (effect.showParticles()) flags |= UpdateMobEffectFlag.VISIBLE.getBit();
+        if (effect.ambient()) {
+            flags |= UpdateMobEffectFlag.AMBIENT.getBit();
+        }
+        if (effect.showParticles()) {
+            flags |= UpdateMobEffectFlag.VISIBLE.getBit();
+        }
         javaEffect.write(Types.BYTE, flags); // flags
     }
 

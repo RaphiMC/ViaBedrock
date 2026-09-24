@@ -1,50 +1,50 @@
 {
-    "maxVersionMajor": 1,
-    "maxVersionMinor": 18,
-    "maxVersionPatch": 10,
-    "maxVersionRevision": 1,
-    "renamedIds": {
-        "minecraft:double_stone_slab": "minecraft:double_stone_block_slab",
-        "minecraft:double_stone_slab2": "minecraft:double_stone_block_slab2",
-        "minecraft:double_stone_slab3": "minecraft:double_stone_block_slab3",
-        "minecraft:double_stone_slab4": "minecraft:double_stone_block_slab4",
-        "minecraft:mangrove_propagule_hanging": "minecraft:mangrove_propagule",
-        "minecraft:stone_slab": "minecraft:stone_block_slab",
-        "minecraft:stone_slab2": "minecraft:stone_block_slab2",
-        "minecraft:stone_slab3": "minecraft:stone_block_slab3",
-        "minecraft:stone_slab4": "minecraft:stone_block_slab4"
+  "maxVersionMajor": 1,
+  "maxVersionMinor": 18,
+  "maxVersionPatch": 10,
+  "maxVersionRevision": 1,
+  "renamedIds": {
+    "minecraft:double_stone_slab": "minecraft:double_stone_block_slab",
+    "minecraft:double_stone_slab2": "minecraft:double_stone_block_slab2",
+    "minecraft:double_stone_slab3": "minecraft:double_stone_block_slab3",
+    "minecraft:double_stone_slab4": "minecraft:double_stone_block_slab4",
+    "minecraft:mangrove_propagule_hanging": "minecraft:mangrove_propagule",
+    "minecraft:stone_slab": "minecraft:stone_block_slab",
+    "minecraft:stone_slab2": "minecraft:stone_block_slab2",
+    "minecraft:stone_slab3": "minecraft:stone_block_slab3",
+    "minecraft:stone_slab4": "minecraft:stone_block_slab4"
+  },
+  "addedProperties": {
+    "minecraft:mangrove_propagule": {
+      "hanging": {
+        "byte": 0
+      },
+      "propagule_stage": {
+        "int": 0
+      }
     },
-    "addedProperties": {
-        "minecraft:mangrove_propagule": {
-            "hanging": {
-                "byte": 0
-            },
-            "propagule_stage": {
-                "int": 0
-            }
-        },
-        "minecraft:mangrove_propagule_hanging": {
-            "hanging": {
-                "byte": 1
-            },
-            "propagule_stage": {
-                "int": 0
-            }
-        },
-        "minecraft:sculk_shrieker": {
-            "can_summon": {
-                "byte": 0
-            }
-        }
+    "minecraft:mangrove_propagule_hanging": {
+      "hanging": {
+        "byte": 1
+      },
+      "propagule_stage": {
+        "int": 0
+      }
     },
-    "removedProperties": {
-        "minecraft:mangrove_propagule": [
-            "facing_direction",
-            "growth"
-        ],
-        "minecraft:mangrove_propagule_hanging": [
-            "facing_direction",
-            "growth"
-        ]
+    "minecraft:sculk_shrieker": {
+      "can_summon": {
+        "byte": 0
+      }
     }
+  },
+  "removedProperties": {
+    "minecraft:mangrove_propagule": [
+      "facing_direction",
+      "growth"
+    ],
+    "minecraft:mangrove_propagule_hanging": [
+      "facing_direction",
+      "growth"
+    ]
+  }
 }

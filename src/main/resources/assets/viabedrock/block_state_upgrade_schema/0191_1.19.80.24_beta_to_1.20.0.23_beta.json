@@ -1,157 +1,157 @@
 {
-    "maxVersionMajor": 1,
-    "maxVersionMinor": 20,
-    "maxVersionPatch": 0,
-    "maxVersionRevision": 33,
-    "renamedIds": {
-        "minecraft:lava_cauldron": "minecraft:cauldron"
-    },
-    "addedProperties": {
-        "minecraft:calibrated_sculk_sensor": {
-            "sculk_sensor_phase": {
-                "int": 0
-            }
-        }
-    },
-    "removedProperties": {
-        "minecraft:calibrated_sculk_sensor": [
-            "powered_bit"
-        ]
-    },
-    "renamedProperties": {
-        "minecraft:carved_pumpkin": {
-            "direction": "minecraft:cardinal_direction"
-        },
-        "minecraft:lit_pumpkin": {
-            "direction": "minecraft:cardinal_direction"
-        },
-        "minecraft:pumpkin": {
-            "direction": "minecraft:cardinal_direction"
-        },
-        "minecraft:sculk_sensor": {
-            "powered_bit": "sculk_sensor_phase"
-        }
-    },
-    "remappedPropertyValues": {
-        "minecraft:carved_pumpkin": {
-            "direction": "direction_00"
-        },
-        "minecraft:lit_pumpkin": {
-            "direction": "direction_00"
-        },
-        "minecraft:pumpkin": {
-            "direction": "direction_00"
-        },
-        "minecraft:sculk_sensor": {
-            "powered_bit": "powered_bit_00"
-        }
-    },
-    "remappedPropertyValuesIndex": {
-        "direction_00": [
-            {
-                "old": {
-                    "int": 0
-                },
-                "new": {
-                    "string": "south"
-                }
-            },
-            {
-                "old": {
-                    "int": 1
-                },
-                "new": {
-                    "string": "west"
-                }
-            },
-            {
-                "old": {
-                    "int": 2
-                },
-                "new": {
-                    "string": "north"
-                }
-            },
-            {
-                "old": {
-                    "int": 3
-                },
-                "new": {
-                    "string": "east"
-                }
-            }
-        ],
-        "powered_bit_00": [
-            {
-                "old": {
-                    "byte": 0
-                },
-                "new": {
-                    "int": 0
-                }
-            },
-            {
-                "old": {
-                    "byte": 1
-                },
-                "new": {
-                    "int": 1
-                }
-            }
-        ]
-    },
-    "flattenedProperties": {
-        "minecraft:carpet": {
-            "prefix": "minecraft:",
-            "flattenedProperty": "color",
-            "suffix": "_carpet",
-            "flattenedValueRemaps": {
-                "silver": "light_gray"
-            }
-        }
-    },
-    "remappedStates": {
-        "minecraft:coral": [
-            {
-                "oldState": {
-                    "dead_bit": {
-                        "byte": 0
-                    }
-                },
-                "newFlattenedName": {
-                    "prefix": "minecraft:",
-                    "flattenedProperty": "coral_color",
-                    "suffix": "_coral",
-                    "flattenedValueRemaps": {
-                        "blue": "tube",
-                        "pink": "brain",
-                        "purple": "bubble",
-                        "red": "fire",
-                        "yellow": "horn"
-                    }
-                },
-                "newState": null
-            },
-            {
-                "oldState": {
-                    "dead_bit": {
-                        "byte": 1
-                    }
-                },
-                "newFlattenedName": {
-                    "prefix": "minecraft:dead_",
-                    "flattenedProperty": "coral_color",
-                    "suffix": "_coral",
-                    "flattenedValueRemaps": {
-                        "blue": "tube",
-                        "pink": "brain",
-                        "purple": "bubble",
-                        "red": "fire",
-                        "yellow": "horn"
-                    }
-                },
-                "newState": null
-            }
-        ]
+  "maxVersionMajor": 1,
+  "maxVersionMinor": 20,
+  "maxVersionPatch": 0,
+  "maxVersionRevision": 33,
+  "renamedIds": {
+    "minecraft:lava_cauldron": "minecraft:cauldron"
+  },
+  "addedProperties": {
+    "minecraft:calibrated_sculk_sensor": {
+      "sculk_sensor_phase": {
+        "int": 0
+      }
     }
+  },
+  "removedProperties": {
+    "minecraft:calibrated_sculk_sensor": [
+      "powered_bit"
+    ]
+  },
+  "renamedProperties": {
+    "minecraft:carved_pumpkin": {
+      "direction": "minecraft:cardinal_direction"
+    },
+    "minecraft:lit_pumpkin": {
+      "direction": "minecraft:cardinal_direction"
+    },
+    "minecraft:pumpkin": {
+      "direction": "minecraft:cardinal_direction"
+    },
+    "minecraft:sculk_sensor": {
+      "powered_bit": "sculk_sensor_phase"
+    }
+  },
+  "remappedPropertyValues": {
+    "minecraft:carved_pumpkin": {
+      "direction": "direction_00"
+    },
+    "minecraft:lit_pumpkin": {
+      "direction": "direction_00"
+    },
+    "minecraft:pumpkin": {
+      "direction": "direction_00"
+    },
+    "minecraft:sculk_sensor": {
+      "powered_bit": "powered_bit_00"
+    }
+  },
+  "remappedPropertyValuesIndex": {
+    "direction_00": [
+      {
+        "old": {
+          "int": 0
+        },
+        "new": {
+          "string": "south"
+        }
+      },
+      {
+        "old": {
+          "int": 1
+        },
+        "new": {
+          "string": "west"
+        }
+      },
+      {
+        "old": {
+          "int": 2
+        },
+        "new": {
+          "string": "north"
+        }
+      },
+      {
+        "old": {
+          "int": 3
+        },
+        "new": {
+          "string": "east"
+        }
+      }
+    ],
+    "powered_bit_00": [
+      {
+        "old": {
+          "byte": 0
+        },
+        "new": {
+          "int": 0
+        }
+      },
+      {
+        "old": {
+          "byte": 1
+        },
+        "new": {
+          "int": 1
+        }
+      }
+    ]
+  },
+  "flattenedProperties": {
+    "minecraft:carpet": {
+      "prefix": "minecraft:",
+      "flattenedProperty": "color",
+      "suffix": "_carpet",
+      "flattenedValueRemaps": {
+        "silver": "light_gray"
+      }
+    }
+  },
+  "remappedStates": {
+    "minecraft:coral": [
+      {
+        "oldState": {
+          "dead_bit": {
+            "byte": 0
+          }
+        },
+        "newFlattenedName": {
+          "prefix": "minecraft:",
+          "flattenedProperty": "coral_color",
+          "suffix": "_coral",
+          "flattenedValueRemaps": {
+            "blue": "tube",
+            "pink": "brain",
+            "purple": "bubble",
+            "red": "fire",
+            "yellow": "horn"
+          }
+        },
+        "newState": null
+      },
+      {
+        "oldState": {
+          "dead_bit": {
+            "byte": 1
+          }
+        },
+        "newFlattenedName": {
+          "prefix": "minecraft:dead_",
+          "flattenedProperty": "coral_color",
+          "suffix": "_coral",
+          "flattenedValueRemaps": {
+            "blue": "tube",
+            "pink": "brain",
+            "purple": "bubble",
+            "red": "fire",
+            "yellow": "horn"
+          }
+        },
+        "newState": null
+      }
+    ]
+  }
 }

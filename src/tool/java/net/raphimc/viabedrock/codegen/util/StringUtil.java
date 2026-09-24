@@ -20,7 +20,7 @@ package net.raphimc.viabedrock.codegen.util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StringUtil {
+public final class StringUtil {
 
     public static String indent(final String input) {
         return indent(input, 1);
@@ -52,6 +52,9 @@ public class StringUtil {
             indented.add(indent(line, level));
         }
         return indented;
+    }
+
+    private StringUtil() {
     }
 
 }

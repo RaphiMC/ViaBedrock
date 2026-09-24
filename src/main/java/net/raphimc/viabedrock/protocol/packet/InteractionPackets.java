@@ -29,11 +29,6 @@ import net.raphimc.viabedrock.api.model.container.player.InventoryContainer;
 import net.raphimc.viabedrock.api.model.entity.ClientPlayerEntity;
 import net.raphimc.viabedrock.api.model.entity.Entity;
 import net.raphimc.viabedrock.api.util.PacketFactory;
-import net.raphimc.viabedrock.protocol.model.inventory.BedrockInventoryTransaction;
-import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
-import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
-import net.raphimc.viabedrock.protocol.model.inventory.InventoryTransactionData;
-import net.raphimc.viabedrock.protocol.rewriter.InventoryTransactionRewriter;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.PlayerActionPacketFactory;
@@ -47,6 +42,11 @@ import net.raphimc.viabedrock.protocol.data.enums.java.generated.PlayerActionAct
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
 import net.raphimc.viabedrock.protocol.model.EntityLink;
 import net.raphimc.viabedrock.protocol.model.Position3f;
+import net.raphimc.viabedrock.protocol.model.inventory.BedrockInventoryTransaction;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryActionData;
+import net.raphimc.viabedrock.protocol.model.inventory.InventorySource;
+import net.raphimc.viabedrock.protocol.model.inventory.InventoryTransactionData;
+import net.raphimc.viabedrock.protocol.rewriter.InventoryTransactionRewriter;
 import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 import net.raphimc.viabedrock.protocol.storage.EntityTracker;
 import net.raphimc.viabedrock.protocol.storage.InventoryTracker;
@@ -55,7 +55,7 @@ import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import java.util.List;
 import java.util.logging.Level;
 
-public class InteractionPackets {
+public final class InteractionPackets {
 
     public static boolean handlePlayerAction(final PacketWrapper wrapper, final PlayerActionAction action) {
         final InventoryTransactionRewriter transactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
@@ -63,16 +63,16 @@ public class InteractionPackets {
 
         if (action == PlayerActionAction.RELEASE_USE_ITEM) {
             final BedrockInventoryTransaction transaction = new BedrockInventoryTransaction(
-                    0,
-                    null,
-                    null,
-                    ComplexInventoryTransaction_Type.ItemReleaseTransaction,
-                    new InventoryTransactionData.ReleaseItemTransactionData(
-                            ItemReleaseActionType.Release,
-                            inventory.getSelectedHotbarSlot(),
-                            inventory.getSelectedHotbarItem(),
-                            wrapper.user().get(EntityTracker.class).getClientPlayer().position()
-                    )
+                0,
+                null,
+                null,
+                ComplexInventoryTransaction_Type.ItemReleaseTransaction,
+                new InventoryTransactionData.ReleaseItemTransactionData(
+                    ItemReleaseActionType.Release,
+                    inventory.getSelectedHotbarSlot(),
+                    inventory.getSelectedHotbarItem(),
+                    wrapper.user().get(EntityTracker.class).getClientPlayer().position()
+                )
             );
             final PacketWrapper transactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
             transactionPacket.write(transactionRewriter.getInventoryTransactionType(), transaction);
@@ -102,24 +102,24 @@ public class InteractionPackets {
         }
 
         final BedrockInventoryTransaction transaction = new BedrockInventoryTransaction(
-                0,
-                null,
-                List.of(
-                        new InventoryActionData(
-                                new InventorySource(InventorySourceType.World_Interaction, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySourceFlags.No_Flag),
-                                0,
-                                BedrockItem.empty(),
-                                droppedItem
-                        ),
-                        new InventoryActionData(
-                                new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySourceFlags.No_Flag),
-                                inventory.getSelectedHotbarSlot(),
-                                currentItem,
-                                remainingItem
-                        )
+            0,
+            null,
+            List.of(
+                new InventoryActionData(
+                    new InventorySource(InventorySourceType.World_Interaction, ContainerID.CONTAINER_ID_NONE.getValue(), InventorySourceFlags.No_Flag),
+                    0,
+                    BedrockItem.empty(),
+                    droppedItem
                 ),
-                ComplexInventoryTransaction_Type.NormalTransaction,
-                new InventoryTransactionData.NormalTransactionData()
+                new InventoryActionData(
+                    new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySourceFlags.No_Flag),
+                    inventory.getSelectedHotbarSlot(),
+                    currentItem,
+                    remainingItem
+                )
+            ),
+            ComplexInventoryTransaction_Type.NormalTransaction,
+            new InventoryTransactionData.NormalTransactionData()
         );
         final PacketWrapper transactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
         transactionPacket.write(transactionRewriter.getInventoryTransactionType(), transaction);
@@ -146,25 +146,25 @@ public class InteractionPackets {
                 return;
             }
 
-            BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
-                    0, // legacy request id
-                    null,
-                    null,
-                    ComplexInventoryTransaction_Type.ItemUseTransaction,
-                    new InventoryTransactionData.UseItemTransactionData(
-                            ItemUseActionType.Use,
-                            ItemUseTriggerType.Unknown,
-                            new BlockPosition(0, 0, 0), // block position
-                            255, // block face
-                            inventoryContainer.getSelectedHotbarSlot(),
-                            HandSlot.Mainhand,
-                            inventoryContainer.getSelectedHotbarItem(),
-                            entityTracker.getClientPlayer().position(),
-                            Position3f.ZERO, // click position
-                            0, // block runtime id
-                            ItemUsePredictedResult.Failure,
-                            ItemUseClientCooldownState.Off
-                    )
+            final BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+                0, // legacy request id
+                null,
+                null,
+                ComplexInventoryTransaction_Type.ItemUseTransaction,
+                new InventoryTransactionData.UseItemTransactionData(
+                    ItemUseActionType.Use,
+                    ItemUseTriggerType.Unknown,
+                    new BlockPosition(0, 0, 0), // block position
+                    255, // block face
+                    inventoryContainer.getSelectedHotbarSlot(),
+                    HandSlot.Mainhand,
+                    inventoryContainer.getSelectedHotbarItem(),
+                    entityTracker.getClientPlayer().position(),
+                    Position3f.ZERO, // click position
+                    0, // block runtime id
+                    ItemUsePredictedResult.Failure,
+                    ItemUseClientCooldownState.Off
+                )
             );
             wrapper.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
         });
@@ -179,20 +179,20 @@ public class InteractionPackets {
 
             final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)]; // hand
 
-            BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
-            int faceInt = wrapper.read(Types.UNSIGNED_BYTE); // face
-            Direction direction = Direction.getFromVerticalId(faceInt);
+            final BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
+            final int faceInt = wrapper.read(Types.UNSIGNED_BYTE); // face
+            final Direction direction = Direction.getFromVerticalId(faceInt);
             if (direction == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown block face id: " + faceInt);
                 return;
             }
-            BlockFace face = direction.blockFace();
-            Position3f clickPosition = new Position3f(
-                    wrapper.read(Types.FLOAT), // x
-                    wrapper.read(Types.FLOAT), // y
-                    wrapper.read(Types.FLOAT)  // z
+            final BlockFace face = direction.blockFace();
+            final Position3f clickPosition = new Position3f(
+                wrapper.read(Types.FLOAT), // x
+                wrapper.read(Types.FLOAT), // y
+                wrapper.read(Types.FLOAT)  // z
             );
-            boolean insideBlock = wrapper.read(Types.BOOLEAN); // inside block
+            final boolean insideBlock = wrapper.read(Types.BOOLEAN); // inside block
             wrapper.read(Types.BOOLEAN); // world border, this doesn't exist on Bedrock.
 
             // Send back block changed ack with the sequence, this will help with ghost blocks.
@@ -205,12 +205,12 @@ public class InteractionPackets {
 
             // The bedrock client will send a start item use on action to the server first.
             PlayerActionPacketFactory.sendBedrockPlayerAction(
-                    wrapper.user(),
-                    clientPlayer.runtimeId(),
-                    PlayerActionType.StartItemUseOn,
-                    position,
-                    insideBlock ? position : position.getRelative(face),
-                    faceInt
+                wrapper.user(),
+                clientPlayer.runtimeId(),
+                PlayerActionType.StartItemUseOn,
+                position,
+                insideBlock ? position : position.getRelative(face),
+                faceInt
             );
 
             // This is the main packet that the bedrock client use to interact with block.The rest of the
@@ -225,32 +225,32 @@ public class InteractionPackets {
                 predictedToItem = BedrockItem.empty();
             }
 
-            BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
-                    0, // legacy request id
-                    null,
-                    List.of(
-                            new InventoryActionData(
-                                    new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySourceFlags.No_Flag),
-                                    inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
-                                    inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
-                                    predictedToItem
-                            )
-                    ),
-                    ComplexInventoryTransaction_Type.ItemUseTransaction,
-                    new InventoryTransactionData.UseItemTransactionData(
-                            ItemUseActionType.Place,
-                            ItemUseTriggerType.Player_Input,
-                            position,
-                            faceInt,
-                            inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
-                            HandSlot.Mainhand,
-                            inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
-                            clientPlayer.position(),
-                            clickPosition,
-                            chunkTracker.getBlockState(position),
-                            ItemUsePredictedResult.Success,
-                            ItemUseClientCooldownState.Off
+            final BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+                0, // legacy request id
+                null,
+                List.of(
+                    new InventoryActionData(
+                        new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySourceFlags.No_Flag),
+                        inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                        inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
+                        predictedToItem
                     )
+                ),
+                ComplexInventoryTransaction_Type.ItemUseTransaction,
+                new InventoryTransactionData.UseItemTransactionData(
+                    ItemUseActionType.Place,
+                    ItemUseTriggerType.Player_Input,
+                    position,
+                    faceInt,
+                    inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                    HandSlot.Mainhand,
+                    inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
+                    clientPlayer.position(),
+                    clickPosition,
+                    chunkTracker.getBlockState(position),
+                    ItemUsePredictedResult.Success,
+                    ItemUseClientCooldownState.Off
+                )
             );
             transactionPacket.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
 
@@ -258,20 +258,20 @@ public class InteractionPackets {
 
             // Bedrock sends a stop item use on after the transaction packet
             PlayerActionPacketFactory.sendBedrockPlayerAction(
-                    wrapper.user(),
-                    clientPlayer.runtimeId(),
-                    PlayerActionType.StopItemUseOn,
-                    position,
-                    new BlockPosition(0, 0, 0),
-                    0
+                wrapper.user(),
+                clientPlayer.runtimeId(),
+                PlayerActionType.StopItemUseOn,
+                position,
+                new BlockPosition(0, 0, 0),
+                0
             );
         });
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_TRANSACTION, null, wrapper -> {
             final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
-            InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
+            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
 
             wrapper.cancel();
-            BedrockInventoryTransaction inventoryTransaction = wrapper.read(inventoryTransactionRewriter.getInventoryTransactionType());
+            final BedrockInventoryTransaction inventoryTransaction = wrapper.read(inventoryTransactionRewriter.getInventoryTransactionType());
 
             if (inventoryTransaction.legacyRequestId() != 0) {
                 // Ignore legacy inventory transactions for now
@@ -281,11 +281,11 @@ public class InteractionPackets {
             if (inventoryTransaction.actions() != null && !inventoryTransaction.actions().isEmpty()) {
                 for (InventoryActionData action : inventoryTransaction.actions()) {
                     if (action.source().type() == InventorySourceType.Container_Inventory) {
-                        Container container = inventoryTracker.getContainerClientbound((byte) action.source().containerId(), null, null);
+                        final Container container = inventoryTracker.getContainerClientbound((byte) action.source().containerId(), null, null);
 
                         if (container != null) {
                             container.setItem(action.slot(), action.toItem());
-                            PacketFactory.sendJavaContainerSetContent(wrapper.user(),  container);
+                            PacketFactory.sendJavaContainerSetContent(wrapper.user(), container);
                         } else {
                             ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Received inventory action for unknown container ID: " + action.source().containerId());
                         }
@@ -327,7 +327,7 @@ public class InteractionPackets {
 
                     if (passenger.uniqueId() == entityTracker.getClientPlayer().uniqueId()) { // TODO: This could be applied to all passengers not just players
                         // The player is now riding an entity, update the state
-                        entityTracker.getClientPlayer().setMountEntityRId(entityTracker.getEntityByUid(linkType.fromEntityUniqueId()).runtimeId());
+                        entityTracker.getClientPlayer().setMountEntityRuntimeId(entityTracker.getEntityByUid(linkType.fromEntityUniqueId()).runtimeId());
                     }
                 }
                 case None -> { // Remove
@@ -339,16 +339,18 @@ public class InteractionPackets {
                         wrapper.write(Types.VAR_INT, entityTracker.getEntityByUid(passengerUid).javaId()); // passenger id
                     }
 
-                    if (passenger.uniqueId() == entityTracker.getClientPlayer().uniqueId()) {// TODO: This could be applied to all passengers not just players
+                    if (passenger.uniqueId() == entityTracker.getClientPlayer().uniqueId()) { // TODO: This could be applied to all passengers not just players
                         // The player is no longer riding an entity, update the state
-                        entityTracker.getClientPlayer().setMountEntityRId(-1);
+                        entityTracker.getClientPlayer().setMountEntityRuntimeId(-1);
                         entityTracker.getClientPlayer().setRequestedDismount(false);
                     }
                 }
             }
         });
 
+    }
 
+    private InteractionPackets() {
     }
 
 }

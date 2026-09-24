@@ -40,7 +40,7 @@ public class OperatorArgumentType implements ArgumentType<Object> {
     }
 
     @Override
-    public Object parse(StringReader reader) throws CommandSyntaxException {
+    public Object parse(final StringReader reader) throws CommandSyntaxException {
         final int start = reader.getCursor();
         while (reader.canRead() && reader.peek() != ' ') {
             reader.skip();
@@ -54,7 +54,7 @@ public class OperatorArgumentType implements ArgumentType<Object> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         return SuggestionsUtil.suggestMatching(OPERATORS, builder);
     }
 

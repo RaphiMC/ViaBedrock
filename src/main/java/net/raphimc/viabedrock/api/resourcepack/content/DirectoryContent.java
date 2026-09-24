@@ -40,13 +40,13 @@ public class DirectoryContent extends Content {
         }
         try {
             return Files.list(resolvedPath)
-                    .filter(Files::isRegularFile)
-                    .map(this.dir::relativize)
-                    .map(Path::toString)
-                    .map(s -> s.replace('\\', '/'))
-                    .filter(file -> !file.contains("/") && file.endsWith(extension))
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
+                .filter(Files::isRegularFile)
+                .map(this.dir::relativize)
+                .map(Path::toString)
+                .map(s -> s.replace('\\', '/'))
+                .filter(file -> !file.contains("/") && file.endsWith(extension))
+                .collect(Collectors.toList());
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }
@@ -59,13 +59,13 @@ public class DirectoryContent extends Content {
         }
         try {
             return Files.walk(resolvedPath)
-                    .filter(Files::isRegularFile)
-                    .map(this.dir::relativize)
-                    .map(Path::toString)
-                    .map(s -> s.replace('\\', '/'))
-                    .filter(file -> file.endsWith(extension))
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
+                .filter(Files::isRegularFile)
+                .map(this.dir::relativize)
+                .map(Path::toString)
+                .map(s -> s.replace('\\', '/'))
+                .filter(file -> file.endsWith(extension))
+                .collect(Collectors.toList());
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }
@@ -83,7 +83,7 @@ public class DirectoryContent extends Content {
         }
         try {
             return Files.readAllBytes(resolvedPath);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
     }
@@ -93,7 +93,7 @@ public class DirectoryContent extends Content {
         final boolean exists = this.contains(path);
         try {
             Files.write(this.resolvePath(this.dir, Path.of(path)), data);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
         return exists;

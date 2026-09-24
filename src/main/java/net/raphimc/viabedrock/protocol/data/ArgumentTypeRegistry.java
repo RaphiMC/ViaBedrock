@@ -27,12 +27,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-public class ArgumentTypeRegistry {
+public final class ArgumentTypeRegistry {
 
     private static final Map<Class<? extends ArgumentType<?>>, ArgumentTypeMapping> ARGUMENT_TYPES = new HashMap<>();
 
     public static void init() {
-        if (!ARGUMENT_TYPES.isEmpty()) throw new IllegalStateException("Argument types already initialized");
+        if (!ARGUMENT_TYPES.isEmpty()) {
+            throw new IllegalStateException("Argument types already initialized");
+        }
 
         register(BoolArgumentType.class, "brigadier:bool", null);
         register(FloatArgumentType.class, "brigadier:float", (wrapper, argumentType) -> {
@@ -40,32 +42,48 @@ public class ArgumentTypeRegistry {
             final boolean hasMax = argumentType.getMaximum() != Float.MAX_VALUE;
             final byte flags = (byte) ((hasMin ? 1 : 0) | (hasMax ? 2 : 0));
             wrapper.write(Types.BYTE, flags); // flags
-            if (hasMin) wrapper.write(Types.FLOAT, argumentType.getMinimum()); // min value
-            if (hasMax) wrapper.write(Types.FLOAT, argumentType.getMaximum()); // max value
+            if (hasMin) {
+                wrapper.write(Types.FLOAT, argumentType.getMinimum()); // min value
+            }
+            if (hasMax) {
+                wrapper.write(Types.FLOAT, argumentType.getMaximum()); // max value
+            }
         });
         register(DoubleArgumentType.class, "brigadier:double", (wrapper, argumentType) -> {
             final boolean hasMin = argumentType.getMinimum() != -Double.MAX_VALUE;
             final boolean hasMax = argumentType.getMaximum() != Double.MAX_VALUE;
             final byte flags = (byte) ((hasMin ? 1 : 0) | (hasMax ? 2 : 0));
             wrapper.write(Types.BYTE, flags); // flags
-            if (hasMin) wrapper.write(Types.DOUBLE, argumentType.getMinimum()); // min value
-            if (hasMax) wrapper.write(Types.DOUBLE, argumentType.getMaximum()); // max value
+            if (hasMin) {
+                wrapper.write(Types.DOUBLE, argumentType.getMinimum()); // min value
+            }
+            if (hasMax) {
+                wrapper.write(Types.DOUBLE, argumentType.getMaximum()); // max value
+            }
         });
         register(IntegerArgumentType.class, "brigadier:integer", (wrapper, argumentType) -> {
             final boolean hasMin = argumentType.getMinimum() != Integer.MIN_VALUE;
             final boolean hasMax = argumentType.getMaximum() != Integer.MAX_VALUE;
             final byte flags = (byte) ((hasMin ? 1 : 0) | (hasMax ? 2 : 0));
             wrapper.write(Types.BYTE, flags); // flags
-            if (hasMin) wrapper.write(Types.INT, argumentType.getMinimum()); // min value
-            if (hasMax) wrapper.write(Types.INT, argumentType.getMaximum()); // max value
+            if (hasMin) {
+                wrapper.write(Types.INT, argumentType.getMinimum()); // min value
+            }
+            if (hasMax) {
+                wrapper.write(Types.INT, argumentType.getMaximum()); // max value
+            }
         });
         register(LongArgumentType.class, "brigadier:long", (wrapper, argumentType) -> {
             final boolean hasMin = argumentType.getMinimum() != Long.MIN_VALUE;
             final boolean hasMax = argumentType.getMaximum() != Long.MAX_VALUE;
             final byte flags = (byte) ((hasMin ? 1 : 0) | (hasMax ? 2 : 0));
             wrapper.write(Types.BYTE, flags); // flags
-            if (hasMin) wrapper.write(Types.LONG, argumentType.getMinimum()); // min value
-            if (hasMax) wrapper.write(Types.LONG, argumentType.getMaximum()); // max value
+            if (hasMin) {
+                wrapper.write(Types.LONG, argumentType.getMinimum()); // min value
+            }
+            if (hasMax) {
+                wrapper.write(Types.LONG, argumentType.getMaximum()); // max value
+            }
         });
         register(StringArgumentType.class, "brigadier:string", (wrapper, argumentType) -> {
             wrapper.write(Types.VAR_INT, argumentType.getType().ordinal()); // type
@@ -113,6 +131,9 @@ public class ArgumentTypeRegistry {
         }
 
         ARGUMENT_TYPES.put(clazz, new ArgumentTypeMapping(BedrockProtocol.MAPPINGS.getJavaCommandArgumentTypes().get(name), (BiConsumer<PacketWrapper, ArgumentType<?>>) writer));
+    }
+
+    private ArgumentTypeRegistry() {
     }
 
     public record ArgumentTypeMapping(int id, BiConsumer<PacketWrapper, ArgumentType<?>> writer) {

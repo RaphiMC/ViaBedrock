@@ -23,6 +23,8 @@ public enum Dimension {
     NETHER("minecraft:the_nether"),
     END("minecraft:the_end");
 
+    private final String key;
+
     public static String[] getDimensionKeys() {
         return new String[]{OVERWORLD.getKey(), NETHER.getKey(), END.getKey()};
     }
@@ -33,8 +35,6 @@ public enum Dimension {
         }
         return values()[value];
     }
-
-    private final String key;
 
     Dimension(final String key) {
         this.key = key;

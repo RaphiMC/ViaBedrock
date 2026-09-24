@@ -44,7 +44,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
     }
 
     @Override
-    public BedrockDataPalette read(ByteBuf buffer) {
+    public BedrockDataPalette read(final ByteBuf buffer) {
         final short header = buffer.readUnsignedByte();
         final int bitArrayVersion = header >> 1;
         final boolean isRuntime = (header & 1) != 0 || !this.allowPersistentIds;
@@ -79,7 +79,7 @@ public class DataPaletteType extends Type<BedrockDataPalette> {
     }
 
     @Override
-    public void write(ByteBuf buffer, BedrockDataPalette value) {
+    public void write(final ByteBuf buffer, final BedrockDataPalette value) {
         if (value == null) {
             buffer.writeByte(127 << 1);
             return;

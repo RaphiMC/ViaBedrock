@@ -29,9 +29,9 @@ import java.util.Map;
  * Run it with {@code ./gradlew reportMappingGaps}. Use {@code --category=items,entities} to narrow it down and
  * {@code --limit=0} to print every entry instead of the first few per kind.
  */
-public class MappingGapReporter {
+public final class MappingGapReporter {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final List<String> categories = categories(toolArgs);
         final int limit = Integer.parseInt(toolArgs.get("limit", "20"));
@@ -88,6 +88,9 @@ public class MappingGapReporter {
             }
         }
         return categories;
+    }
+
+    private MappingGapReporter() {
     }
 
 }

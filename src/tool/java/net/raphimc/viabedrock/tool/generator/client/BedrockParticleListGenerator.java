@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class BedrockParticleListGenerator {
+public final class BedrockParticleListGenerator {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final ResourcePackStorage resourcePackStorage = Util.getClientResourcePacks(ToolPaths.clientDataDir(toolArgs));
 
@@ -43,6 +43,9 @@ public class BedrockParticleListGenerator {
         final JsonArray particles = new JsonArray();
         particleList.forEach(particles::add);
         ToolPaths.writeJson(ToolPaths.BEDROCK_DATA.resolve("particles.json"), particles);
+    }
+
+    private BedrockParticleListGenerator() {
     }
 
 }

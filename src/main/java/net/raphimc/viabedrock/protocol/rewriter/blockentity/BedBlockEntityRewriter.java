@@ -30,7 +30,7 @@ import net.raphimc.viabedrock.protocol.storage.ChunkTracker;
 public class BedBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 
     @Override
-    public BlockEntity toJava(UserConnection user, BedrockBlockEntity bedrockBlockEntity) {
+    public BlockEntity toJava(final UserConnection user, final BedrockBlockEntity bedrockBlockEntity) {
         final CompoundTag bedrockTag = bedrockBlockEntity.tag();
 
         final DyeColor color = DyeColor.getByJavaId(bedrockTag.getByte("color", (byte) -1), DyeColor.RED);

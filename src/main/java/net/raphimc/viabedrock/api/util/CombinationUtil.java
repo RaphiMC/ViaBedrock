@@ -19,7 +19,7 @@ package net.raphimc.viabedrock.api.util;
 
 import java.util.*;
 
-public class CombinationUtil {
+public final class CombinationUtil {
 
     public static <K, V> List<Map<K, V>> generateCombinations(final Map<K, Set<V>> map) {
         final List<Map<K, V>> output = new ArrayList<>();
@@ -48,6 +48,9 @@ public class CombinationUtil {
 
             keys.previous();
         }
+    }
+
+    private CombinationUtil() {
     }
 
 }

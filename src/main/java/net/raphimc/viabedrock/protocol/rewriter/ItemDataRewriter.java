@@ -23,25 +23,23 @@ import com.viaversion.viaversion.api.minecraft.data.StructuredData;
 import com.viaversion.viaversion.api.minecraft.data.StructuredDataKey;
 import com.viaversion.viaversion.api.minecraft.item.Item;
 import com.viaversion.viaversion.api.minecraft.item.data.Enchantments;
-import com.viaversion.viaversion.api.type.types.version.VersionedTypes;
 import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.util.RegistryUtil;
-import net.raphimc.viabedrock.protocol.storage.MapTracker;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.data.JavaRegistries;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.Enchant_Type;
 import net.raphimc.viabedrock.protocol.model.BedrockItem;
+import net.raphimc.viabedrock.protocol.storage.MapTracker;
 
 import java.util.logging.Level;
 
-public class ItemDataRewriter {
+public final class ItemDataRewriter {
 
     // BedrockTag can be null
     public static void handleItem(final UserConnection user, final BedrockItem bedrockItem, final CompoundTag bedrockTag, final Item javaItem) {
 
         if (bedrockTag != null) {
 
-            if (bedrockTag.get("Damage") instanceof NumberTag durability)  {
+            if (bedrockTag.get("Damage") instanceof NumberTag durability) {
                 javaItem.dataContainer().set(StructuredDataKey.DAMAGE, durability.asInt());
             }
 
@@ -51,8 +49,8 @@ public class ItemDataRewriter {
 
             if (bedrockTag.get("ench") instanceof ListTag<?> enchantments) {
 
-                StructuredData<Enchantments> enchantmentsData = javaItem.dataContainer().getData(StructuredDataKey.ENCHANTMENTS1_21_5);
-                Enchantments javaEnchantments;
+                final StructuredData<Enchantments> enchantmentsData = javaItem.dataContainer().getData(StructuredDataKey.ENCHANTMENTS1_21_5);
+                final Enchantments javaEnchantments;
                 if (enchantmentsData == null || enchantmentsData.isEmpty()) {
                     javaEnchantments = new Enchantments(true);
                 } else {
@@ -64,24 +62,24 @@ public class ItemDataRewriter {
                     if (enchantment instanceof CompoundTag compoundTag) {
                         //id and lvl must be a short. Else bedrock defaults to protection (id 0) and lvl 0 (TODO: implement the fallback)
                         if (compoundTag.get("id") instanceof ShortTag idTag && compoundTag.get("lvl") instanceof ShortTag levelTag) {
-                            Enchant_Type bedrockId = Enchant_Type.getByValue(idTag.asInt());
-                            int level = levelTag.asInt();
+                            final Enchant_Type bedrockId = Enchant_Type.getByValue(idTag.asInt());
+                            final int level = levelTag.asInt();
 
                             if (bedrockId == null) {
                                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown enchantment with id " + idTag.asInt() + " and level " + level);
                                 continue;
                             }
 
-                            String javaEnchantmentId = BedrockProtocol.MAPPINGS.getBedrockToJavaEnchantments().get(bedrockId);
+                            final String javaEnchantmentId = BedrockProtocol.MAPPINGS.getBedrockToJavaEnchantments().get(bedrockId);
 
                             //Update the java item with the enchantment
                             if (javaEnchantmentId != null) {
-                                CompoundTag enchantmentsRegistry = (CompoundTag) BedrockProtocol.MAPPINGS.getJavaRegistries().get("minecraft:enchantment");
-                                CompoundTag enchantmentEntry = (CompoundTag) enchantmentsRegistry.get(javaEnchantmentId);
+                                final CompoundTag enchantmentsRegistry = (CompoundTag) BedrockProtocol.MAPPINGS.getJavaRegistries().get("minecraft:enchantment");
+                                final CompoundTag enchantmentEntry = (CompoundTag) enchantmentsRegistry.get(javaEnchantmentId);
                                 if (enchantmentEntry == null) {
                                     ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Enchantment entry is null for enchantment " + javaEnchantmentId);
                                 } else {
-                                    int javaId = RegistryUtil.getRegistryIndex(enchantmentsRegistry, enchantmentEntry);
+                                    final int javaId = RegistryUtil.getRegistryIndex(enchantmentsRegistry, enchantmentEntry);
                                     javaEnchantments.add(javaId, level);
                                 }
                             } else {
@@ -96,4 +94,8 @@ public class ItemDataRewriter {
 
         }
     }
+
+    private ItemDataRewriter() {
+    }
+
 }

@@ -41,7 +41,7 @@ public class BlockStateUpgrader {
                 final JsonObject json = GsonUtil.getGson().fromJson(new String(data, StandardCharsets.UTF_8), JsonObject.class);
                 this.schemas.add(new JsonBlockStateUpgradeSchema(json));
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             ViaBedrock.getPlatform().getLogger().log(Level.SEVERE, "Failed to load block state upgrade schema", e);
             this.schemas.clear();
         }

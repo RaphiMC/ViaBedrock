@@ -23,6 +23,6 @@ public enum PlayerTeamMethod {
     REMOVE,
     CHANGE,
     JOIN,
-    LEAVE,
+    LEAVE
 
 }

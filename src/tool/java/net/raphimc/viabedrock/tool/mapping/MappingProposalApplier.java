@@ -29,11 +29,7 @@ import net.raphimc.viabedrock.tool.ToolPaths;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Merges the reviewed proposals back into the data assets.
@@ -42,19 +38,19 @@ import java.util.Set;
  * for block states bedrock no longer has are dropped unless {@code --keep-stale} is passed. Use {@code --category}
  * to apply only the block states or only the item fixes.
  */
-public class MappingProposalApplier {
+public final class MappingProposalApplier {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final boolean dryRun = toolArgs.flag("dry-run");
         final boolean keepStale = toolArgs.flag("keep-stale");
         final boolean replace = toolArgs.flag("replace");
         final List<String> categories = toolArgs.list("category").isEmpty()
-                ? List.of(MappingAnalysis.BLOCK_STATES, MappingAnalysis.ITEMS)
-                : toolArgs.list("category");
+            ? List.of(MappingAnalysis.BLOCK_STATES, MappingAnalysis.ITEMS)
+            : toolArgs.list("category");
         for (String category : categories) {
             if (!List.of(MappingAnalysis.BLOCK_STATES, MappingAnalysis.ITEMS, MappingAnalysis.ENTITIES,
-                    MappingAnalysis.EFFECTS, MappingAnalysis.PARTICLES, MappingAnalysis.SOUNDS).contains(category)) {
+                MappingAnalysis.EFFECTS, MappingAnalysis.PARTICLES, MappingAnalysis.SOUNDS).contains(category)) {
                 throw new IllegalArgumentException("Cannot apply proposals for category " + category);
             }
         }
@@ -94,7 +90,7 @@ public class MappingProposalApplier {
 
     private static List<IdentifierChanges> prepareIdentifierChanges(final List<String> categories, final boolean replace) throws Exception {
         final List<String> selected = categories.stream().filter(category -> List.of(MappingAnalysis.ENTITIES,
-                MappingAnalysis.EFFECTS, MappingAnalysis.PARTICLES, MappingAnalysis.SOUNDS).contains(category)).toList();
+            MappingAnalysis.EFFECTS, MappingAnalysis.PARTICLES, MappingAnalysis.SOUNDS).contains(category)).toList();
         if (selected.isEmpty()) {
             return List.of();
         }
@@ -117,7 +113,7 @@ public class MappingProposalApplier {
                 default -> throw new IllegalArgumentException("Unknown category " + category);
             };
             final Set<String> javaIdentifiers = category.equals(MappingAnalysis.EFFECTS)
-                    ? assets.javaEffects() : assets.javaNamespaced(category);
+                ? assets.javaEffects() : assets.javaNamespaced(category);
             final Path file = ToolPaths.CUSTOM_DATA.resolve(fileName);
             final JsonObject mappings = JsonParser.parseString(Files.readString(file)).getAsJsonObject();
             final JsonObject proposals = proposed.getAsJsonObject(category);
@@ -264,6 +260,9 @@ public class MappingProposalApplier {
             throw new IllegalStateException("Could not find " + oldValue + " in " + bedrockIdentifier);
         }
         return content.substring(0, start) + entry.replace(oldValue, "\"java_id\": \"" + newJavaId + "\"") + content.substring(start + entry.length());
+    }
+
+    private MappingProposalApplier() {
     }
 
     private record ItemChanges(String content, int count) {

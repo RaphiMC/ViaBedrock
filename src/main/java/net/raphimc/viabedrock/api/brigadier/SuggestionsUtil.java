@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-public class SuggestionsUtil {
+public final class SuggestionsUtil {
 
     public static CompletableFuture<Suggestions> suggestMatching(final Iterable<String> candidates, final SuggestionsBuilder builder) {
         final String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
@@ -53,14 +53,19 @@ public class SuggestionsUtil {
     }
 
     private static boolean shouldSuggest(final String remaining, final String candidate) {
-        for (int i = 0; !candidate.startsWith(remaining, i); i++) {
+        int i = 0;
+        while (!candidate.startsWith(remaining, i)) {
             i = candidate.indexOf('_', i);
             if (i < 0) {
                 return false;
             }
+            i++;
         }
 
         return true;
+    }
+
+    private SuggestionsUtil() {
     }
 
 }

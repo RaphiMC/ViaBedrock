@@ -34,7 +34,7 @@ public class MessageCodec extends MessageToMessageCodec<RakMessage, ByteBuf> {
     private static final int MINECRAFT_MESSAGE_ID = 0xFE;
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
+    protected void encode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         final CompositeByteBuf buf = ctx.alloc().compositeBuffer(2);
         try {
             buf.addComponent(true, ctx.alloc().ioBuffer(1).writeByte(MINECRAFT_MESSAGE_ID));
@@ -46,7 +46,7 @@ public class MessageCodec extends MessageToMessageCodec<RakMessage, ByteBuf> {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, RakMessage in, List<Object> out) {
+    protected void decode(final ChannelHandlerContext ctx, final RakMessage in, final List<Object> out) {
         if (in.channel() != 0 && in.reliability() != RakReliability.RELIABLE_ORDERED) {
             return;
         }

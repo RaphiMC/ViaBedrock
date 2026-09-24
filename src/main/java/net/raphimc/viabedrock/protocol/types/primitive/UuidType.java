@@ -18,41 +18,25 @@
 package net.raphimc.viabedrock.protocol.types.primitive;
 
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.TypeConverter;
 import io.netty.buffer.ByteBuf;
 
-public class IntLEType extends Type<Integer> implements TypeConverter<Integer> {
+import java.util.UUID;
 
-    public IntLEType() {
-        super("IntLE", Integer.class);
-    }
+public class UuidType extends Type<UUID> {
 
-    public int readPrimitive(final ByteBuf buffer) {
-        return buffer.readIntLE();
-    }
-
-    public void writePrimitive(final ByteBuf buffer, final int value) {
-        buffer.writeIntLE(value);
+    public UuidType() {
+        super(UUID.class);
     }
 
     @Override
-    public Integer read(ByteBuf buffer) {
-        return this.readPrimitive(buffer);
+    public UUID read(final ByteBuf buffer) {
+        return new UUID(buffer.readLongLE(), buffer.readLongLE());
     }
 
     @Override
-    public void write(ByteBuf buffer, Integer value) {
-        this.writePrimitive(buffer, value);
-    }
-
-    @Override
-    public Integer from(Object o) {
-        if (o instanceof Number) {
-            return ((Number) o).intValue();
-        } else if (o instanceof Boolean) {
-            return ((Boolean) o) ? 1 : 0;
-        }
-        return (Integer) o;
+    public void write(final ByteBuf buffer, final UUID value) {
+        buffer.writeLongLE(value.getMostSignificantBits());
+        buffer.writeLongLE(value.getLeastSignificantBits());
     }
 
 }

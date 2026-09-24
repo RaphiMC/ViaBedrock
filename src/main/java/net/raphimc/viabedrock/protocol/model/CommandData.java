@@ -63,25 +63,29 @@ public record CommandData(String name, String description, int flags, byte permi
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            EnumData enumData = (EnumData) o;
-            return soft == enumData.soft && Objects.equals(name, enumData.name) && Objects.equals(values, enumData.values);
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            final EnumData enumData = (EnumData) o;
+            return this.soft == enumData.soft && Objects.equals(this.name, enumData.name) && Objects.equals(this.values, enumData.values);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(name, values, soft);
+            return Objects.hash(this.name, this.values, this.soft);
         }
 
         @Override
         public String toString() {
-            return "EnumData{" +
-                    "name='" + name + '\'' +
-                    ", values=" + values +
-                    ", soft=" + soft +
-                    '}';
+            return "EnumData{"
+                + "name='" + this.name + '\''
+                + ", values=" + this.values
+                + ", soft=" + this.soft
+                + '}';
         }
 
     }

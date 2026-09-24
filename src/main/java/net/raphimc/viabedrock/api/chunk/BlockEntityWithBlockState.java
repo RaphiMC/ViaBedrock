@@ -26,8 +26,8 @@ public class BlockEntityWithBlockState implements BlockEntity {
     private BlockEntity blockEntity;
     private final int blockState;
 
-    public BlockEntityWithBlockState(final byte packedXZ, final short y, final int blockState) {
-        this(new BlockEntityImpl(packedXZ, y, -1, null), blockState);
+    public BlockEntityWithBlockState(final byte packedXz, final short y, final int blockState) {
+        this(new BlockEntityImpl(packedXz, y, -1, null), blockState);
     }
 
     public BlockEntityWithBlockState(final BlockEntity blockEntity, final int blockState) {

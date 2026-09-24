@@ -21,38 +21,38 @@ import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.api.type.TypeConverter;
 import io.netty.buffer.ByteBuf;
 
-public class UnsignedShortLEType extends Type<Integer> implements TypeConverter<Integer> {
+public class UnsignedIntLeType extends Type<Long> implements TypeConverter<Long> {
 
-    public UnsignedShortLEType() {
-        super("UnsignedShortLE", Integer.class);
+    public UnsignedIntLeType() {
+        super("UnsignedIntLE", Long.class);
     }
 
-    public int readPrimitive(final ByteBuf buffer) {
-        return buffer.readUnsignedShortLE();
+    public long readPrimitive(final ByteBuf buffer) {
+        return buffer.readUnsignedIntLE();
     }
 
-    public void writePrimitive(final ByteBuf buffer, final int value) {
-        buffer.writeShortLE(value);
+    public void writePrimitive(final ByteBuf buffer, final long value) {
+        buffer.writeIntLE((int) value);
     }
 
     @Override
-    public Integer read(ByteBuf buffer) {
+    public Long read(final ByteBuf buffer) {
         return this.readPrimitive(buffer);
     }
 
     @Override
-    public void write(ByteBuf buffer, Integer value) {
+    public void write(final ByteBuf buffer, final Long value) {
         this.writePrimitive(buffer, value);
     }
 
     @Override
-    public Integer from(Object o) {
+    public Long from(final Object o) {
         if (o instanceof Number) {
-            return ((Number) o).intValue();
+            return ((Number) o).longValue();
         } else if (o instanceof Boolean) {
-            return ((Boolean) o) ? 1 : 0;
+            return ((Boolean) o) ? 1L : 0L;
         }
-        return (Integer) o;
+        return (Long) o;
     }
 
 }

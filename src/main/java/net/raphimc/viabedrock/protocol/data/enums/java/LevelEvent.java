@@ -107,6 +107,8 @@ public enum LevelEvent {
 
     private static final Int2ObjectMap<LevelEvent> BY_VALUE = new Int2ObjectOpenHashMap<>();
 
+    private final int value;
+
     static {
         for (LevelEvent value : values()) {
             BY_VALUE.put(value.value, value);
@@ -120,8 +122,6 @@ public enum LevelEvent {
     public static LevelEvent getByValue(final int value, final LevelEvent fallback) {
         return BY_VALUE.getOrDefault(value, fallback);
     }
-
-    private final int value;
 
     LevelEvent(final int value) {
         this.value = value;

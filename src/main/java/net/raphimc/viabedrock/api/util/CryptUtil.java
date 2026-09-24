@@ -26,7 +26,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-public class CryptUtil {
+public final class CryptUtil {
 
     public static final KeyFactory EC_KEYFACTORY;
     public static final Locator<Key> X5U_KEY_LOCATOR = header -> ecPublicKeyFromBase64((String) header.get("x5u"));
@@ -34,7 +34,7 @@ public class CryptUtil {
     static {
         try {
             EC_KEYFACTORY = KeyFactory.getInstance("EC");
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new RuntimeException("Failed to create EllipticCurve KeyFactory", e);
         }
     }
@@ -46,7 +46,7 @@ public class CryptUtil {
     public static ECPublicKey ecPublicKeyFromBytes(final byte[] bytes) {
         try {
             return (ECPublicKey) EC_KEYFACTORY.generatePublic(new X509EncodedKeySpec(bytes));
-        } catch (InvalidKeySpecException e) {
+        } catch (final InvalidKeySpecException e) {
             throw new RuntimeException("Failed to decode public key", e);
         }
     }
@@ -59,6 +59,9 @@ public class CryptUtil {
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
             throw new RuntimeException("Failed to generate key pair", e);
         }
+    }
+
+    private CryptUtil() {
     }
 
 }

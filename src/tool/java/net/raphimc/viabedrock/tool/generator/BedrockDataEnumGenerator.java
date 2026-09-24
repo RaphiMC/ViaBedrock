@@ -30,12 +30,12 @@ import net.raphimc.viabedrock.tool.ToolPaths;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.List;
 import java.util.stream.Stream;
 
-public class BedrockDataEnumGenerator {
+public final class BedrockDataEnumGenerator {
 
-    public static void main(String[] args) throws Throwable {
+    public static void main(final String[] args) throws Throwable {
         final ToolArgs toolArgs = ToolArgs.parse(args);
         final Path jsonDir = ToolPaths.protocolDocsDir(toolArgs);
         final Gson gson = new Gson();
@@ -58,7 +58,7 @@ public class BedrockDataEnumGenerator {
             }
 
             final String enumName = jsonObject.get("title").getAsString()
-                    .replace("::", "_").replace(" ", "_").replace("-", "_");
+                .replace("::", "_").replace(" ", "_").replace("-", "_");
 
             if (enumName.equalsIgnoreCase("LevelSoundEvent")) {
                 // Skip this enum, we already have a custom implementation for it
@@ -73,8 +73,8 @@ public class BedrockDataEnumGenerator {
             genEnum.members().add(new Field("private static final", "Int2ObjectMap<" + enumName + ">", "BY_VALUE", "new Int2ObjectOpenHashMap<>()"));
             genEnum.members().addStaticBlock(staticBlock -> {
                 staticBlock.code().addForEach(enumName + " value", "values()", forEach -> {
-                    forEach.code().addIf("!BY_VALUE.containsKey(value.value)", _if -> {
-                        _if.code().add("BY_VALUE.put(value.value, value);");
+                    forEach.code().addIf("!BY_VALUE.containsKey(value.value)", ifBlock -> {
+                        ifBlock.code().add("BY_VALUE.put(value.value, value);");
                     });
                 });
             });
@@ -91,8 +91,8 @@ public class BedrockDataEnumGenerator {
             genEnum.members().addMethod("public static", enumName, "getByName", method -> {
                 method.parameters().add(new Field("final", "String", "name"));
                 method.code().addForEach(enumName + " value", "values()", forEach -> {
-                    forEach.code().addIf("value.name().equalsIgnoreCase(name)", _if -> {
-                        _if.code().add("return value;");
+                    forEach.code().addIf("value.name().equalsIgnoreCase(name)", ifBlock -> {
+                        ifBlock.code().add("return value;");
                     });
                 });
                 method.code().add("return null;");
@@ -101,8 +101,8 @@ public class BedrockDataEnumGenerator {
                 method.parameters().add(new Field("final", "String", "name"));
                 method.parameters().add(new Field("final", enumName, "fallback"));
                 method.code().addForEach(enumName + " value", "values()", forEach -> {
-                    forEach.code().addIf("value.name().equalsIgnoreCase(name)", _if -> {
-                        _if.code().add("return value;");
+                    forEach.code().addIf("value.name().equalsIgnoreCase(name)", ifBlock -> {
+                        ifBlock.code().add("return value;");
                     });
                 });
                 method.code().add("return fallback;");
@@ -121,14 +121,13 @@ public class BedrockDataEnumGenerator {
 
             genEnum.members().addMethod("public", "int", "getValue", method -> method.code().add("return this.value;"));
 
-
-            JsonArray enumFields = jsonObject.getAsJsonArray("enum");
+            final JsonArray enumFields = jsonObject.getAsJsonArray("enum");
             for (int i = 0; i < enumFields.size(); i++) {
-                JsonElement enumFieldElement = enumFields.get(i);
-                String name = enumFieldElement.getAsString().replace(" ", "_");
+                final JsonElement enumFieldElement = enumFields.get(i);
+                final String name = enumFieldElement.getAsString().replace(" ", "_");
                 String value = null;
                 if (jsonObject.has("x-enum-binary-value")) {
-                    JsonArray binaryValues = jsonObject.getAsJsonArray("x-enum-binary-value");
+                    final JsonArray binaryValues = jsonObject.getAsJsonArray("x-enum-binary-value");
                     if (binaryValues.size() > i) {
                         value = binaryValues.get(i).getAsString();
                     }
@@ -141,6 +140,9 @@ public class BedrockDataEnumGenerator {
 
         codeGen.generate();
         System.out.println("Generated " + jsonFiles.size() + " enums from " + jsonDir);
+    }
+
+    private BedrockDataEnumGenerator() {
     }
 
 }

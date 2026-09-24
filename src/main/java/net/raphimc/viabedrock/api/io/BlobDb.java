@@ -18,14 +18,14 @@
 package net.raphimc.viabedrock.api.io;
 
 import com.viaversion.viaversion.api.Via;
-import net.raphimc.viabedrock.api.util.LZ4;
+import net.raphimc.viabedrock.api.util.Lz4;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-public class BlobDB implements Closeable {
+public class BlobDb implements Closeable {
 
     private static final byte[] MAGIC = new byte[]{'B', 'D', 'B'};
     private static final int VERSION = 1;
@@ -38,13 +38,13 @@ public class BlobDB implements Closeable {
     private boolean indexDirty = false;
     private long dataOffset = 0;
 
-    public BlobDB(final File directory) throws IOException {
+    public BlobDb(final File directory) throws IOException {
         directory.mkdirs();
         this.indexFile = new File(directory, "index.bdbi");
         this.dataFile = new RandomAccessFile(new File(directory, "data.bdbd"), "rw");
         try {
             this.load();
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             this.dataFile.close();
             throw e;
         }
@@ -57,13 +57,13 @@ public class BlobDB implements Closeable {
                         try {
                             this.putNow(entry.getKey(), entry.getValue());
                             writtenKeys.add(entry.getKey());
-                        } catch (Throwable e) {
+                        } catch (final Throwable e) {
                             Via.getPlatform().getLogger().log(Level.SEVERE, "Failed to write pending blob", e);
                             break;
                         }
                     }
                     writtenKeys.forEach(this.pendingWrites::remove);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     break;
                 }
             }
@@ -72,7 +72,9 @@ public class BlobDB implements Closeable {
     }
 
     public synchronized void save() throws IOException {
-        if (!this.indexDirty) return;
+        if (!this.indexDirty) {
+            return;
+        }
 
         this.waitForWrites();
         try (DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(this.indexFile)))) {
@@ -106,7 +108,7 @@ public class BlobDB implements Closeable {
         this.dataFile.seek(entry.offset);
         final byte[] value = new byte[entry.length];
         this.dataFile.readFully(value);
-        return LZ4.decompress(value);
+        return Lz4.decompress(value);
     }
 
     public synchronized void queuePut(final long key, final byte[] value) {
@@ -122,7 +124,7 @@ public class BlobDB implements Closeable {
             throw new IllegalArgumentException("Key already exists: " + key);
         }
 
-        final byte[] compressedValue = LZ4.compress(value);
+        final byte[] compressedValue = Lz4.compress(value);
         this.dataFile.seek(this.dataOffset);
         this.dataFile.write(compressedValue);
         this.index.put(key, new IndexEntry(this.dataOffset, compressedValue.length));
@@ -134,7 +136,7 @@ public class BlobDB implements Closeable {
         while (!this.pendingWrites.isEmpty()) {
             try {
                 Thread.sleep(50);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 break;
             }
         }
@@ -147,7 +149,9 @@ public class BlobDB implements Closeable {
     }
 
     private void load() throws IOException {
-        if (!this.indexFile.exists()) return;
+        if (!this.indexFile.exists()) {
+            return;
+        }
 
         long availableBytes = this.indexFile.length();
         try (DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(this.indexFile)))) {

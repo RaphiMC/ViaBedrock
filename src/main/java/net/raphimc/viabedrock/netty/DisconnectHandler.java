@@ -28,7 +28,7 @@ public class DisconnectHandler extends ChannelOutboundHandlerAdapter {
     private boolean calledDisconnect = false;
 
     @Override
-    public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+    public void close(final ChannelHandlerContext ctx, final ChannelPromise promise) throws Exception {
         if (ctx.channel().isActive() && !this.calledDisconnect) {
             this.calledDisconnect = true;
             ctx.disconnect(promise); // Send disconnect notification to the server and close the channel
