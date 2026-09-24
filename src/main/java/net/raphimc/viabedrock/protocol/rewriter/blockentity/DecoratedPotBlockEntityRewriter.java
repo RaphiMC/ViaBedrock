@@ -18,20 +18,12 @@
 package net.raphimc.viabedrock.protocol.rewriter.blockentity;
 
 import com.viaversion.nbt.tag.CompoundTag;
-import com.viaversion.nbt.tag.IntTag;
-import com.viaversion.nbt.tag.ListTag;
-import com.viaversion.nbt.tag.StringTag;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntity;
 import com.viaversion.viaversion.api.minecraft.blockentity.BlockEntityImpl;
-import net.raphimc.viabedrock.ViaBedrock;
 import net.raphimc.viabedrock.api.chunk.BedrockBlockEntity;
-import net.raphimc.viabedrock.protocol.BedrockProtocol;
-import net.raphimc.viabedrock.protocol.data.BedrockMappingData;
 import net.raphimc.viabedrock.protocol.rewriter.BlockEntityRewriter;
 
-import java.util.Collections;
-import java.util.logging.Level;
 
 public class DecoratedPotBlockEntityRewriter implements BlockEntityRewriter.Rewriter {
 

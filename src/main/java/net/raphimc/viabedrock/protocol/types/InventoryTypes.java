@@ -20,7 +20,6 @@ package net.raphimc.viabedrock.protocol.types;
 import com.viaversion.viaversion.api.type.Type;
 import net.raphimc.viabedrock.protocol.model.inventory.*;
 import net.raphimc.viabedrock.protocol.types.inventory.*;
-import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 import net.raphimc.viabedrock.protocol.types.array.ArrayType;
 
 public class InventoryTypes {

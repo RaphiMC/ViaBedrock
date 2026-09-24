@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.protocol.types.inventory;
 
 import com.viaversion.viaversion.api.type.Type;
-import com.viaversion.viaversion.api.type.Types;
 import io.netty.buffer.ByteBuf;
 import net.raphimc.viabedrock.protocol.model.inventory.LegacySetItemSlotData;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.ContainerEnumName;

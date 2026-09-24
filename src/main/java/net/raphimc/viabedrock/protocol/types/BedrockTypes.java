@@ -40,7 +40,6 @@ import net.raphimc.viabedrock.protocol.types.position.SubChunkOffsetType;
 import net.raphimc.viabedrock.protocol.types.primitive.*;
 
 import java.awt.image.BufferedImage;
-import java.math.BigInteger;
 import java.util.UUID;
 
 public class BedrockTypes {
