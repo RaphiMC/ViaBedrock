@@ -17,9 +17,9 @@
  */
 package net.raphimc.viabedrock.protocol.util.map;
 
-
 import java.awt.Color;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JavaMapPaletteUtil {
 
@@ -27,13 +27,7 @@ public class JavaMapPaletteUtil {
     private static final float[] JAVA_A;
     private static final float[] JAVA_B;
 
-    private static final int CACHE_BITS = 5;
-    private static final int CACHE_SIZE = 1 << (CACHE_BITS * 3);
-    private static final short[] CACHE = new short[CACHE_SIZE];
-
     static {
-        Arrays.fill(CACHE, (short) -1);
-
         MapColor[] colors = MapColor.values();
         JAVA_L = new float[colors.length];
         JAVA_A = new float[colors.length];
@@ -51,6 +45,7 @@ public class JavaMapPaletteUtil {
     public static short[] convertToJavaPalette(int[] bedrockColors) {
         //TODO: Check biome tinting for grass/foliage/water
         short[] javaColors = new short[bedrockColors.length];
+        final Map<Integer, Short> cache = new HashMap<>();
 
         for (int i = 0; i < bedrockColors.length; i++) {
             int c = bedrockColors[i];
@@ -66,9 +61,9 @@ public class JavaMapPaletteUtil {
             int g = (c >> 8) & 0xFF;
             int b = (c >> 16) & 0xFF;
 
-            int key = quantKey(r, g, b);
-            short cached = CACHE[key];
-            if (cached != -1) {
+            final int rgb = c & 0xFFFFFF;
+            final Short cached = cache.get(rgb);
+            if (cached != null) {
                 javaColors[i] = cached;
                 continue;
             }
@@ -90,18 +85,11 @@ public class JavaMapPaletteUtil {
                 }
             }
 
-            CACHE[key] = best;
+            cache.put(rgb, best);
             javaColors[i] = best;
         }
 
         return javaColors;
-    }
-
-    private static int quantKey(int r, int g, int b) {
-        int rq = r >> (8 - CACHE_BITS);
-        int gq = g >> (8 - CACHE_BITS);
-        int bq = b >> (8 - CACHE_BITS);
-        return (rq << (CACHE_BITS * 2)) | (gq << CACHE_BITS) | bq;
     }
 
     private static float[] rgbToLab(int r, int g, int b) {

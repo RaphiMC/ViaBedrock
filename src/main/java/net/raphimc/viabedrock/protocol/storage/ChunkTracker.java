@@ -791,9 +791,9 @@ public class ChunkTracker extends StoredObject {
                     this.transferPaletteData(layer0, remappedBlockPalette);
                 }
 
-                final String[] paletteIndexBlockStateTags = new String[remappedBlockPalette.size()];
-                for (int i = 0; i < remappedBlockPalette.size(); i++) {
-                    paletteIndexBlockStateTags[i] = blockStateRewriter.tag(remappedBlockPalette.idByIndex(i));
+                final String[] paletteIndexBlockStateTags = new String[layer0.size()];
+                for (int i = 0; i < layer0.size(); i++) {
+                    paletteIndexBlockStateTags[i] = blockStateRewriter.tag(layer0.idByIndex(i));
                 }
                 remappedBlockPalette.replaceIds(bedrockBlockState -> {
                     final int javaBlockState = blockStateRewriter.javaId(bedrockBlockState);
@@ -808,7 +808,7 @@ public class ChunkTracker extends StoredObject {
                 for (int y = 0; y < 16; y++) {
                     for (int z = 0; z < 16; z++) {
                         for (int x = 0; x < 16; x++) {
-                            final String tag = paletteIndexBlockStateTags[remappedBlockPalette.paletteIndexAt(remappedBlockPalette.index(x, y, z))];
+                            final String tag = paletteIndexBlockStateTags[layer0.paletteIndexAt(layer0.index(x, y, z))];
                             if (tag != null) {
                                 if (tag.equals(CustomBlockTags.ITEM_FRAME)) {
                                     final BlockPosition position = new BlockPosition((chunk.getX() << 4) + x, this.minY + (idx << 4) + y, (chunk.getZ() << 4) + z);

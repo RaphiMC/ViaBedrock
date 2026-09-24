@@ -61,6 +61,7 @@ public class EntityTracker extends StoredObject {
     private final Long2ObjectMap<Long> runtimeIdToUniqueId = new Long2ObjectOpenHashMap<>();
     private final Int2ObjectMap<Long> javaIdToUniqueId = new Int2ObjectOpenHashMap<>();
     private final Object2IntMap<BlockPosition> itemFrames = new Object2IntOpenHashMap<>();
+    private final Int2ObjectMap<ItemFrame> itemFramesByJavaId = new Int2ObjectOpenHashMap<>();
 
     public EntityTracker(final UserConnection user) {
         super(user);
@@ -130,6 +131,8 @@ public class EntityTracker extends StoredObject {
 
         final int javaId = this.getNextJavaEntityId();
         this.itemFrames.put(position, javaId);
+        final int facing = Integer.parseInt(blockState.properties().get("facing_direction"));
+        this.itemFramesByJavaId.put(javaId, new ItemFrame(position, facing));
 
         final PacketWrapper spawnEntity = PacketWrapper.create(ClientboundPackets26_3.ADD_ENTITY, this.user());
         spawnEntity.write(Types.VAR_INT, javaId); // entity id
@@ -142,7 +145,7 @@ public class EntityTracker extends StoredObject {
         spawnEntity.write(Types.BYTE, (byte) 0); // pitch
         spawnEntity.write(Types.BYTE, (byte) 0); // yaw
         spawnEntity.write(Types.BYTE, (byte) 0); // head yaw
-        spawnEntity.write(Types.VAR_INT, Integer.valueOf(blockState.properties().get("facing_direction"))); // data
+        spawnEntity.write(Types.VAR_INT, facing); // data
         spawnEntity.send(BedrockProtocol.class);
         this.updateItemFrame(position, this.user().get(ChunkTracker.class).getBlockEntity(position));
     }
@@ -170,8 +173,10 @@ public class EntityTracker extends StoredObject {
 
     public void removeItemFrame(final BlockPosition position) {
         if (this.itemFrames.containsKey(position)) {
+            final int javaId = this.itemFrames.removeInt(position);
+            this.itemFramesByJavaId.remove(javaId);
             final PacketWrapper removeEntities = PacketWrapper.create(ClientboundPackets26_3.REMOVE_ENTITIES, this.user());
-            removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{this.itemFrames.removeInt(position)}); // entity ids
+            removeEntities.write(Types.VAR_INT_ARRAY_PRIMITIVE, new int[]{javaId}); // entity ids
             removeEntities.send(BedrockProtocol.class);
         }
     }
@@ -215,7 +220,12 @@ public class EntityTracker extends StoredObject {
     }
 
     public Entity getEntityByJid(final int javaId) {
-        return this.entities.get((long) this.javaIdToUniqueId.get(javaId));
+        final Long uniqueId = this.javaIdToUniqueId.get(javaId);
+        return uniqueId == null ? null : this.entities.get(uniqueId.longValue());
+    }
+
+    public ItemFrame getItemFrameByJid(final int javaId) {
+        return this.itemFramesByJavaId.get(javaId);
     }
 
     public ClientPlayerEntity getClientPlayer() {
@@ -228,6 +238,9 @@ public class EntityTracker extends StoredObject {
 
     public int getNextJavaEntityId() {
         return ID_COUNTER.getAndIncrement();
+    }
+
+    public record ItemFrame(BlockPosition position, int facing) {
     }
 
 }

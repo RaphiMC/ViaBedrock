@@ -35,6 +35,7 @@ import net.raphimc.viabedrock.api.util.BitSets;
 import net.raphimc.viabedrock.api.util.EnumUtil;
 import net.raphimc.viabedrock.api.util.MathUtil;
 import net.raphimc.viabedrock.api.util.PacketFactory;
+import net.raphimc.viabedrock.experimental.ExperimentalFeatures;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
 import net.raphimc.viabedrock.protocol.ServerboundBedrockPackets;
@@ -396,6 +397,21 @@ public class ClientPlayerPackets {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
             final int entityId = wrapper.read(Types.VAR_INT); // entity id
+            final EntityTracker.ItemFrame itemFrame = entityTracker.getItemFrameByJid(entityId);
+            if (itemFrame != null) {
+                wrapper.cancel();
+                final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)];
+                final Vector3d location = wrapper.read(Types.LOW_PRECISION_VECTOR);
+                wrapper.read(Types.BOOLEAN); // using secondary action
+                if (hand == InteractionHand.MAIN_HAND && ViaBedrock.getConfig().shouldEnableExperimentalFeatures()) {
+                    ExperimentalFeatures.sendUseItemOnBlock(
+                            wrapper.user(), itemFrame.position(), itemFrame.facing(),
+                            new Position3f((float) location.x() + 0.5F, (float) location.y() + 0.5F, (float) location.z() + 0.5F),
+                            false
+                    );
+                }
+                return;
+            }
             final Entity entity = entityTracker.getEntityByJid(entityId);
             if (entity == null) {
                 wrapper.cancel();

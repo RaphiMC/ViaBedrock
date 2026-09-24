@@ -18,4 +18,11 @@ class JavaMapPaletteUtilTest {
         assertEquals(0, palette[0]);
         assertTrue(palette[1] >= 4);
     }
+
+    @Test
+    void distinguishesPaletteColorsWithNearbyRgbValues() {
+        final short[] palette = JavaMapPaletteUtil.convertToJavaPalette(new int[]{0xFF696969, 0xFF6C6C6C});
+        assertEquals(15, palette[0]);
+        assertEquals(88, palette[1]);
+    }
 }

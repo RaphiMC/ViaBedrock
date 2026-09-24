@@ -18,7 +18,6 @@
 package net.raphimc.viabedrock.experimental;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.minecraft.BlockFace;
 import com.viaversion.viaversion.api.minecraft.BlockPosition;
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
 import com.viaversion.viaversion.api.type.Types;
@@ -213,27 +212,20 @@ public class ExperimentalFeatures {
         protocol.registerServerbound(ServerboundPackets26_3.USE_ITEM_ON, null, wrapper -> {
             wrapper.cancel();
 
-            final ClientPlayerEntity clientPlayer = wrapper.user().get(EntityTracker.class).getClientPlayer();
-            final InventoryTracker inventoryTracker = wrapper.user().get(InventoryTracker.class);
-            final ChunkTracker chunkTracker = wrapper.user().get(ChunkTracker.class);
-            final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
-
             final InteractionHand hand = InteractionHand.values()[wrapper.read(Types.VAR_INT)]; // hand
 
-            BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
-            int faceInt = wrapper.read(Types.UNSIGNED_BYTE); // face
-            Direction direction = Direction.getFromVerticalId(faceInt);
-            if (direction == null) {
+            final BlockPosition position = wrapper.read(Types.BLOCK_POSITION1_14); // block position
+            final int faceInt = wrapper.read(Types.UNSIGNED_BYTE); // face
+            if (Direction.getFromVerticalId(faceInt) == null) {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Unknown block face id: " + faceInt);
                 return;
             }
-            BlockFace face = direction.blockFace();
-            Position3f clickPosition = new Position3f(
+            final Position3f clickPosition = new Position3f(
                     wrapper.read(Types.FLOAT), // x
                     wrapper.read(Types.FLOAT), // y
                     wrapper.read(Types.FLOAT)  // z
             );
-            boolean insideBlock = wrapper.read(Types.BOOLEAN); // inside block
+            final boolean insideBlock = wrapper.read(Types.BOOLEAN); // inside block
             wrapper.read(Types.BOOLEAN); // world border, this doesn't exist on Bedrock.
 
             // Send back block changed ack with the sequence, this will help with ghost blocks.
@@ -244,68 +236,7 @@ public class ExperimentalFeatures {
                 return;
             }
 
-            // The bedrock client will send a start item use on action to the server first.
-            ExperimentalPacketFactory.sendBedrockPlayerAction(
-                    wrapper.user(),
-                    clientPlayer.runtimeId(),
-                    PlayerActionType.StartItemUseOn,
-                    position,
-                    insideBlock ? position : position.getRelative(face),
-                    faceInt
-            );
-
-            // This is the main packet that the bedrock client use to interact with block.The rest of the
-            final PacketWrapper transactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, wrapper.user());
-
-            BedrockItem predictedToItem = inventoryTracker.getInventoryContainer().getSelectedHotbarItem().copy();
-            // This is not entirely correct, but at least it's more accurate than not sending actions or sending the original item data.
-            if (predictedToItem.blockRuntimeId() != 0 && clientPlayer.javaGameMode() != GameMode.CREATIVE) {
-                predictedToItem.setAmount(predictedToItem.amount() - 1);
-            }
-            if (predictedToItem.amount() <= 0) {
-                predictedToItem = BedrockItem.empty();
-            }
-
-            BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
-                    0, // legacy request id
-                    null,
-                    List.of(
-                            new InventoryActionData(
-                                    new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySourceFlags.No_Flag),
-                                    inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
-                                    inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
-                                    predictedToItem
-                            )
-                    ),
-                    ComplexInventoryTransaction_Type.ItemUseTransaction,
-                    new InventoryTransactionData.UseItemTransactionData(
-                            ItemUseActionType.Place,
-                            ItemUseTriggerType.Player_Input,
-                            position,
-                            faceInt,
-                            inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
-                            HandSlot.Mainhand,
-                            inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
-                            clientPlayer.position(),
-                            clickPosition,
-                            chunkTracker.getBlockState(position),
-                            ItemUsePredictedResult.Success,
-                            ItemUseClientCooldownState.Off
-                    )
-            );
-            transactionPacket.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
-
-            transactionPacket.sendToServer(BedrockProtocol.class);
-
-            // Bedrock sends a stop item use on after the transaction packet
-            ExperimentalPacketFactory.sendBedrockPlayerAction(
-                    wrapper.user(),
-                    clientPlayer.runtimeId(),
-                    PlayerActionType.StopItemUseOn,
-                    position,
-                    new BlockPosition(0, 0, 0),
-                    0
-            );
+            sendUseItemOnBlock(wrapper.user(), position, faceInt, clickPosition, insideBlock);
         });
         protocol.registerClientbound(ClientboundBedrockPackets.INVENTORY_TRANSACTION, null, wrapper -> {
             final InventoryTransactionRewriter inventoryTransactionRewriter = wrapper.user().get(InventoryTransactionRewriter.class);
@@ -390,6 +321,73 @@ public class ExperimentalFeatures {
         });
 
 
+    }
+
+    public static void sendUseItemOnBlock(final UserConnection user, final BlockPosition position, final int faceInt, final Position3f clickPosition, final boolean insideBlock) {
+        final Direction direction = Direction.getFromVerticalId(faceInt);
+        if (direction == null) {
+            return;
+        }
+
+        final ClientPlayerEntity clientPlayer = user.get(EntityTracker.class).getClientPlayer();
+        final InventoryTracker inventoryTracker = user.get(InventoryTracker.class);
+        final ChunkTracker chunkTracker = user.get(ChunkTracker.class);
+        final InventoryTransactionRewriter inventoryTransactionRewriter = user.get(InventoryTransactionRewriter.class);
+
+        ExperimentalPacketFactory.sendBedrockPlayerAction(
+                user,
+                clientPlayer.runtimeId(),
+                PlayerActionType.StartItemUseOn,
+                position,
+                insideBlock ? position : position.getRelative(direction.blockFace()),
+                faceInt
+        );
+
+        final PacketWrapper transactionPacket = PacketWrapper.create(ServerboundBedrockPackets.INVENTORY_TRANSACTION, user);
+        BedrockItem predictedToItem = inventoryTracker.getInventoryContainer().getSelectedHotbarItem().copy();
+        if (predictedToItem.blockRuntimeId() != 0 && clientPlayer.javaGameMode() != GameMode.CREATIVE) {
+            predictedToItem.setAmount(predictedToItem.amount() - 1);
+        }
+        if (predictedToItem.amount() <= 0) {
+            predictedToItem = BedrockItem.empty();
+        }
+
+        final BedrockInventoryTransaction inventoryTransaction = new BedrockInventoryTransaction(
+                0,
+                null,
+                List.of(new InventoryActionData(
+                        new InventorySource(InventorySourceType.Container_Inventory, ContainerID.CONTAINER_ID_INVENTORY.getValue(), InventorySourceFlags.No_Flag),
+                        inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                        inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
+                        predictedToItem
+                )),
+                ComplexInventoryTransaction_Type.ItemUseTransaction,
+                new InventoryTransactionData.UseItemTransactionData(
+                        ItemUseActionType.Place,
+                        ItemUseTriggerType.Player_Input,
+                        position,
+                        faceInt,
+                        inventoryTracker.getInventoryContainer().getSelectedHotbarSlot(),
+                        HandSlot.Mainhand,
+                        inventoryTracker.getInventoryContainer().getSelectedHotbarItem(),
+                        clientPlayer.position(),
+                        clickPosition,
+                        chunkTracker.getBlockState(position),
+                        ItemUsePredictedResult.Success,
+                        ItemUseClientCooldownState.Off
+                )
+        );
+        transactionPacket.write(inventoryTransactionRewriter.getInventoryTransactionType(), inventoryTransaction);
+        transactionPacket.sendToServer(BedrockProtocol.class);
+
+        ExperimentalPacketFactory.sendBedrockPlayerAction(
+                user,
+                clientPlayer.runtimeId(),
+                PlayerActionType.StopItemUseOn,
+                position,
+                new BlockPosition(0, 0, 0),
+                0
+        );
     }
 
     public static void registerTasks() {
