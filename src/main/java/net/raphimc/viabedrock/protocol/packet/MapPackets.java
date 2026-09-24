@@ -24,7 +24,6 @@ import net.raphimc.viabedrock.api.util.TextUtil;
 import net.raphimc.viabedrock.protocol.util.map.JavaMapPaletteUtil;
 import net.raphimc.viabedrock.protocol.BedrockProtocol;
 import net.raphimc.viabedrock.protocol.ClientboundBedrockPackets;
-import net.raphimc.viabedrock.protocol.data.enums.bedrock.ClientboundMapItemDataPacket_Type;
 import net.raphimc.viabedrock.protocol.storage.MapTracker;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
 
@@ -33,43 +32,40 @@ import java.util.List;
 
 public final class MapPackets {
 
-    private static final int TEXTURE_UPDATE = ClientboundMapItemDataPacket_Type.TextureUpdate.getValue();
-    private static final int DECORATION_UPDATE = ClientboundMapItemDataPacket_Type.DecorationUpdate.getValue();
-    private static final int CREATION = ClientboundMapItemDataPacket_Type.Creation.getValue();
-
     private MapPackets() {
     }
 
     public static void register(final BedrockProtocol protocol) {
         protocol.registerClientbound(ClientboundBedrockPackets.MAP_ITEM_DATA, ClientboundPackets26_3.MAP_ITEM_DATA, wrapper -> {
             final long bedrockId = wrapper.read(BedrockTypes.VAR_LONG);
-            final int flags = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
             wrapper.read(Types.BYTE); // dimension
             final boolean locked = wrapper.read(Types.BOOLEAN);
             wrapper.read(BedrockTypes.BLOCK_POSITION); // origin
 
-            if ((flags & CREATION) != 0) {
+            if (wrapper.read(Types.BOOLEAN)) { // creation map ids present
                 final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
                 for (int i = 0; i < count; i++) {
                     wrapper.read(BedrockTypes.VAR_LONG); // related map id
                 }
             }
 
-            final byte scale = (flags & (CREATION | DECORATION_UPDATE | TEXTURE_UPDATE)) != 0
-                    ? wrapper.read(Types.BYTE) : 0;
-            final List<Decoration> decorations = new ArrayList<>();
-            if ((flags & DECORATION_UPDATE) != 0) {
+            final byte scale = wrapper.read(Types.BOOLEAN) ? wrapper.read(Types.BYTE) : 0;
+            if (wrapper.read(Types.BOOLEAN)) { // tracked actor ids present
                 final int trackedCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
                 for (int i = 0; i < trackedCount; i++) {
-                    switch (wrapper.read(BedrockTypes.INT_LE)) {
-                        case 0 -> wrapper.read(BedrockTypes.VAR_LONG); // entity id
-                        case 1 -> wrapper.read(BedrockTypes.BLOCK_POSITION); // block position
-                        case 2 -> { // Other has no payload.
-                        }
-                        default -> throw new IllegalArgumentException("Unknown map tracked actor type");
+                    wrapper.read(BedrockTypes.INT_LE); // tracked actor type
+                    if (wrapper.read(Types.BOOLEAN)) {
+                        wrapper.read(BedrockTypes.VAR_LONG); // entity id
+                    }
+                    if (wrapper.read(Types.BOOLEAN)) {
+                        wrapper.read(BedrockTypes.BLOCK_POSITION); // block position
                     }
                 }
+            }
 
+            final List<Decoration> decorations = new ArrayList<>();
+            final boolean hasDecorations = wrapper.read(Types.BOOLEAN);
+            if (hasDecorations) {
                 final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
                 for (int i = 0; i < count; i++) {
                     final int type = Byte.toUnsignedInt(wrapper.read(Types.BYTE));
@@ -90,11 +86,19 @@ public final class MapPackets {
             int startX = 0;
             int startY = 0;
             short[] colors = new short[0];
-            if ((flags & TEXTURE_UPDATE) != 0) {
+            if (wrapper.read(Types.BOOLEAN)) {
                 width = wrapper.read(BedrockTypes.VAR_INT);
+            }
+            if (wrapper.read(Types.BOOLEAN)) {
                 height = wrapper.read(BedrockTypes.VAR_INT);
+            }
+            if (wrapper.read(Types.BOOLEAN)) {
                 startX = wrapper.read(BedrockTypes.VAR_INT);
+            }
+            if (wrapper.read(Types.BOOLEAN)) {
                 startY = wrapper.read(BedrockTypes.VAR_INT);
+            }
+            if (wrapper.read(Types.BOOLEAN)) {
                 final int colorCount = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT);
                 if (width < 0 || height < 0 || startX < 0 || startY < 0
                         || width + startX > 128 || height + startY > 128 || colorCount != width * height) {
@@ -112,8 +116,8 @@ public final class MapPackets {
             wrapper.write(Types.VAR_INT, wrapper.user().get(MapTracker.class).javaId(bedrockId));
             wrapper.write(Types.BYTE, scale);
             wrapper.write(Types.BOOLEAN, locked);
-            wrapper.write(Types.BOOLEAN, (flags & DECORATION_UPDATE) != 0);
-            if ((flags & DECORATION_UPDATE) != 0) {
+            wrapper.write(Types.BOOLEAN, hasDecorations);
+            if (hasDecorations) {
                 wrapper.write(Types.VAR_INT, decorations.size());
                 for (Decoration decoration : decorations) {
                     wrapper.write(Types.VAR_INT, decoration.type());

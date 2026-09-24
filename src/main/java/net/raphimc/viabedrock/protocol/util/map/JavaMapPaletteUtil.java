@@ -61,9 +61,10 @@ public class JavaMapPaletteUtil {
                 continue;
             }
 
-            int r = (c >> 16) & 0xFF;
+            // Bedrock map pixels arrive as RGBA bytes in a little-endian uint32.
+            int r = c & 0xFF;
             int g = (c >> 8) & 0xFF;
-            int b = c & 0xFF;
+            int b = (c >> 16) & 0xFF;
 
             int key = quantKey(r, g, b);
             short cached = CACHE[key];
