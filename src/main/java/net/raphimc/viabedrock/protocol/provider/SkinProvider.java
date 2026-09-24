@@ -114,7 +114,7 @@ public class SkinProvider implements Provider {
         }
         { // @since 26.40
             claims.put("ClientEditorConnectionIntent", 0);
-            claims.put("ClientIsEditorCapable", 0);
+            claims.put("ClientIsEditorCapable", false);
             claims.put("ProfileHash", "");
         }
 
