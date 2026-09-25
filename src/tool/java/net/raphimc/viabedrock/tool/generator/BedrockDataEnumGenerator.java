@@ -125,7 +125,7 @@ public final class BedrockDataEnumGenerator {
             for (int i = 0; i < enumFields.size(); i++) {
                 final JsonElement enumFieldElement = enumFields.get(i);
                 final String name = enumFieldElement.getAsString().replace(" ", "_");
-                String value = Integer.toString(i);
+                String value = null;
                 if (jsonObject.has("x-enum-binary-value")) {
                     final JsonArray binaryValues = jsonObject.getAsJsonArray("x-enum-binary-value");
                     if (binaryValues.size() > i) {

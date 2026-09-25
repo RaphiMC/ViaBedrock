@@ -364,16 +364,6 @@ public final class ClientPlayerPackets {
             final EntityTracker entityTracker = wrapper.user().get(EntityTracker.class);
             final InventoryContainer inventoryContainer = wrapper.user().get(InventoryTracker.class).getInventoryContainer();
             final int entityId = wrapper.read(Types.VAR_INT); // entity id
-            // Bedrock item frames are blocks, even though Java attacks them as entities.
-            final EntityTracker.ItemFrame itemFrame = entityTracker.getItemFrameByJid(entityId);
-            if (itemFrame != null) {
-                wrapper.cancel();
-                final ClientPlayerEntity clientPlayer = entityTracker.getClientPlayer();
-                clientPlayer.sendSwingPacketToServer();
-                clientPlayer.cancelNextSwingPacket();
-                clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.StartDestroyBlock, itemFrame.position(), itemFrame.facing()));
-                return;
-            }
             final Entity entity = entityTracker.getEntityByJid(entityId);
             if (entity == null) {
                 wrapper.cancel();
