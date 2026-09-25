@@ -17,7 +17,6 @@
  */
 package net.raphimc.viabedrock.protocol.storage;
 
-import com.google.common.collect.Iterables;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
@@ -106,6 +105,17 @@ public class CommandsStorage extends StoredObject {
         final Map<CommandNode<UserConnection>, Integer> nodeIndices = this.getNodeIndices(root);
         final List<CommandNode<UserConnection>> nodes = new ArrayList<>(nodeIndices.keySet());
         nodes.sort(Comparator.comparingInt(nodeIndices::get));
+        final Set<CommandNode<UserConnection>> serverSuggestionNodes = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (CommandNode<UserConnection> parent : nodes) {
+            for (CommandNode<UserConnection> child : parent.getChildren()) {
+                if (child instanceof ArgumentCommandNode<UserConnection, ?> argument && argument.getCustomSuggestions() != null) {
+                    // The Java client cancels its previous ask_server request when another sibling asks.
+                    // One request is enough: our dispatcher merges suggestions from all sibling nodes.
+                    serverSuggestionNodes.add(child);
+                    break;
+                }
+            }
+        }
 
         wrapper.write(Types.VAR_INT, nodes.size()); // node count
         for (CommandNode<UserConnection> node : nodes) {
@@ -119,9 +129,9 @@ public class CommandsStorage extends StoredObject {
 
             if (node instanceof LiteralCommandNode) {
                 flags |= TYPE_LITERAL;
-            } else if (node instanceof ArgumentCommandNode<UserConnection, ?> argumentCommandNode) {
+            } else if (node instanceof ArgumentCommandNode<?, ?>) {
                 flags |= TYPE_ARGUMENT;
-                if (argumentCommandNode.getCustomSuggestions() != null) {
+                if (serverSuggestionNodes.contains(node)) {
                     flags |= FLAG_CUSTOM_SUGGESTIONS;
                 }
             } else if (!(node instanceof RootCommandNode)) {
@@ -143,7 +153,7 @@ public class CommandsStorage extends StoredObject {
                 if (mapping.writer() != null) {
                     mapping.writer().accept(wrapper, argumentCommandNode.getType()); // argument data
                 }
-                if (argumentCommandNode.getCustomSuggestions() != null) {
+                if (serverSuggestionNodes.contains(node)) {
                     wrapper.write(Types.STRING, ASK_SERVER_SUGGESTION_TYPE); // custom suggestions type
                 }
             }
@@ -189,7 +199,7 @@ public class CommandsStorage extends StoredObject {
         final Command<UserConnection> action = gameSession.areCommandsEnabled() ? NOOP : ALLOW_SEND;
 
         for (CommandData command : this.commands) {
-            final String name = command.alias() != null ? Iterables.getFirst(command.alias().values().keySet(), null) : command.name();
+            final String name = command.name();
             if (name == null) {
                 continue;
             }
@@ -197,7 +207,7 @@ public class CommandsStorage extends StoredObject {
             if (playerCommandPermission < command.permission()) {
                 continue;
             }
-            if ((command.flags() & CommandFlags.HIDDEN_FROM_COMMAND_BLOCK) != 0 && (command.flags() & CommandFlags.HIDDEN_FROM_PLAYER) != 0 && (command.flags() & CommandFlags.HIDDEN_FROM_AUTOMATION) != 0) {
+            if ((command.flags() & CommandFlags.HIDDEN_FROM_PLAYER) != 0) {
                 continue;
             }
             if (!gameSession.areCommandsEnabled() && (command.flags() & CommandFlags.NOT_CHEAT) == 0) {
@@ -217,29 +227,31 @@ public class CommandsStorage extends StoredObject {
                             throw new UnsupportedOperationException("Enum as chained command is not supported yet");
                         }
 
-                        final ArgumentType<?> argumentType;
-                        if ((parameter.flags() & CommandParameterOption.HasSemanticConstraint.getValue()) != 0) {
-                            final Map<String, Set<Byte>> enumDataValues = new HashMap<>(parameter.enumData().values());
-                            enumDataValues.entrySet().removeIf(entry -> {
-                                if (entry.getValue().contains(CommandEnumConstraints.CHEATS_ENABLED) && !gameSession.areCommandsEnabled()) {
-                                    return true;
-                                }
-                                if (entry.getValue().contains(CommandEnumConstraints.OPERATOR_PERMISSIONS) && playerCommandPermission < CommandPermissionLevel.GameDirectors.getValue()) {
-                                    return true;
-                                }
-                                return entry.getValue().contains(CommandEnumConstraints.HOST_PERMISSIONS) && playerCommandPermission < CommandPermissionLevel.Host.getValue();
-                            });
-                            final Set<String> values = new HashSet<>(enumDataValues.keySet());
-                            enumDataValues.entrySet().removeIf(entry -> entry.getValue().contains(CommandEnumConstraints.HIDE_FROM_COMPLETIONS));
-                            argumentType = EnumArgumentType.valuesAndCompletions(values, enumDataValues.keySet());
-                        } else if ((parameter.flags() & CommandParameterOption.EnumAutocompleteExpansion.getValue()) != 0) {
-                            // Only changes the visual representation of the enum: <paramName: enumName> -> <value1|value2|value3>
-                            argumentType = EnumArgumentType.values(parameter.enumData().values().keySet());
+                        final String literalValue = getLiteralEnumValue(parameter);
+                        if (literalValue != null) {
+                            argument = literal(literalValue);
                         } else {
-                            argumentType = EnumArgumentType.values(parameter.enumData().values().keySet());
-                        }
+                            final ArgumentType<?> argumentType;
+                            if ((parameter.flags() & CommandParameterOption.HasSemanticConstraint.getValue()) != 0) {
+                                final Map<String, Set<Byte>> enumDataValues = new HashMap<>(parameter.enumData().values());
+                                enumDataValues.entrySet().removeIf(entry -> {
+                                    if (entry.getValue().contains(CommandEnumConstraints.CHEATS_ENABLED) && !gameSession.areCommandsEnabled()) {
+                                        return true;
+                                    }
+                                    if (entry.getValue().contains(CommandEnumConstraints.OPERATOR_PERMISSIONS) && playerCommandPermission < CommandPermissionLevel.GameDirectors.getValue()) {
+                                        return true;
+                                    }
+                                    return entry.getValue().contains(CommandEnumConstraints.HOST_PERMISSIONS) && playerCommandPermission < CommandPermissionLevel.Host.getValue();
+                                });
+                                final Set<String> values = new HashSet<>(enumDataValues.keySet());
+                                enumDataValues.entrySet().removeIf(entry -> entry.getValue().contains(CommandEnumConstraints.HIDE_FROM_COMPLETIONS));
+                                argumentType = EnumArgumentType.valuesAndCompletions(values, enumDataValues.keySet());
+                            } else {
+                                argumentType = EnumArgumentType.values(parameter.enumData().values().keySet());
+                            }
 
-                        argument = argument(parameter.name() + ": " + parameter.enumData().name(), argumentType).suggests(argumentType::listSuggestions);
+                            argument = argument(parameter.name() + ": " + parameter.enumData().name(), argumentType).suggests(argumentType::listSuggestions);
+                        }
                     } else if (parameter.subCommandData() != null) {
                         // TODO: Enhancement: Sub commands
                         continue;
@@ -265,7 +277,6 @@ public class CommandsStorage extends StoredObject {
                                 argument = argument(parameter.name() + ": compare operator", argumentType);
                             }
                             case Selection, WildcardSelection -> {
-                                // TODO: Enhancement: Implement target argument type
                                 argumentType = TargetArgumentType.target();
                                 argument = argument(parameter.name() + ": target", argumentType);
                             }
@@ -326,6 +337,9 @@ public class CommandsStorage extends StoredObject {
                     cmdBuilder.redirect(this.dispatcher.getRoot());
                 } else if (last != null) {
                     cmdBuilder.then(last);
+                    if (Arrays.stream(overload.parameters()).allMatch(CommandData.OverloadData.ParamData::optional)) {
+                        cmdBuilder.executes(action);
+                    }
                 } else {
                     cmdBuilder.executes(action);
                 }
@@ -333,7 +347,7 @@ public class CommandsStorage extends StoredObject {
 
             final LiteralCommandNode<UserConnection> node = new BedrockLiteralCommandNode<>(command, cmdBuilder.build());
             this.dispatcher.getRoot().addChild(node);
-            if (command.alias() != null && command.alias().values().size() > 1) {
+            if (command.alias() != null) {
                 for (String alias : command.alias().values().keySet()) {
                     if (!alias.equals(node.getName())) {
                         this.dispatcher.register(literal(alias).redirect(node));
@@ -392,7 +406,7 @@ public class CommandsStorage extends StoredObject {
     }
 
     private Map<CommandNode<UserConnection>, Integer> getNodeIndices(final RootCommandNode<UserConnection> root) {
-        final Map<CommandNode<UserConnection>, Integer> nodes = new HashMap<>();
+        final Map<CommandNode<UserConnection>, Integer> nodes = new IdentityHashMap<>();
         final Queue<CommandNode<UserConnection>> queue = new ArrayDeque<>();
         queue.add(root);
 
@@ -416,6 +430,17 @@ public class CommandsStorage extends StoredObject {
 
     private static <T> RequiredArgumentBuilder<UserConnection, T> argument(final String name, final ArgumentType<T> type) {
         return RequiredArgumentBuilder.argument(name, type);
+    }
+
+    private static String getLiteralEnumValue(final CommandData.OverloadData.ParamData parameter) {
+        if (parameter.enumData().soft()
+            || (parameter.flags() & CommandParameterOption.HasSemanticConstraint.getValue()) != 0
+            || parameter.enumData().values().size() != 1) {
+            return null;
+        }
+
+        final String value = parameter.enumData().values().keySet().iterator().next();
+        return value.isEmpty() || value.chars().anyMatch(Character::isWhitespace) ? null : value;
     }
 
 }

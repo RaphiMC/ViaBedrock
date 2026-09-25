@@ -17,11 +17,15 @@
  */
 package net.raphimc.viabedrock.api.brigadier;
 
+import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
 public class TargetArgumentType implements ArgumentType<Object> {
+
+    private static final SimpleCommandExceptionType INVALID_TARGET_EXCEPTION = new SimpleCommandExceptionType(new LiteralMessage("Invalid target"));
 
     public static TargetArgumentType target() {
         return new TargetArgumentType();
@@ -29,7 +33,35 @@ public class TargetArgumentType implements ArgumentType<Object> {
 
     @Override
     public Object parse(final StringReader reader) throws CommandSyntaxException {
-        return null;
+        final int start = reader.getCursor();
+        int brackets = 0;
+        boolean quoted = false;
+        boolean escaped = false;
+
+        while (reader.canRead()) {
+            final char character = reader.peek();
+            if (!quoted && brackets == 0 && character == ' ') {
+                break;
+            }
+
+            reader.skip();
+            if (escaped) {
+                escaped = false;
+            } else if (quoted && character == '\\') {
+                escaped = true;
+            } else if (character == '"') {
+                quoted = !quoted;
+            } else if (!quoted && character == '[') {
+                brackets++;
+            } else if (!quoted && character == ']' && brackets > 0) {
+                brackets--;
+            }
+        }
+
+        if (reader.getCursor() == start || brackets != 0 || quoted) {
+            throw INVALID_TARGET_EXCEPTION.createWithContext(reader);
+        }
+        return reader.getString().substring(start, reader.getCursor());
     }
 
 }
