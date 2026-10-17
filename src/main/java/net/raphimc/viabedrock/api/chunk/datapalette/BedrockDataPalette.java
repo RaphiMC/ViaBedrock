@@ -162,4 +162,13 @@ public class BedrockDataPalette implements DefaultedDataPalette {
         }
     }
 
+    @Override
+    public String toString() {
+        return "BedrockDataPalette{" +
+            "palette=" + palette +
+            ", bitArray=" + bitArray +
+            ", persistentPalette=" + persistentPalette +
+            '}';
+    }
+
 }

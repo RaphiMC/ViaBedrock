@@ -252,7 +252,7 @@ public final class WorldPackets {
                                 section.addPalette(PaletteType.BIOMES, new BedrockBiomeArray(biomeData));
                             }
                         } else {
-                            for (int i = 0; i < sections.length; i++) {
+                            for (int i = 0; i < sectionCount; i++) {
                                 BedrockDataPalette biomePalette = BedrockTypes.RUNTIME_DATA_PALETTE.read(dataBuf); // biome palette
                                 if (biomePalette == null) {
                                     if (i == 0) {

@@ -56,4 +56,9 @@ public final class SingletonBitArray implements BitArray {
         return SingletonBitArray.INSTANCE;
     }
 
+    @Override
+    public String toString() {
+        return "SingletonBitArray{" + "size=" + size() + ", version=" + getVersion() + '}';
+    }
+
 }
