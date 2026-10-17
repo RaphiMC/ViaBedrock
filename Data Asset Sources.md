@@ -71,11 +71,6 @@ This file has been generated using `./gradlew generateBedrockSoundLists` from th
 
 Run `./gradlew syncDerivedMappings` after updating the Bedrock palette and Java registry. It adds sign and shelf tags and directly named potted blocks. Other entries in these files remain curated.
 
-### data/java/block_light_properties.json
-
-This file has been created manually using the light emission and light-filtering block tables from [minecraft.wiki](https://minecraft.wiki/w/Light). State dependent light emission is implemented in
-`BedrockMappingData#loadBlockLightProperties`.
-
 ### data/java/effects.json
 
 This file can be dumped with the Fabric mod in `generator`.
