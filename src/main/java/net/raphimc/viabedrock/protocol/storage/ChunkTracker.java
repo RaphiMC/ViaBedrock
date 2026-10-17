@@ -67,13 +67,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 // TODO: Feature: Block connections
 // TODO: Feature: Incremental light updates instead of whole section recomputations
 public class ChunkTracker extends StoredObject {
 
-    private static final int MAX_SUB_CHUNK_REQUEST_OFFSETS_PER_PACKET = 256;
-    private static final long SUB_CHUNK_REQUEST_BUDGET_NANOS = 5_000_000L;
+    private static final long PARTIAL_CHUNK_SEND_INTERVAL_NANOS = 200_000_000L;
 
     private final Dimension dimension;
     private final int minY;
@@ -83,6 +83,7 @@ public class ChunkTracker extends StoredObject {
 
     private final Long2ObjectMap<BedrockChunk> chunks = new Long2ObjectOpenHashMap<>();
     private final Set<Long> dirtyChunks = new LinkedHashSet<>();
+    private final Map<Long, Long> lastChunkSendNanos = new HashMap<>();
 
     private final Long2ObjectMap<int[][]> javaBlockStateCache = new Long2ObjectOpenHashMap<>(); // chunk key -> per section java block states
     private final Long2ObjectMap<ChunkLight> chunkLight = new Long2ObjectOpenHashMap<>(); // Only chunks sent to the client have cached light
@@ -98,8 +99,7 @@ public class ChunkTracker extends StoredObject {
         return thread;
     });
 
-    private final PriorityQueue<SubChunkPosition> subChunkRequests = new PriorityQueue<>(this::compareSubChunkRequests);
-    private final Set<SubChunkPosition> queuedSubChunkRequests = new HashSet<>();
+    private final Set<SubChunkPosition> subChunkRequests = new HashSet<>();
     private final Set<SubChunkPosition> pendingSubChunks = new HashSet<>();
 
     private int centerX = 0;
@@ -126,14 +126,8 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void setCenter(final int x, final int z) {
-        if (this.centerX != x || this.centerZ != z) {
-            this.centerX = x;
-            this.centerZ = z;
-            // Queue priorities depend on the center, so rebuild the heap after it moves.
-            final List<SubChunkPosition> requests = new ArrayList<>(this.subChunkRequests);
-            this.subChunkRequests.clear();
-            this.subChunkRequests.addAll(requests);
-        }
+        this.centerX = x;
+        this.centerZ = z;
         this.removeOutOfLoadDistanceChunks();
     }
 
@@ -173,6 +167,7 @@ public class ChunkTracker extends StoredObject {
         final long chunkKey = chunkPos.chunkKey();
         this.chunks.remove(chunkKey);
         this.dirtyChunks.remove(chunkKey);
+        this.lastChunkSendNanos.remove(chunkKey);
         this.javaBlockStateCache.remove(chunkKey);
         this.chunkLight.remove(chunkKey);
         this.lightDirtyChunks.remove(chunkKey);
@@ -352,10 +347,7 @@ public class ChunkTracker extends StoredObject {
         if (!this.isInLoadDistance(chunkX, chunkZ)) {
             return;
         }
-        final SubChunkPosition position = new SubChunkPosition(chunkX, subChunkY, chunkZ);
-        if (this.queuedSubChunkRequests.add(position)) {
-            this.subChunkRequests.add(position);
-        }
+        this.subChunkRequests.add(new SubChunkPosition(chunkX, subChunkY, chunkZ));
     }
 
     public boolean mergeSubChunk(final int chunkX, final int subChunkY, final int chunkZ, final BedrockChunkSection other, final List<BedrockBlockEntity> blockEntities) {
@@ -461,16 +453,12 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void sendChunkInNextTick(final int chunkX, final int chunkZ) {
-        final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
-        if (chunk == null || !isChunkFullyLoaded(chunk)) {
-            return;
-        }
         this.dirtyChunks.add(ChunkPosition.chunkKey(chunkX, chunkZ));
     }
 
     public void sendChunk(final int chunkX, final int chunkZ) {
         final BedrockChunk chunk = this.getChunk(chunkX, chunkZ);
-        if (chunk == null || !isChunkFullyLoaded(chunk)) {
+        if (chunk == null) {
             return;
         }
 
@@ -482,6 +470,7 @@ public class ChunkTracker extends StoredObject {
         this.writeLightData(levelChunkWithLight, buildFullLightPacketData(light));
         levelChunkWithLight.send(BedrockProtocol.class);
         final long chunkKey = ChunkPosition.chunkKey(chunkX, chunkZ);
+        this.lastChunkSendNanos.put(chunkKey, System.nanoTime());
         this.chunkLight.put(chunkKey, light);
         this.lightVersions.merge(chunkKey, 1L, Long::sum);
         // Initial lighting uses this chunk alone. Refresh its borders with any loaded neighbors.
@@ -583,7 +572,6 @@ public class ChunkTracker extends StoredObject {
     }
 
     private static boolean isChunkFullyLoaded(final BedrockChunk chunk) {
-        // Sections requested from Bedrock keep pending updates until their subchunk response arrives.
         for (final BedrockChunkSection section : chunk.getSections()) {
             if (section.hasPendingBlockUpdates()) {
                 return false;
@@ -767,50 +755,44 @@ public class ChunkTracker extends StoredObject {
     }
 
     public void tick() {
-        // Keep request preparation and Java chunk sends within the same per-tick time budget.
-        final long deadline = System.nanoTime() + 30_000_000L;
         if (this.user().get(EntityTracker.class) != null && this.user().get(EntityTracker.class).getClientPlayer().isInitiallySpawned()) {
             this.subChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
-            this.queuedSubChunkRequests.removeIf(s -> !this.isInLoadDistance(s.chunkX, s.chunkZ));
-            final long requestDeadline = Math.min(deadline, System.nanoTime() + SUB_CHUNK_REQUEST_BUDGET_NANOS);
-            if (!this.subChunkRequests.isEmpty()) {
-                final BlockPosition basePosition = new BlockPosition(this.centerX, 0, this.centerZ);
-                while (!this.subChunkRequests.isEmpty() && System.nanoTime() < requestDeadline) {
-                    final List<SubChunkPosition> requests = new ArrayList<>(Math.min(MAX_SUB_CHUNK_REQUEST_OFFSETS_PER_PACKET, this.subChunkRequests.size()));
-                    do {
-                        final SubChunkPosition position = this.subChunkRequests.remove();
-                        this.queuedSubChunkRequests.remove(position);
-                        requests.add(position);
-                    } while (requests.size() < MAX_SUB_CHUNK_REQUEST_OFFSETS_PER_PACKET && !this.subChunkRequests.isEmpty() && System.nanoTime() < requestDeadline);
-                    this.pendingSubChunks.addAll(requests);
+            final BlockPosition basePosition = new BlockPosition(this.centerX, 0, this.centerZ);
+            while (!this.subChunkRequests.isEmpty()) {
+                final Set<SubChunkPosition> group = this.subChunkRequests.stream().limit(256).collect(Collectors.toSet());
+                this.subChunkRequests.removeAll(group);
+                this.pendingSubChunks.addAll(group);
 
-                    final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.user());
-                    subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
-                    subChunkRequest.write(BedrockTypes.UNSIGNED_VAR_INT, requests.size()); // sub chunk offset count
-                    for (SubChunkPosition position : requests) {
-                        final BlockPosition offset = new BlockPosition(position.chunkX - basePosition.x(), position.subChunkY, position.chunkZ - basePosition.z());
-                        subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
-                    }
-                    subChunkRequest.write(BedrockTypes.INT_LE, basePosition.x());
-                    subChunkRequest.write(BedrockTypes.INT_LE, basePosition.y());
-                    subChunkRequest.write(BedrockTypes.INT_LE, basePosition.z());
-                    subChunkRequest.sendToServer(BedrockProtocol.class);
+                final PacketWrapper subChunkRequest = PacketWrapper.create(ServerboundBedrockPackets.SUB_CHUNK_REQUEST, this.user());
+                subChunkRequest.write(BedrockTypes.VAR_INT, this.dimension.ordinal()); // dimension id
+                subChunkRequest.write(BedrockTypes.UNSIGNED_VAR_INT, group.size()); // sub chunk offset count
+                for (SubChunkPosition subChunkPosition : group) {
+                    final BlockPosition offset = new BlockPosition(subChunkPosition.chunkX - basePosition.x(), subChunkPosition.subChunkY, subChunkPosition.chunkZ - basePosition.z());
+                    subChunkRequest.write(BedrockTypes.SUB_CHUNK_OFFSET, offset); // offset
                 }
+                subChunkRequest.write(BedrockTypes.INT_LE, basePosition.x());
+                subChunkRequest.write(BedrockTypes.INT_LE, basePosition.y());
+                subChunkRequest.write(BedrockTypes.INT_LE, basePosition.z());
+                subChunkRequest.sendToServer(BedrockProtocol.class);
             }
         }
 
-        // Leave remaining chunk data queued when the tick budget is exhausted.
-        // Send ready chunks outward from the current center, even when replies arrive out of order.
-        final List<Long> readyChunks = new ArrayList<>(this.dirtyChunks);
-        readyChunks.sort(Comparator.comparingLong(chunkKey -> {
-            final ChunkPosition position = new ChunkPosition(chunkKey);
-            return this.distanceToCenterSquared(position.chunkX(), position.chunkZ());
-        }));
-        for (long chunkKey : readyChunks) {
-            if (System.nanoTime() >= deadline) {
-                break;
-            }
+        // Remapping a chunk and computing its initial light run on the event loop. Limit this work
+        // per tick, while leaving remaining chunk data queued for the next tick.
+        final long deadline = System.nanoTime() + 30_000_000L;
+        final int queuedChunks = this.dirtyChunks.size();
+        for (int i = 0; i < queuedChunks && !this.dirtyChunks.isEmpty() && System.nanoTime() < deadline; i++) {
+            final long chunkKey = this.dirtyChunks.iterator().next();
             this.dirtyChunks.remove(chunkKey);
+            final BedrockChunk chunk = this.chunks.get(chunkKey);
+            if (chunk == null) {
+                continue;
+            }
+            final Long lastSend = this.lastChunkSendNanos.get(chunkKey);
+            if (lastSend != null && System.nanoTime() - lastSend < PARTIAL_CHUNK_SEND_INTERVAL_NANOS && !isChunkFullyLoaded(chunk)) {
+                this.dirtyChunks.add(chunkKey);
+                continue;
+            }
             final ChunkPosition chunkPos = new ChunkPosition(chunkKey);
             this.sendChunk(chunkPos.chunkX(), chunkPos.chunkZ());
         }
@@ -830,28 +812,6 @@ public class ChunkTracker extends StoredObject {
                 ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Could not submit chunk light update", e);
             }
         }
-    }
-
-    private long distanceToCenterSquared(final int chunkX, final int chunkZ) {
-        final long dx = (long) chunkX - this.centerX;
-        final long dz = (long) chunkZ - this.centerZ;
-        return dx * dx + dz * dz;
-    }
-
-    private int compareSubChunkRequests(final SubChunkPosition first, final SubChunkPosition second) {
-        int result = Long.compare(this.distanceToCenterSquared(first.chunkX, first.chunkZ), this.distanceToCenterSquared(second.chunkX, second.chunkZ));
-        if (result != 0) {
-            return result;
-        }
-        result = Integer.compare(first.chunkX, second.chunkX);
-        if (result != 0) {
-            return result;
-        }
-        result = Integer.compare(first.chunkZ, second.chunkZ);
-        if (result != 0) {
-            return result;
-        }
-        return Integer.compare(first.subChunkY, second.subChunkY);
     }
 
     private Chunk remapChunk(final BedrockChunk chunk) {
