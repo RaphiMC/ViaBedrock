@@ -164,11 +164,11 @@ public class BedrockDataPalette implements DefaultedDataPalette {
 
     @Override
     public String toString() {
-        return "BedrockDataPalette{" +
-            "palette=" + palette +
-            ", bitArray=" + bitArray +
-            ", persistentPalette=" + persistentPalette +
-            '}';
+        return "BedrockDataPalette{"
+            + "palette=" + this.palette
+            + ", bitArray=" + this.bitArray
+            + ", persistentPalette=" + this.persistentPalette
+            + '}';
     }
 
 }
