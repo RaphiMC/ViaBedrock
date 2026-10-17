@@ -1354,8 +1354,7 @@ public class BedrockMappingData extends MappingDataBase {
                     this.bedrockBlockStateUpgrader.upgradeToLatest(tag);
                     final BedrockBlockState bedrockBlockState = BedrockBlockState.fromNbt(tag);
                     if (!this.bedrockBlockStates.contains(bedrockBlockState)) {
-                        // TODO: This is broken
-                        //throw new RuntimeException("Legacy block state " + bedrockBlockState.toBlockStateString() + " is not mapped to a modern block state");
+                        throw new RuntimeException("Legacy block state " + bedrockBlockState.toBlockStateString() + " is not mapped to a modern block state");
                     }
 
                     this.bedrockLegacyBlockStates.put(id << 6 | metadata & 63, bedrockBlockState);

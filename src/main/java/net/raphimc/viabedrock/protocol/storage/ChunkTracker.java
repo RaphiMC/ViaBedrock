@@ -712,6 +712,10 @@ public class ChunkTracker extends StoredObject {
             if (palette instanceof BedrockDataPalette bedrockPalette) {
                 if (bedrockPalette.usesPersistentIds()) {
                     bedrockPalette.resolvePersistentIds(bedrockBlockStateTag -> {
+                        if (!(bedrockBlockStateTag instanceof CompoundTag)) {
+                            ViaBedrock.getPlatform().getLogger().log(Level.WARNING, "Invalid block state tag: Palette=" + bedrockPalette + " Tag=" + bedrockBlockStateTag);
+                            return blockStateRewriter.bedrockId(BedrockBlockState.INFO_UPDATE);
+                        }
                         final int bedrockBlockState = blockStateRewriter.bedrockId((CompoundTag) bedrockBlockStateTag);
                         if (bedrockBlockState != -1) {
                             return bedrockBlockState;

@@ -433,8 +433,8 @@ public final class JoinPackets {
                 final int count = wrapper.read(BedrockTypes.UNSIGNED_VAR_INT); // entry count
                 for (int i = 0; i < count; i++) {
                     final String dimensionIdentifier = wrapper.read(BedrockTypes.STRING); // dimension identifier
-                    final int maximumHeight = wrapper.read(BedrockTypes.VAR_INT); // maximum height
                     final int minimumHeight = wrapper.read(BedrockTypes.VAR_INT); // minimum height
+                    final int maximumHeight = minimumHeight + wrapper.read(BedrockTypes.VAR_INT); // maximum height
                     wrapper.read(BedrockTypes.VAR_INT); // generator type
                     wrapper.read(BedrockTypes.VAR_INT); // dimension type
                     wrapper.read(BedrockTypes.UUID); // pack id
