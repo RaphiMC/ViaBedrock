@@ -61,7 +61,6 @@ public final class BedrockTypes {
     public static final Type<String> ASCII_STRING = new AsciiStringType();
     public static final Type<String> STRING = new StringType();
     public static final Type<String> OPTIONAL_STRING = new OptionalType<>(STRING);
-    public static final Type<String[]> SHORT_LE_STRING_ARRAY = new ArrayType<>(STRING, SHORT_LE);
     public static final Type<String[]> STRING_ARRAY = new ArrayType<>(STRING, UNSIGNED_VAR_INT);
     public static final Type<String> UTF8_STRING = new Utf8StringType();
     public static final Type<String[]> UTF8_STRING_ARRAY = new ArrayType<>(UTF8_STRING, UNSIGNED_INT_LE);

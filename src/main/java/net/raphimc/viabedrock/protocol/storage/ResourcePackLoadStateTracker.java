@@ -134,7 +134,7 @@ public class ResourcePackLoadStateTracker extends StoredObject {
                 final PacketWrapper resourcePackClientResponse = PacketWrapper.create(ServerboundBedrockPackets.RESOURCE_PACK_CLIENT_RESPONSE, this.user());
                 resourcePackClientResponse.write(BedrockTypes.UNSIGNED_VAR_INT, ResourcePackResponse.Downloading.getValue()); // status
                 resourcePackClientResponse.write(BedrockTypes.STRING, "downloading"); // #blameMojang
-                resourcePackClientResponse.write(BedrockTypes.SHORT_LE_STRING_ARRAY, downloadList.stream().map(ResourcePack.Key::toString).toArray(String[]::new)); // downloading packs
+                resourcePackClientResponse.write(BedrockTypes.STRING_ARRAY, downloadList.stream().map(ResourcePack.Key::toString).toArray(String[]::new)); // downloading packs
                 resourcePackClientResponse.scheduleSendToServer(BedrockProtocol.class);
             } else {
                 this.loadFuture.complete(null);

@@ -188,6 +188,7 @@ public final class ResourcePackPackets {
             final ResourcePackDownloadTracker downloadTracker = wrapper.user().get(ResourcePackDownloadTracker.class);
             final ResourcePackDownloadTracker.Download download = downloadTracker.get(key);
             if (download != null) {
+                ViaBedrock.getPlatform().getLogger().log(Level.INFO, "Downloading resource pack chunk " + chunk + "/" + download.chunkSize() + " for " + key);
                 final ResourcePack resourcePack = download.processDataChunk(chunk, data);
                 if (resourcePack != null) {
                     downloadTracker.remove(key);
