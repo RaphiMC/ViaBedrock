@@ -32,6 +32,7 @@ import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorDataIds;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.ActorFlags;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.DataItemType;
 import net.raphimc.viabedrock.protocol.data.enums.java.generated.BossEventOperationType;
+import net.raphimc.viabedrock.protocol.model.EntityProperties;
 import net.raphimc.viabedrock.protocol.model.Position3f;
 import net.raphimc.viabedrock.protocol.rewriter.EntityMetadataRewriter;
 import net.raphimc.viabedrock.protocol.types.BedrockTypes;
@@ -121,6 +122,10 @@ public class Entity {
             }
         }
         this.onEntityDataChanged();
+    }
+
+    public final void translateEntityProperties(final EntityProperties properties, final List<EntityData> javaEntityData) {
+        EntityMetadataRewriter.rewriteProperties(this.user, this, properties, javaEntityData);
     }
 
     public void playSound(final String soundEvent) {
