@@ -324,7 +324,6 @@ public final class ClientPlayerPackets {
                     clientPlayer.cancelNextSwingPacket();
                     clientPlayer.setBlockBreakingInfo(new ClientPlayerEntity.BlockBreakingInfo(position, direction));
                     // TODO: Handle instant breaking
-                    // TODO: Handle creative mode mining
                     // TODO: Test breaking fire
                     // TODO: The java client keeps spamming swing packets while waiting for the block break cooldown. Those need to be cancelled
 
@@ -350,6 +349,10 @@ public final class ClientPlayerPackets {
 
                     chunkTracker.handleBlockChange(position, 0, chunkTracker.bedrockAirId());
                     PacketFactory.sendJavaBlockUpdate(wrapper.user(), position, ProtocolConstants.JAVA_AIR_ID);
+                }
+                case CHANGE_DESTROY_DIRECTION -> {
+                    clientPlayer.setBlockBreakingInfo(new ClientPlayerEntity.BlockBreakingInfo(position, direction));
+                    clientPlayer.addAuthInputBlockAction(new ClientPlayerEntity.AuthInputBlockAction(PlayerActionType.ContinueDestroyBlock, position, direction.ordinal()));
                 }
                 case SWAP_ITEM_WITH_OFFHAND, STAB -> {
                 }
