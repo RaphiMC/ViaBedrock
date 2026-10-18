@@ -152,6 +152,7 @@ public class BedrockProtocol extends StatelessTransitionProtocol<ClientboundBedr
 
         user.put(new InventoryTransactionRewriter(user));
         user.put(new MapTracker(user));
+        user.put(new EntityPropertyTracker(user));
     }
 
     @Override
