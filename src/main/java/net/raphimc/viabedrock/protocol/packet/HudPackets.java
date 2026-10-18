@@ -76,7 +76,7 @@ public final class HudPackets {
                 switch (action) {
                     case Add -> {
                         final UUID uuid = wrapper.read(BedrockTypes.UUID); // uuid
-                        final long entityUniqueId = wrapper.read(BedrockTypes.UNSIGNED_VAR_LONG); // actorUniqueId
+                        final long entityUniqueId = wrapper.read(BedrockTypes.VAR_LONG); // actorUniqueId
                         final String name = wrapper.read(BedrockTypes.STRING); // name
                         final String xuid = wrapper.read(BedrockTypes.STRING); // xuid
                         final String platformOnlineId = wrapper.read(BedrockTypes.STRING); // platform online id
