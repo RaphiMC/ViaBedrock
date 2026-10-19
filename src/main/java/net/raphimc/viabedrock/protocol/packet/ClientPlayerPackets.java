@@ -280,6 +280,7 @@ public final class ClientPlayerPackets {
             wrapper.read(Types.VAR_INT); // data
 
             switch (action) {
+                case STOP_SLEEPING -> clientPlayer.sendPlayerActionPacketToServer(PlayerActionType.StopSleeping);
                 case START_SPRINTING -> {
                     clientPlayer.setSprinting(true);
                     clientPlayer.addAuthInputData(PlayerAuthInputData.StartSprinting);
